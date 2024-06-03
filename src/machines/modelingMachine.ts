@@ -361,10 +361,8 @@ export const modelingMachine = createMachine(
               },
 
               'Constrain remove constraints': {
-                target: 'SketchIdle',
-                internal: true,
                 cond: 'Can constrain remove constraints',
-                actions: ['Constrain remove constraints'],
+                target: 'Await constrain remove constraints',
               },
 
               'Re-execute': {
@@ -587,6 +585,16 @@ export const modelingMachine = createMachine(
             },
           },
 
+          'Await constrain remove constraints': {
+            invoke: {
+              src: 'do-constrain-remove-constraint',
+              id: 'do-constrain-remove-constraint',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
           'Await constrain horizontally': {
             invoke: {
               src: 'do-constrain-horizontally',
@@ -849,21 +857,6 @@ export const modelingMachine = createMachine(
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),
-      // TODO implement source ranges for all of these constraints
-      // need to make the async like the modal constraints
-      'Constrain remove constraints': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyRemoveConstrainingValues({
-          selectionRanges,
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
       'AST extrude': async (_, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
@@ -1110,6 +1103,38 @@ export const modelingMachine = createMachine(
     },
     // end actions
     services: {
+      'do-constrain-remove-constraint': async ({
+        selectionRanges,
+        sketchDetails,
+      }) => {
+        const { modifiedAst, pathToNodeMap } = applyRemoveConstrainingValues({
+          selectionRanges,
+        })
+        if (!sketchDetails) return
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
+        }
+      },
       'do-constrain-horizontally': async ({
         selectionRanges,
         sketchDetails,
