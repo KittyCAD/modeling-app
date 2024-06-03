@@ -2440,6 +2440,56 @@ test('Extrude from command bar selects extrude line after', async ({
 })
 
 test.describe('Testing constraints', () => {
+  test(`Test remove constraints`, async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const yo = 79
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %, 'seg01')
+  |> line([78.92, -120.11], %)
+  |> angledLine([segAng('seg01', %), yo], %)
+  |> line([41.19, 28.97 + 5], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+      )
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText("line([74.36, 130.4], %, 'seg01')").click()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+    const line3 = await u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`)
+
+    // await page.mouse.click(line1.x, line1.y)
+    // await page.keyboard.down('Shift')
+    await page.mouse.click(line3.x, line3.y)
+    await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
+    // await page.keyboard.up('Shift')
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page
+      .getByRole('button', { name: 'remove constraints', exact: true })
+      .click()
+
+    const activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent).toHaveLength(1)
+    await expect(activeLinesContent[0]).toHaveText('|> line([39.13, 68.63], %)')
+
+    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+  })
   test.describe('Test perpendicular distance constraint', () => {
     const cases = [
       {
@@ -2951,7 +3001,7 @@ const part002 = startSketchOn('XZ')
     ] as const
     for (const { codeAfter, constraintName } of cases) {
       test(`${constraintName}`, async ({ page }) => {
-        await page.addInitScript(async () => {
+        await page.addInitScript(async (customCode) => {
           localStorage.setItem(
             'persistCode',
             `const yo = 5
@@ -2977,15 +3027,21 @@ const part002 = startSketchOn('XZ')
         await page.getByText('line([74.36, 130.4], %)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
-        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
-        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
-        const line4 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
+        const line1 = await u.getSegmentBodyCoords(
+          `[data-overlay-index="${0}"]`
+        )
+        const line3 = await u.getSegmentBodyCoords(
+          `[data-overlay-index="${2}"]`
+        )
+        const line4 = await u.getSegmentBodyCoords(
+          `[data-overlay-index="${3}"]`
+        )
 
         // select two segments by holding down shift
-        await page.mouse.click(line1.x - 20, line1.y + 20)
+        await page.mouse.click(line1.x, line1.y)
         await page.keyboard.down('Shift')
-        await page.mouse.click(line3.x - 3, line3.y + 20)
-        await page.mouse.click(line4.x - 15, line4.y + 15)
+        await page.mouse.click(line3.x, line3.y)
+        await page.mouse.click(line4.x, line4.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
           name: 'Constrain',
