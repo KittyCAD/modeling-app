@@ -185,6 +185,9 @@ export function useNetworkStatus() {
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
+
+      // Tell EngineConnection to start firing events.
+      window.dispatchEvent(new CustomEvent('use-network-status-ready', {}))
     }
 
     engineCommandManager.addEventListener(

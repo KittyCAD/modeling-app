@@ -393,6 +393,8 @@ class EngineConnection extends EventTarget {
           break
       }
     }, pingIntervalMs)
+
+    this.connect()
   }
 
   isConnecting() {
@@ -672,14 +674,14 @@ class EngineConnection extends EventTarget {
       })
     }
 
-    this.state = {
-      type: EngineConnectionStateType.Connecting,
-      value: {
-        type: ConnectingType.WebSocketConnecting,
-      },
-    }
-
     const createWebSocketConnection = () => {
+      this.state = {
+        type: EngineConnectionStateType.Connecting,
+        value: {
+          type: ConnectingType.WebSocketConnecting,
+        },
+      }
+
       this.websocket = new WebSocket(this.url, [])
       this.websocket.binaryType = 'arraybuffer'
 
@@ -939,7 +941,9 @@ class EngineConnection extends EventTarget {
       })
     }
 
-    createWebSocketConnection()
+    window.addEventListener('use-network-status-ready', () => {
+      createWebSocketConnection()
+    })
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
