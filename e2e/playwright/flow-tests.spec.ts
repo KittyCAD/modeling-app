@@ -3153,6 +3153,7 @@ test.describe('Testing segment overlays', () => {
       await page.mouse.down({ button: 'middle' })
       await page.mouse.move(600, 120, { steps: 10 })
       await page.mouse.up({ button: 'middle' })
+      await page.waitForTimeout(100)
 
       let ang = 0
 
