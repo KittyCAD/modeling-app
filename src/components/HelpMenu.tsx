@@ -83,6 +83,12 @@ export function HelpMenu(props: React.PropsWithChildren) {
         </HelpMenuItem>
         <HelpMenuItem
           as="button"
+          onClick={() => navigate('settings?tab=keybindings')}
+        >
+          Keyboard shortcuts
+        </HelpMenuItem>
+        <HelpMenuItem
+          as="button"
           onClick={() => {
             settings.send({
               type: 'set.app.onboardingStatus',
