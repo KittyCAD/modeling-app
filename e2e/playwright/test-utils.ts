@@ -248,7 +248,7 @@ export async function getUtils(page: Page) {
         fullPage: true,
       })
       const screenshot = await PNG.sync.read(buffer)
-      const index = (screenshot.width * y + x) << 2
+      const index = (screenshot.width * y + x) * 4 // rbga is 4 channels
       return [
         screenshot.data[index],
         screenshot.data[index + 1],
