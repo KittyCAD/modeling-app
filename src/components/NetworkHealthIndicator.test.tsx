@@ -5,8 +5,8 @@ import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 import {
   NETWORK_HEALTH_TEXT,
   NetworkHealthIndicator,
-  NetworkHealthState,
 } from './NetworkHealthIndicator'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
@@ -19,6 +19,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   )
 }
 
+// Our Playwright tests for this are much more comprehensive.
 describe('NetworkHealthIndicator tests', () => {
   test('Renders the network indicator', () => {
     render(
@@ -29,21 +30,7 @@ describe('NetworkHealthIndicator tests', () => {
 
     fireEvent.click(screen.getByTestId('network-toggle'))
 
-    expect(screen.getByTestId('network')).toHaveTextContent(
-      NETWORK_HEALTH_TEXT[NetworkHealthState.Ok]
-    )
-  })
-
-  test('Responds to network changes', () => {
-    render(
-      <TestWrap>
-        <NetworkHealthIndicator />
-      </TestWrap>
-    )
-
-    fireEvent.offline(window)
-    fireEvent.click(screen.getByTestId('network-toggle'))
-
+    // Starts as disconnected
     expect(screen.getByTestId('network')).toHaveTextContent(
       NETWORK_HEALTH_TEXT[NetworkHealthState.Disconnected]
     )
