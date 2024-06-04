@@ -227,7 +227,7 @@ export function Toolbar({
         )}
         {state.matches('Sketch no face') && (
           <li className="contents">
-            click plane to sketch on
+            <div className="mx-2 text-sm">click plane to sketch on</div>
           </li>
         )}
         {state.matches('Sketch') && !state.matches('idle') && (
