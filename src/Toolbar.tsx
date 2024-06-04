@@ -225,6 +225,11 @@ export function Toolbar({
             </ActionButton>
           </li>
         )}
+        {state.matches('Sketch no face') && (
+          <li className="contents">
+            click plane to sketch on
+          </li>
+        )}
         {state.matches('Sketch') && !state.matches('idle') && (
           <>
             <li className="contents" key="line-button">
