@@ -53,7 +53,7 @@ async fn inner_line_to(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let id = uuid::Uuid::new_v4();
 
     args.send_modeling_cmd(
@@ -128,7 +128,7 @@ async fn inner_x_line_to(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
 
     let new_sketch_group = inner_line_to([to, from.y], sketch_group, tag, args).await?;
 
@@ -166,7 +166,7 @@ async fn inner_y_line_to(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
 
     let new_sketch_group = inner_line_to([from.x, to], sketch_group, tag, args).await?;
     Ok(new_sketch_group)
@@ -213,7 +213,7 @@ async fn inner_line(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
 
     let id = uuid::Uuid::new_v4();
@@ -381,7 +381,7 @@ async fn inner_angled_line(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let (angle, length) = match data {
         AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
@@ -514,7 +514,7 @@ async fn inner_angled_line_to_x(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: x_to } = data;
 
     let x_component = x_to - from.x;
@@ -600,7 +600,7 @@ async fn inner_angled_line_to_y(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: y_to } = data;
 
     let y_component = y_to - from.y;
@@ -672,7 +672,7 @@ async fn inner_angled_line_that_intersects(
         })?
         .get_base();
 
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let to = intersection_with_parallel_line(
         &[intersect_path.from.into(), intersect_path.to.into()],
         data.offset.unwrap_or_default(),
@@ -948,6 +948,24 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> close(%)
 ///
 /// const example002 = extrude(5, exampleSketch002)
+/// ```
+///
+/// ```no_run
+/// const a1 = startSketchOn({
+///       plane: {
+///         origin: { x: 0, y: 0, z: 0 },
+///         x_axis: { x: 1, y: 0, z: 0 },
+///         y_axis: { x: 0, y: 1, z: 0 },
+///         z_axis: { x: 0, y: 0, z: 1 }
+///       }
+///     })
+///  |> startProfileAt([0, 0], %)
+///  |> line([100.0, 0], %)
+///  |> yLine(-100.0, %)
+///  |> xLine(-100.0, %)
+///  |> yLine(100.0, %)
+///  |> close(%)
+///  |> extrude(3.14, %)
 /// ```
 #[stdlib {
     name = "startSketchOn",
@@ -1337,7 +1355,7 @@ pub(crate) async fn inner_close(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
     let to: Point2d = sketch_group.start.from.into();
 
     let id = uuid::Uuid::new_v4();
@@ -1431,7 +1449,7 @@ pub(crate) async fn inner_arc(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from: Point2d = sketch_group.get_coords_from_paths()?;
+    let from: Point2d = sketch_group.current_pen_position()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
         ArcData::AnglesAndRadius {
@@ -1537,7 +1555,7 @@ async fn inner_tangential_arc(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from: Point2d = sketch_group.get_coords_from_paths()?;
+    let from: Point2d = sketch_group.current_pen_position()?;
 
     let id = uuid::Uuid::new_v4();
 
@@ -1658,7 +1676,7 @@ async fn inner_tangential_arc_to(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from: Point2d = sketch_group.get_coords_from_paths()?;
+    let from: Point2d = sketch_group.current_pen_position()?;
     let tangent_info = sketch_group.get_tangential_info_from_paths();
     let tan_previous_point = if tangent_info.is_center {
         get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
@@ -1744,7 +1762,7 @@ async fn inner_bezier_curve(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from = sketch_group.current_pen_position()?;
 
     let relative = true;
     let delta = data.to;

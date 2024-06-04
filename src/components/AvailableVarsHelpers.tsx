@@ -216,7 +216,7 @@ export const CreateNewVariable = ({
     <>
       <label
         htmlFor="create-new-variable"
-        className="block mt-3 font-mono text-gray-900"
+        className="block mt-3 font-mono text-chalkboard-90"
       >
         Create new variable
       </label>
@@ -224,11 +224,12 @@ export const CreateNewVariable = ({
         {showCheckbox && (
           <input
             type="checkbox"
+            data-testid="create-new-variable-checkbox"
             checked={shouldCreateVariable}
             onChange={(e) => {
               setShouldCreateVariable(e.target.checked)
             }}
-            className="bg-white text-gray-900"
+            className="bg-chalkboard-10 dark:bg-chalkboard-80"
           />
         )}
         <input
@@ -249,7 +250,7 @@ export const CreateNewVariable = ({
         />
       </div>
       {!isNewVariableNameUnique && (
-        <div className="bg-pink-200 rounded px-2 py-0.5 text-xs">
+        <div className="bg-pink-200 dark:bg-chalkboard-80 dark:text-pink-200 rounded px-2 py-0.5 text-xs">
           Sorry, that's not a unique variable name. Please try something else
         </div>
       )}

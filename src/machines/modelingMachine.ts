@@ -1,7 +1,10 @@
-import { PathToNode, VariableDeclarator } from 'lang/wasm'
-import { Axis, Selection, Selections } from 'lib/selections'
+import { PathToNode, VariableDeclarator, parse, recast } from 'lang/wasm'
+import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  isNodeSafeToReplacePath,
+  getNodePathFromSourceRange,
+} from 'lang/queryAst'
 import {
   kclManager,
   sceneInfra,
@@ -44,6 +47,8 @@ import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
+import { Coords2d } from 'lang/std/sketch'
+import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -59,6 +64,7 @@ export type SetSelections =
   | {
       selectionType: 'completeSelection'
       selection: Selections
+      updatedPathToNode?: PathToNode
     }
   | {
       selectionType: 'mirrorCodeMirrorSelections'
@@ -77,6 +83,10 @@ export type MouseState =
       type: 'isDragging'
       on: any
     }
+  | {
+      type: 'timeoutEnd'
+      pathToNodeString: string
+    }
 
 export interface SketchDetails {
   sketchPathToNode: PathToNode
@@ -84,6 +94,34 @@ export interface SketchDetails {
   yAxis: [number, number, number]
   origin: [number, number, number]
 }
+
+export interface SegmentOverlay {
+  windowCoords: Coords2d
+  angle: number
+  group: any
+  pathToNode: PathToNode
+  visible: boolean
+}
+
+export interface SegmentOverlays {
+  [pathToNodeString: string]: SegmentOverlay
+}
+
+export type SegmentOverlayPayload =
+  | {
+      type: 'set-one'
+      pathToNodeString: string
+      seg: SegmentOverlay
+    }
+  | {
+      type: 'delete-one'
+      pathToNodeString: string
+    }
+  | { type: 'clear' }
+  | {
+      type: 'set-many'
+      overlays: SegmentOverlays
+    }
 
 export type ModelingMachineEvent =
   | {
@@ -113,7 +151,10 @@ export type ModelingMachineEvent =
           }
       )
     }
-  | { type: 'Set selection'; data: SetSelections }
+  | {
+      type: 'Set selection'
+      data: SetSelections
+    }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
   | { type: 'Cancel' }
@@ -134,7 +175,7 @@ export type ModelingMachineEvent =
   | { type: 'Constrain length' }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
-  | { type: 'Constrain remove constraints' }
+  | { type: 'Constrain remove constraints'; data?: PathToNode }
   | { type: 'Re-execute' }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
@@ -149,16 +190,35 @@ export type ModelingMachineEvent =
       type: 'done.invoke.animate-to-face' | 'done.invoke.animate-to-sketch'
       data: SketchDetails
     }
+  | {
+      type: 'done.invoke.get-convert-to-variable-info'
+      data: PathToNode
+    }
   | { type: 'Set mouse state'; data: MouseState }
   | {
+      type: 'Set Segment Overlays'
+      data: SegmentOverlayPayload
+    }
+  | {
+      type: 'Delete segment'
+      data: PathToNode
+    }
+  | {
       type: 'code edit during sketch'
+    }
+  | {
+      type: 'Convert to variable'
+      data: {
+        pathToNode: PathToNode
+        variableName: string
+      }
     }
 
 export type MoveDesc = { line: number; snippet: string }
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFTU2VJYWFxDUNDbPFxCQ1dAwQZO0lDW3EcuQzlBRoNFzd0LDxCXwCAW1QAVyDA9hJ2MAjeGI4ueNBE5JTJVUNNBUNlLQ05YsQsjQWNLVE5Yw0aZXFmkHc2-ElsCEwwAgBRXBGAJ0CAaz9yAAsxqITOK8WYyZTCCpg1JaKw5cFFfSIGSmXYaLKyPI0UwKZSmC5XTxQW73R4vd5fH7-QyRZisSbcEFCaw0STZRaiNTiNQ0YRbBAnGSSWzCZSiKz1QziFbKfGtQnEh7PPjsN69DAA2mxKaMpKieSSZE0US40QaUQrPk5DkGnEKFIcmz7QyyjztBWkvgsN7sDXROnAhJM9Q25llXIo818jKGBZiLKihoyYRml3XIneb7sP7EMiUTAZym+oHawMIHI4io8-YNBpmWSWpYx8srSWWBTm1PygtZ36Sbt-ACSJIIyBI30CYCgXTAr38ADcwN7sOQSJgi-6SzMjMimwoZJoRZoaEnLXlpDQL3IJEmlE1XJc5W7+73n0PFaPx0EpzOAr9UG9sAAL24IY13ocYNwZUsrGTBY1FUMUYPBGRLWqGNTXkSwzmMPUZE7J9Mz+PtCN+N9HiIbhYBVEg8H8P8AOA15V38CBsCo3NRnAwFIOmfht1NCwNi5bEslMJYFD5GQzDSI09QvM0xMlfCbmfYjKTI4hKOo2iFyXFdMBYtihgoTiaT9LUoK3MswQUIVDnbVZsjUDZJKTKRDmyA8MjBU1lPTEi1J7DSKNwKi3ho3B-AAQQAIW8fwAA11ws3jEisdtWXEMRw2qZEpMk0wBMK8EGmPURTEyc57wJAjKUCwdhxCsKIuiuL-AATWS+lUu3DLrDsZQjmNY0UMRBAuWDYQrzFVRHH2Pz6pfEjgq08LaLIKAHi6gMrMlNFpCUPd20UQxhFMSSOQhORjoyY0zoqhbVNfRrVpah58HYf4uM1bqdUlLLpFFVQxNkapREk5QlnSXFsjO6sVGER6AuexUmu0yKmEXTHcFY8hekwEgPlY9iTO2zc+Os-dWRSXKTiWVRlEklZdmESo7W8-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-g3SUAeA6umu-g2SgOeSEBeAfCtS2QXs6gjY+47aWI4iQSjgaQEgjQEuFUxisC-guAScwyJAlAPgwQoQLEYAlB+MoWBMHqLKggdgu4KItOz2na82iAg0aQKwUkaI90IoNgC0ZA2AXQwwYBic-gqqHqu+SWUykh0hIwggicgglBlALKeou4Y+WKv8PIFuVMuUtC+4FUWg72gWRIqhMh+ADc-gnCRkYBsAJEShUm8ydh6hmhbhhYN+5MiQnsFghWZ0KwpoX6f6UMxcP+qQ6gvm1hR6QWcCQUw4GCGAThrEAQEAvQAEDhfhPYCeWQiKVSYgnme492wYkSkoVo1Q2Ih6E8kq7h6ROikA9yOReRUAFIhRARn8RgxRFQ+wbae41y+w92o86QU0UkAh9Qwizi5ADwZAgQ-yjwCe2QuwCEeo5yuQEgNSRgaGFgpwxg2chyhmFw5BGA8AUQqSUAnOgRQgDQMYsg8gSgs0ywexZYlqci9ahUkaOypwC0dwDwdxfRSQaw9+4IBymg5oXM1iKwpiag-8ZhlgXajRPaPYIJ9scRrIx0XK+86efKyIQoECPKmQWgZUzifMmJf0Jw6clhdO0JYRDYKIgxVgW6+QKe62jCUqIWDyDEEKMWAycWoy1J0EtorI+yigrMSYe8U+rKtg0gZoXIpwuISYzoNhTCp6Wq8qQpQ6opu06g8aqglgBQKgO4rk1ox4nkuQK2YoxGA6Oa0K+p8sdoUgnIVgICg0zmZOWmIC4ed0OIWEpc4qaJwmvYp6A6F6GyzpaUdovO+4aISw+cf6pwXshceoJqhpqJNxmpvJ4GepXut+u6CwypaIDghwd2fKHItkOc7YxoPIg0BQRm1m4m0ZhZ9xZYFej2w0KwnpxcEM+OZ0bMIocMesDWWMTWA20W2WiqTp7ZoJSwOGF21ZJwEe+QkkJ06QbMw8GZqQDuTOMZSI9gHc+Q7YNg6g9Qb+8J1ODQra+wWIiRoZyRkgg+TOLOHAh5pQ-8MYPIp5po2ItoFuCpqwP6US9ao82ZG2TCr5IOzO5BQKq4n51gFUrI3chotYZQUY9SEelQUe+4ZwIZOZqkMFsuTuLurwVxeWHZhC6cSguQnKoMZwUYg0NoOQNReBMIBeH585Ri4SewpozIUoZguQDY8JzYaGbYHYGpqkHeh2Xex2p2qASF5oP8GKGwo8YINploqZewFU5UjgPIKQhFUFqkp+a+QwG+JE2+n5qwsSEgg8es+6yIb+Ex3xhCAZxo-+AO+ZB5PFxSEgaQaw8gZocYSZjMZCbGB0p0EYwh9QCiSRm2REAB8BwBB+IWrhIQ3AWuGCbwHqbwylmg-F66oVZuGs9amUaw2U7FZgXlgBQOGOoBDhiBvEhixSkMaQeQUINgrMdop4-8gqKwQhdFF4D00lJEZBFBVBYAn57B+QCw5oka-Unmx4fIXM6cI0cadQdYEh2OahshScCh01fl0EZwQoIo4FhU0ppwJhMktqIog8E08VT5thu19hXRchzhVErhJENlKFZRL2x4uQdRcp+4LIJcFezIOI+48xix0cKxNldY3sGwKQU0aIeU2lp1qQ+8l0VCLgLgQAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFTU2VJYWFxDUNDbPFxCQ1dAwQZO0lDW3EcuQzlBRoNFzd0LDxCXwCAW1QAVyDA9hJ2MAjeGI4ueNBE5JTJVUNNBUNlLQ05YsQsjQWNLVE5Yw0aZXFmkHc2r07-XygusFwAgHkANzAAJ0wSPVgxqITOK8RI0LYIGgXK6eKCSbAQTBgAgAUWeX0CAGs-OQABYA5isSbcEFCGTKYQVMmpLRWHLkor6RAyUy7DRZWR5GimBTKUxQ1owuEIpGokafTHYvGGSIE2JTElJaw0STZRaiNTiNQ0YTgk4ySS2YTKURWeqGcQrZT8jztIWIlF8difXoYfHRQnAhJCUTySTMmiiXmiDSiFbgnLqv08hQpdU2faGa3XWHw+3IvgsT7sN1A+VexXqKNKsq5Fmh8EZQwLMRZY0NGTCENJwXeLHsXHEMiUTCtyU5j15mZGJZpYyNrRasyycNLKs5dQ5TVLUPN2299s4ggAEWCI0CYAeT2z9HGA+J+bBjIhq-wknXHfIrX8kA4-ggvU+7QlG-7cvPQ4Qc0QwqfZjQtMpA32cEWTSDIyhUMl6gUCQb1he8cTvNtcQASWFAhkBILF90PZ5-A+LNsHIEhMF-Ilpn4IxmTnBQZE0I1NBoBtwzyaQaD4uQJAbJQmlcS4BTXLCMPQ3D7QIoighIgIcVQT8AC9uCGGiT0BM96MSKxGwWNRVBNAzyRkcNqirYN5EsM5jB9GRUMwyUXI3GSkSIbhYCdEg8H8ZS1I06i32wHyu1GbTZTohUrGDCwNk1bkslMJYFHBGQzDSAMfT4kNUvNZz0LcnC8K83AfM+PzcDIr5OCozBQvCihIpld0-z0xj6gNQ5kNWbI1A2DKGykQ5sjYuDjRElobVvYrpLK7zfP8gBBAAhbx-AADVoz0AKsZCVXEMRS2qZlMoy0x4qu8kGk40RTEyc5ROhCTXIW+1ysq6r-HWzaAE1dsHBjANY0Q-Q2VYjkDQMLKvTVC2EASTVURx9iKySSpxDziCWqr-LIKBESB-8QaAqQLXA5DFEMYRTAy9UKTkamMkDOnHox97JJxr7lpqxF8HYPEovamL83NY7pGNVRUtkapRAy5QlnSXlsjp-YlHJTmNyxnm8Z+pgvkN3AIEo3ofnFU3msoEnOtB1iVRSM6ThHU4MpWXZhEqGM4P2DQxG13FdcWiq+YClTsHU55qMwPR-Go7AoFwW3YrJfVkOWQpg1OcRwxRv0romhtA3yQOpO5kPvv88j6pjuOE6TlPxYbcw2VYumUbME1w2UORJFDR7uXqZlHGembkyx4PPv1-zYFwEgmH8dhUG2pv9uqKQyQtNRHpYswMsafUIOUE+TMcMoy6nzyZ5queF6XlfAZF3NSf0jeLCNaoMmO44MtyClgznwerTDQawx5iVmmhTGH1r6h3xjVMAABHXoIUBZQCFmvMmzJRr-zpsIAMchjrhkyMqNkJg+IBmlnyF64k5rQIrtPOBBsSBVUwIiLSbUX523NA2CwiElhlENHYcMLIKRKz4oYUM6gd6XxgbjJh-lPhgB6B8fwj4FHPH+M-XSqctALCsCGXumhJE6CvEsaoFhVi2EaPkYyTkaGQMnnIgASmAQQYA+AhF6CMTB+ler9zOMhAoJ8Sw6jMSYcGZDTAFB2ErWmsiGEimQdgReAAZPAYAH6oA4aeDqsUYxpAkCoGwV0sjqHBEocGjNrAQVAaZBJkocbImSYvIY+AjzYBCiw8gD9fFMjiiqLkAZSm1lzuEmMfofQqFOEPAM4DXp0K5o0vCzTegpP8Eo0IhNERZJyTpPJ+YRr6m5IfBMWRJFhJKHFBQKogL9RyJUU4DT3J4UfBgZ8psAjvk-Pgb8uI+mASyODXIIYxBrFYnDEo3Ibn5DyBGao3JpoQInvNRJ8ia4PzIiwzpAAjYm2iDnr0ONWJY6xxEsnBLIbUtztQxlsNyK6l8VoAHc-JKQjlHTSTU2mUH8HgAAZqgAgEBuBgDhLgN4qAsSSBgOwQQgVI7BUwIIAVqAAWZUaCqUBJxHpmEepkDK2RzDIQhdUXkcgtYOJRZjFlbLw5BWjo1K2PLMmqoIF8T4KlJBMB+OwQVnwugyr8PKjlSqVW4EFeqzUwKQWLhDKxR6GVwIJVOHxAoDYlZMtZa+GulEQrOoinyiNQqRW4DFXgSV0rZWCFzQ1cNkaCViwAplKwFRjorBMOSSoXErxlCUJIRwhxDgS1pvY8eLYbXZoCLW-NYUXVFsFe6z4nrPjet9f6wN1aZ3KtVVG1tDR5DALEJoYaGwKjS04haFi6h5m0Kga5W1r4-rbQXSW0V4rK1iurSQHFsBBB8HrWqxte0QYttgr3fihDyy9tSPqXIjR+qyF7pkLNdrn1bVfUulda7hgbqDXKn9f6AO7uA8DRILaKRsivQUUwAYtCXVWNIUMYFjiNmoeOt6OtH0BGff9TDpby0SqlV+4NhHBB6EA3utIBRD0PWwY2BW8NTiUYZeqUM0akULPvVxqdv0Nr+D426j1XqfW4ZUpu0Tv7xOSdI6-JkX8+GfyRifc5yhKX9QsLyEJRxjpjuRROh9untmuuLcK99FbhP4cEMFmznCdGHIc0uc0Q7YyGAZoGA00bLCSOYxkVDr5guYeM6u0zfrzNRZiyRuLhLQPVBufg7IrErA71pgzWmFRkv4LkAQy1HHFk6btWgoW-HwtCarcGobOJYu5KbbVyRR1MoshATITilymT1HBjnL+KhaZWHywESbRXl0mfXeV6tk3pv7Nm+Rs1FQ02hlWGxSF62z0hK0KI+QYL9v+ENp8Y2ptyDmxYdywtbqBMfsi9W37-2zYW0EAWlql3oogfI2nHqShrC9zJCxRTJQIXgx-qA40sZCHfeh08AHQPLZztB6F4rOGysBqi+Tk2sOWHw5p4jqrM2UdMjR4XDkWPh646ZBkCkhOT4PSuqTq1AWdbpLLbslELSl6Ew6V0z4PTl7qrpmkbk-8bHRLpmMqFihBnVC0MaZzSxL4K8ycvbJyu1mL02W0om9vUDZJ17IA0DQNhnNVOGFb5hyS8jNTBJQtuMm7MkNhXAHACDqsymkJQfUGgsjkPTK8Zo-QWmibR46dNMpR8Vw7zAsf4-sET9KHnZG+dI37pxS0jWZkVjpiqM4EhbCBlowGEvHvsmSAAHIrwAAqoDwOwWABAVoQAgIMFhAQWCT-VSfXYtGYYZ4aGscEJ9W5mDwbS1P-eY8j-8OPyf0-SAtT2cjuvgFNDmBMJlFiXIDjlKvPgqsNglbRLOjyW9RxYqOPBPAFYwRjA4fBaZQ4N-IPfIDvI0MkVNMkbIS+EAqvKgGvK7XnQCAMKsGMIZUBKlSwBkK5JidIIJUBU0GwFQS+AAFTV2eE6Uam6Qfid3WTt12VX32COlpQenVF7mglAXSCRkylslOFAWEEvl6BNhXnCizHQheFwDCzLQh2lRWm8DoMEBkJFUEHkPYEUOTls24XyBuUOEyAKn2AKDUHBFDGVFSEeTYkpmOkvlcS2XwB2TL0kG4y-AjigDwBnznw2RCDdx2T8LwABSshTxc1o2ZCumyG4l5AHRSEsDpmfzrEvnIERDIECF9SRDAOyF2BMh9BNVyCKRnHNAsFOGMF3j1T21l04yDm4zUW4AxWXixU-B-XtHBwi3GzlXURrkEGXhrWxS6LcW52wPvzKDEA60aCNw7SVhFwQFkEqAqFSBlnewMVEG+wGLqkxTeFGLxSRHp1Kzw2rV2KzCGNQBGM6KOKR1FhwL7QpEsBNXyF2x9CWNsQpisRSFYlRjUB2JvmCJUUyXUSrk0RUME0-UkF0LBL5kECURBMEDhPgWPGq2u3r12CnDZFnEbF7lIKMBYk9imlAXUBWw2D8y00nmaJRJ+gVU5TrkhLULFVhJvhDQdU0ljijUsH7lSCuhZBMDyEsh5Iaw1HJB9C80BI0VqgogaljiZN6JZOuNpLwBrTqjzTYT0G5PMHOmsCWyWEbHSjMT1RVD7RjDKDyEjwaP6yaN0xVJqnpKVVjnjhwCTgVLGyVORLZMdMdVjmi1dKMPRMePOn7hywtU7S9jzjUANFAmOkARWFYilPBJlNrk1JdMTmUJ6I9JhOVLZO3T9IbkDNrzs1KAbFZGDH6goTWDSzMVUCxLOBUDGkNNSiTLDjvlaRXi2ndOhNZI0T0PniYCuP-W5OVE7y9gKAMhDAPgKEpGsEMSnAIVbPgUCAHMxX+m7Mi17PBP7IXiHK1OMIVA1TSH9gNMnCoL-jJGkDKHOhpHWKXJ+iQRQUakmw3OlS3PhMfOokEEmyT1SgNGsBOhsEUGQjczMS9lHAELBlyHbkAOtUCztXtJ+xYRjiwFfM9PtMECYGQrYWoAPIS2jNo1umRgyCNKuWiRuUykyDRhy2XDLn8FwBXn5RIEoB8GCFCDfDACYvNiXx+DLQBUEDsGYhZEL0tzYyWN7hTysHZHZiNBsGcjIGwC6GGC-HaNMzLTQskAUqUpGCHKYptjwoAh9GYlpUaEg21F3wdjOlsQTUNIUHkvj20pUpXg8TnS-FgEkg0q0uGDcWGPcr7AMpBl7k2zTjphWGDF83cxuRPiotSHUFETsouAYowHgCiC02LLtkEAaCrFkHkE1jUGWBNyEEcEdhSFjDZEQO5GclTDAHSoVEEDWDMPJF1U0FDH9gqRWH7gRkkSsssHY380aJxFqvzFipVGpk7QIVgN7RMANF-3nC7QGm2OtO0yDhgSGv2hOE3ken9lsBatCpnBZBAikq2ygNgrl1tLtR9K5QR15VVTWrJmjC1S5EUC9gbC6yTVsGkBDE1FOHNS9m+23RBxalfTuv0jJPPQkRiV7lSmGkjE4nGlyElxNG+3Q2BsmJLKWGiQsCUCsGiV7mMC5EugsUMUUEWDPkpLvWpN0141Rrv3RvNP7lYhxL92e2WNOHBggh9DEGhWZG+0K1urRu4RjHBjODynyG5EOGiQZmjL3mQkDG1F7gKG+0O35tpsFto3NxhhWFxpPkVhUHSFSm5CNHVhLjJyNgpzZ2p2thC0FRBsJIy113VA4h-3yAyhpnSG9mAU5tSBPzL1ttKHsA-lMODGhXqFsI6vz1TxSD1FsB9s93L3QL9rsBNEDotGDvUFDuzw+tWDOFjNo1AT6qpOKk4K8IYoDWokTqApVG-n9AaFkBZq-0dl-zeL+NkFjsHzPwv00QrokCjAtw7TljOArF7ijAeTq1kpWDQMrz9ochDxDH9xMCUFSgJMAlnA6wXHNBeJXCWsngYPaSYI1y11QETtDGePAn9wkoRvDDZr2EegekcG1F+OkNkIXwUMkiUOnvqHMAkEARLnU2ZFsOEKoNsBDDZhAtcJCMK19oFsPLqF91WDSI+I5EshnL1R60ZvU3AfcPdxjx8N+SCHUXn0fE+DLU+ETqJLgaapykEmXv6nLJUCyuQnRm3uKjcNCIH3L1wagH8HCPoi4UPJAvSBsBWxbniJrKuXzuSNo1pgLzJC3r62WowiyLAByNgDyOnqnH7g2BSCRjblsCvrOBmoIUZisSlLaJXgONuMRGnoEbuhDCUHlm7nhjKGVBiWlzLF-wSvkcpoQqBMRNQFUXtKn2sbZGSLOEopukHrMQTINGsTITWH9jOHvP8kurrmCakAKTlg7hcxZoOnMGiQDDBR1UylOoGu8LtKBPzJKFVvyRCYyfCcDDCcskegHTKPqH2C6xcOYcnR8elJSbTMLLSdCZo1VAcFAvEead21NAtUZikK6fgtfEQsqfTKTkGYyYehGehTzg+oHj3jhqxxKZtIwhpKBPbMxS2msYyzugbBsskR3ymsyk+pjHZH9iSdvlXPaP+guZT34iRh9lueXrsEspWPwWznUGQleefGQVQSeHQUGugfFk0HSdSGGdWFGZ7mabIRk1kEcGNEWq8eKmOelKwtYXYQueBSsKKUHjEaMFsGPLWEvUUEaDAbmY3HosYuYpqvhYAgEvgLrGEY2HBU4l1EyEmShuQ0-miXssUuUt+VUt4s5eqfFgMcel5DmPkGazGcQAkosCvSNEAQRlma8a8s4Flecr4FcrwckmnuabBSt04lyARRZtYlHNRliJOB5ETJcCcCAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -183,6 +243,8 @@ export const modelingMachine = createMachine(
       sketchEnginePathId: '' as string,
       moveDescs: [] as MoveDesc[],
       mouseState: { type: 'idle' } as MouseState,
+      segmentOverlays: {} as SegmentOverlays,
+      segmentHoverMap: {} as { [pathToNodeString: string]: number },
     },
 
     schema: {
@@ -224,16 +286,12 @@ export const modelingMachine = createMachine(
             on: {
               'Make segment vertical': {
                 cond: 'Can make selection vertical',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Make selection vertical'],
+                target: 'Await constrain vertically',
               },
 
               'Make segment horizontal': {
-                target: 'SketchIdle',
-                internal: true,
                 cond: 'Can make selection horizontal',
-                actions: ['Make selection horizontal'],
+                target: 'Await constrain horizontally',
               },
 
               'Constrain horizontal distance': {
@@ -273,51 +331,37 @@ export const modelingMachine = createMachine(
 
               'Constrain horizontally align': {
                 cond: 'Can constrain horizontally align',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Constrain horizontally align'],
+                target: 'Await constrain horizontally align',
               },
 
               'Constrain vertically align': {
                 cond: 'Can constrain vertically align',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Constrain vertically align'],
+                target: 'Await constrain vertically align',
               },
 
               'Constrain snap to X': {
                 cond: 'Can constrain snap to X',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Constrain snap to X'],
+                target: 'Await constrain snap to X',
               },
 
               'Constrain snap to Y': {
                 cond: 'Can constrain snap to Y',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Constrain snap to Y'],
+                target: 'Await constrain snap to Y',
               },
 
               'Constrain equal length': {
                 cond: 'Can constrain equal length',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Constrain equal length'],
+                target: 'Await constrain equal length',
               },
 
               'Constrain parallel': {
-                target: 'SketchIdle',
-                internal: true,
+                target: 'Await constrain parallel',
                 cond: 'Can canstrain parallel',
-                actions: ['Constrain parallel'],
               },
 
               'Constrain remove constraints': {
-                target: 'SketchIdle',
-                internal: true,
                 cond: 'Can constrain remove constraints',
-                actions: ['Constrain remove constraints'],
+                target: 'Await constrain remove constraints',
               },
 
               'Re-execute': {
@@ -339,6 +383,11 @@ export const modelingMachine = createMachine(
               },
 
               'code edit during sketch': 'clean slate',
+
+              'Convert to variable': {
+                target: 'Await convert to variable',
+                cond: 'Can convert to variable',
+              },
             },
 
             entry: 'setup client side sketch segments',
@@ -522,12 +571,121 @@ export const modelingMachine = createMachine(
           'clean slate': {
             always: 'SketchIdle',
           },
+
+          'Await convert to variable': {
+            invoke: {
+              src: 'Get convert to variable info',
+              id: 'get-convert-to-variable-info',
+              onError: 'SketchIdle',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set sketchDetails',
+              },
+            },
+          },
+
+          'Await constrain remove constraints': {
+            invoke: {
+              src: 'do-constrain-remove-constraint',
+              id: 'do-constrain-remove-constraint',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain horizontally': {
+            invoke: {
+              src: 'do-constrain-horizontally',
+              id: 'do-constrain-horizontally',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain vertically': {
+            invoke: {
+              src: 'do-constrain-vertically',
+              id: 'do-constrain-vertically',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain horizontally align': {
+            invoke: {
+              src: 'do-constrain-horizontally-align',
+              id: 'do-constrain-horizontally-align',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain vertically align': {
+            invoke: {
+              src: 'do-constrain-vertically-align',
+              id: 'do-constrain-vertically-align',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain snap to X': {
+            invoke: {
+              src: 'do-constrain-snap-to-x',
+              id: 'do-constrain-snap-to-x',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain snap to Y': {
+            invoke: {
+              src: 'do-constrain-snap-to-y',
+              id: 'do-constrain-snap-to-y',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+
+          'Await constrain equal length': {
+            invoke: {
+              src: 'do-constrain-equal-length',
+              id: 'do-constrain-equal-length',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain parallel': {
+            invoke: {
+              src: 'do-constrain-parallel',
+              id: 'do-constrain-parallel',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
         },
 
         initial: 'Init',
 
         on: {
           CancelSketch: '.SketchIdle',
+
+          'Delete segment': {
+            internal: true,
+            actions: 'Delete segment',
+          },
           'code edit during sketch': '.clean slate',
         },
 
@@ -537,6 +695,7 @@ export const modelingMachine = createMachine(
           'tear down client sketch',
           'remove sketch grid',
           'engineToClient cam sync direction',
+          'Reset Segment Overlays',
         ],
 
         entry: [
@@ -602,6 +761,10 @@ export const modelingMachine = createMachine(
         internal: true,
         actions: 'Set mouse state',
       },
+      'Set Segment Overlays': {
+        internal: true,
+        actions: 'Set Segment Overlays',
+      },
     },
   },
   {
@@ -660,8 +823,18 @@ export const modelingMachine = createMachine(
         setEqualLengthInfo({ selectionRanges }).enabled,
       'Can canstrain parallel': ({ selectionRanges }) =>
         equalAngleInfo({ selectionRanges }).enabled,
-      'Can constrain remove constraints': ({ selectionRanges }) =>
-        removeConstrainingValuesInfo({ selectionRanges }).enabled,
+      'Can constrain remove constraints': ({ selectionRanges }, { data }) =>
+        removeConstrainingValuesInfo({
+          selectionRanges,
+          pathToNodes: data && [data],
+        }).enabled,
+      'Can convert to variable': (_, { data }) => {
+        if (!data) return false
+        return isNodeSafeToReplacePath(
+          parse(recast(kclManager.ast)),
+          data.pathToNode
+        ).isSafe
+      },
     },
     // end guards
     actions: {
@@ -686,135 +859,6 @@ export const modelingMachine = createMachine(
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),
-      // TODO implement source ranges for all of these constraints
-      // need to make the async like the modal constraints
-      'Make selection horizontal': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintHorzVert(
-          selectionRanges,
-          'horizontal',
-          kclManager.ast,
-          kclManager.programMemory
-        )
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Make selection vertical': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintHorzVert(
-          selectionRanges,
-          'vertical',
-          kclManager.ast,
-          kclManager.programMemory
-        )
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain horizontally align': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintHorzVertAlign({
-          selectionRanges,
-          constraint: 'setVertDistance',
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain vertically align': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintHorzVertAlign({
-          selectionRanges,
-          constraint: 'setHorzDistance',
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain snap to X': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintAxisAlign({
-          selectionRanges,
-          constraint: 'snapToXAxis',
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain snap to Y': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintAxisAlign({
-          selectionRanges,
-          constraint: 'snapToYAxis',
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain equal length': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintEqualLength({
-          selectionRanges,
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain parallel': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintEqualAngle({
-          selectionRanges,
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Constrain remove constraints': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyRemoveConstrainingValues({
-          selectionRanges,
-        })
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
       'AST extrude': async (_, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
@@ -1055,7 +1099,242 @@ export const modelingMachine = createMachine(
         }),
       'set selection filter to defaults': () =>
         kclManager.defaultSelectionFilter(),
+      'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
+        deleteSegment({ pathToNode, sketchDetails }),
+      'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     },
     // end actions
+    services: {
+      'do-constrain-remove-constraint': async (
+        { selectionRanges, sketchDetails },
+        { data }
+      ) => {
+        const { modifiedAst, pathToNodeMap } = applyRemoveConstrainingValues({
+          selectionRanges,
+          pathToNodes: data && [data],
+        })
+        if (!sketchDetails) return
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
+        }
+      },
+      'do-constrain-horizontally': async ({
+        selectionRanges,
+        sketchDetails,
+      }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+          selectionRanges,
+          'horizontal',
+          kclManager.ast,
+          kclManager.programMemory
+        )
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
+        }
+      },
+      'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+          selectionRanges,
+          'vertical',
+          kclManager.ast,
+          kclManager.programMemory
+        )
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
+        }
+      },
+      'do-constrain-horizontally-align': async ({
+        selectionRanges,
+        sketchDetails,
+      }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+          selectionRanges,
+          constraint: 'setVertDistance',
+        })
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        const updatedSelectionRanges = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updatedSelectionRanges,
+        }
+      },
+      'do-constrain-vertically-align': async ({
+        selectionRanges,
+        sketchDetails,
+      }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        const updatedSelectionRanges = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updatedSelectionRanges,
+        }
+      },
+      'do-constrain-snap-to-x': async ({ selectionRanges, sketchDetails }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintAxisAlign({
+          selectionRanges,
+          constraint: 'snapToXAxis',
+        })
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        const updatedSelectionRanges = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updatedSelectionRanges,
+        }
+      },
+      'do-constrain-snap-to-y': async ({ selectionRanges, sketchDetails }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintAxisAlign({
+          selectionRanges,
+          constraint: 'snapToYAxis',
+        })
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        const updatedSelectionRanges = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updatedSelectionRanges,
+        }
+      },
+      'do-constrain-parallel': async ({ selectionRanges, sketchDetails }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintEqualAngle({
+          selectionRanges,
+        })
+        if (!sketchDetails) throw new Error('No sketch details')
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          parse(recast(modifiedAst)),
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        const updatedSelectionRanges = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updatedSelectionRanges,
+        }
+      },
+      'do-constrain-equal-length': async ({
+        selectionRanges,
+        sketchDetails,
+      }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintEqualLength({
+          selectionRanges,
+        })
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails?.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        const updatedSelectionRanges = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updatedSelectionRanges,
+        }
+      },
+    },
+    // end services
   }
 )

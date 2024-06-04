@@ -2,7 +2,6 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { CreateNewVariable } from './AvailableVarsHelpers'
 import { ActionButton } from './ActionButton'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-hot-toast'
 import { type InstanceProps, create } from 'react-modal-promise'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
@@ -74,16 +73,16 @@ export const SetVarNameModal = ({
                 showCheckbox={false}
               />
               <div className="mt-8 flex justify-between">
+                <ActionButton Element="button" onClick={() => onReject(false)}>
+                  Cancel
+                </ActionButton>
                 <ActionButton
                   Element="button"
                   type="submit"
                   disabled={!isNewVariableNameUnique}
-                  iconStart={{ icon: faPlus }}
+                  iconStart={{ icon: 'plus' }}
                 >
                   Add variable
-                </ActionButton>
-                <ActionButton Element="button" onClick={() => onReject(false)}>
-                  Cancel
                 </ActionButton>
               </div>
             </form>

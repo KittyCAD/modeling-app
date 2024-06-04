@@ -69,12 +69,13 @@ import {
   tangentialArcToSegment,
 } from './segments'
 import {
+  addCallExpressionsToPipe,
   addCloseToPipe,
   addNewSketchLn,
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { roundOff, throttle } from 'lib/utils'
+import { normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -91,7 +92,7 @@ import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
-import { SketchDetails } from 'machines/modelingMachine'
+import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
@@ -138,8 +139,8 @@ export class SceneEntities {
   }
   onCamChange = () => {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-
-    Object.values(this.activeSegments).forEach((segment) => {
+    const callbacks: (() => SegmentOverlayPayload | null)[] = []
+    Object.values(this.activeSegments).forEach((segment, index) => {
       const factor =
         (sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
@@ -150,12 +151,14 @@ export class SceneEntities {
         segment.userData.to &&
         segment.userData.type === STRAIGHT_SEGMENT
       ) {
-        this.updateStraightSegment({
-          from: segment.userData.from,
-          to: segment.userData.to,
-          group: segment,
-          scale: factor,
-        })
+        callbacks.push(
+          this.updateStraightSegment({
+            from: segment.userData.from,
+            to: segment.userData.to,
+            group: segment,
+            scale: factor,
+          })
+        )
       }
 
       if (
@@ -164,13 +167,15 @@ export class SceneEntities {
         segment.userData.prevSegment &&
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
-        this.updateTangentialArcToSegment({
-          prevSegment: segment.userData.prevSegment,
-          from: segment.userData.from,
-          to: segment.userData.to,
-          group: segment,
-          scale: factor,
-        })
+        callbacks.push(
+          this.updateTangentialArcToSegment({
+            prevSegment: segment.userData.prevSegment,
+            from: segment.userData.from,
+            to: segment.userData.to,
+            group: segment,
+            scale: factor,
+          })
+        )
       }
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
@@ -186,6 +191,7 @@ export class SceneEntities {
       const y = this.axisGroup.getObjectByName(Y_AXIS)
       y?.scale.set(factor / sceneInfra._baseUnitMultiplier, 1, 1)
     }
+    sceneInfra.overlayCallbacks(callbacks)
   }
 
   createIntersectionPlane() {
@@ -365,7 +371,7 @@ export class SceneEntities {
     })
     group.add(_profileStart)
     this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
-
+    const callbacks: (() => SegmentOverlayPayload | null)[] = []
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         maybeModdedAst,
@@ -410,6 +416,15 @@ export class SceneEntities {
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
         })
+        callbacks.push(
+          this.updateTangentialArcToSegment({
+            prevSegment: sketchGroup.value[index - 1],
+            from: segment.from,
+            to: segment.to,
+            group: seg,
+            scale: factor,
+          })
+        )
       } else {
         seg = straightSegment({
           from: segment.from,
@@ -422,6 +437,14 @@ export class SceneEntities {
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
         })
+        callbacks.push(
+          this.updateStraightSegment({
+            from: segment.from,
+            to: segment.to,
+            group: seg,
+            scale: factor,
+          })
+        )
       }
       seg.layers.set(SKETCH_LAYER)
       seg.traverse((child) => {
@@ -446,6 +469,7 @@ export class SceneEntities {
       this.intersectionPlane.position.set(...position)
     this.scene.add(group)
     sceneInfra.camControls.enableRotate = false
+    sceneInfra.overlayCallbacks(callbacks)
 
     return {
       truncatedAst,
@@ -536,8 +560,32 @@ export class SceneEntities {
 
         let modifiedAst
         if (profileStart) {
-          modifiedAst = addCloseToPipe({
+          const lastSegment = sketchGroup.value.slice(-1)[0]
+          modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            pathToNode: sketchPathToNode,
+            expressions: [
+              createCallExpressionStdLib(
+                lastSegment.type === 'TangentialArcTo'
+                  ? 'tangentialArcTo'
+                  : 'lineTo',
+                [
+                  createArrayExpression([
+                    createCallExpressionStdLib('profileStartX', [
+                      createPipeSubstitution(),
+                    ]),
+                    createCallExpressionStdLib('profileStartY', [
+                      createPipeSubstitution(),
+                    ]),
+                  ]),
+                  createPipeSubstitution(),
+                ]
+              ),
+            ],
+          })
+          modifiedAst = addCloseToPipe({
+            node: modifiedAst,
             programMemory: kclManager.programMemory,
             pathToNode: sketchPathToNode,
           })
@@ -560,13 +608,17 @@ export class SceneEntities {
         }
 
         await kclManager.executeAstMock(modifiedAst)
-        this.setUpDraftSegment(
-          sketchPathToNode,
-          forward,
-          up,
-          origin,
-          segmentName
-        )
+        if (profileStart) {
+          sceneInfra.modelingSend({ type: 'CancelSketch' })
+        } else {
+          this.setUpDraftSegment(
+            sketchPathToNode,
+            forward,
+            up,
+            origin,
+            segmentName
+          )
+        }
       },
       onMove: (args) => {
         this.onDragSegment({
@@ -990,7 +1042,8 @@ export class SceneEntities {
         orthoFactor,
         sketchGroup
       )
-      sgPaths.forEach((group, index) =>
+
+      const callBacks = sgPaths.map((group, index) =>
         this.updateSegment(
           group,
           index,
@@ -1000,6 +1053,7 @@ export class SceneEntities {
           sketchGroup
         )
       )
+      sceneInfra.overlayCallbacks(callBacks)
     })()
   }
 
@@ -1020,7 +1074,7 @@ export class SceneEntities {
     modifiedAst: Program,
     orthoFactor: number,
     sketchGroup: SketchGroup
-  ) => {
+  ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
       segment.__geoMeta.sourceRange
@@ -1041,7 +1095,7 @@ export class SceneEntities {
         : perspScale(sceneInfra.camControls.camera, group)) /
       sceneInfra._baseUnitMultiplier
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      this.updateTangentialArcToSegment({
+      return this.updateTangentialArcToSegment({
         prevSegment: sgPaths[index - 1],
         from: segment.from,
         to: segment.to,
@@ -1049,7 +1103,7 @@ export class SceneEntities {
         scale: factor,
       })
     } else if (type === STRAIGHT_SEGMENT) {
-      this.updateStraightSegment({
+      return this.updateStraightSegment({
         from: segment.from,
         to: segment.to,
         group,
@@ -1059,6 +1113,7 @@ export class SceneEntities {
       group.position.set(segment.from[0], segment.from[1], 0)
       group.scale.set(factor, factor, factor)
     }
+    return () => null
   }
 
   updateTangentialArcToSegment({
@@ -1073,7 +1128,7 @@ export class SceneEntities {
     to: [number, number]
     group: Group
     scale?: number
-  }) {
+  }): () => SegmentOverlayPayload | null {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
@@ -1161,6 +1216,18 @@ export class SceneEntities {
         scale,
       })
     }
+    const angle = normaliseAngle(
+      (arcInfo.endAngle * 180) / Math.PI + (arcInfo.ccw ? 90 : -90)
+    )
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        arrowGroup,
+        group,
+        isHandlesVisible,
+        from,
+        to,
+        angle,
+      })
   }
   throttledUpdateDashedArcGeo = throttle(
     (
@@ -1181,7 +1248,7 @@ export class SceneEntities {
     to: [number, number]
     group: Group
     scale?: number
-  }) {
+  }): () => SegmentOverlayPayload | null {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
@@ -1258,6 +1325,14 @@ export class SceneEntities {
         scale
       )
     }
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        arrowGroup,
+        group,
+        isHandlesVisible,
+        from,
+        to,
+      })
   }
   async animateAfterSketch() {
     // if (isReducedMotion()) {
@@ -1528,6 +1603,14 @@ export class SceneEntities {
         }
       },
     }
+  }
+  resetOverlays() {
+    sceneInfra.modelingSend({
+      type: 'Set Segment Overlays',
+      data: {
+        type: 'clear',
+      },
+    })
   }
 }
 

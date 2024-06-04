@@ -39,6 +39,7 @@ export function ActionButtonDropdown({
               onClick={item.onClick}
               className="block px-3 py-1 hover:bg-primary/10 dark:hover:bg-chalkboard-80 border-0 m-0 text-sm w-full rounded-none text-left disabled:!bg-transparent dark:disabled:text-chalkboard-60"
               disabled={item.disabled}
+              data-testid={item.label}
             >
               <span className="capitalize">{item.label}</span>
               {item.shortcut && (

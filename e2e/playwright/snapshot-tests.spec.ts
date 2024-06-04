@@ -1,10 +1,10 @@
-import { test, expect, Download } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { secrets } from './secrets'
-import { getUtils } from './test-utils'
+import { Paths, doExport, getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
-import { APP_NAME, KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
@@ -20,6 +20,7 @@ test.beforeEach(async ({ page }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
+      localStorage.setItem('playwright', 'true')
     },
     {
       token: secrets.token,
@@ -44,7 +45,7 @@ test.setTimeout(60_000)
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await context.addInitScript(async () => {
     ;(window as any).playwrightSkipFilePicker = true
     localStorage.setItem(
@@ -98,78 +99,6 @@ const part001 = startSketchOn('-XZ')
   await page.waitForTimeout(1000)
   await u.clearAndCloseDebugPanel()
 
-  interface Paths {
-    modelPath: string
-    imagePath: string
-    outputType: string
-  }
-  const doExport = async (
-    output: Models['OutputFormat_type']
-  ): Promise<Paths> => {
-    await page.getByRole('button', { name: APP_NAME }).click()
-    await expect(
-      page.getByRole('button', { name: 'Export Part' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Export Part' }).click()
-    await expect(page.getByTestId('command-bar')).toBeVisible()
-
-    // Go through export via command bar
-    await page.getByRole('option', { name: output.type, exact: false }).click()
-    await page.locator('#arg-form').waitFor({ state: 'detached' })
-    if ('storage' in output) {
-      await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
-      await page.getByRole('button', { name: 'storage', exact: false }).click()
-      await page
-        .getByRole('option', { name: output.storage, exact: false })
-        .click()
-      await page.locator('#arg-form').waitFor({ state: 'detached' })
-    }
-    await expect(page.getByText('Confirm Export')).toBeVisible()
-
-    const getPromiseAndResolve = () => {
-      let resolve: any = () => {}
-      const promise = new Promise<Download>((r) => {
-        resolve = r
-      })
-      return [promise, resolve]
-    }
-
-    const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
-    let downloadCnt = 0
-
-    page.on('download', async (download) => {
-      if (downloadCnt === 0) {
-        downloadResolve1(download)
-      }
-      downloadCnt++
-    })
-    await page.getByRole('button', { name: 'Submit command' }).click()
-
-    // Handle download
-    const download = await downloadPromise1
-    const downloadLocationer = (extra = '', isImage = false) =>
-      `./e2e/playwright/export-snapshots/${output.type}-${
-        'storage' in output ? output.storage : ''
-      }${extra}.${isImage ? 'png' : output.type}`
-    const downloadLocation = downloadLocationer()
-
-    await download.saveAs(downloadLocation)
-
-    if (output.type === 'step') {
-      // stable timestamps for step files
-      const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
-      const newFileContents = fileContents.replace(
-        /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[0-9]+[0-9]\+[0-9]{2}:[0-9]{2}/g,
-        '1970-01-01T00:00:00.0+00:00'
-      )
-      await fsp.writeFile(downloadLocation, newFileContents)
-    }
-    return {
-      modelPath: downloadLocation,
-      imagePath: downloadLocationer('', true),
-      outputType: output.type,
-    }
-  }
   const axisDirectionPair: Models['AxisDirectionPair_type'] = {
     axis: 'z',
     direction: 'positive',
@@ -185,84 +114,114 @@ const part001 = startSketchOn('-XZ')
   // just note that only `type` and `storage` are used for selecting the drop downs is the app
   // the rest are only there to make typescript happy
   exportLocations.push(
-    await doExport({
-      type: 'step',
-      coords: sysType,
-    })
+    await doExport(
+      {
+        type: 'step',
+        coords: sysType,
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'ply',
-      coords: sysType,
-      selection: { type: 'default_scene' },
-      storage: 'ascii',
-      units: 'in',
-    })
+    await doExport(
+      {
+        type: 'ply',
+        coords: sysType,
+        selection: { type: 'default_scene' },
+        storage: 'ascii',
+        units: 'in',
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'ply',
-      storage: 'binary_little_endian',
-      coords: sysType,
-      selection: { type: 'default_scene' },
-      units: 'in',
-    })
+    await doExport(
+      {
+        type: 'ply',
+        storage: 'binary_little_endian',
+        coords: sysType,
+        selection: { type: 'default_scene' },
+        units: 'in',
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'ply',
-      storage: 'binary_big_endian',
-      coords: sysType,
-      selection: { type: 'default_scene' },
-      units: 'in',
-    })
+    await doExport(
+      {
+        type: 'ply',
+        storage: 'binary_big_endian',
+        coords: sysType,
+        selection: { type: 'default_scene' },
+        units: 'in',
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'stl',
-      storage: 'ascii',
-      coords: sysType,
-      units: 'in',
-      selection: { type: 'default_scene' },
-    })
+    await doExport(
+      {
+        type: 'stl',
+        storage: 'ascii',
+        coords: sysType,
+        units: 'in',
+        selection: { type: 'default_scene' },
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'stl',
-      storage: 'binary',
-      coords: sysType,
-      units: 'in',
-      selection: { type: 'default_scene' },
-    })
+    await doExport(
+      {
+        type: 'stl',
+        storage: 'binary',
+        coords: sysType,
+        units: 'in',
+        selection: { type: 'default_scene' },
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      // obj seems to be a little flaky, times out tests sometimes
-      type: 'obj',
-      coords: sysType,
-      units: 'in',
-    })
+    await doExport(
+      {
+        // obj seems to be a little flaky, times out tests sometimes
+        type: 'obj',
+        coords: sysType,
+        units: 'in',
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'gltf',
-      storage: 'embedded',
-      presentation: 'pretty',
-    })
+    await doExport(
+      {
+        type: 'gltf',
+        storage: 'embedded',
+        presentation: 'pretty',
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'gltf',
-      storage: 'binary',
-      presentation: 'pretty',
-    })
+    await doExport(
+      {
+        type: 'gltf',
+        storage: 'binary',
+        presentation: 'pretty',
+      },
+      page
+    )
   )
   exportLocations.push(
-    await doExport({
-      type: 'gltf',
-      storage: 'standard',
-      presentation: 'pretty',
-    })
+    await doExport(
+      {
+        type: 'gltf',
+        storage: 'standard',
+        presentation: 'pretty',
+      },
+      page
+    )
   )
 
   // close page to disconnect websocket since we can only have one open atm
@@ -369,7 +328,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
     localStorage.setItem('persistCode', code)
   })
 
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -424,7 +383,7 @@ test.describe('extrude on default planes should be stable', () => {
 })
 
 test('Draft segments should look right', async ({ page, context }) => {
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
@@ -483,7 +442,7 @@ test('Draft segments should look right', async ({ page, context }) => {
 })
 
 test('Draft rectangles should look right', async ({ page, context }) => {
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
@@ -530,7 +489,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
 
 test.describe('Client side scene scale should match engine scale', () => {
   test('Inch scale', async ({ page }) => {
-    const u = getUtils(page)
+    const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.goto('/')
@@ -633,7 +592,7 @@ test.describe('Client side scene scale should match engine scale', () => {
         }),
       }
     )
-    const u = getUtils(page)
+    const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.goto('/')
@@ -719,7 +678,7 @@ test.describe('Client side scene scale should match engine scale', () => {
 })
 
 test('Sketch on face with none z-up', async ({ page, context }) => {
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
@@ -768,6 +727,79 @@ const part002 = startSketchOn(part001, 'seg01')
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await page.waitForTimeout(300)
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+})
+
+test('Zoom to fit on load - solid 2d', async ({ page, context }) => {
+  const u = await getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+`
+    )
+  }, KCL_DEFAULT_LENGTH)
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(2)
+  await u.closeDebugPanel()
+
+  // Wait for the second extrusion to appear
+  // TODO: Find a way to truly know that the objects have finished
+  // rendering, because an execution-done message is not sufficient.
+  await page.waitForTimeout(1000)
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+})
+
+test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
+  const u = await getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> extrude(10, %)
+`
+    )
+  }, KCL_DEFAULT_LENGTH)
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(2)
+  await u.closeDebugPanel()
+
+  // Wait for the second extrusion to appear
+  // TODO: Find a way to truly know that the objects have finished
+  // rendering, because an execution-done message is not sufficient.
+  await page.waitForTimeout(1000)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
