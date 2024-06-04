@@ -16,7 +16,7 @@ gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
 kittycad = { workspace = true }
 serde_json = "1.0.116"
-tokio = { version = "1.37.0", features = ["sync"] }
+tokio = { version = "1.38.0", features = ["sync"] }
 toml = "0.8.13"
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.91"
@@ -24,12 +24,12 @@ wasm-bindgen-futures = "0.4.42"
 
 [dev-dependencies]
 anyhow = "1"
-image = "0.24.9"
+image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
 pretty_assertions = "1.4.0"
 reqwest = { version = "0.11.26", default-features = false }
-tokio = { version = "1.37.0", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.7"
+tokio = { version = "1.38.0", features = ["rt-multi-thread", "macros", "time"] }
+twenty-twenty = "0.8"
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -52,6 +52,12 @@ features = [
 [profile.release]
 panic = "abort"
 debug = true
+
+[profile.dev]
+debug = 0
+
+[profile.test]
+debug = "line-tables-only"
 
 [workspace]
 members = [
