@@ -4239,6 +4239,130 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
       }
     }
   })
+  test.describe('Testing remove constraints segments', () => {
+    const cases = [
+      {
+        before: `line([22 + 0, 2 + 0], %, 'seg01')`,
+        after: `line([22, 2], %, 'seg01')`,
+      },
+
+      {
+        before: `angledLine([5 + 0, 23.03 + 0], %, 'seg01')`,
+        after: `line([22.94, 2.01], %, 'seg01')`,
+      },
+      {
+        before: `xLine(23 + 0, %, 'seg01')`,
+        after: `line([23, 0], %, 'seg01')`,
+      },
+      {
+        before: `yLine(-8 + 0, %, 'seg01')`,
+        after: `line([0, -8], %, 'seg01')`,
+      },
+      {
+        before: `xLineTo(30 + 0, %, 'seg01')`,
+        after: `line([25, 0], %, 'seg01')`,
+      },
+      {
+        before: `yLineTo(-4 + 0, %, 'seg01')`,
+        after: `line([0, -10], %, 'seg01')`,
+      },
+      {
+        before: `angledLineOfXLength([3 + 0, 30 + 0], %, 'seg01')`,
+        after: `line([30, 1.57], %, 'seg01')`,
+      },
+      {
+        before: `angledLineOfYLength([3 + 0, 1.5 + 0], %, 'seg01')`,
+        after: `line([28.62, 1.5], %, 'seg01')`,
+      },
+      {
+        before: `angledLineToX([3 + 0, 30 + 0], %, 'seg01')`,
+        after: `line([25, 1.31], %, 'seg01')`,
+      },
+      {
+        before: `angledLineToY([3 + 0, 7 + 0], %, 'seg01')`,
+        after: `line([19.08, 1], %, 'seg01')`,
+      },
+      {
+        before: `angledLineOfXLength({ angle: 3 + 0, length: 30 + 0 }, %, 'seg01')`,
+        after: `line([30, 1.57], %, 'seg01')`,
+      },
+      {
+        before: `angledLineOfYLength({ angle: 3 + 0, length: 1.5 + 0 }, %, 'seg01')`,
+        after: `line([28.62, 1.5], %, 'seg01')`,
+      },
+      {
+        before: `angledLineToX({ angle: 3 + 0, to: 30 + 0 }, %, 'seg01')`,
+        after: `line([25, 1.31], %, 'seg01')`,
+      },
+      {
+        before: `angledLineToY({ angle: 3 + 0, to: 7 + 0 }, %, 'seg01')`,
+        after: `line([19.08, 1], %, 'seg01')`,
+      },
+    ]
+
+    for (const { before, after } of cases) {
+      const isObj = before.includes('{ angle: 3')
+      test(`${before.split('(')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
+        page,
+      }) => {
+        await page.addInitScript(
+          async ({ lineToBeDeleted }) => {
+            localStorage.setItem(
+              'persistCode',
+              `const part001 = startSketchOn('XZ')
+  |> startProfileAt([5, 6], %)
+  |> ${lineToBeDeleted}
+  |> line([-10, -15], %)
+  |> angledLine([-176, segLen('seg01', %)], %)`
+            )
+          },
+          {
+            lineToBeDeleted: before,
+          }
+        )
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+        await page.waitForTimeout(300)
+
+        await page.getByText(before).click()
+        await page.waitForTimeout(100)
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+        await page.waitForTimeout(500)
+
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+        const segmentToDelete = await u.getBoundingBox(
+          `[data-overlay-index="0"]`
+        )
+
+        const isYLine = before.toLowerCase().includes('yline')
+        const hoverPos = {
+          x: segmentToDelete.x + (isYLine ? 0 : -20),
+          y: segmentToDelete.y + (isYLine ? -20 : 0),
+        }
+        await expect(page.getByText('Added variable')).not.toBeVisible()
+        const ang = isYLine ? 45 : -45
+        const [x, y] = [
+          Math.cos((ang * Math.PI) / 180) * 45,
+          Math.sin((ang * Math.PI) / 180) * 45,
+        ]
+
+        await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+        await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
+
+        await expect(page.locator('.cm-content')).toContainText(before)
+
+        await page.getByTestId('overlay-menu').click()
+        await page.getByText('Remove constraints').click()
+
+        await expect(page.locator('.cm-content')).toContainText(after)
+        // check the cursor was left in the correct place after transform
+        await expect(page.locator('.cm-activeLine')).toHaveText('|> ' + after)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+      })
+    }
+  })
 })
 test('First escape in tool pops you out of tool, second exits sketch mode', async ({
   page,
