@@ -35,6 +35,38 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
 
+  // Linux has a default behavior to paste text on middle mouse up
+  // This adds a listener to block that pasting if the click target
+  // is not a text input, so users can move in the 3D scene with
+  // middle mouse drag with a text input focused without pasting.
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const isHtmlElement = e.target && e.target instanceof HTMLElement
+      const isEditable =
+        (isHtmlElement && !('explicitOriginalTarget' in e)) ||
+        ('explicitOriginalTarget' in e &&
+          ((e.explicitOriginalTarget as HTMLElement).contentEditable ===
+            'true' ||
+            ['INPUT', 'TEXTAREA'].some(
+              (tagName) =>
+                tagName === (e.explicitOriginalTarget as HTMLElement).tagName
+            )))
+      if (!isEditable) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+      }
+    }
+
+    globalThis?.window?.document?.addEventListener('paste', handlePaste, {
+      capture: true,
+    })
+    return () =>
+      globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
+        capture: true,
+      })
+  }, [])
+
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
