@@ -1,26 +1,13 @@
 import { Popover } from '@headlessui/react'
-import { useEffect, useState } from 'react'
 import { ActionIcon, ActionIconProps } from './ActionIcon'
-import {
-  ConnectingType,
-  ConnectingTypeGroup,
-  DisconnectingType,
-  EngineConnectionState,
-  EngineConnectionStateType,
-  ErrorType,
-  initialConnectingTypeGroupState,
-} from '../lang/std/engineConnection'
-import { engineCommandManager } from '../lib/singletons'
 import Tooltip from './Tooltip'
-
-export enum NetworkHealthState {
-  Ok,
-  Issue,
-  Disconnected,
-}
+import { ConnectingTypeGroup } from '../lang/std/engineConnection'
+import { useNetworkContext } from '../hooks/useNetworkContext'
+import { NetworkHealthState } from '../hooks/useNetworkStatus'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Connected',
+  [NetworkHealthState.Weak]: 'Weak',
   [NetworkHealthState.Issue]: 'Problem',
   [NetworkHealthState.Disconnected]: 'Offline',
 }
@@ -61,6 +48,10 @@ const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
       icon: 'text-succeed-80 dark:text-succeed-10',
       bg: 'bg-succeed-10/30 dark:bg-succeed-80/50',
     },
+    [NetworkHealthState.Weak]: {
+      icon: 'text-warn-80 dark:text-warn-10',
+      bg: 'bg-warn-10 dark:bg-warn-80/80',
+    },
     [NetworkHealthState.Issue]: {
       icon: 'text-destroy-80 dark:text-destroy-10',
       bg: 'bg-destroy-10 dark:bg-destroy-80/80',
@@ -76,123 +67,9 @@ const overallConnectionStateIcon: Record<
   ActionIconProps['icon']
 > = {
   [NetworkHealthState.Ok]: 'network',
+  [NetworkHealthState.Weak]: 'network',
   [NetworkHealthState.Issue]: 'networkCrossedOut',
   [NetworkHealthState.Disconnected]: 'networkCrossedOut',
-}
-
-export function useNetworkStatus() {
-  const [steps, setSteps] = useState(initialConnectingTypeGroupState)
-  const [internetConnected, setInternetConnected] = useState<boolean>(true)
-  const [overallState, setOverallState] = useState<NetworkHealthState>(
-    NetworkHealthState.Ok
-  )
-  const [hasCopied, setHasCopied] = useState<boolean>(false)
-
-  const [error, setError] = useState<ErrorType | undefined>(undefined)
-
-  const issues: Record<ConnectingTypeGroup, boolean> = {
-    [ConnectingTypeGroup.WebSocket]: steps[ConnectingTypeGroup.WebSocket].some(
-      (a: [ConnectingType, boolean | undefined]) => a[1] === false
-    ),
-    [ConnectingTypeGroup.ICE]: steps[ConnectingTypeGroup.ICE].some(
-      (a: [ConnectingType, boolean | undefined]) => a[1] === false
-    ),
-    [ConnectingTypeGroup.WebRTC]: steps[ConnectingTypeGroup.WebRTC].some(
-      (a: [ConnectingType, boolean | undefined]) => a[1] === false
-    ),
-  }
-
-  const hasIssues: boolean =
-    issues[ConnectingTypeGroup.WebSocket] ||
-    issues[ConnectingTypeGroup.ICE] ||
-    issues[ConnectingTypeGroup.WebRTC]
-
-  useEffect(() => {
-    setOverallState(
-      !internetConnected
-        ? NetworkHealthState.Disconnected
-        : hasIssues
-        ? NetworkHealthState.Issue
-        : NetworkHealthState.Ok
-    )
-  }, [hasIssues, internetConnected])
-
-  useEffect(() => {
-    const onlineCallback = () => {
-      setSteps(initialConnectingTypeGroupState)
-      setInternetConnected(true)
-    }
-    const offlineCallback = () => {
-      setInternetConnected(false)
-    }
-    window.addEventListener('online', onlineCallback)
-    window.addEventListener('offline', offlineCallback)
-    return () => {
-      window.removeEventListener('online', onlineCallback)
-      window.removeEventListener('offline', offlineCallback)
-    }
-  }, [])
-
-  useEffect(() => {
-    engineCommandManager.onConnectionStateChange(
-      (engineConnectionState: EngineConnectionState) => {
-        let hasSetAStep = false
-
-        if (
-          engineConnectionState.type === EngineConnectionStateType.Connecting
-        ) {
-          const groups = Object.values(steps)
-          for (let group of groups) {
-            for (let step of group) {
-              if (step[0] !== engineConnectionState.value.type) continue
-              step[1] = true
-              hasSetAStep = true
-            }
-          }
-        }
-
-        if (
-          engineConnectionState.type === EngineConnectionStateType.Disconnecting
-        ) {
-          const groups = Object.values(steps)
-          for (let group of groups) {
-            for (let step of group) {
-              if (
-                engineConnectionState.value.type === DisconnectingType.Error
-              ) {
-                if (
-                  engineConnectionState.value.value.lastConnectingValue
-                    ?.type === step[0]
-                ) {
-                  step[1] = false
-                  hasSetAStep = true
-                }
-              }
-            }
-
-            if (engineConnectionState.value.type === DisconnectingType.Error) {
-              setError(engineConnectionState.value.value)
-            }
-          }
-        }
-
-        if (hasSetAStep) {
-          setSteps(steps)
-        }
-      }
-    )
-  }, [])
-
-  return {
-    hasIssues,
-    overallState,
-    internetConnected,
-    steps,
-    issues,
-    error,
-    setHasCopied,
-    hasCopied,
-  }
 }
 
 export const NetworkHealthIndicator = () => {
@@ -205,7 +82,7 @@ export const NetworkHealthIndicator = () => {
     error,
     setHasCopied,
     hasCopied,
-  } = useNetworkStatus()
+  } = useNetworkContext()
 
   return (
     <Popover className="relative">
@@ -259,18 +136,18 @@ export const NetworkHealthIndicator = () => {
                     size="lg"
                     icon={
                       hasIssueToIcon[
-                        issues[name as ConnectingTypeGroup].toString()
+                        String(issues[name as ConnectingTypeGroup])
                       ]
                     }
                     iconClassName={
                       hasIssueToIconColors[
-                        issues[name as ConnectingTypeGroup].toString()
+                        String(issues[name as ConnectingTypeGroup])
                       ].icon
                     }
                     bgClassName={
                       'rounded-sm ' +
                       hasIssueToIconColors[
-                        issues[name as ConnectingTypeGroup].toString()
+                        String(issues[name as ConnectingTypeGroup])
                       ].bg
                     }
                   />

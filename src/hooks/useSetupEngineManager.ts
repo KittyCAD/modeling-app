@@ -43,7 +43,7 @@ export function useSetupEngineManager(
     engineCommandManager.pool = settings.pool
   }
 
-  useLayoutEffect(() => {
+  const startEngineInstance = () => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
     const { width: quadWidth, height: quadHeight } = getDimensions(
@@ -73,7 +73,12 @@ export function useSetupEngineManager(
       })
       hasSetNonZeroDimensions.current = true
     }
-  }, [streamRef?.current?.offsetWidth, streamRef?.current?.offsetHeight])
+  }
+
+  useLayoutEffect(startEngineInstance, [
+    streamRef?.current?.offsetWidth,
+    streamRef?.current?.offsetHeight,
+  ])
 
   useEffect(() => {
     const handleResize = deferExecution(() => {
@@ -96,8 +101,20 @@ export function useSetupEngineManager(
       }
     }, 500)
 
+    const onOnline = () => {
+      startEngineInstance()
+    }
+
+    const onOffline = () => {
+      engineCommandManager.tearDown()
+    }
+
+    window.addEventListener('online', onOnline)
+    window.addEventListener('offline', onOffline)
     window.addEventListener('resize', handleResize)
     return () => {
+      window.removeEventListener('online', onOnline)
+      window.removeEventListener('offline', onOffline)
       window.removeEventListener('resize', handleResize)
     }
   }, [])
