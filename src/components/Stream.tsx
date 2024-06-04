@@ -43,13 +43,14 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     const handlePaste = (e: ClipboardEvent) => {
       const isHtmlElement = e.target && e.target instanceof HTMLElement
       const isEditable =
-        isHtmlElement &&
-        'explicitOriginalTarget' in e &&
-        ((e.explicitOriginalTarget as HTMLElement).contentEditable === 'true' ||
-          ['INPUT', 'TEXTAREA'].some(
-            (tagName) =>
-              tagName === (e.explicitOriginalTarget as HTMLElement).tagName
-          ))
+        (isHtmlElement && !('explicitOriginalTarget' in e)) ||
+        ('explicitOriginalTarget' in e &&
+          ((e.explicitOriginalTarget as HTMLElement).contentEditable ===
+            'true' ||
+            ['INPUT', 'TEXTAREA'].some(
+              (tagName) =>
+                tagName === (e.explicitOriginalTarget as HTMLElement).tagName
+            )))
       if (!isEditable) {
         e.preventDefault()
         e.stopPropagation()
