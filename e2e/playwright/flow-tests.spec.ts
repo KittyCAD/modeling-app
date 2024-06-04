@@ -4860,6 +4860,7 @@ test('Paste should not work unless an input is focused', async ({
   await expect(codeEditorText).toContainText(typeContent)
 
   // Paste with the code editor focused
+  // Following this guidance: https://github.com/microsoft/playwright/issues/8114
   await codeEditorText.focus()
   await page.keyboard.press(`${metaModifier}+KeyV`)
   await expect(
