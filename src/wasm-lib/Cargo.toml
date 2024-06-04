@@ -53,6 +53,12 @@ features = [
 panic = "abort"
 debug = true
 
+[profile.dev]
+debug = 0
+
+[profile.test]
+debug = "line-tables-only"
+
 [workspace]
 members = [
 	"derive-docs",
