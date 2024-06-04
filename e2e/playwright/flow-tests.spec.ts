@@ -465,8 +465,8 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await page.keyboard.press('Enter')
 
   // trigger some keyboard events since we type too fast
-  await page.keyboard.type('const ')
-  await page.keyboard.type('topAng = 42')
+  await page.keyboard.type('const topAng = 42')
+  await page.keyboard.press('Enter')
 
   await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
   await expect(page.locator('.cm-lintRange.cm-lintRange-error')).toBeVisible()
