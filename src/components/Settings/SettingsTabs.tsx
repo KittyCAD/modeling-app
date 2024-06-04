@@ -34,6 +34,15 @@ export function SettingsTabs({
           )}
         </RadioGroup.Option>
       )}
+      <RadioGroup.Option value="keybindings">
+        {({ checked }) => (
+          <SettingsTabButton
+            checked={checked}
+            icon="keyboard"
+            text="Keybindings"
+          />
+        )}
+      </RadioGroup.Option>
     </RadioGroup>
   )
 }

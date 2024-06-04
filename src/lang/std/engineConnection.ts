@@ -12,22 +12,43 @@ let lastMessage = ''
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
 
-interface CommandInfo {
-  commandType: CommandTypes
-  range: SourceRange
-  pathToNode: PathToNode
-  parentId?: string
-  additionalData?:
-    | {
-        type: 'cap'
-        info: 'start' | 'end'
-      }
-    | {
-        type: 'batch-ids'
-        ids: string[]
-        info?: null
-      }
-}
+type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
+
+type CommandInfo =
+  | {
+      commandType: 'extrude'
+      // commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      /// uuid of the entity to extrude
+      target: string
+      parentId?: string
+    }
+  | {
+      commandType: 'start_path'
+      // commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      /// uuid of the entity that have been extruded
+      extrusions: string[]
+      parentId?: string
+    }
+  | {
+      commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      parentId?: string
+      additionalData?:
+        | {
+            type: 'cap'
+            info: 'start' | 'end'
+          }
+        | {
+            type: 'batch-ids'
+            ids: string[]
+            info?: null
+          }
+    }
 
 function isHighlightSetEntity_type(
   data: any
@@ -38,13 +59,13 @@ function isHighlightSetEntity_type(
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
-interface ResultCommand extends CommandInfo {
+type ResultCommand = CommandInfo & {
   type: 'result'
   data: any
   raw: WebSocketResponse
   headVertexId?: string
 }
-interface FailedCommand extends CommandInfo {
+type FailedCommand = CommandInfo & {
   type: 'failed'
   errors: Models['FailureWebSocketResponse_type']['errors']
 }
@@ -57,11 +78,13 @@ interface ResolveCommand {
   data?: Models['OkModelingCmdResponse_type']
   errors?: Models['FailureWebSocketResponse_type']['errors']
 }
-interface PendingCommand extends CommandInfo {
+type PendingCommand = CommandInfo & {
   type: 'pending'
   promise: Promise<any>
   resolve: (val: ResolveCommand) => void
 }
+
+export type ArtifactMapCommand = ResultCommand | PendingCommand | FailedCommand
 
 /**
  * The ArtifactMap is a client-side representation of the artifacts that
@@ -72,7 +95,7 @@ interface PendingCommand extends CommandInfo {
  * lines of KCL code that generated them.
  */
 export interface ArtifactMap {
-  [commandId: string]: ResultCommand | PendingCommand | FailedCommand
+  [commandId: string]: ArtifactMapCommand
 }
 
 interface NewTrackArgs {
@@ -988,8 +1011,6 @@ class EngineConnection extends EventTarget {
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
-type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
-
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' | 'camera_drag_move' }
@@ -1814,9 +1835,12 @@ export class EngineCommandManager extends EventTarget {
       if (command.type === 'solid3d_get_extrusion_face_info') {
         const edgeArtifact = this.artifactMap[command.edge_id]
         // edges's parent id is to the original "start_path" artifact
-        if (edgeArtifact?.parentId) return edgeArtifact.parentId
+        if (edgeArtifact && edgeArtifact.parentId) {
+          return edgeArtifact.parentId
+        }
       }
       if (command.type === 'close_path') return command.path_id
+      if (command.type === 'extrude') return command.target
       // handle other commands that have a parent here
     }
     const pathToNode = ast
@@ -1830,6 +1854,33 @@ export class EngineCommandManager extends EventTarget {
       parentId: getParentId(),
       promise,
       resolve,
+    }
+    if (command.type === 'extrude') {
+      this.artifactMap[id] = {
+        range: range || [0, 0],
+        pathToNode,
+        type: 'pending',
+        commandType: 'extrude',
+        parentId: getParentId(),
+        promise,
+        target: command.target,
+        resolve,
+      }
+      const target = this.artifactMap[command.target]
+      if (target.commandType === 'start_path') {
+        // tsc cannot infer that target can have extrusions
+        // from the commandType (why?) so we need to cast it
+        const typedTarget = target as (
+          | PendingCommand
+          | ResultCommand
+          | FailedCommand
+        ) & { extrusions?: string[] }
+        if (typedTarget?.extrusions?.length) {
+          typedTarget.extrusions.push(id)
+        } else {
+          typedTarget.extrusions = [id]
+        }
+      }
     }
     return promise
   }

@@ -93,7 +93,7 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
   await u.closeDebugPanel()
 
@@ -102,7 +102,7 @@ test('Basic sketch', async ({ page }) => {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
@@ -110,20 +110,20 @@ test('Basic sketch', async ({ page }) => {
   await page.waitForTimeout(100)
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)
@@ -149,7 +149,7 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1}], %)
@@ -331,7 +331,7 @@ test('if you click the format button it formats your code', async ({
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
   await page.click('.cm-content')
-  await page.keyboard.type(`const part001 = startSketchOn('XY')
+  await page.keyboard.type(`const sketch001 = startSketchOn('XY')
 |> startProfileAt([-10, -10], %)
 |> line([20, 0], %)
 |> line([0, 20], %)
@@ -341,7 +341,7 @@ test('if you click the format button it formats your code', async ({
   await page.click('button:has-text("Format code")')
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XY')
+    .toHaveText(`const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -356,7 +356,7 @@ test('if you use the format keyboard binding it formats your code', async ({
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('XY')
+      `const sketch001 = startSketchOn('XY')
 |> startProfileAt([-10, -10], %)
 |> line([20, 0], %)
 |> line([0, 20], %)
@@ -392,7 +392,7 @@ test('if you use the format keyboard binding it formats your code', async ({
   await page.keyboard.press('Alt+Shift+KeyF')
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XY')
+    .toHaveText(`const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -610,7 +610,7 @@ test('executes on load', async ({ page }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('-XZ')
+      `const sketch001 = startSketchOn('-XZ')
   |> startProfileAt([-6.95, 4.98], %)
   |> line([25.1, 0.41], %)
   |> line([0.73, -14.93], %)
@@ -628,16 +628,16 @@ test('executes on load', async ({ page }) => {
   })
   await variablesTabButton.click()
 
-  // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
-  // part001 only shows up in the variables summary if it's been executed
+  // can find sketch001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
+  // sketch001 only shows up in the variables summary if it's been executed
   await page.waitForFunction(() => {
     const variablesElement = document.querySelector(
       '.pretty-json-container'
     ) as HTMLDivElement
-    return variablesElement.innerHTML.includes('part001')
+    return variablesElement.innerHTML.includes('sketch001')
   })
   await expect(
-    page.locator('.pretty-json-container >> text=part001')
+    page.locator('.pretty-json-container >> text=sketch001')
   ).toBeVisible()
 })
 
@@ -703,7 +703,7 @@ const sketchOnPlaneAndBackSideTest = async (
     },
   }
 
-  const code = `const part001 = startSketchOn('${plane}')
+  const code = `const sketch001 = startSketchOn('${plane}')
   |> startProfileAt([1.14, -1.54], %)`
 
   await u.openDebugPanel()
@@ -792,7 +792,7 @@ test('Auto complete works', async ({ page }) => {
   // and arrowing down to an option
 
   await page.click('.cm-content')
-  await page.keyboard.type('const part001 = start')
+  await page.keyboard.type('const sketch001 = start')
 
   // expect there to be six auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
@@ -832,7 +832,7 @@ test('Auto complete works', async ({ page }) => {
   await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.14, 12], %)
   |> xLine(5, %) // lin`)
 })
@@ -1047,6 +1047,29 @@ test('Project and user settings can be reset', async ({ page }) => {
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 })
 
+test('Keyboard shortcuts can be viewed through the help menu', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  // Open the help menu
+  await page.getByRole('button', { name: 'Help', exact: false }).click()
+
+  // Open the keyboard shortcuts
+  await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
+
+  // Verify the URL and that you can see a list of shortcuts
+  await expect(page.url()).toContain('?tab=keybindings')
+  await expect(
+    page.getByRole('heading', { name: 'Enter Sketch Mode' })
+  ).toBeAttached()
+})
+
 test('Click through each onboarding step', async ({ page }) => {
   const u = await getUtils(page)
 
@@ -1164,28 +1187,28 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)
@@ -1415,7 +1438,7 @@ test.describe('Command bar tests', () => {
       localStorage.setItem(
         'persistCode',
         `const distance = sqrt(20)
-      const part001 = startSketchOn('XZ')
+      const sketch001 = startSketchOn('XZ')
       |> startProfileAt([-6.95, 10.98], %)
       |> line([25.1, 0.41], %)
       |> line([0.73, -20.93], %)
@@ -1485,13 +1508,16 @@ test.describe('Command bar tests', () => {
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
 const distance001 = ${KCL_DEFAULT_LENGTH}
-const part001 = startSketchOn('XZ')
+const sketch001 = startSketchOn('XZ')
     |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
     |> line([0.73, -20.93], %)
     |> line([-23.44, 0.52], %)
     |> close(%)
-    |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
+const extrude001 = extrude(distance001, sketch001)`.replace(
+        /(\r\n|\n|\r)/gm,
+        ''
+      ) // remove newlines
     )
   })
 })
@@ -1520,7 +1546,7 @@ test('Can add multiple sketches', async ({ page }) => {
     200
   )
 
-  let codeStr = "const part001 = startSketchOn('XY')"
+  let codeStr = "const sketch001 = startSketchOn('XY')"
 
   await page.mouse.click(center.x, viewportSize.height * 0.55)
   await expectCodeToBe(codeStr)
@@ -1558,7 +1584,7 @@ test('Can add multiple sketches', async ({ page }) => {
   // so selecting the plane again is a bit easier.
   await page.mouse.click(center.x + 30, center.y)
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-  codeStr += "const part002 = startSketchOn('XY')"
+  codeStr += "const sketch002 = startSketchOn('XY')"
   await expectCodeToBe(codeStr)
   await u.closeDebugPanel()
 
@@ -1745,14 +1771,14 @@ test("Various pipe expressions should and shouldn't allow edit and or extrude", 
   |> line([-27.65, -2.78], %)
   |> close(%)
   |> extrude(5, %)
-const part002 = startSketchOn('XZ')
+const sketch002 = startSketchOn('XZ')
   ${extrudeAndEditAllowed}
   |> line([10.32, 6.47], %)
   |> line([9.71, -6.16], %)
   |> line([-3.08, -9.86], %)
   |> line([-12.02, -1.54], %)
   |> close(%)
-const part003 = startSketchOn('XZ')
+const sketch003 = startSketchOn('XZ')
   ${editOnly}
   |> line([27.55, -1.65], %)
   |> line([4.95, -8], %)
@@ -1760,7 +1786,7 @@ const part003 = startSketchOn('XZ')
   |> line([-15.79, 17.08], %)
 
 fn yohey = (pos) => {
-  const part004 = startSketchOn('XZ')
+  const sketch004 = startSketchOn('XZ')
   ${extrudeAndEditBlockedInFunction}
   |> line([27.55, -1.65], %)
   |> line([4.95, -10.53], %)
@@ -1815,15 +1841,15 @@ fn yohey = (pos) => {
     page.getByRole('button', { name: 'Edit Sketch' })
   ).not.toBeVisible()
 
-  // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
+  // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.getByTestId('KCL Code').click()
   await page.mouse.click(734, 134)
   await page.getByTestId('KCL Code').click()
-  // expect main content to contain `part005` i.e. started a new sketch
+  // expect main content to contain `sketch005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
-    /part005 = startSketchOn\('XZ'\)/
+    /sketch001 = startSketchOn\('XZ'\)/
   )
 })
 
@@ -1851,7 +1877,7 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
 
   await page.waitForTimeout(600)
@@ -1979,7 +2005,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('XZ')
+      `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -5.38], %)`
@@ -2061,7 +2087,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
 
   // expect the code to have changed
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([6.44, -12.07], %)
   |> line([14.72, 1.97], %)
   |> tangentialArcTo([26.92, -3.32], %)`)
@@ -2079,7 +2105,7 @@ const doSnapAtDifferentScales = async (
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  const code = `const part001 = startSketchOn('-XZ')
+  const code = `const sketch001 = startSketchOn('-XZ')
 |> startProfileAt([${roundOff(scale * 87.68)}, ${roundOff(scale * 43.84)}], %)
 |> line([${roundOff(scale * 175.36)}, 0], %)
 |> line([0, -${roundOff(scale * 175.36) + fudge}], %)
@@ -2102,7 +2128,7 @@ const doSnapAtDifferentScales = async (
   // select a plane
   await page.mouse.click(700, 200)
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('-XZ')`
+    `const sketch001 = startSketchOn('-XZ')`
   )
 
   let prevContent = await page.locator('.cm-content').innerText()
@@ -2164,7 +2190,7 @@ test('Sketch on face', async ({ page }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('XZ')
+      `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -2177,7 +2203,7 @@ test('Sketch on face', async ({ page }) => {
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-  |> extrude(5 + 7, %)`
+  const extrude001 = extrude(5 + 7, sketch001)`
     )
   })
 
@@ -2231,7 +2257,7 @@ test('Sketch on face', async ({ page }) => {
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await expect(page.locator('.cm-content'))
-    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
+    .toContainText(`const sketch002 = startSketchOn(extrude001, 'seg01')
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2.6, -1.25], %)
@@ -2270,7 +2296,7 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const result = makeTemplate`const part002 = startSketchOn(part001, 'seg01')
+  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, 'seg01')
   |> startProfileAt([-12.83, 6.7], %)
   |> line([${[2.28, 2.35]}, -${0.07}], %)
   |> line([-3.05, -1.47], %)
@@ -2299,7 +2325,7 @@ test('Sketch on face', async ({ page }) => {
   await page.keyboard.press('Enter')
 
   const result2 = result.genNext`
-  |> extrude(${[5, 5]} + 7, %)`
+const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
 
@@ -2307,7 +2333,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('XY')
+      `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2345,7 +2371,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.getByText('Add constraining value').click()
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+    `const length001 = 20const sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
   )
 
   // Make sure we didn't pop out of sketch mode.
@@ -2367,7 +2393,7 @@ test('Extrude from command bar selects extrude line after', async ({
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('XY')
+      `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2397,7 +2423,7 @@ test('Extrude from command bar selects extrude line after', async ({
   await page.keyboard.press('Enter')
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-activeLine')).toHaveText(
-    `  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
+    `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
   )
 })
 
@@ -4645,7 +4671,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
   await u.closeDebugPanel()
 
@@ -4654,7 +4680,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
@@ -4662,7 +4688,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   await page.waitForTimeout(100)
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
@@ -4725,14 +4751,14 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   // Ensure we can continue sketching
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([-11.64, 11.11], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([-11.64, 11.11], %)
