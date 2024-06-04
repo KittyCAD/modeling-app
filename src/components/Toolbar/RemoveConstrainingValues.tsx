@@ -1,6 +1,6 @@
 import { toolTips } from '../../useStore'
-import { Selections } from 'lib/selections'
-import { Program, Value } from '../../lang/wasm'
+import { Selection, Selections } from 'lib/selections'
+import { PathToNode, Program, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -14,15 +14,30 @@ import { kclManager } from 'lib/singletons'
 
 export function removeConstrainingValuesInfo({
   selectionRanges,
+  pathToNodes,
 }: {
   selectionRanges: Selections
+  pathToNodes?: Array<PathToNode>
 }) {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
+  const paths =
+    pathToNodes ||
+    selectionRanges.codeBasedSelections.map(({ range }) =>
+      getNodePathFromSourceRange(kclManager.ast, range)
+    )
   const nodes = paths.map(
     (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
   )
+  const updatedSelectionRanges = pathToNodes
+    ? {
+        otherSelections: [],
+        codeBasedSelections: nodes.map(
+          (node): Selection => ({
+            range: [node.start, node.end],
+            type: 'default',
+          })
+        ),
+      }
+    : selectionRanges
   const isAllTooltips = nodes.every(
     (node) =>
       node?.type === 'CallExpression' &&
@@ -31,31 +46,36 @@ export function removeConstrainingValuesInfo({
 
   try {
     const transforms = getRemoveConstraintsTransforms(
-      selectionRanges,
+      updatedSelectionRanges,
       kclManager.ast,
       'removeConstrainingValues'
     )
 
     const enabled = isAllTooltips && transforms.every(Boolean)
-    return { enabled, transforms }
+    return { enabled, transforms, updatedSelectionRanges }
   } catch (e) {
     console.error(e)
-    return { enabled: false, transforms: [] }
+    return { enabled: false, transforms: [], updatedSelectionRanges }
   }
 }
 
 export function applyRemoveConstrainingValues({
   selectionRanges,
+  pathToNodes,
 }: {
   selectionRanges: Selections
+  pathToNodes?: Array<PathToNode>
 }): {
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 } {
-  const { transforms } = removeConstrainingValuesInfo({ selectionRanges })
+  const { transforms, updatedSelectionRanges } = removeConstrainingValuesInfo({
+    selectionRanges,
+    pathToNodes,
+  })
   return transformAstSketchLines({
     ast: kclManager.ast,
-    selectionRanges,
+    selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
