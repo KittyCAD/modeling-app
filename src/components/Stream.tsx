@@ -4,8 +4,9 @@ import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 
@@ -28,8 +29,11 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
-  const { overallState } = useNetworkStatus()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
+  const { overallState } = useNetworkContext()
+
+  const isNetworkOkay =
+    overallState === NetworkHealthState.Ok ||
+    overallState === NetworkHealthState.Weak
 
   // Linux has a default behavior to paste text on middle mouse up
   // This adds a listener to block that pasting if the click target
@@ -74,6 +78,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
@@ -89,6 +94,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
     if (!videoRef.current) return
     setButtonDownInStream(undefined)
     if (state.matches('Sketch')) return
@@ -103,6 +109,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
+    if (!isNetworkOkay) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
     if (!clickCoords) return
@@ -143,7 +150,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
       {!isNetworkOkay && !isLoading && (
         <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Stream disconnected</span>
+            <span data-testid="loading-stream">Stream disconnected...</span>
           </Loading>
         </div>
       )}

@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.21.9",
+  "version": "0.22.0",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.16.0",
@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.63",
+    "@kittycad/lib": "^0.0.64",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^2.0.1",
@@ -95,7 +95,8 @@
     "lint": "eslint --fix src",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json",
     "postinstall": "yarn xstate:typegen",
-    "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\""
+    "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
+    "make:dev": "make dev"
   },
   "prettier": {
     "trailingComma": "es5",
