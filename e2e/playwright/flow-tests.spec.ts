@@ -5,6 +5,7 @@ import {
   getMovementUtils,
   wiggleMove,
   doExport,
+  metaModifier,
 } from './test-utils'
 import waitOn from 'wait-on'
 import { XOR, roundOff, uuidv4 } from 'lib/utils'
@@ -4850,4 +4851,52 @@ const part001 = startSketchOn('-XZ')
   // We test the export functionality across all
   // file types in snapshot-tests.spec.ts
   await expect(page.getByText('Exported successfully')).toBeVisible()
+})
+
+test('Paste should not work unless an input is focused', async ({
+  page,
+  browserName,
+}) => {
+  // To run this test locally, uncomment Firefox in playwright.config.ts
+  test.skip(
+    browserName !== 'firefox',
+    "This bug is really Firefox-only, which we don't run in CI."
+  )
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  const codeEditorText = page.locator('.cm-content')
+  const pasteContent = `// was this pasted?`
+  const typeContent = `// this should be typed`
+
+  // Load text into the clipboard
+  await page.evaluate((t) => navigator.clipboard.writeText(t), pasteContent)
+
+  // Focus the text editor
+  await codeEditorText.focus()
+
+  // Show that we can type into it
+  await page.keyboard.type(typeContent)
+  await page.keyboard.press('Enter')
+
+  // Paste without the code pane focused
+  await codeEditorText.blur()
+  await page.keyboard.press(`${metaModifier}+KeyV`)
+
+  // Show that the paste didn't work but typing did
+  await expect(codeEditorText).not.toContainText(pasteContent)
+  await expect(codeEditorText).toContainText(typeContent)
+
+  // Paste with the code editor focused
+  // Following this guidance: https://github.com/microsoft/playwright/issues/8114
+  await codeEditorText.focus()
+  await page.keyboard.press(`${metaModifier}+KeyV`)
+  await expect(
+    await page.evaluate(
+      () => document.querySelector('.cm-content')?.textContent
+    )
+  ).toContain(pasteContent)
 })

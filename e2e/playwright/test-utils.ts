@@ -1,5 +1,6 @@
 import { test, expect, Page, Download } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
+import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
@@ -443,3 +444,8 @@ export const doExport = async (
     outputType: output.type,
   }
 }
+
+/**
+ * Gets the appropriate modifier key for the platform.
+ */
+export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
