@@ -134,9 +134,14 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Line' }).click()
   await page.waitForTimeout(100)
 
+  const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
+  const colorBefore = await u.getPixValue(line1.x, line1.y)
+  await expect(colorBefore).toEqual([249, 249, 249])
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
+  const colorAfter = await u.getPixValue(line1.x, line1.y)
+  await expect(colorAfter).toEqual([0, 0, 255])
 
   // hold down shift
   await page.keyboard.down('Shift')

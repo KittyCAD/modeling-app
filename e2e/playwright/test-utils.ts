@@ -215,8 +215,8 @@ export async function getUtils(page: Page) {
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
       const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
       return {
-        x: bbox.x + angleXOffset,
-        y: bbox.y - angleYOffset,
+        x: Math.round(bbox.x + angleXOffset),
+        y: Math.round(bbox.y - angleYOffset),
       }
     },
     getAngle: async (locator: string) => {
@@ -242,6 +242,18 @@ export async function getUtils(page: Page) {
       if (!endWithDebugPanelOpen) {
         await closeDebugPanel(page)
       }
+    },
+    getPixValue: async (x: number, y: number) => {
+      const buffer = await page.screenshot({
+        fullPage: true,
+      })
+      const screenshot = await PNG.sync.read(buffer)
+      const index = (screenshot.width * y + x) << 2
+      return [
+        screenshot.data[index],
+        screenshot.data[index + 1],
+        screenshot.data[index + 2],
+      ]
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {
