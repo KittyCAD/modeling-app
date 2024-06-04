@@ -4475,7 +4475,7 @@ test('simulate network down and network little widget', async ({ page }) => {
   await expect(networkPopover).toBeVisible()
 
   // Click off the modal.
-  await page.mouse.click(100, 100)
+  await page.mouse.click(0, 0)
   await expect(networkPopover).not.toBeVisible()
 
   // Turn back on the network

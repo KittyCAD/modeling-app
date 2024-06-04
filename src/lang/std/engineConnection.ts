@@ -384,12 +384,12 @@ class EngineConnection extends EventTarget {
         case EngineConnectionStateType.Disconnecting:
         case EngineConnectionStateType.Disconnected:
           // Reconnect if we have disconnected.
-          if (!this.isConnecting()) this.connect()
+          if (!this.isConnecting()) this.connect(true)
           break
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect()
+          if (!this.pingPongSpan.ping) this.connect(true)
           break
       }
     }, pingIntervalMs)
@@ -420,7 +420,7 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect() {
+  connect(reconnecting?: boolean) {
     if (this.isConnecting() || this.isReady()) {
       return
     }
@@ -941,9 +941,13 @@ class EngineConnection extends EventTarget {
       })
     }
 
-    window.addEventListener('use-network-status-ready', () => {
+    if (reconnecting) {
       createWebSocketConnection()
-    })
+    } else {
+      window.addEventListener('use-network-status-ready', () => {
+        createWebSocketConnection()
+      })
+    }
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
