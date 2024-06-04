@@ -1042,14 +1042,16 @@ test('Project and user settings can be reset', async ({ page }) => {
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 })
 
-test('Keyboard shortcuts can be viewed through the help menu', async ({ page }) => {
+test('Keyboard shortcuts can be viewed through the help menu', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })
-  
+
   // Open the help menu
   await page.getByRole('button', { name: 'Help', exact: false }).click()
 
@@ -1058,7 +1060,9 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({ page }) 
 
   // Verify the URL and that you can see a list of shortcuts
   await expect(page.url()).toContain('?tab=keybindings')
-  await expect(page.getByRole('heading', { name: 'Enter Sketch Mode' })).toBeAttached()
+  await expect(
+    page.getByRole('heading', { name: 'Enter Sketch Mode' })
+  ).toBeAttached()
 })
 
 test('Click through each onboarding step', async ({ page }) => {
