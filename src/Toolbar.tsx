@@ -82,7 +82,7 @@ export function Toolbar({
   useHotkeys(
     'esc',
     () =>
-      state.matches('Sketch.SketchIdle')
+      ['Sketch no face', 'Sketch.SketchIdle'].some(state.matches)
         ? send('Cancel')
         : send('CancelSketch'),
     { enabled: !disableAllButtons, scopes: ['sketch'] }
