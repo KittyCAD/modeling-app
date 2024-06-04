@@ -24,12 +24,12 @@ wasm-bindgen-futures = "0.4.42"
 
 [dev-dependencies]
 anyhow = "1"
-image = "0.24.9"
+image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
 pretty_assertions = "1.4.0"
 reqwest = { version = "0.11.26", default-features = false }
 tokio = { version = "1.37.0", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.7"
+twenty-twenty = "0.8"
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
