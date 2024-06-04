@@ -433,6 +433,8 @@ export class CameraControls {
   onMouseWheel = (event: WheelEvent) => {
     // Assume trackpad if the deltas are small and integers
     this.handleStart()
+    const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
+    const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
 
     if (this.syncDirection === 'engineToClient') {
       const interactions = this.interactionGuards.zoom.scrollCallback(
@@ -446,17 +448,13 @@ export class CameraControls {
         type: 'modeling_cmd_req',
         cmd: {
           type: 'default_camera_zoom',
-          magnitude: -event.deltaY * 0.4,
+          magnitude: -event.deltaY * 40 * zoomSpeed,
         },
         cmd_id: uuidv4(),
       })
       this.handleEnd()
       return
     }
-
-    const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
-
-    const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
     this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
     this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
     this.handleEnd()
