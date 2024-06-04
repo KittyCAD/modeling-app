@@ -12,6 +12,8 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
+import { NetworkContext } from './hooks/useNetworkContext'
+import { useNetworkStatus } from './hooks/useNetworkStatus'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import DownloadAppBanner from 'components/DownloadAppBanner'
 import { WasmErrBanner } from 'components/WasmErrBanner'
@@ -155,5 +157,11 @@ const router = createBrowserRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  return <RouterProvider router={router} />
+  const networkStatus = useNetworkStatus()
+
+  return (
+    <NetworkContext.Provider value={networkStatus}>
+      <RouterProvider router={router} />
+    </NetworkContext.Provider>
+  )
 }
