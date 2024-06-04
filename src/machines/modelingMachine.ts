@@ -145,7 +145,8 @@ export type ModelingMachineEvent =
         | {
             type: 'extrudeFace'
             position: [number, number, number]
-            extrudeSegmentPathToNode: PathToNode
+            sketchPathToNode: PathToNode
+            extrudePathToNode: PathToNode
             cap: 'start' | 'end' | 'none'
             faceId: string
           }
@@ -883,7 +884,7 @@ export const modelingMachine = createMachine(
         const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
           ast,
           pathToNode,
-          true,
+          false,
           'variableName' in distance
             ? distance.variableIdentifierAst
             : distance.valueAst
