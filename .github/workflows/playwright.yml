@@ -46,6 +46,12 @@ jobs:
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright/
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
@@ -143,6 +149,14 @@ jobs:
         cache: 'yarn'
     - name: Install dependencies
       run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache

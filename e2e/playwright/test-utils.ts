@@ -162,12 +162,7 @@ export const getMovementUtils = (opts: any) => {
     return ret.then(() => [last.x, last.y])
   }
 
-  const expectCodeToBe = async (str: string) => {
-    await expect(opts.page.locator('.cm-content')).toHaveText(str)
-    await opts.page.waitForTimeout(100)
-  }
-
-  return { toSU, click00r, expectCodeToBe }
+  return { toSU, click00r }
 }
 
 export async function getUtils(page: Page) {
@@ -215,8 +210,8 @@ export async function getUtils(page: Page) {
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
       const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
       return {
-        x: bbox.x + angleXOffset,
-        y: bbox.y - angleYOffset,
+        x: Math.round(bbox.x + angleXOffset),
+        y: Math.round(bbox.y - angleYOffset),
       }
     },
     getAngle: async (locator: string) => {
@@ -228,6 +223,7 @@ export async function getUtils(page: Page) {
         .locator(locator)
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+    codeLocator: page.locator('.cm-content'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,
@@ -242,6 +238,30 @@ export async function getUtils(page: Page) {
       if (!endWithDebugPanelOpen) {
         await closeDebugPanel(page)
       }
+    },
+    /**
+     * Given an expected RGB value, diff if the channel with the largest difference
+     */
+    getGreatestPixDiff: async (
+      coords: { x: number; y: number },
+      expected: [number, number, number]
+    ): Promise<number> => {
+      const buffer = await page.screenshot({
+        fullPage: true,
+      })
+      const screenshot = await PNG.sync.read(buffer)
+      // most likely related to pixel density but the screenshots for webkit are 2x the size
+      // there might be a more robust way of doing this.
+      const pixMultiplier = browserType === 'webkit' ? 2 : 1
+      const index =
+        (screenshot.width * coords.y * pixMultiplier +
+          coords.x * pixMultiplier) *
+        4 // rbga is 4 channels
+      return Math.max(
+        Math.abs(screenshot.data[index] - expected[0]),
+        Math.abs(screenshot.data[index + 1] - expected[1]),
+        Math.abs(screenshot.data[index + 2] - expected[2])
+      )
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {
