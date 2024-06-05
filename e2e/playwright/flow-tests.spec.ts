@@ -4885,7 +4885,7 @@ test.describe('Testing Gizmo', () => {
       })
       await u.waitForCmdReceive('default_camera_get_settings')
 
-      await page.waitForTimeout(200)
+      await page.waitForTimeout(400)
       await page.mouse.move(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
       await u.clearCommandLogs()
@@ -4901,7 +4901,7 @@ test.describe('Testing Gizmo', () => {
         },
       })
       await u.waitForCmdReceive('default_camera_get_settings')
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(400)
 
       await Promise.all([
         // position
