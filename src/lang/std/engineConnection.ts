@@ -1673,7 +1673,6 @@ export class EngineCommandManager extends EventTarget {
         (command.cmd.type === 'highlight_set_entity' ||
           command.cmd.type === 'mouse_move' ||
           command.cmd.type === 'camera_drag_move' ||
-          command.cmd.type === 'default_camera_look_at' ||
           command.cmd.type === ('default_camera_perspective_settings' as any))
       )
     ) {
@@ -1702,7 +1701,6 @@ export class EngineCommandManager extends EventTarget {
     if (
       (cmd.type === 'camera_drag_move' ||
         cmd.type === 'handle_mouse_drag_move' ||
-        cmd.type === 'default_camera_look_at' ||
         cmd.type === ('default_camera_perspective_settings' as any)) &&
       this.engineConnection?.unreliableDataChannel &&
       !forceWebsocket

@@ -5,6 +5,7 @@ import {
   getMovementUtils,
   wiggleMove,
   doExport,
+  metaModifier,
 } from './test-utils'
 import waitOn from 'wait-on'
 import { XOR, roundOff, uuidv4 } from 'lib/utils'
@@ -92,7 +93,7 @@ test('Basic sketch', async ({ page }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(page.locator('.cm-content')).toHaveText(
+  await expect(u.codeLocator).toHaveText(
     `const sketch001 = startSketchOn('XZ')`
   )
   await u.closeDebugPanel()
@@ -101,29 +102,25 @@ test('Basic sketch', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)
@@ -133,9 +130,14 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Line' }).click()
   await page.waitForTimeout(100)
 
+  const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
+  await expect(await u.getGreatestPixDiff(line1, [249, 249, 249])).toBeLessThan(
+    3
+  )
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
+  await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
 
   // hold down shift
   await page.keyboard.down('Shift')
@@ -148,8 +150,7 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1}], %)
@@ -1527,7 +1528,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.openDebugPanel()
 
   const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-  const { toSU, click00r, expectCodeToBe } = getMovementUtils({ center, page })
+  const { toSU, click00r } = getMovementUtils({ center, page })
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -1544,25 +1545,25 @@ test('Can add multiple sketches', async ({ page }) => {
   let codeStr = "const sketch001 = startSketchOn('XY')"
 
   await page.mouse.click(center.x, viewportSize.height * 0.55)
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
   await u.closeDebugPanel()
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   await click00r(0, 0)
   codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(50, 0)
   codeStr += `  |> line(${toSU([50, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(0, 50)
   codeStr += `  |> line(${toSU([0, 50])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(-50, 0)
   codeStr += `  |> line(${toSU([-50, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   // exit the sketch, reset relative clicker
   click00r(undefined, undefined)
@@ -1580,24 +1581,24 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.mouse.click(center.x + 30, center.y)
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   codeStr += "const sketch002 = startSketchOn('XY')"
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
   await u.closeDebugPanel()
 
   await click00r(30, 0)
   codeStr += `  |> startProfileAt(${toSU([30, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(30, 0)
-  codeStr += `  |> line(${toSU([30 - 0.1 /* imprecision */, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  codeStr += `  |> line(${toSU([30 + 0.1 /* imprecision */, 0])}, %)`
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(0, 30)
   codeStr += `  |> line(${toSU([0, 30])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(-30, 0)
-  codeStr += `  |> line(${toSU([-30 + 0.1, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  codeStr += `  |> line(${toSU([-30 - 0.1, 0])}, %)`
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   click00r(undefined, undefined)
   await u.openAndClearDebugPanel()
@@ -4827,6 +4828,159 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   ).not.toBeVisible()
 })
 
+test.describe('Testing Gizmo', () => {
+  const cases = [
+    {
+      testDescription: 'top view',
+      clickPosition: { x: 951, y: 385 },
+      expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: 'bottom view',
+      clickPosition: { x: 951, y: 429 },
+      expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '+x view',
+      clickPosition: { x: 929, y: 417 },
+      expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '-x view',
+      clickPosition: { x: 974, y: 397 },
+      expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '+y view',
+      clickPosition: { x: 967, y: 421 },
+      expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '-y view',
+      clickPosition: { x: 935, y: 393 },
+      expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+  ] as const
+  for (const {
+    clickPosition,
+    expectedCameraPosition,
+    expectedCameraTarget,
+    testDescription,
+  } of cases) {
+    test(`check ${testDescription}`, async ({ page }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
+        localStorage.setItem(
+          'persistCode',
+          `const part001 = startSketchOn('XZ')
+            |> startProfileAt([20, 0], %)
+            |> line([7.13, 4 + 0], %)
+            |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+            |> lineTo([20.14 + 0, -0.14 + 0], %)
+            |> xLineTo(29 + 0, %)
+            |> yLine(-3.14 + 0, %, 'a')
+            |> xLine(1.63, %)
+            |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
+            |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
+            |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
+            |> angledLineToY({ angle: 30, to: 11.14 }, %)
+            |> angledLineThatIntersects({
+              angle: 3.14,
+              intersectTag: 'a',
+              offset: 0
+            }, %)
+            |> tangentialArcTo([13.14 + 0, 13.14], %)
+            |> close(%)
+            |> extrude(5 + 7, %)
+          `
+        )
+      }, KCL_DEFAULT_LENGTH)
+      await page.setViewportSize({ width: 1000, height: 500 })
+      await page.goto('/')
+      await u.waitForAuthSkipAppStart()
+      await page.waitForTimeout(100)
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: {
+            x: 3000,
+            y: 3000,
+            z: 3000,
+          },
+          center: {
+            x: 800,
+            y: -152,
+            z: 26,
+          },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.clearCommandLogs()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await u.waitForCmdReceive('default_camera_get_settings')
+
+      await page.waitForTimeout(400)
+      await page.mouse.move(clickPosition.x, clickPosition.y)
+      await page.waitForTimeout(100)
+      await u.clearCommandLogs()
+      await page.mouse.click(clickPosition.x, clickPosition.y)
+      await u.waitForCmdReceive('default_camera_look_at')
+      await u.clearCommandLogs()
+
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await u.waitForCmdReceive('default_camera_get_settings')
+      await page.waitForTimeout(400)
+
+      await Promise.all([
+        // position
+        expect(page.getByTestId('cam-x-position')).toHaveValue(
+          expectedCameraPosition.x.toString()
+        ),
+        expect(page.getByTestId('cam-y-position')).toHaveValue(
+          expectedCameraPosition.y.toString()
+        ),
+        expect(page.getByTestId('cam-z-position')).toHaveValue(
+          expectedCameraPosition.z.toString()
+        ),
+        // target
+        expect(page.getByTestId('cam-x-target')).toHaveValue(
+          expectedCameraTarget.x.toString()
+        ),
+        expect(page.getByTestId('cam-y-target')).toHaveValue(
+          expectedCameraTarget.y.toString()
+        ),
+        expect(page.getByTestId('cam-z-target')).toHaveValue(
+          expectedCameraTarget.z.toString()
+        ),
+      ])
+    })
+  }
+})
+
 test('Successful export shows a success toast', async ({ page }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
@@ -4897,4 +5051,52 @@ const part001 = startSketchOn('-XZ')
   // We test the export functionality across all
   // file types in snapshot-tests.spec.ts
   await expect(page.getByText('Exported successfully')).toBeVisible()
+})
+
+test('Paste should not work unless an input is focused', async ({
+  page,
+  browserName,
+}) => {
+  // To run this test locally, uncomment Firefox in playwright.config.ts
+  test.skip(
+    browserName !== 'firefox',
+    "This bug is really Firefox-only, which we don't run in CI."
+  )
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  const codeEditorText = page.locator('.cm-content')
+  const pasteContent = `// was this pasted?`
+  const typeContent = `// this should be typed`
+
+  // Load text into the clipboard
+  await page.evaluate((t) => navigator.clipboard.writeText(t), pasteContent)
+
+  // Focus the text editor
+  await codeEditorText.focus()
+
+  // Show that we can type into it
+  await page.keyboard.type(typeContent)
+  await page.keyboard.press('Enter')
+
+  // Paste without the code pane focused
+  await codeEditorText.blur()
+  await page.keyboard.press(`${metaModifier}+KeyV`)
+
+  // Show that the paste didn't work but typing did
+  await expect(codeEditorText).not.toContainText(pasteContent)
+  await expect(codeEditorText).toContainText(typeContent)
+
+  // Paste with the code editor focused
+  // Following this guidance: https://github.com/microsoft/playwright/issues/8114
+  await codeEditorText.focus()
+  await page.keyboard.press(`${metaModifier}+KeyV`)
+  await expect(
+    await page.evaluate(
+      () => document.querySelector('.cm-content')?.textContent
+    )
+  ).toContain(pasteContent)
 })
