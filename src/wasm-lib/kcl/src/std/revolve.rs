@@ -208,7 +208,7 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> line([5, 5], %)
 ///   |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///   |> close(%)
-/// 
+///
 /// const part001 = revolve({
 ///   axis: {
 ///     custom: {
