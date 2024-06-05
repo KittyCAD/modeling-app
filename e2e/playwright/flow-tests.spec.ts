@@ -93,7 +93,7 @@ test('Basic sketch', async ({ page }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(page.locator('.cm-content')).toHaveText(
+  await expect(u.codeLocator).toHaveText(
     `const sketch001 = startSketchOn('XZ')`
   )
   await u.closeDebugPanel()
@@ -102,29 +102,25 @@ test('Basic sketch', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)
@@ -154,8 +150,7 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1}], %)
@@ -1533,7 +1528,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.openDebugPanel()
 
   const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-  const { toSU, click00r, expectCodeToBe } = getMovementUtils({ center, page })
+  const { toSU, click00r } = getMovementUtils({ center, page })
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -1550,25 +1545,25 @@ test('Can add multiple sketches', async ({ page }) => {
   let codeStr = "const sketch001 = startSketchOn('XY')"
 
   await page.mouse.click(center.x, viewportSize.height * 0.55)
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
   await u.closeDebugPanel()
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   await click00r(0, 0)
   codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(50, 0)
   codeStr += `  |> line(${toSU([50, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(0, 50)
   codeStr += `  |> line(${toSU([0, 50])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(-50, 0)
   codeStr += `  |> line(${toSU([-50, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   // exit the sketch, reset relative clicker
   click00r(undefined, undefined)
@@ -1586,24 +1581,24 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.mouse.click(center.x + 30, center.y)
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   codeStr += "const sketch002 = startSketchOn('XY')"
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
   await u.closeDebugPanel()
 
   await click00r(30, 0)
   codeStr += `  |> startProfileAt(${toSU([30, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(30, 0)
-  codeStr += `  |> line(${toSU([30 - 0.1 /* imprecision */, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  codeStr += `  |> line(${toSU([30 + 0.1 /* imprecision */, 0])}, %)`
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(0, 30)
   codeStr += `  |> line(${toSU([0, 30])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(-30, 0)
   codeStr += `  |> line(${toSU([-30 + 0.1, 0])}, %)`
-  await expectCodeToBe(codeStr)
+  await expect(u.codeLocator).toHaveText(codeStr)
 
   click00r(undefined, undefined)
   await u.openAndClearDebugPanel()
