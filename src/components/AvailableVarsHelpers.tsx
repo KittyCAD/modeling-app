@@ -214,13 +214,17 @@ export const CreateNewVariable = ({
 }) => {
   return (
     <>
-      <label htmlFor="create-new-variable" className="block mt-3 font-mono">
+      <label
+        htmlFor="create-new-variable"
+        className="block mt-3 font-mono text-chalkboard-90"
+      >
         Create new variable
       </label>
       <div className="mt-1 flex gap-2 items-center">
         {showCheckbox && (
           <input
             type="checkbox"
+            data-testid="create-new-variable-checkbox"
             checked={shouldCreateVariable}
             onChange={(e) => {
               setShouldCreateVariable(e.target.checked)

@@ -11,7 +11,10 @@ import {
 import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { isCursorInSketchCommandRange } from 'lang/util'
+import {
+  isCursorInSketchCommandRange,
+  updatePathToNodeFromMap,
+} from 'lang/util'
 import {
   kclManager,
   sceneInfra,
@@ -150,7 +153,7 @@ export const ModelingMachineProvider = ({
               ])
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
-              if (!parent || !pathToNode) return {}
+              if (!parent || !pathToNode) return segmentHoverMap
               if (segmentHoverMap[pathToNodeString] !== undefined)
                 clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
               return {
@@ -218,9 +221,8 @@ export const ModelingMachineProvider = ({
               }
             : {}
         ),
-        'Set selection': assign(({ selectionRanges }, event) => {
-          if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
-          const setSelections = event.data
+        'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
+          const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
@@ -307,11 +309,29 @@ export const ModelingMachineProvider = ({
               selectionRanges: selections,
             }
           }
+          if (setSelections.selectionType === 'completeSelection') {
+            editorManager.selectRange(setSelections.selection)
+            if (!sketchDetails)
+              return {
+                selectionRanges: setSelections.selection,
+              }
+            return {
+              selectionRanges: setSelections.selection,
+              sketchDetails: {
+                ...sketchDetails,
+                sketchPathToNode:
+                  setSelections.updatedPathToNode ||
+                  sketchDetails?.sketchPathToNode ||
+                  [],
+              },
+            }
+          }
 
           return {}
         }),
-        'Engine export': (_, event) => {
+        'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          console.log('exporting', event.data)
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>
@@ -355,9 +375,16 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          exportFromEngine({
-            format: format as Models['OutputFormat_type'],
-          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
+          toast.promise(
+            exportFromEngine({
+              format: format as Models['OutputFormat_type'],
+            }),
+            {
+              loading: 'Exporting...',
+              success: 'Exported successfully',
+              error: 'Error while exporting',
+            }
+          )
         },
       },
       guards: {
@@ -426,7 +453,8 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNode: pathToNewSketchNode } =
               sketchOnExtrudedFace(
                 kclManager.ast,
-                data.extrudeSegmentPathToNode,
+                data.sketchPathToNode,
+                data.extrudePathToNode,
                 kclManager.programMemory,
                 data.cap
               )
@@ -481,13 +509,26 @@ export const ModelingMachineProvider = ({
         },
         'Get horizontal info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
               constraint: 'setHorzDistance',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -495,17 +536,31 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get vertical info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
               constraint: 'setVertDistance',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -513,10 +568,12 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get angle info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
             selectionRanges,
@@ -528,22 +585,48 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
                 angleOrLength: 'setAngle',
               }))
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
-              kclManager.ast,
+              _modifiedAst,
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get length info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -551,17 +634,31 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get perpendicular distance info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect(
             {
               selectionRanges,
             }
           )
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -569,17 +666,31 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get ABS X info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'xAbs',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -587,17 +698,31 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get ABS Y info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'yAbs',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -605,6 +730,7 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get convert to variable info': async ({ sketchDetails }, { data }) => {
@@ -657,6 +783,19 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
+
+  useEffect(() => {
+    const offlineCallback = () => {
+      // If we are in sketch mode we need to exit it.
+      // TODO: how do i check if we are in a sketch mode, I only want to call
+      // this then.
+      modelingSend({ type: 'Cancel' })
+    }
+    window.addEventListener('offline', offlineCallback)
+    return () => {
+      window.removeEventListener('offline', offlineCallback)
+    }
+  }, [modelingSend])
 
   useStateMachineCommands({
     machineId: 'modeling',

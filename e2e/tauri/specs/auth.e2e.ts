@@ -1,11 +1,19 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
+import path from 'path'
+import os from 'os'
 
-const documentsDir = `${process.env.HOME}/Documents`
-const userSettingsDir = `${process.env.HOME}/.config/dev.zoo.modeling-app`
-const defaultProjectDir = `${documentsDir}/zoo-modeling-app-projects`
-const newProjectDir = `${documentsDir}/a-different-directory`
-const userCodeDir = '/tmp/kittycad_user_code'
+const isWin32 = os.platform() === 'win32'
+const documentsDir = path.join(os.homedir(), 'Documents')
+const userSettingsDir = path.join(
+  os.homedir(),
+  '.config',
+  'dev.zoo.modeling-app'
+)
+const defaultProjectDir = path.join(documentsDir, 'zoo-modeling-app-projects')
+const newProjectDir = path.join(documentsDir, 'a-different-directory')
+const tmp = process.env.TEMP || '/tmp'
+const userCodeDir = path.join(tmp, 'kittycad_user_code')
 
 async function click(element: WebdriverIO.Element): Promise<void> {
   // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
@@ -24,7 +32,7 @@ async function setDatasetValue(
   await browser.execute(`arguments[0].dataset.${property} = "${value}"`, field)
 }
 
-describe('ZMA (Tauri, Linux)', () => {
+describe('ZMA (Tauri)', () => {
   it('opens the auth page and signs in', async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
@@ -42,9 +50,7 @@ describe('ZMA (Tauri, Linux)', () => {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Get from main.rs
-    const userCode = await (
-      await fs.readFile('/tmp/kittycad_user_code')
-    ).toString()
+    const userCode = await (await fs.readFile(userCodeDir)).toString()
     console.log(`Found user code ${userCode}`)
 
     // Device flow: verify
@@ -92,7 +98,12 @@ describe('ZMA (Tauri, Linux)', () => {
      * to be able to skip the folder selection dialog if data-testValue
      * has a value, allowing us to test the input otherwise works.
      */
-    await setDatasetValue(projectDirInput, 'testValue', newProjectDir)
+    // TODO: understand why we need to force double \ on Windows
+    await setDatasetValue(
+      projectDirInput,
+      'testValue',
+      isWin32 ? newProjectDir.replaceAll('\\', '\\\\') : newProjectDir
+    )
     const projectDirButton = await $('[data-testid="project-directory-button"]')
     await click(projectDirButton)
     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -101,6 +112,15 @@ describe('ZMA (Tauri, Linux)', () => {
 
     const nameInput = await $('[data-testid="projects-defaultProjectName"]')
     expect(await nameInput.getValue()).toEqual('project-$nnn')
+
+    // Setting it back (for back to back local tests)
+    await new Promise((resolve) => setTimeout(resolve, 5000))
+    await setDatasetValue(
+      projectDirInput,
+      'testValue',
+      isWin32 ? defaultProjectDir.replaceAll('\\', '\\\\') : newProjectDir
+    )
+    await click(projectDirButton)
 
     const closeButton = await $('[data-testid="settings-close-button"]')
     await click(closeButton)
@@ -120,12 +140,19 @@ describe('ZMA (Tauri, Linux)', () => {
   it('opens the new file and expects a loading stream', async () => {
     const projectLink = await $('[data-testid="project-link"]')
     await click(projectLink)
-    const errorText = await $('[data-testid="unexpected-error"]')
-    expect(await errorText.getText()).toContain('unexpected error')
-    await browser.execute('window.location.href = "tauri://localhost/home"')
+    if (isWin32) {
+      // TODO: actually do something to check that the stream is up
+      await new Promise((resolve) => setTimeout(resolve, 5000))
+    } else {
+      const errorText = await $('[data-testid="unexpected-error"]')
+      expect(await errorText.getText()).toContain('unexpected error')
+    }
+    const base = isWin32 ? 'http://tauri.localhost' : 'tauri://localhost'
+    await browser.execute(`window.location.href = "${base}/home"`)
   })
 
   it('signs out', async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await click(menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
