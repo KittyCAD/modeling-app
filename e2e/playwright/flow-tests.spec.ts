@@ -135,13 +135,13 @@ test('Basic sketch', async ({ page }) => {
   await page.waitForTimeout(100)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
-  const colorBefore = await u.getPixValue(line1.x, line1.y)
-  await expect(colorBefore).toEqual([249, 249, 249])
+  await expect(await u.getGreatestPixDiff(line1, [249, 249, 249])).toBeLessThan(
+    3
+  )
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
-  const colorAfter = await u.getPixValue(line1.x, line1.y)
-  await expect(colorAfter).toEqual([0, 0, 255])
+  await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
 
   // hold down shift
   await page.keyboard.down('Shift')

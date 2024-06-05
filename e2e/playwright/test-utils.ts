@@ -243,17 +243,29 @@ export async function getUtils(page: Page) {
         await closeDebugPanel(page)
       }
     },
-    getPixValue: async (x: number, y: number) => {
+    /**
+     * Given an expected RGB value, diff if the channel with the largest difference
+     */
+    getGreatestPixDiff: async (
+      coords: { x: number; y: number },
+      expected: [number, number, number]
+    ): Promise<number> => {
       const buffer = await page.screenshot({
         fullPage: true,
       })
       const screenshot = await PNG.sync.read(buffer)
-      const index = (screenshot.width * y + x) * 4 // rbga is 4 channels
-      return [
-        screenshot.data[index],
-        screenshot.data[index + 1],
-        screenshot.data[index + 2],
-      ]
+      // most likely related to pixel density but the screenshots for webkit are 2x the size
+      // there might be a more robust way of doing this.
+      const pixMultiplier = browserType === 'webkit' ? 2 : 1
+      const index =
+        (screenshot.width * coords.y * pixMultiplier +
+          coords.x * pixMultiplier) *
+        4 // rbga is 4 channels
+      return Math.max(
+        Math.abs(screenshot.data[index] - expected[0]),
+        Math.abs(screenshot.data[index + 1] - expected[1]),
+        Math.abs(screenshot.data[index + 2] - expected[2])
+      )
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {
