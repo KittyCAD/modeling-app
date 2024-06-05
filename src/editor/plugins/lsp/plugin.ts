@@ -382,6 +382,11 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
+          console.log(
+            '[lsp] [window/publishDiagnostics]',
+            this.client.getName(),
+            notification.params
+          )
           const params = notification.params as PublishDiagnosticsParams
           // this is sometimes slower than our actual typing.
           this.processDiagnostics(params)
