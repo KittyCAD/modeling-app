@@ -699,6 +699,15 @@ export const CamDebugSettings = () => {
           }
         }}
       />
+      <div>
+        <button
+          onClick={() => {
+            sceneInfra.camControls.resetCameraPosition()
+          }}
+        >
+          Reset Camera Position
+        </button>
+      </div>
       {camSettings.type === 'perspective' && (
         <input
           type="range"
@@ -808,6 +817,71 @@ export const CamDebugSettings = () => {
                   position: [
                     camSettings.position[0],
                     camSettings.position[1],
+                    parseFloat(e.target.value),
+                  ],
+                })
+              }}
+            />
+          </li>
+        </ul>
+      </div>
+      <div>
+        target
+        <ul className="flex">
+          <li>
+            <span className="pl-2 pr-1">x:</span>
+            <input
+              type="number"
+              step={5}
+              data-testid="cam-x-target"
+              value={camSettings.target[0]}
+              className="text-black w-16"
+              onChange={(e) => {
+                sceneInfra.camControls.setCam({
+                  ...camSettings,
+                  target: [
+                    parseFloat(e.target.value),
+                    camSettings.target[1],
+                    camSettings.target[2],
+                  ],
+                })
+              }}
+            />
+          </li>
+          <li>
+            <span className="pl-2 pr-1">y:</span>
+            <input
+              type="number"
+              step={5}
+              data-testid="cam-y-target"
+              value={camSettings.target[1]}
+              className="text-black w-16"
+              onChange={(e) => {
+                sceneInfra.camControls.setCam({
+                  ...camSettings,
+                  target: [
+                    camSettings.target[0],
+                    parseFloat(e.target.value),
+                    camSettings.target[2],
+                  ],
+                })
+              }}
+            />
+          </li>
+          <li>
+            <span className="pl-2 pr-1">z:</span>
+            <input
+              type="number"
+              step={5}
+              data-testid="cam-z-target"
+              value={camSettings.target[2]}
+              className="text-black w-16"
+              onChange={(e) => {
+                sceneInfra.camControls.setCam({
+                  ...camSettings,
+                  target: [
+                    camSettings.target[0],
+                    camSettings.target[1],
                     parseFloat(e.target.value),
                   ],
                 })
