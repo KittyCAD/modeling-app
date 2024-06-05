@@ -166,8 +166,6 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
-        self.clear_diagnostics(&params.uri).await;
-
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -219,10 +217,6 @@ impl crate::lsp::backend::Backend for Backend {
             }
         };
 
-        for discovered_finding in lint(&ast, checks::lint_variables).into_iter().flatten() {
-            self.add_to_diagnostics(&params, discovered_finding).await;
-        }
-
         // Check if the ast changed.
         let ast_changed = match self.ast_map.get(&params.uri.to_string()).await {
             Some(old_ast) => {
@@ -257,10 +251,20 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        let result = self.execute(&params, ast).await;
+        let result = self.execute(&params, ast.clone()).await;
         if result.is_err() {
             // We return early because we got errors, and we don't want to clear the diagnostics.
             return;
+        }
+
+        // Lets update the diagnostics, since we got no errors.
+        self.clear_diagnostics(&params.uri).await;
+
+        // Now, if the code executes and is otherwise valid, let's run the
+        // linter over it to add up diagnostics.
+
+        for discovered_finding in lint(&ast, checks::lint_variables).into_iter().flatten() {
+            self.add_to_diagnostics(&params, discovered_finding).await;
         }
     }
 }
