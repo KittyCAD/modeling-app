@@ -271,6 +271,8 @@ export const ModelingMachineProvider = ({
               engineEvents.forEach((event) =>
                 engineCommandManager.sendSceneCommand(event)
               )
+
+            console.log('updating scene object colors')
             updateSceneObjectColors()
 
             return {
