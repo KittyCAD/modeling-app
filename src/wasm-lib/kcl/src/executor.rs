@@ -4,7 +4,6 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kittycad_execution_plan_macros::ExecutionPlanValue;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -721,7 +720,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, ExecutionPlanValue)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
