@@ -3158,7 +3158,7 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 [[package]]
 name = "ts-rs"
 version = "8.1.0"
-source = "git+https://github.com/Aleph-Alpha/ts-rs#badbac08e61e65b312880aa64e9ece2976f1bbef"
+source = "git+https://github.com/Aleph-Alpha/ts-rs#be0349d5fb07a8ccab713887a61e90e3bc773c7a"
 dependencies = [
  "chrono",
  "thiserror",
@@ -3170,7 +3170,7 @@ dependencies = [
 [[package]]
 name = "ts-rs-macros"
 version = "8.1.0"
-source = "git+https://github.com/Aleph-Alpha/ts-rs#badbac08e61e65b312880aa64e9ece2976f1bbef"
+source = "git+https://github.com/Aleph-Alpha/ts-rs#be0349d5fb07a8ccab713887a61e90e3bc773c7a"
 dependencies = [
  "proc-macro2",
  "quote",
