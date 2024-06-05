@@ -4708,11 +4708,13 @@ test.describe('Testing Gizmo', () => {
       })
       await u.waitForCmdReceive('default_camera_get_settings')
 
-      await page.waitForTimeout(400)
+      await page.waitForTimeout(100)
       await page.mouse.move(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
+      await u.clearCommandLogs()
       await page.mouse.click(clickPosition.x, clickPosition.y)
-      await page.waitForTimeout(500) // wait for camera to move and update debug values
+      await u.waitForCmdReceive('default_camera_look_at')
+      await u.clearCommandLogs()
 
       await u.sendCustomCmd({
         type: 'modeling_cmd_req',
