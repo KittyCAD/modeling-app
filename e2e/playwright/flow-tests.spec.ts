@@ -426,8 +426,8 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const bottomAng = 25
    */
   await page.click('.cm-content')
-  await page.keyboard.type('Enter')
-  await page.keyboard.type('Enter')
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('Enter')
   await page.keyboard.type('$ error')
 
   // press arrows to clear autocomplete
@@ -462,6 +462,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await page.getByText('const bottomAng = 25').click()
   await page.keyboard.press('Enter')
   await page.keyboard.type("// Let's define the same thing twice")
+  await page.keyboard.press('Enter')
   await page.keyboard.press('Enter')
   await page.keyboard.type('const topAng = 42')
 
