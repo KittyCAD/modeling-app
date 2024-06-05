@@ -3207,6 +3207,58 @@ const part002 = startSketchOn('XZ')
       })
     }
   })
+
+  test('Horizontally constrained line remains selected after applying constraint', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('XZ')
+|> startProfileAt([-7.54, -26.74], %)
+|> line([30, 30], %, 'seg01')
+|> line([80, -40], %)`
+      )
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText("line([30, 30], %, 'seg01')").click()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+    await page.waitForTimeout(100)
+    const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+    await page.mouse.click(line1.x, line1.y)
+    await page.waitForTimeout(100)
+
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page.getByRole('button', { name: 'horizontal', exact: true }).click()
+
+    let activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(80, %)`)
+
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page.getByRole('button', { name: 'length', exact: true }).click()
+
+    await page.getByLabel('length Value').fill('20')
+    await page.getByRole('button', { name: 'Add constraining value' }).click()
+
+    activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
+
+    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+  })
 })
 
 test.describe('Testing segment overlays', () => {
