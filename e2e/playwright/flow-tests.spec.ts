@@ -1597,7 +1597,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(-30, 0)
-  codeStr += `  |> line(${toSU([-30 + 0.1, 0])}, %)`
+  codeStr += `  |> line(${toSU([-30 - 0.1, 0])}, %)`
   await expect(u.codeLocator).toHaveText(codeStr)
 
   click00r(undefined, undefined)
@@ -4885,7 +4885,7 @@ test.describe('Testing Gizmo', () => {
       })
       await u.waitForCmdReceive('default_camera_get_settings')
 
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(200)
       await page.mouse.move(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
       await u.clearCommandLogs()
@@ -4901,6 +4901,7 @@ test.describe('Testing Gizmo', () => {
         },
       })
       await u.waitForCmdReceive('default_camera_get_settings')
+      await page.waitForTimeout(100)
 
       await Promise.all([
         // position
