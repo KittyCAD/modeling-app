@@ -152,6 +152,7 @@ describe('ZMA (Tauri)', () => {
   })
 
   it('signs out', async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await click(menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
