@@ -4,6 +4,8 @@ use kcl_lib::{
     settings::types::UnitLength,
 };
 
+// mod server;
+
 async fn new_context(units: UnitLength) -> Result<ExecutorContext> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
@@ -48,48 +50,16 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
     let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
+
+    let snapshot = ctx.execute_and_prepare_snapshot(program).await?;
+
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
-
-    let _ = ctx.run(program, None).await?;
-
-    // Zoom to fit.
-    ctx.engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            kcl_lib::executor::SourceRange::default(),
-            kittycad::types::ModelingCmd::ZoomToFit {
-                object_ids: Default::default(),
-                padding: 0.1,
-            },
-        )
-        .await?;
-
-    // Send a snapshot request to the engine.
-    let resp = ctx
-        .engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            kcl_lib::executor::SourceRange::default(),
-            kittycad::types::ModelingCmd::TakeSnapshot {
-                format: kittycad::types::ImageFormat::Png,
-            },
-        )
-        .await?;
-
-    if let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
-    } = &resp
-    {
-        // Save the snapshot locally.
-        std::fs::write(&output_file, &data.contents.0)?;
-    } else {
-        anyhow::bail!("Unexpected response from engine: {:?}", resp);
-    }
-
-    // Read the output file.
-    let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
-    Ok(actual)
+    // Save the snapshot locally, to that temporary file.
+    std::fs::write(&output_file, snapshot.contents.0)?;
+    // Decode the snapshot, return it.
+    let img = image::io::Reader::open(output_file).unwrap().decode()?;
+    Ok(img)
 }
 
 #[tokio::test(flavor = "multi_thread")]
