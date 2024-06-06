@@ -53,12 +53,10 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
 
     let snapshot = ctx.execute_and_prepare_snapshot(program).await?;
 
-    // Create a temporary file to write the output to.
-    let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
-    // Save the snapshot locally, to that temporary file.
-    std::fs::write(&output_file, snapshot.contents.0)?;
     // Decode the snapshot, return it.
-    let img = image::io::Reader::open(output_file).unwrap().decode()?;
+    let img = image::io::Reader::new(std::io::Cursor::new(snapshot.contents.0))
+        .with_guessed_format()?
+        .decode()?;
     Ok(img)
 }
 
