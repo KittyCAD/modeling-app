@@ -1149,188 +1149,352 @@ test('Onboarding redirects and code updating', async ({ page }) => {
   await expect(page.locator('.cm-content')).toHaveText(/.+/)
 })
 
-test('Selections work on fresh and edited sketch', async ({ page }) => {
-  // tests mapping works on fresh sketch and edited sketch
-  // tests using hovers which is the same as selections, because if
-  // source ranges are wrong, hovers won't work
-  const u = await getUtils(page)
-  const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
+test.describe('Testing selections', () => {
+  test('Selections work on fresh and edited sketch', async ({ page }) => {
+    // tests mapping works on fresh sketch and edited sketch
+    // tests using hovers which is the same as selections, because if
+    // source ranges are wrong, hovers won't work
+    const u = await getUtils(page)
+    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
 
-  const xAxisClick = () =>
-    page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
-  const emptySpaceClick = () =>
-    page.mouse.click(700, 343).then(() => page.waitForTimeout(100))
-  const topHorzSegmentClick = () =>
-    page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
-  const bottomHorzSegmentClick = () =>
-    page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
+    const xAxisClick = () =>
+      page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+    const emptySpaceClick = () =>
+      page.mouse.click(700, 343).then(() => page.waitForTimeout(100))
+    const topHorzSegmentClick = () =>
+      page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
+    const bottomHorzSegmentClick = () =>
+      page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
 
-  await u.clearCommandLogs()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await u.clearCommandLogs()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-  // select a plane
-  await page.mouse.click(700, 200)
-  await page.waitForTimeout(700) // wait for animation
+    // select a plane
+    await page.mouse.click(700, 200)
+    await page.waitForTimeout(700) // wait for animation
 
-  const startXPx = 600
-  await u.closeDebugPanel()
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)`)
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)`)
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)
-  |> line([-${commonPoints.num2}, 0], %)`)
-
-  // deselect line tool
-  await page.getByRole('button', { name: 'Line' }).click()
-
-  await u.closeDebugPanel()
-  const selectionSequence = async (isSecondTime = false) => {
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    const startXPx = 600
+    await u.closeDebugPanel()
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)`)
 
     await page.waitForTimeout(100)
-    await page.mouse.move(
-      startXPx + PUR * 15,
-      isSecondTime ? 430 : 500 - PUR * 10
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)
+    |> line([${commonPoints.num1}, 0], %)`)
+
+    await page.waitForTimeout(100)
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)
+    |> line([${commonPoints.num1}, 0], %)
+    |> line([0, ${commonPoints.num1}], %)`)
+    await page.waitForTimeout(100)
+    await page.mouse.click(startXPx, 500 - PUR * 20)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)
+    |> line([${commonPoints.num1}, 0], %)
+    |> line([0, ${commonPoints.num1}], %)
+    |> line([-${commonPoints.num2}, 0], %)`)
+
+    // deselect line tool
+    await page.getByRole('button', { name: 'Line' }).click()
+
+    await u.closeDebugPanel()
+    const selectionSequence = async (isSecondTime = false) => {
+      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+      await page.waitForTimeout(100)
+      await page.mouse.move(
+        startXPx + PUR * 15,
+        isSecondTime ? 430 : 500 - PUR * 10
+      )
+
+      await expect(page.getByTestId('hover-highlight')).toBeVisible()
+      // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
+      // and will be an easy fix if it breaks because we change the colour
+      await expect(page.locator('.bg-yellow-200')).toBeVisible()
+
+      // check mousing off, than mousing onto another line
+      await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
+      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+      await page.mouse.move(
+        startXPx + PUR * 10,
+        isSecondTime ? 295 : 500 - PUR * 20
+      ) // mouse onto another line
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+
+      // now check clicking works including axis
+
+      // click a segment hold shift and click an axis, see that a relevant constraint is enabled
+      await topHorzSegmentClick()
+      await page.keyboard.down('Shift')
+      const constrainButton = page.getByRole('button', { name: 'Constrain' })
+      const absYButton = page.getByRole('button', { name: 'ABS Y' })
+      await constrainButton.click()
+      await expect(absYButton).toBeDisabled()
+      await page.waitForTimeout(100)
+      await xAxisClick()
+      await page.keyboard.up('Shift')
+      await constrainButton.click()
+      await absYButton.and(page.locator(':not([disabled])')).waitFor()
+      await expect(absYButton).not.toBeDisabled()
+
+      // clear selection by clicking on nothing
+      await emptySpaceClick()
+
+      await page.waitForTimeout(100)
+      // same selection but click the axis first
+      await xAxisClick()
+      await constrainButton.click()
+      await expect(absYButton).toBeDisabled()
+      await page.keyboard.down('Shift')
+      await page.waitForTimeout(100)
+      await topHorzSegmentClick()
+      await page.waitForTimeout(100)
+
+      await page.keyboard.up('Shift')
+      await constrainButton.click()
+      await expect(absYButton).not.toBeDisabled()
+
+      // clear selection by clicking on nothing
+      await emptySpaceClick()
+
+      // check the same selection again by putting cursor in code first then selecting axis
+      await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+      await page.keyboard.down('Shift')
+      await constrainButton.click()
+      await expect(absYButton).toBeDisabled()
+      await page.waitForTimeout(100)
+      await xAxisClick()
+      await page.keyboard.up('Shift')
+      await constrainButton.click()
+      await expect(absYButton).not.toBeDisabled()
+
+      // clear selection by clicking on nothing
+      await emptySpaceClick()
+
+      // select segment in editor than another segment in scene and check there are two cursors
+      // TODO change this back to shift click in the scene, not cmd click in the editor
+      await bottomHorzSegmentClick()
+
+      await expect(page.locator('.cm-cursor')).toHaveCount(1)
+
+      await page.keyboard.down(
+        process.platform === 'linux' ? 'Control' : 'Meta'
+      )
+      await page.waitForTimeout(100)
+      await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+
+      await expect(page.locator('.cm-cursor')).toHaveCount(2)
+      await page.waitForTimeout(500)
+      await page.keyboard.up(process.platform === 'linux' ? 'Control' : 'Meta')
+
+      // clear selection by clicking on nothing
+      await emptySpaceClick()
+    }
+
+    await selectionSequence()
+
+    // hovering in fresh sketch worked, lets try exiting and re-entering
+    await u.openAndClearDebugPanel()
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await page.waitForTimeout(200)
+    // wait for execution done
+
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
+    await topHorzSegmentClick()
+    await page.waitForTimeout(100)
+
+    // enter sketch again
+    await u.doAndWaitForCmd(
+      () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+      'default_camera_get_settings'
     )
+    await page.waitForTimeout(150)
 
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
-    // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
-    // and will be an easy fix if it breaks because we change the colour
-    await expect(page.locator('.bg-yellow-200')).toBeVisible()
+    await page.waitForTimeout(300) // wait for animation
 
-    // check mousing off, than mousing onto another line
-    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
+    // hover again and check it works
+    await selectionSequence(true)
+  })
+
+  test('Hovering over 3d features highlights code', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('XZ')
+    |> startProfileAt([20, 0], %)
+    |> line([7.13, 4 + 0], %)
+    |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+    |> lineTo([20.14 + 0, -0.14 + 0], %)
+    |> xLineTo(29 + 0, %)
+    |> yLine(-3.14 + 0, %, 'a')
+    |> xLine(1.63, %)
+    |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
+    |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
+    |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
+    |> angledLineToY({ angle: 30, to: 11.14 }, %)
+    |> angledLineThatIntersects({
+          angle: 3.14,
+          intersectTag: 'a',
+          offset: 0
+        }, %)
+    |> tangentialArcTo([13.14 + 0, 13.14], %)
+    |> close(%)
+    |> extrude(5 + 7, %)
+  `
+      )
+    }, KCL_DEFAULT_LENGTH)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 0, y: -1250, z: 580 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const extrusionTop: Coords2d = [800, 240]
+    const flatExtrusionFace: Coords2d = [960, 160]
+    const arc: Coords2d = [840, 160]
+    const close: Coords2d = [720, 200]
+    const nothing: Coords2d = [600, 200]
+
+    await page.mouse.move(nothing[0], nothing[1])
+    await page.mouse.click(nothing[0], nothing[1])
+
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-    await page.mouse.move(
-      startXPx + PUR * 10,
-      isSecondTime ? 295 : 500 - PUR * 20
-    ) // mouse onto another line
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await page.waitForTimeout(200)
 
-    // now check clicking works including axis
+    await page.mouse.move(extrusionTop[0], extrusionTop[1])
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await page.mouse.move(nothing[0], nothing[1])
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-    // click a segment hold shift and click an axis, see that a relevant constraint is enabled
-    await topHorzSegmentClick()
-    await page.keyboard.down('Shift')
-    const constrainButton = page.getByRole('button', { name: 'Constrain' })
-    const absYButton = page.getByRole('button', { name: 'ABS Y' })
-    await constrainButton.click()
-    await expect(absYButton).toBeDisabled()
+    await page.mouse.move(arc[0], arc[1])
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await page.mouse.move(nothing[0], nothing[1])
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+    await page.mouse.move(close[0], close[1])
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await page.mouse.move(nothing[0], nothing[1])
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+    await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+    await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
-    await xAxisClick()
-    await page.keyboard.up('Shift')
-    await constrainButton.click()
-    await absYButton.and(page.locator(':not([disabled])')).waitFor()
-    await expect(absYButton).not.toBeDisabled()
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+  })
 
-    // clear selection by clicking on nothing
-    await emptySpaceClick()
+  test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
+    page,
+  }) => {
+    const cases = [
+      {
+        pos: [694, 185],
+        expectedCode: "line([74.36, 130.4], %, 'seg01')",
+      },
+      {
+        pos: [816, 244],
+        expectedCode: "angledLine([segAng('seg01', %), yo], %)",
+      },
+      {
+        pos: [1107, 161],
+        expectedCode: 'tangentialArcTo([167.95, -28.85], %)',
+      },
+    ] as const
+    await page.addInitScript(
+      async ({ cases }) => {
+        localStorage.setItem(
+          'persistCode',
+          `const yo = 79
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> ${cases[0].expectedCode}
+  |> line([-3.19, -138.43], %)
+  |> ${cases[1].expectedCode}
+  |> line([41.19, 28.97 + 5], %)
+  |> ${cases[2].expectedCode}`
+        )
+      },
+      { cases }
+    )
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+    await u.openAndClearDebugPanel()
 
-    await page.waitForTimeout(100)
-    // same selection but click the axis first
-    await xAxisClick()
-    await constrainButton.click()
-    await expect(absYButton).toBeDisabled()
-    await page.keyboard.down('Shift')
-    await page.waitForTimeout(100)
-    await topHorzSegmentClick()
-    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: -449, y: -7503, z: 99 },
+        center: { x: -449, y: 0, z: 99 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await u.waitForCmdReceive('default_camera_look_at')
+    await u.clearAndCloseDebugPanel()
 
-    await page.keyboard.up('Shift')
-    await constrainButton.click()
-    await expect(absYButton).not.toBeDisabled()
-
-    // clear selection by clicking on nothing
-    await emptySpaceClick()
-
-    // check the same selection again by putting cursor in code first then selecting axis
-    await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
-    await page.keyboard.down('Shift')
-    await constrainButton.click()
-    await expect(absYButton).toBeDisabled()
-    await page.waitForTimeout(100)
-    await xAxisClick()
-    await page.keyboard.up('Shift')
-    await constrainButton.click()
-    await expect(absYButton).not.toBeDisabled()
-
-    // clear selection by clicking on nothing
-    await emptySpaceClick()
-
-    // select segment in editor than another segment in scene and check there are two cursors
-    // TODO change this back to shift click in the scene, not cmd click in the editor
-    await bottomHorzSegmentClick()
-
-    await expect(page.locator('.cm-cursor')).toHaveCount(1)
-
-    await page.keyboard.down(process.platform === 'linux' ? 'Control' : 'Meta')
-    await page.waitForTimeout(100)
-    await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
-
-    await expect(page.locator('.cm-cursor')).toHaveCount(2)
-    await page.waitForTimeout(500)
-    await page.keyboard.up(process.platform === 'linux' ? 'Control' : 'Meta')
-
-    // clear selection by clicking on nothing
-    await emptySpaceClick()
-  }
-
-  await selectionSequence()
-
-  // hovering in fresh sketch worked, lets try exiting and re-entering
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await page.waitForTimeout(200)
-  // wait for execution done
-
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
-  await topHorzSegmentClick()
-  await page.waitForTimeout(100)
-
-  // enter sketch again
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-    'default_camera_get_settings'
-  )
-  await page.waitForTimeout(150)
-
-  await page.waitForTimeout(300) // wait for animation
-
-  // hover again and check it works
-  await selectionSequence(true)
+    // end setup, now test hover and selects
+    for (const { pos, expectedCode } of cases) {
+      // hover over segment, check it's content
+      await page.mouse.move(pos[0], pos[1], { steps: 5 })
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+      await expect(page.getByTestId('hover-highlight').first()).toHaveText(
+        expectedCode
+      )
+      // hover over segment, click it and check the cursor has move to the right place
+      await page.mouse.click(pos[0], pos[1])
+      await expect(page.locator('.cm-activeLine')).toHaveText(
+        '|> ' + expectedCode
+      )
+    }
+  })
 })
 
 test.describe('Command bar tests', () => {
@@ -1645,98 +1809,6 @@ test('ProgramMemory can be serialised', async ({ page }) => {
       expect(message).not.toContain(forbiddenMessage)
     })
   })
-})
-
-test('Hovering over 3d features highlights code', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
-    localStorage.setItem(
-      'persistCode',
-      `const part001 = startSketchOn('XZ')
-  |> startProfileAt([20, 0], %)
-  |> line([7.13, 4 + 0], %)
-  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
-  |> lineTo([20.14 + 0, -0.14 + 0], %)
-  |> xLineTo(29 + 0, %)
-  |> yLine(-3.14 + 0, %, 'a')
-  |> xLine(1.63, %)
-  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-  |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-  |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-  |> angledLineToY({ angle: 30, to: 11.14 }, %)
-  |> angledLineThatIntersects({
-        angle: 3.14,
-        intersectTag: 'a',
-        offset: 0
-      }, %)
-  |> tangentialArcTo([13.14 + 0, 13.14], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-`
-    )
-  }, KCL_DEFAULT_LENGTH)
-  await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  await u.openAndClearDebugPanel()
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -1250, z: 580 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
-  })
-  await page.waitForTimeout(100)
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-  await page.waitForTimeout(100)
-
-  const extrusionTop: Coords2d = [800, 240]
-  const flatExtrusionFace: Coords2d = [960, 160]
-  const arc: Coords2d = [840, 160]
-  const close: Coords2d = [720, 200]
-  const nothing: Coords2d = [600, 200]
-
-  await page.mouse.move(nothing[0], nothing[1])
-  await page.mouse.click(nothing[0], nothing[1])
-
-  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-  await page.waitForTimeout(200)
-
-  await page.mouse.move(extrusionTop[0], extrusionTop[1])
-  await expect(page.getByTestId('hover-highlight')).toBeVisible()
-  await page.mouse.move(nothing[0], nothing[1])
-  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-
-  await page.mouse.move(arc[0], arc[1])
-  await expect(page.getByTestId('hover-highlight')).toBeVisible()
-  await page.mouse.move(nothing[0], nothing[1])
-  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-
-  await page.mouse.move(close[0], close[1])
-  await expect(page.getByTestId('hover-highlight')).toBeVisible()
-  await page.mouse.move(nothing[0], nothing[1])
-  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-
-  await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-  await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
-  await page.mouse.move(nothing[0], nothing[1])
-  await page.waitForTimeout(100)
-  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 })
 
 test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
