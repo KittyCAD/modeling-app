@@ -118,6 +118,7 @@ export default function Gizmo() {
     <>
       <div
         ref={wrapperRef}
+        aria-label="View orientation gizmo"
         className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto"
       >
         <canvas ref={canvasRef} />

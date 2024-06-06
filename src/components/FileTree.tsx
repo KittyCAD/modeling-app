@@ -354,7 +354,7 @@ function FileTreeContextMenu({
         <ContextMenuItem onClick={onRename} hotkey="Enter">
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem onClick={onDelete} hotkey={metaKey + '+Bksp'}>
+        <ContextMenuItem onClick={onDelete} hotkey={metaKey + ' + Del'}>
           Delete
         </ContextMenuItem>,
       ]}
