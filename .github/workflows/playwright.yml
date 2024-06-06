@@ -150,7 +150,7 @@ jobs:
     - name: Install dependencies
       run: yarn
     - name: Cache Playwright Browsers
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cache/ms-playwright
