@@ -3479,14 +3479,24 @@ test.describe('Testing segment overlays', () => {
       await u.expectCmdLog('[data-message-type="execution-done"]')
       await u.closeDebugPanel()
 
+      await page.getByText('xLineTo(5 + 9 - 5, %)').click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+
+      const clickUnconstrained = _clickUnconstrained(page)
+      const clickConstrained = _clickConstrained(page)
+
       await u.openAndClearDebugPanel()
       await u.sendCustomCmd({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_look_at',
-          vantage: { x: 0, y: -1250, z: 580 },
-          center: { x: 0, y: 0, z: 0 },
+          vantage: { x: 80, y: -1350, z: 510 },
+          center: { x: 80, y: 0, z: 510 },
           up: { x: 0, y: 0, z: 1 },
         },
       })
@@ -3500,27 +3510,6 @@ test.describe('Testing segment overlays', () => {
       })
       await page.waitForTimeout(100)
       await u.closeDebugPanel()
-
-      await page.getByText('xLineTo(5 + 9 - 5, %)').click()
-      await page.waitForTimeout(100)
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(500)
-
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
-
-      const clickUnconstrained = _clickUnconstrained(page)
-      const clickConstrained = _clickConstrained(page)
-
-      // Drag the sketch into view
-      await page.mouse.move(600, 64)
-      await page.mouse.down({ button: 'middle' })
-      await page.mouse.move(600, 450, { steps: 10 })
-      await page.mouse.up({ button: 'middle' })
-
-      await page.mouse.move(600, 64)
-      await page.mouse.down({ button: 'middle' })
-      await page.mouse.move(600, 120, { steps: 10 })
-      await page.mouse.up({ button: 'middle' })
 
       let ang = 0
 
@@ -3570,11 +3559,8 @@ test.describe('Testing segment overlays', () => {
       })
 
       await page.mouse.move(700, 250)
-      for (let i = 0; i < 5; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-      await page.waitForTimeout(200)
+      await page.mouse.wheel(0, 25)
+      await page.waitForTimeout(100)
 
       let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
       ang = await u.getAngle(`[data-overlay-index="2"]`)
@@ -3656,12 +3642,8 @@ const part001 = startSketchOn('XZ')
       const clickUnconstrained = _clickUnconstrained(page)
 
       await page.mouse.move(700, 250)
-      for (let i = 0; i < 7; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-
-      await page.waitForTimeout(300)
+      await page.mouse.wheel(0, 25)
+      await page.waitForTimeout(100)
 
       let ang = 0
 
