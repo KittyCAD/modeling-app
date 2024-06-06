@@ -57,7 +57,7 @@ jobs:
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v4
+      uses: dawidd6/action-download-artifact@v5
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -150,7 +150,7 @@ jobs:
     - name: Install dependencies
       run: yarn
     - name: Cache Playwright Browsers
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cache/ms-playwright
@@ -162,7 +162,7 @@ jobs:
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v4
+      uses: dawidd6/action-download-artifact@v5
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}

@@ -162,12 +162,7 @@ export const getMovementUtils = (opts: any) => {
     return ret.then(() => [last.x, last.y])
   }
 
-  const expectCodeToBe = async (str: string) => {
-    await expect(opts.page.locator('.cm-content')).toHaveText(str)
-    await opts.page.waitForTimeout(100)
-  }
-
-  return { toSU, click00r, expectCodeToBe }
+  return { toSU, click00r }
 }
 
 export async function getUtils(page: Page) {
@@ -228,6 +223,7 @@ export async function getUtils(page: Page) {
         .locator(locator)
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+    codeLocator: page.locator('.cm-content'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,
