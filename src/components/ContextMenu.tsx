@@ -105,7 +105,7 @@ export function ContextMenu({
         <Dialog.Backdrop className="fixed z-10 inset-0" />
         <Dialog.Panel
           ref={dialogRef}
-          className={`w-40 fixed bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`w-48 fixed bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg backdrop:fixed backdrop:inset-0 backdrop:bg-primary ${className}`}
           style={{
@@ -124,6 +124,10 @@ export function ContextMenu({
       </div>
     </Dialog>
   )
+}
+
+export function ContextMenuDivider() {
+  return <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
 }
 
 interface ContextMenuItemProps {
