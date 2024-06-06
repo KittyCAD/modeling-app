@@ -3455,6 +3455,7 @@ test.describe('Testing segment overlays', () => {
       await page.mouse.down({ button: 'middle' })
       await page.mouse.move(600, 120, { steps: 10 })
       await page.mouse.up({ button: 'middle' })
+      await page.waitForTimeout(100)
 
       let ang = 0
 
@@ -3504,11 +3505,8 @@ test.describe('Testing segment overlays', () => {
       })
 
       await page.mouse.move(700, 250)
-      for (let i = 0; i < 5; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-      await page.waitForTimeout(200)
+      await page.mouse.wheel(0, 25)
+      await page.waitForTimeout(100)
 
       let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
       ang = await u.getAngle(`[data-overlay-index="2"]`)
@@ -3590,12 +3588,8 @@ const part001 = startSketchOn('XZ')
       const clickUnconstrained = _clickUnconstrained(page)
 
       await page.mouse.move(700, 250)
-      for (let i = 0; i < 7; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-
-      await page.waitForTimeout(300)
+      await page.mouse.wheel(0, 25)
+      await page.waitForTimeout(100)
 
       let ang = 0
 
