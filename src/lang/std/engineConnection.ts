@@ -307,6 +307,7 @@ class EngineConnection extends EventTarget {
   }
 
   set state(next: EngineConnectionState) {
+    console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
       const sub = next.value
