@@ -1235,7 +1235,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
       startXPx + PUR * 10,
       isSecondTime ? 295 : 500 - PUR * 20
     ) // mouse onto another line
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     // now check clicking works including axis
 
@@ -1316,9 +1316,8 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  // select a line
-  // await topHorzSegmentClick()
-  await page.getByText(commonPoints.startAt).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
+  await topHorzSegmentClick()
   await page.waitForTimeout(100)
 
   // enter sketch again
