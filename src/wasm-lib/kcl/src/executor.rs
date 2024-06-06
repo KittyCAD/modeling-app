@@ -15,6 +15,7 @@ use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
+    settings::types::UnitLength,
     std::{FunctionKind, StdLib},
 };
 
@@ -992,7 +993,7 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone)]
 pub struct ExecutorSettings {
     /// The unit to use in modeling dimensions.
-    pub units: crate::settings::types::UnitLength,
+    pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -1081,6 +1082,56 @@ impl ExecutorContext {
             settings,
             is_mock: false,
         })
+    }
+
+    /// For executing unit tests.
+    pub async fn new_for_unit_test(units: UnitLength) -> Result<Self> {
+        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+        let http_client = reqwest::Client::builder()
+            .user_agent(user_agent)
+            // For file conversions we need this to be long.
+            .timeout(std::time::Duration::from_secs(600))
+            .connect_timeout(std::time::Duration::from_secs(60));
+        let ws_client = reqwest::Client::builder()
+            .user_agent(user_agent)
+            // For file conversions we need this to be long.
+            .timeout(std::time::Duration::from_secs(600))
+            .connect_timeout(std::time::Duration::from_secs(60))
+            .connection_verbose(true)
+            .tcp_keepalive(std::time::Duration::from_secs(600))
+            .http1_only();
+
+        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+
+        // Create the client.
+        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+        // Set a local engine address if it's set.
+        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+            client.set_base_url(addr);
+        }
+
+        let ctx = ExecutorContext::new(
+            &client,
+            ExecutorSettings {
+                units,
+                highlight_edges: true,
+                enable_ssao: false,
+            },
+        )
+        .await?;
+        Ok(ctx)
+    }
+
+    /// Clear everything in the scene.
+    pub async fn reset_scene(&self) -> Result<()> {
+        self.engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4().into(),
+                SourceRange::default(),
+                kittycad::types::ModelingCmd::SceneClearAll {},
+            )
+            .await?;
+        Ok(())
     }
 
     /// Perform the execution of a program.
@@ -1309,7 +1360,7 @@ impl ExecutorContext {
     }
 
     /// Update the units for the executor.
-    pub fn update_units(&mut self, units: crate::settings::types::UnitLength) {
+    pub fn update_units(&mut self, units: UnitLength) {
         self.settings.units = units;
     }
 
