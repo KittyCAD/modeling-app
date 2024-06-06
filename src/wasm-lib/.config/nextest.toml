@@ -1,3 +1,8 @@
+# experimental = ["setup-scripts"]
+
+# [script.test-server]
+# command = "just start-test-server"
+
 # Each test can have at most 4 threads, but if its name contains "serial_test_", then it
 # also requires 4 threads.
 # This means such tests run one at a time, with 4 threads.
@@ -14,12 +19,20 @@ slow-timeout = { period = "50s", terminate-after = 5 }
 [[profile.default.overrides]]
 filter = "test(serial_test_)"
 test-group = "serial-integration"
-threads-required = 2
+threads-required = 4
+
+# [[profile.default.scripts]]
+# filter = 'test(serial_test_)'
+# setup = 'test-server'
 
 [[profile.ci.overrides]]
 filter = "test(serial_test_)"
 test-group = "serial-integration"
-threads-required = 2
+threads-required = 4
+
+# [[profile.default.scripts]]
+# filter = 'test(serial_test_)'
+# setup = 'test-server'
 
 [[profile.default.overrides]]
 filter = "test(parser::parser_impl::snapshot_tests)"

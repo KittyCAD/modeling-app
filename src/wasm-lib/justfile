@@ -1,0 +1,2 @@
+start-test-server:
+    cargo build --quiet --bin kcl-test-server --workspace && ./target/debug/kcl-test-server
