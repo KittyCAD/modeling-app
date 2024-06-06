@@ -4,8 +4,6 @@ use kcl_lib::{
     settings::types::UnitLength,
 };
 
-// mod server;
-
 async fn new_context(units: UnitLength) -> Result<ExecutorContext> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
@@ -1958,4 +1956,24 @@ async fn serial_test_neg_xz_plane() {
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/neg_xz_plane.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn start_server() {
+    let server_url = "0.0.0.0:3333";
+    tokio::task::spawn(server::start(server_url.parse().unwrap()));
+    let code = r#"const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> lineTo([100, 100], %)
+  |> lineTo([100, 0], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+"#;
+    let client = reqwest::Client::new();
+    client
+        .post(format!("http://{server_url}"))
+        .body(code)
+        .send()
+        .await
+        .unwrap();
 }
