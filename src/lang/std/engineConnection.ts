@@ -307,13 +307,10 @@ class EngineConnection extends EventTarget {
   }
 
   set state(next: EngineConnectionState) {
-    console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
       const sub = next.value
       if (sub.type === DisconnectingType.Error) {
-        console.log(sub)
-
         // Record the last step we failed at.
         // (Check the current state that we're about to override that
         // it was a Connecting state.)
@@ -756,8 +753,6 @@ class EngineConnection extends EventTarget {
         // when assuming we're the only consumer or that all messages will
         // be carefully formatted here.
 
-        console.log(event)
-
         if (typeof event.data !== 'string') {
           return
         }
@@ -778,7 +773,6 @@ class EngineConnection extends EventTarget {
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.commandType}`
             )
-            console.log(artifactThatFailed)
           } else {
             console.error(`Error from server:\n${errorsString}`)
           }
@@ -869,7 +863,6 @@ class EngineConnection extends EventTarget {
             this.pc
               ?.createOffer()
               .then((offer: RTCSessionDescriptionInit) => {
-                console.log(offer)
                 this.state = {
                   type: EngineConnectionStateType.Connecting,
                   value: {
@@ -941,7 +934,6 @@ class EngineConnection extends EventTarget {
 
           case 'trickle_ice':
             let candidate = resp.data?.candidate
-            console.log('trickle_ice: using this candidate: ', candidate)
             void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
             break
 
@@ -1344,8 +1336,6 @@ export class EngineCommandManager extends EventTarget {
         this.engineConnection?.addEventListener(
           EngineConnectionEvents.NewTrack,
           (({ detail: { mediaStream } }: CustomEvent<NewTrackArgs>) => {
-            console.log('received track', mediaStream)
-
             mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
               console.error(
                 'video track mute: check webrtc internals -> inbound rtp'
@@ -1676,7 +1666,6 @@ export class EngineCommandManager extends EventTarget {
       command.type === 'modeling_cmd_req' &&
       command.cmd.type !== lastMessage
     ) {
-      console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
     }
     if (command.type === 'modeling_cmd_batch_req') {
