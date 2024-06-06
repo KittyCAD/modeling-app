@@ -18,6 +18,7 @@ import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
+import { ContextMenu, ContextMenuItem } from './ContextMenu'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -125,6 +126,7 @@ const FileTreeItem = ({
   const navigate = useNavigate()
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
+  const itemRef = useRef(null)
 
   const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
   const removeCurrentItemFromRenaming = useCallback(
@@ -185,7 +187,7 @@ const FileTreeItem = ({
   }
 
   return (
-    <>
+    <div className="contents" ref={itemRef}>
       {fileOrDir.children === undefined ? (
         <li
           className={
@@ -321,7 +323,24 @@ const FileTreeItem = ({
           setIsOpen={setIsConfirmingDelete}
         />
       )}
-    </>
+      <ContextMenu
+        menuTargetElement={itemRef}
+        items={[
+          <ContextMenuItem
+            icon="sketch"
+            onClick={() => addCurrentItemToRenaming()}
+          >
+            Rename
+          </ContextMenuItem>,
+          <ContextMenuItem
+            icon="trash"
+            onClick={() => setIsConfirmingDelete(true)}
+          >
+            Delete
+          </ContextMenuItem>,
+        ]}
+      />
+    </div>
   )
 }
 
