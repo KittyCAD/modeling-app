@@ -24,6 +24,7 @@ wasm-bindgen-futures = "0.4.42"
 
 [dev-dependencies]
 anyhow = "1"
+hyper = { version = "0.14.29", features = ["server", "http1"] }
 image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
 pretty_assertions = "1.4.0"
