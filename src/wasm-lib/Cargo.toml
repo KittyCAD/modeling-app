@@ -10,7 +10,7 @@ rust-version = "1.73"
 crate-type = ["cdylib"]
 
 [dependencies]
-bson = { version = "2.10.0", features = ["uuid-1", "chrono"] }
+bson = { version = "2.11.0", features = ["uuid-1", "chrono"] }
 clap = "4.5.4"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
