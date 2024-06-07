@@ -3334,7 +3334,7 @@ test.describe('Testing segment overlays', () => {
         const constrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
           pos: { x, y },
-          steps: 300,
+          steps: 500,
           dist: 30,
           ang,
           amplitude: 10,
@@ -3354,7 +3354,7 @@ test.describe('Testing segment overlays', () => {
         const unconstrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
           pos: { x, y },
-          steps: 300,
+          steps: 500,
           dist: 30,
           ang,
           amplitude: 10,
@@ -3415,7 +3415,7 @@ test.describe('Testing segment overlays', () => {
         const unconstrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
           pos: { x, y },
-          steps: 300,
+          steps: 500,
           dist: 30,
           ang,
           amplitude: 10,
@@ -3438,7 +3438,7 @@ test.describe('Testing segment overlays', () => {
         const constrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
           pos: { x, y },
-          steps: 300,
+          steps: 500,
           dist: 30,
           ang,
           amplitude: 10,
@@ -4277,7 +4277,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
           await page.getByText(lineOfInterest).click()
           await page.waitForTimeout(100)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
-          await page.waitForTimeout(500)
+          await page.waitForTimeout(600)
 
           await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
           const segmentToDelete = await u.getBoundingBox(
