@@ -4,6 +4,8 @@ describe('test kclErrToDiagnostic', () => {
   it('converts KCL errors to CodeMirror diagnostics', () => {
     const errors: KCLError[] = [
       {
+        name: '',
+        message: '',
         kind: 'semantic',
         msg: 'Semantic error',
         sourceRanges: [
@@ -12,6 +14,8 @@ describe('test kclErrToDiagnostic', () => {
         ],
       },
       {
+        name: '',
+        message: '',
         kind: 'type',
         msg: 'Type error',
         sourceRanges: [

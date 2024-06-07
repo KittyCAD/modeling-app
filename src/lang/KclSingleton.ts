@@ -3,6 +3,7 @@ import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
+import { err } from 'lib/trap'
 
 import { deferExecution } from 'lib/utils'
 import {
@@ -161,18 +162,17 @@ export class KclManager {
   }
 
   safeParse(code: string): Program | null {
-    try {
-      const ast = parse(code)
-      this.kclErrors = []
-      return ast
-    } catch (e) {
-      console.error('error parsing code', e)
-      if (e instanceof KCLError) {
-        this.kclErrors = [e]
-        if (e.msg === 'file is empty') this.engineCommandManager?.endSession()
-      }
-      return null
-    }
+    const ast = parse(code)
+    this.kclErrors = []
+    if (!err(ast)) return ast
+    const kclerror: KCLError = ast as KCLError
+
+    console.error('error parsing code', kclerror)
+    this.kclErrors = [kclerror]
+    // TODO: re-eval if session should end?
+    if (kclerror.msg === 'file is empty')
+      this.engineCommandManager?.endSession()
+    return null
   }
 
   async ensureWasmInit() {
@@ -256,6 +256,10 @@ export class KclManager {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
+    if (err(newCode)) {
+      console.error(newCode)
+      return
+    }
     const newAst = this.safeParse(newCode)
     if (!newAst) return
     codeManager.updateCodeEditor(newCode)
@@ -281,11 +285,13 @@ export class KclManager {
     Object.entries(this.engineCommandManager.artifactMap).forEach(
       ([commandId, artifact]) => {
         if (!artifact.pathToNode) return
-        const node = getNodeFromPath<CallExpression>(
+        const _node1 = getNodeFromPath<CallExpression>(
           this.ast,
           artifact.pathToNode,
           'CallExpression'
-        ).node
+        )
+        if (err(_node1)) return
+        const { node } = _node1
         if (node.type !== 'CallExpression') return
         const [oldStart, oldEnd] = artifact.range
         if (oldStart === 0 && oldEnd === 0) return
@@ -322,6 +328,10 @@ export class KclManager {
       return
     }
     const code = recast(ast)
+    if (err(code)) {
+      console.error(code)
+      return
+    }
     if (originalCode === code) return
 
     // Update the code state and the editor.
@@ -341,15 +351,20 @@ export class KclManager {
     }
   ): Promise<Selections | null> {
     const newCode = recast(ast)
+    if (err(newCode)) return Promise.reject(newCode)
+
     const astWithUpdatedSource = this.safeParse(newCode)
     if (!astWithUpdatedSource) return null
     let returnVal: Selections | null = null
 
     if (optionalParams?.focusPath) {
-      const { node } = getNodeFromPath<any>(
+      const _node1 = getNodeFromPath<any>(
         astWithUpdatedSource,
         optionalParams?.focusPath
       )
+      if (err(_node1)) return Promise.reject(_node1)
+      const { node } = _node1
+
       const { start, end } = node
       if (!start || !end) return null
       returnVal = {

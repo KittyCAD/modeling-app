@@ -9,12 +9,14 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
+  TransformInfo,
 } from '../../lang/std/sketchcombos'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
+import { err } from 'lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -24,21 +26,38 @@ export function horzVertDistanceInfo({
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
-}) {
+}):
+  | {
+      transforms: TransformInfo[]
+      enabled: boolean
+    }
+  | Error {
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(kclManager.ast, range)
   )
-  const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
-  )
-  const varDecs = paths.map(
-    (pathToNode) =>
-      getNodeFromPath<VariableDeclarator>(
-        kclManager.ast,
-        pathToNode,
-        'VariableDeclarator'
-      )?.node
-  )
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err1 = _nodes.find((x) => x instanceof Error)
+  if (err(_err1)) return _err1
+  // Typescript is dumb so give it some help.
+  const nodes = _nodes as Value[]
+
+  const _varDecs = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<VariableDeclarator>(
+      kclManager.ast,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err2 = _varDecs.find((x) => x instanceof Error)
+  if (err(_err2)) return _err2
+  const varDecs = _varDecs as VariableDeclarator[]
+
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
@@ -82,17 +101,21 @@ export async function applyConstraintHorzVertDistance({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 }> {
-  const transformInfos = horzVertDistanceInfo({
+  const info = horzVertDistanceInfo({
     selectionRanges,
     constraint,
-  }).transforms
+  })
+  if (err(info)) return Promise.reject(info)
+  const transformInfos = info.transforms
+  const transformed = transformSecondarySketchLinesTagFirst({
+    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    selectionRanges,
+    transformInfos,
+    programMemory: kclManager.programMemory,
+  })
+  if (err(transformed)) return Promise.reject(transformed)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
-    transformSecondarySketchLinesTagFirst({
-      ast: JSON.parse(JSON.stringify(kclManager.ast)),
-      selectionRanges,
-      transformInfos,
-      programMemory: kclManager.programMemory,
-    })
+    transformed
   const {
     segName,
     value,
@@ -120,15 +143,17 @@ export async function applyConstraintHorzVertDistance({
       ? createLiteral(0)
       : removeDoubleNegatives(valueNode as BinaryPart, sign, variableName)
     // transform again but forcing certain values
-    const { modifiedAst: _modifiedAst, pathToNodeMap } =
-      transformSecondarySketchLinesTagFirst({
-        ast: kclManager.ast,
-        selectionRanges,
-        transformInfos,
-        programMemory: kclManager.programMemory,
-        forceSegName: segName,
-        forceValueUsedInTransform: finalValue,
-      })
+    const transformed = transformSecondarySketchLinesTagFirst({
+      ast: kclManager.ast,
+      selectionRanges,
+      transformInfos,
+      programMemory: kclManager.programMemory,
+      forceSegName: segName,
+      forceValueUsedInTransform: finalValue,
+    })
+
+    if (err(transformed)) return Promise.reject(transformed)
+    const { modifiedAst: _modifiedAst, pathToNodeMap } = transformed
     if (variableName) {
       const newBody = [..._modifiedAst.body]
       newBody.splice(
@@ -155,22 +180,28 @@ export function applyConstraintHorzVertAlign({
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
-}): {
-  modifiedAst: Program
-  pathToNodeMap: PathToNodeMap
-} {
-  const transformInfos = horzVertDistanceInfo({
+}):
+  | {
+      modifiedAst: Program
+      pathToNodeMap: PathToNodeMap
+    }
+  | Error {
+  const info = horzVertDistanceInfo({
     selectionRanges,
     constraint,
-  }).transforms
+  })
+  if (err(info)) return info
+  const transformInfos = info.transforms
   let finalValue = createLiteral(0)
-  const { modifiedAst, pathToNodeMap } = transformSecondarySketchLinesTagFirst({
+  const retval = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     forceValueUsedInTransform: finalValue,
   })
+  if (err(retval)) return retval
+  const { modifiedAst, pathToNodeMap } = retval
   return {
     modifiedAst: modifiedAst,
     pathToNodeMap,

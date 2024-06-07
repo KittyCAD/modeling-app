@@ -76,6 +76,7 @@ import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { uuidv4 } from 'lib/utils'
+import { err, trap } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -436,12 +437,15 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        'Sketch is empty': ({ sketchDetails }) =>
-          getNodeFromPath<VariableDeclaration>(
+        'Sketch is empty': ({ sketchDetails }) => {
+          const node = getNodeFromPath<VariableDeclaration>(
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
-          )?.node?.declarations?.[0]?.init.type !== 'PipeExpression',
+          )
+          if (trap(node)) return false
+          return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+        },
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -484,14 +488,16 @@ export const ModelingMachineProvider = ({
         },
         'animate-to-face': async (_, { data }) => {
           if (data.type === 'extrudeFace') {
-            const { modifiedAst, pathToNode: pathToNewSketchNode } =
-              sketchOnExtrudedFace(
-                kclManager.ast,
-                data.sketchPathToNode,
-                data.extrudePathToNode,
-                kclManager.programMemory,
-                data.cap
-              )
+            const sketched = sketchOnExtrudedFace(
+              kclManager.ast,
+              data.sketchPathToNode,
+              data.extrudePathToNode,
+              kclManager.programMemory,
+              data.cap
+            )
+            if (trap(sketched)) return Promise.reject(sketched)
+            const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
+
             await kclManager.executeAstMock(modifiedAst)
 
             await letEngineAnimateAndSyncCamAfter(
@@ -512,10 +518,17 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.syncDirection = 'clientToEngine'
+
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             data.planeId
           )
+
+          const quat = await getSketchQuaternion(pathToNode, data.zAxis)
+          if (trap(quat)) return Promise.reject(quat)
+
+          await sceneInfra.camControls.tweenCameraToQuaternion(quat)
+
           return {
             sketchPathToNode: pathToNode,
             zAxis: data.zAxis,
@@ -611,9 +624,11 @@ export const ModelingMachineProvider = ({
           selectionRanges,
           sketchDetails,
         }): Promise<SetSelections> => {
-          const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
+          const info = angleBetweenInfo({
             selectionRanges,
-          }).enabled
+          })
+          if (err(info)) return Promise.reject(info)
+          const { modifiedAst, pathToNodeMap } = await (info.enabled
             ? applyConstraintAngleBetween({
                 selectionRanges,
               })
@@ -622,6 +637,8 @@ export const ModelingMachineProvider = ({
                 angleOrLength: 'setAngle',
               }))
           const _modifiedAst = parse(recast(modifiedAst))
+          if (err(_modifiedAst)) return Promise.reject(_modifiedAst)
+
           if (!sketchDetails) throw new Error('No sketch details')
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
@@ -774,16 +791,22 @@ export const ModelingMachineProvider = ({
           const { variableName } = await getVarNameModal({
             valueName: data.variableName || 'var',
           })
+          const parsed1 = parse(recast(kclManager.ast))
+          if (trap(parsed1)) return []
+
           const { modifiedAst: _modifiedAst, pathToReplacedNode } =
             moveValueIntoNewVariablePath(
-              parse(recast(kclManager.ast)),
+              parsed1,
               kclManager.programMemory,
               data.pathToNode,
               variableName
             )
+          const parsed2 = parse(recast(_modifiedAst))
+          if (trap(parsed2)) return []
+
           await sceneEntitiesManager.updateAstAndRejigSketch(
             pathToReplacedNode || [],
-            parse(recast(_modifiedAst)),
+            parsed2,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin

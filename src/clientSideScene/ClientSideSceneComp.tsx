@@ -44,6 +44,7 @@ import {
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
+import { err, trap } from 'lib/trap'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -184,11 +185,14 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
-  const callExpression = getNodeFromPath<CallExpression>(
+  const _node1 = getNodeFromPath<CallExpression>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
-  ).node
+  )
+  if (err(_node1)) return
+  const callExpression = _node1.node
+
   const constraints = getConstraintInfo(
     callExpression,
     codeManager.code,
@@ -352,7 +356,7 @@ export async function deleteSegment({
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {
-  let modifiedAst: Program = kclManager.ast
+  let modifiedAst: Program | Error = kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -370,9 +374,12 @@ export async function deleteSegment({
     codeManager.code,
     pathToNode
   )
+  if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
   const newCode = recast(modifiedAst)
   modifiedAst = parse(newCode)
+  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+
   const testExecute = await executeAst({
     ast: modifiedAst,
     useFakeExecutor: true,
@@ -535,10 +542,13 @@ const ConstraintSymbol = ({
   const implicitDesc =
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
 
-  const node = useMemo(
-    () => getNodeFromPath<Value>(kclManager.ast, pathToNode).node,
+  const _node = useMemo(
+    () => getNodeFromPath<Value>(kclManager.ast, pathToNode),
     [kclManager.ast, pathToNode]
   )
+  if (err(_node)) return
+  const node = _node.node
+
   const range: SourceRange = node ? [node.start, node.end] : [0, 0]
 
   if (_type === 'intersectionTag') return null
@@ -576,12 +586,17 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const shallowPath = getNodeFromPath<CallExpression>(
-                parse(recast(kclManager.ast)),
+              const parsed = parse(recast(kclManager.ast))
+              if (trap(parsed)) return Promise.reject(parsed)
+              const _node1 = getNodeFromPath<CallExpression>(
+                parsed,
                 pathToNode,
                 'CallExpression',
                 true
-              ).shallowPath
+              )
+              if (trap(_node1)) return Promise.reject(_node1)
+              const shallowPath = _node1.shallowPath
+
               const input = makeRemoveSingleConstraintInput(
                 argPosition,
                 shallowPath

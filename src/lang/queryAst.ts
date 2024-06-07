@@ -25,6 +25,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from './std/sketchcombos'
+import { err } from 'lib/trap'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -38,49 +39,41 @@ export function getNodeFromPath<T>(
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false
-): {
-  node: T
-  shallowPath: PathToNode
-  deepPath: PathToNode
-} {
+):
+  | {
+      node: T
+      shallowPath: PathToNode
+      deepPath: PathToNode
+    }
+  | Error {
   let currentNode = node as any
   let stopAtNode = null
   let successfulPaths: PathToNode = []
   let pathsExplored: PathToNode = []
   for (const pathItem of path) {
-    try {
-      if (typeof currentNode[pathItem[0]] !== 'object')
-        throw new Error('not an object')
-      currentNode = currentNode?.[pathItem[0]]
-      successfulPaths.push(pathItem)
-      if (!stopAtNode) {
-        pathsExplored.push(pathItem)
-      }
-      if (
-        typeof stopAt !== 'undefined' &&
-        (Array.isArray(stopAt)
-          ? stopAt.includes(currentNode.type)
-          : currentNode.type === stopAt)
-      ) {
-        // it will match the deepest node of the type
-        // instead of returning at the first match
-        stopAtNode = currentNode
-        if (returnEarly) {
-          return {
-            node: stopAtNode,
-            shallowPath: pathsExplored,
-            deepPath: successfulPaths,
-          }
+    if (typeof currentNode[pathItem[0]] !== 'object')
+      return new Error('not an object')
+    currentNode = currentNode?.[pathItem[0]]
+    successfulPaths.push(pathItem)
+    if (!stopAtNode) {
+      pathsExplored.push(pathItem)
+    }
+    if (
+      typeof stopAt !== 'undefined' &&
+      (Array.isArray(stopAt)
+        ? stopAt.includes(currentNode.type)
+        : currentNode.type === stopAt)
+    ) {
+      // it will match the deepest node of the type
+      // instead of returning at the first match
+      stopAtNode = currentNode
+      if (returnEarly) {
+        return {
+          node: stopAtNode,
+          shallowPath: pathsExplored,
+          deepPath: successfulPaths,
         }
       }
-    } catch (e) {
-      // console.error(
-      //   `Could not find path ${pathItem} in node ${JSON.stringify(
-      //     currentNode,
-      //     null,
-      //     2
-      //   )}, successful path was ${successfulPaths}`
-      // )
     }
   }
   return {
@@ -99,17 +92,16 @@ export function getNodeFromPathCurry(
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
-) => {
-  node: T
-  path: PathToNode
-} {
+) =>
+  | {
+      node: T
+      path: PathToNode
+    }
+  | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
-    const { node: _node, shallowPath } = getNodeFromPath<T>(
-      node,
-      path,
-      stopAt,
-      returnEarly
-    )
+    const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    if (err(_node1)) return _node1
+    const { node: _node, shallowPath } = _node1
     return {
       node: _node,
       path: shallowPath,
@@ -374,17 +366,31 @@ export function findAllPreviousVariablesPath(
   bodyPath: PathToNode
   insertIndex: number
 } {
-  const { shallowPath: pathToDec, node } = getNodeFromPath(
-    ast,
-    path,
-    'VariableDeclaration'
-  )
+  const _node1 = getNodeFromPath(ast, path, 'VariableDeclaration')
+  if (err(_node1)) {
+    console.error(_node1)
+    return {
+      variables: [],
+      bodyPath: [],
+      insertIndex: 0,
+    }
+  }
+  const { shallowPath: pathToDec, node } = _node1
 
   const startRange = (node as any).start
 
   const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
 
-  const { node: bodyItems } = getNodeFromPath<Program['body']>(ast, bodyPath)
+  const _node2 = getNodeFromPath<Program['body']>(ast, bodyPath)
+  if (err(_node2)) {
+    console.error(_node2)
+    return {
+      variables: [],
+      bodyPath: [],
+      insertIndex: 0,
+    }
+  }
+  const { node: bodyItems } = _node2
 
   const variables: PrevVariable<any>[] = []
   bodyItems?.forEach?.((item) => {
@@ -422,16 +428,18 @@ export function findAllPreviousVariables(
 type ReplacerFn = (
   _ast: Program,
   varName: string
-) => { modifiedAst: Program; pathToReplaced: PathToNode }
+) => { modifiedAst: Program; pathToReplaced: PathToNode } | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
   path: PathToNode
-): {
-  isSafe: boolean
-  value: Value
-  replacer: ReplacerFn
-} {
+):
+  | {
+      isSafe: boolean
+      value: Value
+      replacer: ReplacerFn
+    }
+  | Error {
   if (path[path.length - 1][0] === 'callee') {
     path = path.slice(0, -1)
   }
@@ -442,16 +450,14 @@ export function isNodeSafeToReplacePath(
     'Literal',
     'UnaryExpression',
   ]
-  const { node: value, deepPath: outPath } = getNodeFromPath(
-    ast,
-    path,
-    acceptedNodeTypes
-  )
-  const { node: binValue, shallowPath: outBinPath } = getNodeFromPath(
-    ast,
-    path,
-    'BinaryExpression'
-  )
+  const _node1 = getNodeFromPath(ast, path, acceptedNodeTypes)
+  if (err(_node1)) return _node1
+  const { node: value, deepPath: outPath } = _node1
+
+  const _node2 = getNodeFromPath(ast, path, 'BinaryExpression')
+  if (err(_node2)) return _node2
+  const { node: binValue, shallowPath: outBinPath } = _node2
+
   // binaryExpression should take precedence
   const [finVal, finPath] =
     (binValue as Value)?.type === 'BinaryExpression'
@@ -464,7 +470,9 @@ export function isNodeSafeToReplacePath(
     const pathToReplaced = JSON.parse(JSON.stringify(finPath))
     pathToReplaced[1][0] = pathToReplaced[1][0] + 1
     const startPath = finPath.slice(0, -1)
-    const nodeToReplace = getNodeFromPath(_ast, startPath).node as any
+    const _nodeToReplace = getNodeFromPath(_ast, startPath)
+    if (err(_nodeToReplace)) return _nodeToReplace
+    const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
     return { modifiedAst: _ast, pathToReplaced }
   }
@@ -485,11 +493,13 @@ export function isNodeSafeToReplacePath(
 export function isNodeSafeToReplace(
   ast: Program,
   sourceRange: [number, number]
-): {
-  isSafe: boolean
-  value: Value
-  replacer: ReplacerFn
-} {
+):
+  | {
+      isSafe: boolean
+      value: Value
+      replacer: ReplacerFn
+    }
+  | Error {
   let path = getNodePathFromSourceRange(ast, sourceRange)
   return isNodeSafeToReplacePath(ast, path)
 }
@@ -546,20 +556,26 @@ export function isLinesParallelAndConstrained(
   programMemory: ProgramMemory,
   primaryLine: Selection,
   secondaryLine: Selection
-): {
-  isParallelAndConstrained: boolean
-  sourceRange: SourceRange
-} {
+):
+  | {
+      isParallelAndConstrained: boolean
+      sourceRange: SourceRange
+    }
+  | Error {
   try {
     const EPSILON = 0.005
     const primaryPath = getNodePathFromSourceRange(ast, primaryLine.range)
     const secondaryPath = getNodePathFromSourceRange(ast, secondaryLine.range)
-    const secondaryNode = getNodeFromPath<CallExpression>(
+    const _secondaryNode = getNodeFromPath<CallExpression>(
       ast,
       secondaryPath,
       'CallExpression'
-    ).node
-    const varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration').node
+    )
+    if (err(_secondaryNode)) return _secondaryNode
+    const secondaryNode = _secondaryNode.node
+    const _varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration')
+    if (err(_varDec)) return _varDec
+    const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
     const path = programMemory?.root[varName] as SketchGroup
     const primarySegment = getSketchSegmentFromSourceRange(
@@ -580,14 +596,26 @@ export function isLinesParallelAndConstrained(
 
     // is secordary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getFirstArg(secondaryNode)
+    if (err(secondaryFirstArg)) return secondaryFirstArg
+
     const constraintType = getConstraintType(
       secondaryFirstArg.val,
       secondaryNode.callee.name as ToolTip
     )
-    const constraintLevel = getConstraintLevelFromSourceRange(
+
+    const constraintLevelMeta = getConstraintLevelFromSourceRange(
       secondaryLine.range,
       ast
-    ).level
+    )
+    if (err(constraintLevelMeta)) {
+      console.error(constraintLevelMeta)
+      return {
+        isParallelAndConstrained: false,
+        sourceRange: [0, 0],
+      }
+    }
+    const constraintLevel = constraintLevelMeta.level
+
     const isConstrained =
       constraintType === 'angle' || constraintLevel === 'full'
 
@@ -622,11 +650,16 @@ export function doesPipeHaveCallExp({
   selection: Selection
 }): boolean {
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpressionMeta = getNodeFromPath<PipeExpression>(
     ast,
     pathToNode,
     'PipeExpression'
-  ).node
+  )
+  if (err(pipeExpressionMeta)) {
+    console.error(pipeExpressionMeta)
+    return false
+  }
+  const pipeExpression = pipeExpressionMeta.node
   if (pipeExpression.type !== 'PipeExpression') return false
   return pipeExpression.body.some(
     (expression) =>
@@ -645,11 +678,16 @@ export function hasExtrudeSketchGroup({
   programMemory: ProgramMemory
 }): boolean {
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
-  const varDec = getNodeFromPath<VariableDeclaration>(
+  const varDecMeta = getNodeFromPath<VariableDeclaration>(
     ast,
     pathToNode,
     'VariableDeclaration'
-  ).node
+  )
+  if (err(varDecMeta)) {
+    console.error(varDecMeta)
+    return false
+  }
+  const varDec = varDecMeta.node
   if (varDec.type !== 'VariableDeclaration') return false
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.root[varName]
@@ -687,11 +725,16 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const node = getNodeFromPath<CallExpression>(
+  const nodeMeta = getNodeFromPath<CallExpression>(
     ast,
     pathToNode,
     'CallExpression'
-  ).node
+  )
+  if (err(nodeMeta)) {
+    console.error(nodeMeta)
+    return []
+  }
+  const node = nodeMeta.node
   if (node.type !== 'CallExpression') return []
   const tagIndex = node.callee.name === 'close' ? 1 : 2
   const thirdParam = node.arguments[tagIndex]
@@ -702,10 +745,14 @@ export function findUsesOfTagInPipe(
     ast,
     pathToNode,
     'VariableDeclaration'
-  ).node
+  )
+  if (err(varDec)) {
+    console.error(varDec)
+    return []
+  }
   const dependentRanges: SourceRange[] = []
 
-  traverse(varDec, {
+  traverse(varDec.node, {
     enter: (node) => {
       if (
         node.type !== 'CallExpression' ||

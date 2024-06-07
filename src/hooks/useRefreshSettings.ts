@@ -15,6 +15,7 @@ export function useRefreshSettings(routeId: string = paths.INDEX) {
   const routeData = useRouteLoaderData(routeId) as typeof settings
 
   if (!ctx) {
+    // Intended to stop the world
     throw new Error(
       'useRefreshSettings must be used within a SettingsAuthProvider'
     )

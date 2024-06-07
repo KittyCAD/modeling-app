@@ -5,10 +5,12 @@ import {
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
   ConstraintType,
+  ConstraintLevel,
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from '../../useStore'
 import { Selections } from 'lib/selections'
+import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
 beforeAll(async () => {
@@ -62,8 +64,10 @@ describe('testing getConstraintType', () => {
 
 function getConstraintTypeFromSourceHelper(
   code: string
-): ReturnType<typeof getConstraintType> {
+): ReturnType<typeof getConstraintType> | Error {
   const ast = parse(code)
+  if (err(ast)) return ast
+
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
     Value,
     Value
@@ -73,8 +77,10 @@ function getConstraintTypeFromSourceHelper(
 }
 function getConstraintTypeFromSourceHelper2(
   code: string
-): ReturnType<typeof getConstraintType> {
+): ReturnType<typeof getConstraintType> | Error {
   const ast = parse(code)
+  if (err(ast)) return ast
+
   const arg = (ast.body[0] as any).expression.arguments[0] as Value
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(arg, fnName)
@@ -200,6 +206,8 @@ const part001 = startSketchOn('XY')
 `
   it('should transform the ast', async () => {
     const ast = parse(inputScript)
+    if (err(ast)) return Promise.reject(ast)
+
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
@@ -224,8 +232,10 @@ const part001 = startSketchOn('XY')
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory,
-    })?.modifiedAst
-    const newCode = recast(newAst)
+    })
+    if (err(newAst)) return Promise.reject(newAst)
+
+    const newCode = recast(newAst.modifiedAst)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
@@ -287,6 +297,8 @@ const part001 = startSketchOn('XY')
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
     const ast = parse(inputScript)
+    if (err(ast)) return Promise.reject(ast)
+
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
@@ -312,8 +324,10 @@ const part001 = startSketchOn('XY')
       transformInfos,
       programMemory,
       referenceSegName: '',
-    })?.modifiedAst
-    const newCode = recast(newAst)
+    })
+    if (err(newAst)) return Promise.reject(newAst)
+
+    const newCode = recast(newAst.modifiedAst)
     expect(newCode).toBe(expectModifiedScript)
   })
   it('should transform vertical lines the ast', async () => {
@@ -345,6 +359,8 @@ const part001 = startSketchOn('XY')
   |> yLineTo(myVar, %) // select for vertical constraint 10
 `
     const ast = parse(inputScript)
+    if (err(ast)) return Promise.reject(ast)
+
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
@@ -370,8 +386,10 @@ const part001 = startSketchOn('XY')
       transformInfos,
       programMemory,
       referenceSegName: '',
-    })?.modifiedAst
-    const newCode = recast(newAst)
+    })
+    if (err(newAst)) return Promise.reject(newAst)
+
+    const newCode = recast(newAst.modifiedAst)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
@@ -436,6 +454,8 @@ async function helperThing(
   constraint: ConstraintType
 ): Promise<string> {
   const ast = parse(inputScript)
+  if (err(ast)) return Promise.reject(ast)
+
   const selectionRanges: Selections['codeBasedSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
@@ -462,8 +482,13 @@ async function helperThing(
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
     programMemory,
-  })?.modifiedAst
-  return recast(newAst)
+  })
+
+  if (err(newAst)) return Promise.reject(newAst)
+  const recasted = recast(newAst.modifiedAst)
+
+  if (err(recasted)) return Promise.reject(recasted)
+  return recasted
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {
@@ -498,9 +523,7 @@ const part001 = startSketchOn('XY')
   |> xLine(-3.43 + 0, %) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
     const ast = parse(code)
-    const constraintLevels: ReturnType<
-      typeof getConstraintLevelFromSourceRange
-    >['level'][] = ['full', 'partial', 'free']
+    const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
       const recursivelySeachCommentsAndCheckConstraintLevel = (
         str: string,
@@ -514,8 +537,11 @@ const part001 = startSketchOn('XY')
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
           [offsetIndex, offsetIndex],
           ast
-        ).level
-        expect(expectedConstraintLevel).toBe(constraintLevel)
+        )
+        if (err(expectedConstraintLevel)) {
+          fail()
+        }
+        expect(expectedConstraintLevel.level).toBe(constraintLevel)
         return recursivelySeachCommentsAndCheckConstraintLevel(
           str,
           index + constraintLevel.length

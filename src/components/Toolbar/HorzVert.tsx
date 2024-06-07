@@ -9,19 +9,32 @@ import {
   PathToNodeMap,
   getTransformInfos,
   transformAstSketchLines,
+  TransformInfo,
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 
 export function horzVertInfo(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal'
-) {
+):
+  | {
+      transforms: TransformInfo[]
+      enabled: boolean
+    }
+  | Error {
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(kclManager.ast, range)
   )
-  const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
-  )
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err1 = _nodes.find((x) => x instanceof Error)
+  if (err(_err1)) return _err1
+  const nodes = _nodes as Value[]
+
   const isAllTooltips = nodes.every(
     (node) =>
       node?.type === 'CallExpression' &&
@@ -33,6 +46,8 @@ export function horzVertInfo(
     kclManager.ast,
     horOrVert
   )
+  if (err(theTransforms)) return theTransforms
+
   const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
   return { enabled: _enableHorz, transforms: theTransforms }
 }
@@ -42,11 +57,16 @@ export function applyConstraintHorzVert(
   horOrVert: 'vertical' | 'horizontal',
   ast: Program,
   programMemory: ProgramMemory
-): {
-  modifiedAst: Program
-  pathToNodeMap: PathToNodeMap
-} {
-  const transformInfos = horzVertInfo(selectionRanges, horOrVert).transforms
+):
+  | {
+      modifiedAst: Program
+      pathToNodeMap: PathToNodeMap
+    }
+  | Error {
+  const info = horzVertInfo(selectionRanges, horOrVert)
+  if (err(info)) return info
+  const transformInfos = info.transforms
+
   return transformAstSketchLines({
     ast,
     selectionRanges,

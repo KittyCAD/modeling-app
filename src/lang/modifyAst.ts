@@ -1,4 +1,5 @@
 import { Selection } from 'lib/selections'
+import { err, trap } from 'lib/trap'
 import {
   Program,
   CallExpression,
@@ -73,12 +74,14 @@ export function addStartProfileAt(
   node: Program,
   pathToNode: PathToNode,
   at: [number, number]
-): { modifiedAst: Program; pathToNode: PathToNode } {
-  const variableDeclaration = getNodeFromPath<VariableDeclaration>(
+): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+  const _node1 = getNodeFromPath<VariableDeclaration>(
     node,
     pathToNode,
     'VariableDeclaration'
-  ).node
+  )
+  if (err(_node1)) return _node1
+  const variableDeclaration = _node1.node
   if (variableDeclaration.type !== 'VariableDeclaration') {
     throw new Error('variableDeclaration.init.type !== PipeExpression')
   }
@@ -247,24 +250,36 @@ export function extrudeSketch(
   pathToNode: PathToNode,
   shouldPipe = false,
   distance = createLiteral(4) as Value
-): {
-  modifiedAst: Program
-  pathToNode: PathToNode
-  pathToExtrudeArg: PathToNode
-} {
+):
+  | {
+      modifiedAst: Program
+      pathToNode: PathToNode
+      pathToExtrudeArg: PathToNode
+    }
+  | Error {
   const _node = { ...node }
-  const { node: sketchExpression } = getNodeFromPath(_node, pathToNode)
+  const _node1 = getNodeFromPath(_node, pathToNode)
+  if (err(_node1)) return _node1
+  const { node: sketchExpression } = _node1
 
   // determine if sketchExpression is in a pipeExpression or not
-  const { node: pipeExpression } = getNodeFromPath<PipeExpression>(
+  const _node2 = getNodeFromPath<PipeExpression>(
     _node,
     pathToNode,
     'PipeExpression'
   )
+  if (err(_node2)) return _node2
+  const { node: pipeExpression } = _node2
+
   const isInPipeExpression = pipeExpression.type === 'PipeExpression'
 
-  const { node: variableDeclarator, shallowPath: pathToDecleration } =
-    getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
+  const _node3 = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  if (err(_node3)) return _node3
+  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
     distance,
@@ -331,34 +346,42 @@ export function sketchOnExtrudedFace(
   extrudePathToNode: PathToNode,
   programMemory: ProgramMemory,
   cap: 'none' | 'start' | 'end' = 'none'
-): { modifiedAst: Program; pathToNode: PathToNode } {
+): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
   const newSketchName = findUniqueName(
     node,
     KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
   )
-  const { node: oldSketchNode } = getNodeFromPath<VariableDeclarator>(
+  const _node1 = getNodeFromPath<VariableDeclarator>(
     _node,
     sketchPathToNode,
     'VariableDeclarator',
     true
   )
+  if (err(_node1)) return _node1
+  const { node: oldSketchNode } = _node1
+
   const oldSketchName = oldSketchNode.id.name
-  const { node: expression } = getNodeFromPath<CallExpression>(
+  const _node2 = getNodeFromPath<CallExpression>(
     _node,
     sketchPathToNode,
     'CallExpression'
   )
-  const { node: extrudeVarDec } = getNodeFromPath<VariableDeclarator>(
+  if (err(_node2)) return _node2
+  const { node: expression } = _node2
+
+  const _node3 = getNodeFromPath<VariableDeclarator>(
     _node,
     extrudePathToNode,
     'VariableDeclarator'
   )
+  if (err(_node3)) return _node3
+  const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
   let _tag = ''
   if (cap === 'none') {
-    const { modifiedAst, tag } = addTagForSketchOnFace(
+    const __tag = addTagForSketchOnFace(
       {
         previousProgramMemory: programMemory,
         pathToNode: sketchPathToNode,
@@ -366,6 +389,8 @@ export function sketchOnExtrudedFace(
       },
       expression.callee.name
     )
+    if (err(__tag)) return __tag
+    const { modifiedAst, tag } = __tag
     _tag = tag
     _node = modifiedAst
   } else {
@@ -616,18 +641,19 @@ export function giveSketchFnCallTag(
   ast: Program,
   range: Selection['range'],
   tag?: string
-): {
-  modifiedAst: Program
-  tag: string
-  isTagExisting: boolean
-  pathToNode: PathToNode
-} {
+):
+  | {
+      modifiedAst: Program
+      tag: string
+      isTagExisting: boolean
+      pathToNode: PathToNode
+    }
+  | Error {
   const path = getNodePathFromSourceRange(ast, range)
-  const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
-    ast,
-    path,
-    'CallExpression'
-  )
+  const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
+  if (err(_node1)) return _node1
+  const { node: primaryCallExp } = _node1
+
   // Tag is always 3rd expression now, using arg index feels brittle
   // but we can come up with a better way to identify tag later.
   const thirdArg = primaryCallExp.arguments?.[2]
@@ -646,7 +672,7 @@ export function giveSketchFnCallTag(
       pathToNode: path,
     }
   } else {
-    throw new Error('Unable to assign tag without value')
+    return new Error('Unable to assign tag without value')
   }
 }
 
@@ -659,7 +685,10 @@ export function moveValueIntoNewVariablePath(
   modifiedAst: Program
   pathToReplacedNode?: PathToNode
 } {
-  const { isSafe, value, replacer } = isNodeSafeToReplacePath(ast, pathToNode)
+  const meta = isNodeSafeToReplacePath(ast, pathToNode)
+  if (trap(meta)) return { modifiedAst: ast }
+  const { isSafe, value, replacer } = meta
+
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
 
   const { insertIndex } = findAllPreviousVariablesPath(
@@ -669,6 +698,8 @@ export function moveValueIntoNewVariablePath(
   )
   let _node = JSON.parse(JSON.stringify(ast))
   const boop = replacer(_node, variableName)
+  if (trap(boop)) return { modifiedAst: ast }
+
   _node = boop.modifiedAst
   _node.body.splice(
     insertIndex,
@@ -687,7 +718,9 @@ export function moveValueIntoNewVariable(
   modifiedAst: Program
   pathToReplacedNode?: PathToNode
 } {
-  const { isSafe, value, replacer } = isNodeSafeToReplace(ast, sourceRange)
+  const meta = isNodeSafeToReplace(ast, sourceRange)
+  if (trap(meta)) return { modifiedAst: ast }
+  const { isSafe, value, replacer } = meta
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
 
   const { insertIndex } = findAllPreviousVariables(
@@ -696,7 +729,10 @@ export function moveValueIntoNewVariable(
     sourceRange
   )
   let _node = JSON.parse(JSON.stringify(ast))
-  const { modifiedAst, pathToReplaced } = replacer(_node, variableName)
+  const replaced = replacer(_node, variableName)
+  if (trap(replaced)) return { modifiedAst: ast }
+
+  const { modifiedAst, pathToReplaced } = replaced
   _node = modifiedAst
   _node.body.splice(
     insertIndex,
@@ -716,7 +752,7 @@ export function deleteSegmentFromPipeExpression(
   programMemory: ProgramMemory,
   code: string,
   pathToNode: PathToNode
-): Program {
+): Program | Error {
   let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
 
   dependentRanges.forEach((range) => {
@@ -728,10 +764,13 @@ export function deleteSegmentFromPipeExpression(
       'CallExpression',
       true
     )
+    if (err(callExp)) return callExp
+
     const constraintInfo = getConstraintInfo(callExp.node, code, path).find(
       ({ sourceRange }) => isOverlap(sourceRange, range)
     )
     if (!constraintInfo) return
+
     const input = makeRemoveSingleConstraintInput(
       constraintInfo.argPosition,
       callExp.shallowPath
@@ -752,13 +791,14 @@ export function deleteSegmentFromPipeExpression(
     _modifiedAst,
     pathToNode,
     'PipeExpression'
-  ).node
+  )
+  if (err(pipeExpression)) return pipeExpression
 
   const pipeInPathIndex = pathToNode.findIndex(
     ([_, desc]) => desc === 'PipeExpression'
   )
   const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1][0] as number
-  pipeExpression.body.splice(segmentIndexInPipe, 1)
+  pipeExpression.node.body.splice(segmentIndexInPipe, 1)
 
   return _modifiedAst
 }
@@ -809,11 +849,13 @@ export function removeSingleConstraintInfo(
     ast,
   })
   if (!transform) return false
-  return transformAstSketchLines({
+  const retval = transformAstSketchLines({
     ast,
     selectionRanges: [pathToCallExp],
     transformInfos: [transform],
     programMemory,
     referenceSegName: '',
   })
+  if (err(retval)) return false
+  return retval
 }

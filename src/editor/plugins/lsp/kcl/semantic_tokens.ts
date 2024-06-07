@@ -31,6 +31,7 @@ export function deserializeTokens(
   }
   // Check if data length is divisible by 5
   if (data.length % 5 !== 0) {
+    // Used in Promise, non fatal
     throw new Error('Length is not divisible by 5')
   }
 

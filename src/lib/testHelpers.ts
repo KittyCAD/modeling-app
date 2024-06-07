@@ -73,9 +73,12 @@ class MockEngineCommandManager {
 }
 
 export async function enginelessExecutor(
-  ast: Program,
-  pm: ProgramMemory = { root: {}, return: null }
+  ast: Program | Error,
+  pm: ProgramMemory | Error = { root: {}, return: null }
 ): Promise<ProgramMemory> {
+  if (ast instanceof Error) return Promise.reject(ast)
+  if (pm instanceof Error) return Promise.reject(pm)
+
   const mockEngineCommandManager = new MockEngineCommandManager({
     setIsStreamReady: () => {},
     setMediaStream: () => {},

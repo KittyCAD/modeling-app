@@ -110,7 +110,7 @@ const initialise = async () => {
     return await init(buffer)
   } catch (e) {
     console.log('Error initialising WASM', e)
-    throw e
+    /* non-fatal */ throw e
   }
 }
 
@@ -119,20 +119,19 @@ export const initPromise = initialise()
 export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
   ranges.map(([start, end]) => [start, end])
 
-export const parse = (code: string): Program => {
+export const parse = (code: string | Error): Program | Error => {
+  if (code instanceof Error) return code
+
   try {
     const program: Program = parse_wasm(code)
     return program
   } catch (e: any) {
     const parsed: RustKclError = JSON.parse(e.toString())
-    const kclError = new KCLError(
+    return new KCLError(
       parsed.kind,
       parsed.msg,
       rangeTypeFix(parsed.sourceRanges)
     )
-
-    console.log(kclError)
-    throw kclError
   }
 }
 
@@ -149,10 +148,12 @@ export interface ProgramMemory {
 
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = { root: {}, return: null },
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ProgramMemory> => {
+  if (programMemory instanceof Error) return Promise.reject(programMemory)
+
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
@@ -168,10 +169,12 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = { root: {}, return: null },
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ProgramMemory> => {
+  if (programMemory instanceof Error) return Promise.reject(programMemory)
+
   try {
     let baseUnit = 'mm'
     if (!TEST) {
@@ -199,20 +202,12 @@ export const _executor = async (
       rangeTypeFix(parsed.sourceRanges)
     )
 
-    console.log(kclError)
-    throw kclError
+    /* non-fatal */ throw kclError
   }
 }
 
-export const recast = (ast: Program): string => {
-  try {
-    const s: string = recast_wasm(JSON.stringify(ast))
-    return s
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('recast error', e)
-    throw e
-  }
+export const recast = (ast: Program): string | Error => {
+  return recast_wasm(JSON.stringify(ast))
 }
 
 export const makeDefaultPlanes = async (
@@ -226,19 +221,12 @@ export const makeDefaultPlanes = async (
   } catch (e) {
     // TODO: do something real with the error.
     console.log('make default planes error', e)
-    throw e
+    /* non-fatal */ throw e
   }
 }
 
-export function lexer(str: string): Token[] {
-  try {
-    const tokens: Token[] = lexer_wasm(str)
-    return tokens
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('lexer error', e)
-    throw e
-  }
+export function lexer(str: string): Token[] | Error {
+  return lexer_wasm(str)
 }
 
 export const modifyAstForSketch = async (
@@ -267,7 +255,7 @@ export const modifyAstForSketch = async (
     )
 
     console.log(kclError)
-    throw kclError
+    /* non-fatal */ throw kclError
   }
 }
 
@@ -314,21 +302,18 @@ export function getTangentialArcToInfo({
   }
 }
 
-export function programMemoryInit(): ProgramMemory {
+export function programMemoryInit(): ProgramMemory | Error {
   try {
     const memory: ProgramMemory = program_memory_init()
     return memory
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
-    const kclError = new KCLError(
+    return new KCLError(
       parsed.kind,
       parsed.msg,
       rangeTypeFix(parsed.sourceRanges)
     )
-
-    console.log(kclError)
-    throw kclError
   }
 }
 
@@ -343,66 +328,35 @@ export async function coreDump(
     }
     return dump
   } catch (e: any) {
-    throw new Error(`Error getting core dump: ${e}`)
+    /* non-fatal */ throw new Error(`Error getting core dump: ${e}`)
   }
 }
 
-export function tomlStringify(toml: any): string {
-  try {
-    const s: string = toml_stringify(JSON.stringify(toml))
-    return s
-  } catch (e: any) {
-    throw new Error(`Error stringifying toml: ${e}`)
-  }
+export function tomlStringify(toml: any): string | Error {
+  return toml_stringify(JSON.stringify(toml))
 }
 
-export function defaultAppSettings(): Configuration {
-  try {
-    const settings: Configuration = default_app_settings()
-    return settings
-  } catch (e: any) {
-    throw new Error(`Error getting default app settings: ${e}`)
-  }
+export function defaultAppSettings(): Configuration | Error {
+  return default_app_settings()
 }
 
-export function parseAppSettings(toml: string): Configuration {
-  try {
-    const settings: Configuration = parse_app_settings(toml)
-    return settings
-  } catch (e: any) {
-    throw new Error(`Error parsing app settings: ${e}`)
-  }
+export function parseAppSettings(toml: string): Configuration | Error {
+  return parse_app_settings(toml)
 }
 
-export function defaultProjectSettings(): ProjectConfiguration {
-  try {
-    const settings: ProjectConfiguration = default_project_settings()
-    return settings
-  } catch (e: any) {
-    throw new Error(`Error getting default project settings: ${e}`)
-  }
+export function defaultProjectSettings(): ProjectConfiguration | Error {
+  return default_project_settings()
 }
 
-export function parseProjectSettings(toml: string): ProjectConfiguration {
-  try {
-    const settings: ProjectConfiguration = parse_project_settings(toml)
-    return settings
-  } catch (e: any) {
-    throw new Error(`Error parsing project settings: ${e}`)
-  }
+export function parseProjectSettings(
+  toml: string
+): ProjectConfiguration | Error {
+  return parse_project_settings(toml)
 }
 
 export function parseProjectRoute(
   configuration: Configuration,
   route_str: string
-): ProjectRoute {
-  try {
-    const route: ProjectRoute = parse_project_route(
-      JSON.stringify(configuration),
-      route_str
-    )
-    return route
-  } catch (e: any) {
-    throw new Error(`Error parsing project route: ${e}`)
-  }
+): ProjectRoute | Error {
+  return parse_project_route(JSON.stringify(configuration), route_str)
 }

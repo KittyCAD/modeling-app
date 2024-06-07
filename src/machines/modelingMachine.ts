@@ -43,6 +43,7 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { err, trap } from 'lib/trap'
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
@@ -777,9 +778,10 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           sketchDetails.sketchPathToNode,
           'VariableDeclarator'
-        ).node
-        if (variableDeclaration.type !== 'VariableDeclarator') return false
-        const pipeExpression = variableDeclaration.init
+        )
+        if (err(variableDeclaration)) return false
+        if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+        const pipeExpression = variableDeclaration.node.init
         if (pipeExpression.type !== 'PipeExpression') return false
         const hasStartProfileAt = pipeExpression.body.some(
           (item) =>
@@ -788,52 +790,119 @@ export const modelingMachine = createMachine(
         )
         return hasStartProfileAt && pipeExpression.body.length > 2
       },
-      'Can make selection horizontal': ({ selectionRanges }) =>
-        horzVertInfo(selectionRanges, 'horizontal').enabled,
-      'Can make selection vertical': ({ selectionRanges }) =>
-        horzVertInfo(selectionRanges, 'vertical').enabled,
-      'Can constrain horizontal distance': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
-          .enabled,
-      'Can constrain vertical distance': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setVertDistance' })
-          .enabled,
-      'Can constrain ABS X': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'xAbs' }).enabled,
-      'Can constrain ABS Y': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'yAbs' }).enabled,
-      'Can constrain angle': ({ selectionRanges }) =>
-        angleBetweenInfo({ selectionRanges }).enabled ||
-        angleLengthInfo({ selectionRanges, angleOrLength: 'setAngle' }).enabled,
-      'Can constrain length': ({ selectionRanges }) =>
-        angleLengthInfo({ selectionRanges }).enabled,
-      'Can constrain perpendicular distance': ({ selectionRanges }) =>
-        intersectInfo({ selectionRanges }).enabled,
-      'Can constrain horizontally align': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
-          .enabled,
-      'Can constrain vertically align': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
-          .enabled,
-      'Can constrain snap to X': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'snapToXAxis' }).enabled,
-      'Can constrain snap to Y': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'snapToYAxis' }).enabled,
-      'Can constrain equal length': ({ selectionRanges }) =>
-        setEqualLengthInfo({ selectionRanges }).enabled,
-      'Can canstrain parallel': ({ selectionRanges }) =>
-        equalAngleInfo({ selectionRanges }).enabled,
-      'Can constrain remove constraints': ({ selectionRanges }, { data }) =>
-        removeConstrainingValuesInfo({
+      'Can make selection horizontal': ({ selectionRanges }) => {
+        const info = horzVertInfo(selectionRanges, 'horizontal')
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can make selection vertical': ({ selectionRanges }) => {
+        const info = horzVertInfo(selectionRanges, 'vertical')
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain horizontal distance': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain vertical distance': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setVertDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain ABS X': ({ selectionRanges }) => {
+        const info = absDistanceInfo({ selectionRanges, constraint: 'xAbs' })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain ABS Y': ({ selectionRanges }) => {
+        const info = absDistanceInfo({ selectionRanges, constraint: 'yAbs' })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain angle': ({ selectionRanges }) => {
+        const angleBetween = angleBetweenInfo({ selectionRanges })
+        if (trap(angleBetween)) return false
+        const angleLength = angleLengthInfo({
+          selectionRanges,
+          angleOrLength: 'setAngle',
+        })
+        if (trap(angleLength)) return false
+        return angleBetween.enabled || angleLength.enabled
+      },
+      'Can constrain length': ({ selectionRanges }) => {
+        const angleLength = angleLengthInfo({ selectionRanges })
+        if (trap(angleLength)) return false
+        return angleLength.enabled
+      },
+      'Can constrain perpendicular distance': ({ selectionRanges }) => {
+        const info = intersectInfo({ selectionRanges })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain horizontally align': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain vertically align': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain snap to X': ({ selectionRanges }) => {
+        const info = absDistanceInfo({
+          selectionRanges,
+          constraint: 'snapToXAxis',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain snap to Y': ({ selectionRanges }) => {
+        const info = absDistanceInfo({
+          selectionRanges,
+          constraint: 'snapToYAxis',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain equal length': ({ selectionRanges }) => {
+        const info = setEqualLengthInfo({ selectionRanges })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can canstrain parallel': ({ selectionRanges }) => {
+        const info = equalAngleInfo({ selectionRanges })
+        if (err(info)) return false
+        return info.enabled
+      },
+      'Can constrain remove constraints': ({ selectionRanges }, { data }) => {
+        const info = removeConstrainingValuesInfo({
           selectionRanges,
           pathToNodes: data && [data],
-        }).enabled,
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
       'Can convert to variable': (_, { data }) => {
         if (!data) return false
-        return isNodeSafeToReplacePath(
-          parse(recast(kclManager.ast)),
-          data.pathToNode
-        ).isSafe
+        const ast = parse(recast(kclManager.ast))
+        if (err(ast)) return false
+        const isSafeRetVal = isNodeSafeToReplacePath(ast, data.pathToNode)
+        if (err(isSafeRetVal)) return false
+        return isSafeRetVal.isSafe
       },
     },
     // end guards
@@ -880,7 +949,7 @@ export const modelingMachine = createMachine(
           ast,
           selection.codeBasedSelections[0].range
         )
-        const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
+        const extrudeSketchRes = extrudeSketch(
           ast,
           pathToNode,
           false,
@@ -888,6 +957,9 @@ export const modelingMachine = createMachine(
             ? distance.variableIdentifierAst
             : distance.valueAst
         )
+        if (trap(extrudeSketchRes)) return
+        const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+
         const selections = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
@@ -1001,11 +1073,15 @@ export const modelingMachine = createMachine(
             const { intersectionPoint } = args
             if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
               return
-            const { modifiedAst } = addStartProfileAt(
+            const addStartProfileAtRes = addStartProfileAt(
               kclManager.ast,
               sketchDetails.sketchPathToNode,
               [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
             )
+
+            if (trap(addStartProfileAtRes)) return
+            const { modifiedAst } = addStartProfileAtRes
+
             await kclManager.updateAst(modifiedAst, false)
             sceneEntitiesManager.removeIntersectionPlane()
             sceneInfra.modelingSend('Add start point')
@@ -1053,10 +1129,12 @@ export const modelingMachine = createMachine(
         { selectionRanges, sketchDetails },
         { data }
       ) => {
-        const { modifiedAst, pathToNodeMap } = applyRemoveConstrainingValues({
+        const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
         })
+        if (trap(constraint)) return
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
@@ -1086,12 +1164,14 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+        const constraint = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
         )
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchPathToNode,
@@ -1110,12 +1190,14 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+        const constraint = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
           kclManager.programMemory
         )
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchPathToNode || [],
@@ -1137,10 +1219,12 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+        const constraint = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
+        if (trap(constraint)) return
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
@@ -1163,10 +1247,12 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+        const constraint = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
+        if (trap(constraint)) return
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
@@ -1186,10 +1272,12 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-snap-to-x': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintAxisAlign({
+        const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
         })
+        if (err(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
@@ -1209,10 +1297,12 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-snap-to-y': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintAxisAlign({
+        const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
         })
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
@@ -1232,10 +1322,17 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-parallel': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintEqualAngle({
+        const constraint = applyConstraintEqualAngle({
           selectionRanges,
         })
-        if (!sketchDetails) throw new Error('No sketch details')
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
+
+        if (!sketchDetails) {
+          trap(new Error('No sketch details'))
+          return
+        }
+
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           parse(recast(modifiedAst)),
@@ -1257,9 +1354,11 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintEqualLength({
+        const constraint = applyConstraintEqualLength({
           selectionRanges,
         })
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],

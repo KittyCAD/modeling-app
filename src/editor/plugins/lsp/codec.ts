@@ -7,7 +7,6 @@ import Headers from './codec/headers'
 import Queue from './codec/queue'
 import Tracer from './tracer'
 import { LspWorkerEventType, LspWorker } from './types'
-import { trap } from 'lib/trap'
 
 export const encoder = new TextEncoder()
 export const decoder = new TextDecoder()
@@ -68,10 +67,13 @@ export interface FromServer extends WritableStream<Uint8Array> {
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FromServer {
-  export function create(): FromServer | undefined {
+  export function create(): FromServer | Error {
     // Calls private method .start() which can throw.
-    return trap('', () => {
+    // This is an odd one of the bunch but try/catch seems most suitable here.
+    try {
       return new StreamDemuxer()
-    }).fail("Can't start StreamDemuxer")
+    } catch (e: any) {
+      return e
+    }
   }
 }

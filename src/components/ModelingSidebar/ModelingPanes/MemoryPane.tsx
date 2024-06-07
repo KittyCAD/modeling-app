@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast'
 import ReactJson from 'react-json-view'
 import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
@@ -13,10 +14,12 @@ export const MemoryPaneMenu = () => {
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
-      trap(
-        'Program memory copied to clipboard',
-        () => navigator.clipboard.writeText(JSON.stringify(programMemory))
-      ).fail('Failed to copy program memory to clipboard')
+      navigator.clipboard
+        .writeText(JSON.stringify(programMemory))
+        .then(() => toast.success('Program memory copied to clipboard'))
+        .catch((e) =>
+          trap(e, new Error('Failed to copy program memory to clipboard'))
+        )
     }
   }
 

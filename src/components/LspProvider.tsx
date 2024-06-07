@@ -24,6 +24,7 @@ import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { err, trap } from 'lib/trap'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -111,11 +112,14 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventData: initEvent,
     })
     lspWorker.onmessage = function (e) {
+      if (err(fromServer)) return
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
-    const fromServer: FromServer = FromServer.create()
+    const fromServer: FromServer | Error = FromServer.create()
+    if (trap(fromServer)) return { lspClient: null }
+
     const client = new Client(fromServer, intoServer)
 
     setIsKclLspServerReady(true)
@@ -185,11 +189,14 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventData: initEvent,
     })
     lspWorker.onmessage = function (e) {
+      if (err(fromServer)) return
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
-    const fromServer: FromServer = FromServer.create()
+    const fromServer: FromServer | Error = FromServer.create()
+    if (trap(fromServer)) return { lspClient: null }
+
     const client = new Client(fromServer, intoServer)
 
     setIsCopilotLspServerReady(true)

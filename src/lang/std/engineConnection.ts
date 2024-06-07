@@ -1816,7 +1816,7 @@ export class EngineCommandManager extends EventTarget {
         )
       }
     }
-    throw Error('shouldnt reach here')
+    return Promise.reject(new Error('Expected unreachable reached'))
   }
   handlePendingSceneCommand(
     id: string,
@@ -1922,7 +1922,9 @@ export class EngineCommandManager extends EventTarget {
     )
 
     if (!idToRangeMap) {
-      throw new Error('idToRangeMap is required for batch commands')
+      return Promise.reject(
+        new Error('idToRangeMap is required for batch commands')
+      )
     }
 
     // Add the overall batch command to the artifact map just so we can track all of the
@@ -1946,7 +1948,7 @@ export class EngineCommandManager extends EventTarget {
     )
     return promise
   }
-  sendModelingCommandFromWasm(
+  async sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
     commandStr: string,
@@ -1959,13 +1961,13 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve()
     }
     if (id === undefined) {
-      throw new Error('id is undefined')
+      return Promise.reject(new Error('id is undefined'))
     }
     if (rangeStr === undefined) {
-      throw new Error('rangeStr is undefined')
+      return Promise.reject(new Error('rangeStr is undefined'))
     }
     if (commandStr === undefined) {
-      throw new Error('commandStr is undefined')
+      return Promise.reject(new Error('commandStr is undefined'))
     }
     const range: SourceRange = JSON.parse(rangeStr)
     const idToRangeMap: { [key: string]: SourceRange } =
@@ -1982,17 +1984,19 @@ export class EngineCommandManager extends EventTarget {
       idToRangeMap,
     }).then((resp) => {
       if (!resp) {
-        throw new Error(
-          'returning modeling cmd response to the rust side is undefined or null'
+        return Promise.reject(
+          new Error(
+            'returning modeling cmd response to the rust side is undefined or null'
+          )
         )
       }
       return JSON.stringify(resp.raw)
     })
   }
-  commandResult(id: string): Promise<any> {
+  async commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
     if (!command) {
-      throw new Error('No command found')
+      return Promise.reject(new Error('No command found'))
     }
     if (command.type === 'result') {
       return command.data

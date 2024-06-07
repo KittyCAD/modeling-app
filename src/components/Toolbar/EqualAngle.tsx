@@ -10,28 +10,46 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
+  TransformInfo,
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 
 export function equalAngleInfo({
   selectionRanges,
 }: {
   selectionRanges: Selections
-}) {
+}):
+  | {
+      transforms: TransformInfo[]
+      enabled: boolean
+    }
+  | Error {
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(kclManager.ast, range)
   )
-  const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
-  )
-  const varDecs = paths.map(
-    (pathToNode) =>
-      getNodeFromPath<VariableDeclarator>(
-        kclManager.ast,
-        pathToNode,
-        'VariableDeclarator'
-      )?.node
-  )
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err1 = _nodes.find((x) => x instanceof Error)
+  if (err(_err1)) return _err1
+  const nodes = _nodes as Value[]
+
+  const _varDecs = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<VariableDeclarator>(
+      kclManager.ast,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err2 = _varDecs.find((x) => x instanceof Error)
+  if (err(_err2)) return _err2
+  const varDecs = _varDecs as VariableDeclarator[]
+
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
@@ -51,6 +69,7 @@ export function equalAngleInfo({
     kclManager.ast,
     'equalAngle'
   )
+  if (err(transforms)) return transforms
 
   const enabled =
     !!secondaryVarDecs.length &&
@@ -64,16 +83,24 @@ export function applyConstraintEqualAngle({
   selectionRanges,
 }: {
   selectionRanges: Selections
-}): {
-  modifiedAst: Program
-  pathToNodeMap: PathToNodeMap
-} {
-  const { transforms } = equalAngleInfo({ selectionRanges })
-  const { modifiedAst, pathToNodeMap } = transformSecondarySketchLinesTagFirst({
+}):
+  | {
+      modifiedAst: Program
+      pathToNodeMap: PathToNodeMap
+    }
+  | Error {
+  const info = equalAngleInfo({ selectionRanges })
+  if (err(info)) return info
+  const { transforms } = info
+
+  const transform = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
   })
+  if (err(transform)) return transform
+  const { modifiedAst, pathToNodeMap } = transform
+
   return { modifiedAst, pathToNodeMap }
 }
