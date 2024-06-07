@@ -332,15 +332,15 @@ test('if you click the format button it formats your code', async ({
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.type(`const sketch001 = startSketchOn('XY')
 |> startProfileAt([-10, -10], %)
 |> line([20, 0], %)
 |> line([0, 20], %)
 |> line([-20, 0], %)
 |> close(%)`)
-  await page.click('#code-pane button:first-child')
-  await page.click('button:has-text("Format code")')
+  await page.locator('#code-pane button:first-child').click()
+  await page.locator('button:has-text("Format code")').click()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XY')
@@ -388,7 +388,7 @@ test('if you use the format keyboard binding it formats your code', async ({
   await u.closeDebugPanel()
 
   // focus the editor
-  await page.click('.cm-line')
+  await u.codeLocator.click()
 
   // Hit alt+shift+f to format the code
   await page.keyboard.press('Alt+Shift+KeyF')
@@ -426,7 +426,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const topAng = 30
     const bottomAng = 25
    */
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.type('$ error')
 
   // press arrows to clear autocomplete
@@ -523,7 +523,7 @@ fn squareHole = (l, w) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
   // Click on the bottom of the code editor to add a new line
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
@@ -788,7 +788,7 @@ test('Auto complete works', async ({ page }) => {
   // tests clicking on an option, selection the first option
   // and arrowing down to an option
 
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.type('const sketch001 = start')
 
   // expect there to be six auto complete options
@@ -930,7 +930,8 @@ test('Project settings can be opened with keybinding from the editor', async ({
     .waitFor({ state: 'visible' })
 
   // Put the cursor in the editor
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
+
 
   // Open the settings modal with the browser keyboard shortcut
   await page.keyboard.press('Meta+Shift+,')
@@ -979,7 +980,7 @@ test('Project and user settings can be reset', async ({ page }) => {
     .waitFor({ state: 'visible' })
 
   // Put the cursor in the editor
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
 
   // Open the settings modal with the browser keyboard shortcut
   await page.keyboard.press('Meta+Shift+,')
@@ -1558,7 +1559,7 @@ test.describe('Command bar tests', () => {
     let cmdSearchBar = page.getByPlaceholder('Search commands')
 
     // Put the cursor in the code editor
-    await page.click('.cm-content')
+    await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
