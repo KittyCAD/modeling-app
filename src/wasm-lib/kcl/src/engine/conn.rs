@@ -43,12 +43,16 @@ pub struct TcpRead {
 impl TcpRead {
     pub async fn read(&mut self) -> Result<WebSocketResponse> {
         let Some(msg) = self.stream.next().await else {
-            anyhow::bail!("Failed to read from websocket");
+            anyhow::bail!("Failed to read from WebSocket");
         };
-        let msg: WebSocketResponse = match msg? {
+        let msg = match msg {
+            Ok(msg) => msg,
+            Err(e) => anyhow::bail!("Error reading from engine's WebSocket: {e}"),
+        };
+        let msg: WebSocketResponse = match msg {
             WsMsg::Text(text) => serde_json::from_str(&text)?,
             WsMsg::Binary(bin) => bson::from_slice(&bin)?,
-            other => anyhow::bail!("Unexpected websocket message from server: {}", other),
+            other => anyhow::bail!("Unexpected WebSocket message from engine API: {}", other),
         };
         Ok(msg)
     }
@@ -150,7 +154,7 @@ impl EngineConnection {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
                         for e in ws_resp.errors.iter().flatten() {
-                            println!("got error message: {e}");
+                            println!("got error message: {} {}", e.error_code, e.message);
                         }
                         if let Some(id) = ws_resp.request_id {
                             responses_clone.insert(id, ws_resp.clone());

@@ -88,7 +88,7 @@ async fn snapshot_endpoint(body: Vec<u8>, state3: ExecutorContext) -> Response<B
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };
-    eprintln!("Serving response");
+    eprintln!("\tServing response");
     let png_bytes = snapshot.contents.0;
     let mut resp = Response::new(Body::from(png_bytes));
     resp.headers_mut().insert(CONTENT_TYPE, "image/png".parse().unwrap());
