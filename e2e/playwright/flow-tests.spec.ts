@@ -3326,8 +3326,9 @@ test.describe('Testing segment overlays', () => {
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        const isWebKit = page.context().browser()?.browserType().name() !== 'chromium'
-        
+        const isWebKit =
+          page.context().browser()?.browserType().name() !== 'chromium'
+
         if (isWebKit) {
           await page.waitForTimeout(1000)
         }
@@ -3353,7 +3354,7 @@ test.describe('Testing segment overlays', () => {
         await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        
+
         if (isWebKit) {
           await page.waitForTimeout(1000)
         }
@@ -3415,8 +3416,9 @@ test.describe('Testing segment overlays', () => {
         y = hoverPos.y - Math.sin(ang * deg) * 32
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        const isWebKit = page.context().browser()?.browserType().name() !== 'chromium'
-        
+        const isWebKit =
+          page.context().browser()?.browserType().name() !== 'chromium'
+
         if (isWebKit) {
           await page.waitForTimeout(1000)
         }
@@ -3447,7 +3449,7 @@ test.describe('Testing segment overlays', () => {
         await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        
+
         if (isWebKit) {
           await page.waitForTimeout(1000)
         }
