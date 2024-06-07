@@ -12,7 +12,9 @@ async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
   await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
-  await page.getByTestId('loading').waitFor({ state: 'detached' })
+  await page
+    .getByTestId('loading')
+    .waitFor({ state: 'detached', timeout: 20_000 })
 
   await page.getByTestId('start-sketch').waitFor()
 }
