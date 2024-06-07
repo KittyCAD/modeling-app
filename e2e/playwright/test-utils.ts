@@ -312,15 +312,21 @@ export async function getUtils(page: Page) {
     }) => {
       return new Promise<Locator>(async (resolve) => {
         const locator = await page.locator(locatorString)
-        const isVisible = await locator.isVisible()
-        if (isVisible) {
-          try {
-            await locator.hover({ timeout: 100 })
-            resolve(locator)
-            return
-          } catch (e) {
-            console.log('Element not found')
+        const isElementGoodToGo = async (): Promise<boolean> => {
+          const isVisible = await locator.isVisible()
+          if (isVisible) {
+            try {
+              await locator.hover({ timeout: 100 })
+              return true
+            } catch (e) {
+              // do nothing, we'll try again later
+            }
           }
+          return false
+        }
+        if (await isElementGoodToGo()) {
+          resolve(locator)
+          return
         }
 
         const tau = Math.PI * 2
@@ -336,16 +342,9 @@ export async function getUtils(page: Page) {
           await page.locator('#stream').hover({
             position: { x: x + xr, y: y + yr },
           })
-          const isVisible = await locator.isVisible()
-
-          if (isVisible) {
-            try {
-              await locator.hover({ timeout: 100 })
-              resolve(locator)
-              return
-            } catch (e) {
-              console.log('Element not found')
-            }
+          if (await isElementGoodToGo()) {
+            resolve(locator)
+            return
           }
         }
         throw new Error('Element not found')
