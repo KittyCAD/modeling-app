@@ -317,6 +317,14 @@ export async function getUtils(page: Page) {
           if (isVisible) {
             try {
               await locator.hover({ timeout: 100 })
+
+              const count = await page
+                .getByTestId('constraint-symbol-popover')
+                .count()
+              if (count < 1) {
+                throw new Error('nope, try again')
+              }
+
               return true
             } catch (e) {
               // do nothing, we'll try again later
