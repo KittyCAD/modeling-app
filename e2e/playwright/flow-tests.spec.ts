@@ -3301,6 +3301,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
+        wait,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -3313,6 +3314,7 @@ test.describe('Testing segment overlays', () => {
         expectFinal: string
         ang?: number
         steps?: number
+        wait?: number
       }) => {
         const u = await getUtils(page)
         await expect(page.getByText('Added variable')).not.toBeVisible()
@@ -3326,11 +3328,9 @@ test.describe('Testing segment overlays', () => {
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        const isWebKit =
-          page.context().browser()?.browserType().name() !== 'chromium'
 
-        if (isWebKit) {
-          await page.waitForTimeout(1000)
+        if (wait) {
+          await page.waitForTimeout(wait)
         }
         await page.locator('#stream').hover({
           position: { x, y },
@@ -3355,8 +3355,8 @@ test.describe('Testing segment overlays', () => {
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
 
-        if (isWebKit) {
-          await page.waitForTimeout(1000)
+        if (wait) {
+          await page.waitForTimeout(wait)
         }
         await page.locator('#stream').hover({
           position: { x, y },
@@ -3394,6 +3394,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
+        wait,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -3406,6 +3407,7 @@ test.describe('Testing segment overlays', () => {
         expectFinal: string
         ang?: number
         steps?: number
+        wait?: number
       }) => {
         const u = await getUtils(page)
         await page.getByTestId('app-logo').hover()
@@ -3416,11 +3418,8 @@ test.describe('Testing segment overlays', () => {
         y = hoverPos.y - Math.sin(ang * deg) * 32
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        const isWebKit =
-          page.context().browser()?.browserType().name() !== 'chromium'
-
-        if (isWebKit) {
-          await page.waitForTimeout(1000)
+        if (wait) {
+          await page.waitForTimeout(wait)
         }
         await page.locator('#stream').hover({
           position: { x, y },
@@ -3450,8 +3449,8 @@ test.describe('Testing segment overlays', () => {
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
 
-        if (isWebKit) {
-          await page.waitForTimeout(1000)
+        if (wait) {
+          await page.waitForTimeout(wait)
         }
         await page.locator('#stream').hover({
           position: { x, y },
@@ -3829,6 +3828,8 @@ const part001 = startSketchOn('XZ')
       page,
     }) => {
       test.setTimeout(120_000)
+      const isWebKit =
+        page.context().browser()?.browserType().name() !== 'chromium'
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -3886,6 +3887,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained: 'angledLineToX({ angle: 3, to: 26 }, %)',
         expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
       console.log('angledLineToX2')
       await clickUnconstrained({
@@ -3897,6 +3899,7 @@ const part001 = startSketchOn('XZ')
           'angledLineToX({ angle: angle001, to: xAbs001 }, %)',
         expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
 
       const angledLineToY = await u.getBoundingBox(`[data-overlay-index="10"]`)
@@ -3912,6 +3915,7 @@ const part001 = startSketchOn('XZ')
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
         steps: process.platform === 'darwin' ? 8 : 9,
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
       console.log('angledLineToY2')
       await clickConstrained({
@@ -3922,6 +3926,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained: 'angledLineToY({ angle: 89, to: 9.14 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: yAbs001 }, %)',
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
 
       const angledLineThatIntersects = await u.getBoundingBox(
@@ -3951,6 +3956,7 @@ const part001 = startSketchOn('XZ')
       intersectTag: 'a'
     }, %)`,
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
       console.log('angledLineThatIntersects2')
       await clickUnconstrained({
@@ -3975,6 +3981,7 @@ const part001 = startSketchOn('XZ')
       intersectTag: 'a'
     }, %)`,
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
     })
     test('for segment [tangentialArcTo]', async ({ page }) => {
