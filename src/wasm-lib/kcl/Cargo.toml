@@ -35,7 +35,7 @@ serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.116"
 sha2 = "0.10.8"
 thiserror = "1.0.61"
-toml = "0.8.13"
+toml = "0.8.14"
 # TODO: change this to a cargo release once 8.1.1 comes out
 ts-rs = { git = "https://github.com/Aleph-Alpha/ts-rs", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings"] }
 url = { version = "2.5.0", features = ["serde"] }

@@ -51,14 +51,6 @@ function CommandBarSelectionInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
-  // Exit engine's edit mode when this input step is active,
-  // and re-enter it when it's not.
-  // In future the engine's edit mode will go away and this will be handled differently.
-  useEffect(() => {
-    kclManager.exitEditMode()
-    return () => kclManager.defaultSelectionFilter()
-  }, [])
-
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
   useEffect(() => {
