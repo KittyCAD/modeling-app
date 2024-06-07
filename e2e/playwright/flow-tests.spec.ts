@@ -932,7 +932,6 @@ test('Project settings can be opened with keybinding from the editor', async ({
   // Put the cursor in the editor
   await page.locator('.cm-content').click()
 
-
   // Open the settings modal with the browser keyboard shortcut
   await page.keyboard.press('Meta+Shift+,')
 
