@@ -354,6 +354,7 @@ export async function getUtils(page: Page) {
             resolve(locator)
             return
           }
+          await page.waitForTimeout(100)
         }
         throw new Error('Element not found')
       })

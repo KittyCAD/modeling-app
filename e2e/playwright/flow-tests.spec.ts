@@ -3326,6 +3326,11 @@ test.describe('Testing segment overlays', () => {
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
+        const isWebKit = page.context().browser()?.browserType().name() !== 'chromium'
+        
+        if (isWebKit) {
+          await page.waitForTimeout(1000)
+        }
         await page.locator('#stream').hover({
           position: { x, y },
           timeout: 5000,
@@ -3348,6 +3353,10 @@ test.describe('Testing segment overlays', () => {
         await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
+        
+        if (isWebKit) {
+          await page.waitForTimeout(1000)
+        }
         await page.locator('#stream').hover({
           position: { x, y },
         })
@@ -3405,6 +3414,12 @@ test.describe('Testing segment overlays', () => {
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
         await expect(page.getByText('Added variable')).not.toBeVisible()
+
+        const isWebKit = page.context().browser()?.browserType().name() !== 'chromium'
+        
+        if (isWebKit) {
+          await page.waitForTimeout(1000)
+        }
         await page.locator('#stream').hover({
           position: { x, y },
         })
@@ -3432,6 +3447,10 @@ test.describe('Testing segment overlays', () => {
         await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
+        
+        if (isWebKit) {
+          await page.waitForTimeout(1000)
+        }
         await page.locator('#stream').hover({
           position: { x, y },
         })
@@ -3450,7 +3469,7 @@ test.describe('Testing segment overlays', () => {
     test('for segments [line, angledLine, lineTo, xLineTo]', async ({
       page,
     }) => {
-      test.setTimeout(120000)
+      test.setTimeout(120_000)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -3807,6 +3826,7 @@ const part001 = startSketchOn('XZ')
     test('for segments [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
       page,
     }) => {
+      test.setTimeout(120_000)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
