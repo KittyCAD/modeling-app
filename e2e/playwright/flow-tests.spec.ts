@@ -3,7 +3,6 @@ import {
   makeTemplate,
   getUtils,
   getMovementUtils,
-  wiggleMove,
   doExport,
   metaModifier,
 } from './test-utils'
@@ -3302,7 +3301,6 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
-        steps = 10,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -3316,22 +3314,31 @@ test.describe('Testing segment overlays', () => {
         ang?: number
         steps?: number
       }) => {
+        const u = await getUtils(page)
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         let x = 0,
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+
+        const constrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
+          pos: { x, y },
+          steps: 20,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
 
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
-        )
-        const constrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
         )
         await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
@@ -3343,16 +3350,23 @@ test.describe('Testing segment overlays', () => {
           expectAfterUnconstrained
         )
 
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+        const unconstrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
+          pos: { x, y },
+          steps: 20,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
 
-        const unconstrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
-        )
         await expect(unconstrainedLocator).toBeVisible()
         await unconstrainedLocator.hover()
         await expect(
@@ -3381,7 +3395,6 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
-        steps = 5,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -3395,22 +3408,30 @@ test.describe('Testing segment overlays', () => {
         ang?: number
         steps?: number
       }) => {
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        const u = await getUtils(page)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         let x = 0,
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
-
         await expect(page.getByText('Added variable')).not.toBeVisible()
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
         )
-        const unconstrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
-        )
+        const unconstrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
+          pos: { x, y },
+          steps: 20,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
         await expect(unconstrainedLocator).toBeVisible()
         await unconstrainedLocator.hover()
         await expect(
@@ -3423,16 +3444,22 @@ test.describe('Testing segment overlays', () => {
         )
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
-
-        const constrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
-        )
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+        const constrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
+          pos: { x, y },
+          steps: 20,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
         await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
         await expect(
@@ -3441,10 +3468,10 @@ test.describe('Testing segment overlays', () => {
         await constrainedLocator.click()
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
       }
-    test.setTimeout(120000)
     test('for segments [line, angledLine, lineTo, xLineTo]', async ({
       page,
     }) => {
+      test.setTimeout(120000)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
