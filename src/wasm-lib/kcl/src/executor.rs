@@ -1085,6 +1085,7 @@ impl ExecutorContext {
     }
 
     /// For executing unit tests.
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength) -> Result<Self> {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
