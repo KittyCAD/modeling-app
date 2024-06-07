@@ -19,7 +19,7 @@ async function waitForPageLoad(page: Page) {
 
 async function removeCurrentCode(page: Page) {
   const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
   await page.keyboard.down(hotkey)
   await page.keyboard.press('a')
   await page.keyboard.up(hotkey)
@@ -28,12 +28,12 @@ async function removeCurrentCode(page: Page) {
 }
 
 async function sendCustomCmd(page: Page, cmd: EngineCommand) {
-  await page.fill('[data-testid="custom-cmd-input"]', JSON.stringify(cmd))
-  await page.click('[data-testid="custom-cmd-send-button"]')
+  await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
+  await page.getByTestId('custom-cmd-send-button').click()
 }
 
 async function clearCommandLogs(page: Page) {
-  await page.click('[data-testid="clear-commands"]')
+  await page.getByTestId('clear-commands').click()
 }
 
 async function expectCmdLog(page: Page, locatorStr: string) {
