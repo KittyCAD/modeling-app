@@ -3301,7 +3301,6 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
-        wait = 100,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -3314,7 +3313,6 @@ test.describe('Testing segment overlays', () => {
         expectFinal: string
         ang?: number
         steps?: number
-        wait?: number
       }) => {
         const u = await getUtils(page)
         await expect(page.getByText('Added variable')).not.toBeVisible()
@@ -3333,8 +3331,6 @@ test.describe('Testing segment overlays', () => {
           timeout: 5000,
         })
 
-        await page.waitForTimeout(1500)
-        console.log('first wiggle')
         const constrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
           pos: { x, y },
@@ -3355,8 +3351,6 @@ test.describe('Testing segment overlays', () => {
         await page.locator('#stream').hover({
           position: { x, y },
         })
-        await page.waitForTimeout(wait)
-        console.log('2nd wiggle')
         const unconstrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
           pos: { x, y },
@@ -3418,7 +3412,6 @@ test.describe('Testing segment overlays', () => {
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
         )
-        console.log('1st wiggle')
         const unconstrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
           pos: { x, y },
@@ -3442,7 +3435,6 @@ test.describe('Testing segment overlays', () => {
         await page.locator('#stream').hover({
           position: { x, y },
         })
-        console.log('2nd wiggle')
         const constrainedLocator = await u.wiggleMove({
           locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
           pos: { x, y },
@@ -3560,7 +3552,6 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained: 'angledLine({ angle: 3, length: 32 + 0 }, %)',
         expectFinal: 'angledLine({ angle: angle001, length: 32 + 0 }, %)',
         ang: ang + 180,
-        wait: 1000,
       })
       console.log('angledLine2')
       await clickConstrained({
@@ -3614,7 +3605,6 @@ test.describe('Testing segment overlays', () => {
         expectFinal: 'xLineTo(xAbs002, %)',
         ang: ang + 180,
         steps: 8,
-        wait: 900,
       })
     })
     test('for segments [yLineTo, xLine]', async ({ page }) => {
@@ -3769,7 +3759,6 @@ const part001 = startSketchOn('XZ')
         expectFinal:
           'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
         ang: ang + 180,
-        wait: 1000,
       })
       console.log('angledLineOfXLength2')
       await clickUnconstrained({
