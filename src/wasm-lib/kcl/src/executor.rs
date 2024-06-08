@@ -1127,7 +1127,7 @@ impl ExecutorContext {
     pub async fn reset_scene(&self) -> Result<()> {
         self.engine
             .send_modeling_cmd(
-                uuid::Uuid::new_v4().into(),
+                uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 kittycad::types::ModelingCmd::SceneClearAll {},
             )
