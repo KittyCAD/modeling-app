@@ -96,17 +96,20 @@ async fn snapshot_endpoint(body: Vec<u8>, state3: ExecutorContext) -> Response<B
 }
 
 fn bad_request(msg: String) -> Response<Body> {
+    eprintln!("\tBad request");
     let mut resp = Response::new(Body::from(msg));
     *resp.status_mut() = hyper::StatusCode::BAD_REQUEST;
     resp
 }
 
 fn bad_gateway(msg: String) -> Response<Body> {
+    eprintln!("\tBad gateway");
     let mut resp = Response::new(Body::from(msg));
     *resp.status_mut() = hyper::StatusCode::BAD_GATEWAY;
     resp
 }
 
 fn kcl_err(err: anyhow::Error) -> Response<Body> {
+    eprintln!("\tBad KCL");
     bad_gateway(format!("{err}"))
 }
