@@ -251,7 +251,10 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        let result = self.execute(&params, ast.clone()).await;
+        if let Err(_) = self.execute(&params, ast.clone()).await {
+            // if there was an issue, let's bail and avoid trying to lint.
+            return;
+        }
 
         self.client.log_message(MessageType::INFO, format!("linting")).await;
 
