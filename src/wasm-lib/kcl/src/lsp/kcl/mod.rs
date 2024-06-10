@@ -256,8 +256,6 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
-        self.client.log_message(MessageType::INFO, format!("linting")).await;
-
         for discovered_finding in lint(&ast, checks::lint_variables).into_iter().flatten() {
             self.add_to_diagnostics(&params, discovered_finding).await;
         }
