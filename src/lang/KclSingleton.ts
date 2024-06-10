@@ -186,6 +186,11 @@ export class KclManager {
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
+    // here we're going to clear diagnostics since we're the first
+    // one in. We're the only location where diagnostics are cleared;
+    // everything from here on out should be *appending*.
+    editorManager.clearDiagnostics()
+
     this.isExecuting = true
     await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({

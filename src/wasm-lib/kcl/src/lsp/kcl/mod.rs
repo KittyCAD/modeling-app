@@ -252,10 +252,8 @@ impl crate::lsp::backend::Backend for Backend {
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
         let result = self.execute(&params, ast.clone()).await;
-        if result.is_ok() {
-            // Lets update the diagnostics, since we got no errors.
-            self.clear_diagnostics(&params.uri).await;
-        }
+
+        self.client.log_message(MessageType::INFO, format!("linting")).await;
 
         for discovered_finding in lint(&ast, checks::lint_variables).into_iter().flatten() {
             self.add_to_diagnostics(&params, discovered_finding).await;

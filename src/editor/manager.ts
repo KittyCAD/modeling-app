@@ -91,6 +91,11 @@ export default class EditorManager {
     }
   }
 
+  clearDiagnostics(diagnostics: Diagnostic[]): void {
+    console.log('[lsp] cleared diagnostics')
+    this.editorView.dispatch(setDiagnostics(this.editorView.state, []))
+  }
+
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this.editorView) return
     this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
