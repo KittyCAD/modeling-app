@@ -393,25 +393,6 @@ impl Backend {
             .await;
     }
 
-    async fn clear_diagnostics(&self, uri: &url::Url) {
-        self.diagnostics_map
-            .insert(
-                uri.to_string(),
-                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: vec![],
-                    },
-                }),
-            )
-            .await;
-
-        // Publish the diagnostic, we reset it here so the client knows the code compiles now.
-        // If the client supports it.
-        self.client.publish_diagnostics(uri.clone(), vec![], None).await;
-    }
-
     async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) -> Result<()> {
         // Check if we can execute.
         if !self.can_execute().await {
