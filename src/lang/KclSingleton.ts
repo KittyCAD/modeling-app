@@ -89,9 +89,10 @@ export class KclManager {
     return this._kclErrors
   }
   set kclErrors(kclErrors) {
+    console.log('[lsp] not lsp, actually typescript: ', kclErrors)
     this._kclErrors = kclErrors
     let diagnostics = kclErrorsToDiagnostics(kclErrors)
-    editorManager.setDiagnostics(diagnostics)
+    editorManager.addDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
   }
 

@@ -357,26 +357,40 @@ impl Backend {
             .await;
     }
 
-    async fn add_to_diagnostics<DiagT: IntoDiagnostic>(&self, params: &TextDocumentItem, diagnostic: DiagT) {
-        let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
-        // We got errors, update the diagnostics.
-        self.diagnostics_map
-            .insert(
-                params.uri.to_string(),
-                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: vec![diagnostic.clone()],
-                    },
-                }),
-            )
+    async fn add_to_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
+        &self,
+        params: &TextDocumentItem,
+        diagnostic: DiagT,
+    ) {
+        self.client
+            .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostic))
             .await;
 
-        // Publish the diagnostic.
-        // If the client supports it.
+        let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
+
+        let DocumentDiagnosticReport::Full(mut report) = self
+            .diagnostics_map
+            .get(params.uri.clone().as_str())
+            .await
+            .unwrap_or(DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                related_documents: None,
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items: vec![],
+                },
+            }))
+        else {
+            unreachable!();
+        };
+
+        report.full_document_diagnostic_report.items.push(diagnostic);
+
+        self.diagnostics_map
+            .insert(params.uri.to_string(), DocumentDiagnosticReport::Full(report.clone()))
+            .await;
+
         self.client
-            .publish_diagnostics(params.uri.clone(), vec![diagnostic], None)
+            .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
             .await;
     }
 

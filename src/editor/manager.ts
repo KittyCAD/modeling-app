@@ -7,7 +7,7 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight } from './highlightextension'
-import { setDiagnostics, Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnostics, Diagnostic } from '@codemirror/lint'
 
 export default class EditorManager {
   private _editorView: EditorView | null = null
@@ -93,6 +93,14 @@ export default class EditorManager {
 
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this.editorView) return
+    this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
+  }
+
+  addDiagnostics(diagnostics: Diagnostic[]): void {
+    if (!this.editorView) return
+    forEachDiagnostic(this.editorView.state, function (diag) {
+      diagnostics.push(diag)
+    })
     this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
   }
 
