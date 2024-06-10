@@ -444,7 +444,7 @@ export class CameraControls {
         this.handleEnd()
         return
       }
-      this.throttledEngCmd({
+      this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'default_camera_zoom',
@@ -456,11 +456,11 @@ export class CameraControls {
       return
     }
 
-    const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
+    // Else "clientToEngine" (Sketch Mode) or forceUpdate
 
-    const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
+    // From onMouseMove zoom handling which seems to be really smooth
     this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-    this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
+    this.pendingZoom *= 1 + event.deltaY * 0.01
     this.handleEnd()
   }
 

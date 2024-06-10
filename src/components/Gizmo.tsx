@@ -19,6 +19,12 @@ import {
   Intersection,
   Object3D,
 } from 'three'
+import {
+  ContextMenu,
+  ContextMenuDivider,
+  ContextMenuItem,
+  ContextMenuItemRefresh,
+} from './ContextMenu'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -38,8 +44,17 @@ enum AxisNames {
   NEG_Y = '-y',
   NEG_Z = '-z',
 }
+const axisNamesSemantic: Record<AxisNames, string> = {
+  [AxisNames.X]: 'Right',
+  [AxisNames.Y]: 'Back',
+  [AxisNames.Z]: 'Top',
+  [AxisNames.NEG_X]: 'Left',
+  [AxisNames.NEG_Y]: 'Front',
+  [AxisNames.NEG_Z]: 'Bottom',
+}
 
 export default function Gizmo() {
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
@@ -100,9 +115,43 @@ export default function Gizmo() {
   }, [])
 
   return (
-    <div className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-none">
-      <canvas ref={canvasRef} />
-    </div>
+    <>
+      <div
+        ref={wrapperRef}
+        aria-label="View orientation gizmo"
+        className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto"
+      >
+        <canvas ref={canvasRef} />
+        <ContextMenu
+          menuTargetElement={wrapperRef}
+          items={[
+            ...Object.entries(axisNamesSemantic).map(
+              ([axisName, axisSemantic]) => (
+                <ContextMenuItem
+                  key={axisName}
+                  onClick={() => {
+                    sceneInfra.camControls.updateCameraToAxis(
+                      axisName as AxisNames
+                    )
+                  }}
+                >
+                  {axisSemantic} view
+                </ContextMenuItem>
+              )
+            ),
+            <ContextMenuItem
+              onClick={() => {
+                sceneInfra.camControls.resetCameraPosition()
+              }}
+            >
+              Reset view
+            </ContextMenuItem>,
+            <ContextMenuDivider />,
+            <ContextMenuItemRefresh />,
+          ]}
+        />
+      </div>
+    </>
   )
 }
 

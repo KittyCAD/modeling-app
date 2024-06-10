@@ -17,6 +17,7 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
+  TEST_CODE_GIZMO,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
@@ -331,15 +332,15 @@ test('if you click the format button it formats your code', async ({
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.type(`const sketch001 = startSketchOn('XY')
 |> startProfileAt([-10, -10], %)
 |> line([20, 0], %)
 |> line([0, 20], %)
 |> line([-20, 0], %)
 |> close(%)`)
-  await page.click('#code-pane button:first-child')
-  await page.click('button:has-text("Format code")')
+  await page.locator('#code-pane button:first-child').click()
+  await page.locator('button:has-text("Format code")').click()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XY')
@@ -387,7 +388,7 @@ test('if you use the format keyboard binding it formats your code', async ({
   await u.closeDebugPanel()
 
   // focus the editor
-  await page.click('.cm-line')
+  await u.codeLocator.click()
 
   // Hit alt+shift+f to format the code
   await page.keyboard.press('Alt+Shift+KeyF')
@@ -425,7 +426,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const topAng = 30
     const bottomAng = 25
    */
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.type('$ error')
 
   // press arrows to clear autocomplete
@@ -524,7 +525,7 @@ fn squareHole = (l, w) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
   // Click on the bottom of the code editor to add a new line
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
@@ -789,7 +790,7 @@ test('Auto complete works', async ({ page }) => {
   // tests clicking on an option, selection the first option
   // and arrowing down to an option
 
-  await page.click('.cm-content')
+  await u.codeLocator.click()
   await page.keyboard.type('const sketch001 = start')
 
   // expect there to be six auto complete options
@@ -931,7 +932,7 @@ test('Project settings can be opened with keybinding from the editor', async ({
     .waitFor({ state: 'visible' })
 
   // Put the cursor in the editor
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
 
   // Open the settings modal with the browser keyboard shortcut
   await page.keyboard.press('Meta+Shift+,')
@@ -980,7 +981,7 @@ test('Project and user settings can be reset', async ({ page }) => {
     .waitFor({ state: 'visible' })
 
   // Put the cursor in the editor
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
 
   // Open the settings modal with the browser keyboard shortcut
   await page.keyboard.press('Meta+Shift+,')
@@ -1559,7 +1560,7 @@ test.describe('Command bar tests', () => {
     let cmdSearchBar = page.getByPlaceholder('Search commands')
 
     // Put the cursor in the code editor
-    await page.click('.cm-content')
+    await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
@@ -3481,14 +3482,24 @@ test.describe('Testing segment overlays', () => {
       await u.expectCmdLog('[data-message-type="execution-done"]')
       await u.closeDebugPanel()
 
+      await page.getByText('xLineTo(5 + 9 - 5, %)').click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+
+      const clickUnconstrained = _clickUnconstrained(page)
+      const clickConstrained = _clickConstrained(page)
+
       await u.openAndClearDebugPanel()
       await u.sendCustomCmd({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_look_at',
-          vantage: { x: 0, y: -1250, z: 580 },
-          center: { x: 0, y: 0, z: 0 },
+          vantage: { x: 80, y: -1350, z: 510 },
+          center: { x: 80, y: 0, z: 510 },
           up: { x: 0, y: 0, z: 1 },
         },
       })
@@ -3502,27 +3513,6 @@ test.describe('Testing segment overlays', () => {
       })
       await page.waitForTimeout(100)
       await u.closeDebugPanel()
-
-      await page.getByText('xLineTo(5 + 9 - 5, %)').click()
-      await page.waitForTimeout(100)
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(500)
-
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
-
-      const clickUnconstrained = _clickUnconstrained(page)
-      const clickConstrained = _clickConstrained(page)
-
-      // Drag the sketch into view
-      await page.mouse.move(600, 64)
-      await page.mouse.down({ button: 'middle' })
-      await page.mouse.move(600, 450, { steps: 10 })
-      await page.mouse.up({ button: 'middle' })
-
-      await page.mouse.move(600, 64)
-      await page.mouse.down({ button: 'middle' })
-      await page.mouse.move(600, 120, { steps: 10 })
-      await page.mouse.up({ button: 'middle' })
 
       let ang = 0
 
@@ -3572,11 +3562,8 @@ test.describe('Testing segment overlays', () => {
       })
 
       await page.mouse.move(700, 250)
-      for (let i = 0; i < 5; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-      await page.waitForTimeout(200)
+      await page.mouse.wheel(0, 25)
+      await page.waitForTimeout(100)
 
       let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
       ang = await u.getAngle(`[data-overlay-index="2"]`)
@@ -3658,12 +3645,8 @@ const part001 = startSketchOn('XZ')
       const clickUnconstrained = _clickUnconstrained(page)
 
       await page.mouse.move(700, 250)
-      for (let i = 0; i < 7; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-
-      await page.waitForTimeout(300)
+      await page.mouse.wheel(0, 25)
+      await page.waitForTimeout(100)
 
       let ang = 0
 
@@ -4864,25 +4847,25 @@ test.describe('Testing Gizmo', () => {
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
-      testDescription: '+x view',
+      testDescription: 'right view',
       clickPosition: { x: 929, y: 417 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
-      testDescription: '-x view',
+      testDescription: 'left view',
       clickPosition: { x: 974, y: 397 },
       expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
-      testDescription: '+y view',
+      testDescription: 'back view',
       clickPosition: { x: 967, y: 421 },
       expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
-      testDescription: '-y view',
+      testDescription: 'front view',
       clickPosition: { x: 935, y: 393 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
@@ -4894,34 +4877,11 @@ test.describe('Testing Gizmo', () => {
     expectedCameraTarget,
     testDescription,
   } of cases) {
-    test(`check ${testDescription}`, async ({ page }) => {
+    test(`check ${testDescription}`, async ({ page, browserName }) => {
       const u = await getUtils(page)
-      await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
-        localStorage.setItem(
-          'persistCode',
-          `const part001 = startSketchOn('XZ')
-            |> startProfileAt([20, 0], %)
-            |> line([7.13, 4 + 0], %)
-            |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
-            |> lineTo([20.14 + 0, -0.14 + 0], %)
-            |> xLineTo(29 + 0, %)
-            |> yLine(-3.14 + 0, %, 'a')
-            |> xLine(1.63, %)
-            |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-            |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-            |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-            |> angledLineToY({ angle: 30, to: 11.14 }, %)
-            |> angledLineThatIntersects({
-              angle: 3.14,
-              intersectTag: 'a',
-              offset: 0
-            }, %)
-            |> tangentialArcTo([13.14 + 0, 13.14], %)
-            |> close(%)
-            |> extrude(5 + 7, %)
-          `
-        )
-      }, KCL_DEFAULT_LENGTH)
+      await page.addInitScript((TEST_CODE_GIZMO) => {
+        localStorage.setItem('persistCode', TEST_CODE_GIZMO)
+      }, TEST_CODE_GIZMO)
       await page.setViewportSize({ width: 1000, height: 500 })
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
@@ -4958,11 +4918,11 @@ test.describe('Testing Gizmo', () => {
       })
       await u.waitForCmdReceive('default_camera_get_settings')
 
-      await page.waitForTimeout(400)
+      await u.clearCommandLogs()
       await page.mouse.move(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
-      await u.clearCommandLogs()
       await page.mouse.click(clickPosition.x, clickPosition.y)
+      await page.mouse.move(0, 0)
       await u.waitForCmdReceive('default_camera_look_at')
       await u.clearCommandLogs()
 
@@ -4974,7 +4934,6 @@ test.describe('Testing Gizmo', () => {
         },
       })
       await u.waitForCmdReceive('default_camera_get_settings')
-      await page.waitForTimeout(400)
 
       await Promise.all([
         // position
@@ -5000,6 +4959,103 @@ test.describe('Testing Gizmo', () => {
       ])
     })
   }
+
+  test('Context menu', async ({ page }) => {
+    const testCase = {
+      testDescription: 'Right view',
+      expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    }
+
+    // Test prelude taken from the above test
+    const u = await getUtils(page)
+    await page.addInitScript((TEST_CODE_GIZMO) => {
+      localStorage.setItem('persistCode', TEST_CODE_GIZMO)
+    }, TEST_CODE_GIZMO)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+    await page.waitForTimeout(100)
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: {
+          x: 3000,
+          y: 3000,
+          z: 3000,
+        },
+        center: {
+          x: 800,
+          y: -152,
+          z: 26,
+        },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.clearCommandLogs()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await u.waitForCmdReceive('default_camera_get_settings')
+
+    // Now find and select the correct
+    // view from the context menu
+    await u.clearCommandLogs()
+    const gizmo = page.locator('[aria-label*=gizmo]')
+    await gizmo.click({ button: 'right' })
+    const buttonToTest = page.getByRole('button', {
+      name: testCase.testDescription,
+    })
+    await expect(buttonToTest).toBeVisible()
+    await buttonToTest.click()
+
+    // Now assert we've moved to the correct view
+    // Taken from the above test
+    await u.waitForCmdReceive('default_camera_look_at')
+
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await u.waitForCmdReceive('default_camera_get_settings')
+    await page.waitForTimeout(400)
+
+    await Promise.all([
+      // position
+      expect(page.getByTestId('cam-x-position')).toHaveValue(
+        testCase.expectedCameraPosition.x.toString()
+      ),
+      expect(page.getByTestId('cam-y-position')).toHaveValue(
+        testCase.expectedCameraPosition.y.toString()
+      ),
+      expect(page.getByTestId('cam-z-position')).toHaveValue(
+        testCase.expectedCameraPosition.z.toString()
+      ),
+      // target
+      expect(page.getByTestId('cam-x-target')).toHaveValue(
+        testCase.expectedCameraTarget.x.toString()
+      ),
+      expect(page.getByTestId('cam-y-target')).toHaveValue(
+        testCase.expectedCameraTarget.y.toString()
+      ),
+      expect(page.getByTestId('cam-z-target')).toHaveValue(
+        testCase.expectedCameraTarget.z.toString()
+      ),
+    ])
+  })
 })
 
 test('Successful export shows a success toast', async ({ page }) => {
