@@ -415,7 +415,7 @@ impl Backend {
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,
             Err(err) => {
-                self.add_to_diagnostics(params, err).await;
+                // self.add_to_diagnostics(params, err).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
