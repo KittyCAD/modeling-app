@@ -172,7 +172,7 @@ impl crate::lsp::backend::Backend for Backend {
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                // self.add_to_diagnostics(&params, err).await;
                 return;
             }
         };
@@ -212,7 +212,7 @@ impl crate::lsp::backend::Backend for Backend {
         let ast = match result {
             Ok(ast) => ast,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                // self.add_to_diagnostics(&params, err).await;
                 return;
             }
         };
