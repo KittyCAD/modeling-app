@@ -1,12 +1,17 @@
 //! Executes KCL programs.
 //! The server reuses the same engine session for each KCL program it receives.
 use std::net::SocketAddr;
+use std::time::Duration;
 
 use hyper::header::CONTENT_TYPE;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Error, Response, Server};
 use kcl_lib::executor::ExecutorContext;
 use kcl_lib::settings::types::UnitLength;
+use kcl_lib::test_server::RequestBody;
+use tokio::sync::oneshot;
+use tokio::task::JoinHandle;
+use tokio::time::sleep;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -18,13 +23,6 @@ async fn main() -> anyhow::Result<()> {
 
     // Run the actual server.
     start(listen_on).await
-}
-
-#[derive(serde::Deserialize)]
-pub struct RequestBody {
-    kcl_program: String,
-    #[serde(default)]
-    test_name: String,
 }
 
 pub async fn start(listen_on: SocketAddr) -> anyhow::Result<()> {
@@ -66,13 +64,12 @@ pub async fn start(listen_on: SocketAddr) -> anyhow::Result<()> {
 /// KCL errors (from engine or the executor) respond with HTTP Bad Gateway.
 /// Malformed requests are HTTP Bad Request.
 /// Successful requests contain a PNG as the body.
-async fn snapshot_endpoint(body: Vec<u8>, state3: ExecutorContext) -> Response<Body> {
+async fn snapshot_endpoint(body: Vec<u8>, state: ExecutorContext) -> Response<Body> {
     let body = match serde_json::from_slice::<RequestBody>(&body) {
         Ok(bd) => bd,
         Err(e) => return bad_request(format!("Invalid request JSON: {e}")),
     };
     let RequestBody { kcl_program, test_name } = body;
-    eprintln!("Executing {test_name}");
     let parser = match kcl_lib::token::lexer(&kcl_program) {
         Ok(ts) => kcl_lib::parser::Parser::new(ts),
         Err(e) => return bad_request(format!("tokenization error: {e}")),
@@ -81,13 +78,19 @@ async fn snapshot_endpoint(body: Vec<u8>, state3: ExecutorContext) -> Response<B
         Ok(pr) => pr,
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
-    if let Err(e) = state3.reset_scene().await {
+    eprintln!("Executing {test_name}");
+    if let Err(e) = state.reset_scene().await {
         return kcl_err(e);
     }
-    let snapshot = match state3.execute_and_prepare_snapshot(program).await {
+    // Let users know if the test is taking a long time.
+    let (done_tx, done_rx) = oneshot::channel::<()>();
+    let timer = time_until(done_rx);
+    let snapshot = match state.execute_and_prepare_snapshot(program).await {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };
+    let _ = done_tx.send(());
+    timer.abort();
     eprintln!("\tServing response");
     let png_bytes = snapshot.contents.0;
     let mut resp = Response::new(Body::from(png_bytes));
@@ -112,4 +115,21 @@ fn bad_gateway(msg: String) -> Response<Body> {
 fn kcl_err(err: anyhow::Error) -> Response<Body> {
     eprintln!("\tBad KCL");
     bad_gateway(format!("{err}"))
+}
+
+fn time_until(done: oneshot::Receiver<()>) -> JoinHandle<()> {
+    tokio::task::spawn(async move {
+        let period = 10;
+        tokio::pin!(done);
+        for i in 1..=3 {
+            tokio::select! {
+                biased;
+                // If the test is done, no need for this timer anymore.
+                _ = &mut done => return,
+                _ = sleep(Duration::from_secs(period)) => {
+                    eprintln!("\tTest has taken {}s", period * i);
+                },
+            };
+        }
+    })
 }
