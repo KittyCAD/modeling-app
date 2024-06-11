@@ -104,9 +104,7 @@ export default class EditorManager {
   addDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this.editorView) return
     forEachDiagnostic(this.editorView.state, function (diag) {
-      if (!diagnostics.contains(diag)) {
-        diagnostics.push(diag)
-      }
+      diagnostics.push(diag)
     })
     this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
   }
