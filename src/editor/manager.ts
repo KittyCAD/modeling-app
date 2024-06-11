@@ -10,7 +10,7 @@ import { addLineHighlight } from './highlightextension'
 import { forEachDiagnostic, setDiagnostics, Diagnostic } from '@codemirror/lint'
 
 function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
-  return d1.start === d2.start && d1.end === d2.end && d1.message === d2.message
+  return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
 }
 
 export default class EditorManager {
