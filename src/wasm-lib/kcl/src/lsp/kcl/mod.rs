@@ -166,6 +166,7 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        self.clear_diagnostics_map(&params.uri).await;
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -353,6 +354,21 @@ impl Backend {
         }
         self.semantic_tokens_map
             .insert(params.uri.to_string(), semantic_tokens)
+            .await;
+    }
+
+    async fn clear_diagnostics_map(&self, uri: &url::Url) {
+        self.diagnostics_map
+            .insert(
+                uri.to_string(),
+                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                    related_documents: None,
+                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                        result_id: None,
+                        items: vec![],
+                    },
+                }),
+            )
             .await;
     }
 
