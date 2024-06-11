@@ -93,7 +93,10 @@ import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
-import { EngineCommandManager } from 'lang/std/engineConnection'
+import {
+  ArtifactMapCommand,
+  EngineCommandManager,
+} from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
@@ -759,14 +762,6 @@ export class SceneEntities {
 
           _ast = parse(recast(_ast))
 
-          console.log('onClick', {
-            sketchInit: sketchInit,
-            _ast,
-            x,
-            y,
-            truncatedAst,
-          })
-
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'CancelSketch' })
@@ -1422,6 +1417,30 @@ export class SceneEntities {
             return ['plane', entity_id]
           }
           const artifact = this.engineCommandManager.artifactMap[entity_id]
+          // If we clicked on an extrude wall, we climb up the parent Id
+          // to get the sketch profile's face ID. If we clicked on an endcap,
+          // we already have it.
+          const targetId =
+            'additionalData' in artifact &&
+            artifact.additionalData?.type === 'cap'
+              ? entity_id
+              : artifact.parentId
+
+          // tsc cannot infer that target can have extrusions
+          // from the commandType (why?) so we need to cast it
+          const target = this.engineCommandManager.artifactMap?.[
+            targetId || ''
+          ] as ArtifactMapCommand & { extrusions?: string[] }
+
+          // TODO: We get the first extrusion command ID,
+          // which is fine while backend systems only support one extrusion.
+          // but we need to more robustly handle resolving to the correct extrusion
+          // if there are multiple.
+          const extrusions =
+            this.engineCommandManager.artifactMap?.[
+              target?.extrusions?.[0] || ''
+            ]
+
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
             return ['other', entity_id]
 
@@ -1429,10 +1448,13 @@ export class SceneEntities {
           if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
             return ['other', entity_id]
           const { z_axis, y_axis, origin } = faceInfo
-          const pathToNode = getNodePathFromSourceRange(
+          const sketchPathToNode = getNodePathFromSourceRange(
             kclManager.ast,
             artifact.range
           )
+          const extrudePathToNode = extrusions?.range
+            ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+            : []
 
           sceneInfra.modelingSend({
             type: 'Select default plane',
@@ -1443,7 +1465,8 @@ export class SceneEntities {
               position: [origin.x, origin.y, origin.z].map(
                 (num) => num / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
-              extrudeSegmentPathToNode: pathToNode,
+              sketchPathToNode,
+              extrudePathToNode,
               cap:
                 artifact?.additionalData?.type === 'cap'
                   ? artifact.additionalData.info
@@ -1455,7 +1478,6 @@ export class SceneEntities {
         }
 
         const faceResult = await checkExtrudeFaceClick()
-        console.log('faceResult', faceResult)
         if (faceResult[0] === 'face') return
 
         if (!args || !args.intersects?.[0]) return

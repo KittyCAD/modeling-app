@@ -48,12 +48,14 @@ export type ReactCameraProperties =
       type: 'perspective'
       fov?: number
       position: [number, number, number]
+      target: [number, number, number]
       quaternion: [number, number, number, number]
     }
   | {
       type: 'orthographic'
       zoom?: number
       position: [number, number, number]
+      target: [number, number, number]
       quaternion: [number, number, number, number]
     }
 
@@ -442,7 +444,7 @@ export class CameraControls {
         this.handleEnd()
         return
       }
-      this.throttledEngCmd({
+      this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'default_camera_zoom',
@@ -454,11 +456,11 @@ export class CameraControls {
       return
     }
 
-    const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
+    // Else "clientToEngine" (Sketch Mode) or forceUpdate
 
-    const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
+    // From onMouseMove zoom handling which seems to be really smooth
     this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-    this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
+    this.pendingZoom *= 1 + event.deltaY * 0.01
     this.handleEnd()
   }
 
@@ -773,6 +775,75 @@ export class CameraControls {
     })
   }
 
+  async updateCameraToAxis(
+    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
+  ): Promise<void> {
+    const distance = this.camera.position.distanceTo(this.target)
+
+    const vantage = this.target.clone()
+    let up = { x: 0, y: 0, z: 1 }
+
+    if (axis === 'x') {
+      vantage.x += distance
+    } else if (axis === 'y') {
+      vantage.y += distance
+    } else if (axis === 'z') {
+      vantage.z += distance
+      up = { x: -1, y: 0, z: 0 }
+    } else if (axis === '-x') {
+      vantage.x -= distance
+    } else if (axis === '-y') {
+      vantage.y -= distance
+    } else if (axis === '-z') {
+      vantage.z -= distance
+      up = { x: -1, y: 0, z: 0 }
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: this.target,
+        vantage: vantage,
+        up: up,
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  async resetCameraPosition(): Promise<void> {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: this.target,
+        vantage: {
+          x: this.target.x,
+          y: this.target.y - 128,
+          z: this.target.z + 64,
+        },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'zoom_to_fit',
+        object_ids: [], // leave empty to zoom to all objects
+        padding: 0.2, // padding around the objects
+      },
+    })
+  }
+
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition = new Vector3(),
@@ -956,6 +1027,11 @@ export class CameraControls {
         roundOff(this.camera.position.x, 2),
         roundOff(this.camera.position.y, 2),
         roundOff(this.camera.position.z, 2),
+      ],
+      target: [
+        roundOff(this.target.x, 2),
+        roundOff(this.target.y, 2),
+        roundOff(this.target.z, 2),
       ],
       quaternion: [
         roundOff(this.camera.quaternion.x, 2),

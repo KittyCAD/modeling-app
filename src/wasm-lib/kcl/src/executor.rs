@@ -4,7 +4,6 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kittycad_execution_plan_macros::ExecutionPlanValue;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -12,7 +11,7 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, KclNone, Value},
+    ast::types::{BodyItem, FunctionExpression, KclNone, Program, Value},
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -721,7 +720,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, ExecutionPlanValue)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -976,6 +975,8 @@ impl Default for PipeInfo {
 }
 
 /// The executor context.
+/// Cloning will return another handle to the same engine connection/session,
+/// as this uses `Arc` under the hood.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
@@ -1310,6 +1311,43 @@ impl ExecutorContext {
     /// Update the units for the executor.
     pub fn update_units(&mut self, units: crate::settings::types::UnitLength) {
         self.settings.units = units;
+    }
+
+    /// Execute the program, then get a PNG screenshot.
+    pub async fn execute_and_prepare_snapshot(&self, program: Program) -> Result<kittycad::types::TakeSnapshot> {
+        let _ = self.run(program, None).await?;
+
+        // Zoom to fit.
+        self.engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::ZoomToFit {
+                    object_ids: Default::default(),
+                    padding: 0.1,
+                },
+            )
+            .await?;
+
+        // Send a snapshot request to the engine.
+        let resp = self
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::TakeSnapshot {
+                    format: kittycad::types::ImageFormat::Png,
+                },
+            )
+            .await?;
+
+        let kittycad::types::OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        } = resp
+        else {
+            anyhow::bail!("Unexpected response from engine: {:?}", resp);
+        };
+        Ok(data)
     }
 }
 

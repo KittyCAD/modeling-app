@@ -200,6 +200,24 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///         axis: getOppositeEdge('revolveAxis', box)
 ///     }, %)
 /// ```
+///
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///   |> startProfileAt([10, 0], %)
+///   |> line([5, -5], %)
+///   |> line([5, 5], %)
+///   |> lineTo([profileStartX(%), profileStartY(%)], %)
+///   |> close(%)
+///
+/// const part001 = revolve({
+///   axis: {
+///     custom: {
+///       axis: [0.0, 1.0, 0.0],
+///       origin: [0.0, 0.0, 0.0]
+///     }
+///   }
+/// }, sketch001)
+/// ```
 #[stdlib {
     name = "revolve",
 }]

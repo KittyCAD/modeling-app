@@ -1,14 +1,65 @@
 import { useEffect, useState } from 'react'
 
+import {
+  EngineConnectionStateType,
+  DisconnectingType,
+  EngineCommandManagerEvents,
+  EngineConnectionEvents,
+  ConnectionError,
+  CONNECTION_ERROR_TEXT,
+} from '../lang/std/engineConnection'
+
+import { engineCommandManager } from '../lib/singletons'
+
 const Loading = ({ children }: React.PropsWithChildren) => {
-  const [hasLongLoadTime, setHasLongLoadTime] = useState(false)
+  const [error, setError] = useState<ConnectionError>(ConnectionError.Unset)
+
   useEffect(() => {
+    const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
+      if (
+        (state.type !== EngineConnectionStateType.Disconnected ||
+          state.type !== EngineConnectionStateType.Disconnecting) &&
+        state.value?.type !== DisconnectingType.Error
+      )
+        return
+      setError(state.value.value.error)
+    }
+
+    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
+      engineConnection.addEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChange as EventListener
+      )
+    }
+
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.EngineAvailable,
+      onEngineAvailable as EventListener
+    )
+
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.EngineAvailable,
+        onEngineAvailable as EventListener
+      )
+      engineCommandManager.engineConnection?.removeEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChange as EventListener
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    // Don't set long loading time if there's a more severe error
+    if (error > ConnectionError.LongLoadingTime) return
+
     const timer = setTimeout(() => {
-      setHasLongLoadTime(true)
+      setError(ConnectionError.LongLoadingTime)
     }, 4000)
 
     return () => clearTimeout(timer)
-  }, [setHasLongLoadTime])
+  }, [error, setError])
+
   return (
     <div
       className="body-bg flex flex-col items-center justify-center h-screen"
@@ -29,10 +80,10 @@ const Loading = ({ children }: React.PropsWithChildren) => {
       <p
         className={
           'text-sm mt-4 text-primary/60 transition-opacity duration-500' +
-          (hasLongLoadTime ? ' opacity-100' : ' opacity-0')
+          (error !== ConnectionError.Unset ? ' opacity-100' : ' opacity-0')
         }
       >
-        Loading is taking longer than expected.
+        {CONNECTION_ERROR_TEXT[error]}
       </p>
     </div>
   )

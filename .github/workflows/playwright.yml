@@ -46,12 +46,18 @@ jobs:
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright/
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v3
+      uses: dawidd6/action-download-artifact@v5
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -143,12 +149,20 @@ jobs:
         cache: 'yarn'
     - name: Install dependencies
       run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v3
+      uses: dawidd6/action-download-artifact@v5
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
