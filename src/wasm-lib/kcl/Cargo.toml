@@ -38,7 +38,7 @@ thiserror = "1.0.61"
 toml = "0.8.14"
 # TODO: change this to a cargo release once 8.1.1 comes out
 ts-rs = { git = "https://github.com/Aleph-Alpha/ts-rs", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings"] }
-url = { version = "2.5.0", features = ["serde"] }
+url = { version = "2.5.1", features = ["serde"] }
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
 validator = { version = "0.18.1", features = ["derive"] }
 winnow = "0.5.40"
