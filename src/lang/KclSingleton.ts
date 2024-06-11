@@ -241,11 +241,6 @@ export class KclManager {
   ) {
     await this.ensureWasmInit()
 
-    // here we're going to clear diagnostics since we're the first
-    // one in. We're the only location where diagnostics are cleared;
-    // everything from here on out should be *appending*.
-    editorManager.clearDiagnostics()
-
     const newCode = recast(ast)
     const newAst = this.safeParse(newCode)
     if (!newAst) return
@@ -254,6 +249,11 @@ export class KclManager {
     await codeManager.writeToFile()
     await this?.engineCommandManager?.waitForReady
     this._ast = { ...newAst }
+
+    // here we're going to clear diagnostics since we're the first
+    // one in. We're the only location where diagnostics are cleared;
+    // everything from here on out should be *appending*.
+    editorManager.clearDiagnostics()
 
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
