@@ -11,6 +11,7 @@ pub mod engine;
 pub mod errors;
 pub mod executor;
 pub mod fs;
+pub mod lint;
 pub mod lsp;
 pub mod parser;
 pub mod settings;

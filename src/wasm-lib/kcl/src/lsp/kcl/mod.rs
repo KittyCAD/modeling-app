@@ -36,9 +36,9 @@ use tower_lsp::{
 use super::backend::{InnerHandle, UpdateHandle};
 use crate::{
     ast::types::VariableKind,
-    errors::KclError,
     executor::SourceRange,
-    lsp::{backend::Backend as _, safemap::SafeMap},
+    lint::{checks, lint},
+    lsp::{backend::Backend as _, safemap::SafeMap, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
 };
 
@@ -166,6 +166,7 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        self.clear_diagnostics_map(&params.uri).await;
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -251,14 +252,14 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        let result = self.execute(&params, ast).await;
-        if result.is_err() {
-            // We return early because we got errors, and we don't want to clear the diagnostics.
+        if self.execute(&params, ast.clone()).await.is_err() {
+            // if there was an issue, let's bail and avoid trying to lint.
             return;
         }
 
-        // Lets update the diagnostics, since we got no errors.
-        self.clear_diagnostics(&params.uri).await;
+        for discovered_finding in lint(&ast, checks::lint_variables).into_iter().flatten() {
+            self.add_to_diagnostics(&params, discovered_finding).await;
+        }
     }
 }
 
@@ -356,30 +357,7 @@ impl Backend {
             .await;
     }
 
-    async fn add_to_diagnostics(&self, params: &TextDocumentItem, err: KclError) {
-        let diagnostic = err.to_lsp_diagnostic(&params.text);
-        // We got errors, update the diagnostics.
-        self.diagnostics_map
-            .insert(
-                params.uri.to_string(),
-                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: vec![diagnostic.clone()],
-                    },
-                }),
-            )
-            .await;
-
-        // Publish the diagnostic.
-        // If the client supports it.
-        self.client
-            .publish_diagnostics(params.uri.clone(), vec![diagnostic], None)
-            .await;
-    }
-
-    async fn clear_diagnostics(&self, uri: &url::Url) {
+    async fn clear_diagnostics_map(&self, uri: &url::Url) {
         self.diagnostics_map
             .insert(
                 uri.to_string(),
@@ -392,10 +370,43 @@ impl Backend {
                 }),
             )
             .await;
+    }
 
-        // Publish the diagnostic, we reset it here so the client knows the code compiles now.
-        // If the client supports it.
-        self.client.publish_diagnostics(uri.clone(), vec![], None).await;
+    async fn add_to_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
+        &self,
+        params: &TextDocumentItem,
+        diagnostic: DiagT,
+    ) {
+        self.client
+            .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostic))
+            .await;
+
+        let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
+
+        let DocumentDiagnosticReport::Full(mut report) = self
+            .diagnostics_map
+            .get(params.uri.clone().as_str())
+            .await
+            .unwrap_or(DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                related_documents: None,
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items: vec![],
+                },
+            }))
+        else {
+            unreachable!();
+        };
+
+        report.full_document_diagnostic_report.items.push(diagnostic);
+
+        self.diagnostics_map
+            .insert(params.uri.to_string(), DocumentDiagnosticReport::Full(report.clone()))
+            .await;
+
+        self.client
+            .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
+            .await;
     }
 
     async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) -> Result<()> {

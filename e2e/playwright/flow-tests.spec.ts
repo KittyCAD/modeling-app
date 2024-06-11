@@ -421,8 +421,8 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  /* add the following code to the editor (# error is not a valid line)
-    # error
+  /* add the following code to the editor ($ error is not a valid line)
+    $ error
     const topAng = 30
     const bottomAng = 25
    */
@@ -463,6 +463,8 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await page.keyboard.type("// Let's define the same thing twice")
   await page.keyboard.press('Enter')
   await page.keyboard.type('const topAng = 42')
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.press('ArrowRight')
 
   await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
   await expect(page.locator('.cm-lintRange.cm-lintRange-error')).toBeVisible()
