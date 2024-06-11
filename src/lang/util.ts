@@ -26,6 +26,22 @@ export function pathMapToSelections(
   return newSelections
 }
 
+export function updatePathToNodeFromMap(
+  oldPath: PathToNode,
+  pathToNodeMap: { [key: number]: PathToNode }
+): PathToNode {
+  const updatedPathToNode = JSON.parse(JSON.stringify(oldPath))
+  let max = 0
+  Object.values(pathToNodeMap).forEach((path) => {
+    const index = Number(path[1][0])
+    if (index > max) {
+      max = index
+    }
+  })
+  updatedPathToNode[1][0] = max
+  return updatedPathToNode
+}
+
 export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections

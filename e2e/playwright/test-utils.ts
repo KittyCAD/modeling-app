@@ -1,22 +1,27 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page, Download } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
+import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
+import type { Models } from '@kittycad/lib'
+import { APP_NAME } from 'lib/constants'
 
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
   await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
-  await page.getByTestId('loading').waitFor({ state: 'detached' })
+  await page
+    .getByTestId('loading')
+    .waitFor({ state: 'detached', timeout: 20_000 })
 
   await page.getByTestId('start-sketch').waitFor()
 }
 
 async function removeCurrentCode(page: Page) {
   const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
   await page.keyboard.down(hotkey)
   await page.keyboard.press('a')
   await page.keyboard.up(hotkey)
@@ -25,12 +30,12 @@ async function removeCurrentCode(page: Page) {
 }
 
 async function sendCustomCmd(page: Page, cmd: EngineCommand) {
-  await page.fill('[data-testid="custom-cmd-input"]', JSON.stringify(cmd))
-  await page.click('[data-testid="custom-cmd-send-button"]')
+  await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
+  await page.getByTestId('custom-cmd-send-button').click()
 }
 
 async function clearCommandLogs(page: Page) {
-  await page.click('[data-testid="clear-commands"]')
+  await page.getByTestId('clear-commands').click()
 }
 
 async function expectCmdLog(page: Page, locatorStr: string) {
@@ -94,6 +99,74 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+export const wiggleMove = async (
+  page: any,
+  x: number,
+  y: number,
+  steps: number,
+  dist: number,
+  ang: number,
+  amplitude: number,
+  freq: number
+) => {
+  const tau = Math.PI * 2
+  const deg = tau / 360
+  const step = dist / steps
+  for (let i = 0, j = 0; i < dist; i += step, j += 1) {
+    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
+    const [x2, y2] = [
+      Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
+      Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
+    ]
+    const [xr, yr] = [x2, y2]
+    await page.mouse.move(x + xr, y + yr, { steps: 2 })
+  }
+}
+
+export const getMovementUtils = (opts: any) => {
+  // The way we truncate is kinda odd apparently, so we need this function
+  // "[k]itty[c]ad round"
+  const kcRound = (n: number) => Math.trunc(n * 100) / 100
+
+  // To translate between screen and engine ("[U]nit") coordinates
+  // NOTE: these pretty much can't be perfect because of screen scaling.
+  // Handle on a case-by-case.
+  const toU = (x: number, y: number) => [
+    kcRound(x * 0.0854),
+    kcRound(-y * 0.0854), // Y is inverted in our coordinate system
+  ]
+
+  // Turn the array into a string with specific formatting
+  const fromUToString = (xy: number[]) => `[${xy[0]}, ${xy[1]}]`
+
+  // Combine because used often
+  const toSU = (xy: number[]) => fromUToString(toU(xy[0], xy[1]))
+
+  // Make it easier to click around from center ("click [from] zero zero")
+  const click00 = (x: number, y: number) =>
+    opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
+
+  // Relative clicker, must keep state
+  let last = { x: 0, y: 0 }
+  const click00r = (x?: number, y?: number) => {
+    // reset relative coordinates when anything is undefined
+    if (x === undefined || y === undefined) {
+      last.x = 0
+      last.y = 0
+      return
+    }
+
+    const ret = click00(last.x + x, last.y + y)
+    last.x += x
+    last.y += y
+
+    // Returns the new absolute coordinate if you need it.
+    return ret.then(() => [last.x, last.y])
+  }
+
+  return { toSU, click00r }
+}
+
 export async function getUtils(page: Page) {
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
@@ -130,11 +203,29 @@ export async function getUtils(page: Page) {
     },
     waitForCmdReceive: (commandType: string) =>
       waitForCmdReceive(page, commandType),
+    getSegmentBodyCoords: async (locator: string, px = 30) => {
+      const overlay = page.locator(locator)
+      const bbox = await overlay
+        .boundingBox()
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
+      const angle = Number(await overlay.getAttribute('data-overlay-angle'))
+      const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
+      const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
+      return {
+        x: Math.round(bbox.x + angleXOffset),
+        y: Math.round(bbox.y - angleYOffset),
+      }
+    },
+    getAngle: async (locator: string) => {
+      const overlay = page.locator(locator)
+      return Number(await overlay.getAttribute('data-overlay-angle'))
+    },
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
         .boundingBox()
-        .then((box) => ({ x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+    codeLocator: page.locator('.cm-content'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,
@@ -149,6 +240,30 @@ export async function getUtils(page: Page) {
       if (!endWithDebugPanelOpen) {
         await closeDebugPanel(page)
       }
+    },
+    /**
+     * Given an expected RGB value, diff if the channel with the largest difference
+     */
+    getGreatestPixDiff: async (
+      coords: { x: number; y: number },
+      expected: [number, number, number]
+    ): Promise<number> => {
+      const buffer = await page.screenshot({
+        fullPage: true,
+      })
+      const screenshot = await PNG.sync.read(buffer)
+      // most likely related to pixel density but the screenshots for webkit are 2x the size
+      // there might be a more robust way of doing this.
+      const pixMultiplier = browserType === 'webkit' ? 2 : 1
+      const index =
+        (screenshot.width * coords.y * pixMultiplier +
+          coords.x * pixMultiplier) *
+        4 // rbga is 4 channels
+      return Math.max(
+        Math.abs(screenshot.data[index] - expected[0]),
+        Math.abs(screenshot.data[index + 1] - expected[1]),
+        Math.abs(screenshot.data[index + 2] - expected[2])
+      )
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {
@@ -277,3 +392,82 @@ export const makeTemplate: (
       ),
   }
 }
+
+export interface Paths {
+  modelPath: string
+  imagePath: string
+  outputType: string
+}
+
+export const doExport = async (
+  output: Models['OutputFormat_type'],
+  page: Page
+): Promise<Paths> => {
+  await page.getByRole('button', { name: APP_NAME }).click()
+  await expect(page.getByRole('button', { name: 'Export Part' })).toBeVisible()
+  await page.getByRole('button', { name: 'Export Part' }).click()
+  await expect(page.getByTestId('command-bar')).toBeVisible()
+
+  // Go through export via command bar
+  await page.getByRole('option', { name: output.type, exact: false }).click()
+  await page.locator('#arg-form').waitFor({ state: 'detached' })
+  if ('storage' in output) {
+    await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
+    await page.getByRole('button', { name: 'storage', exact: false }).click()
+    await page
+      .getByRole('option', { name: output.storage, exact: false })
+      .click()
+    await page.locator('#arg-form').waitFor({ state: 'detached' })
+  }
+  await expect(page.getByText('Confirm Export')).toBeVisible()
+
+  const getPromiseAndResolve = () => {
+    let resolve: any = () => {}
+    const promise = new Promise<Download>((r) => {
+      resolve = r
+    })
+    return [promise, resolve]
+  }
+
+  const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
+  let downloadCnt = 0
+
+  page.on('download', async (download) => {
+    if (downloadCnt === 0) {
+      downloadResolve1(download)
+    }
+    downloadCnt++
+  })
+  await page.getByRole('button', { name: 'Submit command' }).click()
+
+  // Handle download
+  const download = await downloadPromise1
+  const downloadLocationer = (extra = '', isImage = false) =>
+    `./e2e/playwright/export-snapshots/${output.type}-${
+      'storage' in output ? output.storage : ''
+    }${extra}.${isImage ? 'png' : output.type}`
+  const downloadLocation = downloadLocationer()
+
+  await download.saveAs(downloadLocation)
+
+  if (output.type === 'step') {
+    // stable timestamps for step files
+    const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
+    const newFileContents = fileContents.replace(
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[0-9]+[0-9]\+[0-9]{2}:[0-9]{2}/g,
+      '1970-01-01T00:00:00.0+00:00'
+    )
+    await fsp.writeFile(downloadLocation, newFileContents)
+  }
+
+  return {
+    modelPath: downloadLocation,
+    imagePath: downloadLocationer('', true),
+    outputType: output.type,
+  }
+}
+
+/**
+ * Gets the appropriate modifier key for the platform.
+ */
+export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
