@@ -155,7 +155,7 @@ export class CoreDumpManager {
      * @param {object} obj - The object to clone.
      */
     const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
-    
+
     /**
      * Check if a function is private method
      */
@@ -197,10 +197,7 @@ export class CoreDumpManager {
       // Singletons
 
       // engine_command_manager
-      console.log(
-        'CoreDump: engineCommandManager',
-        this.engineCommandManager
-      )
+      console.log('CoreDump: engineCommandManager', this.engineCommandManager)
 
       // artifact map - this.engineCommandManager.artifactMap
       if (this.engineCommandManager?.artifactMap) {
@@ -355,9 +352,14 @@ export class CoreDumpManager {
 
       if (sceneEntitiesManager) {
         // Scene Entities Manager active segments
-        console.log('CoreDump: Scene Entities Manager active segments', sceneEntitiesManager?.activeSegments)
+        console.log(
+          'CoreDump: Scene Entities Manager active segments',
+          sceneEntitiesManager?.activeSegments
+        )
         if (sceneEntitiesManager?.activeSegments) {
-          clientState.scene_entities_manager.activeSegments = deepClone(sceneEntitiesManager.activeSegments)
+          clientState.scene_entities_manager.activeSegments = deepClone(
+            sceneEntitiesManager.activeSegments
+          )
         }
       }
 
@@ -384,7 +386,9 @@ export class CoreDumpManager {
             clientState.editor_manager[key] = deepClone(editorManager[key])
           } catch (error) {
             console.error(
-              'CoreDump: unable to parse Editor Manager ' + key + ' data due to ',
+              'CoreDump: unable to parse Editor Manager ' +
+                key +
+                ' data due to ',
               error
             )
           }
