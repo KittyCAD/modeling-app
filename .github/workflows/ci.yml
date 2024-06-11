@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   check-format:
-    runs-on: 'ubuntu-latest'
+    runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,7 +32,7 @@ jobs:
       - run: yarn fmt-check
 
   check-types:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
 
 
   check-typos:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
 
 
   build-test-web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -88,7 +88,7 @@ jobs:
 
 
   prepare-json-files:
-    runs-on: ubuntu-latest  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
     steps:
@@ -128,12 +128,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, ubuntu-latest, windows-latest]
+        os: [macos-14, ubuntu-22.04, windows-2022]
     env:
       # Specific Apple Universal target for macos
       TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
       # Only build executable on linux (no appimage or deb)
-      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
+      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-22.04' && '--bundles' || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -148,7 +148,7 @@ jobs:
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
 
       - name: Update WebView2 on Windows
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         # Workaround needed to build the tauri windows app with matching edge version.
         # From https://github.com/actions/runner-images/issues/9538
         run: |
@@ -156,7 +156,7 @@ jobs:
           Start-Process -FilePath setup.exe -Verb RunAs -Wait
 
       - name: Install ubuntu system dependencies
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -212,7 +212,7 @@ jobs:
           rustup target add x86_64-apple-darwin
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
+        if: ${{ matrix.os == 'windows-2022' && env.BUILD_RELEASE == 'true' }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
           cat /d/Certificate_pkcs12.p12
@@ -227,7 +227,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
+        if: ${{ matrix.os == 'windows-2022' && env.BUILD_RELEASE == 'true' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -347,12 +347,12 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-2022' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
           args: "${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os != 'ubuntu-latest'
+        if: matrix.os != 'ubuntu-22.04'
         env:
           PREFIX: ${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
@@ -360,7 +360,7 @@ jobs:
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
       - name: Run e2e tests (linux only)
-        if: ${{ matrix.os == 'ubuntu-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
           cargo install tauri-driver --force
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
@@ -371,7 +371,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - name: Run e2e tests (windows only)
-        if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
+        if: ${{ matrix.os == 'windows-2022' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
           cargo install tauri-driver --force
           yarn wdio run wdio.conf.ts
@@ -383,7 +383,7 @@ jobs:
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
   publish-apps-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
@@ -494,7 +494,7 @@ jobs:
 
   announce_release:
     needs: [publish-apps-release]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event_name == 'release'
     steps:
       - name: Check out code
