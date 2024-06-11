@@ -9,7 +9,7 @@ import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight } from './highlightextension'
 import { forEachDiagnostic, setDiagnostics, Diagnostic } from '@codemirror/lint'
 
-function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): bool {
+function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
   return d1.start == d2.start && d1.end == d2.end && d1.message == d2.message
 }
 
@@ -95,7 +95,8 @@ export default class EditorManager {
     }
   }
 
-  clearDiagnostics(diagnostics: Diagnostic[]): void {
+  clearDiagnostics(): void {
+    if (!this.editorView) return
     this.editorView.dispatch(setDiagnostics(this.editorView.state, []))
   }
 
@@ -111,7 +112,7 @@ export default class EditorManager {
       diagnostics.push(diag)
     })
 
-    const uniqueDiagnostics = new Set()
+    const uniqueDiagnostics = new Set<Diagnostic>()
     diagnostics.forEach((diagnostic) => {
       for (const knownDiagnostic of uniqueDiagnostics.values()) {
         if (diagnosticIsEqual(diagnostic, knownDiagnostic)) {
