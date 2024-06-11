@@ -171,8 +171,8 @@ impl crate::lsp::backend::Backend for Backend {
         // Lets update the tokens.
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
-            Err(_err) => {
-                // self.add_to_diagnostics(&params, err).await;
+            Err(err) => {
+                self.add_to_diagnostics(&params, err).await;
                 return;
             }
         };
@@ -211,8 +211,8 @@ impl crate::lsp::backend::Backend for Backend {
         let result = parser.ast();
         let ast = match result {
             Ok(ast) => ast,
-            Err(_err) => {
-                // self.add_to_diagnostics(&params, err).await;
+            Err(err) => {
+                self.add_to_diagnostics(&params, err).await;
                 return;
             }
         };
@@ -414,8 +414,8 @@ impl Backend {
 
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,
-            Err(_err) => {
-                // self.add_to_diagnostics(params, err).await;
+            Err(err) => {
+                self.add_to_diagnostics(params, err).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
