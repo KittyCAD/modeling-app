@@ -33,7 +33,7 @@ export function LowerRightControls(props: React.PropsWithChildren) {
           rel="noopener noreferrer"
         >
           <CustomIcon
-            name="exclamationMark"
+            name="bug"
             className={`w-5 h-5 ${linkOverrideClassName}`}
           />
           <Tooltip position="top">Report a bug</Tooltip>

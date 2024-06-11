@@ -11,30 +11,8 @@
   --_p-inline: calc(50% + calc(var(--isRTL) * var(--_triangle-width) / 2));
   --_p-block: 4px;
   --_bg: var(--chalkboard-10);
-  --_shadow-alpha: 5%;
+  --_shadow-alpha: 8%;
   --_theme-alpha: 0.15;
-  --_theme-outline: drop-shadow(
-      0 1px 0
-        oklch(
-          var(--primary-lightness) var(--primary-chroma) var(--primary-hue) /
-            var(--_theme-alpha)
-        )
-    )
-    drop-shadow(
-      0 -1px 0 oklch(var(--primary-lightness) var(--primary-chroma)
-            var(--primary-hue) / var(--_theme-alpha))
-    )
-    drop-shadow(
-      1px 0 0
-        oklch(
-          var(--primary-lightness) var(--primary-chroma) var(--primary-hue) /
-            var(--_theme-alpha)
-        )
-    )
-    drop-shadow(
-      -1px 0 0 oklch(var(--primary-lightness) var(--primary-chroma)
-            var(--primary-hue) / var(--_theme-alpha))
-    );
 
   pointer-events: none;
   user-select: none;
@@ -61,16 +39,15 @@
   background: var(--_bg);
   @apply text-chalkboard-110;
   will-change: filter;
-  filter: drop-shadow(0 1px 3px hsl(0 0% 0% / var(--_shadow-alpha)))
-    drop-shadow(0 4px 8px hsl(0 0% 0% / var(--_shadow-alpha)))
-    var(--_theme-outline);
+  filter: drop-shadow(0 1px 2px hsl(0 0% 0% / var(--_shadow-alpha)))
+    drop-shadow(0 4px 6px hsl(0 0% 0% / calc(var(--_shadow-alpha) / 2)));
 }
 
 :global(.dark) .tooltip {
-  --_bg: var(--chalkboard-110);
+  --_bg: var(--chalkboard-90);
   --_theme-alpha: 40%;
+  --_shadow-alpha: 16%;
   @apply text-chalkboard-10;
-  filter: var(--_theme-outline);
 }
 
 .tooltip:dir(rtl) {
@@ -109,7 +86,7 @@
 }
 
 /* Sometimes there's no visible label,
- * so we'll use the tooltip as the label  
+ * so we'll use the tooltip as the label
 */
 .tooltip:only-child::before {
   content: 'Tooltip:';
