@@ -341,6 +341,8 @@ export async function coreDump(
     if (openGithubIssue && dump.github_issue_url) {
       openWindow(dump.github_issue_url)
     }
+    console.log('CoreDump: final coredump', dump)
+    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
