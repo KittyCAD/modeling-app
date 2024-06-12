@@ -901,7 +901,7 @@ export const modelingMachine = createMachine(
           sceneInfra.modelingSend('Equip Line tool')
         }
       },
-      'setup client side sketch segments': ({ sketchDetails }) => {
+      'setup client side sketch segments': ({ sketchDetails, selectionRanges }) => {
         if (!sketchDetails) return
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
@@ -914,6 +914,7 @@ export const modelingMachine = createMachine(
             up: sketchDetails.yAxis,
             position: sketchDetails.origin,
             maybeModdedAst: kclManager.ast,
+            selectionRanges,
           })
           sceneInfra.resetMouseListeners()
           sceneEntitiesManager.setupSketchIdleCallbacks({
@@ -1157,13 +1158,15 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        const selection = updateSelections(
+          pathToNodeMap,
+          selectionRanges,
+          parse(recast(modifiedAst))
+        )
+        console.log('new selection after horz constraint', selection)
         return {
-          selectionType: 'completeSelection',
-          selection: updateSelections(
-            pathToNodeMap,
-            selectionRanges,
-            parse(recast(modifiedAst))
-          ),
+          selectionType: 'singleCodeCursor',
+          selection: selection.codeBasedSelections[0],
         }
       },
       'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {

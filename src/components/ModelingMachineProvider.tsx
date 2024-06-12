@@ -222,6 +222,12 @@ export const ModelingMachineProvider = ({
             : {}
         ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
+          console.log('start of set selection', {
+            selectionRanges,
+            sketchDetails,
+            event,
+            hasEditorView: !!editorManager.editorView,
+          })
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
@@ -237,6 +243,7 @@ export const ModelingMachineProvider = ({
             codeBasedSelections: [],
             otherSelections: [],
           }
+          console.log('did we get this far?', setSelections.selectionType)
           if (setSelections.selectionType === 'singleCodeCursor') {
             if (!setSelections.selection && editorManager.isShiftDown) {
             } else if (!setSelections.selection && !editorManager.isShiftDown) {

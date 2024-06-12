@@ -75,7 +75,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { normaliseAngle, roundOff, throttle } from 'lib/utils'
+import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -85,8 +85,10 @@ import {
   findUniqueName,
 } from 'lang/modifyAst'
 import {
+  Selections,
   getEventForSegmentSelection,
   sendSelectEventToEngine,
+  updateSceneObjectColors,
 } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
@@ -302,13 +304,15 @@ export class SceneEntities {
     position,
     maybeModdedAst,
     draftExpressionsIndices,
+    selectionRanges,
   }: {
     sketchPathToNode: PathToNode
     maybeModdedAst: Program
     draftExpressionsIndices?: { start: number; end: number }
     forward: [number, number, number]
     up: [number, number, number]
-    position?: [number, number, number]
+    position?: [number, number, number],
+    selectionRanges?: Selections,
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
@@ -401,6 +405,13 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
+      const segmentHasCursor = selectionRanges?.codeBasedSelections.some((selection) => {
+          return isOverlap(selection.range, segment.__geoMeta.sourceRange)
+        })
+      const segmentColor = segmentHasCursor
+      ? 0x0000ff
+      : getThemeColorForThreeJs(sceneInfra._theme)
+
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
         maybeModdedAst,
@@ -418,6 +429,7 @@ export class SceneEntities {
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          color: segmentColor,
         })
         callbacks.push(
           this.updateTangentialArcToSegment({
@@ -439,6 +451,7 @@ export class SceneEntities {
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          color: segmentColor,
         })
         callbacks.push(
           this.updateStraightSegment({
@@ -1376,6 +1389,7 @@ export class SceneEntities {
   }: {
     removeAxis?: boolean
   } = {}) {
+    console.trace('tearing down sketch')
     // I think promisifying this is mostly a side effect of not having
     // "setupSketch" correctly capture a promise when it's done
     // so we're effectively waiting for to be finished setting up the scene just to tear it down
