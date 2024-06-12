@@ -36,7 +36,7 @@ pub trait CoreDump: Clone {
     async fn screenshot(&self) -> Result<String>;
 
     /// Get a screenshot of the app and upload it to public cloud storage.
-    async fn upload_screenshot(&self) -> Result<String> {
+    async fn upload_screenshot(&self, coredump_id: &Uuid) -> Result<String> {
         let screenshot = self.screenshot().await?;
         let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
         // Create the zoo client.
@@ -50,7 +50,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some("modeling-app/core-dump-screenshot.png".to_string()),
+                filename: Some(format!(r#"modeling-app/coredump-{}-screenshot.png"#, coredump_id)),
                 content_type: Some("image/png".to_string()),
                 data,
             }])
@@ -66,13 +66,14 @@ pub trait CoreDump: Clone {
 
     /// Dump the app info.
     async fn dump(&self) -> Result<CoreDumpInfo> {
+        let coredump_id = uuid::Uuid::new_v4();
         let client_state: JValue = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
-        let screenshot_url = self.upload_screenshot().await?;
+        let screenshot_url = self.upload_screenshot(&coredump_id).await?;
 
         let mut core_dump_info = CoreDumpInfo {
-            id: uuid::Uuid::new_v4(),
+            id: coredump_id,
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
@@ -83,7 +84,7 @@ pub trait CoreDump: Clone {
             pool: self.pool()?,
             client_state,
         };
-        core_dump_info.set_github_issue_url(&screenshot_url)?;
+        core_dump_info.set_github_issue_url(&screenshot_url, &coredump_id)?;
 
         Ok(core_dump_info)
     }
@@ -127,7 +128,7 @@ pub struct CoreDumpInfo {
 
 impl CoreDumpInfo {
     /// Set the github issue url.
-    pub fn set_github_issue_url(&mut self, screenshot_url: &str) -> Result<()> {
+    pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_id: &Uuid) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
@@ -141,10 +142,13 @@ impl CoreDumpInfo {
 ```json
 {}
 ```
+
+Reference ID: {}
 </details>
 "#,
             screenshot_url,
-            serde_json::to_string_pretty(&self)?
+            serde_json::to_string_pretty(&self)?,
+            coredump_id
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
