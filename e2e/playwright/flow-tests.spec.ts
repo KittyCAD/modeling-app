@@ -411,6 +411,47 @@ test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
   await expect(zooLogo).not.toHaveAttribute('href')
 })
 
+test('if you write kcl with lint errors you get lints', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+
+  await u.codeLocator.click()
+  await page.keyboard.type('const my_snake_case_var = 5')
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('const myCamelCaseVar = 5')
+  await page.keyboard.press('Enter')
+
+  // press arrows to clear autocomplete
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.press('ArrowRight')
+
+  // error in guter
+  await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-info')
+  await expect(
+    page.getByText('Identifiers must be lowerCamelCase')
+  ).toBeVisible()
+
+  // select the line that's causing the error and delete it
+  await page.getByText('const my_snake_case_var = 5').click()
+  await page.keyboard.press('End')
+  await page.keyboard.down('Shift')
+  await page.keyboard.press('Home')
+  await page.keyboard.up('Shift')
+  await page.keyboard.press('Backspace')
+
+  // wait for .cm-lint-marker-info not to be visible
+  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+})
+
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
@@ -421,8 +462,8 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  /* add the following code to the editor (# error is not a valid line)
-    # error
+  /* add the following code to the editor ($ error is not a valid line)
+    $ error
     const topAng = 30
     const bottomAng = 25
    */
@@ -463,6 +504,8 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await page.keyboard.type("// Let's define the same thing twice")
   await page.keyboard.press('Enter')
   await page.keyboard.type('const topAng = 42')
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.press('ArrowRight')
 
   await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
   await expect(page.locator('.cm-lintRange.cm-lintRange-error')).toBeVisible()

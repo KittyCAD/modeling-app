@@ -7,3 +7,5 @@ mod safemap;
 #[cfg(test)]
 mod tests;
 pub mod util;
+
+pub use util::IntoDiagnostic;

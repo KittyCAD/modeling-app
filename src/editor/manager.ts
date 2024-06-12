@@ -7,7 +7,11 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight } from './highlightextension'
-import { setDiagnostics, Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnostics, Diagnostic } from '@codemirror/lint'
+
+function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
+  return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
+}
 
 export default class EditorManager {
   private _editorView: EditorView | null = null
@@ -91,9 +95,36 @@ export default class EditorManager {
     }
   }
 
+  clearDiagnostics(): void {
+    if (!this.editorView) return
+    this.editorView.dispatch(setDiagnostics(this.editorView.state, []))
+  }
+
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this.editorView) return
     this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
+  }
+
+  addDiagnostics(diagnostics: Diagnostic[]): void {
+    if (!this.editorView) return
+
+    forEachDiagnostic(this.editorView.state, function (diag) {
+      diagnostics.push(diag)
+    })
+
+    const uniqueDiagnostics = new Set<Diagnostic>()
+    diagnostics.forEach((diagnostic) => {
+      for (const knownDiagnostic of uniqueDiagnostics.values()) {
+        if (diagnosticIsEqual(diagnostic, knownDiagnostic)) {
+          return
+        }
+      }
+      uniqueDiagnostics.add(diagnostic)
+    })
+
+    this.editorView.dispatch(
+      setDiagnostics(this.editorView.state, [...uniqueDiagnostics])
+    )
   }
 
   undo() {

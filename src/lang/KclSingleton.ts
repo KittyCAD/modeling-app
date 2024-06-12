@@ -89,9 +89,10 @@ export class KclManager {
     return this._kclErrors
   }
   set kclErrors(kclErrors) {
+    console.log('[lsp] not lsp, actually typescript: ', kclErrors)
     this._kclErrors = kclErrors
     let diagnostics = kclErrorsToDiagnostics(kclErrors)
-    editorManager.setDiagnostics(diagnostics)
+    editorManager.addDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
   }
 
@@ -185,6 +186,11 @@ export class KclManager {
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
+    // here we're going to clear diagnostics since we're the first
+    // one in. We're the only location where diagnostics are cleared;
+    // everything from here on out should be *appending*.
+    editorManager.clearDiagnostics()
+
     this.isExecuting = true
     await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({
@@ -234,6 +240,7 @@ export class KclManager {
     } = { updates: 'none' }
   ) {
     await this.ensureWasmInit()
+
     const newCode = recast(ast)
     const newAst = this.safeParse(newCode)
     if (!newAst) return
@@ -242,6 +249,11 @@ export class KclManager {
     await codeManager.writeToFile()
     await this?.engineCommandManager?.waitForReady
     this._ast = { ...newAst }
+
+    // here we're going to clear diagnostics since we're the first
+    // one in. We're the only location where diagnostics are cleared;
+    // everything from here on out should be *appending*.
+    editorManager.clearDiagnostics()
 
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,

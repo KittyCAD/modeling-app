@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::executor::SourceRange;
+use crate::{executor::SourceRange, lsp::IntoDiagnostic};
 
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
@@ -42,19 +42,9 @@ pub struct KclErrorDetails {
 }
 
 impl KclError {
-    /// Get the error message, line and column from the error and input code.
-    pub fn get_message_line_column(&self, input: &str) -> (String, Option<usize>, Option<usize>) {
-        // Calculate the line and column of the error from the source range.
-        let (line, column) = if let Some(range) = self.source_ranges().first() {
-            let line = input[..range.0[0]].lines().count();
-            let column = input[..range.0[0]].lines().last().map(|l| l.len()).unwrap_or_default();
-
-            (Some(line), Some(column))
-        } else {
-            (None, None)
-        };
-
-        (format!("{}: {}", self.error_type(), self.message()), line, column)
+    /// Get the error message.
+    pub fn get_message(&self) -> String {
+        format!("{}: {}", self.error_type(), self.message())
     }
 
     pub fn error_type(&self) -> &'static str {
@@ -106,24 +96,6 @@ impl KclError {
         }
     }
 
-    pub fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
-        let (message, _, _) = self.get_message_line_column(code);
-        let source_ranges = self.source_ranges();
-
-        Diagnostic {
-            range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
-            severity: Some(DiagnosticSeverity::ERROR),
-            code: None,
-            // TODO: this is neat we can pass a URL to a help page here for this specific error.
-            code_description: None,
-            source: Some("kcl".to_string()),
-            message,
-            related_information: None,
-            tags: None,
-            data: None,
-        }
-    }
-
     pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
@@ -160,6 +132,26 @@ impl KclError {
         }
 
         new
+    }
+}
+
+impl IntoDiagnostic for KclError {
+    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+        let message = self.get_message();
+        let source_ranges = self.source_ranges();
+
+        Diagnostic {
+            range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
+            severity: Some(DiagnosticSeverity::ERROR),
+            code: None,
+            // TODO: this is neat we can pass a URL to a help page here for this specific error.
+            code_description: None,
+            source: Some("kcl".to_string()),
+            message,
+            related_information: None,
+            tags: None,
+            data: None,
+        }
     }
 }
 
