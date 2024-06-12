@@ -11,6 +11,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
+use uuid::Uuid;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -71,6 +72,7 @@ pub trait CoreDump: Clone {
         let screenshot_url = self.upload_screenshot().await?;
 
         let mut core_dump_info = CoreDumpInfo {
+            id: uuid::Uuid::new_v4(),
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
@@ -93,6 +95,8 @@ pub trait CoreDump: Clone {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct CoreDumpInfo {
+    /// The unique id for the coredump - this helps correlate uploaded files with coredump data
+    pub id: Uuid,
     /// The version of the app.
     pub version: String,
     /// The git revision of the app.
