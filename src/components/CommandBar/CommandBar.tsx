@@ -120,7 +120,7 @@ export const CommandBar = () => {
             )}
             <button
               onClick={() => commandBarSend({ type: 'Close' })}
-              className="group block !absolute left-auto right-full top-[-3px] p-2.5 mx-[1px] border-r-0 border-chalkboard-20 dark:border-chalkboard-70 rounded-none rounded-l-sm bg-chalkboard-10 dark:bg-chalkboard-100 hover:bg-inherit hover:border-inherit dark:hover:border-inherit"
+              className="group block !absolute left-auto right-full top-[-3px] p-2.5 pb-0 mx-[1px] border-none bg-transparent hover:bg-transparent"
             >
               <CustomIcon
                 name="close"
