@@ -163,6 +163,14 @@ export class CoreDumpManager {
       return key.length && key[0] === '_'
     }
 
+    // Turn off verbose logging by default
+    const verboseLogging = false
+
+    /**
+     * Toggle verbose debug logging of step-by-step client state coredump data
+     */
+    const debugLog = verboseLogging ? console.log : () => {}
+
     console.warn('CoreDump: Gathering client state')
 
     // Initialize the clientState object
@@ -190,18 +198,18 @@ export class CoreDumpManager {
       modeling_machine: {},
       settings_machine: {},
     }
-    console.log('CoreDump: initialized clientState', clientState)
-    console.info('CoreDump: globalThis.window', globalThis.window)
+    debugLog('CoreDump: initialized clientState', clientState)
+    debugLog('CoreDump: globalThis.window', globalThis.window)
 
     try {
       // Singletons
 
       // engine_command_manager
-      console.log('CoreDump: engineCommandManager', this.engineCommandManager)
+      debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
 
       // artifact map - this.engineCommandManager.artifactMap
       if (this.engineCommandManager?.artifactMap) {
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager artifact map',
           this.engineCommandManager.artifactMap
         )
@@ -212,7 +220,7 @@ export class CoreDumpManager {
 
       // command logs - this.engineCommandManager.commandLogs
       if (this.engineCommandManager?.commandLogs) {
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager command logs',
           this.engineCommandManager.commandLogs
         )
@@ -223,7 +231,7 @@ export class CoreDumpManager {
 
       // default planes - this.engineCommandManager.defaultPlanes
       if (this.engineCommandManager?.defaultPlanes) {
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager default planes',
           this.engineCommandManager.defaultPlanes
         )
@@ -236,7 +244,7 @@ export class CoreDumpManager {
       if (this.engineCommandManager?.engineConnection?.state) {
         clientState.engine_command_manager.engine_connection.state =
           this.engineCommandManager.engineConnection.state
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager engine connection state',
           this.engineCommandManager.engineConnection.state
         )
@@ -244,7 +252,7 @@ export class CoreDumpManager {
 
       // in sequence - this.engineCommandManager.inSequence
       if (this.engineCommandManager?.inSequence) {
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager in sequence',
           this.engineCommandManager.inSequence
         )
@@ -254,7 +262,7 @@ export class CoreDumpManager {
 
       // out sequence - this.engineCommandManager.outSequence
       if (this.engineCommandManager?.inSequence) {
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager out sequence',
           this.engineCommandManager.outSequence
         )
@@ -264,7 +272,7 @@ export class CoreDumpManager {
 
       // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
       if (this.engineCommandManager?.sceneCommandArtifacts) {
-        console.log(
+        debugLog(
           'CoreDump: Engine Command Manager scene command artifacts',
           this.engineCommandManager.sceneCommandArtifacts
         )
@@ -275,35 +283,35 @@ export class CoreDumpManager {
 
       // KCL Manager - globalThis?.window?.kclManager
       const kclManager = globalThis?.window?.kclManager
-      console.log('CoreDump: kclManager', kclManager)
+      debugLog('CoreDump: kclManager', kclManager)
 
       if (kclManager) {
         // KCL Manager AST
-        console.log('CoreDump: KCL Manager AST', kclManager?.ast)
+        debugLog('CoreDump: KCL Manager AST', kclManager?.ast)
         if (kclManager?.ast) {
           clientState.kcl_manager.ast = deepClone(kclManager.ast)
         }
 
         // KCL Errors
-        console.log('CoreDump: KCL Errors', kclManager?.kclErrors)
+        debugLog('CoreDump: KCL Errors', kclManager?.kclErrors)
         if (kclManager?.kclErrors) {
           clientState.kcl_manager.kcl_errors = deepClone(kclManager.kclErrors)
         }
 
         // KCL isExecuting
-        console.log('CoreDump: KCL isExecuting', kclManager?.isExecuting)
+        debugLog('CoreDump: KCL isExecuting', kclManager?.isExecuting)
         if (kclManager?.isExecuting) {
           clientState.kcl_manager.isExecuting = kclManager.isExecuting
         }
 
         // KCL logs
-        console.log('CoreDump: KCL logs', kclManager?.logs)
+        debugLog('CoreDump: KCL logs', kclManager?.logs)
         if (kclManager?.logs) {
           clientState.kcl_manager.logs = deepClone(kclManager.logs)
         }
 
         // KCL programMemory
-        console.log('CoreDump: KCL programMemory', kclManager?.programMemory)
+        debugLog('CoreDump: KCL programMemory', kclManager?.programMemory)
         if (kclManager?.programMemory) {
           clientState.kcl_manager.programMemory = deepClone(
             kclManager.programMemory
@@ -311,7 +319,7 @@ export class CoreDumpManager {
         }
 
         // KCL wasmInitFailed
-        console.log('CoreDump: KCL wasmInitFailed', kclManager?.wasmInitFailed)
+        debugLog('CoreDump: KCL wasmInitFailed', kclManager?.wasmInitFailed)
         if (kclManager?.wasmInitFailed) {
           clientState.kcl_manager.wasmInitFailed = kclManager.wasmInitFailed
         }
@@ -319,7 +327,7 @@ export class CoreDumpManager {
 
       // Scene Infra - globalThis?.window?.sceneInfra
       const sceneInfra = globalThis?.window?.sceneInfra
-      console.log('CoreDump: Scene Infra', sceneInfra)
+      debugLog('CoreDump: Scene Infra', sceneInfra)
 
       if (sceneInfra) {
         const sceneInfraSkipKeys = ['camControls']
@@ -332,9 +340,9 @@ export class CoreDumpManager {
             )
           })
 
-        console.log('CoreDump: Scene Infra keys', sceneInfraKeys)
+        debugLog('CoreDump: Scene Infra keys', sceneInfraKeys)
         sceneInfraKeys.forEach((key: string) => {
-          console.log('CoreDump: Scene Infra', key, sceneInfra[key])
+          debugLog('CoreDump: Scene Infra', key, sceneInfra[key])
           try {
             clientState.scene_infra[key] = sceneInfra[key]
           } catch (error) {
@@ -348,11 +356,11 @@ export class CoreDumpManager {
 
       // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
       const sceneEntitiesManager = globalThis?.window?.sceneEntitiesManager
-      console.log('CoreDump: sceneEntitiesManager', sceneEntitiesManager)
+      debugLog('CoreDump: sceneEntitiesManager', sceneEntitiesManager)
 
       if (sceneEntitiesManager) {
         // Scene Entities Manager active segments
-        console.log(
+        debugLog(
           'CoreDump: Scene Entities Manager active segments',
           sceneEntitiesManager?.activeSegments
         )
@@ -365,7 +373,7 @@ export class CoreDumpManager {
 
       // Editor Manager - globalThis?.window?.editorManager
       const editorManager = globalThis?.window?.editorManager
-      console.log('CoreDump: editorManager', editorManager)
+      debugLog('CoreDump: editorManager', editorManager)
 
       if (editorManager) {
         const editorManagerSkipKeys = ['camControls']
@@ -379,9 +387,9 @@ export class CoreDumpManager {
             )
           })
 
-        console.log('CoreDump: Editor Manager keys', editorManagerKeys)
+        debugLog('CoreDump: Editor Manager keys', editorManagerKeys)
         editorManagerKeys.forEach((key: string) => {
-          console.log('CoreDump: Editor Manager', key, editorManager[key])
+          debugLog('CoreDump: Editor Manager', key, editorManager[key])
           try {
             clientState.editor_manager[key] = deepClone(editorManager[key])
           } catch (error) {
@@ -397,21 +405,21 @@ export class CoreDumpManager {
 
       // enableMousePositionLogs - Not coredumped
       // See https://github.com/KittyCAD/modeling-app/issues/2338#issuecomment-2136441998
-      console.log(
+      debugLog(
         'CoreDump: enableMousePositionLogs [not coredumped]',
         globalThis?.window?.enableMousePositionLogs
       )
 
       // XState Machines
-      console.log(
+      debugLog(
         'CoreDump: xstate services',
         globalThis?.window?.__xstate__?.services
       )
 
-      console.log('CoreDump: final clientState', clientState)
+      debugLog('CoreDump: final clientState', clientState)
 
       const clientStateJson = JSON.stringify(clientState)
-      console.log('CoreDump: final clientState JSON', clientStateJson)
+      debugLog('CoreDump: final clientState JSON', clientStateJson)
 
       return Promise.resolve(clientStateJson)
     } catch (error) {
