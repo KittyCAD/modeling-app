@@ -12,6 +12,8 @@ use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
 use uuid::Uuid;
+use kittycad::Client;
+use std::path::Path;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -36,17 +38,14 @@ pub trait CoreDump: Clone {
     async fn screenshot(&self) -> Result<String>;
 
     /// Get a screenshot of the app and upload it to public cloud storage.
-    async fn upload_screenshot(&self, coredump_id: &Uuid) -> Result<String> {
+    async fn upload_screenshot(&self, coredump_id: &Uuid, zoo_client: &Client) -> Result<String> {
         let screenshot = self.screenshot().await?;
         let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
-        // Create the zoo client.
-        let mut zoo = kittycad::Client::new(self.token()?);
-        zoo.set_base_url(&self.base_api_url()?);
 
         // Base64 decode the screenshot.
         let data = base64::engine::general_purpose::STANDARD.decode(cleaned)?;
         // Upload the screenshot.
-        let links = zoo
+        let links = zoo_client
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
@@ -66,11 +65,15 @@ pub trait CoreDump: Clone {
 
     /// Dump the app info.
     async fn dump(&self) -> Result<CoreDumpInfo> {
+        // Create the zoo client.
+        let mut zoo_client = kittycad::Client::new(self.token()?);
+        zoo_client.set_base_url(&self.base_api_url()?);
+
         let coredump_id = uuid::Uuid::new_v4();
         let client_state: JValue = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
-        let screenshot_url = self.upload_screenshot(&coredump_id).await?;
+        let screenshot_url = self.upload_screenshot(&coredump_id, &zoo_client).await?;
 
         let mut core_dump_info = CoreDumpInfo {
             id: coredump_id,
@@ -129,6 +132,10 @@ pub struct CoreDumpInfo {
 impl CoreDumpInfo {
     /// Set the github issue url.
     pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_id: &Uuid) -> Result<()> {
+        // was 
+        // serde_json::to_string_pretty(&self)?
+        let coredump_url = screenshot_url;
+        let coredump_filename = Path::new(coredump_url).file_name().unwrap().to_str().unwrap();
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
@@ -139,15 +146,14 @@ impl CoreDumpInfo {
 <details>
 <summary><b>Core Dump</b></summary>
 
-```json
-{}
-```
+[{}]({})
 
 Reference ID: {}
 </details>
 "#,
             screenshot_url,
-            serde_json::to_string_pretty(&self)?,
+            coredump_filename,
+            coredump_url,
             coredump_id
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
