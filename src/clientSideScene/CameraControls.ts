@@ -433,7 +433,6 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
-    // Assume trackpad if the deltas are small and integers
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
@@ -445,12 +444,35 @@ export class CameraControls {
         return
       }
       this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'default_camera_zoom',
-          magnitude: -event.deltaY * 0.4,
-        },
-        cmd_id: uuidv4(),
+        type: 'modeling_cmd_batch_req',
+        batch_id: uuidv4(),
+        requests: [
+          {
+            cmd: {
+              type: 'camera_drag_start',
+              interaction: 'zoom',
+              window: { x: 5, y: 5 },
+            },
+            cmd_id: uuidv4(),
+          },
+          {
+            cmd: {
+              type: 'camera_drag_move',
+              interaction: 'zoom',
+              window: { x: 0, y: 5 - event.deltaY },
+            },
+            cmd_id: uuidv4(),
+          },
+          {
+            cmd: {
+              type: 'camera_drag_end',
+              interaction: 'zoom',
+              window: { x: 5, y: 5 - event.deltaY },
+            },
+            cmd_id: uuidv4(),
+          },
+        ],
+        responses: false,
       })
       this.handleEnd()
       return
