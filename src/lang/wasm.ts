@@ -338,11 +338,21 @@ export async function coreDump(
 ): Promise<CoreDumpInfo> {
   try {
     const dump: CoreDumpInfo = await coredump(coreDumpManager)
-    if (openGithubIssue && dump.github_issue_url) {
-      openWindow(dump.github_issue_url)
-    }
+    /* NOTE: this console output of the coredump should include the field
+       `github_issue_url` which is not in the uploaded coredump file.
+       `github_issue_url` is added after the file is uploaded
+       and is only needed for the openWindow operation which creates
+       a new GitHub issue for the user.
+     */
     console.log('CoreDump: final coredump', dump)
     console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
+    if (openGithubIssue && dump.github_issue_url) {
+      openWindow(dump.github_issue_url)
+    } else {
+      console.error(
+        'github_issue_url undefined. Unable to create GitHub issue for coredump.'
+      )
+    }
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
