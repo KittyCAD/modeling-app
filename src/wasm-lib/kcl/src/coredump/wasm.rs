@@ -3,10 +3,7 @@
 use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{
-    coredump::CoreDump,
-    wasm::JsFuture,
-};
+use crate::{coredump::CoreDump, wasm::JsFuture};
 use serde_json::Value as JValue;
 
 #[wasm_bindgen(module = "/../../lib/coredump.ts")]
