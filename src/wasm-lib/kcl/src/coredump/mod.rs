@@ -139,7 +139,7 @@ impl CoreDumpInfo {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
-            r#"[Insert a description of the issue here]
+            r#"[Add a title above and insert a description of the issue here]
 
 ![Screenshot]({})
 
