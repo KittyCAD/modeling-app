@@ -121,7 +121,14 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
-  useHotkeyWrapper(['meta + shift + .'], () => coreDump(coreDumpManager, true))
+  useHotkeyWrapper(['meta + shift + .'], () => {
+    console.warn('CoreDump: Initializing core dump')
+    toast.promise(coreDump(coreDumpManager, true), {
+      loading: 'Starting core dump...',
+      success: 'Core dump completed successfully',
+      error: 'Error while exporting core dump',
+    })
+  })
 
   // Settings machine setup
   // const retrievedSettings = useRef(
