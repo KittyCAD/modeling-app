@@ -70,17 +70,18 @@ fn start_worker(i: u8) -> mpsc::Sender<WorkerReq> {
     tx
 }
 
+struct ServerState {
+    workers: Vec<mpsc::Sender<WorkerReq>>,
+    req_num: AtomicUsize,
+}
+
 async fn start_server(args: ServerArgs) -> anyhow::Result<()> {
     let ServerArgs {
         listen_on,
         worker_threads,
     } = args;
     let workers: Vec<_> = (0..worker_threads).map(start_worker).collect();
-    struct State {
-        workers: Vec<mpsc::Sender<WorkerReq>>,
-        req_num: AtomicUsize,
-    }
-    let state = Arc::new(State {
+    let state = Arc::new(ServerState {
         workers,
         req_num: 0.into(),
     });
@@ -90,33 +91,15 @@ async fn start_server(args: ServerArgs) -> anyhow::Result<()> {
         // This closure is run for each connection.
         move |_conn_info| {
             // eprintln!("Connected to a client");
-            let state2 = state.clone();
+            let state = state.clone();
             async move {
                 // This is the `Service` which handles the connection.
                 // `service_fn` converts a function which returns a Response
                 // into a `Service`.
                 Ok::<_, Error>(service_fn(move |req| {
                     // eprintln!("Received a request");
-                    let state3 = state2.clone();
-                    async move {
-                        let whole_body = hyper::body::to_bytes(req.into_body()).await?;
-
-                        // Round robin requests between each available worker.
-                        let req_num = state3.req_num.fetch_add(1, Ordering::Relaxed);
-                        let worker_id = req_num % state3.workers.len();
-                        // println!("Sending request {req_num} to worker {worker_id}");
-                        let worker = state3.workers[worker_id].clone();
-                        let (tx, rx) = oneshot::channel();
-                        let req_sent = worker
-                            .send(WorkerReq {
-                                body: whole_body.into(),
-                                resp: tx,
-                            })
-                            .await;
-                        req_sent.unwrap();
-                        let resp = rx.await.unwrap();
-                        Ok::<_, Error>(resp)
-                    }
+                    let state = state.clone();
+                    async move { handle_request(req, state).await }
                 }))
             }
         },
@@ -129,6 +112,26 @@ async fn start_server(args: ServerArgs) -> anyhow::Result<()> {
         return Err(e.into());
     }
     Ok(())
+}
+
+async fn handle_request(req: hyper::Request<Body>, state3: Arc<ServerState>) -> Result<Response<Body>, Error> {
+    let whole_body = hyper::body::to_bytes(req.into_body()).await?;
+
+    // Round robin requests between each available worker.
+    let req_num = state3.req_num.fetch_add(1, Ordering::Relaxed);
+    let worker_id = req_num % state3.workers.len();
+    // println!("Sending request {req_num} to worker {worker_id}");
+    let worker = state3.workers[worker_id].clone();
+    let (tx, rx) = oneshot::channel();
+    let req_sent = worker
+        .send(WorkerReq {
+            body: whole_body.into(),
+            resp: tx,
+        })
+        .await;
+    req_sent.unwrap();
+    let resp = rx.await.unwrap();
+    Ok::<_, Error>(resp)
 }
 
 /// Execute a KCL program, then respond with a PNG snapshot.
