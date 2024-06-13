@@ -581,7 +581,11 @@ export const modelingMachine = createMachine(
               onError: 'SketchIdle',
               onDone: {
                 target: 'SketchIdle',
-                actions: 'Set sketchDetails',
+                actions: [
+                  'Set sketchDetails',
+                  'Get selection from ast and sketchDetails',
+                  'Set selection'
+                ],
               },
             },
           },
@@ -686,7 +690,7 @@ export const modelingMachine = createMachine(
 
           'Delete segment': {
             internal: true,
-            actions: 'Delete segment',
+            actions: ['Delete segment', 'Set sketchDetails'],
           },
           'code edit during sketch': '.clean slate',
         },
@@ -960,7 +964,7 @@ export const modelingMachine = createMachine(
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-        const selections = await kclManager.updateAst(modifiedAst, true, {
+        const { selections } = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
         if (selections) {
@@ -972,7 +976,7 @@ export const modelingMachine = createMachine(
           sceneInfra.modelingSend('Equip Line tool')
         }
       },
-      'setup client side sketch segments': ({ sketchDetails }) => {
+      'setup client side sketch segments': ({ sketchDetails }, event) => {
         if (!sketchDetails) return
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
@@ -1090,6 +1094,7 @@ export const modelingMachine = createMachine(
       },
       'add axis n grid': ({ sketchDetails }) => {
         if (!sketchDetails) return
+        if (localStorage.getItem('disableAxis')) return
         sceneEntitiesManager.createSketchAxis(
           sketchDetails.sketchPathToNode || [],
           sketchDetails.zAxis,
@@ -1134,19 +1139,11 @@ export const modelingMachine = createMachine(
           pathToNodes: data && [data],
         })
         if (trap(constraint)) return
-        const { modifiedAst, pathToNodeMap } = constraint
+        const { pathToNodeMap } = constraint
         if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-        if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          modifiedAst,
+        let updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+          pathToNodeMap[0],
+          constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
@@ -1156,7 +1153,7 @@ export const modelingMachine = createMachine(
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            parse(recast(modifiedAst))
+            updatedAst.newAst
           ),
         }
       },
@@ -1173,7 +1170,7 @@ export const modelingMachine = createMachine(
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchPathToNode,
           modifiedAst,
           sketchDetails.zAxis,
@@ -1185,7 +1182,7 @@ export const modelingMachine = createMachine(
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            parse(recast(modifiedAst))
+            updatedAst.newAst
           ),
         }
       },
@@ -1199,7 +1196,7 @@ export const modelingMachine = createMachine(
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
@@ -1211,7 +1208,7 @@ export const modelingMachine = createMachine(
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            parse(recast(modifiedAst))
+            updatedAst.newAst
           ),
         }
       },
@@ -1226,7 +1223,7 @@ export const modelingMachine = createMachine(
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
@@ -1236,7 +1233,7 @@ export const modelingMachine = createMachine(
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1254,7 +1251,7 @@ export const modelingMachine = createMachine(
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
@@ -1264,7 +1261,7 @@ export const modelingMachine = createMachine(
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1279,7 +1276,7 @@ export const modelingMachine = createMachine(
         if (err(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
@@ -1289,7 +1286,7 @@ export const modelingMachine = createMachine(
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1304,7 +1301,7 @@ export const modelingMachine = createMachine(
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
@@ -1314,7 +1311,7 @@ export const modelingMachine = createMachine(
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1333,7 +1330,7 @@ export const modelingMachine = createMachine(
           return
         }
 
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           parse(recast(modifiedAst)),
           sketchDetails.zAxis,
@@ -1343,7 +1340,7 @@ export const modelingMachine = createMachine(
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1360,7 +1357,7 @@ export const modelingMachine = createMachine(
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
@@ -1370,7 +1367,7 @@ export const modelingMachine = createMachine(
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',

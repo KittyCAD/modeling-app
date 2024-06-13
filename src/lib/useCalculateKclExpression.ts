@@ -86,7 +86,7 @@ export function useCalculateKclExpression({
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
       const ast = parse(_code)
-      if (trap(ast)) return
+      if (trap(ast, { suppress: true })) return
 
       const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {

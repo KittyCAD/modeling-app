@@ -29,7 +29,6 @@ import {
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
-import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
 import {
   Selections,
@@ -37,6 +36,7 @@ import {
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
+  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -256,6 +256,17 @@ export const ModelingMachineProvider = ({
               }
             : {}
         ),
+        'Get selection from ast and sketchDetails': assign(({ sketchDetails, selectionRanges }, event) => {
+          event.data = {
+            selectionType: 'completeSelection',
+            selection: updateSelections(
+              [sketchDetails.sketchPathToNode],
+              selectionRanges,
+              kclManager.ast,
+            ),
+          }
+          return event.data
+        }),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
@@ -443,7 +454,9 @@ export const ModelingMachineProvider = ({
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
           )
-          if (trap(node)) return false
+          // This should not be returning false, and it should be caught
+          // but we need to simulate old behavior to move on.
+          if (err(node)) return false
           return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
         },
         'Selection is on face': ({ selectionRanges }, { data }) => {
@@ -571,7 +584,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -580,10 +593,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -603,7 +616,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -612,10 +625,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -644,7 +657,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -653,10 +666,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              _modifiedAst,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -673,7 +686,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -682,10 +695,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -705,7 +718,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -714,10 +727,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -737,7 +750,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -746,10 +759,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -769,7 +782,7 @@ export const ModelingMachineProvider = ({
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
@@ -778,10 +791,10 @@ export const ModelingMachineProvider = ({
           )
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
+            selection: updateSelections(
+              pathToNodeMap,
               selectionRanges,
-              pathToNodeMap
+              updatedAst.newAst,
             ),
             updatedPathToNode,
           }
@@ -804,15 +817,15 @@ export const ModelingMachineProvider = ({
           const parsed2 = parse(recast(_modifiedAst))
           if (trap(parsed2)) return []
 
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             pathToReplacedNode || [],
             parsed2,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
-          return pathToReplacedNode || sketchDetails.sketchPathToNode
-        },
+          return pathToReplacedNode
+        }
       },
       devTools: true,
     }

@@ -797,8 +797,11 @@ export function deleteSegmentFromPipeExpression(
   const pipeInPathIndex = pathToNode.findIndex(
     ([_, desc]) => desc === 'PipeExpression'
   )
-  const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1][0] as number
-  pipeExpression.node.body.splice(segmentIndexInPipe, 1)
+  const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
+  pipeExpression.node.body.splice(segmentIndexInPipe[0], 1)
+
+  // Move up to the next segment.
+  segmentIndexInPipe[0] = Math.max(segmentIndexInPipe[0] - 1, 0)
 
   return _modifiedAst
 }

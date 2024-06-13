@@ -107,19 +107,24 @@ export const wiggleMove = async (
   dist: number,
   ang: number,
   amplitude: number,
-  freq: number
+  freq: number,
+  locator?: string,
 ) => {
   const tau = Math.PI * 2
   const deg = tau / 360
   const step = dist / steps
   for (let i = 0, j = 0; i < dist; i += step, j += 1) {
+    if (locator) {
+      const isElVis = await page.locator(locator).isVisible()
+      if (isElVis) return
+    }
     const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
     const [x2, y2] = [
       Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
       Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
     ]
     const [xr, yr] = [x2, y2]
-    await page.mouse.move(x + xr, y + yr, { steps: 2 })
+    await page.mouse.move(x + xr, y + yr, { steps: 5 })
   }
 }
 

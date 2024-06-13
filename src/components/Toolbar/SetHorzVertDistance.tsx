@@ -40,7 +40,7 @@ export function horzVertDistanceInfo({
     if (err(tmp)) return tmp
     return tmp.node
   })
-  const _err1 = _nodes.find((x) => x instanceof Error)
+  const _err1 = _nodes.find(err)
   if (err(_err1)) return _err1
   // Typescript is dumb so give it some help.
   const nodes = _nodes as Value[]
@@ -54,7 +54,7 @@ export function horzVertDistanceInfo({
     if (err(tmp)) return tmp
     return tmp.node
   })
-  const _err2 = _varDecs.find((x) => x instanceof Error)
+  const _err2 = _varDecs.find(err)
   if (err(_err2)) return _err2
   const varDecs = _varDecs as VariableDeclarator[]
 

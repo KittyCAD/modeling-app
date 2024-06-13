@@ -498,9 +498,9 @@ export class SceneEntities {
     up: [number, number, number],
     origin: [number, number, number]
   ) => {
-    if (modifiedAst instanceof Error) return modifiedAst
+    if (err(modifiedAst)) return modifiedAst
 
-    await kclManager.updateAst(modifiedAst, false)
+    const nextAst = await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
@@ -508,7 +508,7 @@ export class SceneEntities {
       forward,
       up,
       position: origin,
-      maybeModdedAst: kclManager.ast,
+      maybeModdedAst: nextAst.newAst,
     })
     this.setupSketchIdleCallbacks({
       forward,
@@ -516,6 +516,7 @@ export class SceneEntities {
       position: origin,
       pathToNode: sketchPathToNode,
     })
+    return nextAst
   }
   setUpDraftSegment = async (
     sketchPathToNode: PathToNode,
@@ -1048,7 +1049,7 @@ export class SceneEntities {
     const info = draftInfo
       ? draftInfo
       : this.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
-    if (trap(info)) return
+    if (trap(info, { suppress: true })) return
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       info
     ;(async () => {
@@ -1588,7 +1589,7 @@ export class SceneEntities {
             parent.userData.pathToNode,
             'CallExpression'
           )
-          if (trap(_node)) return
+          if (trap(_node, { suppress: true })) return
           const node = _node.node
           editorManager.setHighlightRange([node.start, node.end])
           const yellow = 0xffff00

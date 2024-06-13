@@ -574,20 +574,22 @@ export function updateSelections(
   prevSelectionRanges: Selections,
   ast: Program | Error
 ): Selections | Error {
-  if (ast instanceof Error) return ast
+  if (err(ast)) return ast
+
+  const newSelections = Object.entries(pathToNodeMap)
+    .map(([index, pathToNode]): Selection | undefined => {
+      const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+      if (err(nodeMeta)) return undefined
+      const node = nodeMeta.node
+      return {
+        range: [node.start, node.end],
+        type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+      }
+    })
+    .filter((x?: Selection) => x !== undefined) as Selection[]
 
   return {
-    ...prevSelectionRanges,
-    codeBasedSelections: Object.entries(pathToNodeMap)
-      .map(([index, pathToNode]): Selection | undefined => {
-        const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
-        if (err(nodeMeta)) return undefined
-        const node = nodeMeta.node
-        return {
-          range: [node.start, node.end],
-          type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
-        }
-      })
-      .filter((x?: Selection) => x !== undefined) as Selection[],
+    codeBasedSelections: newSelections.length > 0 ? newSelections : prevSelectionRanges.codeBasedSelections,
+    otherSelections: prevSelectionRanges.otherSelections,
   }
 }

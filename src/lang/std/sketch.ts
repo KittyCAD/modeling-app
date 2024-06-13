@@ -453,9 +453,7 @@ export const line: SketchLineHelper = {
       return {
         modifiedAst: _node,
         pathToNode: [
-          ...pathToNode,
-          ['body', 'PipeExpression'],
-          [callIndex, 'CallExpression'],
+          ...pathToNode
         ],
         valueUsedInTransform,
       }

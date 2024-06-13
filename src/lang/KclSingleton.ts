@@ -349,7 +349,10 @@ export class KclManager {
     optionalParams?: {
       focusPath?: PathToNode
     }
-  ): Promise<Selections | null> {
+  ): Promise<{
+      newAst: Program,
+      selections?: Selections,
+    } | null> {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
@@ -392,7 +395,8 @@ export class KclManager {
       // Execute ast mock will update the code state and editor.
       await this.executeAstMock(astWithUpdatedSource)
     }
-    return returnVal
+
+    return { selections: returnVal, newAst: astWithUpdatedSource }
   }
 
   get defaultPlanes() {

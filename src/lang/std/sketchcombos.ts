@@ -77,7 +77,7 @@ function createCallWrapper(
     args.push(tag)
   }
 
-  if (args.some((x) => x instanceof Error)) {
+  if (args.some(err)) {
     console.error(args)
     return {
       callExp: createCallExpression('', []),

@@ -46,8 +46,8 @@ export function angleLengthInfo({
   const nodes = paths.map((pathToNode) =>
     getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression')
   )
-  const hasError = nodes.find((x) => x instanceof Error)
-  if (err(hasError)) return hasError
+  const _err1 = nodes.find(err)
+  if (err(_err1)) return _err1
 
   const isAllTooltips = nodes.every((meta) => {
     if (err(meta)) return false

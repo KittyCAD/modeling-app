@@ -371,7 +371,7 @@ const ya = 6 */' from 14  to 50`,
 
 const stringSummaryLexer = (input: string) => {
   const tokens = lexer(input)
-  if (tokens instanceof Error) return []
+  if (err(tokens)) return []
   return tokens.map(
     ({ type, value, start, end }) =>
       `${type.padEnd(12, ' ')} ${`'${value}'`.padEnd(10, ' ')} from ${String(

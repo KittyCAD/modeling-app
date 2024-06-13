@@ -6,6 +6,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { err } from 'lib/trap'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 
@@ -76,8 +77,8 @@ export async function enginelessExecutor(
   ast: Program | Error,
   pm: ProgramMemory | Error = { root: {}, return: null }
 ): Promise<ProgramMemory> {
-  if (ast instanceof Error) return Promise.reject(ast)
-  if (pm instanceof Error) return Promise.reject(pm)
+  if (err(ast)) return Promise.reject(ast)
+  if (err(pm)) return Promise.reject(pm)
 
   const mockEngineCommandManager = new MockEngineCommandManager({
     setIsStreamReady: () => {},

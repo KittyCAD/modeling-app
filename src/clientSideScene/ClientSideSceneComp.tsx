@@ -223,6 +223,7 @@ const Overlay = ({
         data-testid="segment-overlay"
         data-path-to-node={pathToNodeString}
         data-overlay-index={overlayIndex}
+        data-overlay-visible={shouldShow}
         data-overlay-angle={overlay.angle}
         className="pointer-events-auto absolute w-0 h-0"
         style={{
@@ -231,6 +232,7 @@ const Overlay = ({
       ></div>
       {shouldShow && (
         <div
+          data-overlay-toolbar-index={overlayIndex}
           className={`px-0 pointer-events-auto absolute flex gap-1`}
           style={{
             transform: `translate3d(calc(${
@@ -351,8 +353,8 @@ export const confirmModal = create<ConfirmModalProps, boolean, boolean>(
 
 export async function deleteSegment({
   pathToNode,
-  sketchDetails,
-}: {
+  sketchDetails
+} : {
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {
@@ -367,6 +369,10 @@ export async function deleteSegment({
     : true
 
   if (!shouldContinueSegDelete) return
+
+  // Modifies pathToNode to point to the next segment.
+  // We still need the old pathToNode though, so we need to copy.
+  const oldPathToNode = structuredClone(pathToNode)
   modifiedAst = deleteSegmentFromPipeExpression(
     dependentRanges,
     modifiedAst,
@@ -391,13 +397,15 @@ export async function deleteSegment({
   }
 
   if (!sketchDetails) return
-  sceneEntitiesManager.updateAstAndRejigSketch(
-    sketchDetails.sketchPathToNode,
+  await sceneEntitiesManager.updateAstAndRejigSketch(
+    pathToNode,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
     sketchDetails.origin
   )
+
+  // Now 'Set sketchDetails' is called with the modified pathToNode
 }
 
 const SegmentMenu = ({

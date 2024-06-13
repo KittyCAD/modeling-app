@@ -37,7 +37,7 @@ export function removeConstrainingValuesInfo({
     if (err(tmp)) return tmp
     return tmp.node
   })
-  const _err1 = _nodes.find((x) => x instanceof Error)
+  const _err1 = _nodes.find(err)
   if (err(_err1)) return _err1
   const nodes = _nodes as Value[]
 

@@ -15,7 +15,7 @@ export function pathMapToSelections(
   }
   Object.entries(pathToNodeMap).forEach(([index, path]) => {
     const nodeMeta = getNodeFromPath(ast, path)
-    if (nodeMeta instanceof Error) return
+    if (err(nodeMeta)) return
     const node = nodeMeta.node as any
     const type = prevSelections.codeBasedSelections[Number(index)].type
     if (node) {

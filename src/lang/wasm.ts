@@ -33,6 +33,7 @@ import { TEST } from 'env'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
+import { err } from 'lib/trap'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -120,7 +121,7 @@ export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
   ranges.map(([start, end]) => [start, end])
 
 export const parse = (code: string | Error): Program | Error => {
-  if (code instanceof Error) return code
+  if (err(code)) return code
 
   try {
     const program: Program = parse_wasm(code)
@@ -152,7 +153,7 @@ export const executor = async (
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ProgramMemory> => {
-  if (programMemory instanceof Error) return Promise.reject(programMemory)
+  if (err(programMemory)) return Promise.reject(programMemory)
 
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
@@ -173,7 +174,7 @@ export const _executor = async (
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ProgramMemory> => {
-  if (programMemory instanceof Error) return Promise.reject(programMemory)
+  if (err(programMemory)) return Promise.reject(programMemory)
 
   try {
     let baseUnit = 'mm'
