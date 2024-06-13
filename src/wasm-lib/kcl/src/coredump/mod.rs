@@ -7,13 +7,13 @@ pub mod wasm;
 
 use anyhow::Result;
 use base64::Engine;
+use kittycad::Client;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
-use uuid::Uuid;
-use kittycad::Client;
 use std::path::Path;
+use uuid::Uuid;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -70,7 +70,7 @@ pub trait CoreDump: Clone {
         zoo_client.set_base_url(&self.base_api_url()?);
 
         let coredump_id = uuid::Uuid::new_v4();
-        let client_state: JValue = self.get_client_state().await?;
+        let client_state = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
         let screenshot_url = self.upload_screenshot(&coredump_id, &zoo_client).await?;
@@ -87,7 +87,29 @@ pub trait CoreDump: Clone {
             pool: self.pool()?,
             client_state,
         };
-        core_dump_info.set_github_issue_url(&screenshot_url, &coredump_id)?;
+
+        // pretty-printed JSON byte vector of the coredump.
+        let data = serde_json::to_vec_pretty(&core_dump_info)?;
+
+        // Upload the coredump.
+        let links = zoo_client
+            .meta()
+            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
+                name: "".to_string(),
+                filename: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id)),
+                content_type: Some("application/json".to_string()),
+                data,
+            }])
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        if links.is_empty() {
+            anyhow::bail!("Failed to upload coredump");
+        }
+
+        let coredump_url = links[0].clone();
+
+        core_dump_info.set_github_issue_url(&screenshot_url, &coredump_url, &coredump_id)?;
 
         Ok(core_dump_info)
     }
@@ -99,7 +121,7 @@ pub trait CoreDump: Clone {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct CoreDumpInfo {
-    /// The unique id for the coredump - this helps correlate uploaded files with coredump data
+    /// The unique id for the core dump - this helps correlate uploaded files with coredump data.
     pub id: Uuid,
     /// The version of the app.
     pub version: String,
@@ -110,31 +132,22 @@ pub struct CoreDumpInfo {
     pub timestamp: chrono::DateTime<chrono::Utc>,
     /// If the app is running in tauri or the browser.
     pub tauri: bool,
-
     /// The os info.
     pub os: OsInfo,
-
     /// The webrtc stats.
     pub webrtc_stats: WebrtcStats,
-
     /// A GitHub issue url to report the core dump.
-    /// This gets prepoulated with all the core dump info.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub github_issue_url: Option<String>,
-
     /// Engine pool the client is connected to.
     pub pool: String,
-
-    /// The client state (singletons and xstate)
+    /// The client state (singletons and xstate).
     pub client_state: JValue,
 }
 
 impl CoreDumpInfo {
     /// Set the github issue url.
-    pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_id: &Uuid) -> Result<()> {
-        // was 
-        // serde_json::to_string_pretty(&self)?
-        let coredump_url = screenshot_url;
+    pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_url: &str, coredump_id: &Uuid) -> Result<()> {
         let coredump_filename = Path::new(coredump_url).file_name().unwrap().to_str().unwrap();
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
@@ -151,13 +164,13 @@ impl CoreDumpInfo {
 Reference ID: {}
 </details>
 "#,
-            screenshot_url,
-            coredump_filename,
-            coredump_url,
-            coredump_id
+            screenshot_url, coredump_filename, coredump_url, coredump_id
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
+        // Note that `github_issue_url` is not included in the coredump file.
+        // It has already been encoded and uploaded at this point.
+        // The `github_issue_url` is used to in openWindow in wasm.ts.
         self.github_issue_url = Some(format!(
             r#"https://github.com/{}/{}/issues/new?body={}&labels={}"#,
             "KittyCAD",
