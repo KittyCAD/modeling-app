@@ -1,7 +1,9 @@
 import { browser, $, expect } from '@wdio/globals'
+import { describe, it } from 'mocha'
 import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
+import { click } from '../utils'
 
 const isWin32 = os.platform() === 'win32'
 const documentsDir = path.join(os.homedir(), 'Documents')
@@ -15,12 +17,6 @@ const newProjectDir = path.join(documentsDir, 'a-different-directory')
 const tmp = process.env.TEMP || '/tmp'
 const userCodeDir = path.join(tmp, 'kittycad_user_code')
 
-async function click(element: WebdriverIO.Element): Promise<void> {
-  // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
-  await element.waitForClickable()
-  await browser.execute('arguments[0].click();', element)
-}
-
 /* Shoutout to @Sheap on Github for a great workaround utility:
  * https://github.com/tauri-apps/tauri/issues/6541#issue-1638944060
  */
@@ -33,7 +29,7 @@ async function setDatasetValue(
 }
 
 describe('ZMA (Tauri)', () => {
-  it('opens the auth page and signs in', async () => {
+  before(async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
@@ -42,7 +38,9 @@ describe('ZMA (Tauri)', () => {
     await fs.rm(userSettingsDir, { force: true, recursive: true })
     await fs.mkdir(defaultProjectDir, { recursive: true })
     await fs.mkdir(newProjectDir, { recursive: true })
+  })
 
+  it('opens the auth page and signs in', async () => {
     const signInButton = await $('[data-testid="sign-in-button"]')
     expect(await signInButton.getText()).toEqual('Sign in')
 
