@@ -128,7 +128,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, ubuntu-latest, windows-latest]
+        os: [macos-14, windows-latest]
+        # TODO: add back ubuntu when https://github.com/KittyCAD/modeling-app/issues/625 is closed
+        # os: [macos-14, ubuntu-latest, windows-latest]
     env:
       # Specific Apple Universal target for macos
       TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
