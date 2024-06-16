@@ -26,7 +26,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/playwright/**/*'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*'],
     deps: {
       optimizer: {
         web: {
