@@ -28,7 +28,6 @@ import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 
 import {
   SketchLineHelper,
-  ModifyAstBase,
   TransformCallback,
   ConstrainInfo,
   RawValues,
@@ -37,6 +36,8 @@ import {
   SingleValueInput,
   VarValueKeys,
   ArrayOrObjItemInput,
+  AddTagInfo,
+  ModifyAstBase,
 } from 'lang/std/stdTypes'
 
 import {
@@ -1792,10 +1793,7 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
-export function addTagForSketchOnFace(
-  a: ModifyAstBase,
-  expressionName: string
-) {
+export function addTagForSketchOnFace(a: AddTagInfo, expressionName: string) {
   if (expressionName === 'close') {
     return addTag(1)(a)
   }
@@ -1816,9 +1814,7 @@ function isAngleLiteral(lineArugement: Value): boolean {
     : false
 }
 
-type addTagFn = (
-  a: ModifyAstBase
-) => { modifiedAst: Program; tag: string } | Error
+type addTagFn = (a: AddTagInfo) => { modifiedAst: Program; tag: string } | Error
 
 function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {

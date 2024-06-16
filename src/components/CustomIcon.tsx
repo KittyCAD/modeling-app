@@ -187,6 +187,22 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  fillet: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M8 5H5V15H15V12C15 8.13401 11.866 5 8 5ZM5 4H4V5V15V16H5H15H16V15V12C16 7.58172 12.4183 4 8 4H5Z"
+        fill="currentColor"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M4.5 3.5H5.5H8.5C12.9183 3.5 16.5 7.08172 16.5 11.5V14.5V15.5H16V12C16 7.58172 12.4182 4 7.99996 4H4.5V3.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   file: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

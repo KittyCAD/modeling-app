@@ -38,6 +38,7 @@ import {
   deleteFromSelection,
   extrudeSketch,
 } from 'lang/modifyAst'
+import { addFillet } from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -207,6 +208,7 @@ export type ModelingMachineEvent =
   | { type: 'Re-execute' }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
@@ -314,6 +316,13 @@ export const modelingMachine = createMachine(
             target: 'idle',
             cond: 'has valid extrude selection',
             actions: ['AST extrude'],
+            internal: true,
+          },
+
+          Fillet: {
+            target: 'idle',
+            cond: 'has valid fillet selection', // TODO: fix selections
+            actions: ['AST fillet'],
             internal: true,
           },
 
@@ -1101,6 +1110,52 @@ export const modelingMachine = createMachine(
         }
 
         await kclManager.updateAst(modifiedAst, true)
+      },
+      'AST fillet': async (_, event) => {
+        if (!event.data) return
+
+        const { selection, radius } = event.data
+        let ast = kclManager.ast
+
+        if (
+          'variableName' in radius &&
+          radius.variableName &&
+          radius.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
+          ast.body = newBody
+        }
+
+        const pathToSegmentNode = getNodePathFromSourceRange(
+          ast,
+          selection.codeBasedSelections[0].range
+        )
+
+        // we assume that there is only one body related to the sketch
+        // and apply the fillet to it
+
+        const pathToExtrudeNode: PathToNode = []
+
+        const addFilletResult = addFillet(
+          ast,
+          pathToSegmentNode,
+          pathToExtrudeNode,
+          'variableName' in radius
+            ? radius.variableIdentifierAst
+            : radius.valueAst
+          // kclManager.programMemory
+        )
+
+        if (trap(addFilletResult)) return
+        const { modifiedAst, pathToFilletNode } = addFilletResult
+
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+          focusPath: pathToFilletNode,
+        })
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
+        }
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {

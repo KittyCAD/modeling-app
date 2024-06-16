@@ -388,7 +388,6 @@ export function sketchOnExtrudedFace(
   if (cap === 'none') {
     const __tag = addTagForSketchOnFace(
       {
-        previousProgramMemory: programMemory,
         pathToNode: sketchPathToNode,
         node: _node,
       },

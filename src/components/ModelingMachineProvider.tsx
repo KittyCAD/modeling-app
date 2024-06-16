@@ -33,6 +33,7 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
   canExtrudeSelection,
+  canFilletSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -54,11 +55,14 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, parse, recast } from 'lang/wasm'
+import { Program, parse, recast, CallExpression } from 'lang/wasm'
 import {
+  getNodeFromPath,
   getNodePathFromSourceRange,
   hasExtrudableGeometry,
+  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
+  traverse,
 } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
@@ -72,6 +76,7 @@ import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
+import { sketchLineHelperMap } from 'lang/std/sketch'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -443,6 +448,68 @@ export const ModelingMachineProvider = ({
           if (!commandBarState.matches('Closed')) return false
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
+        },
+        'has valid fillet selection': ({ selectionRanges }) => {
+          // case 0: check if there is anything filletable in the scene
+          let extrudeExists = false
+          kclManager.ast.body.forEach((node) => {
+            traverse(node, {
+              enter(node) {
+                if (
+                  node.type === 'CallExpression' &&
+                  node.callee.name === 'extrude'
+                ) {
+                  extrudeExists = true
+                }
+              },
+            })
+          })
+          if (!extrudeExists) return false
+
+          // case 1: nothing selected, test whether the extrusion exists
+          if (selectionRanges) {
+            if (selectionRanges.codeBasedSelections.length === 0) {
+              return true
+            }
+            const range0 = selectionRanges.codeBasedSelections[0].range[0]
+            const codeLength = codeManager.code.length
+            if (range0 === codeLength) {
+              return true
+            }
+          }
+
+          // case 2: scketch segment selected, test wehter it is extruded
+          // TODO: add loft / sweep check
+          if (selectionRanges.codeBasedSelections.length > 0) {
+            const isExtruded = hasSketchPipeBeenExtruded(
+              selectionRanges.codeBasedSelections[0],
+              kclManager.ast
+            )
+            if (isExtruded) {
+              const pathToSelectedNode = getNodePathFromSourceRange(
+                kclManager.ast,
+                selectionRanges.codeBasedSelections[0].range
+              )
+              const segmentNode = getNodeFromPath<CallExpression>(
+                kclManager.ast,
+                pathToSelectedNode,
+                'CallExpression'
+              )
+              if ('node' in segmentNode) {
+                // check wethe segment is in sketchLineHelperMap
+                const segmentName = segmentNode.node.callee.name
+                if (segmentName in sketchLineHelperMap) {
+                  return true
+                } else {
+                  return false
+                }
+              }
+            } else {
+              return false
+            }
+          }
+
+          return canFilletSelection(selectionRanges)
         },
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false

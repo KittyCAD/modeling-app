@@ -118,6 +118,15 @@ export function Toolbar({
       }),
     { enabled: !disableAllButtons, scopes: ['modeling'] }
   )
+  useHotkeys(
+    'f',
+    () =>
+      commandBarSend({
+        type: 'Find and select command',
+        data: { name: 'Fillet', ownerMachine: 'modeling' },
+      }),
+    { enabled: !disableAllButtons, scopes: ['modeling'] }
+  )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -400,6 +409,38 @@ export function Toolbar({
                 className="!px-2 !text-xs"
               >
                 Shortcut: E
+              </Tooltip>
+            </ActionButton>
+          </li>
+        )}
+        {state.matches('idle') && (
+          <li className="contents">
+            <ActionButton
+              className={buttonClassName}
+              Element="button"
+              onClick={() =>
+                commandBarSend({
+                  type: 'Find and select command',
+                  data: { name: 'Fillet', ownerMachine: 'modeling' },
+                })
+              }
+              disabled={!state.can('Fillet') || disableAllButtons}
+              title={
+                state.can('Fillet') ? 'fillet' : 'sketches need to be closed'
+              }
+              iconStart={{
+                icon: 'fillet', // todo: add fillet icon
+                iconClassName,
+                bgClassName,
+              }}
+            >
+              Fillet
+              <Tooltip
+                delay={1250}
+                position="bottom"
+                className="!px-2 !text-xs"
+              >
+                Shortcut: F
               </Tooltip>
             </ActionButton>
           </li>

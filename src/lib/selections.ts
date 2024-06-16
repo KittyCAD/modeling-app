@@ -406,6 +406,17 @@ export function canExtrudeSelection(selection: Selections) {
   )
 }
 
+export function canFilletSelection(selection: Selections) {
+  const commonNodes = selection.codeBasedSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  ) // TODO FILLET DUMMY PLACEHOLDER
+  return (
+    !!isSketchPipe(selection) &&
+    commonNodes.every((n) => nodeHasClose(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
 function canExtrudeSelectionItem(selection: Selections, i: number) {
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
