@@ -16,7 +16,7 @@ const newProjectDir = path.join(documentsDir, 'a-different-directory')
 const tmp = process.env.TEMP || '/tmp'
 const userCodeDir = path.join(tmp, 'kittycad_user_code')
 
-describe('ZMA (Tauri)', () => {
+describe('ZMA sign in flow', () => {
   before(async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
@@ -68,6 +68,11 @@ describe('ZMA (Tauri)', () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
   })
+
+})
+
+describe('ZMA authorized user flows', () => {
+  // Note: each flow below is intended to start *and* end from the home page
 
   it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
@@ -136,7 +141,9 @@ describe('ZMA (Tauri)', () => {
     const base = isWin32 ? 'http://tauri.localhost' : 'tauri://localhost'
     await browser.execute(`window.location.href = "${base}/home"`)
   })
+})
 
+describe('ZMA sign out flow', () => {
   it('signs out', async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
