@@ -34,9 +34,9 @@ async function setDatasetValue(
 }
 
 describe('ZMA (Tauri)', () => {
-  before(async () => {
+  it('clears previously created folders', async () => {
     // Clean up filesystem from previous tests
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
     await fs.rm(newProjectDir, { force: true, recursive: true })
     await fs.rm(userCodeDir, { force: true })
