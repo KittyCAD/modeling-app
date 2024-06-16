@@ -3,7 +3,6 @@ import { describe, it } from 'mocha'
 import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
-import { click, setDatasetValue } from '../utils'
 
 const isWin32 = os.platform() === 'win32'
 const documentsDir = path.join(os.homedir(), 'Documents')
@@ -16,6 +15,23 @@ const defaultProjectDir = path.join(documentsDir, 'zoo-modeling-app-projects')
 const newProjectDir = path.join(documentsDir, 'a-different-directory')
 const tmp = process.env.TEMP || '/tmp'
 const userCodeDir = path.join(tmp, 'kittycad_user_code')
+
+async function click(element: WebdriverIO.Element): Promise<void> {
+  // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
+  await element.waitForClickable()
+  await browser.execute('arguments[0].click();', element)
+}
+
+/* Shoutout to @Sheap on Github for a great workaround utility:
+ * https://github.com/tauri-apps/tauri/issues/6541#issue-1638944060
+ */
+async function setDatasetValue(
+  field: WebdriverIO.Element,
+  property: string,
+  value: string
+) {
+  await browser.execute(`arguments[0].dataset.${property} = "${value}"`, field)
+}
 
 describe('ZMA (Tauri)', () => {
   before(async () => {
