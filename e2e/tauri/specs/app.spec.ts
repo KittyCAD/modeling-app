@@ -1,5 +1,4 @@
 import { browser, $, expect } from '@wdio/globals'
-import { describe, it } from 'mocha'
 import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
@@ -34,7 +33,7 @@ async function setDatasetValue(
 }
 
 describe('ZMA (Tauri)', () => {
-  it('clears previously created folders', async () => {
+  it('opens the auth page and signs in', async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
