@@ -5,6 +5,7 @@ import os from 'os'
 import { click, setDatasetValue } from '../utils'
 
 const isWin32 = os.platform() === 'win32'
+const tauriProtocol = isWin32 ? 'http://tauri.localhost' : 'tauri://localhost'
 const documentsDir = path.join(os.homedir(), 'Documents')
 const userSettingsDir = path.join(
   os.homedir(),
@@ -67,6 +68,11 @@ describe('ZMA sign in flow', () => {
     await new Promise((resolve) => setTimeout(resolve, 10000))
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
+
+
+    // Refresh once before the authorized user flows
+    await browser.execute(`window.location.href = "${tauriProtocol}/home"`)
+    await new Promise((resolve) => setTimeout(resolve, 10000))
   })
 })
 
@@ -145,8 +151,7 @@ describe('ZMA authorized user flows', () => {
       const errorText = await $('[data-testid="unexpected-error"]')
       expect(await errorText.getText()).toContain('unexpected error')
     }
-    const base = isWin32 ? 'http://tauri.localhost' : 'tauri://localhost'
-    await browser.execute(`window.location.href = "${base}/home"`)
+    await browser.execute(`window.location.href = "${tauriProtocol}/home"`)
   })
 })
 
