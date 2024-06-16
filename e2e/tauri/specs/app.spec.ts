@@ -20,7 +20,7 @@ const userCodeDir = path.join(tmp, 'kittycad_user_code')
 describe('ZMA (Tauri)', () => {
   before(async () => {
     // Clean up filesystem from previous tests
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
     await fs.rm(newProjectDir, { force: true, recursive: true })
     await fs.rm(userCodeDir, { force: true })
