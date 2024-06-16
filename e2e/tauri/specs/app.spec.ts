@@ -68,7 +68,6 @@ describe('ZMA sign in flow', () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
   })
-
 })
 
 describe('ZMA authorized user flows', () => {
