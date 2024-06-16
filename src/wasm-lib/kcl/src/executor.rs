@@ -619,6 +619,14 @@ pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4
 #[ts(export)]
 pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
+impl From<SourceRange> for miette::SourceSpan {
+    fn from(value: SourceRange) -> Self {
+        let [start, end] = value.0;
+        let length = end - start;
+        miette::SourceSpan::new(start.into(), length)
+    }
+}
+
 impl SourceRange {
     /// Create a new source range.
     pub fn new(start: usize, end: usize) -> Self {

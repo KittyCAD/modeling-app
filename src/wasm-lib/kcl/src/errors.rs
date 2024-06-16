@@ -32,6 +32,32 @@ pub enum KclError {
     Internal(KclErrorDetails),
 }
 
+/// A KCL error that can be displayed fancy.
+#[derive(Error, Debug, miette::Diagnostic)]
+#[error("KCL error: {error}")]
+pub struct KclErrorReport {
+    #[source]
+    error: KclError,
+    // The Source that we're gonna be printing snippets out of.
+    // This can be a String if you don't have or care about file names.
+    #[source_code]
+    src: miette::NamedSource<String>,
+    // Snippets and highlights can be included in the diagnostic!
+    #[label("Error here")]
+    source_range: SourceRange,
+}
+
+impl KclErrorReport {
+    /// Create a new error report.
+    pub fn new(error: KclError, kcl_filename: String, kcl_code: String, source_range: SourceRange) -> Self {
+        Self {
+            error,
+            src: miette::NamedSource::new(kcl_filename, kcl_code),
+            source_range,
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
 pub struct KclErrorDetails {
