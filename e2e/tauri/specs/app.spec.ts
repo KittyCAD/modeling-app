@@ -69,6 +69,14 @@ describe('ZMA (Tauri)', () => {
     expect(await newFileButton.getText()).toEqual('New project')
   })
 
+  it('checks the network indicator status', async () => {
+    const toggle = await $('[data-testid="network-toggle"]')
+    await click(toggle)
+    const status = await $('[data-testid="network"]')
+    expect(await status.getText()).toEqual('CONNECTED')
+    await click(toggle)
+  })
+
   it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await click(menuButton)
