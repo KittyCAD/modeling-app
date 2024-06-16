@@ -44,12 +44,12 @@ pub struct KclErrorReport {
     src: miette::NamedSource<String>,
     // Snippets and highlights can be included in the diagnostic!
     #[label("Error here")]
-    source_range: SourceRange,
+    source_range: Option<SourceRange>,
 }
 
 impl KclErrorReport {
     /// Create a new error report.
-    pub fn new(error: KclError, kcl_filename: String, kcl_code: String, source_range: SourceRange) -> Self {
+    pub fn new(error: KclError, kcl_filename: String, kcl_code: String, source_range: Option<SourceRange>) -> Self {
         Self {
             error,
             src: miette::NamedSource::new(kcl_filename, kcl_code),
