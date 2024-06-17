@@ -4675,7 +4675,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: 'Exit Sketch' })
   ).not.toBeVisible()
-  await page.waitForTimeout(200)
+  await page.waitForTimeout(400)
 
   // Extrude
   await page.mouse.click(750, 150)
