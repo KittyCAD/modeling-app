@@ -10,11 +10,11 @@ rust-version = "1.73"
 crate-type = ["cdylib"]
 
 [dependencies]
-bson = { version = "2.10.0", features = ["uuid-1", "chrono"] }
-clap = "4.5.4"
+bson = { version = "2.11.0", features = ["uuid-1", "chrono"] }
+clap = "4.5.7"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
-kittycad = { workspace = true }
+kittycad.workspace = true
 serde_json = "1.0.116"
 tokio = { version = "1.38.0", features = ["sync"] }
 toml = "0.8.14"
@@ -68,7 +68,7 @@ members = [
 ]
 
 [workspace.dependencies]
-kittycad = { version = "0.3.3", default-features = false, features = ["js", "requests"] }
+kittycad = { version = "0.3.5", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-session = "0.1.4"
 
 [[test]]

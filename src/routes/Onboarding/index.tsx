@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import Introduction from './Introduction'
 import Camera from './Camera'
 import Sketching from './Sketching'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import Streaming from './Streaming'
@@ -94,17 +94,31 @@ export function useNextClick(newStatus: string) {
 export function useDismiss() {
   const filePath = useAbsoluteFilePath()
   const {
-    settings: { send },
+    settings: { state, send },
   } = useSettingsAuthContext()
   const navigate = useNavigate()
 
-  return useCallback(() => {
+  const settingsCallback = useCallback(() => {
     send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: 'dismissed' },
     })
-    navigate(filePath)
-  }, [send, navigate, filePath])
+  }, [send])
+
+  /**
+   * A "listener" for the XState to return to "idle" state
+   * when the user dismisses the onboarding, using the callback above
+   */
+  useEffect(() => {
+    if (
+      state.context.app.onboardingStatus.user === 'dismissed' &&
+      state.matches('idle')
+    ) {
+      navigate(filePath)
+    }
+  }, [filePath, navigate, state])
+
+  return settingsCallback
 }
 
 // Get the 1-indexed step number of the current onboarding step
