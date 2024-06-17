@@ -9,7 +9,7 @@ A linear pattern on a 3D model.
 
 
 ```js
-patternLinear3d(data: LinearPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
+patternLinear3d(data: LinearPattern3dData, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]
 ```
 
 ### Examples
@@ -45,7 +45,7 @@ const example = extrude(1, exampleSketch)
 	repetitions: number,
 }
 ```
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
+* `extrude_group_set`: `ExtrudeGroupSet` - A extrude group or a group of extrude groups. (REQUIRED)
 ```js
 {
 	// The id of the extrusion end cap
@@ -125,6 +125,7 @@ const example = extrude(1, exampleSketch)
 }],
 	// The id of the extrusion start cap
 	startCapId: uuid,
+	type: "extrudeGroup",
 	// The extrude surfaces.
 	value: [{
 	// The face id for the extrude plane.
@@ -174,6 +175,9 @@ const example = extrude(1, exampleSketch)
 	y: number,
 	z: number,
 },
+} |
+{
+	type: "extrudeGroups",
 }
 ```
 

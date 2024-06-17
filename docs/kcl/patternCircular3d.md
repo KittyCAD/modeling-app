@@ -9,7 +9,7 @@ A circular pattern on a 3D model.
 
 
 ```js
-patternCircular3d(data: CircularPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
+patternCircular3d(data: CircularPattern3dData, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]
 ```
 
 ### Examples
@@ -47,7 +47,7 @@ const example = extrude(-5, exampleSketch)
 	rotateDuplicates: string,
 }
 ```
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
+* `extrude_group_set`: `ExtrudeGroupSet` - A extrude group or a group of extrude groups. (REQUIRED)
 ```js
 {
 	// The id of the extrusion end cap
@@ -127,6 +127,7 @@ const example = extrude(-5, exampleSketch)
 }],
 	// The id of the extrusion start cap
 	startCapId: uuid,
+	type: "extrudeGroup",
 	// The extrude surfaces.
 	value: [{
 	// The face id for the extrude plane.
@@ -176,6 +177,9 @@ const example = extrude(-5, exampleSketch)
 	y: number,
 	z: number,
 },
+} |
+{
+	type: "extrudeGroups",
 }
 ```
 
