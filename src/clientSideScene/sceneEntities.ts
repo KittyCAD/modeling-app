@@ -1825,7 +1825,6 @@ export function sketchGroupFromPathToNode({
   )
   if (err(varDec)) return varDec
   return programMemory.root[varDec.node?.id?.name || ''] as SketchGroup
-
 }
 
 function colorSegment(object: any, color: number) {
@@ -1880,7 +1879,7 @@ export async function getSketchOrientationDetails(
   if (err(sketchGroup)) return Promise.reject(sketchGroup)
 
   console.log(JSON.stringify(sketchGroup))
-  console.log("src/clientSideScene/sceneEntities.ts:1869:16")
+  console.log('src/clientSideScene/sceneEntities.ts:1869:16')
   if (sketchGroup.on.type === 'plane') {
     const zAxis = sketchGroup?.zAxis
     return {
@@ -1895,7 +1894,7 @@ export async function getSketchOrientationDetails(
     }
   }
 
-  console.log("src/clientSideScene/sceneEntities.ts:1884:16")
+  console.log('src/clientSideScene/sceneEntities.ts:1884:16')
   if (sketchGroup.on.type === 'face') {
     const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
 

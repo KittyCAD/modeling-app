@@ -2359,14 +2359,12 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.waitForTimeout(400)
   let prevContent = await page.locator('.cm-content').innerText()
 
-  const step5 = { steps: 5 }
-
   await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
   // drag startProfieAt handle
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: startPX[0], y: startPX[1] },
-    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX }
+    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX },
   })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -2379,7 +2377,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y - dragPX, step5 },
+    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y - dragPX  },
   })
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
@@ -2388,7 +2386,10 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
-    targetPosition: { x: tangentEnd.x + dragPX, y: tangentEnd.y - dragPX, step5 },
+    targetPosition: {
+      x: tangentEnd.x + dragPX,
+      y: tangentEnd.y - dragPX,
+    },
   })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -2398,7 +2399,8 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([9.83, -8.68], %)
   |> line([18.11, 5.36], %)
-  |> tangentialArcTo([30.31, 0.07], %)`) })
+  |> tangentialArcTo([30.31, 0.07], %)`)
+})
 
 const doSnapAtDifferentScales = async (
   page: any,

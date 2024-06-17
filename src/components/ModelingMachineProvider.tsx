@@ -562,21 +562,13 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sourceRange
           )
-          try {
-          const info = await getSketchOrientationDetails(sketchPathToNode || [])
-          } catch(e) {
-            console.error(e)
-            return
-          }
-          try {
+          const info = await getSketchOrientationDetails(
+            sketchPathToNode || []
+          )
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             info?.sketchDetails?.faceId || ''
           )
-          } catch (e) {
-            console.log(e)
-            return
-          }
           return {
             sketchPathToNode: sketchPathToNode || [],
             zAxis: info.sketchDetails.zAxis || null,
