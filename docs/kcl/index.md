@@ -65,6 +65,7 @@ layout: manual
 * [`segEndX`](kcl/segEndX)
 * [`segEndY`](kcl/segEndY)
 * [`segLen`](kcl/segLen)
+* [`shell`](kcl/shell)
 * [`sin`](kcl/sin)
 * [`sqrt`](kcl/sqrt)
 * [`startProfileAt`](kcl/startProfileAt)
