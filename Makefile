@@ -13,7 +13,5 @@ $(XSTATE_TYPEGENS): $(TS_SRC)
 public/wasm_lib_bg.wasm: $(WASM_LIB_FILES)
 	yarn build:wasm-dev
 
-node_modules: package.json
-
-package.json:
+node_modules: package.json yarn.lock
 	yarn install
