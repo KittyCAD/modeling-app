@@ -9,7 +9,7 @@ A circular pattern on a 2D sketch.
 
 
 ```js
-patternCircular2d(data: CircularPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
+patternCircular2d(data: CircularPattern2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
 ```
 
 ### Examples
@@ -48,7 +48,7 @@ const example = extrude(1, exampleSketch)
 	rotateDuplicates: string,
 }
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
+* `sketch_group_set`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```js
 {
 	// The plane id or face id of the sketch group.
@@ -129,6 +129,7 @@ const example = extrude(1, exampleSketch)
 	// The to point.
 	to: [number, number],
 },
+	type: "sketchGroup",
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -212,6 +213,9 @@ const example = extrude(1, exampleSketch)
 	y: number,
 	z: number,
 },
+} |
+{
+	type: "sketchGroups",
 }
 ```
 

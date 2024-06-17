@@ -11,6 +11,7 @@ pub mod patterns;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
+pub mod shell;
 pub mod sketch;
 pub mod types;
 pub mod utils;
@@ -30,7 +31,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, SketchGroup, SketchGroupSet,
+        SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -88,6 +90,7 @@ lazy_static! {
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::shell::Shell),
         Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::revolve::GetEdge),
         Box::new(crate::std::import::Import),
@@ -769,6 +772,52 @@ impl Args {
         };
 
         Ok((data, sketch_surface, tag))
+    }
+
+    fn get_data_and_extrude_group_set<T: serde::de::DeserializeOwned>(&self) -> Result<(T, ExtrudeGroupSet), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_set = if let MemoryItem::ExtrudeGroup(eg) = second_value {
+            ExtrudeGroupSet::ExtrudeGroup(eg.clone())
+        } else if let MemoryItem::ExtrudeGroups { value } = second_value {
+            ExtrudeGroupSet::ExtrudeGroups(value.clone())
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a ExtrudeGroup or Vector of ExtrudeGroups as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((data, extrude_set))
     }
 
     fn get_data_and_extrude_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<ExtrudeGroup>), KclError> {
