@@ -149,7 +149,6 @@ impl EngineConnection {
             loop {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
-                        println!("got ws response: {:?}", ws_resp);
                         for e in ws_resp.errors.iter().flatten() {
                             println!("got error message: {e}");
                         }
