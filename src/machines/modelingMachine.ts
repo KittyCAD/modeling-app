@@ -584,7 +584,7 @@ export const modelingMachine = createMachine(
                 actions: [
                   'Set sketchDetails',
                   'Get selection from ast and sketchDetails',
-                  'Set selection'
+                  'Set selection',
                 ],
               },
             },
@@ -964,11 +964,11 @@ export const modelingMachine = createMachine(
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-        const { selections } = await kclManager.updateAst(modifiedAst, true, {
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
-        if (selections) {
-          editorManager.selectRange(selections)
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
         }
       },
       'conditionally equip line tool': (_, { type }) => {
@@ -1148,6 +1148,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1177,6 +1179,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1203,6 +1207,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1230,6 +1236,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1258,6 +1266,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1283,6 +1293,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1308,6 +1320,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1337,6 +1351,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1364,6 +1380,8 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,

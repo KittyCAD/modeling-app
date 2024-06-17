@@ -350,15 +350,15 @@ export class KclManager {
       focusPath?: PathToNode
     }
   ): Promise<{
-      newAst: Program,
-      selections?: Selections,
-    } | null> {
+    newAst: Program
+    selections?: Selections
+  }> {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
     const astWithUpdatedSource = this.safeParse(newCode)
-    if (!astWithUpdatedSource) return null
-    let returnVal: Selections | null = null
+    if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
+    let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
       const _node1 = getNodeFromPath<any>(
@@ -369,7 +369,11 @@ export class KclManager {
       const { node } = _node1
 
       const { start, end } = node
-      if (!start || !end) return null
+      if (!start || !end)
+        return {
+          selections: undefined,
+          newAst: astWithUpdatedSource,
+        }
       returnVal = {
         codeBasedSelections: [
           {

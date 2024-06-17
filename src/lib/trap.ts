@@ -12,8 +12,8 @@ export function err<T>(value: Exclude<T, Error> | Error): value is Error {
 // Used to report errors to user at a certain point in execution
 export function trap<T>(
   value: Exclude<T, Error> | Error,
-  opts: {
-    altErr?: Error,
+  opts?: {
+    altErr?: Error
     suppress?: boolean
   }
 ): value is Error {
@@ -22,6 +22,7 @@ export function trap<T>(
   }
 
   console.error(value)
-  opts?.suppress || toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString())
+  opts?.suppress ||
+    toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString())
   return true
 }

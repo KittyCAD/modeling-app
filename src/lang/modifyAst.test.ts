@@ -363,7 +363,6 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
       extrudePathToNode,
       programMemory
     )
-    const extruded = sketchOnExtrudedFace(ast, pathToNode, programMemory)
     if (err(extruded)) fail()
     const { modifiedAst } = extruded
 
@@ -434,6 +433,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
     |> close(%)
     const part001 = extrude(5 + 7, sketch001)`
     const ast = parse(code)
+    if (err(ast)) fail()
     const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([4.99, -0.46], %)`
     const segmentRange: [number, number] = [
@@ -448,13 +448,14 @@ const sketch001 = startSketchOn(part001, 'END')`)
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
-    const { modifiedAst } = sketchOnExtrudedFace(
+    const updatedAst = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
       extrudePathToNode,
       programMemory
     )
-    const newCode = recast(modifiedAst)
+    if (err(updatedAst)) fail()
+    const newCode = recast(updatedAst.modifiedAst)
     expect(newCode).toContain(`const part001 = extrude(5 + 7, sketch001)
 const sketch002 = startSketchOn(part001, 'seg01')`)
   })

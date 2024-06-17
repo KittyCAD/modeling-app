@@ -353,8 +353,8 @@ export const confirmModal = create<ConfirmModalProps, boolean, boolean>(
 
 export async function deleteSegment({
   pathToNode,
-  sketchDetails
-} : {
+  sketchDetails,
+}: {
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {

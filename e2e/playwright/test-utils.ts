@@ -108,7 +108,7 @@ export const wiggleMove = async (
   ang: number,
   amplitude: number,
   freq: number,
-  locator?: string,
+  locator?: string
 ) => {
   const tau = Math.PI * 2
   const deg = tau / 360

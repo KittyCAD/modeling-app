@@ -3,6 +3,7 @@ import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
 import { ArtifactMap } from './std/engineConnection'
 import { isOverlap } from 'lib/utils'
+import { err } from 'lib/trap'
 
 export function pathMapToSelections(
   ast: Program,
@@ -14,7 +15,7 @@ export function pathMapToSelections(
     codeBasedSelections: [],
   }
   Object.entries(pathToNodeMap).forEach(([index, path]) => {
-    const nodeMeta = getNodeFromPath(ast, path)
+    const nodeMeta = getNodeFromPath<any>(ast, path)
     if (err(nodeMeta)) return
     const node = nodeMeta.node as any
     const type = prevSelections.codeBasedSelections[Number(index)].type

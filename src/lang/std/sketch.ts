@@ -452,9 +452,7 @@ export const line: SketchLineHelper = {
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
-        pathToNode: [
-          ...pathToNode
-        ],
+        pathToNode: [...pathToNode],
         valueUsedInTransform,
       }
     }

@@ -18,7 +18,7 @@ export const MemoryPaneMenu = () => {
         .writeText(JSON.stringify(programMemory))
         .then(() => toast.success('Program memory copied to clipboard'))
         .catch((e) =>
-          trap(e, new Error('Failed to copy program memory to clipboard'))
+          trap(new Error('Failed to copy program memory to clipboard'))
         )
     }
   }

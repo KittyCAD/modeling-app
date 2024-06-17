@@ -256,17 +256,24 @@ export const ModelingMachineProvider = ({
               }
             : {}
         ),
-        'Get selection from ast and sketchDetails': assign(({ sketchDetails, selectionRanges }, event) => {
-          event.data = {
-            selectionType: 'completeSelection',
-            selection: updateSelections(
-              [sketchDetails.sketchPathToNode],
-              selectionRanges,
-              kclManager.ast,
-            ),
+        // For some reason, this one is tricky.
+        'Get selection from ast and sketchDetails': assign(
+          // @ts-ignore
+          ({ sketchDetails, selectionRanges }, event) => {
+            // @ts-ignore
+            event.data = {
+              // @ts-ignore
+              selectionType: 'completeSelection',
+              selection: updateSelections(
+                [sketchDetails?.sketchPathToNode || []],
+                selectionRanges,
+                kclManager.ast
+              ),
+            }
+            // @ts-ignore
+            return event.data
           }
-          return event.data
-        }),
+        ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
@@ -555,11 +562,21 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sourceRange
           )
+          try {
           const info = await getSketchOrientationDetails(sketchPathToNode || [])
+          } catch(e) {
+            console.error(e)
+            return
+          }
+          try {
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             info?.sketchDetails?.faceId || ''
           )
+          } catch (e) {
+            console.log(e)
+            return
+          }
           return {
             sketchPathToNode: sketchPathToNode || [],
             zAxis: info.sketchDetails.zAxis || null,
@@ -591,13 +608,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -623,13 +643,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -664,13 +687,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -693,13 +719,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -725,13 +754,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -757,13 +789,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -789,13 +824,16 @@ export const ModelingMachineProvider = ({
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: updateSelections(
-              pathToNodeMap,
-              selectionRanges,
-              updatedAst.newAst,
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -817,15 +855,19 @@ export const ModelingMachineProvider = ({
           const parsed2 = parse(recast(_modifiedAst))
           if (trap(parsed2)) return []
 
-          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            pathToReplacedNode || [],
-            parsed2,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
-          )
-          return pathToReplacedNode
-        }
+          try {
+            await sceneEntitiesManager.updateAstAndRejigSketch(
+              pathToReplacedNode || [],
+              parsed2,
+              sketchDetails.zAxis,
+              sketchDetails.yAxis,
+              sketchDetails.origin
+            )
+            return pathToReplacedNode || []
+          } catch (e) {
+            return []
+          }
+        },
       },
       devTools: true,
     }

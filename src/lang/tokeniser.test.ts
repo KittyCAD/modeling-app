@@ -1,4 +1,5 @@
 import { lexer, initPromise } from './wasm'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise

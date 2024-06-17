@@ -589,7 +589,10 @@ export function updateSelections(
     .filter((x?: Selection) => x !== undefined) as Selection[]
 
   return {
-    codeBasedSelections: newSelections.length > 0 ? newSelections : prevSelectionRanges.codeBasedSelections,
+    codeBasedSelections:
+      newSelections.length > 0
+        ? newSelections
+        : prevSelectionRanges.codeBasedSelections,
     otherSelections: prevSelectionRanges.otherSelections,
   }
 }
