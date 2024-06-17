@@ -67,12 +67,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
-    async fn send_modeling_cmd(
+    // Send a modeling command to the engine.
+    async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        cmd: &kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
         let req = WebSocketRequest::ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id,
@@ -81,16 +82,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add cmd to the batch.
         self.batch().lock().unwrap().push((req, source_range));
 
-        // If the batch only has this one command that expects a return value,
-        // fire it right away, or if we want to flush batch queue.
-        let is_sending = is_cmd_with_return_values(&cmd);
+        Ok(())
+    }
 
-        // Return a fake modeling_request empty response.
-        if !is_sending {
-            return Ok(OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-            });
-        }
+    /// Send the modeling cmd and wait for the response.
+    async fn send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        self.batch_modeling_cmd(id, source_range, &cmd).await?;
 
         // Flush the batch queue.
         self.flush_batch(source_range).await
@@ -124,7 +126,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
             batch_id: uuid::Uuid::new_v4(),
-            responses: false,
+            responses: true,
         };
 
         let final_req = if self.batch().lock().unwrap().len() == 1 {
@@ -157,10 +159,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // We pop off the responses to cleanup our mappings.
         let id_final = match final_req {
             WebSocketRequest::ModelingCmdBatchReq {
-                requests: _,
-                batch_id,
+                ref requests,
+                batch_id: _,
                 responses: _,
-            } => batch_id,
+            } => {
+                // Get the last command ID.
+                requests.last().unwrap().cmd_id
+            }
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
             _ => {
                 return Err(KclError::Engine(KclErrorDetails {
