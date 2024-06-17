@@ -65,6 +65,7 @@ members = [
 	"derive-docs",
 	"kcl",
 	"kcl-macros",
+	"kcl-test-server",
 ]
 
 [workspace.dependencies]
