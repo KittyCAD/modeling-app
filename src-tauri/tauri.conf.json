@@ -66,9 +66,7 @@
       "mobile": [],
       "desktop": {
         "schemes": [
-          {
-          "host": "app.zoo.dev"
-          }
+          "app.zoo.dev"
         ]
       }
     },
