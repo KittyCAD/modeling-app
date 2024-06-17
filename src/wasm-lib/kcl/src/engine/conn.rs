@@ -149,8 +149,40 @@ impl EngineConnection {
             loop {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
+                        println!("got ws response: {:?}", ws_resp);
                         for e in ws_resp.errors.iter().flatten() {
                             println!("got error message: {e}");
+                        }
+                        // If we got a batch response, add all the inner responses.
+                        if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) =
+                            &ws_resp.resp
+                        {
+                            for (resp_id, batch_response) in responses {
+                                let id: uuid::Uuid = resp_id.parse().unwrap();
+                                if let Some(response) = &batch_response.response {
+                                    responses_clone.insert(
+                                        id,
+                                        kittycad::types::WebSocketResponse {
+                                            request_id: Some(id),
+                                            resp: Some(kittycad::types::OkWebSocketResponseData::Modeling {
+                                                modeling_response: response.clone(),
+                                            }),
+                                            errors: None,
+                                            success: Some(true),
+                                        },
+                                    );
+                                } else {
+                                    responses_clone.insert(
+                                        id,
+                                        kittycad::types::WebSocketResponse {
+                                            request_id: Some(id),
+                                            resp: None,
+                                            errors: batch_response.errors.clone(),
+                                            success: Some(false),
+                                        },
+                                    );
+                                }
+                            }
                         }
                         if let Some(id) = ws_resp.request_id {
                             responses_clone.insert(id, ws_resp.clone());
