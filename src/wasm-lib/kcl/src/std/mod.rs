@@ -1,5 +1,6 @@
 //! Functions implemented for language execution.
 
+pub mod chamfer;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -81,6 +82,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
+        Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
