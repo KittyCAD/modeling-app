@@ -55,7 +55,7 @@ async fn inner_line_to(
     let from = sketch_group.current_pen_position()?;
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -217,7 +217,7 @@ async fn inner_line(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -409,7 +409,7 @@ async fn inner_angled_line(
         },
     };
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -1071,7 +1071,7 @@ async fn start_sketch_on_face(
 
     // Enter sketch mode on the face.
     let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::EnableSketchMode {
             animated: false,
@@ -1117,7 +1117,7 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
         } => {
             // Create the custom plane on the fly.
             let id = uuid::Uuid::new_v4();
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::MakePlane {
                     clobber: false,
@@ -1135,7 +1135,7 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
     };
 
     // Enter sketch mode on the plane.
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::EnableSketchMode {
             animated: false,
@@ -1205,8 +1205,8 @@ pub(crate) async fn inner_start_profile_at(
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(path_id, ModelingCmd::StartPath {}).await?;
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(path_id, ModelingCmd::StartPath {}).await?;
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::MovePathPen {
             path: path_id,
@@ -1359,7 +1359,7 @@ pub(crate) async fn inner_close(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ClosePath {
             path_id: sketch_group.id,
@@ -1370,7 +1370,7 @@ pub(crate) async fn inner_close(
     // If we are sketching on a plane we can close the sketch group now.
     if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 
@@ -1469,7 +1469,7 @@ pub(crate) async fn inner_arc(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -1565,7 +1565,7 @@ async fn inner_tangential_arc(
             let start_angle = Angle::from_degrees(0.0);
             let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
 
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::ExtendPath {
                     path: sketch_group.id,
@@ -1582,7 +1582,7 @@ async fn inner_tangential_arc(
             to.into()
         }
         TangentialArcData::Point(to) => {
-            args.send_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
+            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
 
             *to
         }
@@ -1692,7 +1692,7 @@ async fn inner_tangential_arc_to(
 
     let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
+    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
@@ -1769,7 +1769,7 @@ async fn inner_bezier_curve(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -1864,7 +1864,7 @@ async fn inner_hole(
 
     match hole_sketch_group {
         SketchGroupSet::SketchGroup(hole_sketch_group) => {
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 ModelingCmd::Solid2DAddHole {
                     object_id: sketch_group.id,
@@ -1874,7 +1874,7 @@ async fn inner_hole(
             .await?;
             // suggestion (mike)
             // we also hide the source hole since its essentially "consumed" by this operation
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 ModelingCmd::ObjectVisible {
                     object_id: hole_sketch_group.id,
@@ -1885,7 +1885,7 @@ async fn inner_hole(
         }
         SketchGroupSet::SketchGroups(hole_sketch_groups) => {
             for hole_sketch_group in hole_sketch_groups {
-                args.send_modeling_cmd(
+                args.batch_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     ModelingCmd::Solid2DAddHole {
                         object_id: sketch_group.id,
@@ -1895,7 +1895,7 @@ async fn inner_hole(
                 .await?;
                 // suggestion (mike)
                 // we also hide the source hole since its essentially "consumed" by this operation
-                args.send_modeling_cmd(
+                args.batch_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     ModelingCmd::ObjectVisible {
                         object_id: hole_sketch_group.id,

@@ -1065,10 +1065,10 @@ impl ExecutorContext {
 
         // Set the edge visibility.
         engine
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                kittycad::types::ModelingCmd::EdgeLinesVisible {
+                &kittycad::types::ModelingCmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
                 },
             )
@@ -1093,10 +1093,10 @@ impl ExecutorContext {
     ) -> Result<ProgramMemory, KclError> {
         // Before we even start executing the program, set the units.
         self.engine
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                kittycad::types::ModelingCmd::SetSceneUnits {
+                &kittycad::types::ModelingCmd::SetSceneUnits {
                     unit: self.settings.units.clone().into(),
                 },
             )
