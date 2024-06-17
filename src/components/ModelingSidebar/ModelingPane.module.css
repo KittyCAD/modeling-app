@@ -6,6 +6,10 @@
   scroll-margin-block-start: 41px;
 }
 
+.panel:focus-within {
+  @apply border-primary border-opacity-100;
+}
+
 .header::before,
 .header::-webkit-details-marker {
   display: none;
@@ -13,6 +17,10 @@
 
 :global(.dark) .panel {
   @apply bg-chalkboard-100/50 backdrop-blur-[3px] border-chalkboard-80;
+}
+
+:global(.dark) .panel:focus-within {
+  @apply border-chalkboard-50 border-opacity-100;
 }
 
 .header {
