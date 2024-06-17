@@ -23,6 +23,7 @@ layout: manual
 * [`atan`](kcl/atan)
 * [`bezierCurve`](kcl/bezierCurve)
 * [`ceil`](kcl/ceil)
+* [`chamfer`](kcl/chamfer)
 * [`circle`](kcl/circle)
 * [`close`](kcl/close)
 * [`cos`](kcl/cos)
