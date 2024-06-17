@@ -18,7 +18,7 @@ const prependRoutes =
   }
 
 type OnboardingPaths = {
-  [K in keyof typeof onboardingPaths]: `/onboarding${typeof onboardingPaths[K]}`
+  [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
 }
 
 export const paths = {
@@ -27,9 +27,7 @@ export const paths = {
   FILE: '/file',
   SETTINGS: '/settings',
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(onboardingPaths)(
-    '/onboarding'
-  ) as OnboardingPaths,
+  ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
