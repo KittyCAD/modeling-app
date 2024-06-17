@@ -4750,6 +4750,11 @@ eslint-plugin-react@^7.27.1:
     semver "^6.3.1"
     string.prototype.matchall "^4.0.8"
 
+eslint-plugin-suggest-no-throw@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-suggest-no-throw/-/eslint-plugin-suggest-no-throw-1.0.0.tgz#facc852aa9acd5e0f4d5e0aff71d6a186e3be8e8"
+  integrity sha512-IoSDNVeH9WRC9T4Nm3HResFthgiPEW8e6YkKzichJ4fZwac0T8qBQ/8qjmv9NeRSEw8q2EbN/THLE/UU38J46g==
+
 eslint-plugin-testing-library@^5.0.1:
   version "5.11.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-testing-library/-/eslint-plugin-testing-library-5.11.0.tgz#0bad7668e216e20dd12f8c3652ca353009163121"
