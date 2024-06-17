@@ -54251,6 +54251,7 @@
           "properties": {
             "angle": {
               "description": "Angle to revolve (in degrees). Default is 360.",
+              "default": null,
               "type": "number",
               "format": "double",
               "nullable": true
