@@ -23,10 +23,10 @@ const sk3 = startSketchAt([0, 0])
     ]
 
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const _node = getNodeFromPath<any>(ast, nodePath)
-    if (err(_node)) fail()
+    if (err(_node)) throw _node
     const { node } = _node
 
     expect([node.start, node.end]).toEqual(sourceRange)
@@ -51,10 +51,10 @@ const b1 = cube([0,0], 10)`
     ]
 
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const _node = getNodeFromPath<Parameter>(ast, nodePath)
-    if (err(_node)) fail()
+    if (err(_node)) throw _node
     const node = _node.node
 
     expect(nodePath).toEqual([
@@ -88,10 +88,10 @@ const b1 = cube([0,0], 10)`
     ]
 
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const _node = getNodeFromPath<Identifier>(ast, nodePath)
-    if (err(_node)) fail()
+    if (err(_node)) throw _node
     const node = _node.node
     expect(nodePath).toEqual([
       ['body', ''],

@@ -30,17 +30,19 @@ export function getSketchSegmentFromPathToNode(
 
   const node = nodeMeta.node
   if (!node || typeof node.start !== 'number' || !node.end)
-    throw new Error('no node found')
+    return new Error('no node found')
   const sourceRange: SourceRange = [node.start, node.end]
   return getSketchSegmentFromSourceRange(sketchGroup, sourceRange)
 }
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: SourceRange
-): {
-  segment: SketchGroup['value'][number]
-  index: number
-} {
+):
+  | {
+      segment: SketchGroup['value'][number]
+      index: number
+    }
+  | Error {
   const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
   if (
     startSourceRange &&
@@ -55,7 +57,7 @@ export function getSketchSegmentFromSourceRange(
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
   const line = sketchGroup.value[lineIndex]
-  if (!line) throw new Error('could not find matching line')
+  if (!line) return new Error('could not find matching line')
   return {
     segment: line,
     index: lineIndex,

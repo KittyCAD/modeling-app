@@ -111,7 +111,7 @@ const initialise = async () => {
     return await init(buffer)
   } catch (e) {
     console.log('Error initialising WASM', e)
-    /* non-fatal */ throw e
+    return Promise.reject(e)
   }
 }
 
@@ -203,7 +203,7 @@ export const _executor = async (
       rangeTypeFix(parsed.sourceRanges)
     )
 
-    /* non-fatal */ throw kclError
+    return Promise.reject(kclError)
   }
 }
 
@@ -222,7 +222,7 @@ export const makeDefaultPlanes = async (
   } catch (e) {
     // TODO: do something real with the error.
     console.log('make default planes error', e)
-    /* non-fatal */ throw e
+    return Promise.reject(e)
   }
 }
 
@@ -256,7 +256,7 @@ export const modifyAstForSketch = async (
     )
 
     console.log(kclError)
-    /* non-fatal */ throw kclError
+    return Promise.reject(kclError)
   }
 }
 
@@ -329,7 +329,7 @@ export async function coreDump(
     }
     return dump
   } catch (e: any) {
-    /* non-fatal */ throw new Error(`Error getting core dump: ${e}`)
+    return Promise.reject(new Error(`Error getting core dump: ${e}`))
   }
 }
 

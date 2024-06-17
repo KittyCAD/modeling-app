@@ -16,6 +16,7 @@ export function useRefreshSettings(routeId: string = paths.INDEX) {
 
   if (!ctx) {
     // Intended to stop the world
+    // eslint-disable-next-line
     throw new Error(
       'useRefreshSettings must be used within a SettingsAuthProvider'
     )

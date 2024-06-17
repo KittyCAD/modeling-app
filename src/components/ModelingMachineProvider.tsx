@@ -562,9 +562,7 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sourceRange
           )
-          const info = await getSketchOrientationDetails(
-            sketchPathToNode || []
-          )
+          const info = await getSketchOrientationDetails(sketchPathToNode || [])
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             info?.sketchDetails?.faceId || ''
@@ -588,7 +586,8 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
@@ -623,7 +622,8 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
@@ -667,7 +667,8 @@ export const ModelingMachineProvider = ({
           const _modifiedAst = parse(recast(modifiedAst))
           if (err(_modifiedAst)) return Promise.reject(_modifiedAst)
 
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
@@ -699,7 +700,8 @@ export const ModelingMachineProvider = ({
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
@@ -734,7 +736,8 @@ export const ModelingMachineProvider = ({
             }
           )
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
@@ -769,7 +772,8 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
@@ -804,7 +808,8 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap

@@ -22,17 +22,16 @@ export class SemanticToken {
   }
 }
 
-export function deserializeTokens(
+export async function deserializeTokens(
   data: number[],
   semanticTokensProvider?: LSP.SemanticTokensOptions
-): SemanticToken[] {
+): Promise<SemanticToken[]> {
   if (!semanticTokensProvider) {
     return []
   }
   // Check if data length is divisible by 5
   if (data.length % 5 !== 0) {
-    // Used in Promise, non fatal
-    throw new Error('Length is not divisible by 5')
+    return Promise.reject(new Error('Length is not divisible by 5'))
   }
 
   const tokens = []

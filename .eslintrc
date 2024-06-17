@@ -27,6 +27,12 @@
           "@typescript-eslint/no-floating-promises": "warn",
           "testing-library/prefer-screen-queries": "off"
         }
+      },
+      {
+        "files": ["src/**/*.test.ts"],
+        "rules": {
+          "suggest-no-throw/suggest-no-throw": "off",
+        }
       }
     ]
 }

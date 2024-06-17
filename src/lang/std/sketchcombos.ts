@@ -1574,7 +1574,7 @@ export function transformAstSketchLines({
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
 
-    if (!callBack || !transformTo) throw new Error('no callback helper')
+    if (!callBack || !transformTo) return new Error('no callback helper')
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
@@ -1639,7 +1639,7 @@ export function transformAstSketchLines({
     const varName = varDec.node.id.name
     const sketchGroup = programMemory.root?.[varName]
     if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
-      throw new Error('not a sketch group')
+      return new Error('not a sketch group')
     const segMeta = getSketchSegmentFromPathToNode(
       sketchGroup,
       ast,
@@ -1648,10 +1648,19 @@ export function transformAstSketchLines({
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
-    const referencedSegment = referencedSegmentRange
-      ? getSketchSegmentFromSourceRange(sketchGroup, referencedSegmentRange)
-          .segment
-      : sketchGroup.value.find((path) => path.name === _referencedSegmentName)
+    let referencedSegment
+    if (referencedSegmentRange) {
+      const _segment = getSketchSegmentFromSourceRange(
+        sketchGroup,
+        referencedSegmentRange
+      )
+      if (err(_segment)) return _segment
+      referencedSegment = _segment.segment
+    } else {
+      referencedSegment = sketchGroup.value.find(
+        (path) => path.name === _referencedSegmentName
+      )
+    }
     const { to, from } = seg
     const replacedSketchLine = replaceSketchLine({
       node: node,

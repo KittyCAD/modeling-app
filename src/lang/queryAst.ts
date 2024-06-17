@@ -578,12 +578,16 @@ export function isLinesParallelAndConstrained(
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
     const path = programMemory?.root[varName] as SketchGroup
-    const primarySegment = getSketchSegmentFromSourceRange(
+    const _primarySegment = getSketchSegmentFromSourceRange(
       path,
       primaryLine.range
-    ).segment
-    const { segment: secondarySegment, index: secondaryIndex } =
-      getSketchSegmentFromSourceRange(path, secondaryLine.range)
+    )
+    if (err(_primarySegment)) return _primarySegment
+    const primarySegment = _primarySegment.segment
+
+    const _segment = getSketchSegmentFromSourceRange(path, secondaryLine.range)
+    if (err(_segment)) return _segment
+    const { segment: secondarySegment, index: secondaryIndex } = _segment
     const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
     const secondaryAngle = getAngle(secondarySegment.from, secondarySegment.to)
     const secondaryAngleAlt = getAngle(

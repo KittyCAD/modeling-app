@@ -83,7 +83,7 @@ export function addStartProfileAt(
   if (err(_node1)) return _node1
   const variableDeclaration = _node1.node
   if (variableDeclaration.type !== 'VariableDeclaration') {
-    throw new Error('variableDeclaration.init.type !== PipeExpression')
+    return new Error('variableDeclaration.init.type !== PipeExpression')
   }
   const _node = { ...node }
   const init = variableDeclaration.declarations[0].init

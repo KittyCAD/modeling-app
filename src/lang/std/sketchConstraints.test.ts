@@ -41,7 +41,8 @@ async function testingSwapSketchFnCall({
   }
   const transformInfos = getTransformInfos(selections, ast, constraintType)
 
-  if (!transformInfos) throw new Error('nope')
+  if (!transformInfos)
+    return Promise.reject(new Error('transformInfos undefined'))
   const ast2 = transformAstSketchLines({
     ast,
     programMemory,
@@ -363,10 +364,12 @@ const part001 = startSketchOn('XY')
   it('normal case works', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+    const _segment = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    ).segment
+    )
+    if (err(_segment)) throw _segment
+    const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       type: 'ToPoint',
       to: [5.62, 1.79],
@@ -377,10 +380,12 @@ const part001 = startSketchOn('XY')
   it('verify it works when the segment is in the `start` property', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+    const _segment = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    ).segment
+    )
+    if (err(_segment)) throw _segment
+    const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],

@@ -2377,7 +2377,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y - dragPX  },
+    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y - dragPX },
   })
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()

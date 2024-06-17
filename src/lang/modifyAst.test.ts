@@ -141,14 +141,14 @@ function giveSketchFnCallTagTestHelper(
   // this wrapper changes the input and output to code
   // making it more of an integration test, but easier to read the test intention is the goal
   const ast = parse(code)
-  if (err(ast)) fail()
+  if (err(ast)) throw ast
   const start = code.indexOf(searchStr)
   const range: [number, number] = [start, start + searchStr.length]
   const sketchRes = giveSketchFnCallTag(ast, range)
-  if (err(sketchRes)) fail()
+  if (err(sketchRes)) throw sketchRes
   const { modifiedAst, tag, isTagExisting } = sketchRes
   const newCode = recast(modifiedAst)
-  if (err(newCode)) fail()
+  if (err(newCode)) throw newCode
   return { tag, newCode, isTagExisting }
 }
 
@@ -216,7 +216,7 @@ const part001 = startSketchOn('XY')
 const yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -231,7 +231,7 @@ const yo2 = hmm([identifierGuy + 5])`
   })
   it('should move a value into a new variable', async () => {
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -246,7 +246,7 @@ const yo2 = hmm([identifierGuy + 5])`
   })
   it('should move a callExpression into a new variable', async () => {
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -261,7 +261,7 @@ const yo2 = hmm([identifierGuy + 5])`
   })
   it('should move a binary expression with call expression into a new variable', async () => {
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -276,7 +276,7 @@ const yo2 = hmm([identifierGuy + 5])`
   })
   it('should move a identifier into a new variable', async () => {
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -300,7 +300,7 @@ describe('testing sketchOnExtrudedFace', () => {
   |> close(%)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
 
     const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([9.7, 9.19], %)`
@@ -322,7 +322,7 @@ describe('testing sketchOnExtrudedFace', () => {
       extrudePathToNode,
       programMemory
     )
-    if (err(extruded)) fail()
+    if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
 
     const newCode = recast(modifiedAst)
@@ -342,7 +342,7 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
   |> close(%)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `close(%)`
     const segmentRange: [number, number] = [
@@ -363,7 +363,7 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
       extrudePathToNode,
       programMemory
     )
-    if (err(extruded)) fail()
+    if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
 
     const newCode = recast(modifiedAst)
@@ -383,7 +383,7 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
   |> close(%)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const sketchSnippet = `startProfileAt([3.58, 2.06], %)`
     const sketchRange: [number, number] = [
@@ -405,7 +405,7 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
       programMemory,
       'end'
     )
-    if (err(extruded)) fail()
+    if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
 
     const newCode = recast(modifiedAst)
@@ -433,7 +433,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
     |> close(%)
     const part001 = extrude(5 + 7, sketch001)`
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([4.99, -0.46], %)`
     const segmentRange: [number, number] = [
@@ -454,7 +454,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
       extrudePathToNode,
       programMemory
     )
-    if (err(updatedAst)) fail()
+    if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)
     expect(newCode).toContain(`const part001 = extrude(5 + 7, sketch001)
 const sketch002 = startSketchOn(part001, 'seg01')`)
@@ -469,7 +469,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> line([306.21, 198.85], %, 'a')
   |> line([306.21, 198.87], %)`
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
     const lineOfInterest = "line([306.21, 198.85], %, 'a')"
     const range: [number, number] = [
@@ -484,7 +484,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       code,
       pathToNode
     )
-    if (err(modifiedAst)) fail()
+    if (err(modifiedAst)) throw modifiedAst
     const newCode = recast(modifiedAst)
     expect(newCode).toBe(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
@@ -547,7 +547,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
       const ast = parse(code)
-      if (err(ast)) fail()
+      if (err(ast)) throw ast
       const programMemory = await enginelessExecutor(ast)
       const lineOfInterest = line
       const range: [number, number] = [
@@ -563,7 +563,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
         code,
         pathToNode
       )
-      if (err(modifiedAst)) fail()
+      if (err(modifiedAst)) throw modifiedAst
       const newCode = recast(modifiedAst)
       expect(newCode).toBe(makeCode(line, replace1, replace2))
     })
@@ -635,7 +635,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
     ])('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = parse(code)
-      if (err(ast)) fail()
+      if (err(ast)) throw ast
 
       const programMemory = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
@@ -652,7 +652,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         ast,
         programMemory
       )
-      if (!mod) throw new Error('yo is undefined')
+      if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
       expect(recastCode).toContain(expectedFinish)
     })
@@ -673,7 +673,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['angledLineToY([30, 10.14 + 0], %)', 'arrayIndex', 0],
     ])('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = parse(code)
-      if (err(ast)) fail()
+      if (err(ast)) throw ast
 
       const programMemory = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
@@ -690,7 +690,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         ast,
         programMemory
       )
-      if (!mod) throw new Error('yo is undefined')
+      if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
       expect(recastCode).toContain(expectedFinish)
     })

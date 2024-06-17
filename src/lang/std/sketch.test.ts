@@ -115,7 +115,7 @@ describe('testing changeSketchArguments', () => {
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) return ast
 
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
@@ -126,7 +126,7 @@ describe('testing changeSketchArguments', () => {
       [2, 3],
       [0, 0]
     )
-    if (err(changeSketchArgsRetVal)) fail()
+    if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
     expect(recast(changeSketchArgsRetVal.modifiedAst)).toBe(expectedCode)
   })
 })
@@ -142,7 +142,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)`
     const ast = parse(code)
-    if (err(ast)) fail()
+    if (err(ast)) return ast
 
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
@@ -161,7 +161,7 @@ const mySketch001 = startSketchOn('XY')
         ['init', 'VariableDeclarator'],
       ],
     })
-    if (err(newSketchLnRetVal)) fail()
+    if (err(newSketchLnRetVal)) return newSketchLnRetVal
 
     // Enable rotations #152
     let expectedCode = `const mySketch001 = startSketchOn('XY')
@@ -186,7 +186,7 @@ const mySketch001 = startSketchOn('XY')
         ['init', 'VariableDeclarator'],
       ],
     })
-    if (err(modifiedAst2)) fail()
+    if (err(modifiedAst2)) return modifiedAst2
 
     expectedCode = `const mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -217,7 +217,7 @@ describe('testing addTagForSketchOnFace', () => {
       sourceStart,
       sourceStart + originalLine.length,
     ]
-    if (err(ast)) fail()
+    if (err(ast)) return ast
     const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
     const sketchOnFaceRetVal = addTagForSketchOnFace(
       {
@@ -227,7 +227,7 @@ describe('testing addTagForSketchOnFace', () => {
       },
       'lineTo'
     )
-    if (err(sketchOnFaceRetVal)) fail()
+    if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
     const expectedCode = genCode("lineTo([-1.59, -1.54], %, 'seg01')")
@@ -598,14 +598,14 @@ describe('testing getConstraintInfo', () => {
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length,
       ]
-      if (err(ast)) fail()
+      if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
       )
-      if (err(callExp)) fail()
+      if (err(callExp)) return callExp
       const result = getConstraintInfo(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
@@ -752,14 +752,14 @@ describe('testing getConstraintInfo', () => {
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length,
       ]
-      if (err(ast)) fail()
+      if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
       )
-      if (err(callExp)) fail()
+      if (err(callExp)) return callExp
       const result = getConstraintInfo(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
@@ -1108,14 +1108,14 @@ describe('testing getConstraintInfo', () => {
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length,
       ]
-      if (err(ast)) fail()
+      if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
       )
-      if (err(callExp)) fail()
+      if (err(callExp)) return callExp
 
       const result = getConstraintInfo(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)

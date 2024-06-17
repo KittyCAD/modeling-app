@@ -57,13 +57,13 @@ class MockEngineCommandManager {
     commandStr: string
   ): Promise<any> {
     if (id === undefined) {
-      throw new Error('id is undefined')
+      return Promise.reject(new Error('id is undefined'))
     }
     if (rangeStr === undefined) {
-      throw new Error('rangeStr is undefined')
+      return Promise.reject(new Error('rangeStr is undefined'))
     }
     if (commandStr === undefined) {
-      throw new Error('commandStr is undefined')
+      return Promise.reject(new Error('commandStr is undefined'))
     }
     const command: EngineCommand = JSON.parse(commandStr)
     const range: SourceRange = JSON.parse(rangeStr)

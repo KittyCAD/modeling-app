@@ -539,7 +539,7 @@ const part001 = startSketchOn('XY')
           ast
         )
         if (err(expectedConstraintLevel)) {
-          fail()
+          throw expectedConstraintLevel
         }
         expect(expectedConstraintLevel.level).toBe(constraintLevel)
         return recursivelySeachCommentsAndCheckConstraintLevel(

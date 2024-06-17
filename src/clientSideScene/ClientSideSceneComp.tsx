@@ -370,9 +370,6 @@ export async function deleteSegment({
 
   if (!shouldContinueSegDelete) return
 
-  // Modifies pathToNode to point to the next segment.
-  // We still need the old pathToNode though, so we need to copy.
-  const oldPathToNode = structuredClone(pathToNode)
   modifiedAst = deleteSegmentFromPipeExpression(
     dependentRanges,
     modifiedAst,
