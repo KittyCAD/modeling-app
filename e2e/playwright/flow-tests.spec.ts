@@ -38,9 +38,9 @@ document.addEventListener('mousemove', (e) =>
 const deg = (Math.PI * 2) / 360
 
 const commonPoints = {
-  startAt: '[9.06, -12.22]',
-  num1: 9.14,
-  num2: 18.2,
+  startAt: '[7.19, -9.7]',
+  num1: 7.25,
+  num2: 14.44,
   // num1: 9.64,
   // num2: 19.19,
 }
@@ -99,7 +99,7 @@ test('Basic sketch', async ({ page }) => {
   )
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
@@ -118,13 +118,13 @@ test('Basic sketch', async ({ page }) => {
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)`)
+  |> line([0, ${commonPoints.num1 + 0.01}], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)
+  |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -154,7 +154,7 @@ test('Basic sketch', async ({ page }) => {
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
-  |> line([0, ${commonPoints.num1}], %)
+  |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -744,7 +744,7 @@ const sketchOnPlaneAndBackSideTest = async (
   }
 
   const code = `const sketch001 = startSketchOn('${plane}')
-  |> startProfileAt([1.14, -1.54], %)`
+  |> startProfileAt([0.9, -1.22], %)`
 
   await u.openDebugPanel()
 
@@ -1245,28 +1245,25 @@ test.describe('Testing selections', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1}], %)`)
+    |> line([0, ${commonPoints.num1 + 0.01}], %)`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1}], %)
+    |> line([0, ${commonPoints.num1 + 0.01}], %)
     |> line([-${commonPoints.num2}, 0], %)`)
 
     // deselect line tool
     await page.getByRole('button', { name: 'Line' }).click()
 
     await u.closeDebugPanel()
-    const selectionSequence = async (isSecondTime = false) => {
+    const selectionSequence = async () => {
       await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
       await page.waitForTimeout(100)
-      await page.mouse.move(
-        startXPx + PUR * 15,
-        isSecondTime ? 430 : 500 - PUR * 10
-      )
+      await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
       await expect(page.getByTestId('hover-highlight')).toBeVisible()
       // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
@@ -1276,10 +1273,7 @@ test.describe('Testing selections', () => {
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
       await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-      await page.mouse.move(
-        startXPx + PUR * 10,
-        isSecondTime ? 295 : 500 - PUR * 20
-      ) // mouse onto another line
+      await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 20) // mouse onto another line
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
       // now check clicking works including axis
@@ -1376,8 +1370,33 @@ test.describe('Testing selections', () => {
 
     await page.waitForTimeout(300) // wait for animation
 
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: 0, y: -1378.01, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    await emptySpaceClick()
+
+    await u.closeDebugPanel()
+
     // hover again and check it works
-    await selectionSequence(true)
+    await selectionSequence()
   })
 
   test('Hovering over 3d features highlights code', async ({ page }) => {
@@ -2217,9 +2236,9 @@ const doSnapAtDifferentScales = async (
   await u.openDebugPanel()
 
   const code = `const sketch001 = startSketchOn('-XZ')
-|> startProfileAt([${roundOff(scale * 87.68)}, ${roundOff(scale * 43.84)}], %)
-|> line([${roundOff(scale * 175.36)}, 0], %)
-|> line([0, -${roundOff(scale * 175.36) + fudge}], %)
+|> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
+|> line([${roundOff(scale * 139.19)}, 0], %)
+|> line([0, -${roundOff(scale * 139.2)}], %)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)`
 
@@ -2249,6 +2268,7 @@ const doSnapAtDifferentScales = async (
   const pointC = [900, 400]
 
   // draw three lines
+  await page.waitForTimeout(500)
   await page.mouse.click(pointA[0], pointA[1])
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -2384,11 +2404,8 @@ test('Sketch on face', async ({ page }) => {
 
   await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-    'default_camera_get_settings',
-    true
-  )
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
   await page.waitForTimeout(150)
   await page.setViewportSize({ width: 1200, height: 1200 })
   await u.openAndClearDebugPanel()
@@ -4658,13 +4675,15 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: 'Exit Sketch' })
   ).not.toBeVisible()
+  await page.waitForTimeout(200)
 
   // Extrude
   await page.mouse.click(750, 150)
   await expect(extrudeButton).not.toBeDisabled()
   await page.keyboard.press('e')
-  await page.mouse.move(730, 230, { steps: 5 })
-  await page.mouse.click(730, 230)
+  await page.waitForTimeout(100)
+  await page.mouse.move(900, 200, { steps: 5 })
+  await page.mouse.click(900, 200)
   await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Submit command' }).click()
@@ -4768,7 +4787,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   )
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
@@ -4847,15 +4866,15 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([-11.64, 11.11], %)`)
+  |> line([-9.16, 8.81], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([-11.64, 11.11], %)
-  |> line([-6.56, 0], %)`)
+  |> line([-9.16, 8.81], %)
+  |> line([-5.28, 0], %)`)
 
   // Unequip line tool
   await page.keyboard.press('Escape')

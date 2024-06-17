@@ -166,7 +166,9 @@ export const ModelingMachineProvider = ({
                   center: settings.center,
                   vantage: {
                     ...settings.pos,
-                    y: settings.pos.y - 1,
+                    y:
+                      settings.pos.y +
+                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
                   },
                   up: { x: 0, y: 0, z: 1 },
                 },

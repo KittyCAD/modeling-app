@@ -1393,19 +1393,21 @@ export class SceneEntities {
       },
       onClick: async (args) => {
         const { streamDimensions } = useStore.getState()
-        const { entity_id } = await sendSelectEventToEngine(
+        const { entity_id, ...rest } = await sendSelectEventToEngine(
           args?.mouseEvent,
           document.getElementById('video-stream') as HTMLVideoElement,
           streamDimensions
         )
-        if (!entity_id) return
+        let _entity_id = entity_id
+        console.log('things', _entity_id, rest)
+        if (!_entity_id) return
         if (
-          engineCommandManager.defaultPlanes?.xy === entity_id ||
-          engineCommandManager.defaultPlanes?.xz === entity_id ||
-          engineCommandManager.defaultPlanes?.yz === entity_id ||
-          engineCommandManager.defaultPlanes?.negXy === entity_id ||
-          engineCommandManager.defaultPlanes?.negXz === entity_id ||
-          engineCommandManager.defaultPlanes?.negYz === entity_id
+          engineCommandManager.defaultPlanes?.xy === _entity_id ||
+          engineCommandManager.defaultPlanes?.xz === _entity_id ||
+          engineCommandManager.defaultPlanes?.yz === _entity_id ||
+          engineCommandManager.defaultPlanes?.negXy === _entity_id ||
+          engineCommandManager.defaultPlanes?.negXz === _entity_id ||
+          engineCommandManager.defaultPlanes?.negYz === _entity_id
         ) {
           const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
             [engineCommandManager.defaultPlanes.xy]: 'XY',
@@ -1419,46 +1421,59 @@ export class SceneEntities {
           // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
           let zAxis: [number, number, number] = [0, 0, 1]
           let yAxis: [number, number, number] = [0, 1, 0]
-          if (engineCommandManager.defaultPlanes?.xy === entity_id) {
+
+          // get unit vector from camera position to target
+          const camVector = sceneInfra.camControls.camera.position
+            .clone()
+            .sub(sceneInfra.camControls.target)
+
+          if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
+            console.log('XY')
             zAxis = [0, 0, 1]
             yAxis = [0, 1, 0]
-          } else if (engineCommandManager.defaultPlanes?.negXy === entity_id) {
-            zAxis = [0, 0, -1]
-            yAxis = [0, 1, 0]
-          } else if (engineCommandManager.defaultPlanes?.yz === entity_id) {
+            if (camVector.z < 0) {
+              zAxis = [0, 0, -1]
+              _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
+            }
+          } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
+            console.log('YZ')
             zAxis = [1, 0, 0]
             yAxis = [0, 0, 1]
-          } else if (engineCommandManager.defaultPlanes?.negYz === entity_id) {
-            zAxis = [-1, 0, 0]
-            yAxis = [0, 0, 1]
-          } else if (engineCommandManager.defaultPlanes?.xz === entity_id) {
-            zAxis = [0, -1, 0]
-            yAxis = [0, 0, 1]
-          } else if (engineCommandManager.defaultPlanes?.negXz === entity_id) {
+            if (camVector.x < 0) {
+              zAxis = [-1, 0, 0]
+              _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
+            }
+          } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
+            console.log('XZ')
             zAxis = [0, 1, 0]
             yAxis = [0, 0, 1]
+            _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
+            if (camVector.y < 0) {
+              zAxis = [0, -1, 0]
+              _entity_id = engineCommandManager.defaultPlanes?.xz || ''
+            }
           }
 
           sceneInfra.modelingSend({
             type: 'Select default plane',
             data: {
               type: 'defaultPlane',
-              planeId: entity_id || '',
-              plane: defaultPlaneStrMap[entity_id] || 'XY',
+              planeId: _entity_id,
+              plane: defaultPlaneStrMap[_entity_id],
               zAxis,
               yAxis,
             },
           })
           return
         }
-        const artifact = this.engineCommandManager.artifactMap[entity_id]
+        const artifact = this.engineCommandManager.artifactMap[_entity_id]
         // If we clicked on an extrude wall, we climb up the parent Id
         // to get the sketch profile's face ID. If we clicked on an endcap,
         // we already have it.
         const targetId =
           'additionalData' in artifact &&
           artifact.additionalData?.type === 'cap'
-            ? entity_id
+            ? _entity_id
             : artifact.parentId
 
         // tsc cannot infer that target can have extrusions
@@ -1476,7 +1491,7 @@ export class SceneEntities {
 
         if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
 
-        const faceInfo = await getFaceDetails(entity_id)
+        const faceInfo = await getFaceDetails(_entity_id)
         if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
         const { z_axis, y_axis, origin } = faceInfo
         const sketchPathToNode = getNodePathFromSourceRange(
@@ -1502,7 +1517,7 @@ export class SceneEntities {
               artifact?.additionalData?.type === 'cap'
                 ? artifact.additionalData.info
                 : 'none',
-            faceId: entity_id,
+            faceId: _entity_id,
           },
         })
         return
