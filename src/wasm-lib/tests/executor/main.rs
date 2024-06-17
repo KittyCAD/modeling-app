@@ -1959,3 +1959,53 @@ async fn serial_test_neg_xz_plane() {
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/neg_xz_plane.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_linear_pattern3d_a_pattern() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 2], %)
+  |> line([3, 1], %)
+  |> line([0, -4], %)
+  |> close(%)
+  |> extrude(1, %)
+
+const pattn1 = patternLinear3d({
+       axis: [1, 0, 0],
+       repetitions: 6,
+       distance: 6
+     }, exampleSketch)
+
+const pattn2 = patternLinear3d({
+       axis: [0, 0, 1],
+       distance: 1,
+       repetitions: 6
+     }, pattn1)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/linear_pattern3d_a_pattern.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_a_pattern() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 2], %)
+  |> line([3, 1], %)
+  |> line([0, -4], %)
+  |> close(%)
+  |> extrude(1, %)
+
+const pattn1 = patternLinear3d({
+       axis: [1, 0, 0],
+       repetitions: 6,
+       distance: 6
+     }, exampleSketch)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, pattn1)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/circular_pattern3d_a_pattern.png", &result, 1.0);
+}
