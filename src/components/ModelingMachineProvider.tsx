@@ -143,30 +143,35 @@ export const ModelingMachineProvider = ({
       actions: {
         'sketch exit execute': () => {
           ;(async () => {
-            await sceneInfra.camControls.makeSureTargetIsCorrect()
+            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_set_perspective',
-                parameters: {
-                  fov_y: 45,
-                  z_near: 0.01,
-                  z_far: 1000,
+            const settings: Models['CameraSettings_type'] = (
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_get_settings',
                 },
-              },
-            })
- 
-            const yo2 = await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_get_settings',
-              },
-            })
+              })
+            )?.data?.data?.settings
+            if (settings.up.z !== 1) {
+              // workaround for gimbal lock situation
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_look_at',
+                  center: settings.center,
+                  vantage: {
+                    ...settings.pos,
+                    y: settings.pos.y - 1,
+                  },
+                  up: { x: 0, y: 0, z: 1 },
+                },
+              })
+            }
 
             kclManager.executeCode(true)
           })()
@@ -492,7 +497,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               data.faceId
             )
-            // sceneInfra.camControls.syncDirection = 'clientToEngine'
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
               zAxis: data.zAxis,

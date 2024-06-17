@@ -1329,13 +1329,6 @@ export class SceneEntities {
         to,
       })
   }
-  async animateAfterSketch() {
-    // if (isReducedMotion()) {
-    //   sceneInfra.camControls.usePerspectiveCamera()
-    //   return
-    // }
-    await sceneInfra.camControls.animateToPerspective()
-  }
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)
   }
