@@ -601,9 +601,9 @@ dependencies = [
 
 [[package]]
 name = "bson"
-version = "2.10.0"
+version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d43b38e074cc0de2957f10947e376a1d88b9c4dbab340b590800cc1b2e066b2"
+checksum = "d8a88e82b9106923b5c4d6edfca9e7db958d4e98a478ec115022e81b9b38e2c8"
 dependencies = [
  "ahash 0.8.11",
  "base64 0.13.1",
@@ -2471,6 +2471,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2616,9 +2625,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.3"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0cbef813153197e60c0e96f59eea0b75f8418380f414b20250ee81b60e522c3"
+checksum = "df75feef10313fa1cb15b7cecd0f579877312ba3d42bb5b8b4c1d4b1d0fcabf0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2631,7 +2640,7 @@ dependencies = [
  "format_serde_error",
  "futures",
  "http 0.2.12",
- "itertools",
+ "itertools 0.13.0",
  "log",
  "mime_guess",
  "parse-display",
@@ -2719,7 +2728,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c2a198fb6b0eada2a8df47933734e6d35d350665a33a3593d7164fa52c75c19"
 dependencies = [
  "cfg-if",
- "windows-targets 0.52.5",
+ "windows-targets 0.48.5",
 ]
 
 [[package]]
@@ -3530,7 +3539,7 @@ dependencies = [
  "bincode",
  "either",
  "fnv",
- "itertools",
+ "itertools 0.12.1",
  "lazy_static",
  "nom",
  "quick-xml",

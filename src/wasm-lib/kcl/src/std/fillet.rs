@@ -117,6 +117,7 @@ async fn inner_fillet(
                 object_id: extrude_group.id,
                 radius: data.radius,
                 tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
+                cut_type: Some(kittycad::types::CutType::Fillet),
             },
         )
         .await?;
