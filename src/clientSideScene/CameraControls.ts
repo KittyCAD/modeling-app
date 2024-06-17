@@ -534,20 +534,22 @@ export class CameraControls {
     direction.normalize()
     this.camera.position.copy(this.target).addScaledVector(direction, distance)
   }
-  usePerspectiveCamera = () => {
+  usePerspectiveCamera = async () => {
     this._usePerspectiveCamera()
-    this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_perspective',
-        parameters: {
-          fov_y:
-            this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
-          ...calculateNearFarFromFOV(this.lastPerspectiveFov),
+    if (this.syncDirection === 'clientToEngine') {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_perspective',
+          parameters: {
+            fov_y:
+              this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
+            ...calculateNearFarFromFOV(this.lastPerspectiveFov),
+          },
         },
-      },
-    })
+      })
+    }
     this.onCameraChange()
     this.update()
     return this.camera
@@ -1071,6 +1073,25 @@ export class CameraControls {
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
+  makeSureTargetIsCorrect = () => {
+    const cmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam({
+          quaternion: this.camera.quaternion,
+          position: this.camera.position,
+          zoom: this.camera.zoom,
+          isPerspective: true,
+          target: this.target,
+        }),
+        center: this.target,
+      },
+    }
+
+    return this.engineCommandManager.sendSceneCommand(cmd)
+  }
   getInteractionType = (event: any) =>
     _getInteractionType(
       this.interactionGuards,
@@ -1087,7 +1108,7 @@ function calculateNearFarFromFOV(fov: number) {
   // const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   // const z_far = 1000 + nearFarRatio * (100000 - 1000)
-  return { z_near: 0.1, z_far: 1000 }
+  return { z_near: 0.01, z_far: 1000 }
 }
 
 function convertThreeCamValuesToEngineCam({
@@ -1106,11 +1127,6 @@ function convertThreeCamValuesToEngineCam({
   // leaving for now since it's working but maybe revisit later
   const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
 
-  const lookAtVector = new Vector3(0, 0, -1)
-    .applyEuler(euler)
-    .normalize()
-    .add(position)
-
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
   if (isPerspective) {
     return {
@@ -1119,6 +1135,10 @@ function convertThreeCamValuesToEngineCam({
       vantage: position,
     }
   }
+  const lookAtVector = new Vector3(0, 0, -1)
+    .applyEuler(euler)
+    .normalize()
+    .add(position)
   const fudgeFactor2 = zoom * 0.9979224466814468 - 0.03473692325839295
   const zoomFactor = (-ZOOM_MAGIC_NUMBER + fudgeFactor2) / zoom
   const direction = lookAtVector.clone().sub(position).normalize()

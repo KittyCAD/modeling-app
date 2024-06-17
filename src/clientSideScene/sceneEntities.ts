@@ -1399,114 +1399,120 @@ export class SceneEntities {
         selected.material.color = defaultPlaneColor(type)
       },
       onClick: async (args) => {
-        const checkExtrudeFaceClick = async (): Promise<
-          ['face' | 'plane' | 'other', string]
-        > => {
-          const { streamDimensions } = useStore.getState()
-          const { entity_id } = await sendSelectEventToEngine(
-            args?.mouseEvent,
-            document.getElementById('video-stream') as HTMLVideoElement,
-            streamDimensions
-          )
-          if (!entity_id) return ['other', '']
-          if (
-            engineCommandManager.defaultPlanes?.xy === entity_id ||
-            engineCommandManager.defaultPlanes?.xz === entity_id ||
-            engineCommandManager.defaultPlanes?.yz === entity_id
-          ) {
-            return ['plane', entity_id]
+        const { streamDimensions } = useStore.getState()
+        const { entity_id } = await sendSelectEventToEngine(
+          args?.mouseEvent,
+          document.getElementById('video-stream') as HTMLVideoElement,
+          streamDimensions
+        )
+        if (!entity_id) return
+        if (
+          engineCommandManager.defaultPlanes?.xy === entity_id ||
+          engineCommandManager.defaultPlanes?.xz === entity_id ||
+          engineCommandManager.defaultPlanes?.yz === entity_id ||
+          engineCommandManager.defaultPlanes?.negXy === entity_id ||
+          engineCommandManager.defaultPlanes?.negXz === entity_id ||
+          engineCommandManager.defaultPlanes?.negYz === entity_id
+        ) {
+          const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+            [engineCommandManager.defaultPlanes.xy]: 'XY',
+            [engineCommandManager.defaultPlanes.xz]: 'XZ',
+            [engineCommandManager.defaultPlanes.yz]: 'YZ',
+            [engineCommandManager.defaultPlanes.negXy]: '-XY',
+            [engineCommandManager.defaultPlanes.negXz]: '-XZ',
+            [engineCommandManager.defaultPlanes.negYz]: '-YZ',
           }
-          const artifact = this.engineCommandManager.artifactMap[entity_id]
-          // If we clicked on an extrude wall, we climb up the parent Id
-          // to get the sketch profile's face ID. If we clicked on an endcap,
-          // we already have it.
-          const targetId =
-            'additionalData' in artifact &&
-            artifact.additionalData?.type === 'cap'
-              ? entity_id
-              : artifact.parentId
-
-          // tsc cannot infer that target can have extrusions
-          // from the commandType (why?) so we need to cast it
-          const target = this.engineCommandManager.artifactMap?.[
-            targetId || ''
-          ] as ArtifactMapCommand & { extrusions?: string[] }
-
-          // TODO: We get the first extrusion command ID,
-          // which is fine while backend systems only support one extrusion.
-          // but we need to more robustly handle resolving to the correct extrusion
-          // if there are multiple.
-          const extrusions =
-            this.engineCommandManager.artifactMap?.[
-              target?.extrusions?.[0] || ''
-            ]
-
-          if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
-            return ['other', entity_id]
-
-          const faceInfo = await getFaceDetails(entity_id)
-          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-            return ['other', entity_id]
-          const { z_axis, y_axis, origin } = faceInfo
-          const sketchPathToNode = getNodePathFromSourceRange(
-            kclManager.ast,
-            artifact.range
-          )
-          const extrudePathToNode = extrusions?.range
-            ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
-            : []
+          // TODO can we get this information from rust land when it creates the default planes?
+          // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+          let zAxis: [number, number, number] = [0, 0, 1]
+          let yAxis: [number, number, number] = [0, 1, 0]
+          if (engineCommandManager.defaultPlanes?.xy === entity_id) {
+            zAxis = [0, 0, 1]
+            yAxis = [0, 1, 0]
+          } else if (engineCommandManager.defaultPlanes?.negXy === entity_id) {
+            zAxis = [0, 0, -1]
+            yAxis = [0, 1, 0]
+          } else if (engineCommandManager.defaultPlanes?.yz === entity_id) {
+            zAxis = [1, 0, 0]
+            yAxis = [0, 0, 1]
+          } else if (engineCommandManager.defaultPlanes?.negYz === entity_id) {
+            zAxis = [-1, 0, 0]
+            yAxis = [0, 0, 1]
+          } else if (engineCommandManager.defaultPlanes?.xz === entity_id) {
+            zAxis = [0, -1, 0]
+            yAxis = [0, 0, 1]
+          } else if (engineCommandManager.defaultPlanes?.negXz === entity_id) {
+            zAxis = [0, 1, 0]
+            yAxis = [0, 0, 1]
+          }
 
           sceneInfra.modelingSend({
             type: 'Select default plane',
             data: {
-              type: 'extrudeFace',
-              zAxis: [z_axis.x, z_axis.y, z_axis.z],
-              yAxis: [y_axis.x, y_axis.y, y_axis.z],
-              position: [origin.x, origin.y, origin.z].map(
-                (num) => num / sceneInfra._baseUnitMultiplier
-              ) as [number, number, number],
-              sketchPathToNode,
-              extrudePathToNode,
-              cap:
-                artifact?.additionalData?.type === 'cap'
-                  ? artifact.additionalData.info
-                  : 'none',
-              faceId: entity_id,
+              type: 'defaultPlane',
+              planeId: entity_id || '',
+              plane: defaultPlaneStrMap[entity_id] || 'XY',
+              zAxis,
+              yAxis,
             },
           })
-          return ['face', entity_id]
+          return
         }
+        const artifact = this.engineCommandManager.artifactMap[entity_id]
+        // If we clicked on an extrude wall, we climb up the parent Id
+        // to get the sketch profile's face ID. If we clicked on an endcap,
+        // we already have it.
+        const targetId =
+          'additionalData' in artifact &&
+          artifact.additionalData?.type === 'cap'
+            ? entity_id
+            : artifact.parentId
 
-        const faceResult = await checkExtrudeFaceClick()
-        if (faceResult[0] === 'face') return
+        // tsc cannot infer that target can have extrusions
+        // from the commandType (why?) so we need to cast it
+        const target = this.engineCommandManager.artifactMap?.[
+          targetId || ''
+        ] as ArtifactMapCommand & { extrusions?: string[] }
 
-        if (!args || !args.intersects?.[0]) return
-        if (args.mouseEvent.which !== 1) return
-        const { intersects } = args
-        const type = intersects?.[0].object.name || ''
-        const posNorm = Number(intersects?.[0]?.normal?.z) > 0
-        let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
-        let zAxis: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
-        let yAxis: [number, number, number] = [0, 1, 0]
-        if (type === YZ_PLANE) {
-          planeString = posNorm ? 'YZ' : '-YZ'
-          zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
-          yAxis = [0, 0, 1]
-        } else if (type === XZ_PLANE) {
-          planeString = posNorm ? '-XZ' : 'XZ'
-          zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
-          yAxis = [0, 0, 1]
-        }
+        // TODO: We get the first extrusion command ID,
+        // which is fine while backend systems only support one extrusion.
+        // but we need to more robustly handle resolving to the correct extrusion
+        // if there are multiple.
+        const extrusions =
+          this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
+
+        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
+
+        const faceInfo = await getFaceDetails(entity_id)
+        if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
+        const { z_axis, y_axis, origin } = faceInfo
+        const sketchPathToNode = getNodePathFromSourceRange(
+          kclManager.ast,
+          artifact.range
+        )
+        const extrudePathToNode = extrusions?.range
+          ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+          : []
+
         sceneInfra.modelingSend({
           type: 'Select default plane',
           data: {
-            type: 'defaultPlane',
-            plane: planeString,
-            zAxis,
-            yAxis,
-            planeId: faceResult[1],
+            type: 'extrudeFace',
+            zAxis: [z_axis.x, z_axis.y, z_axis.z],
+            yAxis: [y_axis.x, y_axis.y, y_axis.z],
+            position: [origin.x, origin.y, origin.z].map(
+              (num) => num / sceneInfra._baseUnitMultiplier
+            ) as [number, number, number],
+            sketchPathToNode,
+            extrudePathToNode,
+            cap:
+              artifact?.additionalData?.type === 'cap'
+                ? artifact.additionalData.info
+                : 'none',
+            faceId: entity_id,
           },
         })
+        return
       },
     })
   }

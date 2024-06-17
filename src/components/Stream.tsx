@@ -126,8 +126,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
 
   return (
     <div
-      id="stream"
-      className={className}
+      className="absolute inset-0 z-0"
       onMouseUp={handleMouseUp}
       onMouseDown={handleMouseDown}
       onContextMenu={(e) => e.preventDefault()}
@@ -142,7 +141,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         onMouseMoveCapture={handleMouseMove}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
-        style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
         id="video-stream"
       />
       <ClientSideScene

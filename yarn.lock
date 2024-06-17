@@ -1880,10 +1880,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kittycad/lib@^0.0.64":
-  version "0.0.64"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.64.tgz#0cea0788cd8af4a8964ddbf7152028affadcb17f"
-  integrity sha512-qHyvNYKbhsfR5aXLFrdKrBQ4JI+0G0v096oROD3HatJ+AIzg5H0THmI+rMnQ9L4zx4U6n1A9gLi7ZQjSsZsleg==
+"@kittycad/lib@^0.0.66":
+  version "0.0.66"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.66.tgz#518728c222528668e4b7ecae4cf142f6fe8bbd55"
+  integrity sha512-j6dGoXJWqNjUzD+yiEmgf4deeFJ/DWM07/YvZAyL6z3dK886P3AXznEGyh78PSwO4roZayI5fu/BAllSJZtUAw==
   dependencies:
     node-fetch "3.3.2"
     openapi-types "^12.0.0"
