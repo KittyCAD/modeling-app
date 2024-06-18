@@ -311,8 +311,8 @@ export class SceneEntities {
     draftExpressionsIndices?: { start: number; end: number }
     forward: [number, number, number]
     up: [number, number, number]
-    position?: [number, number, number],
-    selectionRanges?: Selections,
+    position?: [number, number, number]
+    selectionRanges?: Selections
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
@@ -405,12 +405,14 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
-      const segmentHasCursor = selectionRanges?.codeBasedSelections.some((selection) => {
+      const segmentHasCursor = selectionRanges?.codeBasedSelections.some(
+        (selection) => {
           return isOverlap(selection.range, segment.__geoMeta.sourceRange)
-        })
+        }
+      )
       const segmentColor = segmentHasCursor
-      ? 0x0000ff
-      : getThemeColorForThreeJs(sceneInfra._theme)
+        ? 0x0000ff
+        : getThemeColorForThreeJs(sceneInfra._theme)
 
       let seg
       const callExpName = getNodeFromPath<CallExpression>(

@@ -900,7 +900,10 @@ export const modelingMachine = createMachine(
           sceneInfra.modelingSend('Equip Line tool')
         }
       },
-      'setup client side sketch segments': ({ sketchDetails, selectionRanges }) => {
+      'setup client side sketch segments': ({
+        sketchDetails,
+        selectionRanges,
+      }) => {
         if (!sketchDetails) return
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
