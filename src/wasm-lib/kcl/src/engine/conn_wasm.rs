@@ -182,7 +182,7 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        // If we have a batch response, we want to return the specfic id we care about.
+        // If we have a batch response, we want to return the specific id we care about.
         if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) = &ws_result.resp {
             // Find the id we care about.
             let batch_response = responses.get(&id.to_string()).ok_or_else(|| {
