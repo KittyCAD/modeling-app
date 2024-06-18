@@ -123,11 +123,21 @@ export const ModelingMachineProvider = ({
   )
   useHotkeyWrapper(['meta + shift + .'], () => {
     console.warn('CoreDump: Initializing core dump')
-    toast.promise(coreDump(coreDumpManager, true), {
-      loading: 'Starting core dump...',
-      success: 'Core dump completed successfully',
-      error: 'Error while exporting core dump',
-    })
+    toast.promise(
+      coreDump(coreDumpManager, true),
+      {
+        loading: 'Starting core dump...',
+        success: 'Core dump completed successfully',
+        error: 'Error while exporting core dump',
+      },
+      {
+        success: {
+          // Note: this extended duration is especially important for Playwright e2e testing
+          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+          duration: 6000,
+        },
+      }
+    )
   })
 
   // Settings machine setup
