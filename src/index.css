@@ -152,7 +152,7 @@ code {
 
 .dark #code-mirror-override .cm-activeLine,
 .dark #code-mirror-override .cm-activeLineGutter {
-  @apply bg-primary/10;
+  @apply bg-chalkboard-70/20;
   mix-blend-mode: lighten;
 }
 
@@ -163,11 +163,15 @@ code {
 
 .dark #code-mirror-override .cm-focused .cm-activeLine,
 .dark #code-mirror-override .cm-focused .cm-activeLineGutter {
+  @apply bg-chalkboard-70/40;
+}
+
+#code-mirror-override .cm-matchingBracket {
   @apply bg-primary/20;
 }
 
-#code-mirror-override .cm-matchingB {
-  @apply bg-primary/20;
+.dark #code-mirror-override .cm-matchingBracket {
+  @apply bg-chalkboard-70/60;
 }
 
 #code-mirror-override .cm-gutters {
@@ -185,27 +189,8 @@ code {
   @apply caret-chalkboard-10;
 }
 
-#code-mirror-override .cm-focused .cm-cursor {
-  width: 0px;
-}
-
 #code-mirror-override .cm-focused {
   outline: none;
-}
-
-#code-mirror-override .cm-cursor {
-  display: block;
-  width: 1ch;
-  @apply mix-blend-multiply;
-  @apply border-l-primary;
-}
-
-.dark #code-mirror-override .cm-cursor {
-  @apply border-l-chalkboard-10;
-}
-
-#code-mirror-override.blink .cm-cursor {
-  animation: blink 1200ms ease-out infinite;
 }
 
 @keyframes blink {
