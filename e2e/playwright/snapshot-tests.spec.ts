@@ -405,17 +405,16 @@ test('Draft segments should look right', async ({ page, context }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const sketch001 = startSketchOn('XZ')`
-  )
+  let code = `const sketch001 = startSketchOn('XZ')`
+  await expect(page.locator('.cm-content')).toHaveText(code)
 
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.19, -9.7], %)`)
+  code += `
+  |> startProfileAt([7.19, -9.7], %)`
+  await expect(page.locator('.cm-content')).toHaveText(code)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -427,10 +426,9 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.19, -9.7], %)
-  |> line([7.25, 0], %)`)
+  code += `
+  |> line([7.25, 0], %)`
+  await expect(page.locator('.cm-content')).toHaveText(code)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
 
@@ -513,17 +511,16 @@ test.describe('Client side scene scale should match engine scale', () => {
     // select a plane
     await page.mouse.click(700, 200)
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
-    )
+    let code = `const sketch001 = startSketchOn('XZ')`
+    await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+    await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
 
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.19, -9.7], %)`)
+    code += `
+  |> startProfileAt([7.19, -9.7], %)`
+    await expect(u.codeLocator).toHaveText(code)
     await page.waitForTimeout(100)
 
     await u.closeDebugPanel()
@@ -531,21 +528,18 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
     await page.waitForTimeout(100)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.19, -9.7], %)
-    |> line([7.25, 0], %)`)
+    code += `
+  |> line([7.25, 0], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.19, -9.7], %)
-    |> line([7.25, 0], %)
-    |> tangentialArcTo([21.7, -2.44], %)`)
+    code += `
+  |> tangentialArcTo([21.7, -2.44], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     // click tangential arc tool again to unequip it
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
@@ -616,17 +610,16 @@ test.describe('Client side scene scale should match engine scale', () => {
     // select a plane
     await page.mouse.click(700, 200)
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
-    )
+    let code = `const sketch001 = startSketchOn('XZ')`
+    await expect(u.codeLocator).toHaveText(code)
 
-    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+    await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
 
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-      |> startProfileAt([182.59, -246.32], %)`)
+    code += `
+  |> startProfileAt([182.59, -246.32], %)`
+    await expect(u.codeLocator).toHaveText(code)
     await page.waitForTimeout(100)
 
     await u.closeDebugPanel()
@@ -634,21 +627,18 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
     await page.waitForTimeout(100)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-      |> startProfileAt([182.59, -246.32], %)
-      |> line([184.3, 0], %)`)
+    code += `
+  |> line([184.3, 0], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-      |> startProfileAt([182.59, -246.32], %)
-      |> line([184.3, 0], %)
-      |> tangentialArcTo([551.2, -62.01], %)`)
+    code += `
+  |> tangentialArcTo([551.2, -62.01], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
     await page.waitForTimeout(100)
