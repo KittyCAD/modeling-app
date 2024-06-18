@@ -405,14 +405,11 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
-      const segmentHasCursor = selectionRanges?.codeBasedSelections.some(
+      const isSelected = selectionRanges?.codeBasedSelections.some(
         (selection) => {
           return isOverlap(selection.range, segment.__geoMeta.sourceRange)
         }
       )
-      const segmentColor = segmentHasCursor
-        ? 0x0000ff
-        : getThemeColorForThreeJs(sceneInfra._theme)
 
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
@@ -431,7 +428,7 @@ export class SceneEntities {
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
-          color: segmentColor,
+          isSelected,
         })
         callbacks.push(
           this.updateTangentialArcToSegment({
@@ -453,7 +450,7 @@ export class SceneEntities {
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
-          color: segmentColor,
+          isSelected,
         })
         callbacks.push(
           this.updateStraightSegment({

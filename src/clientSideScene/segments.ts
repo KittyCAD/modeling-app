@@ -45,20 +45,21 @@ export function profileStart({
   pathToNode,
   scale = 1,
   theme,
-  color,
+  isSelected,
 }: {
   from: Coords2d
   id: string
   pathToNode: PathToNode
   scale?: number
   theme: Themes
-  color?: number
+  isSelected?: boolean
 }) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: color || baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
   group.add(mesh)
@@ -68,7 +69,7 @@ export function profileStart({
     id,
     from,
     pathToNode,
-    isSelected: false,
+    isSelected,
     baseColor,
   }
   group.name = PROFILE_START
@@ -87,7 +88,7 @@ export function straightSegment({
   callExpName,
   texture,
   theme,
-  color,
+  isSelected = false,
 }: {
   from: Coords2d
   to: Coords2d
@@ -98,7 +99,7 @@ export function straightSegment({
   callExpName: string
   texture: Texture
   theme: Themes
-  color?: number
+  isSelected?: boolean
 }): Group {
   const group = new Group()
 
@@ -124,7 +125,8 @@ export function straightSegment({
 
   const baseColor =
     callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: color || baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
@@ -137,7 +139,7 @@ export function straightSegment({
     from,
     to,
     pathToNode,
-    isSelected: false,
+    isSelected,
     callExpName,
     baseColor,
   }
@@ -238,7 +240,7 @@ export function tangentialArcToSegment({
   scale = 1,
   texture,
   theme,
-  color,
+  isSelected,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -249,7 +251,7 @@ export function tangentialArcToSegment({
   scale?: number
   texture: Texture
   theme: Themes
-  color?: number
+  isSelected?: boolean
 }): Group {
   const group = new Group()
 
@@ -281,7 +283,8 @@ export function tangentialArcToSegment({
   })
 
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: color || baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -294,7 +297,7 @@ export function tangentialArcToSegment({
     to,
     prevSegment,
     pathToNode,
-    isSelected: false,
+    isSelected,
     baseColor,
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
