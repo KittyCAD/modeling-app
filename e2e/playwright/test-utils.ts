@@ -226,6 +226,7 @@ export async function getUtils(page: Page) {
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,

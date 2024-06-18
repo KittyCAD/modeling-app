@@ -127,6 +127,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   return (
     <div
       className="absolute inset-0 z-0"
+      data-testid="stream"
       onMouseUp={handleMouseUp}
       onMouseDown={handleMouseDown}
       onContextMenu={(e) => e.preventDefault()}
