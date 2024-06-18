@@ -128,6 +128,32 @@ export const wiggleMove = async (
   }
 }
 
+export const circleMove = async (
+  page: any,
+  x: number,
+  y: number,
+  steps: number,
+  diameter: number,
+  locator?: string
+) => {
+  const tau = Math.PI * 2
+  const step = tau / steps
+  for (let i = 0; i < tau; i += step) {
+    if (locator) {
+      const isElVis = await page.locator(locator).isVisible()
+      if (isElVis) return
+    }
+    const [x1, y1] = [
+      Math.cos(i) * diameter,
+      Math.sin(i) * diameter,
+    ]
+    const [xr, yr] = [x1, y1]
+    await page.mouse.move(x + xr, y + yr, { steps: 5 })
+  }
+}
+
+
+
 export const getMovementUtils = (opts: any) => {
   // The way we truncate is kinda odd apparently, so we need this function
   // "[k]itty[c]ad round"
@@ -149,11 +175,11 @@ export const getMovementUtils = (opts: any) => {
 
   // Make it easier to click around from center ("click [from] zero zero")
   const click00 = (x: number, y: number) =>
-    opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
+    opts.page.mouse.click(opts.center.x + x, opts.center.y + y, { delay: 100 })
 
   // Relative clicker, must keep state
   let last = { x: 0, y: 0 }
-  const click00r = (x?: number, y?: number) => {
+  const click00r = async (x?: number, y?: number) => {
     // reset relative coordinates when anything is undefined
     if (x === undefined || y === undefined) {
       last.x = 0
@@ -161,12 +187,13 @@ export const getMovementUtils = (opts: any) => {
       return
     }
 
-    const ret = click00(last.x + x, last.y + y)
+    await circleMove(opts.page, opts.center.x + last.x + x, opts.center.y + last.y + y, 10, 10)
+    await click00(last.x + x, last.y + y)
     last.x += x
     last.y += y
 
     // Returns the new absolute coordinate if you need it.
-    return ret.then(() => [last.x, last.y])
+    return [last.x, last.y]
   }
 
   return { toSU, click00r }

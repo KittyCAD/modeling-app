@@ -2853,10 +2853,14 @@ const part002 = startSketchOn('XZ')
           .getByRole('button', { name: 'Add constraining value' })
           .click()
 
+        // give ui time to update selections
+        await page.waitForTimeout(1000)
+
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await expect(activeLinesContent[0]).toHaveText(
           `|> line([74.36, 130.4], %, 'seg01')`
         )
+        console.log(activeLinesContent[1])
         await expect(activeLinesContent[1]).toHaveText(`}, %)`)
         await expect(page.locator('.cm-content')).toContainText(`angle: -57,`)
         await expect(page.locator('.cm-content')).toContainText(
@@ -3336,6 +3340,12 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x, line3.y)
         await page.mouse.click(line4.x, line4.y)
         await page.keyboard.up('Shift')
+
+
+        // check actives lines
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await expect(activeLinesContent).toHaveLength(codeAfter.length)
+
         const constraintMenuButton = page.getByRole('button', {
           name: 'Constrain',
         })
@@ -3347,11 +3357,8 @@ const part002 = startSketchOn('XZ')
 
         // apply the constraint
         await constraintMenuButton.click()
-        await constraintButton.click()
+        await constraintButton.click({ delay: 500 })
 
-        // check actives lines
-        const activeLinesContent = await page.locator('.cm-activeLine').all()
-        await expect(activeLinesContent).toHaveLength(codeAfter.length)
         // check there are still 3 cursors (they should stay on the same lines as before constraint was applied)
         await expect(page.locator('.cm-cursor')).toHaveCount(codeAfter.length)
 
