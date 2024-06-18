@@ -943,10 +943,8 @@ class EngineConnection extends EventTarget {
 
           case 'modeling_batch':
             const batchResponse = resp.data.responses as BatchResponseMap
-            console.log('Batch response:', batchResponse)
             // Iterate over the map of responses.
             Object.entries(batchResponse).forEach(([key, response]) => {
-              console.log('Batch response:', key, response)
               // If the response is a success, we resolve the promise.
               if ('response' in response && response.response) {
                 const artifact = this.engineCommandManager.artifactMap[key]
