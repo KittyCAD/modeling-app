@@ -143,16 +143,11 @@ export const circleMove = async (
       const isElVis = await page.locator(locator).isVisible()
       if (isElVis) return
     }
-    const [x1, y1] = [
-      Math.cos(i) * diameter,
-      Math.sin(i) * diameter,
-    ]
+    const [x1, y1] = [Math.cos(i) * diameter, Math.sin(i) * diameter]
     const [xr, yr] = [x1, y1]
     await page.mouse.move(x + xr, y + yr, { steps: 5 })
   }
 }
-
-
 
 export const getMovementUtils = (opts: any) => {
   // The way we truncate is kinda odd apparently, so we need this function
@@ -187,7 +182,13 @@ export const getMovementUtils = (opts: any) => {
       return
     }
 
-    await circleMove(opts.page, opts.center.x + last.x + x, opts.center.y + last.y + y, 10, 10)
+    await circleMove(
+      opts.page,
+      opts.center.x + last.x + x,
+      opts.center.y + last.y + y,
+      10,
+      10
+    )
     await click00(last.x + x, last.y + y)
     last.x += x
     last.y += y

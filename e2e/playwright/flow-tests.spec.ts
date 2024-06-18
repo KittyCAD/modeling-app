@@ -3341,7 +3341,6 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line4.x, line4.y)
         await page.keyboard.up('Shift')
 
-
         // check actives lines
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await expect(activeLinesContent).toHaveLength(codeAfter.length)
