@@ -948,7 +948,7 @@ class EngineConnection extends EventTarget {
             Object.entries(batchResponse).forEach(([key, response]) => {
               console.log('Batch response:', key, response)
               // If the response is a success, we resolve the promise.
-              if (response.response) {
+              if ('response' in response && response.response) {
                 const artifact = this.engineCommandManager.artifactMap[key]
                 if (artifact.type === 'pending') {
                   artifact.resolve({
@@ -957,13 +957,18 @@ class EngineConnection extends EventTarget {
                     range: artifact.range,
                     raw: {
                       request_id: key,
-                      resp: response.response,
+                      resp: {
+                        type: 'modeling',
+                        data: {
+                          modeling_response: response.response,
+                        },
+                      },
                       success: true,
                     },
                     data: response.response,
                   })
                 }
-              } else {
+              } else if ('errors' in response) {
                 const artifact = this.engineCommandManager.artifactMap[key]
                 if (artifact.type === 'pending') {
                   artifact.resolve({
