@@ -45,18 +45,20 @@ export function profileStart({
   pathToNode,
   scale = 1,
   theme,
+  color,
 }: {
   from: Coords2d
   id: string
   pathToNode: PathToNode
   scale?: number
   theme: Themes
+  color?: number
 }) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const body = new MeshBasicMaterial({ color: color || baseColor })
   const mesh = new Mesh(geometry, body)
 
   group.add(mesh)
@@ -67,6 +69,7 @@ export function profileStart({
     from,
     pathToNode,
     isSelected: false,
+    baseColor,
   }
   group.name = PROFILE_START
   group.position.set(from[0], from[1], 0)
@@ -143,7 +146,7 @@ export function straightSegment({
   const length = Math.sqrt(
     Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
   )
-  const arrowGroup = createArrowhead(scale, theme)
+  const arrowGroup = createArrowhead(scale, theme, color)
   arrowGroup.position.set(to[0], to[1], 0)
   const dir = new Vector3()
     .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
@@ -171,9 +174,10 @@ export function straightSegment({
   return group
 }
 
-function createArrowhead(scale = 1, theme: Themes): Group {
+function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
+  const baseColor = getThemeColorForThreeJs(theme)
   const arrowMaterial = new MeshBasicMaterial({
-    color: getThemeColorForThreeJs(theme),
+    color: color || baseColor,
   })
   // specify the size of the geometry in pixels (i.e. cone height = 20px, cone radius = 4.5px)
   // we'll scale the group to the correct size later to match these sizes in screen space
@@ -295,7 +299,7 @@ export function tangentialArcToSegment({
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
 
-  const arrowGroup = createArrowhead(scale, theme)
+  const arrowGroup = createArrowhead(scale, theme, color)
   arrowGroup.position.set(to[0], to[1], 0)
   const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
   arrowGroup.quaternion.setFromUnitVectors(
