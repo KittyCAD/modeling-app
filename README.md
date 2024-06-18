@@ -319,7 +319,7 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 
 ```
 yarn install
-yarn build:wasm
+yarn build:wasm-dev
 cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 yarn vite build --mode development
 yarn tauri build --debug -b

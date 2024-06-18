@@ -127,7 +127,7 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream className="absolute inset-0 z-0" />
+      <Stream />
       {/* <CamToggle /> */}
       <LowerRightControls>
         <Gizmo />
