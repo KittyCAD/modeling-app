@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.1.59"
+version = "0.1.60"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -56,7 +56,7 @@ web-sys = { version = "0.3.69", features = ["console"] }
 approx = "0.5"
 bson = { version = "2.11.0", features = ["uuid-1", "chrono"] }
 tokio = { version = "1.38.0", features = ["full"] }
-tokio-tungstenite = { version = "0.23.0", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.23.1", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
 [features]
