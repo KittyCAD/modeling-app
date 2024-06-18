@@ -1801,29 +1801,31 @@ test('Can add multiple sketches', async ({ page }) => {
 
   // start a new sketch
   await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
 
   // when exiting the sketch above the camera is still looking down at XY,
   // so selecting the plane again is a bit easier.
-  await page.mouse.click(center.x + 30, center.y)
+  await page.mouse.click(center.x + 200, center.y + 100)
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   codeStr += "const sketch002 = startSketchOn('XY')"
   await expect(u.codeLocator).toHaveText(codeStr)
   await u.closeDebugPanel()
+  await page.waitForTimeout(100)
 
   await click00r(30, 0)
-  codeStr += `  |> startProfileAt(${toSU([30, 0])}, %)`
+  codeStr += `  |> startProfileAt([1.53, 0], %)`
   await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(30, 0)
-  codeStr += `  |> line(${toSU([30 + 0.1 /* imprecision */, 0])}, %)`
+  codeStr += `  |> line([1.53, 0], %)`
   await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(0, 30)
-  codeStr += `  |> line(${toSU([0, 30])}, %)`
+  codeStr += `  |> line([0, -1.53], %)`
   await expect(u.codeLocator).toHaveText(codeStr)
 
   await click00r(-30, 0)
-  codeStr += `  |> line(${toSU([-30 - 0.1, 0])}, %)`
+  codeStr += `  |> line([-1.53, 0], %)`
   await expect(u.codeLocator).toHaveText(codeStr)
 
   click00r(undefined, undefined)
