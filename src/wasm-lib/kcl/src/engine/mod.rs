@@ -50,10 +50,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
 
     async fn clear_scene(&self, source_range: crate::executor::SourceRange) -> Result<(), crate::errors::KclError> {
-        self.send_modeling_cmd(
+        self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
-            kittycad::types::ModelingCmd::SceneClearAll {},
+            &kittycad::types::ModelingCmd::SceneClearAll {},
         )
         .await?;
 
@@ -191,10 +191,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
 
         let plane_id = uuid::Uuid::new_v4();
-        self.send_modeling_cmd(
+        self.batch_modeling_cmd(
             plane_id,
             source_range,
-            ModelingCmd::MakePlane {
+            &ModelingCmd::MakePlane {
                 clobber: false,
                 origin: default_origin,
                 size: default_size,
@@ -207,10 +207,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         if let Some(color) = color {
             // Set the color.
-            self.send_modeling_cmd(
+            self.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 source_range,
-                ModelingCmd::PlaneSetColor { color, plane_id },
+                &ModelingCmd::PlaneSetColor { color, plane_id },
             )
             .await?;
         }
