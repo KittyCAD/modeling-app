@@ -947,8 +947,6 @@ class EngineConnection extends EventTarget {
             Object.entries(batchResponse).forEach(([key, response]) => {
               // If the response is a success, we resolve the promise.
               if ('response' in response && response.response) {
-                const artifact = this.engineCommandManager.artifactMap[key]
-                if (artifact.type === 'pending') {
                   this.engineCommandManager.handleModelingCommand(
                     {
                       type: 'modeling',
@@ -968,16 +966,12 @@ class EngineConnection extends EventTarget {
                       success: true,
                     }
                   )
-                }
               } else if ('errors' in response) {
-                const artifact = this.engineCommandManager.artifactMap[key]
-                if (artifact.type === 'pending') {
                   this.engineCommandManager.handleFailedModelingCommand(key, {
                     request_id: key,
                     success: false,
                     errors: response.errors,
                   })
-                }
               }
             })
 
