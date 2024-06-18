@@ -84,7 +84,7 @@ export function straightSegment({
   callExpName,
   texture,
   theme,
-  color = getThemeColorForThreeJs(theme),
+  color,
 }: {
   from: Coords2d
   to: Coords2d
@@ -120,8 +120,8 @@ export function straightSegment({
   }
 
   const baseColor =
-    callExpName === 'close' ? 0x444444 : color
-  const body = new MeshBasicMaterial({ color: baseColor })
+    callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color: color || baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
@@ -234,7 +234,7 @@ export function tangentialArcToSegment({
   scale = 1,
   texture,
   theme,
-  color = getThemeColorForThreeJs(theme),
+  color,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -276,7 +276,8 @@ export function tangentialArcToSegment({
     scale,
   })
 
-  const body = new MeshBasicMaterial({ color })
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color: color || baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -290,7 +291,7 @@ export function tangentialArcToSegment({
     prevSegment,
     pathToNode,
     isSelected: false,
-    baseColor: color,
+    baseColor,
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
 
