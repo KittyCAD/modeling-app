@@ -947,33 +947,55 @@ class EngineConnection extends EventTarget {
             Object.entries(batchResponse).forEach(([key, response]) => {
               // If the response is a success, we resolve the promise.
               if ('response' in response && response.response) {
-                  this.engineCommandManager.handleModelingCommand(
-                    {
+                this.engineCommandManager.handleModelingCommand(
+                  {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: response.response,
+                    },
+                  },
+                  key,
+                  {
+                    request_id: key,
+                    resp: {
                       type: 'modeling',
                       data: {
                         modeling_response: response.response,
                       },
                     },
-                    key,
-                    {
-                      request_id: key,
-                      resp: {
-                        type: 'modeling',
-                        data: {
-                          modeling_response: response.response,
-                        },
-                      },
-                      success: true,
-                    }
-                  )
+                    success: true,
+                  }
+                )
               } else if ('errors' in response) {
-                  this.engineCommandManager.handleFailedModelingCommand(key, {
-                    request_id: key,
-                    success: false,
-                    errors: response.errors,
-                  })
+                this.engineCommandManager.handleFailedModelingCommand(key, {
+                  request_id: key,
+                  success: false,
+                  errors: response.errors,
+                })
               }
             })
+
+            if (message.request_id) {
+              const id = message.request_id
+              const command = this.engineCommandManager.artifactMap[id]
+              if (command && command?.type === 'pending') {
+                // Get the last response.
+                // batch artifact is just a container, we don't need to keep it
+                // once we process all the commands inside it
+                const resolve = command.resolve
+                delete this.engineCommandManager.artifactMap[id]
+                resolve({
+                  id,
+                  commandType: command.commandType,
+                  range: command.range,
+                  // We just send empty here it does not matter.
+                  data: { type: 'empty' },
+                  // What actually matters for the wasm code is the raw
+                  // message here.
+                  raw: message,
+                })
+              }
+            }
 
             break
 
@@ -1798,14 +1820,20 @@ export class EngineCommandManager extends EventTarget {
       typeof command !== 'string' &&
       command.type === 'modeling_cmd_batch_req'
     ) {
-      return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
+      const batchId = command.batch_id
+      return this.handlePendingBatchCommand(
+        batchId,
+        command.requests,
+        idToRangeMap
+      )
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
       } else if (parseCommand.type === 'modeling_cmd_batch_req') {
+        const batchId = parseCommand.batch_id
         return this.handlePendingBatchCommand(
-          id,
+          batchId,
           parseCommand.requests,
           idToRangeMap
         )
