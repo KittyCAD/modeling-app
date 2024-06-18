@@ -548,7 +548,7 @@ function codeToIdSelections(
     .filter(Boolean) as any
 }
 
-export function sendSelectEventToEngine(
+export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
   el: HTMLVideoElement,
   streamDimensions: { streamWidth: number; streamHeight: number }
@@ -559,7 +559,7 @@ export function sendSelectEventToEngine(
     el,
     ...streamDimensions,
   })
-  const result: Promise<Models['SelectWithPoint_type']> = engineCommandManager
+  const result: Models['SelectWithPoint_type'] = await engineCommandManager
     .sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {

@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.22.0",
+  "version": "0.22.2",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.16.0",
@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.64",
+    "@kittycad/lib": "^0.0.67",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^2.0.1",

@@ -46,7 +46,11 @@ export const ModelingPane = ({
       data-testid={detailsTestId}
       id={id}
       className={
-        pointerEventsCssClass + styles.panel + ' group ' + (className || '')
+        'group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 ' +
+        pointerEventsCssClass +
+        styles.panel +
+        ' group ' +
+        (className || '')
       }
     >
       <ModelingPaneHeader title={title} Menu={Menu} />

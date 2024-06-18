@@ -7,10 +7,8 @@ import {
   getSelectionType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { StateFrom } from 'xstate'
 
 const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
@@ -40,12 +38,6 @@ function CommandBarSelectionInput({
   const [canSubmitSelection, setCanSubmitSelection] = useState<boolean>(
     canSubmitSelectionArg(selectionsByType, arg)
   )
-
-  useHotkeys('tab', () => onSubmit(selection), {
-    enableOnFormTags: true,
-    enableOnContentEditable: true,
-    keyup: true,
-  })
 
   useEffect(() => {
     inputRef.current?.focus()
