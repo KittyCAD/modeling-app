@@ -3490,8 +3490,8 @@ const part002 = startSketchOn('XZ')
         'persistCode',
         `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-1.05, -1.07], %)
-  |> line([3.79, 4.68], %, 'seg01')
-  |> line([7.13, -2.4], %)`
+  |> line([3.79, 2.68], %, 'seg01')
+  |> line([3.13, -2.4], %)`
       )
     })
     const u = await getUtils(page)
@@ -3499,16 +3499,23 @@ const part002 = startSketchOn('XZ')
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await page.getByText("line([3.79, 4.68], %, 'seg01')").click()
+    await page.getByText("line([3.79, 2.68], %, 'seg01')").click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(100)
-    const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="1"]`, 0)
-    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
-    await page.mouse.move(line1.x, line1.y)
+    const lineBefore = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
+    ).toBeLessThan(3)
+    await page.mouse.move(lineBefore.x, lineBefore.y)
     await page.waitForTimeout(50)
-    await page.mouse.click(line1.x, line1.y)
-    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    await page.mouse.click(lineBefore.x, lineBefore.y)
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
 
     await page
       .getByRole('button', {
@@ -3518,9 +3525,21 @@ const part002 = startSketchOn('XZ')
     await page.getByRole('button', { name: 'horizontal', exact: true }).click()
 
     let activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText(`|> xLine(7.13, %)`)
-    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
-    
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+
+    // If the overlay-angle is updated the THREE.js scene is in a good state
+    await expect(
+      await page.locator('[data-overlay-index="1"]')
+    ).toHaveAttribute('data-overlay-angle', '0')
+
+    const lineAfter = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
+
     await page
       .getByRole('button', {
         name: 'Constrain',
