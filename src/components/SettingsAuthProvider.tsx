@@ -171,7 +171,9 @@ export const SettingsAuthProviderBase = ({
           })
         },
         'Execute AST': () => kclManager.executeCode(true, true),
-        persistSettings: (context) =>
+      },
+      services: {
+        'Persist settings': (context) =>
           saveSettings(context, loadedProject?.project?.path),
       },
     }
