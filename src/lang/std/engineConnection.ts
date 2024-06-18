@@ -58,6 +58,9 @@ function isHighlightSetEntity_type(
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
+type BatchResponseMap = {
+  [key: string]: Models['BatchResponse_type']
+}
 
 type ResultCommand = CommandInfo & {
   type: 'result'
@@ -936,6 +939,48 @@ class EngineConnection extends EventTarget {
           case 'trickle_ice':
             let candidate = resp.data?.candidate
             void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
+            break
+
+          case 'modeling_batch':
+            const batchResponse = resp.data.responses as BatchResponseMap
+            console.log('Batch response:', batchResponse)
+            // Iterate over the map of responses.
+            Object.entries(batchResponse).forEach(([key, response]) => {
+              console.log('Batch response:', key, response)
+              // If the response is a success, we resolve the promise.
+              if (response.response) {
+                const artifact = this.engineCommandManager.artifactMap[key]
+                if (artifact.type === 'pending') {
+                  artifact.resolve({
+                    id: key,
+                    commandType: artifact.commandType,
+                    range: artifact.range,
+                    raw: {
+                      request_id: key,
+                      resp: response.response,
+                      success: true,
+                    },
+                    data: response.response,
+                  })
+                }
+              } else {
+                const artifact = this.engineCommandManager.artifactMap[key]
+                if (artifact.type === 'pending') {
+                  artifact.resolve({
+                    id: key,
+                    commandType: artifact.commandType,
+                    range: artifact.range,
+                    raw: {
+                      request_id: key,
+                      success: false,
+                      errors: response.errors,
+                    },
+                    errors: response.errors,
+                  })
+                }
+              }
+            })
+
             break
 
           case 'metrics_request':
