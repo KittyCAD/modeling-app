@@ -2,6 +2,7 @@ import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
+import { click, setDatasetValue } from '../utils'
 
 const isWin32 = os.platform() === 'win32'
 const documentsDir = path.join(os.homedir(), 'Documents')
@@ -15,25 +16,8 @@ const newProjectDir = path.join(documentsDir, 'a-different-directory')
 const tmp = process.env.TEMP || '/tmp'
 const userCodeDir = path.join(tmp, 'kittycad_user_code')
 
-async function click(element: WebdriverIO.Element): Promise<void> {
-  // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
-  await element.waitForClickable()
-  await browser.execute('arguments[0].click();', element)
-}
-
-/* Shoutout to @Sheap on Github for a great workaround utility:
- * https://github.com/tauri-apps/tauri/issues/6541#issue-1638944060
- */
-async function setDatasetValue(
-  field: WebdriverIO.Element,
-  property: string,
-  value: string
-) {
-  await browser.execute(`arguments[0].dataset.${property} = "${value}"`, field)
-}
-
-describe('ZMA (Tauri)', () => {
-  it('opens the auth page and signs in', async () => {
+describe('ZMA sign in flow', () => {
+  before(async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
@@ -42,7 +26,9 @@ describe('ZMA (Tauri)', () => {
     await fs.rm(userSettingsDir, { force: true, recursive: true })
     await fs.mkdir(defaultProjectDir, { recursive: true })
     await fs.mkdir(newProjectDir, { recursive: true })
+  })
 
+  it('opens the auth page and signs in', async () => {
     const signInButton = await $('[data-testid="sign-in-button"]')
     expect(await signInButton.getText()).toEqual('Sign in')
 
@@ -82,6 +68,10 @@ describe('ZMA (Tauri)', () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
   })
+})
+
+describe('ZMA authorized user flows', () => {
+  // Note: each flow below is intended to start *and* end from the home page
 
   it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
@@ -150,7 +140,9 @@ describe('ZMA (Tauri)', () => {
     const base = isWin32 ? 'http://tauri.localhost' : 'tauri://localhost'
     await browser.execute(`window.location.href = "${base}/home"`)
   })
+})
 
+describe('ZMA sign out flow', () => {
   it('signs out', async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
