@@ -949,11 +949,15 @@ class EngineConnection extends EventTarget {
               if ('response' in response && response.response) {
                 const artifact = this.engineCommandManager.artifactMap[key]
                 if (artifact.type === 'pending') {
-                  artifact.resolve({
-                    id: key,
-                    commandType: artifact.commandType,
-                    range: artifact.range,
-                    raw: {
+                  this.engineCommandManager.handleModelingCommand(
+                    {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: response.response,
+                      },
+                    },
+                    key,
+                    {
                       request_id: key,
                       resp: {
                         type: 'modeling',
@@ -962,22 +966,15 @@ class EngineConnection extends EventTarget {
                         },
                       },
                       success: true,
-                    },
-                    data: response.response,
-                  })
+                    }
+                  )
                 }
               } else if ('errors' in response) {
                 const artifact = this.engineCommandManager.artifactMap[key]
                 if (artifact.type === 'pending') {
-                  artifact.resolve({
-                    id: key,
-                    commandType: artifact.commandType,
-                    range: artifact.range,
-                    raw: {
-                      request_id: key,
-                      success: false,
-                      errors: response.errors,
-                    },
+                  this.engineCommandManager.handleFailedModelingCommand(key, {
+                    request_id: key,
+                    success: false,
                     errors: response.errors,
                   })
                 }
