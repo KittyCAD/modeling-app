@@ -157,24 +157,52 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch().lock().unwrap().clear();
 
         // We pop off the responses to cleanup our mappings.
-        let id_final = match final_req {
+        match final_req {
             WebSocketRequest::ModelingCmdBatchReq {
-                requests: _,
+                ref requests,
                 batch_id,
                 responses: _,
-            } => batch_id,
-            WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
-            _ => {
-                return Err(KclError::Engine(KclErrorDetails {
-                    message: format!("The final request is not a modeling command: {:?}", final_req),
-                    source_ranges: vec![source_range],
-                }));
-            }
-        };
+            } => {
+                // Get the last command ID.
+                let last_id = requests.last().unwrap().cmd_id;
+                let response = self
+                    .inner_send_modeling_cmd(batch_id, source_range, final_req, id_to_source_range.clone())
+                    .await?;
 
-        self.inner_send_modeling_cmd(id_final, source_range, final_req, id_to_source_range)
-            .await
+                // If we have a batch response, we want to return the specific id we care about.
+                if let kittycad::types::OkWebSocketResponseData::ModelingBatch { responses } = &response {
+                    self.parse_batch_responses(last_id, id_to_source_range, responses.clone())
+                } else {
+                    // We should never get here.
+                    Err(KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get batch response: {:?}", response),
+                        source_ranges: vec![source_range],
+                    }))
+                }
+            }
+            WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
+                self.inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
+                    .await
+            }
+            _ => Err(KclError::Engine(KclErrorDetails {
+                message: format!("The final request is not a modeling command: {:?}", final_req),
+                source_ranges: vec![source_range],
+            })),
+        }
     }
+
+    /*async fn send_batch_command(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        self.batch_modeling_cmd(id, source_range, &cmd).await?;
+
+        // Flush the batch queue.
+        self.flush_batch(source_range).await
+
+    }*/
 
     async fn make_default_plane(
         &self,

@@ -276,7 +276,7 @@ impl EngineManager for EngineConnection {
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
-        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
         let (tx, rx) = oneshot::channel();
 
@@ -322,10 +322,7 @@ impl EngineManager for EngineConnection {
             }
             // We pop off the responses to cleanup our mappings.
             if let Some((_, resp)) = self.responses.remove(&id) {
-                return if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) = &resp.resp {
-                    // If we have a batch response, we want to return the specific id we care about.
-                    return self.parse_batch_responses(id, id_to_source_range, responses.clone());
-                } else if let Some(data) = &resp.resp {
+                return if let Some(data) = &resp.resp {
                     Ok(data.clone())
                 } else {
                     Err(KclError::Engine(KclErrorDetails {
