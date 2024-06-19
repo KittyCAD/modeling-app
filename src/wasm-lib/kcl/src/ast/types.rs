@@ -1340,7 +1340,7 @@ impl VariableDeclaration {
                 indentation,
                 self.kind,
                 declaration.id.name,
-                declaration.init.recast(options, indentation_level, false)
+                declaration.init.recast(options, indentation_level, false).trim()
             );
             output
         })
@@ -1756,7 +1756,7 @@ impl ArrayExpression {
                 inner_indentation,
                 self.elements
                     .iter()
-                    .map(|el| el.recast(options, indentation_level, false))
+                    .map(|el| el.recast(options, indentation_level, is_in_pipe))
                     .collect::<Vec<String>>()
                     .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
