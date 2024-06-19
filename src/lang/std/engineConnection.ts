@@ -58,6 +58,9 @@ function isHighlightSetEntity_type(
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
+type BatchResponseMap = {
+  [key: string]: Models['BatchResponse_type']
+}
 
 type ResultCommand = CommandInfo & {
   type: 'result'
@@ -1316,7 +1319,8 @@ export class EngineCommandManager extends EventTarget {
             )
             if (
               message.success &&
-              message.resp.type === 'modeling' &&
+              (message.resp.type === 'modeling' ||
+                message.resp.type === 'modeling_batch') &&
               message.request_id
             ) {
               this.handleModelingCommand(
@@ -1380,19 +1384,60 @@ export class EngineCommandManager extends EventTarget {
     id: string,
     raw: WebSocketResponse
   ) {
-    if (message.type !== 'modeling') {
+    if (!(message.type === 'modeling' || message.type === 'modeling_batch')) {
       return
     }
-    const modelingResponse = message.data.modeling_response
+
     const command = this.artifactMap[id]
+    let modelingResponse: Models['OkModelingCmdResponse_type'] = {
+      type: 'empty',
+    }
+    if ('modeling_response' in message.data) {
+      modelingResponse = message.data.modeling_response
+    }
     if (
       command?.type === 'pending' &&
       command.commandType === 'batch' &&
       command?.additionalData?.type === 'batch-ids'
     ) {
-      command.additionalData.ids.forEach((id) => {
-        this.handleModelingCommand(message, id, raw)
-      })
+      if ('responses' in message.data) {
+        const batchResponse = message.data.responses as BatchResponseMap
+        // Iterate over the map of responses.
+        Object.entries(batchResponse).forEach(([key, response]) => {
+          // If the response is a success, we resolve the promise.
+          if ('response' in response && response.response) {
+            this.handleModelingCommand(
+              {
+                type: 'modeling',
+                data: {
+                  modeling_response: response.response,
+                },
+              },
+              key,
+              {
+                request_id: key,
+                resp: {
+                  type: 'modeling',
+                  data: {
+                    modeling_response: response.response,
+                  },
+                },
+                success: true,
+              }
+            )
+          } else if ('errors' in response) {
+            this.handleFailedModelingCommand(key, {
+              request_id: key,
+              success: false,
+              errors: response.errors,
+            })
+          }
+        })
+      } else {
+        command.additionalData.ids.forEach((id) => {
+          this.handleModelingCommand(message, id, raw)
+        })
+      }
       // batch artifact is just a container, we don't need to keep it
       // once we process all the commands inside it
       const resolve = command.resolve
@@ -1401,7 +1446,6 @@ export class EngineCommandManager extends EventTarget {
         id,
         commandType: command.commandType,
         range: command.range,
-        data: modelingResponse,
         raw,
       })
       return
@@ -1733,7 +1777,7 @@ export class EngineCommandManager extends EventTarget {
     command: EngineCommand
     ast: Program
     idToRangeMap?: { [key: string]: SourceRange }
-  }): Promise<any> {
+  }): Promise<ResolveCommand | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1802,11 +1846,13 @@ export class EngineCommandManager extends EventTarget {
     command: Models['ModelingCmd_type'],
     ast?: Program,
     range?: SourceRange
-  ) {
+  ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
+    const promise: Promise<ResolveCommand | void> = new Promise(
+      (_resolve, reject) => {
+        resolve = _resolve
+      }
+    )
     const getParentId = (): string | undefined => {
       if (command.type === 'extend_path') return command.path
       if (command.type === 'solid3d_get_extrusion_face_info') {
@@ -1867,11 +1913,13 @@ export class EngineCommandManager extends EventTarget {
     idToRangeMap?: { [key: string]: SourceRange },
     ast?: Program,
     range?: SourceRange
-  ) {
+  ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
+    const promise: Promise<ResolveCommand | void> = new Promise(
+      (_resolve, reject) => {
+        resolve = _resolve
+      }
+    )
 
     if (!idToRangeMap) {
       throw new Error('idToRangeMap is required for batch commands')
@@ -1891,7 +1939,7 @@ export class EngineCommandManager extends EventTarget {
       resolve,
     }
 
-    await Promise.all(
+    Promise.all(
       commands.map((c) =>
         this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
       )
@@ -1903,7 +1951,7 @@ export class EngineCommandManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<any> {
+  ): Promise<string | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1932,13 +1980,13 @@ export class EngineCommandManager extends EventTarget {
       command,
       ast: this.getAst(),
       idToRangeMap,
-    }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
-      if (raw === undefined || raw === null) {
+    }).then((resp) => {
+      if (!resp) {
         throw new Error(
           'returning modeling cmd response to the rust side is undefined or null'
         )
       }
-      return JSON.stringify(raw)
+      return JSON.stringify(resp.raw)
     })
   }
   commandResult(id: string): Promise<any> {

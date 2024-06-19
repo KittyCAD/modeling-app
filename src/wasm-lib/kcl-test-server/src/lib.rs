@@ -1,20 +1,26 @@
 //! Executes KCL programs.
 //! The server reuses the same engine session for each KCL program it receives.
-use std::net::SocketAddr;
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
+use std::{
+    net::SocketAddr,
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    },
+    time::Duration,
+};
 
-use hyper::body::Bytes;
-use hyper::header::CONTENT_TYPE;
-use hyper::service::{make_service_fn, service_fn};
-use hyper::{Body, Error, Response, Server};
-use kcl_lib::executor::ExecutorContext;
-use kcl_lib::settings::types::UnitLength;
-use kcl_lib::test_server::RequestBody;
-use tokio::sync::{mpsc, oneshot};
-use tokio::task::JoinHandle;
-use tokio::time::sleep;
+use hyper::{
+    body::Bytes,
+    header::CONTENT_TYPE,
+    service::{make_service_fn, service_fn},
+    Body, Error, Response, Server,
+};
+use kcl_lib::{executor::ExecutorContext, settings::types::UnitLength, test_server::RequestBody};
+use tokio::{
+    sync::{mpsc, oneshot},
+    task::JoinHandle,
+    time::sleep,
+};
 
 #[derive(Debug)]
 pub struct ServerArgs {

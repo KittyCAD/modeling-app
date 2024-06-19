@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { SettingsAuthProviderJest } from './SettingsAuthProvider'
-import { APP_NAME } from 'lib/constants'
 import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 
