@@ -148,8 +148,8 @@ export class CoreDumpManager {
   getClientState(): Promise<string> {
     /**
      * Deep clone a JavaScript Object
-     * - NOTE: this function thows on parse errors from things like circular references
-     * - It is also syncronous and could be more performant
+     * - NOTE: this function throws on parse errors from things like circular references
+     * - It is also synchronous and could be more performant
      * - There is a whole rabbit hole to explore here if you like.
      * - This works for our use case.
      * @param {object} obj - The object to clone.
