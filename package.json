@@ -121,7 +121,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.24.3",
     "@iarna/toml": "^2.2.5",
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.44.1",
     "@tauri-apps/cli": "^2.0.0-beta.13",
     "@types/crypto-js": "^4.2.2",
     "@types/debounce-promise": "^3.1.9",
