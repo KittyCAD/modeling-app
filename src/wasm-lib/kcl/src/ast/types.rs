@@ -1076,7 +1076,12 @@ impl CallExpression {
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
-            "{}({})",
+            "{}{}({})",
+            if is_in_pipe {
+                "".to_string()
+            } else {
+                options.get_indentation(indentation_level)
+            },
             self.callee.name,
             self.arguments
                 .iter()
@@ -2678,7 +2683,8 @@ impl PipeExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        self.body
+        let pipe = self
+            .body
             .iter()
             .enumerate()
             .map(|(index, statement)| {
@@ -2710,7 +2716,8 @@ impl PipeExpression {
                 }
                 s
             })
-            .collect::<String>()
+            .collect::<String>();
+        format!("{}{}", options.get_indentation(indentation_level), pipe)
     }
 
     /// Returns a hover value that includes the given character position.
@@ -3266,6 +3273,132 @@ fn ghi = (x) => {
     }
 
     #[test]
+    fn test_recast_bug_fn_in_fn() {
+        let some_program_string = r#"// Start point (top left)
+const zoo_x = -20
+const zoo_y = 7
+// Scale
+const s = 1 // s = 1 -> height of Z is 13.4mm
+// Depth
+const d = 1
+
+fn rect = (x, y, w, h) => {
+  startSketchOn('XY')
+    |> startProfileAt([x, y], %)
+    |> xLine(w, %)
+    |> yLine(h, %)
+    |> xLine(-w, %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+  startSketchOn('XY')
+    |> startProfileAt([x1, y1], %)
+    |> lineTo([x2, y2], %)
+    |> lineTo([x3, y3], %)
+    |> lineTo([x4, y4], %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn crosshair = (x, y) => {
+  startSketchOn('XY')
+    |> startProfileAt([x, y], %)
+    |> yLine(1, %)
+    |> yLine(-2, %)
+    |> yLine(1, %)
+    |> xLine(1, %)
+    |> xLine(-2, %)
+}
+
+fn z = (z_x, z_y) => {
+  const z_end_w = s * 8.4
+  const z_end_h = s * 3
+  const z_corner = s * 2
+  const z_w = z_end_w + 2 * z_corner
+  const z_h = z_w * 1.08130081300813
+  rect(z_x, z_y, z_end_w, -z_end_h)
+  rect(z_x + z_w, z_y, -z_corner, -z_corner)
+  rect(z_x + z_w, z_y - z_h, -z_end_w, z_end_h)
+  rect(z_x, z_y - z_h, z_corner, z_corner)
+  quad(z_x, z_y - z_h + z_corner, z_x + z_w - z_corner, z_y, z_x + z_w, z_y - z_corner, z_x + z_corner, z_y - z_h)
+}
+
+fn o = (c_x, c_y) => {
+  // Outer and inner radii
+  const o_r = s * 6.95
+  const i_r = 0.5652173913043478 * o_r
+
+  // Angle offset for diagonal break
+  const a = 7
+
+  // Start point for the top sketch
+  const o_x1 = c_x + o_r * cos((45 + a) / 360 * tau())
+  const o_y1 = c_y + o_r * sin((45 + a) / 360 * tau())
+
+  // Start point for the bottom sketch
+  const o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
+  const o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
+
+  // End point for the bottom startSketchAt
+  const o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
+  const o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
+
+  // Where is the center?
+  // crosshair(c_x, c_y)
+
+
+  startSketchOn('XY')
+    |> startProfileAt([o_x1, o_y1], %)
+    |> arc({
+         radius: o_r,
+         angle_start: 45 + a,
+         angle_end: 225 - a
+       }, %)
+    |> angledLine([45, o_r - i_r], %)
+    |> arc({
+         radius: i_r,
+         angle_start: 225 - a,
+         angle_end: 45 + a
+       }, %)
+    |> close(%)
+    |> extrude(d, %)
+
+  startSketchOn('XY')
+    |> startProfileAt([o_x2, o_y2], %)
+    |> arc({
+         radius: o_r,
+         angle_start: 225 + a,
+         angle_end: 360 + 45 - a
+       }, %)
+    |> angledLine([225, o_r - i_r], %)
+    |> arc({
+         radius: i_r,
+         angle_start: 45 - a,
+         angle_end: 225 + a - 360
+       }, %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn zoo = (x0, y0) => {
+  z(x0, y0)
+  o(x0 + s * 20, y0 - (s * 6.7))
+  o(x0 + s * 35, y0 - (s * 6.7))
+}
+
+zoo(zoo_x, zoo_y)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
     fn test_recast_bug_extra_parens() {
         let some_program_string = r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
@@ -3331,8 +3464,6 @@ const outsideRevolve = startSketchOn('XZ')
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-
-        println!("{:#?}", program);
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -3656,7 +3787,6 @@ const tabs_l = startSketchOn({
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        println!("{:#?}", program);
 
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
