@@ -41,7 +41,18 @@ export class KclManager {
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
     const ast = this.safeParse(code)
-    if (!ast) return
+    if (!ast) {
+      this._ast = {
+        body: [],
+        start: 0,
+        end: 0,
+        nonCodeMeta: {
+          nonCodeNodes: {},
+          start: [],
+        },
+      }
+      return
+    }
     try {
       const fmtAndStringify = (ast: Program) =>
         JSON.stringify(parse(recast(ast)))
