@@ -95,20 +95,6 @@ jobs:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
-    # if have previous run results, use them
-    - uses: actions/download-artifact@v4
-      if: ${{ always() }}
-      continue-on-error: true
-      with:
-        name: playwright-report
-        path: playwright-report/
-    # otherwise upload screenshot artifacts
-    - uses: actions/upload-artifact@v4
-      if: ${{ failure() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
     - name: check for changes
       id: git-check
       run: |
@@ -133,7 +119,29 @@ jobs:
         git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
         git push
         git push origin ${{ github.head_ref }}
+    # only upload artifacts if there's actually changes
+    - uses: actions/upload-artifact@v4
+      if: steps.git-check.outputs.modified == 'true'
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+    # if have previous run results, use them
+    - uses: actions/download-artifact@v4
+      if: ${{ always() }}
+      continue-on-error: true
+      with:
+        name: playwright-report
+        path: playwright-report/
+    # this will error if no tests are found
+    - name: Run ubuntu/chrome flow retry failures
+      if: ${{ always() }}
+      run: yarn playwright test --last-failed --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run ubuntu/chrome flow
+      if: ${{ failure() }}
       run: yarn playwright test --last-failed --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
