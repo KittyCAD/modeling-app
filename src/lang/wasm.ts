@@ -344,8 +344,6 @@ export async function coreDump(
        and is only needed for the openWindow operation which creates
        a new GitHub issue for the user.
      */
-    console.log('CoreDump: final coredump', dump)
-    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
     if (openGithubIssue && dump.github_issue_url) {
       openWindow(dump.github_issue_url)
     } else {
@@ -353,6 +351,8 @@ export async function coreDump(
         'github_issue_url undefined. Unable to create GitHub issue for coredump.'
       )
     }
+    console.log('CoreDump: final coredump', dump)
+    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
