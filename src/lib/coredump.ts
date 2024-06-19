@@ -242,12 +242,12 @@ export class CoreDumpManager {
 
       // engine connection state
       if (this.engineCommandManager?.engineConnection?.state) {
-        clientState.engine_command_manager.engine_connection.state =
-          this.engineCommandManager.engineConnection.state
         debugLog(
           'CoreDump: Engine Command Manager engine connection state',
           this.engineCommandManager.engineConnection.state
         )
+        clientState.engine_command_manager.engine_connection.state =
+          this.engineCommandManager.engineConnection.state
       }
 
       // in sequence - this.engineCommandManager.inSequence
@@ -256,18 +256,18 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager in sequence',
           this.engineCommandManager.inSequence
         )
-        clientState.engine_command_manager.in_sequence =
+        ;(clientState.engine_command_manager as any).in_sequence =
           this.engineCommandManager.inSequence
       }
 
       // out sequence - this.engineCommandManager.outSequence
-      if (this.engineCommandManager?.inSequence) {
+      if (this.engineCommandManager?.outSequence) {
         debugLog(
           'CoreDump: Engine Command Manager out sequence',
           this.engineCommandManager.outSequence
         )
-        clientState.engine_command_manager.out_sequence =
-          this.engineCommandManager.inSequence
+        ;(clientState.engine_command_manager as any).out_sequence =
+          this.engineCommandManager.outSequence
       }
 
       // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
@@ -282,7 +282,7 @@ export class CoreDumpManager {
       }
 
       // KCL Manager - globalThis?.window?.kclManager
-      const kclManager = globalThis?.window?.kclManager
+      const kclManager = (globalThis?.window as any)?.kclManager
       debugLog('CoreDump: kclManager', kclManager)
 
       if (kclManager) {
@@ -301,19 +301,19 @@ export class CoreDumpManager {
         // KCL isExecuting
         debugLog('CoreDump: KCL isExecuting', kclManager?.isExecuting)
         if (kclManager?.isExecuting) {
-          clientState.kcl_manager.isExecuting = kclManager.isExecuting
+          ;(clientState.kcl_manager as any).isExecuting = kclManager.isExecuting
         }
 
         // KCL logs
         debugLog('CoreDump: KCL logs', kclManager?.logs)
         if (kclManager?.logs) {
-          clientState.kcl_manager.logs = deepClone(kclManager.logs)
+          ;(clientState.kcl_manager as any).logs = deepClone(kclManager.logs)
         }
 
         // KCL programMemory
         debugLog('CoreDump: KCL programMemory', kclManager?.programMemory)
         if (kclManager?.programMemory) {
-          clientState.kcl_manager.programMemory = deepClone(
+          ;(clientState.kcl_manager as any).programMemory = deepClone(
             kclManager.programMemory
           )
         }
@@ -321,12 +321,13 @@ export class CoreDumpManager {
         // KCL wasmInitFailed
         debugLog('CoreDump: KCL wasmInitFailed', kclManager?.wasmInitFailed)
         if (kclManager?.wasmInitFailed) {
-          clientState.kcl_manager.wasmInitFailed = kclManager.wasmInitFailed
+          ;(clientState.kcl_manager as any).wasmInitFailed =
+            kclManager.wasmInitFailed
         }
       }
 
       // Scene Infra - globalThis?.window?.sceneInfra
-      const sceneInfra = globalThis?.window?.sceneInfra
+      const sceneInfra = (globalThis?.window as any)?.sceneInfra
       debugLog('CoreDump: Scene Infra', sceneInfra)
 
       if (sceneInfra) {
@@ -344,7 +345,7 @@ export class CoreDumpManager {
         sceneInfraKeys.forEach((key: string) => {
           debugLog('CoreDump: Scene Infra', key, sceneInfra[key])
           try {
-            clientState.scene_infra[key] = sceneInfra[key]
+            ;(clientState.scene_infra as any)[key] = sceneInfra[key]
           } catch (error) {
             console.error(
               'CoreDump: unable to parse Scene Infra ' + key + ' data due to ',
@@ -355,7 +356,8 @@ export class CoreDumpManager {
       }
 
       // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
-      const sceneEntitiesManager = globalThis?.window?.sceneEntitiesManager
+      const sceneEntitiesManager = (globalThis?.window as any)
+        ?.sceneEntitiesManager
       debugLog('CoreDump: sceneEntitiesManager', sceneEntitiesManager)
 
       if (sceneEntitiesManager) {
@@ -365,14 +367,13 @@ export class CoreDumpManager {
           sceneEntitiesManager?.activeSegments
         )
         if (sceneEntitiesManager?.activeSegments) {
-          clientState.scene_entities_manager.activeSegments = deepClone(
-            sceneEntitiesManager.activeSegments
-          )
+          ;(clientState.scene_entities_manager as any).activeSegments =
+            deepClone(sceneEntitiesManager.activeSegments)
         }
       }
 
       // Editor Manager - globalThis?.window?.editorManager
-      const editorManager = globalThis?.window?.editorManager
+      const editorManager = (globalThis?.window as any)?.editorManager
       debugLog('CoreDump: editorManager', editorManager)
 
       if (editorManager) {
@@ -391,7 +392,9 @@ export class CoreDumpManager {
         editorManagerKeys.forEach((key: string) => {
           debugLog('CoreDump: Editor Manager', key, editorManager[key])
           try {
-            clientState.editor_manager[key] = deepClone(editorManager[key])
+            ;(clientState.editor_manager as any)[key] = deepClone(
+              editorManager[key]
+            )
           } catch (error) {
             console.error(
               'CoreDump: unable to parse Editor Manager ' +
@@ -407,13 +410,13 @@ export class CoreDumpManager {
       // See https://github.com/KittyCAD/modeling-app/issues/2338#issuecomment-2136441998
       debugLog(
         'CoreDump: enableMousePositionLogs [not coredumped]',
-        globalThis?.window?.enableMousePositionLogs
+        (globalThis?.window as any)?.enableMousePositionLogs
       )
 
       // XState Machines
       debugLog(
         'CoreDump: xstate services',
-        globalThis?.window?.__xstate__?.services
+        (globalThis?.window as any)?.__xstate__?.services
       )
 
       debugLog('CoreDump: final clientState', clientState)
