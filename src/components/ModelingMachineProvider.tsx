@@ -302,12 +302,11 @@ export const ModelingMachineProvider = ({
               selections,
             })
 
-            if (codeMirrorSelection) dispatchSelection(codeMirrorSelection)
-            if (engineEvents) {
+            codeMirrorSelection && dispatchSelection(codeMirrorSelection)
+            engineEvents &&
               engineEvents.forEach((event) =>
                 engineCommandManager.sendSceneCommand(event)
               )
-            }
             updateSceneObjectColors()
 
             return {
