@@ -142,7 +142,7 @@ jobs:
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run ubuntu/chrome flow
       if: ${{ failure() }}
-      run: yarn playwright test --last-failed --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
