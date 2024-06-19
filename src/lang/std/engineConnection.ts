@@ -1943,7 +1943,7 @@ export class EngineCommandManager extends EventTarget {
       resolve,
     }
 
-    await Promise.all(
+    Promise.all(
       commands.map((c) =>
         this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
       )
@@ -1955,7 +1955,7 @@ export class EngineCommandManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<any> {
+  ): Promise<string | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
