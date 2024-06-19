@@ -301,7 +301,6 @@ export const ModelingMachineProvider = ({
             } = handleSelectionBatch({
               selections,
             })
-
             codeMirrorSelection && dispatchSelection(codeMirrorSelection)
             engineEvents &&
               engineEvents.forEach((event) =>
