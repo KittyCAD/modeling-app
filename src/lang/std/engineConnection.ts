@@ -1389,7 +1389,6 @@ export class EngineCommandManager extends EventTarget {
     }
 
     const command = this.artifactMap[id]
-    console.log('command', id, command)
     let modelingResponse: Models['OkModelingCmdResponse_type'] = {
       type: 'empty',
     }
@@ -1402,6 +1401,9 @@ export class EngineCommandManager extends EventTarget {
       command?.additionalData?.type === 'batch-ids'
     ) {
       if ('responses' in message.data) {
+        console.log('raw', raw)
+        console.log('message', message)
+        console.log('command', id, command)
         const batchResponse = message.data.responses as BatchResponseMap
         // Iterate over the map of responses.
         Object.entries(batchResponse).forEach(([key, response]) => {
@@ -1815,12 +1817,6 @@ export class EngineCommandManager extends EventTarget {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
-        console.log('you are here batch')
-        return this.handlePendingBatchCommand(
-          id,
-          parseCommand.requests,
-          idToRangeMap
-        )
       }
     }
     throw Error('shouldnt reach here')
