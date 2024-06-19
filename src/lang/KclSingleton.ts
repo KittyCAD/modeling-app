@@ -41,7 +41,10 @@ export class KclManager {
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
     const ast = this.safeParse(code)
-    if (!ast) return
+    if (!ast) {
+      this.clearAst()
+      return
+    }
     try {
       const fmtAndStringify = (ast: Program) =>
         JSON.stringify(parse(recast(ast)))
@@ -144,6 +147,18 @@ export class KclManager {
   }
   registerExecuteCallback(callback: () => void) {
     this._executeCallback = callback
+  }
+
+  clearAst() {
+    this._ast = {
+      body: [],
+      start: 0,
+      end: 0,
+      nonCodeMeta: {
+        nonCodeNodes: {},
+        start: [],
+      },
+    }
   }
 
   safeParse(code: string): Program | null {
@@ -293,14 +308,20 @@ export class KclManager {
     if (!force) return this._defferer(codeManager.code)
 
     const ast = this.safeParse(codeManager.code)
-    if (!ast) return
+    if (!ast) {
+      this.clearAst()
+      return
+    }
     this.ast = { ...ast }
     return this.executeAst(ast, zoomToFit)
   }
   format() {
     const originalCode = codeManager.code
     const ast = this.safeParse(originalCode)
-    if (!ast) return
+    if (!ast) {
+      this.clearAst()
+      return
+    }
     const code = recast(ast)
     if (originalCode === code) return
 
