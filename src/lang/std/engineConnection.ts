@@ -1820,20 +1820,14 @@ export class EngineCommandManager extends EventTarget {
       typeof command !== 'string' &&
       command.type === 'modeling_cmd_batch_req'
     ) {
-      const batchId = command.batch_id
-      return this.handlePendingBatchCommand(
-        batchId,
-        command.requests,
-        idToRangeMap
-      )
+      return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
       } else if (parseCommand.type === 'modeling_cmd_batch_req') {
-        const batchId = parseCommand.batch_id
         return this.handlePendingBatchCommand(
-          batchId,
+          id,
           parseCommand.requests,
           idToRangeMap
         )
