@@ -23,6 +23,7 @@ where
 
 /// Specific discovered lint rule Violation of a particular Finding.
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct Discovered {
     /// Zoo Lint Finding information.
     pub finding: Finding,
@@ -59,6 +60,7 @@ impl IntoDiagnostic for Discovered {
 
 /// Abstract lint problem type.
 #[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct Finding {
     /// Unique identifier for this particular issue.
     pub code: &'static str,
