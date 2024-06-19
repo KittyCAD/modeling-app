@@ -159,13 +159,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // We pop off the responses to cleanup our mappings.
         let id_final = match final_req {
             WebSocketRequest::ModelingCmdBatchReq {
-                ref requests,
-                batch_id: _,
+                requests: _,
+                batch_id,
                 responses: _,
-            } => {
-                // Get the last command ID.
-                requests.last().unwrap().cmd_id
-            }
+            } => batch_id,
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
             _ => {
                 return Err(KclError::Engine(KclErrorDetails {

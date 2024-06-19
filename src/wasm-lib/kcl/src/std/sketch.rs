@@ -1436,7 +1436,6 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)
-///
 // const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {

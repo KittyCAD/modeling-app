@@ -1,8 +1,10 @@
+use std::sync::{Arc, Mutex};
+
+use anyhow::Result;
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+
 use super::{walk, Node};
 use crate::{ast::types::Program, executor::SourceRange, lsp::IntoDiagnostic};
-use anyhow::Result;
-use std::sync::{Arc, Mutex};
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -105,7 +107,6 @@ macro_rules! finding {
     };
 }
 pub(crate) use finding;
-
 #[cfg(test)]
 pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_finding};
 
