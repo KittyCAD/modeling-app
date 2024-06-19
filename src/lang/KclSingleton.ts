@@ -364,18 +364,55 @@ export class KclManager {
     return this?.engineCommandManager?.defaultPlanes
   }
 
-  showPlanes() {
-    if (!this.defaultPlanes) return
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
+  showPlanes(all = false) {
+    if (!this.defaultPlanes) return Promise.all([])
+    const thePromises = [
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false),
+    ]
+    if (all) {
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negXy,
+          false
+        )
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negYz,
+          false
+        )
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negXz,
+          false
+        )
+      )
+    }
+    return Promise.all(thePromises)
   }
 
-  hidePlanes() {
-    if (!this.defaultPlanes) return
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
+  hidePlanes(all = false) {
+    if (!this.defaultPlanes) return Promise.all([])
+    const thePromises = [
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true),
+    ]
+    if (all) {
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXy, true)
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negYz, true)
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
+      )
+    }
+    return Promise.all(thePromises)
   }
   defaultSelectionFilter() {
     defaultSelectionFilter(this.programMemory, this.engineCommandManager)

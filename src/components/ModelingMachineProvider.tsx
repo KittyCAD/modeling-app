@@ -76,6 +76,7 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -158,7 +159,41 @@ export const ModelingMachineProvider = ({
     {
       actions: {
         'sketch exit execute': () => {
-          kclManager.executeCode(true)
+          ;(async () => {
+            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            const settings: Models['CameraSettings_type'] = (
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_get_settings',
+                },
+              })
+            )?.data?.data?.settings
+            if (settings.up.z !== 1) {
+              // workaround for gimbal lock situation
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_look_at',
+                  center: settings.center,
+                  vantage: {
+                    ...settings.pos,
+                    y:
+                      settings.pos.y +
+                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
+                  },
+                  up: { x: 0, y: 0, z: 1 },
+                },
+              })
+            }
+
+            kclManager.executeCode(true)
+          })()
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
@@ -481,7 +516,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               data.faceId
             )
-
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
               zAxis: data.zAxis,
@@ -495,8 +530,10 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.syncDirection = 'clientToEngine'
-          const quat = await getSketchQuaternion(pathToNode, data.zAxis)
-          await sceneInfra.camControls.tweenCameraToQuaternion(quat)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            data.planeId
+          )
           return {
             sketchPathToNode: pathToNode,
             zAxis: data.zAxis,

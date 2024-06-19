@@ -2,7 +2,7 @@
   @apply relative z-0 rounded-r max-w-full h-full flex-1;
   display: grid;
   grid-template-rows: auto 1fr;
-  @apply bg-chalkboard-10/50 backdrop-blur-sm border border-chalkboard-20;
+  @apply bg-chalkboard-10/50 focus-within:bg-chalkboard-10/90 backdrop-blur-sm border border-chalkboard-20;
   scroll-margin-block-start: 41px;
 }
 
@@ -12,7 +12,7 @@
 }
 
 :global(.dark) .panel {
-  @apply bg-chalkboard-100/50 backdrop-blur-[3px] border-chalkboard-80;
+  @apply bg-chalkboard-100/50 focus-within:bg-chalkboard-100/90 backdrop-blur-[3px] border-chalkboard-80;
 }
 
 .header {

@@ -123,70 +123,73 @@ function ModelingSidebarSection({
   }, [showDebugPanel.current, togglePane, openPanes])
 
   return (
-    <Tab.Group
-      vertical
-      selectedIndex={
-        currentPane === 'none' ? 0 : paneIds.indexOf(currentPane) + 1
-      }
-      onChange={(index) => {
-        const newPane = index === 0 ? 'none' : paneIds[index - 1]
-        togglePane(newPane)
-      }}
-    >
-      <Tab.List
-        className={
-          'pointer-events-auto ' +
-          (alignButtons === 'start'
-            ? 'justify-start self-start'
-            : 'justify-end self-end') +
-          (currentPane === 'none'
-            ? ' rounded-r focus-within:!border-primary/50'
-            : ' border-r-0') +
-          ' p-2 col-start-1 col-span-1 h-fit w-fit flex flex-col items-start gap-2 bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 ' +
-          (openPanes.length === 1 && currentPane === 'none' ? 'pr-0.5' : '')
+    <div className="group contents">
+      <Tab.Group
+        vertical
+        selectedIndex={
+          currentPane === 'none' ? 0 : paneIds.indexOf(currentPane) + 1
         }
+        onChange={(index) => {
+          const newPane = index === 0 ? 'none' : paneIds[index - 1]
+          togglePane(newPane)
+        }}
       >
-        <Tab key="none" className="sr-only">
-          No panes open
-        </Tab>
-        {filteredPanes.map((pane) => (
-          <ModelingPaneButton
-            key={pane.id}
-            paneConfig={pane}
-            currentPane={currentPane}
-            togglePane={() => togglePane(pane.id)}
-          />
-        ))}
-      </Tab.List>
-      <Tab.Panels
-        as="article"
-        className={
-          'col-start-2 col-span-1 ' +
-          (openPanes.length === 1
-            ? currentPane !== 'none'
-              ? `row-start-1 row-end-3`
-              : `hidden`
-            : ``)
-        }
-      >
-        <Tab.Panel key="none" />
-        {filteredPanes.map((pane) => (
-          <Tab.Panel key={pane.id} className="h-full">
-            <ModelingPane
-              id={`${pane.id}-pane`}
-              title={pane.title}
-              Menu={pane.Menu}
-            >
-              {pane.Content instanceof Function ? (
-                <pane.Content />
-              ) : (
-                pane.Content
-              )}
-            </ModelingPane>
-          </Tab.Panel>
-        ))}
-      </Tab.Panels>
-    </Tab.Group>
+        <Tab.List
+          className={
+            'pointer-events-auto ' +
+            (alignButtons === 'start'
+              ? 'justify-start self-start'
+              : 'justify-end self-end') +
+            (currentPane === 'none'
+              ? ' rounded-r focus-within:!border-primary/50'
+              : ' border-r-0') +
+            ' p-2 col-start-1 col-span-1 h-fit w-fit flex flex-col items-start gap-2 ' +
+            'bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 ' +
+            (openPanes.length === 1 && currentPane === 'none' ? 'pr-0.5' : '')
+          }
+        >
+          <Tab key="none" className="sr-only">
+            No panes open
+          </Tab>
+          {filteredPanes.map((pane) => (
+            <ModelingPaneButton
+              key={pane.id}
+              paneConfig={pane}
+              currentPane={currentPane}
+              togglePane={() => togglePane(pane.id)}
+            />
+          ))}
+        </Tab.List>
+        <Tab.Panels
+          as="article"
+          className={
+            'col-start-2 col-span-1 ' +
+            (openPanes.length === 1
+              ? currentPane !== 'none'
+                ? `row-start-1 row-end-3`
+                : `hidden`
+              : ``)
+          }
+        >
+          <Tab.Panel key="none" />
+          {filteredPanes.map((pane) => (
+            <Tab.Panel key={pane.id} className="h-full">
+              <ModelingPane
+                id={`${pane.id}-pane`}
+                title={pane.title}
+                Menu={pane.Menu}
+              >
+                {pane.Content instanceof Function ? (
+                  <pane.Content />
+                ) : (
+                  pane.Content
+                )}
+              </ModelingPane>
+            </Tab.Panel>
+          ))}
+        </Tab.Panels>
+      </Tab.Group>
+    </div>
   )
 }
 
