@@ -594,6 +594,40 @@ test('if you write kcl with lint errors you get lints', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
 })
 
+test('if you fixup kcl errors you clear lints', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+|> startProfileAt([3.29, 7.86], %)
+|> line([2.48, 2.44], %)
+|> line([2.66, 1.17], %)
+|> close(%)
+`
+    )
+  })
+
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+
+  await u.codeLocator.click()
+
+  await page.getByText(' |> line([2.48, 2.44], %)').click()
+
+  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+  await page.keyboard.press('End')
+  await page.keyboard.press('Backspace')
+  await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
+  await page.keyboard.type(')')
+  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+})
+
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
