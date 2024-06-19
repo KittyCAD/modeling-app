@@ -317,6 +317,58 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             neg_yz: planes[&PlaneName::NegYz],
         })
     }
+
+    fn parse_batch_responses(
+        &self,
+        // The last response we are looking for.
+        id: uuid::Uuid,
+        // The mapping of source ranges to command IDs.
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        // The response from the engine.
+        responses: HashMap<String, kittycad::types::BatchResponse>,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        // Iterate over the responses and check for errors.
+        for (cmd_id, resp) in responses.iter() {
+            let cmd_id = uuid::Uuid::parse_str(cmd_id).map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to parse command ID: {:?}", e),
+                    source_ranges: vec![id_to_source_range[&id]],
+                })
+            })?;
+
+            if let Some(errors) = resp.errors.as_ref() {
+                // Get the source range for the command.
+                let source_range = id_to_source_range.get(&cmd_id).cloned().ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        source_ranges: vec![],
+                    })
+                })?;
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!("Modeling command failed: {:?}", errors),
+                    source_ranges: vec![source_range],
+                }));
+            }
+            if let Some(response) = resp.response.as_ref() {
+                if cmd_id == id {
+                    // This is the response we care about.
+                    return Ok(kittycad::types::OkWebSocketResponseData::Modeling {
+                        modeling_response: response.clone(),
+                    });
+                } else {
+                    // Continue the loop if this is not the response we care about.
+                    continue;
+                }
+            }
+        }
+
+        // Return an error that we did not get an error or the response we wanted.
+        // This should never happen but who knows.
+        Err(KclError::Engine(KclErrorDetails {
+            message: format!("Failed to find response for command ID: {:?}", id),
+            source_ranges: vec![],
+        }))
+    }
 }
 
 #[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

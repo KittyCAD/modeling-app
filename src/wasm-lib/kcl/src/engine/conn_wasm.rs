@@ -184,28 +184,7 @@ impl crate::engine::EngineManager for EngineConnection {
 
         // If we have a batch response, we want to return the specific id we care about.
         if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) = &ws_result.resp {
-            // Find the id we care about.
-            let batch_response = responses.get(&id.to_string()).ok_or_else(|| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to find response for id: {:?}", id),
-                    source_ranges: vec![source_range],
-                })
-            })?;
-            if let Some(data) = &batch_response.response {
-                return Ok(kittycad::types::OkWebSocketResponseData::Modeling {
-                    modeling_response: data.clone(),
-                });
-            } else if let Some(errors) = &batch_response.errors {
-                Err(KclError::Engine(KclErrorDetails {
-                    message: format!("Modeling command failed: {:?}", errors),
-                    source_ranges: vec![source_range],
-                }))
-            } else {
-                Err(KclError::Engine(KclErrorDetails {
-                    message: format!("Modeling command failed: {:?}", batch_response),
-                    source_ranges: vec![source_range],
-                }))
-            }
+            return self.parse_batch_responses(id, id_to_source_range, responses.clone());
         } else if let Some(data) = &ws_result.resp {
             Ok(data.clone())
         } else if let Some(errors) = &ws_result.errors {
