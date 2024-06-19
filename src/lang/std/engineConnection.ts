@@ -1446,7 +1446,7 @@ export class EngineCommandManager extends EventTarget {
       // once we process all the commands inside it
       const resolve = command.resolve
       delete this.artifactMap[id]
-        console.log('resolve', id, modelingResponse)
+      console.log('resolve', id, modelingResponse)
       resolve({
         id,
         commandType: command.commandType,
@@ -1921,7 +1921,7 @@ export class EngineCommandManager extends EventTarget {
   ) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
-        console.log('you are in the resolve', id)
+      console.log('you are in the resolve', id)
       resolve = _resolve
     })
 
