@@ -89,7 +89,6 @@ export class KclManager {
     return this._kclErrors
   }
   set kclErrors(kclErrors) {
-    console.log('[lsp] not lsp, actually typescript: ', kclErrors)
     this._kclErrors = kclErrors
     let diagnostics = kclErrorsToDiagnostics(kclErrors)
     editorManager.addDiagnostics(diagnostics)
@@ -183,7 +182,6 @@ export class KclManager {
     executionId?: number
   ): Promise<void> {
     await this?.engineCommandManager?.waitForReady
-    console.log('executeAst')
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
@@ -193,14 +191,11 @@ export class KclManager {
     editorManager.clearDiagnostics()
 
     this.isExecuting = true
-    console.log('executeAst before ensureWasmInit')
     await this.ensureWasmInit()
-    console.log('executeAst after ensureWasmInit')
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
     })
-    console.log('executeAst done')
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
     defaultSelectionFilter(programMemory, this.engineCommandManager)
 

@@ -1409,9 +1409,6 @@ export class EngineCommandManager extends EventTarget {
         Object.entries(batchResponse).forEach(([key, response]) => {
           // If the response is a success, we resolve the promise.
           if ('response' in response && response.response) {
-            if (response.response.type !== 'empty') {
-              modelingResponse = response.response
-            }
             this.handleModelingCommand(
               {
                 type: 'modeling',
@@ -1453,7 +1450,6 @@ export class EngineCommandManager extends EventTarget {
         id,
         commandType: command.commandType,
         range: command.range,
-        data: modelingResponse,
         raw,
       })
       return
@@ -1811,7 +1807,6 @@ export class EngineCommandManager extends EventTarget {
       typeof command !== 'string' &&
       command.type === 'modeling_cmd_batch_req'
     ) {
-      console.log('you are here')
       return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
@@ -1917,15 +1912,12 @@ export class EngineCommandManager extends EventTarget {
   ) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
-      console.log('you are in the resolve', id)
       resolve = _resolve
     })
 
     if (!idToRangeMap) {
       throw new Error('idToRangeMap is required for batch commands')
     }
-
-    console.log('commands', commands)
 
     // Add the overall batch command to the artifact map just so we can track all of the
     // individual commands that are part of the batch.
@@ -1940,8 +1932,6 @@ export class EngineCommandManager extends EventTarget {
       promise,
       resolve,
     }
-
-    console.log('commands after', commands)
 
     await Promise.all(
       commands.map((c) =>
@@ -1985,7 +1975,7 @@ export class EngineCommandManager extends EventTarget {
       ast: this.getAst(),
       idToRangeMap,
     }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
-      console.log('raw', raw)
+      console.log('raw in then', raw)
       if (raw === undefined || raw === null) {
         throw new Error(
           'returning modeling cmd response to the rust side is undefined or null'
