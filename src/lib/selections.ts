@@ -311,13 +311,6 @@ export function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     // we wouldn't need to set this here,
     // it would be better to treat xstate context as the source of truth instead of having
     // extra redundant state floating around
-
-    console.log('groupHasCursor', {
-      color,
-      groupHasCursor,
-      segmentGroup,
-      codeBasedSelections,
-    })
     segmentGroup.userData.isSelected = groupHasCursor
   })
 }

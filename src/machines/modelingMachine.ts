@@ -1104,15 +1104,13 @@ export const modelingMachine = createMachine(
           sketchDetails.yAxis,
           sketchDetails.origin
         )
-        const selection = updateSelections(
-          pathToNodeMap,
-          selectionRanges,
-          parse(recast(modifiedAst))
-        )
-        console.log('new selection after horz constraint', selection)
         return {
-          selectionType: 'singleCodeCursor',
-          selection: selection.codeBasedSelections[0],
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
         }
       },
       'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {
