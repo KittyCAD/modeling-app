@@ -18,7 +18,7 @@ chamfer(data: ChamferData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 const width = 20
 const length = 10
 const thickness = 1
-const chamferRadius = 2
+const chamferLength = 2
 
 const mountingPlateSketch = startSketchOn("XY")
   |> startProfileAt([-width / 2, -length / 2], %)
@@ -29,7 +29,7 @@ const mountingPlateSketch = startSketchOn("XY")
 
 const mountingPlate = extrude(thickness, mountingPlateSketch)
   |> chamfer({
-       radius: chamferRadius,
+       length: chamferLength,
        tags: [
          getNextAdjacentEdge('edge1', %),
          getNextAdjacentEdge('edge2', %),
@@ -46,8 +46,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 * `data`: `ChamferData` - Data for chamfers. (REQUIRED)
 ```js
 {
-	// The radius of the chamfer.
-	radius: number,
+	// The length of the chamfer.
+	length: number,
 	// The tags of the paths you want to chamfer.
 	tags: [uuid |
 string],
