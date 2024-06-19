@@ -1378,7 +1378,6 @@ export class SceneEntities {
   }: {
     removeAxis?: boolean
   } = {}) {
-    console.trace('tearing down sketch')
     // I think promisifying this is mostly a side effect of not having
     // "setupSketch" correctly capture a promise when it's done
     // so we're effectively waiting for to be finished setting up the scene just to tear it down
