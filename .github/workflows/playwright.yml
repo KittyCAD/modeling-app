@@ -100,8 +100,6 @@ jobs:
       with:
         name: playwright-report
         path: playwright-report/
-    # if there were no previous artifacts (from a previous failed run)
-    # then upload any snapshot changes
     - uses: actions/upload-artifact@v4
       if: ${{ failure() }}
       with:
@@ -143,6 +141,7 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+        overwrite: true
 
   playwright-macos:
     timeout-minutes: 60
@@ -219,3 +218,4 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+        overwrite: true
