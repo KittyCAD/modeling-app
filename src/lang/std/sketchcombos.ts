@@ -1690,11 +1690,17 @@ export function transformAstSketchLines({
   }
 
   if ('codeBasedSelections' in selectionRanges) {
-    selectionRanges.codeBasedSelections.forEach(({ range }, index) =>
-      processSelection(getNodePathFromSourceRange(node, range), index)
-    )
+    // If the processing of any of the selections failed, return the first error
+    const maybeProcessErrors = selectionRanges.codeBasedSelections
+      .map(({ range }, index) =>
+        processSelection(getNodePathFromSourceRange(node, range), index)
+      )
+      .filter(err)
+
+    if (maybeProcessErrors.length) return maybeProcessErrors[0]
   } else {
-    selectionRanges.forEach(processSelection)
+    const maybeProcessErrors = selectionRanges.map(processSelection).filter(err)
+    if (maybeProcessErrors.length) return maybeProcessErrors[0]
   }
 
   return {
