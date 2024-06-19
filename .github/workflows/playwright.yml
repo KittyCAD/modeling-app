@@ -95,11 +95,14 @@ jobs:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    # if have previous run results, use them
     - uses: actions/download-artifact@v4
       if: ${{ always() }}
+      continue-on-error: true
       with:
         name: playwright-report
         path: playwright-report/
+    # otherwise upload screenshot artifacts
     - uses: actions/upload-artifact@v4
       if: ${{ failure() }}
       with:
