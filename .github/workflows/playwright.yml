@@ -136,7 +136,7 @@ jobs:
     # this will error if no tests are found
     - name: Run ubuntu/chrome flow retry failures
       if: ${{ always() }}
-      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts --last-failed
+      run: yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
