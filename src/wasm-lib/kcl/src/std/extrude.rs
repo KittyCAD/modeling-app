@@ -111,13 +111,13 @@ pub(crate) async fn do_post_extrude(
     // We need to do this after extrude for sketch on face.
     if let SketchSurface::Face(_) = sketch_group.on {
         // Disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         kittycad::types::ModelingCmd::ObjectBringToFront {
             object_id: sketch_group.id,

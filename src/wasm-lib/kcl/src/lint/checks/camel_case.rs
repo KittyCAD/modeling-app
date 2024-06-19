@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::{
     ast::types::VariableDeclarator,
     executor::SourceRange,
@@ -6,8 +8,6 @@ use crate::{
         Node,
     },
 };
-
-use anyhow::Result;
 
 def_finding!(
     Z0001,

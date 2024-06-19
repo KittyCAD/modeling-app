@@ -59,7 +59,7 @@ async fn inner_helix(
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::EntityMakeHelix {
             cylinder_id: extrude_group.id,

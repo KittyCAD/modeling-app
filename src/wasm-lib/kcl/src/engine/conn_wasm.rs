@@ -130,7 +130,7 @@ impl crate::engine::EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
+    ) -> Result<kittycad::types::WebSocketResponse, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
@@ -182,18 +182,6 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        if let Some(data) = &ws_result.resp {
-            Ok(data.clone())
-        } else if let Some(errors) = &ws_result.errors {
-            Err(KclError::Engine(KclErrorDetails {
-                message: format!("Modeling command failed: {:?}", errors),
-                source_ranges: vec![source_range],
-            }))
-        } else {
-            Err(KclError::Engine(KclErrorDetails {
-                message: format!("Modeling command failed: {:?}", ws_result),
-                source_ranges: vec![source_range],
-            }))
-        }
+        Ok(ws_result)
     }
 }
