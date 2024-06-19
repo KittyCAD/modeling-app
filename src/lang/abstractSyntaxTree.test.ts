@@ -1677,17 +1677,12 @@ describe('should recognise callExpresions in binaryExpressions', () => {
 describe('parsing errors', () => {
   it('should return an error when there is a unexpected closed curly brace', async () => {
     const code = `const myVar = startSketchAt([}], %)`
+    const result = parse(code)
 
-    let _theError
-    try {
-      // eslint-disable-next-line
-      let _ = expect(parse(code))
-    } catch (e) {
-      _theError = e
-    }
-    const theError = _theError as any
-    expect(theError).toEqual(
-      new KCLError('syntax', 'Unexpected token', [[27, 28]])
-    )
+    expect(result).toBeInstanceOf(KCLError)
+    const error = result as KCLError
+    expect(error.kind).toBe('syntax')
+    expect(error.msg).toBe('Unexpected token')
+    expect(error.sourceRanges).toEqual([[27, 28]])
   })
 })
