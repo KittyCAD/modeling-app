@@ -614,18 +614,19 @@ test('if you fixup kcl errors you clear lints', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
 
   // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
   await u.codeLocator.click()
 
   await page.getByText(' |> line([2.48, 2.44], %)').click()
 
-  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
   await page.keyboard.press('End')
   await page.keyboard.press('Backspace')
-  await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
+
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
   await page.keyboard.type(')')
-  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
