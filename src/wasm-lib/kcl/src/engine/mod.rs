@@ -191,19 +191,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
     }
 
-    /*async fn send_batch_command(
-        &self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, &cmd).await?;
-
-        // Flush the batch queue.
-        self.flush_batch(source_range).await
-
-    }*/
-
     async fn make_default_plane(
         &self,
         x_axis: Point3d,

@@ -1,7 +1,10 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::Result;
 use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
@@ -39,11 +42,31 @@ impl crate::engine::EngineManager for EngineConnection {
         &self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
-        _cmd: kittycad::types::WebSocketRequest,
+        cmd: kittycad::types::WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        Ok(OkWebSocketResponseData::Modeling {
-            modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-        })
+        match cmd {
+            WebSocketRequest::ModelingCmdBatchReq {
+                ref requests,
+                batch_id: _,
+                responses: _,
+            } => {
+                // Create the empty responses.
+                let mut responses = HashMap::new();
+                for request in requests {
+                    responses.insert(
+                        request.cmd_id.to_string(),
+                        kittycad::types::BatchResponse {
+                            response: Some(kittycad::types::OkModelingCmdResponse::Empty {}),
+                            errors: None,
+                        },
+                    );
+                }
+                Ok(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses })
+            }
+            _ => Ok(OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+            }),
+        }
     }
 }

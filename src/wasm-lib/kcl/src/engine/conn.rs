@@ -184,6 +184,7 @@ impl EngineConnection {
                             println!("got error message: {} {}", e.error_code, e.message);
                         }
                         // If we got a batch response, add all the inner responses.
+                        println!("got response: {:?}", ws_resp);
                         if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) =
                             &ws_resp.resp
                         {
@@ -214,6 +215,7 @@ impl EngineConnection {
                                 }
                             }
                         }
+
                         if let Some(id) = ws_resp.request_id {
                             responses_clone.insert(id, ws_resp.clone());
                         }
