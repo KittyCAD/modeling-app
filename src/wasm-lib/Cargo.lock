@@ -663,6 +663,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "dashmap"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23fadfd577acfd4485fb258011b0fd080882ea83359b6fd41304900b94ccf487"
+dependencies = [
+ "cfg-if",
+ "crossbeam-utils",
+ "hashbrown 0.14.3",
+ "lock_api",
+ "once_cell",
+ "parking_lot_core 0.9.9",
+]
+
+[[package]]
 name = "data-encoding"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1381,7 +1395,7 @@ dependencies = [
  "clap",
  "convert_case",
  "criterion",
- "dashmap",
+ "dashmap 6.0.0",
  "databake",
  "derive-docs",
  "expectorate",
@@ -2543,9 +2557,9 @@ dependencies = [
 
 [[package]]
 name = "serde_tokenstream"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a00ffd23fd882d096f09fcaae2a9de8329a328628e86027e049ee051dc1621f"
+checksum = "8790a7c3fe883e443eaa2af6f705952bc5d6e8671a220b9335c8cae92c037e74"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3069,7 +3083,7 @@ dependencies = [
  "async-trait",
  "auto_impl",
  "bytes",
- "dashmap",
+ "dashmap 5.5.3",
  "futures",
  "httparse",
  "lsp-types",
@@ -3285,9 +3299,9 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "url"
-version = "2.5.0"
+version = "2.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31e6302e3bb753d46e83516cae55ae196fc0c309407cf11ab35cc51a4c2a4633"
+checksum = "22784dbdf76fdde8af1aeda5622b546b422b6fc585325248a2bf9f5e41e94d6c"
 dependencies = [
  "form_urlencoded",
  "idna",
