@@ -2853,19 +2853,17 @@ const part002 = startSketchOn('XZ')
           .getByRole('button', { name: 'Add constraining value' })
           .click()
 
-        // give ui time to update selections
-        await page.waitForTimeout(1000)
+        // Wait for the codemod to take effect
+        await expect(page.locator('.cm-content')).toContainText(`angle: -57,`)
+        await expect(page.locator('.cm-content')).toContainText(
+          `offset: ${offset},`
+        )
 
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await expect(activeLinesContent[0]).toHaveText(
           `|> line([74.36, 130.4], %, 'seg01')`
         )
-        console.log(activeLinesContent[1])
         await expect(activeLinesContent[1]).toHaveText(`}, %)`)
-        await expect(page.locator('.cm-content')).toContainText(`angle: -57,`)
-        await expect(page.locator('.cm-content')).toContainText(
-          `offset: ${offset},`
-        )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
         await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
@@ -3356,7 +3354,7 @@ const part002 = startSketchOn('XZ')
 
         // apply the constraint
         await constraintMenuButton.click()
-        await constraintButton.click({ delay: 500 })
+        await constraintButton.click({ delay: 200 })
 
         // check there are still 3 cursors (they should stay on the same lines as before constraint was applied)
         await expect(page.locator('.cm-cursor')).toHaveCount(codeAfter.length)

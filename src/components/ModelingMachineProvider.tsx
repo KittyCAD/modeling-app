@@ -544,11 +544,6 @@ export const ModelingMachineProvider = ({
             data.planeId
           )
 
-          const quat = await getSketchQuaternion(pathToNode, data.zAxis)
-          if (trap(quat)) return Promise.reject(quat)
-
-          await sceneInfra.camControls.tweenCameraToQuaternion(quat)
-
           return {
             sketchPathToNode: pathToNode,
             zAxis: data.zAxis,
