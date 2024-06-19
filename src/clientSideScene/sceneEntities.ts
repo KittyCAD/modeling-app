@@ -32,9 +32,7 @@ import {
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
-  XZ_PLANE,
   Y_AXIS,
-  YZ_PLANE,
 } from './sceneInfra'
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
@@ -88,7 +86,6 @@ import {
   Selections,
   getEventForSegmentSelection,
   sendSelectEventToEngine,
-  updateSceneObjectColors,
 } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
