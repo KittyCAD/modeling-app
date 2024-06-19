@@ -1401,9 +1401,6 @@ export class EngineCommandManager extends EventTarget {
       command?.additionalData?.type === 'batch-ids'
     ) {
       if ('responses' in message.data) {
-        console.log('raw', raw)
-        console.log('message', message)
-        console.log('command', id, command)
         const batchResponse = message.data.responses as BatchResponseMap
         // Iterate over the map of responses.
         Object.entries(batchResponse).forEach(([key, response]) => {
@@ -1445,7 +1442,6 @@ export class EngineCommandManager extends EventTarget {
       // once we process all the commands inside it
       const resolve = command.resolve
       delete this.artifactMap[id]
-      console.log('resolve', id, modelingResponse)
       resolve({
         id,
         commandType: command.commandType,
@@ -1985,7 +1981,6 @@ export class EngineCommandManager extends EventTarget {
       ast: this.getAst(),
       idToRangeMap,
     }).then((resp) => {
-      console.log('raw in sendModelingCommandFromWasm', resp)
       if (!resp) {
         throw new Error(
           'returning modeling cmd response to the rust side is undefined or null'
