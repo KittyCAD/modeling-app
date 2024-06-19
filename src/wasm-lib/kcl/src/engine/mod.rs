@@ -47,7 +47,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
+    ) -> Result<kittycad::types::WebSocketResponse, crate::errors::KclError>;
 
     async fn clear_scene(&self, source_range: crate::executor::SourceRange) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
@@ -165,9 +165,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             } => {
                 // Get the last command ID.
                 let last_id = requests.last().unwrap().cmd_id;
-                let response = self
+                let ws_resp = self
                     .inner_send_modeling_cmd(batch_id, source_range, final_req, id_to_source_range.clone())
                     .await?;
+                let response = self.parse_websocket_response(ws_resp, source_range)?;
 
                 // If we have a batch response, we want to return the specific id we care about.
                 if let kittycad::types::OkWebSocketResponseData::ModelingBatch { responses } = &response {
@@ -181,8 +182,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 }
             }
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
-                self.inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
-                    .await
+                let ws_resp = self
+                    .inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
+                    .await?;
+                self.parse_websocket_response(ws_resp, source_range)
             }
             _ => Err(KclError::Engine(KclErrorDetails {
                 message: format!("The final request is not a modeling command: {:?}", final_req),
@@ -328,6 +331,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             yz: planes[&PlaneName::Yz],
             neg_yz: planes[&PlaneName::NegYz],
         })
+    }
+
+    fn parse_websocket_response(
+        &self,
+        response: kittycad::types::WebSocketResponse,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        if let Some(data) = &response.resp {
+            Ok(data.clone())
+        } else if let Some(errors) = &response.errors {
+            Err(KclError::Engine(KclErrorDetails {
+                message: format!("Modeling command failed: {:?}", errors),
+                source_ranges: vec![source_range],
+            }))
+        } else {
+            // We should never get here.
+            Err(KclError::Engine(KclErrorDetails {
+                message: "Modeling command failed: no response or errors".to_string(),
+                source_ranges: vec![source_range],
+            }))
+        }
     }
 
     fn parse_batch_responses(

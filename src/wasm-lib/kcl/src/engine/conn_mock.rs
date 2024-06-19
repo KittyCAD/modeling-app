@@ -7,7 +7,7 @@ use std::{
 };
 
 use anyhow::Result;
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
+use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 
 use crate::{errors::KclError, executor::DefaultPlanes};
 
@@ -40,11 +40,11 @@ impl crate::engine::EngineManager for EngineConnection {
 
     async fn inner_send_modeling_cmd(
         &self,
-        _id: uuid::Uuid,
+        id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<OkWebSocketResponseData, KclError> {
+    ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq {
                 ref requests,
@@ -62,10 +62,20 @@ impl crate::engine::EngineManager for EngineConnection {
                         },
                     );
                 }
-                Ok(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses })
+                Ok(WebSocketResponse {
+                    request_id: Some(id),
+                    resp: Some(OkWebSocketResponseData::ModelingBatch { responses }),
+                    success: Some(true),
+                    errors: None,
+                })
             }
-            _ => Ok(OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+            _ => Ok(WebSocketResponse {
+                request_id: Some(id),
+                resp: Some(OkWebSocketResponseData::Modeling {
+                    modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+                }),
+                success: Some(true),
+                errors: None,
             }),
         }
     }

@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use kittycad::types::{WebSocketRequest, WebSocketResponse};
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
@@ -279,7 +279,7 @@ impl EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<OkWebSocketResponseData, KclError> {
+    ) -> Result<WebSocketResponse, KclError> {
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -324,20 +324,7 @@ impl EngineManager for EngineConnection {
             }
             // We pop off the responses to cleanup our mappings.
             if let Some((_, resp)) = self.responses.remove(&id) {
-                return if let Some(data) = &resp.resp {
-                    Ok(data.clone())
-                } else if let Some(errors) = &resp.errors {
-                    Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Modeling command failed: {:?}", errors),
-                        source_ranges: vec![source_range],
-                    }))
-                } else {
-                    // We should never get here.
-                    Err(KclError::Engine(KclErrorDetails {
-                        message: "Modeling command failed: no response or errors".to_string(),
-                        source_ranges: vec![source_range],
-                    }))
-                };
+                return Ok(resp);
             }
         }
 
