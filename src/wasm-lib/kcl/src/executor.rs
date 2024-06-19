@@ -1149,7 +1149,7 @@ impl ExecutorContext {
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 &kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.clone().into(),
+                    unit: self.settings.units.into(),
                 },
             )
             .await?;

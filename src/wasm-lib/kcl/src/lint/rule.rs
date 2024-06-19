@@ -115,7 +115,7 @@ mod test {
             let tokens = $crate::token::lexer($kcl).unwrap();
             let parser = $crate::parser::Parser::new(tokens);
             let prog = parser.ast().unwrap();
-            for discovered_finding in $crate::lint::lint(&prog, $check).unwrap() {
+            for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     assert!(false, "Finding {:?} was emitted", $finding.code);
                 }
@@ -129,7 +129,7 @@ mod test {
             let parser = $crate::parser::Parser::new(tokens);
             let prog = parser.ast().unwrap();
 
-            for discovered_finding in $crate::lint::lint(&prog, $check).unwrap() {
+            for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     return;
                 }

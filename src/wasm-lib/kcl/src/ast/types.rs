@@ -153,7 +153,7 @@ impl Program {
     }
 
     /// Check the provided Program for any lint findings.
-    pub fn lint<'a, RuleT>(&self, rule: RuleT) -> Result<Vec<crate::lint::Discovered>>
+    pub fn lint<'a, RuleT>(&'a self, rule: RuleT) -> Result<Vec<crate::lint::Discovered>>
     where
         RuleT: crate::lint::rule::Rule<'a>,
     {
