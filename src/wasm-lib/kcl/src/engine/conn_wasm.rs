@@ -190,8 +190,9 @@ impl crate::engine::EngineManager for EngineConnection {
                 source_ranges: vec![source_range],
             }))
         } else {
+            // We should never get here.
             Err(KclError::Engine(KclErrorDetails {
-                message: format!("Modeling command failed: {:?}", ws_result),
+                message: "Modeling command failed: no response or errors".to_string(),
                 source_ranges: vec![source_range],
             }))
         }

@@ -326,9 +326,15 @@ impl EngineManager for EngineConnection {
             if let Some((_, resp)) = self.responses.remove(&id) {
                 return if let Some(data) = &resp.resp {
                     Ok(data.clone())
-                } else {
+                } else if let Some(errors) = &resp.errors {
                     Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Modeling command failed: {:?}", resp.errors),
+                        message: format!("Modeling command failed: {:?}", errors),
+                        source_ranges: vec![source_range],
+                    }))
+                } else {
+                    // We should never get here.
+                    Err(KclError::Engine(KclErrorDetails {
+                        message: "Modeling command failed: no response or errors".to_string(),
                         source_ranges: vec![source_range],
                     }))
                 };
