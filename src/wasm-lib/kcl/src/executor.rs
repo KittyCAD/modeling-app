@@ -189,6 +189,15 @@ pub enum SketchGroupSet {
     SketchGroups(Vec<Box<SketchGroup>>),
 }
 
+impl SketchGroupSet {
+    pub fn ids(&self) -> Vec<uuid::Uuid> {
+        match self {
+            SketchGroupSet::SketchGroup(s) => vec![s.id],
+            SketchGroupSet::SketchGroups(s) => s.iter().map(|s| s.id).collect(),
+        }
+    }
+}
+
 /// A extrude group or a group of extrude groups.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -196,6 +205,15 @@ pub enum SketchGroupSet {
 pub enum ExtrudeGroupSet {
     ExtrudeGroup(Box<ExtrudeGroup>),
     ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+}
+
+impl ExtrudeGroupSet {
+    pub fn ids(&self) -> Vec<uuid::Uuid> {
+        match self {
+            ExtrudeGroupSet::ExtrudeGroup(s) => vec![s.id],
+            ExtrudeGroupSet::ExtrudeGroups(s) => s.iter().map(|s| s.id).collect(),
+        }
+    }
 }
 
 /// Data for an imported geometry.
@@ -296,6 +314,34 @@ pub struct UserVal {
     pub value: serde_json::Value,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
+}
+
+/// Wrap MemoryFunction to give it (shitty) JSON schema.
+pub struct MemoryFunctionWrapper<'a> {
+    pub inner: &'a MemoryFunction,
+}
+
+impl<'a> From<&'a MemoryFunction> for MemoryFunctionWrapper<'a> {
+    fn from(inner: &'a MemoryFunction) -> Self {
+        Self { inner }
+    }
+}
+
+impl<'a> From<MemoryFunctionWrapper<'a>> for &'a MemoryFunction {
+    fn from(value: MemoryFunctionWrapper<'a>) -> Self {
+        value.inner
+    }
+}
+
+impl<'a> JsonSchema for MemoryFunctionWrapper<'a> {
+    fn schema_name() -> String {
+        "Function".to_owned()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        // TODO: Actually generate a reasonable schema.
+        gen.subschema_for::<()>()
+    }
 }
 
 pub type MemoryFunction =
@@ -412,6 +458,84 @@ impl MemoryItem {
             }));
         };
         func(args, memory, expression.clone(), meta.clone(), ctx).await
+    }
+
+    fn as_user_val(&self) -> Option<&UserVal> {
+        if let MemoryItem::UserVal(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    /// If this value is of type function, return it.
+    pub fn get_function(&self, source_ranges: Vec<SourceRange>) -> Result<&MemoryFunction, KclError> {
+        let MemoryItem::Function {
+            func,
+            expression,
+            meta: _,
+        } = &self
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "not a in memory function".to_string(),
+                source_ranges,
+            }));
+        };
+        func.as_ref().ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                message: format!("Not a function: {:?}", expression),
+                source_ranges,
+            })
+        })
+    }
+
+    /// If this value is of type u32, return it.
+    pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
+        let err = KclError::Semantic(KclErrorDetails {
+            message: "Expected an integer >= 0".to_owned(),
+            source_ranges,
+        });
+        self.as_user_val()
+            .and_then(|uv| uv.value.as_number())
+            .and_then(|n| n.as_u64())
+            .and_then(|n| u32::try_from(n).ok())
+            .ok_or(err)
+    }
+
+    /// If this contains a sketch group set, return it.
+    pub(crate) fn as_sketch_group_set(&self, sr: SourceRange) -> Result<SketchGroupSet, KclError> {
+        let sketch_set = if let MemoryItem::SketchGroup(sg) = self {
+            SketchGroupSet::SketchGroup(sg.clone())
+        } else if let MemoryItem::SketchGroups { value } = self {
+            SketchGroupSet::SketchGroups(value.clone())
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or Vector of SketchGroups as this argument, found {:?}",
+                    self,
+                ),
+                source_ranges: vec![sr],
+            }));
+        };
+        Ok(sketch_set)
+    }
+
+    /// If this contains an extrude group set, return it.
+    pub(crate) fn as_extrude_group_set(&self, sr: SourceRange) -> Result<ExtrudeGroupSet, KclError> {
+        let sketch_set = if let MemoryItem::ExtrudeGroup(sg) = self {
+            ExtrudeGroupSet::ExtrudeGroup(sg.clone())
+        } else if let MemoryItem::ExtrudeGroups { value } = self {
+            ExtrudeGroupSet::ExtrudeGroups(value.clone())
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup or Vector of ExtrudeGroups as this argument, found {:?}",
+                    self,
+                ),
+                source_ranges: vec![sr],
+            }));
+        };
+        Ok(sketch_set)
     }
 }
 

@@ -25,14 +25,15 @@ use lazy_static::lazy_static;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     ast::types::parse_json_number_as_f64,
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, SketchGroup, SketchGroupSet,
-        SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryFunction, MemoryItem, Metadata, SketchGroup,
+        SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -84,6 +85,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
+        Box::new(crate::std::patterns::Pattern),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
@@ -387,6 +389,41 @@ impl Args {
         }
     }
 
+    /// Works with either 2D or 3D solids.
+    fn get_pattern_args(&self) -> std::result::Result<(u32, &MemoryFunction, Vec<Uuid>), KclError> {
+        let sr = vec![self.source_range];
+        let mut args = self.args.iter();
+        let num_repetitions = args.next().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Missing first argument (should be the number of repetitions)".to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        let num_repetitions = num_repetitions.get_u32(sr.clone())?;
+        let transform = args.next().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Missing second argument (should be the transform function)".to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        let transform = transform.get_function(sr.clone())?;
+        let sg = args.next().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Missing third argument (should be a Sketch/ExtrudeGroup or an array of Sketch/ExtrudeGroups)"
+                    .to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        let sketch_ids = sg.as_sketch_group_set(self.source_range);
+        let extrude_ids = sg.as_extrude_group_set(self.source_range);
+        let entity_ids = match (sketch_ids, extrude_ids) {
+            (Ok(group), _) => group.ids(),
+            (_, Ok(group)) => group.ids(),
+            (Err(e), _) => return Err(e),
+        };
+        Ok((num_repetitions, transform, entity_ids))
+    }
+
     fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a SketchGroup.
@@ -437,19 +474,7 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = first_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the first argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
+        let sketch_set = first_value.as_sketch_group_set(self.source_range)?;
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -672,19 +697,7 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
+        let sketch_set = second_value.as_sketch_group_set(self.source_range)?;
 
         Ok((data, sketch_set))
     }
@@ -953,19 +966,7 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
+        let sketch_set = second_value.as_sketch_group_set(self.source_range)?;
 
         Ok((number, sketch_set))
     }

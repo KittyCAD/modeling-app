@@ -5,12 +5,37 @@ use derive_docs::stdlib;
 use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryItem, SketchGroup, SketchGroupSet},
+    executor::{
+        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryFunctionWrapper, MemoryItem, Point3d, SketchGroup,
+        SketchGroupSet,
+    },
     std::{types::Uint, Args},
 };
+
+const CANNOT_USE_ZERO_VECTOR: &str =
+    "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place.";
+
+/// How to change each element of a pattern.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LinearTransform {
+    /// Translate the replica this far along each dimension.
+    /// Defaults to zero vector (i.e. same position as the original).
+    #[serde(default)]
+    pub translate: Option<Point3d>,
+    /// Scale the replica's size along each axis.
+    /// Defaults to (1, 1, 1) (i.e. the same size as the original).
+    #[serde(default)]
+    pub scale: Option<Point3d>,
+    /// Whether to replicate the original solid in this instance.
+    #[serde(default)]
+    pub replicate: Option<bool>,
+}
 
 /// Data for a linear pattern on a 2D sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -70,21 +95,73 @@ impl LinearPattern {
     }
 }
 
+/// A linear pattern, either 2D or 3D.
+/// Each element in the pattern repeats a particular piece of geometry.
+/// The repetitions can be transformed by the `transform` parameter.
+pub async fn pattern(args: Args) -> Result<MemoryItem, KclError> {
+    let (num_repetitions, transform, entity_ids) = args.get_pattern_args()?;
+
+    let sketch_groups = inner_pattern(
+        num_repetitions,
+        MemoryFunctionWrapper::from(transform),
+        entity_ids,
+        &args,
+    )
+    .await?;
+    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+}
+
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
-            message:
-                "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
-                    .to_string(),
+            message: CANNOT_USE_ZERO_VECTOR.to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     let sketch_groups = inner_pattern_linear_2d(data, sketch_group_set, args).await?;
     Ok(MemoryItem::SketchGroups { value: sketch_groups })
+}
+
+/// A linear pattern on a 2D or 3D solid.
+/// Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
+///
+/// ```no_run
+/// The vase is 100 layers tall.
+/// The 100 layers are replica of each other, with a slight transformation applied to each.
+/// let vase = layer() |> pattern(100, transform, %)
+/// // base radius
+/// const r = 50
+/// // layer height
+/// const h = 10
+/// // taper factor [0 - 1)
+/// const t = 0.005
+/// // Each layer is just a pretty thin cylinder.
+/// fn layer = () => {
+///   return startSketchOn("XY") // or some other plane idk
+///     |> circle([0, 0], 1, %)
+///     |> extrude(h, %)
+/// // Change each replica's radius and shift it up the Z axis.
+/// fn transform = (replicaId) => {
+///   return {
+///     translate: [0, 0, replicaId*10]
+///     scale: r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+///   }
+/// }
+/// ```
+#[stdlib {
+    name = "pattern",
+}]
+async fn inner_pattern<'a>(
+    _num_repetitions: u32,
+    _transform: MemoryFunctionWrapper<'a>,
+    _ids: Vec<Uuid>,
+    _args: &'a Args,
+) -> Result<Vec<Box<SketchGroup>>, KclError> {
+    todo!()
 }
 
 /// A linear pattern on a 2D sketch.
