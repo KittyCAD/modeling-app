@@ -941,64 +941,6 @@ class EngineConnection extends EventTarget {
             void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
             break
 
-          case 'modeling_batch':
-            const batchResponse = resp.data.responses as BatchResponseMap
-            // Iterate over the map of responses.
-            Object.entries(batchResponse).forEach(([key, response]) => {
-              // If the response is a success, we resolve the promise.
-              if ('response' in response && response.response) {
-                this.engineCommandManager.handleModelingCommand(
-                  {
-                    type: 'modeling',
-                    data: {
-                      modeling_response: response.response,
-                    },
-                  },
-                  key,
-                  {
-                    request_id: key,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: response.response,
-                      },
-                    },
-                    success: true,
-                  }
-                )
-              } else if ('errors' in response) {
-                this.engineCommandManager.handleFailedModelingCommand(key, {
-                  request_id: key,
-                  success: false,
-                  errors: response.errors,
-                })
-              }
-            })
-
-            if (message.request_id) {
-              const id = message.request_id
-              const command = this.engineCommandManager.artifactMap[id]
-              if (command && command?.type === 'pending') {
-                // Get the last response.
-                // batch artifact is just a container, we don't need to keep it
-                // once we process all the commands inside it
-                const resolve = command.resolve
-                delete this.engineCommandManager.artifactMap[id]
-                resolve({
-                  id,
-                  commandType: command.commandType,
-                  range: command.range,
-                  // We just send empty here it does not matter.
-                  data: { type: 'empty' },
-                  // What actually matters for the wasm code is the raw
-                  // message here.
-                  raw: message,
-                })
-              }
-            }
-
-            break
-
           case 'metrics_request':
             if (this.webrtcStatsCollector === undefined) {
               // TODO: Error message here?
@@ -1377,7 +1319,8 @@ export class EngineCommandManager extends EventTarget {
             )
             if (
               message.success &&
-              message.resp.type === 'modeling' &&
+              (message.resp.type === 'modeling' ||
+                message.resp.type === 'modeling_batch') &&
               message.request_id
             ) {
               this.handleModelingCommand(
@@ -1441,23 +1384,69 @@ export class EngineCommandManager extends EventTarget {
     id: string,
     raw: WebSocketResponse
   ) {
-    if (message.type !== 'modeling') {
+    if (!(message.type === 'modeling' || message.type === 'modeling_batch')) {
       return
     }
-    const modelingResponse = message.data.modeling_response
+
     const command = this.artifactMap[id]
+    console.log('command', id, command)
+    let modelingResponse: Models['OkModelingCmdResponse_type'] = {
+      type: 'empty',
+    }
+    if ('modeling_response' in message.data) {
+      modelingResponse = message.data.modeling_response
+    }
     if (
       command?.type === 'pending' &&
       command.commandType === 'batch' &&
       command?.additionalData?.type === 'batch-ids'
     ) {
-      command.additionalData.ids.forEach((id) => {
-        this.handleModelingCommand(message, id, raw)
-      })
+      if ('responses' in message.data) {
+        const batchResponse = message.data.responses as BatchResponseMap
+        // Iterate over the map of responses.
+        Object.entries(batchResponse).forEach(([key, response]) => {
+          // If the response is a success, we resolve the promise.
+          if ('response' in response && response.response) {
+            if (response.response.type !== 'empty') {
+              modelingResponse = response.response
+            }
+            this.handleModelingCommand(
+              {
+                type: 'modeling',
+                data: {
+                  modeling_response: response.response,
+                },
+              },
+              key,
+              {
+                request_id: key,
+                resp: {
+                  type: 'modeling',
+                  data: {
+                    modeling_response: response.response,
+                  },
+                },
+                success: true,
+              }
+            )
+          } else if ('errors' in response) {
+            this.handleFailedModelingCommand(key, {
+              request_id: key,
+              success: false,
+              errors: response.errors,
+            })
+          }
+        })
+      } else {
+        command.additionalData.ids.forEach((id) => {
+          this.handleModelingCommand(message, id, raw)
+        })
+      }
       // batch artifact is just a container, we don't need to keep it
       // once we process all the commands inside it
       const resolve = command.resolve
       delete this.artifactMap[id]
+        console.log('resolve', id, modelingResponse)
       resolve({
         id,
         commandType: command.commandType,
@@ -1820,12 +1809,13 @@ export class EngineCommandManager extends EventTarget {
       typeof command !== 'string' &&
       command.type === 'modeling_cmd_batch_req'
     ) {
+      console.log('you are here')
       return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
-      } else if (parseCommand.type === 'modeling_cmd_batch_req') {
+        console.log('you are here batch')
         return this.handlePendingBatchCommand(
           id,
           parseCommand.requests,
@@ -1931,12 +1921,15 @@ export class EngineCommandManager extends EventTarget {
   ) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
+        console.log('you are in the resolve', id)
       resolve = _resolve
     })
 
     if (!idToRangeMap) {
       throw new Error('idToRangeMap is required for batch commands')
     }
+
+    console.log('commands', commands)
 
     // Add the overall batch command to the artifact map just so we can track all of the
     // individual commands that are part of the batch.
@@ -1951,6 +1944,8 @@ export class EngineCommandManager extends EventTarget {
       promise,
       resolve,
     }
+
+    console.log('commands after', commands)
 
     await Promise.all(
       commands.map((c) =>
@@ -1994,6 +1989,7 @@ export class EngineCommandManager extends EventTarget {
       ast: this.getAst(),
       idToRangeMap,
     }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
+      console.log('raw', raw)
       if (raw === undefined || raw === null) {
         throw new Error(
           'returning modeling cmd response to the rust side is undefined or null'

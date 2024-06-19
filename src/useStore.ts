@@ -150,15 +150,19 @@ export async function executeAst({
   programMemory: ProgramMemory
 }> {
   try {
+    console.log('starting new session')
     if (!useFakeExecutor) {
       engineCommandManager.endSession()
       engineCommandManager.startNewSession()
     }
+    console.log('executing ast')
     const programMemory = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
       : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
+    console.log('waiting for all commands')
     await engineCommandManager.waitForAllCommands()
+    console.log('all commands finished')
     return {
       logs: [],
       errors: [],

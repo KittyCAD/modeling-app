@@ -150,6 +150,7 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
+        web_sys::console::log_1(&format!("Sending command to engine: {:?}", cmd).into());
         let promise = self
             .manager
             .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
@@ -174,6 +175,7 @@ impl crate::engine::EngineManager for EngineConnection {
                 source_ranges: vec![source_range],
             })
         })?;
+        web_sys::console::log_1(&format!("Response from engine: {:?}", s).into());
 
         let ws_result: kittycad::types::WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
             KclError::Engine(KclErrorDetails {
