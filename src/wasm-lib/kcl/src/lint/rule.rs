@@ -3,8 +3,12 @@ use std::sync::{Arc, Mutex};
 use anyhow::Result;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use super::{walk, Node};
-use crate::{ast::types::Program, executor::SourceRange, lsp::IntoDiagnostic};
+use crate::{
+    ast::types::Program,
+    executor::SourceRange,
+    lint::{walk, Node},
+    lsp::IntoDiagnostic,
+};
 
 /// Check the provided AST for any found rule violations.
 ///
