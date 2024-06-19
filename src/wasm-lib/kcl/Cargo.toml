@@ -26,6 +26,8 @@ git_rev = "0.1.0"
 gltf-json = "1.4.1"
 kittycad = { workspace = true, features = ["clap"] }
 lazy_static = "1.4.0"
+# TODO: Make this optional
+miette = { version = "7.2.0", optional = false, features = ["fancy"] }
 mime_guess = "2.0.4"
 parse-display = "0.9.1"
 reqwest = { version = "0.11.26", default-features = false, features = ["stream", "rustls-tls"] }
@@ -62,6 +64,7 @@ tower-lsp = { version = "0.20.0", features = ["proposed"] }
 [features]
 default = ["cli", "engine"]
 cli = ["dep:clap"]
+# miette = ["dep:miette"]
 engine = []
 
 [profile.release]
