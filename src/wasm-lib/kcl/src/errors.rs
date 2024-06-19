@@ -168,3 +168,20 @@ impl From<String> for KclError {
         serde_json::from_str(&error).unwrap()
     }
 }
+
+#[cfg(feature = "pyo3")]
+impl From<pyo3::PyErr> for KclError {
+    fn from(error: pyo3::PyErr) -> Self {
+        KclError::Internal(KclErrorDetails {
+            source_ranges: vec![],
+            message: error.to_string(),
+        })
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl From<KclError> for pyo3::PyErr {
+    fn from(error: KclError) -> Self {
+        pyo3::exceptions::PyException::new_err(error.to_string())
+    }
+}
