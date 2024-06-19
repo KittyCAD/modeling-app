@@ -1781,7 +1781,7 @@ export class EngineCommandManager extends EventTarget {
     command: EngineCommand
     ast: Program
     idToRangeMap?: { [key: string]: SourceRange }
-  }): Promise<any> {
+  }): Promise<ResolveCommand | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1812,6 +1812,12 @@ export class EngineCommandManager extends EventTarget {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
+      } else if (parseCommand.type === 'modeling_cmd_batch_req') {
+        return this.handlePendingBatchCommand(
+          id,
+          parseCommand.requests,
+          idToRangeMap
+        )
       }
     }
     throw Error('shouldnt reach here')
@@ -1844,11 +1850,13 @@ export class EngineCommandManager extends EventTarget {
     command: Models['ModelingCmd_type'],
     ast?: Program,
     range?: SourceRange
-  ) {
+  ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
+    const promise: Promise<ResolveCommand | void> = new Promise(
+      (_resolve, reject) => {
+        resolve = _resolve
+      }
+    )
     const getParentId = (): string | undefined => {
       if (command.type === 'extend_path') return command.path
       if (command.type === 'solid3d_get_extrusion_face_info') {
@@ -1909,11 +1917,13 @@ export class EngineCommandManager extends EventTarget {
     idToRangeMap?: { [key: string]: SourceRange },
     ast?: Program,
     range?: SourceRange
-  ) {
+  ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
+    const promise: Promise<ResolveCommand | void> = new Promise(
+      (_resolve, reject) => {
+        resolve = _resolve
+      }
+    )
 
     if (!idToRangeMap) {
       throw new Error('idToRangeMap is required for batch commands')
@@ -1974,14 +1984,14 @@ export class EngineCommandManager extends EventTarget {
       command,
       ast: this.getAst(),
       idToRangeMap,
-    }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
-      console.log('raw in then', raw)
-      if (raw === undefined || raw === null) {
+    }).then((resp) => {
+      console.log('raw in sendModelingCommandFromWasm', resp)
+      if (!resp) {
         throw new Error(
           'returning modeling cmd response to the rust side is undefined or null'
         )
       }
-      return JSON.stringify(raw)
+      return JSON.stringify(resp.raw)
     })
   }
   commandResult(id: string): Promise<any> {
