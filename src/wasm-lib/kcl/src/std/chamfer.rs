@@ -19,8 +19,8 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ChamferData {
-    /// The radius of the chamfer.
-    pub radius: f64,
+    /// The length of the chamfer.
+    pub length: f64,
     /// The tags of the paths you want to chamfer.
     pub tags: Vec<EdgeReference>,
 }
@@ -50,7 +50,7 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 /// const width = 20
 /// const length = 10
 /// const thickness = 1
-/// const chamferRadius = 2
+/// const chamferLength = 2
 ///
 /// const mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
@@ -61,7 +61,7 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> chamfer({
-///     radius: chamferRadius,
+///     length: chamferLength,
 ///     tags: [
 ///       getNextAdjacentEdge('edge1', %),
 ///       getNextAdjacentEdge('edge2', %),
@@ -114,7 +114,7 @@ async fn inner_chamfer(
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
-                radius: data.radius,
+                radius: data.length,
                 tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
                 cut_type: Some(kittycad::types::CutType::Chamfer),
             },

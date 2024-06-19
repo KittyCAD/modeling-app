@@ -18155,12 +18155,12 @@
           "description": "Data for chamfers.",
           "type": "object",
           "required": [
-            "radius",
+            "length",
             "tags"
           ],
           "properties": {
-            "radius": {
-              "description": "The radius of the chamfer.",
+            "length": {
+              "description": "The length of the chamfer.",
               "type": "number",
               "format": "double"
             },
@@ -19702,7 +19702,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const width = 20\nconst length = 10\nconst thickness = 1\nconst chamferRadius = 2\n\nconst mountingPlateSketch = startSketchOn(\"XY\")\n  |> startProfileAt([-width / 2, -length / 2], %)\n  |> lineTo([width / 2, -length / 2], %, 'edge1')\n  |> lineTo([width / 2, length / 2], %, 'edge2')\n  |> lineTo([-width / 2, length / 2], %, 'edge3')\n  |> close(%, 'edge4')\n\nconst mountingPlate = extrude(thickness, mountingPlateSketch)\n  |> chamfer({\n       radius: chamferRadius,\n       tags: [\n         getNextAdjacentEdge('edge1', %),\n         getNextAdjacentEdge('edge2', %),\n         getNextAdjacentEdge('edge3', %),\n         getNextAdjacentEdge('edge4', %)\n       ]\n     }, %)"
+      "const width = 20\nconst length = 10\nconst thickness = 1\nconst chamferLength = 2\n\nconst mountingPlateSketch = startSketchOn(\"XY\")\n  |> startProfileAt([-width / 2, -length / 2], %)\n  |> lineTo([width / 2, -length / 2], %, 'edge1')\n  |> lineTo([width / 2, length / 2], %, 'edge2')\n  |> lineTo([-width / 2, length / 2], %, 'edge3')\n  |> close(%, 'edge4')\n\nconst mountingPlate = extrude(thickness, mountingPlateSketch)\n  |> chamfer({\n       length: chamferLength,\n       tags: [\n         getNextAdjacentEdge('edge1', %),\n         getNextAdjacentEdge('edge2', %),\n         getNextAdjacentEdge('edge3', %),\n         getNextAdjacentEdge('edge4', %)\n       ]\n     }, %)"
     ]
   },
   {
