@@ -1,9 +1,12 @@
-use super::Node;
-use crate::ast::types::{
-    BinaryPart, BodyItem, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
-    Parameter, Program, UnaryExpression, Value, VariableDeclarator,
-};
 use anyhow::Result;
+
+use crate::{
+    ast::types::{
+        BinaryPart, BodyItem, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
+        Parameter, Program, UnaryExpression, Value, VariableDeclarator,
+    },
+    lint::Node,
+};
 
 /// Walker is implemented by things that are able to walk an AST tree to
 /// produce lints. This trait is implemented automatically for a few of the

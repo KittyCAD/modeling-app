@@ -32,9 +32,7 @@ import {
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
-  XZ_PLANE,
   Y_AXIS,
-  YZ_PLANE,
 } from './sceneInfra'
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {

@@ -47,7 +47,6 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
   getSketchOrientationDetails,
-  getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
 import {
   moveValueIntoNewVariablePath,
