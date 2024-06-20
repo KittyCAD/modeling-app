@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - '**.rs'
+      - .github/workflows/cargo-check.yml
+  pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+name: cargo check
+jobs:
+  cargocheck:
+    name: cargo check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ['src/wasm-lib']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install latest rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2.6.1
+
+      - name: Run check
+        run: |
+          cd "${{ matrix.dir }}"
+          # We specifically want to test the disable-println feature
+          # Since it is not enabled by default, we need to specify it
+          # This is used in kcl-lsp
+          cargo check --all --features disable-println --features pyo3
