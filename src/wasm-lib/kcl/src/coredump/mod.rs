@@ -163,7 +163,8 @@ impl CoreDumpInfo {
 
 Reference ID: {coredump_id}
 </details>
-"#);
+"#
+        );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
         // Note that `github_issue_url` is not included in the coredump file.
