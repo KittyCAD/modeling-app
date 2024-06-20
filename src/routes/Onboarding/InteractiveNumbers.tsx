@@ -1,9 +1,16 @@
-import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
+import {
+  OnboardingButtons,
+  kbdClasses,
+  useDemoCode,
+  useDismiss,
+  useNextClick,
+} from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { bracketWidthConstantLine } from 'lib/exampleKcl'
 
-export default function InteractiveNumbers() {
+export default function OnboardingInteractiveNumbers() {
+  useDemoCode()
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))

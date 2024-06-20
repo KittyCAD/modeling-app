@@ -19,6 +19,8 @@ import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+import { codeManager } from 'lib/singletons'
+import { bracket } from 'lib/exampleKcl'
 
 export const kbdClasses =
   'p-0.5 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
@@ -74,6 +76,12 @@ export const onboardingRoutes = [
     element: <FutureWork />,
   },
 ]
+
+export function useDemoCode() {
+  useEffect(() => {
+    codeManager.updateCodeStateEditor(bracket)
+  }, [codeManager])
+}
 
 export function useNextClick(newStatus: string) {
   const filePath = useAbsoluteFilePath()

@@ -1,11 +1,12 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
 
-export default function ParametricModeling() {
+export default function OnboardingParametricModeling() {
+  useDemoCode()
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
