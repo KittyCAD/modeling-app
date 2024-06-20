@@ -180,11 +180,7 @@ impl EngineConnection {
             loop {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
-                        for e in ws_resp.errors.iter().flatten() {
-                            println!("got error message: {} {}", e.error_code, e.message);
-                        }
                         // If we got a batch response, add all the inner responses.
-                        println!("got response: {:?}", ws_resp);
                         if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) =
                             &ws_resp.resp
                         {
