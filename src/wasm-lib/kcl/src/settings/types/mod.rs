@@ -405,7 +405,10 @@ impl From<bool> for DefaultTrue {
 }
 
 /// The valid types of length units.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[derive(
+    Debug, Default, Eq, PartialEq, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr,
+)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 #[display(style = "lowercase")]

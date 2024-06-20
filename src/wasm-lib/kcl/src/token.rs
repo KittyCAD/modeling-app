@@ -13,6 +13,7 @@ mod tokeniser;
 
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
@@ -142,6 +143,7 @@ impl TokenType {
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 pub struct Token {
     #[serde(rename = "type")]

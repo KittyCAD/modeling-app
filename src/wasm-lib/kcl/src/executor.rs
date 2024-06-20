@@ -617,6 +617,7 @@ impl From<Position> for Point3d {
 pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
@@ -1149,7 +1150,7 @@ impl ExecutorContext {
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 &kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.clone().into(),
+                    unit: self.settings.units.into(),
                 },
             )
             .await?;
