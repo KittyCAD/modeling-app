@@ -370,6 +370,11 @@ impl Backend {
                 }),
             )
             .await;
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            self.client.publish_diagnostics(uri.clone(), vec![], None).await;
+        }
     }
 
     async fn add_to_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
