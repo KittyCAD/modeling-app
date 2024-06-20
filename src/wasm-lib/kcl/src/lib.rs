@@ -4,6 +4,13 @@
 //! the standard library implementation, a LSP implementation, generator for the docs, and more.
 #![recursion_limit = "1024"]
 
+macro_rules! println {
+    ($($rest:tt)*) => {
+        #[cfg(not(feature = "disable-println"))]
+        std::println!($($rest)*)
+    }
+}
+
 pub mod ast;
 pub mod coredump;
 pub mod docs;

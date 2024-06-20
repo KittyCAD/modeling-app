@@ -63,6 +63,9 @@ tower-lsp = { version = "0.20.0", features = ["proposed"] }
 [features]
 default = ["cli", "engine"]
 cli = ["dep:clap"]
+# For the lsp server, when run with stdout for rpc we want to disable println.
+# This is used for editor extensions that use the lsp server.
+disable-println = []
 engine = []
 pyo3 = ["dep:pyo3"]
 
