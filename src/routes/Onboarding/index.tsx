@@ -23,7 +23,7 @@ import { codeManager, editorManager } from 'lib/singletons'
 import { bracket } from 'lib/exampleKcl'
 
 export const kbdClasses =
-  'p-0.5 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
+  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
 export const onboardingRoutes = [
   {

@@ -40,8 +40,10 @@ export default function OnboardingInteractiveNumbers() {
               <kbd className={kbdClasses}>Option</kbd>) key
             </li>
             <li>
-              Hover over the number assigned to <code>width</code> on line{' '}
-              {bracketWidthConstantLine}
+              Hover over the number assigned to "width" on{' '}
+              <em>
+                <strong>line {bracketWidthConstantLine}</strong>
+              </em>
             </li>
             <li>Drag the number left and right to change its value</li>
           </ol>
