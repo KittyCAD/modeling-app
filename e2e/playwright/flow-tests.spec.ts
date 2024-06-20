@@ -18,6 +18,7 @@ import {
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
+  TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
@@ -1287,87 +1288,161 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
   ).toBeAttached()
 })
 
-test('Click through each onboarding step', async ({ page }) => {
-  const u = await getUtils(page)
+test.describe('Onboarding tests', () => {
+  test('Onboarding code is shown in the editor', async ({ page }) => {
+    const u = await getUtils(page)
 
-  // Override beforeEach test setup
-  await page.addInitScript(
-    async ({ settingsKey, settings }) => {
-      // Give no initial code, so that the onboarding start is shown immediately
-      localStorage.setItem('persistCode', '')
-      localStorage.setItem(settingsKey, settings)
-    },
-    {
-      settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_START }),
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey }) => {
+        // Give no initial code, so that the onboarding start is shown immediately
+        localStorage.removeItem('persistCode')
+        localStorage.removeItem(settingsKey)
+      },
+      { settingsKey: TEST_SETTINGS_KEY }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+    // *and* that the code is shown in the editor
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+  })
+
+  test('Click through each onboarding step', async ({ page }) => {
+    const u = await getUtils(page)
+
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        // Give no initial code, so that the onboarding start is shown immediately
+        localStorage.setItem('persistCode', '')
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_START }),
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+    const nextButton = page.getByTestId('onboarding-next')
+
+    while ((await nextButton.innerText()) !== 'Finish') {
+      await expect(nextButton).toBeVisible()
+      await nextButton.click()
     }
-  )
 
-  await page.setViewportSize({ width: 1200, height: 1080 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-
-  // Test that the onboarding pane loaded
-  await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
-
-  const nextButton = page.getByTestId('onboarding-next')
-
-  while ((await nextButton.innerText()) !== 'Finish') {
+    // Finish the onboarding
     await expect(nextButton).toBeVisible()
     await nextButton.click()
-  }
 
-  // Finish the onboarding
-  await expect(nextButton).toBeVisible()
-  await nextButton.click()
+    // Test that the onboarding pane is gone
+    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+    await expect(page.url()).not.toContain('onboarding')
+  })
 
-  // Test that the onboarding pane is gone
-  await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-  await expect(page.url()).not.toContain('onboarding')
-})
+  test('Onboarding redirects and code updating', async ({ page }) => {
+    const u = await getUtils(page)
 
-test('Onboarding redirects and code updating', async ({ page }) => {
-  const u = await getUtils(page)
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        // Give some initial code, so we can test that it's cleared
+        localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_EXPORT }),
+      }
+    )
 
-  // Override beforeEach test setup
-  await page.addInitScript(
-    async ({ settingsKey, settings }) => {
-      // Give some initial code, so we can test that it's cleared
-      localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
-      localStorage.setItem(settingsKey, settings)
-    },
-    {
-      settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_EXPORT }),
-    }
-  )
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
 
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
+    // Test that the redirect happened
+    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+    )
 
-  // Test that the redirect happened
-  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-    `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
-  )
+    // Test that you come back to this page when you refresh
+    await page.reload()
+    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+    )
 
-  // Test that you come back to this page when you refresh
-  await page.reload()
-  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-    `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
-  )
+    // Test that the onboarding pane loaded
+    const title = page.locator('[data-testid="onboarding-content"]')
+    await expect(title).toBeAttached()
 
-  // Test that the onboarding pane loaded
-  const title = page.locator('[data-testid="onboarding-content"]')
-  await expect(title).toBeAttached()
+    // Test that the code changes when you advance to the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText('')
 
-  // Test that the code changes when you advance to the next step
-  await page.locator('[data-testid="onboarding-next"]').click()
-  await expect(page.locator('.cm-content')).toHaveText('')
+    // Test that the code is not empty when you click on the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  })
 
-  // Test that the code is not empty when you click on the next step
-  await page.locator('[data-testid="onboarding-next"]').click()
-  await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  test('Avatar text updates depending on image load success', async ({
+    page,
+  }) => {
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+    // Test that the text in this step is correct
+    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
+    const onboardingOverlayLocator = page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
+
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('your avatar')
+
+    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
+      })
+    })
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+
+    // Now expect the text to be different
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+  })
 })
 
 test.describe('Testing selections', () => {

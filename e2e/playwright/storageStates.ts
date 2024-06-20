@@ -1,5 +1,6 @@
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS = {
@@ -22,9 +23,14 @@ export const TEST_SETTINGS = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
+export const TEST_SETTINGS_ONBOARDING_USER_MENU = {
+  ...TEST_SETTINGS,
+  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.USER_MENU },
+} satisfies Partial<SaveSettingsPayload>
+
 export const TEST_SETTINGS_ONBOARDING_EXPORT = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: '/export' },
+  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.EXPORT },
 } satisfies Partial<SaveSettingsPayload>
 
 export const TEST_SETTINGS_ONBOARDING_START = {

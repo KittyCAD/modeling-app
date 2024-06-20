@@ -6176,8 +6176,9 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "8.1.0"
-source = "git+https://github.com/Aleph-Alpha/ts-rs#be0349d5fb07a8ccab713887a61e90e3bc773c7a"
+version = "9.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e2dcf58e612adda9a83800731e8e4aba04d8a302b9029617b0b6e4b021d5357"
 dependencies = [
  "chrono",
  "serde_json",
@@ -6189,8 +6190,9 @@ dependencies = [
 
 [[package]]
 name = "ts-rs-macros"
-version = "8.1.0"
-source = "git+https://github.com/Aleph-Alpha/ts-rs#be0349d5fb07a8ccab713887a61e90e3bc773c7a"
+version = "9.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cbdee324e50a7402416d9c25270d3df4241ed528af5d36dda18b6f219551c577"
 dependencies = [
  "proc-macro2",
  "quote",

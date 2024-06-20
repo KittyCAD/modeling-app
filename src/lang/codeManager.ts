@@ -22,7 +22,7 @@ export default class CodeManager {
       return
     }
 
-    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN) || ''
+    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN)
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
