@@ -128,11 +128,7 @@ export const ModelingMachineProvider = ({
       {
         loading: 'Starting core dump...',
         success: 'Core dump completed successfully',
-        error: (err) => {
-          const errorMessage = 'Error while exporting core dump'
-          console.error(errorMessage, err)
-          return errorMessage
-        },
+        error: 'Error while exporting core dump',
       },
       {
         success: {

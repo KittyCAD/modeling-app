@@ -355,6 +355,7 @@ export async function coreDump(
     console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
     return dump
   } catch (e: any) {
+    console.error('CoreDump: error', e)
     throw new Error(`Error getting core dump: ${e}`)
   }
 }
