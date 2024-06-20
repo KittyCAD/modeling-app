@@ -79,7 +79,7 @@ export const onboardingRoutes = [
 
 export function useDemoCode() {
   useEffect(() => {
-    codeManager.updateCodeStateEditor(bracket)
+    codeManager.updateCodeEditor(bracket)
   }, [codeManager])
 }
 
