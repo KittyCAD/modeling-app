@@ -1406,6 +1406,7 @@ test.describe('Onboarding tests', () => {
       process.platform === 'darwin',
       "Skip on macOS, because Playwright isn't behaving the same as the actual browser"
     )
+    const u = await getUtils(page)
     const badCode = `// This is bad code we shouldn't see`
     // Override beforeEach test setup
     await page.addInitScript(
@@ -1431,13 +1432,15 @@ test.describe('Onboarding tests', () => {
     const bracketNoNewLines = bracket.replace(/\n/g, '')
 
     // Check the code got reset on load
-    const codeLocator = page.locator('.cm-content')
-    await expect(codeLocator).toHaveText(bracketNoNewLines)
+    await expect(page.locator('#code-pane')).toBeVisible()
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
+      timeout: 10_000,
+    })
 
     // Mess with the code again
-    await codeLocator.selectText()
-    await codeLocator.fill(badCode)
-    await expect(codeLocator).toHaveText(badCode)
+    await u.codeLocator.selectText()
+    await u.codeLocator.fill(badCode)
+    await expect(u.codeLocator).toHaveText(badCode)
 
     // Click to the next step
     await page.locator('[data-testid="onboarding-next"]').click()
@@ -1446,7 +1449,7 @@ test.describe('Onboarding tests', () => {
     })
 
     // Check that the code has been reset
-    await expect(codeLocator).toHaveText(bracketNoNewLines)
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
   })
 
   test('Avatar text updates depending on image load success', async ({
