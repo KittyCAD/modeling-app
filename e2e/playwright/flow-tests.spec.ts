@@ -5489,3 +5489,72 @@ test('Paste should not work unless an input is focused', async ({
     )
   ).toContain(pasteContent)
 })
+
+test('Core dump from keyboard commands success', async ({ page }) => {
+  // This test can run long if it takes a little too long to load
+  // the engine, plus coredump takes bit to process.
+  test.setTimeout(150000)
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    ;(window as any).playwrightSkipFilePicker = true
+    localStorage.setItem(
+      'persistCode',
+      `const topAng = 25
+const bottomAng = 35
+const baseLen = 3.5
+const baseHeight = 1
+const totalHeightHalf = 2
+const armThick = 0.5
+const totalLen = 9.5
+const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> yLine(baseHeight, %)
+  |> xLine(baseLen, %)
+  |> angledLineToY({
+        angle: topAng,
+        to: totalHeightHalf,
+      }, %, 'seg04')
+  |> xLineTo(totalLen, %, 'seg03')
+  |> yLine(-armThick, %, 'seg01')
+  |> angledLineThatIntersects({
+        angle: HALF_TURN,
+        offset: -armThick,
+        intersectTag: 'seg04'
+      }, %)
+  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
+  |> angledLineToY({
+        angle: -bottomAng,
+        to: -totalHeightHalf - armThick,
+      }, %, 'seg02')
+  |> xLineTo(segEndX('seg03', %) + 0, %)
+  |> yLine(-segLen('seg01', %), %)
+  |> angledLineThatIntersects({
+        angle: HALF_TURN,
+        offset: -armThick,
+        intersectTag: 'seg02'
+      }, %)
+  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> xLineTo(ZERO, %)
+  |> close(%)
+  |> extrude(4, %)`
+    )
+  })
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  // Start waiting for popup before clicking. Note no await.
+  const popupPromise = page.waitForEvent('popup')
+  await page.keyboard.press('Meta+Shift+.')
+  // after invoking coredump, a loading toast will appear
+  await expect(page.getByText('Starting core dump')).toBeVisible()
+  // Allow time for core dump processing
+  await page.waitForTimeout(1000)
+  await expect(page.getByText('Core dump completed successfully')).toBeVisible()
+  const popup = await popupPromise
+  console.log(await popup.title())
+  // GitHub popup will go to unlogged in page. Can't look for "New Issue" here.
+  await expect(popup).toHaveTitle(/GitHub /)
+})
