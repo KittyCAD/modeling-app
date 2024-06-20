@@ -256,22 +256,6 @@ export const ModelingMachineProvider = ({
               }
             : {}
         ),
-        // For some reason, this one is tricky.
-        'Get selection from ast and sketchDetails': assign(
-          ({ sketchDetails, selectionRanges }) => {
-            const updatedSelections = updateSelections(
-              [sketchDetails?.sketchPathToNode || []],
-              selectionRanges,
-              kclManager.ast
-            )
-            if (err(updatedSelections)) return {}
-            const result: SetSelections = {
-              selectionType: 'completeSelection',
-              selection: updatedSelections,
-            }
-            return result
-          }
-        ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
@@ -827,35 +811,50 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get convert to variable info': async ({ sketchDetails }, { data }) => {
-          if (!sketchDetails) return []
+        'Get convert to variable info': async (
+          { sketchDetails, selectionRanges },
+          { data }
+        ): Promise<SetSelections> => {
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const { variableName } = await getVarNameModal({
             valueName: data.variableName || 'var',
           })
-          const parsed1 = parse(recast(kclManager.ast))
-          if (trap(parsed1)) return []
+          let parsed = parse(recast(kclManager.ast))
+          if (trap(parsed)) return Promise.reject(parsed)
+          parsed = parsed as Program
 
           const { modifiedAst: _modifiedAst, pathToReplacedNode } =
             moveValueIntoNewVariablePath(
-              parsed1,
+              parsed,
               kclManager.programMemory,
               data.pathToNode,
               variableName
             )
-          const parsed2 = parse(recast(_modifiedAst))
-          if (trap(parsed2)) return []
+          parsed = parse(recast(_modifiedAst))
+          if (trap(parsed)) return Promise.reject(parsed)
+          parsed = parsed as Program
+          if (!pathToReplacedNode)
+            return Promise.reject(new Error('No path to replaced node'))
 
-          try {
-            await sceneEntitiesManager.updateAstAndRejigSketch(
-              pathToReplacedNode || [],
-              parsed2,
-              sketchDetails.zAxis,
-              sketchDetails.yAxis,
-              sketchDetails.origin
-            )
-            return pathToReplacedNode || []
-          } catch (e) {
-            return []
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            pathToReplacedNode || [],
+            parsed,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            { 0: pathToReplacedNode },
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
+          return {
+            selectionType: 'completeSelection',
+            selection,
+            updatedPathToNode: pathToReplacedNode,
           }
         },
       },
