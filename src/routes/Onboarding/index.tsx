@@ -19,7 +19,7 @@ import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { codeManager } from 'lib/singletons'
+import { codeManager, editorManager } from 'lib/singletons'
 import { bracket } from 'lib/exampleKcl'
 
 export const kbdClasses =
@@ -79,8 +79,9 @@ export const onboardingRoutes = [
 
 export function useDemoCode() {
   useEffect(() => {
-    codeManager.updateCodeEditor(bracket)
-  }, [codeManager])
+    if (!editorManager.editorView) return
+    codeManager.updateCodeStateEditor(bracket)
+  }, [editorManager.editorView, codeManager.updateCodeStateEditor])
 }
 
 export function useNextClick(newStatus: string) {
