@@ -617,6 +617,7 @@ impl From<Position> for Point3d {
 pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
@@ -1066,10 +1067,10 @@ impl ExecutorContext {
 
         // Set the edge visibility.
         engine
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                kittycad::types::ModelingCmd::EdgeLinesVisible {
+                &kittycad::types::ModelingCmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
                 },
             )
@@ -1145,11 +1146,11 @@ impl ExecutorContext {
     ) -> Result<ProgramMemory, KclError> {
         // Before we even start executing the program, set the units.
         self.engine
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.clone().into(),
+                &kittycad::types::ModelingCmd::SetSceneUnits {
+                    unit: self.settings.units.into(),
                 },
             )
             .await?;

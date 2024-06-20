@@ -109,7 +109,7 @@ async fn inner_chamfer(
             }
         };
 
-        args.send_modeling_cmd(
+        args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,

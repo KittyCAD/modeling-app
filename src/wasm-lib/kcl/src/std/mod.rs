@@ -215,6 +215,16 @@ impl Args {
         }
     }
 
+    // Add a modeling command to the batch but don't fire it right away.
+    pub async fn batch_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
+    }
+
+    /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
