@@ -1402,6 +1402,10 @@ test.describe('Onboarding tests', () => {
   test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
     page,
   }) => {
+    test.skip(
+      process.platform === 'darwin',
+      "Skip on macOS, because Playwright isn't behaving the same as the actual browser"
+    )
     const badCode = `// This is bad code we shouldn't see`
     // Override beforeEach test setup
     await page.addInitScript(
@@ -1431,6 +1435,7 @@ test.describe('Onboarding tests', () => {
     await expect(codeLocator).toHaveText(bracketNoNewLines)
 
     // Mess with the code again
+    await codeLocator.selectText()
     await codeLocator.fill(badCode)
     await expect(codeLocator).toHaveText(badCode)
 
