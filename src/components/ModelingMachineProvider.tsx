@@ -258,20 +258,18 @@ export const ModelingMachineProvider = ({
         ),
         // For some reason, this one is tricky.
         'Get selection from ast and sketchDetails': assign(
-          // @ts-ignore
-          ({ sketchDetails, selectionRanges }, event) => {
-            // @ts-ignore
-            event.data = {
-              // @ts-ignore
+          ({ sketchDetails, selectionRanges }) => {
+            const updatedSelections = updateSelections(
+              [sketchDetails?.sketchPathToNode || []],
+              selectionRanges,
+              kclManager.ast
+            )
+            if (err(updatedSelections)) return {}
+            const result: SetSelections = {
               selectionType: 'completeSelection',
-              selection: updateSelections(
-                [sketchDetails?.sketchPathToNode || []],
-                selectionRanges,
-                kclManager.ast
-              ),
+              selection: updatedSelections,
             }
-            // @ts-ignore
-            return event.data
+            return result
           }
         ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {

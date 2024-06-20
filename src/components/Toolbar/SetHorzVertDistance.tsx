@@ -16,7 +16,7 @@ import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
-import { err } from 'lib/trap'
+import { cleanErrs, err } from 'lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -40,9 +40,9 @@ export function horzVertDistanceInfo({
     if (err(tmp)) return tmp
     return tmp.node
   })
-  const _err1 = _nodes.find(err)
-  if (err(_err1)) return _err1
-  // Typescript is dumb so give it some help.
+  const [hasErr, , nodesWErrs] = cleanErrs(_nodes)
+
+  if (hasErr) return nodesWErrs[0]
   const nodes = _nodes as Value[]
 
   const _varDecs = paths.map((pathToNode) => {

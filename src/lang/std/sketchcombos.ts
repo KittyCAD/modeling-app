@@ -1,7 +1,7 @@
 import { TransformCallback, VarValues } from './stdTypes'
 import { toolTips, ToolTip } from '../../useStore'
 import { Selections, Selection } from 'lib/selections'
-import { err } from 'lib/trap'
+import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
   Program,
@@ -77,7 +77,8 @@ function createCallWrapper(
     args.push(tag)
   }
 
-  if (args.some(err)) {
+  const [hasErr, argsWOutErr] = cleanErrs(args)
+  if (hasErr) {
     console.error(args)
     return {
       callExp: createCallExpression('', []),
@@ -86,9 +87,7 @@ function createCallWrapper(
   }
 
   return {
-    // @ts-ignore
-    // Typescript can't tell args cannot have an Error in it.
-    callExp: createCallExpression(a, args),
+    callExp: createCallExpression(a, argsWOutErr),
     valueUsedInTransform,
   }
 }
