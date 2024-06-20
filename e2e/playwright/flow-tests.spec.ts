@@ -1399,8 +1399,6 @@ test.describe('Onboarding tests', () => {
   test('Avatar text updates depending on image load success', async ({
     page,
   }) => {
-    const u = await getUtils(page)
-
     // Override beforeEach test setup
     await page.addInitScript(
       async ({ settingsKey, settings }) => {
