@@ -19,7 +19,7 @@ import { VITE_KC_API_BASE_URL } from 'env'
  * @module lib/coredump
  * @class
  */
-// CoreDumpManager is insantiated in ModelingMachineProvider and passed to coreDump() in wasm.ts
+// CoreDumpManager is instantiated in ModelingMachineProvider and passed to coreDump() in wasm.ts
 // The async function coreDump() handles any errors thrown in its Promise catch method and rethrows
 // them to so the toast handler in ModelingMachineProvider can show the user an error message toast
 export class CoreDumpManager {
