@@ -19,12 +19,15 @@ import {
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
+  TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { EngineCommand } from 'lang/std/engineConnection'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+import { bracket } from 'lib/exampleKcl'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -1394,6 +1397,51 @@ test.describe('Onboarding tests', () => {
     // Test that the code is not empty when you click on the next step
     await page.locator('[data-testid="onboarding-next"]').click()
     await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  })
+
+  test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
+    page,
+  }) => {
+    const badCode = `// This is bad code we shouldn't see`
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings, badCode }) => {
+        localStorage.setItem('persistCode', badCode)
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
+        }),
+        badCode,
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    const bracketNoNewLines = bracket.replace(/\n/g, '')
+
+    // Check the code got reset on load
+    const codeLocator = page.locator('.cm-content')
+    await expect(codeLocator).toHaveText(bracketNoNewLines)
+
+    // Mess with the code again
+    await codeLocator.fill(badCode)
+    await expect(codeLocator).toHaveText(badCode)
+
+    // Click to the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    // Check that the code has been reset
+    await expect(codeLocator).toHaveText(bracketNoNewLines)
   })
 
   test('Avatar text updates depending on image load success', async ({
