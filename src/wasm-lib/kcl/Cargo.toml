@@ -28,6 +28,7 @@ kittycad = { workspace = true, features = ["clap"] }
 lazy_static = "1.4.0"
 mime_guess = "2.0.4"
 parse-display = "0.9.1"
+pyo3 = {version = "0.21.2", optional = true}
 reqwest = { version = "0.11.26", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = ["impl_json_schema", "url", "uuid1"] }
@@ -62,7 +63,11 @@ tower-lsp = { version = "0.20.0", features = ["proposed"] }
 [features]
 default = ["cli", "engine"]
 cli = ["dep:clap"]
+# For the lsp server, when run with stdout for rpc we want to disable println.
+# This is used for editor extensions that use the lsp server.
+disable-println = []
 engine = []
+pyo3 = ["dep:pyo3"]
 
 [profile.release]
 panic = "abort"

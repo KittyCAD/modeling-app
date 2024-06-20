@@ -2907,7 +2907,10 @@ let myBox = box([0,0], -3, -16, -10)
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let err = parser.ast().unwrap_err();
-        println!("{err}")
+        assert_eq!(
+            err.to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
+        );
     }
 }
 
