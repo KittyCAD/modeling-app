@@ -107,7 +107,7 @@ pub trait CoreDump: Clone {
             anyhow::bail!("Failed to upload coredump");
         }
 
-        let coredump_url = links[0].clone();
+        let coredump_url = &links[0];
 
         core_dump_info.set_github_issue_url(&screenshot_url, &coredump_url, &coredump_id)?;
 
