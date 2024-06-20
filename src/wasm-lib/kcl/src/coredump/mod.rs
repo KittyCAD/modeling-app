@@ -170,7 +170,7 @@ Reference ID: {}
 
         // Note that `github_issue_url` is not included in the coredump file.
         // It has already been encoded and uploaded at this point.
-        // The `github_issue_url` is used to in openWindow in wasm.ts.
+        // The `github_issue_url` is used in openWindow in wasm.ts.
         self.github_issue_url = Some(format!(
             r#"https://github.com/{}/{}/issues/new?body={}&labels={}"#,
             "KittyCAD",
