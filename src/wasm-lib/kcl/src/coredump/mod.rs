@@ -49,7 +49,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some(format!(r#"modeling-app/coredump-{}-screenshot.png"#, coredump_id)),
+                filename: Some(format!(r#"modeling-app/coredump-{coredump_id}-screenshot.png"#)),
                 content_type: Some("image/png".to_string()),
                 data,
             }])
