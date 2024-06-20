@@ -54,6 +54,7 @@ jobs:
         run: |
           cd "${{ matrix.dir }}"
           cargo clippy --all --tests --benches -- -D warnings
+          cargo clippy --all --tests --features pyo3 --benches -- -D warnings
       # If this fails, run "cargo check" to update Cargo.lock,
       # then add Cargo.lock to the PR.
       - name: Check Cargo.lock doesn't need updating
