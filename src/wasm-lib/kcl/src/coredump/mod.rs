@@ -154,18 +154,16 @@ impl CoreDumpInfo {
         let body = format!(
             r#"[Add a title above and insert a description of the issue here]
 
-![Screenshot]({})
+![Screenshot]({screenshot_url})
 
 <details>
 <summary><b>Core Dump</b></summary>
 
-[{}]({})
+[{coredump_filename}]({coredump_url})
 
-Reference ID: {}
+Reference ID: {coredump_id}
 </details>
-"#,
-            screenshot_url, coredump_filename, coredump_url, coredump_id
-        );
+"#);
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
         // Note that `github_issue_url` is not included in the coredump file.
