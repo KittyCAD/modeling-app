@@ -109,7 +109,7 @@ pub trait CoreDump: Clone {
 
         let coredump_url = &links[0];
 
-        core_dump_info.set_github_issue_url(&screenshot_url, &coredump_url, &coredump_id)?;
+        core_dump_info.set_github_issue_url(&screenshot_url, coredump_url, &coredump_id)?;
 
         Ok(core_dump_info)
     }
