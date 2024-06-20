@@ -101,7 +101,7 @@ pub trait CoreDump: Clone {
                 data,
             }])
             .await
-?;
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         if links.is_empty() {
             anyhow::bail!("Failed to upload coredump");
