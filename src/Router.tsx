@@ -41,15 +41,15 @@ const router = createBrowserRouter([
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
-      <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
+      <SettingsAuthProvider>
+        <LspProvider>
+          <CommandBarProvider>
             <KclContextProvider>
               <Outlet />
             </KclContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
-      </CommandBarProvider>
+          </CommandBarProvider>
+        </LspProvider>
+      </SettingsAuthProvider>
     ),
     errorElement: <ErrorPage />,
     children: [

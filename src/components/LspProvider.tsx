@@ -1,6 +1,6 @@
 import { LanguageServerClient } from 'editor/plugins/lsp'
 import type * as LSP from 'vscode-languageserver-protocol'
-import React, { createContext, useMemo, useEffect, useContext } from 'react'
+import React, { createContext, useMemo, useEffect, useContext, useState, } from 'react'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Client from '../editor/plugins/lsp/client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
@@ -77,6 +77,8 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
     isStreamReady: s.isStreamReady,
   }))
+  const [isLspReady, setIsLspReady] = useState(false)
+  const [isCopilotReady, setIsCopilotReady] = useState(false)
 
   const {
     auth,
@@ -118,11 +120,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
     const fromServer: FromServer | Error = FromServer.create()
-    if (trap(fromServer)) return { lspClient: null }
+    if (err(fromServer)) return { lspClient: null }
 
     const client = new Client(fromServer, intoServer)
 
-    setIsKclLspServerReady(true)
+    setIsLspReady(true)
 
     const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
     return { lspClient }
@@ -195,11 +197,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
     const fromServer: FromServer | Error = FromServer.create()
-    if (trap(fromServer)) return { lspClient: null }
+    if (err(fromServer)) return { lspClient: null }
 
     const client = new Client(fromServer, intoServer)
 
-    setIsCopilotLspServerReady(true)
+    setIsCopilotReady(true)
 
     const lspClient = new LanguageServerClient({
       client,
@@ -236,6 +238,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   if (copilotLspClient) {
     lspClients.push(copilotLspClient)
   }
+
+  useEffect(() => {
+    setIsKclLspServerReady(isLspReady)
+  }, [isLspReady])
+  useEffect(() => {
+    setIsCopilotLspServerReady(isCopilotReady)
+  }, [isCopilotReady])
 
   const onProjectClose = (
     file: FileEntry | null,
