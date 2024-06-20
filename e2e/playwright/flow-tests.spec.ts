@@ -18,6 +18,7 @@ import {
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
+  TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
@@ -1393,6 +1394,56 @@ test.describe('Onboarding tests', () => {
     // Test that the code is not empty when you click on the next step
     await page.locator('[data-testid="onboarding-next"]').click()
     await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  })
+
+  test('Avatar text updates depending on image load success', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+    // Test that the text in this step is correct
+    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
+    const onboardingOverlayLocator = page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
+
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('your avatar')
+
+    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
+      })
+    })
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+
+    // Now expect the text to be different
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
   })
 })
 
