@@ -38,6 +38,30 @@ pub struct Discovered {
     pub overridden: bool,
 }
 
+#[cfg(feature = "pyo3")]
+#[pyo3::pymethods]
+impl Discovered {
+    #[getter]
+    pub fn finding(&self) -> Finding {
+        self.finding.clone()
+    }
+
+    #[getter]
+    pub fn description(&self) -> String {
+        self.description.clone()
+    }
+
+    #[getter]
+    pub fn pos(&self) -> SourceRange {
+        self.pos
+    }
+
+    #[getter]
+    pub fn overridden(&self) -> bool {
+        self.overridden
+    }
+}
+
 impl IntoDiagnostic for Discovered {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let message = self.finding.title.to_owned();
@@ -84,6 +108,30 @@ impl Finding {
             pos,
             overridden: false,
         }
+    }
+}
+
+#[cfg(feature = "pyo3")]
+#[pyo3::pymethods]
+impl Finding {
+    #[getter]
+    pub fn code(&self) -> &'static str {
+        self.code
+    }
+
+    #[getter]
+    pub fn title(&self) -> &'static str {
+        self.title
+    }
+
+    #[getter]
+    pub fn description(&self) -> &'static str {
+        self.description
+    }
+
+    #[getter]
+    pub fn experimental(&self) -> bool {
+        self.experimental
     }
 }
 
