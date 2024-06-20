@@ -11,6 +11,9 @@ export function err<T>(value: ExcludeErr<T> | Error): value is Error {
   return true
 }
 
+/** Takes array of maybe error and types narrows them into
+ * @returns [hasErr, arrayWithoutErr, arrayWithErr]
+ */
 export function cleanErrs<T>(
   value: Array<ExcludeErr<T> | Error>
 ): [boolean, Array<ExcludeErr<T>>, Array<Error>] {
