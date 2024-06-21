@@ -68,7 +68,9 @@ export default class CodeManager {
     this._currentFilePath = path
   }
 
-  // This updates the code state and calls the updateState function.
+  /**
+   * This updates the code state and calls the updateState function.
+   */
   updateCodeState(code: string): void {
     if (this._code !== code) {
       this.code = code
@@ -76,7 +78,9 @@ export default class CodeManager {
     }
   }
 
-  // Update the code in the editor.
+  /**
+   * Update the code in the editor.
+   */
   updateCodeEditor(code: string): void {
     this.code = code
     if (editorManager.editorView) {
@@ -90,7 +94,9 @@ export default class CodeManager {
     }
   }
 
-  // Update the code, state, and the code the code mirror editor sees.
+  /**
+   * Update the code, state, and the code the code mirror editor sees.
+   */
   updateCodeStateEditor(code: string): void {
     if (this._code !== code) {
       this.code = code

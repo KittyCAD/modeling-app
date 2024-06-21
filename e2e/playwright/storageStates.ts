@@ -33,6 +33,14 @@ export const TEST_SETTINGS_ONBOARDING_EXPORT = {
   app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.EXPORT },
 } satisfies Partial<SaveSettingsPayload>
 
+export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING = {
+  ...TEST_SETTINGS,
+  app: {
+    ...TEST_SETTINGS.app,
+    onboardingStatus: onboardingPaths.PARAMETRIC_MODELING,
+  },
+} satisfies Partial<SaveSettingsPayload>
+
 export const TEST_SETTINGS_ONBOARDING_START = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, onboardingStatus: '' },

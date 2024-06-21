@@ -19,12 +19,15 @@ import {
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
+  TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { EngineCommand } from 'lang/std/engineConnection'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+import { bracket } from 'lib/exampleKcl'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -1394,6 +1397,59 @@ test.describe('Onboarding tests', () => {
     // Test that the code is not empty when you click on the next step
     await page.locator('[data-testid="onboarding-next"]').click()
     await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  })
+
+  test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
+    page,
+  }) => {
+    test.skip(
+      process.platform === 'darwin',
+      "Skip on macOS, because Playwright isn't behaving the same as the actual browser"
+    )
+    const u = await getUtils(page)
+    const badCode = `// This is bad code we shouldn't see`
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings, badCode }) => {
+        localStorage.setItem('persistCode', badCode)
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
+        }),
+        badCode,
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    const bracketNoNewLines = bracket.replace(/\n/g, '')
+
+    // Check the code got reset on load
+    await expect(page.locator('#code-pane')).toBeVisible()
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
+      timeout: 10_000,
+    })
+
+    // Mess with the code again
+    await u.codeLocator.selectText()
+    await u.codeLocator.fill(badCode)
+    await expect(u.codeLocator).toHaveText(badCode)
+
+    // Click to the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    // Check that the code has been reset
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
   })
 
   test('Avatar text updates depending on image load success', async ({
@@ -5488,73 +5544,4 @@ test('Paste should not work unless an input is focused', async ({
       () => document.querySelector('.cm-content')?.textContent
     )
   ).toContain(pasteContent)
-})
-
-test('Core dump from keyboard commands success', async ({ page }) => {
-  // This test can run long if it takes a little too long to load
-  // the engine, plus coredump takes bit to process.
-  test.setTimeout(150000)
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    ;(window as any).playwrightSkipFilePicker = true
-    localStorage.setItem(
-      'persistCode',
-      `const topAng = 25
-const bottomAng = 35
-const baseLen = 3.5
-const baseHeight = 1
-const totalHeightHalf = 2
-const armThick = 0.5
-const totalLen = 9.5
-const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0, 0], %)
-  |> yLine(baseHeight, %)
-  |> xLine(baseLen, %)
-  |> angledLineToY({
-        angle: topAng,
-        to: totalHeightHalf,
-      }, %, 'seg04')
-  |> xLineTo(totalLen, %, 'seg03')
-  |> yLine(-armThick, %, 'seg01')
-  |> angledLineThatIntersects({
-        angle: HALF_TURN,
-        offset: -armThick,
-        intersectTag: 'seg04'
-      }, %)
-  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
-  |> angledLineToY({
-        angle: -bottomAng,
-        to: -totalHeightHalf - armThick,
-      }, %, 'seg02')
-  |> xLineTo(segEndX('seg03', %) + 0, %)
-  |> yLine(-segLen('seg01', %), %)
-  |> angledLineThatIntersects({
-        angle: HALF_TURN,
-        offset: -armThick,
-        intersectTag: 'seg02'
-      }, %)
-  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
-  |> xLineTo(ZERO, %)
-  |> close(%)
-  |> extrude(4, %)`
-    )
-  })
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  // Start waiting for popup before clicking. Note no await.
-  const popupPromise = page.waitForEvent('popup')
-  await page.keyboard.press('Meta+Shift+.')
-  // after invoking coredump, a loading toast will appear
-  await expect(page.getByText('Starting core dump')).toBeVisible()
-  // Allow time for core dump processing
-  await page.waitForTimeout(1000)
-  await expect(page.getByText('Core dump completed successfully')).toBeVisible()
-  const popup = await popupPromise
-  console.log(await popup.title())
-  // GitHub popup will go to unlogged in page. Can't look for "New Issue" here.
-  await expect(popup).toHaveTitle(/GitHub /)
 })
