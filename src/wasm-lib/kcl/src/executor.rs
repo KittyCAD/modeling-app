@@ -645,7 +645,7 @@ impl SourceRange {
     pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code[..self.start()].lines().count();
+        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
         if line > 0 {
             line = line.saturating_sub(1);
         }
