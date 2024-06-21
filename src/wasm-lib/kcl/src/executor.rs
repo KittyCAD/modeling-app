@@ -1326,7 +1326,7 @@ impl ExecutorContext {
                         }
                         match self.stdlib.get_either(&call_expr.callee.name) {
                             FunctionKind::Core(func) => {
-                                let args = crate::std::Args::new(args, call_expr.into(), self.clone());
+                                let args = crate::std::Args::new(args, call_expr.into(), self.clone(), memory.clone());
                                 let result = func.std_lib_fn()(args).await?;
                                 memory.return_ = Some(ProgramReturn::Value(result));
                             }

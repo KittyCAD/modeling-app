@@ -32,8 +32,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryFunction, MemoryItem, Metadata, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryFunction, MemoryItem, Metadata, ProgramMemory,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -206,14 +206,17 @@ pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
+    // TODO: This should be reference, not clone.
+    pub memory: ProgramMemory,
 }
 
 impl Args {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext, memory: ProgramMemory) -> Self {
         Self {
             args,
             source_range,
             ctx,
+            memory,
         }
     }
 
@@ -390,9 +393,7 @@ impl Args {
     }
 
     /// Works with either 2D or 3D solids.
-    fn get_pattern_args(
-        &self,
-    ) -> std::result::Result<(u32, (&MemoryFunction, Box<FunctionExpression>), Vec<Uuid>), KclError> {
+    fn get_pattern_args(&self) -> std::result::Result<(u32, FnAsArg<'_>, Vec<Uuid>), KclError> {
         let sr = vec![self.source_range];
         let mut args = self.args.iter();
         let num_repetitions = args.next().ok_or_else(|| {
@@ -408,7 +409,7 @@ impl Args {
                 source_ranges: sr.clone(),
             })
         })?;
-        let (transform, expression) = transform.get_function(sr.clone())?;
+        let (transform, expr) = transform.get_function(sr.clone())?;
         let sg = args.next().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Missing third argument (should be a Sketch/ExtrudeGroup or an array of Sketch/ExtrudeGroups)"
@@ -423,7 +424,7 @@ impl Args {
             (_, Ok(group)) => group.ids(),
             (Err(e), _) => return Err(e),
         };
-        Ok((num_repetitions, (transform, expression), entity_ids))
+        Ok((num_repetitions, FnAsArg { func: transform, expr }, entity_ids))
     }
 
     fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
@@ -1047,6 +1048,11 @@ pub enum Primitive {
     String,
     /// A uuid value.
     Uuid,
+}
+
+struct FnAsArg<'a> {
+    pub func: &'a MemoryFunction,
+    pub expr: Box<FunctionExpression>,
 }
 
 #[cfg(test)]

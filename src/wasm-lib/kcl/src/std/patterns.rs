@@ -10,8 +10,8 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, FunctionParam, Geometries, Geometry, MemoryItem, Point3d, SketchGroup,
-        SketchGroupSet, UserVal,
+        ExtrudeGroup, ExtrudeGroupSet, FunctionParam, Geometries, Geometry, MemoryItem, Point3d, ProgramReturn,
+        SketchGroup, SketchGroupSet, SourceRange, UserVal,
     },
     std::{types::Uint, Args},
 };
@@ -19,23 +19,23 @@ use crate::{
 const CANNOT_USE_ZERO_VECTOR: &str =
     "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place.";
 
-/// How to change each element of a pattern.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct LinearTransform {
-    /// Translate the replica this far along each dimension.
-    /// Defaults to zero vector (i.e. same position as the original).
-    #[serde(default)]
-    pub translate: Option<Point3d>,
-    /// Scale the replica's size along each axis.
-    /// Defaults to (1, 1, 1) (i.e. the same size as the original).
-    #[serde(default)]
-    pub scale: Option<Point3d>,
-    /// Whether to replicate the original solid in this instance.
-    #[serde(default)]
-    pub replicate: Option<bool>,
-}
+// /// How to change each element of a pattern.
+// #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+// #[ts(export)]
+// #[serde(rename_all = "camelCase")]
+// pub struct LinearTransform {
+//     /// Translate the replica this far along each dimension.
+//     /// Defaults to zero vector (i.e. same position as the original).
+//     #[serde(default)]
+//     pub translate: Option<Point3d>,
+//     /// Scale the replica's size along each axis.
+//     /// Defaults to (1, 1, 1) (i.e. the same size as the original).
+//     #[serde(default)]
+//     pub scale: Option<Point3d>,
+//     /// Whether to replicate the original solid in this instance.
+//     #[serde(default)]
+//     pub replicate: Option<bool>,
+// }
 
 /// Data for a linear pattern on a 2D sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -99,16 +99,16 @@ impl LinearPattern {
 /// Each element in the pattern repeats a particular piece of geometry.
 /// The repetitions can be transformed by the `transform` parameter.
 pub async fn pattern(args: Args) -> Result<MemoryItem, KclError> {
-    let (num_repetitions, (transform_fn, transform_expr), entity_ids) = args.get_pattern_args()?;
+    let (num_repetitions, transform, entity_ids) = args.get_pattern_args()?;
 
     let sketch_groups = inner_pattern(
         num_repetitions,
         FunctionParam {
-            inner: transform_fn,
-            fn_expr: transform_expr,
+            inner: transform.func,
+            fn_expr: transform.expr,
             meta: vec![args.source_range.into()],
-            ctx: args.ctx,
-            memory: todo!(),
+            ctx: args.ctx.clone(),
+            memory: args.memory.clone(),
         },
         entity_ids,
         &args,
@@ -170,18 +170,64 @@ async fn inner_pattern<'a>(
     // Build the vec of transforms, one for each repetition.
     let mut transforms = Vec::new();
     for i in 0..num_repetitions {
+        // Call the transform fn for this repetition.
         let repetition_num = MemoryItem::UserVal(UserVal {
             value: serde_json::Value::Number(i.into()),
             meta: vec![args.source_range.into()],
         });
-        // The user-defined `transform` function takes 1 argument, the index number
-        // of which repetition the transform is for.
-        let args = vec![repetition_num];
-        let xform = transform_function.call(args);
-        transforms.push(xform);
+        let transform_fn_args = vec![repetition_num];
+        let transform_fn_return = transform_function.call(transform_fn_args).await?;
+
+        // Unpack the returned transform object.
+        let transform_fn_return = transform_fn_return.ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                message: "Transform function must return a value".to_string(),
+                source_ranges: vec![args.source_range],
+            })
+        })?;
+        let ProgramReturn::Value(transform_fn_return) = transform_fn_return else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Transform function must return a value".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        let MemoryItem::UserVal(transform) = transform_fn_return else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Transform function must return a transform object".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        // Apply defaults to the transform.
+        let replicate = match transform.value.get("replicate") {
+            Some(serde_json::Value::Bool(true)) => true,
+            Some(serde_json::Value::Bool(false)) => false,
+            Some(_) => {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: "The 'replicate' key must be a bool".to_string(),
+                    source_ranges: vec![args.source_range],
+                }));
+            }
+            None => true,
+        };
+        let scale = match transform.value.get("scale") {
+            Some(x) => array_to_point3d(x, vec![args.source_range])?,
+            None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
+        };
+        let translate = match transform.value.get("translate") {
+            Some(x) => array_to_point3d(x, vec![args.source_range])?,
+            None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
+        };
+        let t = kittycad::types::LinearTransform {
+            replicate,
+            scale: Some(scale.into()),
+            translate: Some(translate.into()),
+        };
+        transforms.push(dbg!(t));
     }
     for id in ids {
         // Call the pattern API endpoint.
+        send_pattern_cmd(id, transforms.clone(), args).await?;
     }
     Ok(Vec::new())
 }
@@ -309,6 +355,27 @@ async fn inner_pattern_linear_3d(
     }
 
     Ok(extrude_groups)
+}
+
+async fn send_pattern_cmd(
+    entity_id: Uuid,
+    transform: Vec<kittycad::types::LinearTransform>,
+    args: &Args,
+) -> Result<kittycad::types::EntityLinearPatternTransform, KclError> {
+    let id = uuid::Uuid::new_v4();
+    let resp = args
+        .send_modeling_cmd(id, ModelingCmd::EntityLinearPatternTransform { entity_id, transform })
+        .await?;
+    let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPatternTransform { data: pattern_info },
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("EntityLinearPatternTransform response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+    Ok(pattern_info.to_owned())
 }
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
@@ -622,4 +689,43 @@ async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args)
     };
 
     Ok(geometries)
+}
+
+fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+    let serde_json::Value::Array(arr) = dbg!(json) else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
+            source_ranges,
+        }));
+    };
+    let len = arr.len();
+    if len != 3 {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!("Expected an array of 3 numbers (i.e. a 3D point) but found {len} items"),
+            source_ranges,
+        }));
+    };
+    let Some(x) = arr[0].as_number().and_then(|num| num.as_f64()) else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "X component of this point was not a number".to_owned(),
+            source_ranges,
+        }));
+    };
+    let Some(y) = arr[1].as_number().and_then(|num| num.as_f64()) else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Y component of this point was not a number".to_owned(),
+            source_ranges,
+        }));
+    };
+    let Some(z) = arr[2].as_number().and_then(|num| num.as_f64()) else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Z component of this point was not a number".to_owned(),
+            source_ranges,
+        }));
+    };
+    Ok(Point3d {
+        x: x.to_owned().into(),
+        y: y.to_owned(),
+        z: z.to_owned(),
+    })
 }

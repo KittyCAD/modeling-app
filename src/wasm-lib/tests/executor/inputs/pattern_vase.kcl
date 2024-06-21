@@ -9,9 +9,10 @@ const t = 0.005 // taper factor [0-1)
 // Defines how to modify each layer of the vase.
 // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 fn transform = (replicaId) => {
+  let scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
   return {
     translate: [0, 0, replicaId * 10],
-    scale: r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+    scale: [scale, scale, 0],
   }
 }
 
@@ -20,10 +21,10 @@ fn layer = () => {
   return startSketchOn("XY") // or some other plane idk
     |> circle([0, 0], 1, %, 'tag1')
     |> extrude(h, %)
-    |> fillet({
-           radius: h / 2.01,
-           tags: ["tag1", getOppositeEdge("tag1", %)]
-       }, %)
+    // |> fillet({
+    //        radius: h / 2.01,
+    //        tags: ["tag1", getOppositeEdge("tag1", %)]
+    //    }, %)
 }
 
 // The vase is 100 layers tall.
