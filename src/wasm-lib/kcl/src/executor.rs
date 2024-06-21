@@ -316,26 +316,31 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
-/// Wrap MemoryFunction to give it (shitty) JSON schema.
-pub struct MemoryFunctionWrapper<'a> {
+/// A function being used as a parameter into a stdlib function.
+pub struct FunctionParam<'a> {
     pub inner: &'a MemoryFunction,
+    pub memory: ProgramMemory,
+    pub fn_expr: Box<FunctionExpression>,
+    pub meta: Vec<Metadata>,
+    pub ctx: ExecutorContext,
 }
 
-impl<'a> From<&'a MemoryFunction> for MemoryFunctionWrapper<'a> {
-    fn from(inner: &'a MemoryFunction) -> Self {
-        Self { inner }
+impl<'a> FunctionParam<'a> {
+    pub async fn call(&self, args: Vec<MemoryItem>) -> Result<Option<ProgramReturn>, KclError> {
+        (self.inner)(
+            args,
+            self.memory.clone(),
+            self.fn_expr.clone(),
+            self.meta.clone(),
+            self.ctx.clone(),
+        )
+        .await
     }
 }
 
-impl<'a> From<MemoryFunctionWrapper<'a>> for &'a MemoryFunction {
-    fn from(value: MemoryFunctionWrapper<'a>) -> Self {
-        value.inner
-    }
-}
-
-impl<'a> JsonSchema for MemoryFunctionWrapper<'a> {
+impl<'a> JsonSchema for FunctionParam<'a> {
     fn schema_name() -> String {
-        "Function".to_owned()
+        "FunctionParam".to_owned()
     }
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
@@ -469,7 +474,10 @@ impl MemoryItem {
     }
 
     /// If this value is of type function, return it.
-    pub fn get_function(&self, source_ranges: Vec<SourceRange>) -> Result<&MemoryFunction, KclError> {
+    pub fn get_function(
+        &self,
+        source_ranges: Vec<SourceRange>,
+    ) -> Result<(&MemoryFunction, Box<FunctionExpression>), KclError> {
         let MemoryItem::Function {
             func,
             expression,
@@ -477,16 +485,17 @@ impl MemoryItem {
         } = &self
         else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: "not a in memory function".to_string(),
+                message: "not an in-memory function".to_string(),
                 source_ranges,
             }));
         };
-        func.as_ref().ok_or_else(|| {
+        let func = func.as_ref().ok_or_else(|| {
             KclError::Semantic(KclErrorDetails {
-                message: format!("Not a function: {:?}", expression),
+                message: format!("Not an in-memory function: {:?}", expression),
                 source_ranges,
             })
-        })
+        })?;
+        Ok((func, expression.to_owned()))
     }
 
     /// If this value is of type u32, return it.

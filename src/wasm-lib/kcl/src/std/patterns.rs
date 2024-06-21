@@ -10,8 +10,8 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryFunctionWrapper, MemoryItem, Point3d, SketchGroup,
-        SketchGroupSet,
+        ExtrudeGroup, ExtrudeGroupSet, FunctionParam, Geometries, Geometry, MemoryItem, Point3d, SketchGroup,
+        SketchGroupSet, UserVal,
     },
     std::{types::Uint, Args},
 };
@@ -99,11 +99,17 @@ impl LinearPattern {
 /// Each element in the pattern repeats a particular piece of geometry.
 /// The repetitions can be transformed by the `transform` parameter.
 pub async fn pattern(args: Args) -> Result<MemoryItem, KclError> {
-    let (num_repetitions, transform, entity_ids) = args.get_pattern_args()?;
+    let (num_repetitions, (transform_fn, transform_expr), entity_ids) = args.get_pattern_args()?;
 
     let sketch_groups = inner_pattern(
         num_repetitions,
-        MemoryFunctionWrapper::from(transform),
+        FunctionParam {
+            inner: transform_fn,
+            fn_expr: transform_expr,
+            meta: vec![args.source_range.into()],
+            ctx: args.ctx,
+            memory: todo!(),
+        },
         entity_ids,
         &args,
     )
@@ -156,12 +162,28 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     name = "pattern",
 }]
 async fn inner_pattern<'a>(
-    _num_repetitions: u32,
-    _transform: MemoryFunctionWrapper<'a>,
-    _ids: Vec<Uuid>,
-    _args: &'a Args,
+    num_repetitions: u32,
+    transform_function: FunctionParam<'a>,
+    ids: Vec<Uuid>,
+    args: &'a Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    todo!()
+    // Build the vec of transforms, one for each repetition.
+    let mut transforms = Vec::new();
+    for i in 0..num_repetitions {
+        let repetition_num = MemoryItem::UserVal(UserVal {
+            value: serde_json::Value::Number(i.into()),
+            meta: vec![args.source_range.into()],
+        });
+        // The user-defined `transform` function takes 1 argument, the index number
+        // of which repetition the transform is for.
+        let args = vec![repetition_num];
+        let xform = transform_function.call(args);
+        transforms.push(xform);
+    }
+    for id in ids {
+        // Call the pattern API endpoint.
+    }
+    Ok(Vec::new())
 }
 
 /// A linear pattern on a 2D sketch.

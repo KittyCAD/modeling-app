@@ -28,7 +28,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ast::types::parse_json_number_as_f64,
+    ast::types::{parse_json_number_as_f64, FunctionExpression},
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -390,7 +390,9 @@ impl Args {
     }
 
     /// Works with either 2D or 3D solids.
-    fn get_pattern_args(&self) -> std::result::Result<(u32, &MemoryFunction, Vec<Uuid>), KclError> {
+    fn get_pattern_args(
+        &self,
+    ) -> std::result::Result<(u32, (&MemoryFunction, Box<FunctionExpression>), Vec<Uuid>), KclError> {
         let sr = vec![self.source_range];
         let mut args = self.args.iter();
         let num_repetitions = args.next().ok_or_else(|| {
@@ -406,7 +408,7 @@ impl Args {
                 source_ranges: sr.clone(),
             })
         })?;
-        let transform = transform.get_function(sr.clone())?;
+        let (transform, expression) = transform.get_function(sr.clone())?;
         let sg = args.next().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Missing third argument (should be a Sketch/ExtrudeGroup or an array of Sketch/ExtrudeGroups)"
@@ -421,7 +423,7 @@ impl Args {
             (_, Ok(group)) => group.ids(),
             (Err(e), _) => return Err(e),
         };
-        Ok((num_repetitions, transform, entity_ids))
+        Ok((num_repetitions, (transform, expression), entity_ids))
     }
 
     fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
