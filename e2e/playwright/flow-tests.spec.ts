@@ -1399,58 +1399,59 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toHaveText(/.+/)
   })
 
-  test.fixme('Onboarding code gets reset to demo on Interactive Numbers step', async ({
-    page,
-  }) => {
-    test.skip(
-      process.platform === 'darwin',
-      "Skip on macOS, because Playwright isn't behaving the same as the actual browser"
-    )
-    const u = await getUtils(page)
-    const badCode = `// This is bad code we shouldn't see`
-    // Override beforeEach test setup
-    await page.addInitScript(
-      async ({ settingsKey, settings, badCode }) => {
-        localStorage.setItem('persistCode', badCode)
-        localStorage.setItem(settingsKey, settings)
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: TOML.stringify({
-          settings: TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
-        }),
-        badCode,
-      }
-    )
+  test.fixme(
+    'Onboarding code gets reset to demo on Interactive Numbers step',
+    async ({ page }) => {
+      test.skip(
+        process.platform === 'darwin',
+        "Skip on macOS, because Playwright isn't behaving the same as the actual browser"
+      )
+      const u = await getUtils(page)
+      const badCode = `// This is bad code we shouldn't see`
+      // Override beforeEach test setup
+      await page.addInitScript(
+        async ({ settingsKey, settings, badCode }) => {
+          localStorage.setItem('persistCode', badCode)
+          localStorage.setItem(settingsKey, settings)
+        },
+        {
+          settingsKey: TEST_SETTINGS_KEY,
+          settings: TOML.stringify({
+            settings: TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
+          }),
+          badCode,
+        }
+      )
 
-    await page.setViewportSize({ width: 1200, height: 1080 })
-    await page.goto('/')
-    await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
-      waitUntil: 'domcontentloaded',
-    })
+      await page.setViewportSize({ width: 1200, height: 1080 })
+      await page.goto('/')
+      await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
+        waitUntil: 'domcontentloaded',
+      })
 
-    const bracketNoNewLines = bracket.replace(/\n/g, '')
+      const bracketNoNewLines = bracket.replace(/\n/g, '')
 
-    // Check the code got reset on load
-    await expect(page.locator('#code-pane')).toBeVisible()
-    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
-      timeout: 10_000,
-    })
+      // Check the code got reset on load
+      await expect(page.locator('#code-pane')).toBeVisible()
+      await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
+        timeout: 10_000,
+      })
 
-    // Mess with the code again
-    await u.codeLocator.selectText()
-    await u.codeLocator.fill(badCode)
-    await expect(u.codeLocator).toHaveText(badCode)
+      // Mess with the code again
+      await u.codeLocator.selectText()
+      await u.codeLocator.fill(badCode)
+      await expect(u.codeLocator).toHaveText(badCode)
 
-    // Click to the next step
-    await page.locator('[data-testid="onboarding-next"]').click()
-    await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
-      waitUntil: 'domcontentloaded',
-    })
+      // Click to the next step
+      await page.locator('[data-testid="onboarding-next"]').click()
+      await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
+        waitUntil: 'domcontentloaded',
+      })
 
-    // Check that the code has been reset
-    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
-  })
+      // Check that the code has been reset
+      await expect(u.codeLocator).toHaveText(bracketNoNewLines)
+    }
+  )
 
   test('Avatar text updates depending on image load success', async ({
     page,
