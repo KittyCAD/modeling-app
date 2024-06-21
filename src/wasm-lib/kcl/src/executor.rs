@@ -658,7 +658,7 @@ impl SourceRange {
     }
 
     pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
-        let lines = code[..self.end()].lines();
+        let lines = code.get(..self.end()).unwrap_or_default().lines();
         if lines.clone().count() == 0 {
             return LspPosition { line: 0, character: 0 };
         }

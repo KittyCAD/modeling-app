@@ -990,6 +990,59 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 })
 
+test('Position _ Is Out Of Range... regression test', async ({ page }) => {
+  const u = await getUtils(page)
+  // const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const exampleSketch = startSketchOn("XZ")
+  |> startProfileAt([0, 0], %)
+  |> angledLine({ angle: 50, length: 45 }, %)
+  |> yLineTo(0, %)
+  |> close(%)
+  |>
+
+const example = extrude(5, exampleSketch)
+shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+    )
+  })
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  // error in guter
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-error')
+  await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+  // Okay execution finished, let's start editing text below the error.
+  await u.codeLocator.click()
+  // Go to the end of the editor
+  await page.keyboard.press('End')
+
+  // Get to the area where we want to type.
+  for (let i = 0; i < 20; i++) {
+    await page.keyboard.press('ArrowLeft')
+  }
+
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('thing: "blah"', { delay: 100 })
+  await page.keyboard.press('Enter')
+})
+
 test('Auto complete works', async ({ page }) => {
   const u = await getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
