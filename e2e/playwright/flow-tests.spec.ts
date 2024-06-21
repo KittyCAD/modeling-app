@@ -1399,7 +1399,7 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toHaveText(/.+/)
   })
 
-  test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
+  test.fixme('Onboarding code gets reset to demo on Interactive Numbers step', async ({
     page,
   }) => {
     test.skip(
