@@ -4,6 +4,7 @@ use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{coredump::CoreDump, wasm::JsFuture};
+use serde_json::Value as JValue;
 
 #[wasm_bindgen(module = "/../../lib/coredump.ts")]
 extern "C" {
@@ -30,6 +31,9 @@ extern "C" {
 
     #[wasm_bindgen(method, js_name = getWebrtcStats, catch)]
     fn get_webrtc_stats(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
+
+    #[wasm_bindgen(method, js_name = getClientState, catch)]
+    fn get_client_state(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
     #[wasm_bindgen(method, js_name = screenshot, catch)]
     fn screenshot(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
@@ -121,6 +125,27 @@ impl CoreDump for CoreDumper {
             serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse webrtc stats: {:?}", e))?;
 
         Ok(stats)
+    }
+
+    async fn get_client_state(&self) -> Result<JValue> {
+        let promise = self
+            .manager
+            .get_client_state()
+            .map_err(|e| anyhow::anyhow!("Failed to get promise from get client state: {:?}", e))?;
+
+        let value = JsFuture::from(promise)
+            .await
+            .map_err(|e| anyhow::anyhow!("Failed to get response from client state: {:?}", e))?;
+
+        // Parse the value as a string.
+        let s = value
+            .as_string()
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from client stat: `{:?}`", value))?;
+
+        let client_state: JValue =
+            serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse client state: {:?}", e))?;
+
+        Ok(client_state)
     }
 
     async fn screenshot(&self) -> Result<String> {

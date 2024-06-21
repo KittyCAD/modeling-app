@@ -25,7 +25,7 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
+import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
@@ -335,14 +335,27 @@ export function programMemoryInit(): ProgramMemory {
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
   openGithubIssue: boolean = false
-): Promise<AppInfo> {
+): Promise<CoreDumpInfo> {
   try {
-    const dump: AppInfo = await coredump(coreDumpManager)
+    const dump: CoreDumpInfo = await coredump(coreDumpManager)
+    /* NOTE: this console output of the coredump should include the field
+       `github_issue_url` which is not in the uploaded coredump file.
+       `github_issue_url` is added after the file is uploaded
+       and is only needed for the openWindow operation which creates
+       a new GitHub issue for the user.
+     */
     if (openGithubIssue && dump.github_issue_url) {
       openWindow(dump.github_issue_url)
+    } else {
+      console.error(
+        'github_issue_url undefined. Unable to create GitHub issue for coredump.'
+      )
     }
+    console.log('CoreDump: final coredump', dump)
+    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
     return dump
   } catch (e: any) {
+    console.error('CoreDump: error', e)
     throw new Error(`Error getting core dump: ${e}`)
   }
 }
