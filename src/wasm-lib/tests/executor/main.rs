@@ -2009,3 +2009,32 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/circular_pattern3d_a_pattern.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_array_of_sketches() {
+    let code = r#"const plane001 = startSketchOn('XZ')
+
+const profile001 = plane001
+  |> startProfileAt([40.82, 240.82], %)
+  |> line([235.72, -8.16], %)
+  |> line([13.27, -253.07], %)
+  |> line([-247.97, -19.39], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+const profile002 = plane001
+  |> startProfileAt([47.17, -71.91], %)
+  |> line([247.96, -4.03], %)
+  |> line([-17.26, -116.79], %)
+  |> line([-235.87, 12.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+const sketch001 = [profile001, profile002]
+
+extrude(10, sketch001)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/array_of_sketches.png", &result, 1.0);
+}

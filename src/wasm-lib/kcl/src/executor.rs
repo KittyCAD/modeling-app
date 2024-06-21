@@ -153,6 +153,34 @@ pub enum MemoryItem {
     },
 }
 
+impl MemoryItem {
+    pub fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
+        match self {
+            MemoryItem::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
+            MemoryItem::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
+            MemoryItem::UserVal(value) => {
+                let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
+                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
+                Ok(SketchGroupSet::SketchGroups(sg.clone()))
+            }
+            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
+        }
+    }
+
+    pub fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+        match self {
+            MemoryItem::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
+            MemoryItem::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
+            MemoryItem::UserVal(value) => {
+                let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
+                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
+                Ok(ExtrudeGroupSet::ExtrudeGroups(eg.clone()))
+            }
+            _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+}
+
 /// A geometry.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
