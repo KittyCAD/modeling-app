@@ -720,3 +720,78 @@ export function findUsesOfTagInPipe(
   })
   return dependentRanges
 }
+
+export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
+  const path = getNodePathFromSourceRange(ast, selection.range)
+  const { node: pipeExpression } = getNodeFromPath<PipeExpression>(
+    ast,
+    path,
+    'PipeExpression'
+  )
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    path,
+    'VariableDeclarator'
+  ).node
+  let extruded = false
+  traverse(ast as any, {
+    enter(node) {
+      if (
+        node.type === 'CallExpression' &&
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'extrude' &&
+        node.arguments?.[1]?.type === 'Identifier' &&
+        node.arguments[1].name === varDec.id.name
+      ) {
+        extruded = true
+      }
+    },
+  })
+  return extruded
+}
+
+/** File must contain at least one sketch that has not been extruded already */
+export function hasExtrudableGeometry(ast: Program) {
+  const theMap: any = {}
+  traverse(ast as any, {
+    enter(node) {
+      if (
+        node.type === 'VariableDeclarator' &&
+        node.init?.type === 'PipeExpression'
+      ) {
+        let hasStartProfileAt = false
+        let hasStartSketchOn = false
+        let hasClose = false
+        for (const pipe of node.init.body) {
+          if (
+            pipe.type === 'CallExpression' &&
+            pipe.callee.name === 'startProfileAt'
+          ) {
+            hasStartProfileAt = true
+          }
+          if (
+            pipe.type === 'CallExpression' &&
+            pipe.callee.name === 'startSketchOn'
+          ) {
+            hasStartSketchOn = true
+          }
+          if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
+            hasClose = true
+          }
+        }
+        if (hasStartProfileAt && hasStartSketchOn && hasClose) {
+          theMap[node.id.name] = true
+        }
+      } else if (
+        node.type === 'CallExpression' &&
+        node.callee.name === 'extrude' &&
+        node.arguments[1]?.type === 'Identifier' &&
+        theMap?.[node?.arguments?.[1]?.name]
+      ) {
+        delete theMap[node.arguments[1].name]
+      }
+    },
+  })
+  return Object.keys(theMap).length > 0
+}

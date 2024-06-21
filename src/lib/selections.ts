@@ -16,6 +16,7 @@ import { Program } from 'lang/wasm'
 import {
   doesPipeHaveCallExp,
   getNodeFromPath,
+  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -387,6 +388,7 @@ export function canExtrudeSelection(selection: Selections) {
   )
   return (
     !!isSketchPipe(selection) &&
+    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     commonNodes.every((n) => nodeHasClose(n)) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
