@@ -83,6 +83,8 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
+
+    console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
       clientY: e.clientY,
