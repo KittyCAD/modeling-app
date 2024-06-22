@@ -507,6 +507,7 @@ export const ModelingMachineProvider = ({
         },
         'animate-to-face': async (_, { data }) => {
           if (data.type === 'extrudeFace') {
+            console.log('data', data)
             const { modifiedAst, pathToNode: pathToNewSketchNode } =
               sketchOnExtrudedFace(
                 kclManager.ast,
