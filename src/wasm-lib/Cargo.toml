@@ -69,7 +69,7 @@ members = [
 ]
 
 [workspace.dependencies]
-kittycad = { version = "0.3.5", default-features = false, features = ["js", "requests"] }
+kittycad = { version = "0.3.6", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-session = "0.1.4"
 
 [[test]]
@@ -81,9 +81,6 @@ name = "modify"
 path = "tests/modify/main.rs"
 
 # Example: how to point modeling-api at a different repo (e.g. a branch or a local clone)
-# [patch."https://github.com/KittyCAD/modeling-api"]
-# kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
-# kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
-
-[patch.crates-io]
-kittycad = { git = "https://github.com/KittyCAD/kittycad.rs", branch = "main" }
+#[patch."https://github.com/KittyCAD/modeling-api"]
+#kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
+#kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
