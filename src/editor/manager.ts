@@ -157,10 +157,8 @@ export default class EditorManager {
   }
 
   selectRange(selections: Selections) {
+    console.log(selections)
     if (selections.codeBasedSelections.length === 0) {
-      return
-    }
-    if (!this.editorView) {
       return
     }
     let codeBasedSelections = []
@@ -177,6 +175,9 @@ export default class EditorManager {
         ].range[1]
       )
     )
+    if (!this.editorView) {
+      return
+    }
     this.editorView.dispatch({
       selection: EditorSelection.create(codeBasedSelections, 1),
     })

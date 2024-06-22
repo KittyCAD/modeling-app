@@ -1404,6 +1404,7 @@ export class SceneEntities {
           document.getElementById('video-stream') as HTMLVideoElement,
           streamDimensions
         )
+
         let _entity_id = entity_id
         if (!_entity_id) return
         if (
