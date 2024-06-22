@@ -2245,3 +2245,27 @@ const baseExtrusion = extrude(width, sketch001)
         1.0,
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_engine_error_source_range_on_last_command() {
+    let code = r#"const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([61.74, 206.13], %)
+  |> xLine(305.11, %, 'seg01')
+  |> yLine(-291.85, %)
+  |> xLine(-segLen('seg01', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(40.14, %)
+  |> shell({
+    faces: ["seg01"],
+    thickness: 3.14,
+  }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([262, 320])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
+    );
+}

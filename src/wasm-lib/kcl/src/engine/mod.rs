@@ -222,6 +222,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 }
             }
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
+                let source_range = id_to_source_range.get(&cmd_id).cloned().ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        source_ranges: vec![],
+                    })
+                })?;
                 let ws_resp = self
                     .inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
                     .await?;
