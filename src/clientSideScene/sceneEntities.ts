@@ -1825,7 +1825,11 @@ export async function getSketchOrientationDetails(
       sketchDetails: {
         sketchPathToNode,
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
-        yAxis: [sketchGroup.on.yAxis.x, sketchGroup.on.yAxis.y, sketchGroup.on.yAxis.z],
+        yAxis: [
+          sketchGroup.on.yAxis.x,
+          sketchGroup.on.yAxis.y,
+          sketchGroup.on.yAxis.z,
+        ],
         origin: [0, 0, 0],
         faceId: sketchGroup.on.id,
       },
