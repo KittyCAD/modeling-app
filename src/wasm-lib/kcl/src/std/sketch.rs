@@ -1175,6 +1175,7 @@ pub(crate) async fn inner_start_profile_at(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     // Enter sketch mode on the surface.
+    // We call this here so you can reuse the sketch surface for multiple sketches.
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
