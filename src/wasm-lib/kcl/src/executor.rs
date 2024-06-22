@@ -458,14 +458,6 @@ pub struct SketchGroup {
     pub position: Position,
     /// The rotation of the sketch group base plane.
     pub rotation: Rotation,
-    /// The x-axis of the sketch group base plane in the 3D space
-    pub x_axis: Point3d,
-    /// The y-axis of the sketch group base plane in the 3D space
-    pub y_axis: Point3d,
-    /// The z-axis of the sketch group base plane in the 3D space
-    pub z_axis: Point3d,
-    /// The plane id or face id of the sketch group.
-    pub entity_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
