@@ -244,6 +244,16 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
+    /// Flush the batch for our fillets/chamfers if there are any.
+    pub async fn flush_batch(&self) -> Result<(), KclError> {
+        if self.ctx.engine.batch_end().lock().unwrap().is_empty() {
+            return Ok(());
+        }
+        self.ctx.engine.flush_batch(true, SourceRange::default()).await?;
+
+        Ok(())
+    }
+
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
         Ok(MemoryItem::UserVal(crate::executor::UserVal {
             value: j,
