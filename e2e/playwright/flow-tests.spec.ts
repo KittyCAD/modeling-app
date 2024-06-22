@@ -6133,7 +6133,7 @@ const sketch006 = startSketchOn('XY')
   |> close(%)`
     )
   })
-  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.setViewportSize({ width: 1000, height: 1500 })
   const lspStartPromise = page.waitForEvent('console', async (message) => {
     // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
     // but that doesn't seem to make it to the console for macos/safari :(
@@ -6153,55 +6153,44 @@ const sketch006 = startSketchOn('XY')
   await u.closeDebugPanel()
   await page.waitForTimeout(100)
 
-  // Close the code pane.
-  await u.closeKclCodePanel()
-
-  // sleep.
-  await page.waitForTimeout(10000000)
-
   // Make sure we have the original text.
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.81, 11.2], %)
-  |> line([16.72, 0.13], %)
-  |> line([0.55, -18.91], %)
-  |> line([-17.73, -0.17], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001 = extrude(5, sketch001)
-const sketch002 = startSketchOn(extrude001, 'END')
-  |> startProfileAt([11.85, 5.18], %)
-  |> line([4.82, -0.15], %)
-  |> line([0.91, -10.6], %)
-  |> line([-6.11, 1.11], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude002 = extrude(10, sketch002)
+  await expect(u.codeLocator).toHaveText(
+    `const sketch001 = startSketchOn('XZ')
+        |> startProfileAt([3.81, 11.2], %)
+        |> line([16.72, 0.13], %)
+        |> line([0.55, -18.91], %)
+        |> line([-17.73, -0.17], %)
+        |> lineTo([profileStartX(%), profileStartY(%)], %)
+        |> close(%)const extrude001 = extrude(5, sketch001)const sketch002 = startSketchOn(extrude001, 'END')
+        |> startProfileAt([11.85, 5.18], %)
+        |> line([4.82, -0.15], %)
+        |> line([0.91, -10.6], %)
+    |> line([-6.11, 1.11], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)const extrude002 = extrude(10, sketch002)const sketch003 = startSketchOn('XZ')
+    |> startProfileAt([26.03, 19.06], %)
+    |> line([8.62, 1.75], %)
+    |> line([2.06, -9.37], %)
+    |> line([-9.37, -4], %)
+    |> line([-4, 11.56], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)const extrude003 = extrude(5, sketch003)const sketch004 = startSketchOn(extrude003, 'END')
+    |> startProfileAt([28.69, 16.75], %)
+    |> line([4.19, 0.79], %)
+    |> line([0.99, -3.43], %)
+    |> line([-4.53, -0.95], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)const sketch006 = startSketchOn('XY')
+    |> startProfileAt([-15.51, 9.16], %)
+    |> line([7.72, 0.05], %)
+    |> line([-0.4, -12.46], %)
+    |> line([-10.7, 3.66], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)`
+  )
 
-const sketch003 = startSketchOn('XZ')
-  |> startProfileAt([26.03, 19.06], %)
-  |> line([8.62, 1.75], %)
-  |> line([2.06, -9.37], %)
-  |> line([-9.37, -4], %)
-  |> line([-4, 11.56], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude003 = extrude(5, sketch003)
-
-const sketch004 = startSketchOn(extrude003, 'END')
-  |> startProfileAt([28.69, 16.75], %)
-  |> line([4.19, 0.79], %)
-  |> line([0.99, -3.43], %)
-  |> line([-4.53, -0.95], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-
-const sketch006 = startSketchOn('XY')
-  |> startProfileAt([-15.51, 9.16], %)
-  |> line([7.72, 0.05], %)
-  |> line([-0.4, -12.46], %)
-  |> line([-10.7, 3.66], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`)
+  await u.closeKclCodePanel()
+  await page.waitForTimeout(100)
 
   // Select a sketch on face and delete it.
   // Ensure the code for the sketch on face only is deleted.
@@ -6210,6 +6199,7 @@ const sketch006 = startSketchOn('XY')
 
   // Open the code pane.
   await u.openKclCodePanel()
+  await page.waitForTimeout(100)
 
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.81, 11.2], %)
@@ -6255,6 +6245,7 @@ const sketch006 = startSketchOn('XY')
   |> close(%)`)
 
   await u.closeKclCodePanel()
+  await page.waitForTimeout(100)
 
   // Select a sketch on face with the parent.
   // Ensure both the parent and the sketch on face is deleted.
@@ -6262,6 +6253,7 @@ const sketch006 = startSketchOn('XY')
   await page.keyboard.press('Delete')
 
   await u.openKclCodePanel()
+  await page.waitForTimeout(100)
 
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.81, 11.2], %)
@@ -6281,12 +6273,14 @@ const sketch006 = startSketchOn('XY')
   |> close(%)`)
 
   await u.closeKclCodePanel()
+  await page.waitForTimeout(100)
 
   // Select an extruded sketch.
   await page.mouse.click(483, 252)
   await page.keyboard.press('Delete')
 
   await u.openKclCodePanel()
+  await page.waitForTimeout(100)
 
   await expect(u.codeLocator).toHaveText(`const sketch006 = startSketchOn('XY')
   |> startProfileAt([-15.51, 9.16], %)
@@ -6297,6 +6291,7 @@ const sketch006 = startSketchOn('XY')
   |> close(%)`)
 
   await u.closeKclCodePanel()
+  await page.waitForTimeout(100)
 
   // Select a sketch.
   await page.mouse.click(365, 241)
