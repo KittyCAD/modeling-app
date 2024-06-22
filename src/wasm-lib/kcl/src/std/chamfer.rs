@@ -94,7 +94,8 @@ async fn inner_chamfer(
             EdgeReference::Uuid(uuid) => uuid,
             EdgeReference::Tag(tag) => {
                 extrude_group
-                    .sketch_group_values
+                    .sketch_group
+                    .value
                     .iter()
                     .find(|p| p.get_name() == tag)
                     .ok_or_else(|| {

@@ -239,11 +239,8 @@ pub(crate) async fn do_post_extrude(
         // sketch group.
         id: sketch_group.id,
         value: new_value,
-        sketch_group_values: sketch_group.value.clone(),
+        sketch_group: sketch_group.clone(),
         height: length,
-        x_axis: sketch_group.on.x_axis(),
-        y_axis: sketch_group.on.y_axis(),
-        z_axis: sketch_group.on.z_axis(),
         start_cap_id,
         end_cap_id,
         meta: sketch_group.meta,

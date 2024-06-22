@@ -1074,9 +1074,9 @@ async fn start_sketch_on_face(
         value: tag.to_string(),
         sketch_group_id: extrude_group.id,
         // TODO: get this from the extrude plane data.
-        x_axis: extrude_group.x_axis,
-        y_axis: extrude_group.y_axis,
-        z_axis: extrude_group.z_axis,
+        x_axis: extrude_group.sketch_group.on.x_axis(),
+        y_axis: extrude_group.sketch_group.on.y_axis(),
+        z_axis: extrude_group.sketch_group.on.z_axis(),
         meta: vec![args.source_range.into()],
     }))
 }

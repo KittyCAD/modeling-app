@@ -570,16 +570,10 @@ pub struct ExtrudeGroup {
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch group paths.
-    pub sketch_group_values: Vec<Path>,
+    /// The sketch group.
+    pub sketch_group: SketchGroup,
     /// The height of the extrude group.
     pub height: f64,
-    /// The x-axis of the extrude group base plane in the 3D space
-    pub x_axis: Point3d,
-    /// The y-axis of the extrude group base plane in the 3D space
-    pub y_axis: Point3d,
-    /// The z-axis of the extrude group base plane in the 3D space
-    pub z_axis: Point3d,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
