@@ -31,6 +31,7 @@ pub struct EngineConnection {
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -236,6 +237,7 @@ impl EngineConnection {
             responses,
             socket_health,
             batch: Arc::new(Mutex::new(Vec::new())),
+            batch_end: Arc::new(Mutex::new(Vec::new())),
             default_planes: Default::default(),
         })
     }
@@ -245,6 +247,10 @@ impl EngineConnection {
 impl EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
+    }
+
+    fn batch_end(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+        self.batch_end.clone()
     }
 
     async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {

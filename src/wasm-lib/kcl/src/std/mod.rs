@@ -224,6 +224,17 @@ impl Args {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
 
+    // Add a modeling command to the batch that gets executed at the end of the file.
+    // This is good for something like fillet or chamfer where the engine would
+    // eat the path id if we executed it right away.
+    pub async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+    }
+
     /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,

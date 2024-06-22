@@ -2040,6 +2040,73 @@ extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_after_fillets_referencing_face() {
+    let code = r#"// Shelf Bracket
+// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
+
+
+// Define our bracket feet lengths
+const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
+const wallMountL = 6 // the length of the bracket
+
+
+// Define constants required to calculate the thickness needed to support 300 lbs
+const sigmaAllow = 35000 // psi
+const width = 6 // inch
+const p = 300 // Force on shelf - lbs
+const L = 12 // inches
+const M = L * p / 2 // Moment experienced at fixed end of bracket
+const FOS = 2 // Factor of safety of 2 to be conservative
+
+
+// Calculate the thickness off the bending stress and factor of safety
+const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
+
+// 0.25 inch fillet radius
+const filletR = 0.25
+
+// Sketch the bracket and extrude with fillets
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, wallMountL], %, 'outerEdge')
+  |> line([-shelfMountL, 0], %, 'seg01')
+  |> line([0, -thickness], %)
+  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
+  |> line([0, -wallMountL + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+  |> fillet({
+       radius: filletR,
+       tags: [
+         getPreviousAdjacentEdge('innerEdge', %)
+       ]
+     }, %)
+  |> fillet({
+       radius: filletR + thickness,
+       tags: [
+         getPreviousAdjacentEdge('outerEdge', %)
+       ]
+     }, %)
+
+const sketch001 = startSketchOn(bracket, 'seg01')
+  |> startProfileAt([4.28, 3.83], %)
+  |> line([2.17, -0.03], %)
+  |> line([-0.07, -1.8], %)
+  |> line([-2.07, 0.05], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/sketch_on_face_after_fillets_referencing_face.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_circular_pattern3d_array_of_extrudes() {
     let code = r#"const plane001 = startSketchOn('XZ')
 
@@ -2073,4 +2140,56 @@ const pattn1 = patternLinear3d({
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pattern3d_array_of_extrudes.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_fillets_referencing_other_fillets() {
+    let code = r#"// Z-Bracket
+
+// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
+
+// Define constants
+const foot1Length = 4
+const height = 4
+const foot2Length = 5
+const width = 4
+const filletRad = 0.25
+const thickness = 0.125
+
+const cornerFilletRad = 0.5
+
+const holeDia = 0.5
+
+const sketch001 = startSketchOn("XZ")
+  |> startProfileAt([-foot1Length, 0], %)
+  |> line([0, thickness], %, 'cornerFillet1')
+  |> line([foot1Length, 0], %)
+  |> line([0, height], %, 'fillet1')
+  |> line([foot2Length, 0], %)
+  |> line([0, -thickness], %, 'cornerFillet2')
+  |> line([-foot2Length+thickness, 0], %)
+  |> line([0, -height], %, 'fillet2')
+  |> close(%)
+
+const baseExtrusion = extrude(width, sketch001)
+  |> fillet({
+    radius: cornerFilletRad,
+    tags: ["cornerFillet1", "cornerFillet2", getOppositeEdge("cornerFillet1", %), getOppositeEdge("cornerFillet2", %)],
+  }, %)
+  |> fillet({
+    radius: filletRad,
+    tags: [getPreviousAdjacentEdge("fillet1", %), getPreviousAdjacentEdge("fillet2", %)]
+  }, %)
+  |> fillet({
+   radius: filletRad + thickness,
+   tags: [getNextAdjacentEdge("fillet1", %), getNextAdjacentEdge("fillet2", %)],
+ }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/fillets_referencing_other_fillets.png",
+        &result,
+        1.0,
+    );
 }
