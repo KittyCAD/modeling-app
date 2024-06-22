@@ -2688,6 +2688,7 @@ async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
   const startPX = [665, 458]
 
   const dragPX = 30
+  let prevContent = ''
 
   if (openPanes.includes('code')) {
     await page.getByText('startProfileAt([4.61, -14.01], %)').click()
@@ -2701,7 +2702,7 @@ async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(400)
   if (openPanes.includes('code')) {
-    let prevContent = await page.locator('.cm-content').innerText()
+    prevContent = await page.locator('.cm-content').innerText()
   }
 
   const step5 = { steps: 5 }
