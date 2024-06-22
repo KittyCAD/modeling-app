@@ -2193,3 +2193,55 @@ const baseExtrusion = extrude(width, sketch001)
         1.0,
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_chamfers_referencing_other_chamfers() {
+    let code = r#"// Z-Bracket
+
+// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
+
+// Define constants
+const foot1Length = 4
+const height = 4
+const foot2Length = 5
+const width = 4
+const chamferRad = 0.25
+const thickness = 0.125
+
+const cornerChamferRad = 0.5
+
+const holeDia = 0.5
+
+const sketch001 = startSketchOn("XZ")
+  |> startProfileAt([-foot1Length, 0], %)
+  |> line([0, thickness], %, 'cornerChamfer1')
+  |> line([foot1Length, 0], %)
+  |> line([0, height], %, 'chamfer1')
+  |> line([foot2Length, 0], %)
+  |> line([0, -thickness], %, 'cornerChamfer2')
+  |> line([-foot2Length+thickness, 0], %)
+  |> line([0, -height], %, 'chamfer2')
+  |> close(%)
+
+const baseExtrusion = extrude(width, sketch001)
+  |> chamfer({
+    length: cornerChamferRad,
+    tags: ["cornerChamfer1", "cornerChamfer2", getOppositeEdge("cornerChamfer1", %), getOppositeEdge("cornerChamfer2", %)],
+  }, %)
+  |> chamfer({
+    length: chamferRad,
+    tags: [getPreviousAdjacentEdge("chamfer1", %), getPreviousAdjacentEdge("chamfer2", %)]
+  }, %)
+  |> chamfer({
+   length: chamferRad + thickness,
+   tags: [getNextAdjacentEdge("chamfer1", %), getNextAdjacentEdge("chamfer2", %)],
+ }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/chamfers_referencing_other_chamfers.png",
+        &result,
+        1.0,
+    );
+}
