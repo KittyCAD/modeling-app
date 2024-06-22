@@ -1078,7 +1078,6 @@ async fn start_sketch_on_face(
         y_axis: extrude_group.y_axis,
         z_axis: extrude_group.z_axis,
         meta: vec![args.source_range.into()],
-        face_id: extrude_plane_id,
     }))
 }
 
