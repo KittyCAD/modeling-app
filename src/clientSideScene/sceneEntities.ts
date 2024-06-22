@@ -1394,7 +1394,6 @@ export class SceneEntities {
           streamDimensions
         )
         let _entity_id = entity_id
-        console.log('things', _entity_id, rest)
         if (!_entity_id) return
         if (
           engineCommandManager.defaultPlanes?.xy === _entity_id ||
@@ -1423,7 +1422,6 @@ export class SceneEntities {
             .sub(sceneInfra.camControls.target)
 
           if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
-            console.log('XY')
             zAxis = [0, 0, 1]
             yAxis = [0, 1, 0]
             if (camVector.z < 0) {
@@ -1431,7 +1429,6 @@ export class SceneEntities {
               _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
             }
           } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
-            console.log('YZ')
             zAxis = [1, 0, 0]
             yAxis = [0, 0, 1]
             if (camVector.x < 0) {
@@ -1439,7 +1436,6 @@ export class SceneEntities {
               _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
             }
           } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
-            console.log('XZ')
             zAxis = [0, 1, 0]
             yAxis = [0, 0, 1]
             _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
