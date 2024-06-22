@@ -566,6 +566,56 @@ test('if you click the format button it formats your code', async ({
   |> close(%)`)
 })
 
+test('hover over functions shows function description', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // focus the editor
+  await u.codeLocator.click()
+
+  // Hover over  the startSketchOn function
+  await page.getByText('startSketchOn').hover()
+  await expect(page.locator('.hover-tooltip')).toBeVisible()
+  await expect(
+    page.getByText('Start a sketch on a specific plane or face')
+  ).toBeVisible()
+
+  // Hover over the line function
+  await page.getByText('line').first().hover()
+  await expect(page.locator('.hover-tooltip')).toBeVisible()
+  await expect(page.getByText('Draw a line')).toBeVisible()
+})
+
 test('if you use the format keyboard binding it formats your code', async ({
   page,
 }) => {
