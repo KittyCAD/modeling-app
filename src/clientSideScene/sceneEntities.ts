@@ -1762,7 +1762,11 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
-  return programMemory.root[varDec?.id?.name || ''] as SketchGroup
+  const result = programMemory.root[varDec?.id?.name || '']
+  if (result?.type === 'ExtrudeGroup') {
+    return result.sketchGroup
+  }
+  return result as SketchGroup
 }
 
 function colorSegment(object: any, color: number) {
