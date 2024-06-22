@@ -23,6 +23,7 @@ import {
   editorManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
@@ -459,6 +460,18 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
+        'has valid selection for deletion': ({
+          selectionRanges,
+          selection,
+        }) => {
+          console.log('selection', selection)
+          console.log('selectionRanges', selectionRanges)
+          if (selectionRanges.codeBasedSelections.length <= 0) return false
+          console.log('you are here')
+          // Get the sketch group for the path to node.
+
+          return true
+        },
         'Sketch is empty': ({ sketchDetails }) =>
           getNodeFromPath<VariableDeclaration>(
             kclManager.ast,
@@ -855,6 +868,11 @@ export const ModelingMachineProvider = ({
       window.removeEventListener('offline', offlineCallback)
     }
   }, [modelingSend])
+
+  // Allow using the delete key to delete solids
+  useHotkeys(['backspace', 'delete', 'del'], () => {
+    modelingSend({ type: 'Delete selection' })
+  })
 
   useStateMachineCommands({
     machineId: 'modeling',

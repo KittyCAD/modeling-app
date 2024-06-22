@@ -49,6 +49,7 @@ import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { removeNodeAtPath } from 'lang/std/sketchcombos'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -155,6 +156,9 @@ export type ModelingMachineEvent =
   | {
       type: 'Set selection'
       data: SetSelections
+    }
+  | {
+      type: 'Delete selection'
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
@@ -275,6 +279,13 @@ export const modelingMachine = createMachine(
             internal: true,
             cond: 'Has exportable geometry',
             actions: 'Engine export',
+          },
+
+          'Delete selection': {
+            target: 'idle',
+            cond: 'has valid selection for deletion',
+            actions: ['AST delete selection'],
+            internal: true,
           },
         },
 
@@ -894,6 +905,18 @@ export const modelingMachine = createMachine(
         if (selections) {
           editorManager.selectRange(selections)
         }
+      },
+      'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
+        console.log('selection', selectionRanges)
+        console.log('sketchDetails', sketchDetails)
+        let ast = kclManager.ast
+        const pathToNode = getNodePathFromSourceRange(
+          ast,
+          selectionRanges.codeBasedSelections[0].range
+        )
+
+        const modifiedAst = removeNodeAtPath(ast, pathToNode)
+        await kclManager.updateAst(modifiedAst, true, {})
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
