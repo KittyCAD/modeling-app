@@ -1,4 +1,4 @@
-import { test, expect, Page, Download } from '@playwright/test'
+import { test, expect, Page, Download, Locator } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import os from 'os'
 import fsp from 'fs/promises'
@@ -104,30 +104,6 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .locator(`[data-receive-command-type="${commandType}"]`)
     .first()
     .waitFor()
-}
-
-export const wiggleMove = async (
-  page: any,
-  x: number,
-  y: number,
-  steps: number,
-  dist: number,
-  ang: number,
-  amplitude: number,
-  freq: number
-) => {
-  const tau = Math.PI * 2
-  const deg = tau / 360
-  const step = dist / steps
-  for (let i = 0, j = 0; i < dist; i += step, j += 1) {
-    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
-    const [x2, y2] = [
-      Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
-      Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
-    ]
-    const [xr, yr] = [x2, y2]
-    await page.mouse.move(x + xr, y + yr, { steps: 2 })
-  }
 }
 
 export const getMovementUtils = (opts: any) => {
@@ -324,6 +300,72 @@ export async function getUtils(page: Page) {
       )
 
       cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+    },
+    wiggleMove: async ({
+      locatorString,
+      pos: { x, y },
+      steps,
+      dist,
+      ang,
+      amplitude,
+      freq,
+    }: {
+      locatorString: string
+      pos: { x: number; y: number }
+      steps: number
+      dist: number
+      ang: number
+      amplitude: number
+      freq: number
+    }) => {
+      return new Promise<Locator>(async (resolve) => {
+        const locator = await page.locator(locatorString)
+        const isElementGoodToGo = async (): Promise<boolean> => {
+          const isVisible = await locator.isVisible()
+          if (isVisible) {
+            try {
+              await locator.hover({ timeout: 100 })
+
+              const count = await page
+                .getByTestId('constraint-symbol-popover')
+                .count()
+              if (count < 1) {
+                throw new Error('nope, try again')
+              }
+
+              return true
+            } catch (e) {
+              // do nothing, we'll try again later
+            }
+          }
+          return false
+        }
+        if (await isElementGoodToGo()) {
+          resolve(locator)
+          return
+        }
+
+        const tau = Math.PI * 2
+        const deg = tau / 360
+        const step = dist / steps
+        for (let i = 0, j = 0; i < dist; i += step, j += 1) {
+          const y1 = Math.sin((tau / steps) * j * freq) * amplitude
+          const [x2, y2] = [
+            Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
+            Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
+          ]
+          const [xr, yr] = [x2, y2]
+          await page.locator('#stream').hover({
+            position: { x: x + xr, y: y + yr },
+          })
+          if (await isElementGoodToGo()) {
+            resolve(locator)
+            return
+          }
+          await page.waitForTimeout(100)
+        }
+        throw new Error('Element not found')
+      })
     },
   }
 }

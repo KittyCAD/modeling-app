@@ -3,7 +3,6 @@ import {
   makeTemplate,
   getUtils,
   getMovementUtils,
-  wiggleMove,
   doExport,
   metaModifier,
   TEST_COLORS,
@@ -4206,7 +4205,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
-        steps = 10,
+        wait,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -4219,49 +4218,63 @@ test.describe('Testing segment overlays', () => {
         expectFinal: string
         ang?: number
         steps?: number
+        wait?: number
       }) => {
+        const u = await getUtils(page)
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
+        await expect(page.locator('.cm-content')).toContainText(
+          expectBeforeUnconstrained
+        )
         let x = 0,
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
 
-        await expect(page.locator('.cm-content')).toContainText(
-          expectBeforeUnconstrained
-        )
-        const constrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
-        )
-        await expect(constrainedLocator).toBeVisible()
-        await constrainedLocator.hover()
-        await expect(
-          await page.getByTestId('constraint-symbol-popover').count()
-        ).toBeGreaterThan(0)
+        if (wait) {
+          await page.waitForTimeout(wait)
+        }
+        await page.locator('#stream').hover({
+          position: { x, y },
+          timeout: 5000,
+        })
+
+        const constrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
+          pos: { x, y },
+          steps: 500,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
+
         await constrainedLocator.click()
-        await expect(page.locator('.cm-content')).toContainText(
-          expectAfterUnconstrained
-        )
+        await expect(u.codeLocator).toContainText(expectAfterUnconstrained)
 
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
 
-        const unconstrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
-        )
-        await expect(unconstrainedLocator).toBeVisible()
-        await unconstrainedLocator.hover()
-        await expect(
-          await page.getByTestId('constraint-symbol-popover').count()
-        ).toBeGreaterThan(0)
+        if (wait) {
+          await page.waitForTimeout(wait)
+        }
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+        const unconstrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
+          pos: { x, y },
+          steps: 500,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
+
         await unconstrainedLocator.click()
         await page.getByText('Add variable').click()
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
@@ -4285,7 +4298,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
-        steps = 5,
+        wait,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -4298,28 +4311,36 @@ test.describe('Testing segment overlays', () => {
         expectFinal: string
         ang?: number
         steps?: number
+        wait?: number
       }) => {
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        const u = await getUtils(page)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         let x = 0,
           y = 0
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
-
         await expect(page.getByText('Added variable')).not.toBeVisible()
+
+        if (wait) {
+          await page.waitForTimeout(wait)
+        }
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
         )
-        const unconstrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
-        )
-        await expect(unconstrainedLocator).toBeVisible()
-        await unconstrainedLocator.hover()
-        await expect(
-          await page.getByTestId('constraint-symbol-popover').count()
-        ).toBeGreaterThan(0)
+        const unconstrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`,
+          pos: { x, y },
+          steps: 500,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
         await unconstrainedLocator.click()
         await page.getByText('Add variable').click()
         await expect(page.locator('.cm-content')).toContainText(
@@ -4327,28 +4348,33 @@ test.describe('Testing segment overlays', () => {
         )
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        await page.mouse.move(0, 0)
-        await page.waitForTimeout(1000)
+        await page.getByTestId('app-logo').hover()
+        await page.waitForTimeout(100)
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
-        await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
 
-        const constrainedLocator = page.locator(
-          `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
-        )
-        await expect(constrainedLocator).toBeVisible()
-        await constrainedLocator.hover()
-        await expect(
-          await page.getByTestId('constraint-symbol-popover').count()
-        ).toBeGreaterThan(0)
+        if (wait) {
+          await page.waitForTimeout(wait)
+        }
+        await page.locator('#stream').hover({
+          position: { x, y },
+        })
+        const constrainedLocator = await u.wiggleMove({
+          locatorString: `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`,
+          pos: { x, y },
+          steps: 500,
+          dist: 30,
+          ang,
+          amplitude: 10,
+          freq: 5,
+        })
         await constrainedLocator.click()
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
       }
-    test.setTimeout(120000)
     test('for segments [line, angledLine, lineTo, xLineTo]', async ({
       page,
     }) => {
+      test.setTimeout(120_000)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -4490,6 +4516,8 @@ test.describe('Testing segment overlays', () => {
         ang: ang + 180,
       })
 
+      await page.waitForTimeout(100)
+      await page.getByTestId('app-logo').hover()
       const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
       ang = await u.getAngle(`[data-overlay-index="3"]`)
       console.log('xlineTo1')
@@ -4685,6 +4713,7 @@ const part001 = startSketchOn('XZ')
         expectFinal: 'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
         ang: ang + 180,
         steps: 6,
+        // wait: 800,
       })
       console.log('angledLineOfYLength2')
       await clickConstrained({
@@ -4702,6 +4731,9 @@ const part001 = startSketchOn('XZ')
     test('for segments [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
       page,
     }) => {
+      test.setTimeout(120_000)
+      const isWebKit =
+        page.context().browser()?.browserType().name() !== 'chromium'
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -4759,6 +4791,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained: 'angledLineToX({ angle: 3, to: 26 }, %)',
         expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
       console.log('angledLineToX2')
       await clickUnconstrained({
@@ -4770,6 +4803,7 @@ const part001 = startSketchOn('XZ')
           'angledLineToX({ angle: angle001, to: xAbs001 }, %)',
         expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
 
       const angledLineToY = await u.getBoundingBox(`[data-overlay-index="10"]`)
@@ -4785,6 +4819,7 @@ const part001 = startSketchOn('XZ')
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
         steps: process.platform === 'darwin' ? 8 : 9,
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
       console.log('angledLineToY2')
       await clickConstrained({
@@ -4795,6 +4830,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained: 'angledLineToY({ angle: 89, to: 9.14 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: yAbs001 }, %)',
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
 
       const angledLineThatIntersects = await u.getBoundingBox(
@@ -4824,6 +4860,7 @@ const part001 = startSketchOn('XZ')
       intersectTag: 'a'
     }, %)`,
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
       console.log('angledLineThatIntersects2')
       await clickUnconstrained({
@@ -4848,6 +4885,7 @@ const part001 = startSketchOn('XZ')
       intersectTag: 'a'
     }, %)`,
         ang: ang + 180,
+        wait: isWebKit ? 1000 : 0,
       })
     })
     test('for segment [tangentialArcTo]', async ({ page }) => {
@@ -5172,7 +5210,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
           await page.getByText(lineOfInterest).click()
           await page.waitForTimeout(100)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
-          await page.waitForTimeout(500)
+          await page.waitForTimeout(600)
 
           await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
           const segmentToDelete = await u.getBoundingBox(
