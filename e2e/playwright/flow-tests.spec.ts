@@ -161,7 +161,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
   if (openPanes.includes('code')) {
-  expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
     await expect(
       await u.getGreatestPixDiff(line1, [249, 249, 249])
     ).toBeLessThan(3)
@@ -170,7 +170,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
   if (openPanes.includes('code')) {
-  expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
     await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
   }
 
