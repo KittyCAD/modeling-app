@@ -1069,22 +1069,8 @@ async fn start_sketch_on_face(
         })?,
     };
 
-    // Enter sketch mode on the face.
-    let id = uuid::Uuid::new_v4();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: extrude_plane_id,
-            adjust_camera: false,
-            planar_normal: None,
-        },
-    )
-    .await?;
-
     Ok(Box::new(Face {
-        id,
+        id: extrude_plane_id,
         value: tag.to_string(),
         sketch_group_id: extrude_group.id,
         // TODO: get this from the extrude plane data.
@@ -1134,28 +1120,12 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
         }
     };
 
-    // Enter sketch mode on the plane.
-    args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: plane.id,
-            // We pass in the normal for the plane here.
-            planar_normal: Some(plane.z_axis.clone().into()),
-            adjust_camera: false,
-        },
-    )
-    .await?;
-
     Ok(Box::new(plane))
 }
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
     let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<String>) = args.get_data_and_sketch_surface()?;
-
-    println!("sketch_surface: {:?}", sketch_surface);
 
     let sketch_group = inner_start_profile_at(start, sketch_surface, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
@@ -1204,6 +1174,20 @@ pub(crate) async fn inner_start_profile_at(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
+    // Enter sketch mode on the surface.
+    let id = uuid::Uuid::new_v4();
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::EnableSketchMode {
+            animated: false,
+            ortho: false,
+            entity_id: sketch_surface.id(),
+            adjust_camera: false,
+            planar_normal: None,
+        },
+    )
+    .await?;
+
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
