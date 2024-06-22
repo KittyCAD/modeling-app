@@ -1155,6 +1155,8 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
     let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<String>) = args.get_data_and_sketch_surface()?;
 
+    println!("sketch_surface: {:?}", sketch_surface);
+
     let sketch_group = inner_start_profile_at(start, sketch_surface, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
