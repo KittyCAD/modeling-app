@@ -135,10 +135,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             });
         }
 
-        let mut requests: Vec<ModelingCmdReq> = self
-            .batch()
-            .lock()
-            .unwrap()
+        let all_requests = if batch_end {
+            let mut requests = self.batch().lock().unwrap().clone();
+            requests.extend(self.batch_end().lock().unwrap().clone());
+            requests
+        } else {
+            self.batch().lock().unwrap().clone()
+        };
+
+        let requests: Vec<ModelingCmdReq> = all_requests
             .iter()
             .filter_map(|(val, _)| match val {
                 WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => Some(kittycad::types::ModelingCmdReq {
@@ -148,21 +153,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 _ => None,
             })
             .collect();
-        if batch_end {
-            requests.extend(
-                self.batch_end()
-                    .lock()
-                    .unwrap()
-                    .iter()
-                    .filter_map(|(val, _)| match val {
-                        WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => Some(kittycad::types::ModelingCmdReq {
-                            cmd: cmd.clone(),
-                            cmd_id: *cmd_id,
-                        }),
-                        _ => None,
-                    }),
-            );
-        }
 
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
@@ -170,9 +160,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             responses: true,
         };
 
-        let final_req = if self.batch().lock().unwrap().len() == 1 {
+        let final_req = if all_requests.len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            self.batch().lock().unwrap().first().unwrap().0.clone()
+            all_requests.first().unwrap().0.clone()
         } else {
             batched_requests
         };
@@ -180,7 +170,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = std::collections::HashMap::new();
-        for (req, range) in self.batch().lock().unwrap().iter() {
+        for (req, range) in all_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
                     id_to_source_range.insert(*cmd_id, *range);
@@ -196,6 +186,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Throw away the old batch queue.
         self.batch().lock().unwrap().clear();
+        if batch_end {
+            self.batch_end().lock().unwrap().clear();
+        }
 
         // We pop off the responses to cleanup our mappings.
         match final_req {

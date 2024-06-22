@@ -1865,7 +1865,7 @@ const bracket = startSketchOn('XY')
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getNextAdjacentEdge('innerEdge', %)]
+       tags: [getNextAdjacentEdge('outerEdge', %)]
      }, %)
 "#;
 
