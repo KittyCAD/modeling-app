@@ -108,7 +108,7 @@ pub async fn mirror(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
-///   |> mirror({'axis': 'X'}, %)
+///   |> mirror({axis: 'X'}, %)
 ///
 /// const example = extrude(10, exampleSketch)
 /// ```
