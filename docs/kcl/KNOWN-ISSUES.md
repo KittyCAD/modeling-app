@@ -17,4 +17,11 @@ once fixed in engine will just start working here with no language changes.
     currently move or transform the imported objects at all, once we have assemblies
     this will work.
 
-- **Fillets**: Fillets cannot intersect, you will get an error. Only simple fillet cases work currently.
+- **Fillets**: Fillets cannot intersect, you will get an error. Only simple fillet
+    cases work currently.
+
+- **Chamfers**: Chamfers cannot intersect, you will get an error. Only simple
+    chamfer cases work currently.
+
+- **Shell**: Shell is only working for `end` faces, not for `side` or `start` 
+    faces. We are tracking the engine side bug on this.

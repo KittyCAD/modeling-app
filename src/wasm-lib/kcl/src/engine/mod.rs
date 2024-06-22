@@ -216,6 +216,19 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 }
             }
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
+                // You are probably wondering why we can't just return the source range we were
+                // passed with the function. Well this is actually really important.
+                // If this is the last command in the batch and there is only one and we've reached
+                // the end of the file, this will trigger a flush batch function, but it will just
+                // send default or the end of the file as it's source range not the origin of the
+                // request so we need the original request source range in case the engine returns
+                // an error.
+                let source_range = id_to_source_range.get(&cmd_id).cloned().ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        source_ranges: vec![],
+                    })
+                })?;
                 let ws_resp = self
                     .inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
                     .await?;
