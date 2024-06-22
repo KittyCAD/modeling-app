@@ -608,24 +608,6 @@ pub enum BodyType {
     Block,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
-
-impl From<Position> for Point3d {
-    fn from(p: Position) -> Self {
-        Self {
-            x: p.0[0],
-            y: p.0[1],
-            z: p.0[2],
-        }
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
-
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]

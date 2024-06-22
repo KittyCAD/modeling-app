@@ -343,11 +343,8 @@ export class SceneEntities {
       pathToNode: sketchPathToNode,
     }
     const dummy = new Mesh()
-    dummy.position.set(
-      sketchGroup.position[0],
-      sketchGroup.position[1],
-      sketchGroup.position[2]
-    )
+    // TODO: When we actually have sketch positions and rotations we can use them here.
+    dummy.position.set(0, 0, 0)
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
       (sceneInfra.camControls.camera instanceof OrthographicCamera
