@@ -1489,6 +1489,7 @@ export class SceneEntities {
           kclManager.ast,
           artifact.range
         )
+
         const extrudePathToNode = extrusions?.range
           ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
           : []
