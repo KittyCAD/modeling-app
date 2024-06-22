@@ -6,11 +6,10 @@ use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::std::fillet::EdgeReference;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{MemoryItem, SketchGroup, SketchGroupSet},
-    std::Args,
+    std::{fillet::EdgeReference, Args},
 };
 
 /// Data for a mirror.
