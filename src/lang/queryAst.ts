@@ -660,7 +660,6 @@ export function isSingleCursorInPipe(
   selectionRanges: Selections,
   ast: Program
 ) {
-  console.log('is single cursor selectionRanges', selectionRanges)
   if (selectionRanges.codeBasedSelections.length !== 1) return false
   const selection = selectionRanges.codeBasedSelections[0]
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
