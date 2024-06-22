@@ -1183,7 +1183,12 @@ pub(crate) async fn inner_start_profile_at(
             ortho: false,
             entity_id: sketch_surface.id(),
             adjust_camera: false,
-            planar_normal: None,
+            planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
+                // We pass in the normal for the plane here.
+                Some(plane.z_axis.clone().into())
+            } else {
+                None
+            },
         },
     )
     .await?;
