@@ -11,7 +11,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -1218,8 +1218,6 @@ pub(crate) async fn inner_start_profile_at(
     let sketch_group = SketchGroup {
         id: path_id,
         on: sketch_surface.clone(),
-        position: Position([0.0, 0.0, 0.0]),
-        rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],

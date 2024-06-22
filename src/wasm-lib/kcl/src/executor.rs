@@ -454,10 +454,6 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// The position of the sketch group.
-    pub position: Position,
-    /// The rotation of the sketch group base plane.
-    pub rotation: Rotation,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -578,10 +574,6 @@ pub struct ExtrudeGroup {
     pub sketch_group_values: Vec<Path>,
     /// The height of the extrude group.
     pub height: f64,
-    /// The position of the extrude group.
-    pub position: Position,
-    /// The rotation of the extrude group.
-    pub rotation: Rotation,
     /// The x-axis of the extrude group base plane in the 3D space
     pub x_axis: Point3d,
     /// The y-axis of the extrude group base plane in the 3D space
@@ -914,10 +906,6 @@ pub enum ExtrudeSurface {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
-    /// The position.
-    pub position: Position,
-    /// The rotation.
-    pub rotation: Rotation,
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
@@ -932,10 +920,6 @@ pub struct ExtrudePlane {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {
-    /// The position.
-    pub position: Position,
-    /// The rotation.
-    pub rotation: Rotation,
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
@@ -957,20 +941,6 @@ impl ExtrudeSurface {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.name.to_string(),
-        }
-    }
-
-    pub fn get_position(&self) -> Position {
-        match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.position,
-            ExtrudeSurface::ExtrudeArc(ea) => ea.position,
-        }
-    }
-
-    pub fn get_rotation(&self) -> Rotation {
-        match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
-            ExtrudeSurface::ExtrudeArc(ea) => ea.rotation,
         }
     }
 }

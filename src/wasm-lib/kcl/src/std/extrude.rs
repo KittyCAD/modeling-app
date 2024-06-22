@@ -198,8 +198,6 @@ pub(crate) async fn do_post_extrude(
             match path {
                 Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
                     let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
-                        position: sketch_group.position, // TODO should be for the extrude surface
-                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
                         face_id: *actual_face_id,
                         name: path.get_base().name.clone(),
                         geo_meta: GeoMeta {
@@ -211,8 +209,6 @@ pub(crate) async fn do_post_extrude(
                 }
                 Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
                     let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                        position: sketch_group.position, // TODO should be for the extrude surface
-                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
                         face_id: *actual_face_id,
                         name: path.get_base().name.clone(),
                         geo_meta: GeoMeta {
@@ -226,8 +222,6 @@ pub(crate) async fn do_post_extrude(
         } else if args.ctx.is_mock {
             // Only pre-populate the extrude surface if we are in mock mode.
             new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                position: sketch_group.position, // TODO should be for the extrude surface
-                rotation: sketch_group.rotation, // TODO should be for the extrude surface
                 // pushing this values with a fake face_id to make extrudes mock-execute safe
                 face_id: Uuid::new_v4(),
                 name: path.get_base().name.clone(),
@@ -247,8 +241,6 @@ pub(crate) async fn do_post_extrude(
         value: new_value,
         sketch_group_values: sketch_group.value.clone(),
         height: length,
-        position: sketch_group.position,
-        rotation: sketch_group.rotation,
         x_axis: sketch_group.on.x_axis(),
         y_axis: sketch_group.on.y_axis(),
         z_axis: sketch_group.on.z_axis(),
