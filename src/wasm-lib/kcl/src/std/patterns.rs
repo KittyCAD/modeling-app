@@ -705,27 +705,16 @@ fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -
             source_ranges,
         }));
     };
-    let Some(x) = arr[0].as_number().and_then(|num| num.as_f64()) else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "X component of this point was not a number".to_owned(),
-            source_ranges,
-        }));
+    // Gets an f64 from a JSON value, returns Option.
+    let f = |j: &serde_json::Value| j.as_number().and_then(|num| num.as_f64()).map(|x| x.to_owned());
+    let err = |component| {
+        KclError::Semantic(KclErrorDetails {
+            message: format!("{component} component of this point was not a number"),
+            source_ranges: source_ranges.clone(),
+        })
     };
-    let Some(y) = arr[1].as_number().and_then(|num| num.as_f64()) else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Y component of this point was not a number".to_owned(),
-            source_ranges,
-        }));
-    };
-    let Some(z) = arr[2].as_number().and_then(|num| num.as_f64()) else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Z component of this point was not a number".to_owned(),
-            source_ranges,
-        }));
-    };
-    Ok(Point3d {
-        x: x.to_owned().into(),
-        y: y.to_owned(),
-        z: z.to_owned(),
-    })
+    let x = f(&arr[0]).ok_or_else(|| err("X"))?;
+    let y = f(&arr[1]).ok_or_else(|| err("Y"))?;
+    let z = f(&arr[2]).ok_or_else(|| err("Z"))?;
+    Ok(Point3d { x, y, z })
 }
