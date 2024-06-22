@@ -13,7 +13,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use kittycad::types::{Color, ModelingCmd, OkWebSocketResponseData, WebSocketRequest};
+use kittycad::types::{Color, ModelingCmd, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -26,6 +26,9 @@ use crate::{
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
     fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
+
+    /// Get the batch of end commands to be sent to the engine.
+    fn batch_end(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the default planes.
     async fn default_planes(
@@ -59,7 +62,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
-        self.flush_batch(source_range).await?;
+        self.flush_batch(false, source_range).await?;
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(source_range).await?;
@@ -85,6 +88,25 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    /// Add a command to the batch that needs to be executed at the very end.
+    /// This for stuff like fillets or chamfers where if we execute too soon the
+    /// engine will eat the ID and we can't reference it for other commands.
+    async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: &kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        let req = WebSocketRequest::ModelingCmdReq {
+            cmd: cmd.clone(),
+            cmd_id: id,
+        };
+
+        // Add cmd to the batch end.
+        self.batch_end().lock().unwrap().push((req, source_range));
+        Ok(())
+    }
+
     /// Send the modeling cmd and wait for the response.
     async fn send_modeling_cmd(
         &self,
@@ -95,25 +117,33 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(id, source_range, &cmd).await?;
 
         // Flush the batch queue.
-        self.flush_batch(source_range).await
+        self.flush_batch(false, source_range).await
     }
 
     /// Force flush the batch queue.
     async fn flush_batch(
         &self,
+        // Whether or not to flush the end commands as well.
+        // We only do this at the very end of the file.
+        batch_end: bool,
         source_range: crate::executor::SourceRange,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        let all_requests = if batch_end {
+            let mut requests = self.batch().lock().unwrap().clone();
+            requests.extend(self.batch_end().lock().unwrap().clone());
+            requests
+        } else {
+            self.batch().lock().unwrap().clone()
+        };
+
         // Return early if we have no commands to send.
-        if self.batch().lock().unwrap().is_empty() {
+        if all_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
                 modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
             });
         }
 
-        let requests = self
-            .batch()
-            .lock()
-            .unwrap()
+        let requests: Vec<ModelingCmdReq> = all_requests
             .iter()
             .filter_map(|(val, _)| match val {
                 WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => Some(kittycad::types::ModelingCmdReq {
@@ -123,15 +153,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 _ => None,
             })
             .collect();
+
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
             batch_id: uuid::Uuid::new_v4(),
             responses: true,
         };
 
-        let final_req = if self.batch().lock().unwrap().len() == 1 {
+        let final_req = if all_requests.len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            self.batch().lock().unwrap().first().unwrap().0.clone()
+            all_requests.first().unwrap().0.clone()
         } else {
             batched_requests
         };
@@ -139,7 +170,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = std::collections::HashMap::new();
-        for (req, range) in self.batch().lock().unwrap().iter() {
+        for (req, range) in all_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
                     id_to_source_range.insert(*cmd_id, *range);
@@ -155,6 +186,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Throw away the old batch queue.
         self.batch().lock().unwrap().clear();
+        if batch_end {
+            self.batch_end().lock().unwrap().clear();
+        }
 
         // We pop off the responses to cleanup our mappings.
         match final_req {
@@ -321,7 +355,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Flush the batch queue, so these planes are created right away.
-        self.flush_batch(source_range).await?;
+        self.flush_batch(false, source_range).await?;
 
         Ok(DefaultPlanes {
             xy: planes[&PlaneName::Xy],

@@ -111,7 +111,7 @@ async fn inner_fillet(
             }
         };
 
-        args.batch_modeling_cmd(
+        args.batch_end_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,
