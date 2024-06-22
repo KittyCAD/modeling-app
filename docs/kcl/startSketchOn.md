@@ -167,10 +167,6 @@ const a1 = startSketchOn({
 	height: number,
 	// The id of the extrude group.
 	id: uuid,
-	// The position of the extrude group.
-	position: [number, number, number],
-	// The rotation of the extrude group.
-	rotation: [number, number, number, number],
 	// The sketch group paths.
 	sketchGroupValues: [{
 	// The from point.
@@ -246,10 +242,6 @@ const a1 = startSketchOn({
 	id: uuid,
 	// The name.
 	name: string,
-	// The position.
-	position: [number, number, number],
-	// The rotation.
-	rotation: [number, number, number, number],
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
@@ -261,10 +253,6 @@ const a1 = startSketchOn({
 	id: uuid,
 	// The name.
 	name: string,
-	// The position.
-	position: [number, number, number],
-	// The rotation.
-	rotation: [number, number, number, number],
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudeArc",
@@ -331,8 +319,6 @@ string
 },
 } |
 {
-	// the face id the sketch is on
-	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
