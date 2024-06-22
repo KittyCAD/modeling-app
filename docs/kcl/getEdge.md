@@ -49,10 +49,6 @@ const revolution = startSketchOn(box, "revolveAxis")
 	height: number,
 	// The id of the extrude group.
 	id: uuid,
-	// The position of the extrude group.
-	position: [number, number, number],
-	// The rotation of the extrude group.
-	rotation: [number, number, number, number],
 	// The sketch group paths.
 	sketchGroupValues: [{
 	// The from point.
@@ -128,10 +124,6 @@ const revolution = startSketchOn(box, "revolveAxis")
 	id: uuid,
 	// The name.
 	name: string,
-	// The position.
-	position: [number, number, number],
-	// The rotation.
-	rotation: [number, number, number, number],
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
@@ -143,10 +135,6 @@ const revolution = startSketchOn(box, "revolveAxis")
 	id: uuid,
 	// The name.
 	name: string,
-	// The position.
-	position: [number, number, number],
-	// The rotation.
-	rotation: [number, number, number, number],
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudeArc",

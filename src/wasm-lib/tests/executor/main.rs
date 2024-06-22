@@ -2038,3 +2038,39 @@ extrude(10, sketch001)
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/array_of_sketches.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_array_of_extrudes() {
+    let code = r#"const plane001 = startSketchOn('XZ')
+
+const sketch001 = plane001
+  |> startProfileAt([40.82, 240.82], %)
+  |> line([235.72, -8.16], %)
+  |> line([13.27, -253.07], %)
+  |> line([-247.97, -19.39], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(10, %)
+
+const sketch002 = plane001
+  |> startProfileAt([47.17, -71.91], %)
+  |> line([247.96, -4.03], %)
+  |> line([-17.26, -116.79], %)
+  |> line([-235.87, 12.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(10, %)
+
+
+let extrudes = [sketch001, sketch002] 
+
+const pattn1 = patternLinear3d({
+       axis: [0, 1, 0],
+       repetitions: 2,
+       distance: 20
+     }, extrudes)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pattern3d_array_of_extrudes.png", &result, 1.0);
+}

@@ -343,11 +343,8 @@ export class SceneEntities {
       pathToNode: sketchPathToNode,
     }
     const dummy = new Mesh()
-    dummy.position.set(
-      sketchGroup.position[0],
-      sketchGroup.position[1],
-      sketchGroup.position[2]
-    )
+    // TODO: When we actually have sketch positions and rotations we can use them here.
+    dummy.position.set(0, 0, 0)
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
       (sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -1804,7 +1801,7 @@ export function getSketchQuaternion(
     ast: kclManager.ast,
     programMemory: kclManager.programMemory,
   })
-  const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  const zAxis = sketchGroup?.on.zAxis || sketchNormalBackUp
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
 export async function getSketchOrientationDetails(
@@ -1819,20 +1816,24 @@ export async function getSketchOrientationDetails(
     programMemory: kclManager.programMemory,
   })
   if (sketchGroup.on.type === 'plane') {
-    const zAxis = sketchGroup?.zAxis
+    const zAxis = sketchGroup?.on.zAxis
     return {
       quat: getQuaternionFromZAxis(massageFormats(zAxis)),
       sketchDetails: {
         sketchPathToNode,
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
-        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        yAxis: [
+          sketchGroup.on.yAxis.x,
+          sketchGroup.on.yAxis.y,
+          sketchGroup.on.yAxis.z,
+        ],
         origin: [0, 0, 0],
         faceId: sketchGroup.on.id,
       },
     }
   }
   if (sketchGroup.on.type === 'face') {
-    const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
+    const faceInfo = await getFaceDetails(sketchGroup.on.id)
 
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       throw new Error('faceInfo')
@@ -1848,7 +1849,7 @@ export async function getSketchOrientationDetails(
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
-        faceId: sketchGroup.on.faceId,
+        faceId: sketchGroup.on.id,
       },
     }
   }

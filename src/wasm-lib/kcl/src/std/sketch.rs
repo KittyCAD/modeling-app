@@ -11,7 +11,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -1069,22 +1069,8 @@ async fn start_sketch_on_face(
         })?,
     };
 
-    // Enter sketch mode on the face.
-    let id = uuid::Uuid::new_v4();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: extrude_plane_id,
-            adjust_camera: false,
-            planar_normal: None,
-        },
-    )
-    .await?;
-
     Ok(Box::new(Face {
-        id,
+        id: extrude_plane_id,
         value: tag.to_string(),
         sketch_group_id: extrude_group.id,
         // TODO: get this from the extrude plane data.
@@ -1092,7 +1078,6 @@ async fn start_sketch_on_face(
         y_axis: extrude_group.y_axis,
         z_axis: extrude_group.z_axis,
         meta: vec![args.source_range.into()],
-        face_id: extrude_plane_id,
     }))
 }
 
@@ -1133,20 +1118,6 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
             id
         }
     };
-
-    // Enter sketch mode on the plane.
-    args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: plane.id,
-            // We pass in the normal for the plane here.
-            planar_normal: Some(plane.z_axis.clone().into()),
-            adjust_camera: false,
-        },
-    )
-    .await?;
 
     Ok(Box::new(plane))
 }
@@ -1202,6 +1173,26 @@ pub(crate) async fn inner_start_profile_at(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
+    // Enter sketch mode on the surface.
+    // We call this here so you can reuse the sketch surface for multiple sketches.
+    let id = uuid::Uuid::new_v4();
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::EnableSketchMode {
+            animated: false,
+            ortho: false,
+            entity_id: sketch_surface.id(),
+            adjust_camera: false,
+            planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
+                // We pass in the normal for the plane here.
+                Some(plane.z_axis.clone().into())
+            } else {
+                None
+            },
+        },
+    )
+    .await?;
+
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
@@ -1232,12 +1223,6 @@ pub(crate) async fn inner_start_profile_at(
     let sketch_group = SketchGroup {
         id: path_id,
         on: sketch_surface.clone(),
-        position: Position([0.0, 0.0, 0.0]),
-        rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
-        x_axis: sketch_surface.x_axis(),
-        y_axis: sketch_surface.y_axis(),
-        z_axis: sketch_surface.z_axis(),
-        entity_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
