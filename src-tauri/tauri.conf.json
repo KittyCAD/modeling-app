@@ -63,17 +63,16 @@
       "subcommands": {}
     },
     "deep-link": {
-      "mobile": [],
-      "desktop": {
-        "schemes": [
-          "app.zoo.dev"
-        ]
-      }
+      "domains": [
+        {
+          "host": "app.zoo.dev"
+        }
+      ]
     },
     "shell": {
       "open": true
     }
   },
   "productName": "Zoo Modeling App",
-  "version": "0.22.4"
+  "version": "0.22.5"
 }
