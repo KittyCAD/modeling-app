@@ -1466,6 +1466,9 @@ export class EngineCommandManager extends EventTarget {
 
     if (command && command.type === 'pending') {
       const resolve = command.resolve
+      const oldArtifact = this.artifactMap[id] as ArtifactMapCommand & {
+        extrusions?: string[]
+      }
       const artifact = {
         type: 'result',
         range: command.range,
@@ -1474,7 +1477,10 @@ export class EngineCommandManager extends EventTarget {
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
         raw,
-      } as const
+      } as ArtifactMapCommand & { extrusions?: string[] }
+      if (oldArtifact?.extrusions) {
+        artifact.extrusions = oldArtifact.extrusions
+      }
       this.artifactMap[id] = artifact
       if (
         (command.commandType === 'entity_linear_pattern' &&
@@ -1903,6 +1909,8 @@ export class EngineCommandManager extends EventTarget {
         } else {
           typedTarget.extrusions = [id]
         }
+        // Update in the map.
+        this.artifactMap[command.target] = typedTarget
       }
     }
     return promise
