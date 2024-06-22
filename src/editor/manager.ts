@@ -157,7 +157,6 @@ export default class EditorManager {
   }
 
   selectRange(selections: Selections) {
-    console.log(selections)
     if (selections.codeBasedSelections.length === 0) {
       return
     }
