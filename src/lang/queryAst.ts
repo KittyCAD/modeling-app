@@ -661,14 +661,6 @@ export function isSingleCursorInPipe(
   ast: Program
 ) {
   if (selectionRanges.codeBasedSelections.length !== 1) return false
-  if (
-    doesPipeHaveCallExp({
-      ast,
-      selection: selectionRanges.codeBasedSelections[0],
-      calleeName: 'extrude',
-    })
-  )
-    return false
   const selection = selectionRanges.codeBasedSelections[0]
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const nodeTypes = pathToNode.map(([, type]) => type)

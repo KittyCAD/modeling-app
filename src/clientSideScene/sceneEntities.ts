@@ -1388,7 +1388,7 @@ export class SceneEntities {
       },
       onClick: async (args) => {
         const { streamDimensions } = useStore.getState()
-        const { entity_id, ...rest } = await sendSelectEventToEngine(
+        const { entity_id } = await sendSelectEventToEngine(
           args?.mouseEvent,
           document.getElementById('video-stream') as HTMLVideoElement,
           streamDimensions
@@ -1762,7 +1762,11 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
-  return programMemory.root[varDec?.id?.name || ''] as SketchGroup
+  const result = programMemory.root[varDec?.id?.name || '']
+  if (result?.type === 'ExtrudeGroup') {
+    return result.sketchGroup
+  }
+  return result as SketchGroup
 }
 
 function colorSegment(object: any, color: number) {
