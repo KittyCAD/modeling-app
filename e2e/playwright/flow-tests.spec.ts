@@ -78,13 +78,21 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-test('Basic sketch', async ({ page }) => {
+async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
+
+  // If we have the code pane open, we should see the code.
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator).toHaveText(``)
+  } else {
+    // Ensure we don't see the code.
+    await expect(u.codeLocator).not.toBeVisible()
+  }
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -99,49 +107,72 @@ test('Basic sketch', async ({ page }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(u.codeLocator).toHaveText(
-    `const sketch001 = startSketchOn('XZ')`
-  )
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+  }
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(1000) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
-  await page.waitForTimeout(100)
+  }
+  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
 
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  }
+  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
-  await page.waitForTimeout(100)
+  }
+  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
+  }
 
   // deselect line tool
   await page.getByRole('button', { name: 'Line' }).click()
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
-  expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
+  if (openPanes.includes('code')) {
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
+    await expect(
+      await u.getGreatestPixDiff(line1, [249, 249, 249])
+    ).toBeLessThan(3)
+  }
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
-  expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+  if (openPanes.includes('code')) {
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+  }
 
   // hold down shift
   await page.keyboard.down('Shift')
@@ -149,16 +180,55 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
 
   // selected two lines therefore there should be two cursors
-  await expect(page.locator('.cm-cursor')).toHaveCount(2)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-cursor')).toHaveCount(2)
+  }
 
   await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
+  // Open the code pane.
+  await u.openKclCodePanel()
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
+}
+
+test.describe('Basic sketch', () => {
+  test('code pane open at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+
+    await doBasicSketch(page, ['code'])
+  })
+
+  test('code pane closed at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: [],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doBasicSketch(page, [])
+  })
 })
 
 test.describe('Testing Camera Movement', () => {
@@ -2558,18 +2628,20 @@ const part002 = startSketchOn('-XZ')
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
 })
 
-test('Can edit segments by dragging their handles', async ({ page }) => {
-  const u = await getUtils(page)
+async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
+  // Load the app with the code panes
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)`
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`
     )
   })
 
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -2598,16 +2670,40 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
     },
   })
   await page.waitForTimeout(100)
+  await u.closeDebugPanel()
+
+  // If we have the code pane open, we should see the code.
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`)
+  } else {
+    // Ensure we don't see the code.
+    await expect(u.codeLocator).not.toBeVisible()
+  }
 
   const startPX = [665, 458]
 
   const dragPX = 30
+  let prevContent = ''
 
-  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  if (openPanes.includes('code')) {
+    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  } else {
+    // Wait for the render.
+    await page.waitForTimeout(1000)
+    // Select the sketch
+    await page.mouse.click(700, 370)
+  }
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(400)
-  let prevContent = await page.locator('.cm-content').innerText()
+  if (openPanes.includes('code')) {
+    prevContent = await page.locator('.cm-content').innerText()
+  }
 
   const step5 = { steps: 5 }
 
@@ -2619,8 +2715,10 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
   await page.mouse.up()
 
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+  }
 
   // drag line handle
   await page.waitForTimeout(100)
@@ -2631,8 +2729,10 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
   await page.mouse.up()
   await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+  }
 
   // drag tangentialArcTo handle
   const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
@@ -2641,14 +2741,55 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
   await page.mouse.up()
   await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  }
+
+  // Open the code pane
+  await u.openKclCodePanel()
 
   // expect the code to have changed
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([6.44, -12.07], %)
   |> line([14.72, 1.97], %)
-  |> tangentialArcTo([26.92, -3.32], %)`)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)`)
+}
+
+test.describe('Can edit segments by dragging their handles', () => {
+  test('code pane open at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doEditSegmentsByDraggingHandle(page, ['code'])
+  })
+
+  test('code pane closed at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: [],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doEditSegmentsByDraggingHandle(page, [])
+  })
 })
 
 test('Can edit a sketch that has been extruded in the same pipe', async ({
