@@ -394,9 +394,11 @@ export function sketchOnExtrudedFace(
     'const'
   )
 
-  console.log('sketchPathToNode', sketchPathToNode)
-  console.log('extrudePathToNode', extrudePathToNode)
-  _node.body = [..._node.body, newSurface]
+  const expressionIndex = Math.max(
+    sketchPathToNode[1][0] as number,
+    extrudePathToNode[1][0] as number
+  )
+  _node.body.splice(expressionIndex + 1, 0, newSurface)
 
   // Create the variable for the sketch.
   const newSketchName = findUniqueName(
@@ -407,8 +409,8 @@ export function sketchOnExtrudedFace(
     newSketchName,
     createIdentifier(newSurfaceName)
   )
-  _node.body = [..._node.body, sketchVariableDeclaration]
-  const sketchIndex = _node.body.length - 1
+  const sketchIndex = expressionIndex + 2
+  _node.body.splice(sketchIndex, 0, sketchVariableDeclaration)
 
   let newPathToNode: PathToNode = [
     ['body', ''],
