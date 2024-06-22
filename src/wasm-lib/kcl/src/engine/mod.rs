@@ -128,13 +128,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         batch_end: bool,
         source_range: crate::executor::SourceRange,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
-        // Return early if we have no commands to send.
-        if self.batch().lock().unwrap().is_empty() {
-            return Ok(OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-            });
-        }
-
         let all_requests = if batch_end {
             let mut requests = self.batch().lock().unwrap().clone();
             requests.extend(self.batch_end().lock().unwrap().clone());
@@ -142,6 +135,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         } else {
             self.batch().lock().unwrap().clone()
         };
+
+        // Return early if we have no commands to send.
+        if all_requests.is_empty() {
+            return Ok(OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+            });
+        }
 
         let requests: Vec<ModelingCmdReq> = all_requests
             .iter()

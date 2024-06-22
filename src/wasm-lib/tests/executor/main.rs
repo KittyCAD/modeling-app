@@ -1873,7 +1873,7 @@ const bracket = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1443, 1443])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1336, 1442])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
     );
 }
 
