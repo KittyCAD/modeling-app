@@ -74,8 +74,6 @@ export type SyntaxType =
   | 'UnaryExpression'
 
 export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
-export type { Position } from '../wasm-lib/kcl/bindings/Position'
-export type { Rotation } from '../wasm-lib/kcl/bindings/Rotation'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
