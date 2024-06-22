@@ -11,6 +11,7 @@ pub mod import;
 pub mod kcl_stdlib;
 pub mod loft;
 pub mod math;
+pub mod mirror;
 pub mod patterns;
 pub mod planes;
 pub mod polar;
@@ -86,6 +87,7 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::mirror::Mirror),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
