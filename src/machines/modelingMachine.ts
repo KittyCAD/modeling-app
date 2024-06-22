@@ -900,7 +900,10 @@ export const modelingMachine = createMachine(
           sceneInfra.modelingSend('Equip Line tool')
         }
       },
-      'setup client side sketch segments': ({ sketchDetails }) => {
+      'setup client side sketch segments': ({
+        sketchDetails,
+        selectionRanges,
+      }) => {
         if (!sketchDetails) return
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
@@ -913,6 +916,7 @@ export const modelingMachine = createMachine(
             up: sketchDetails.yAxis,
             position: sketchDetails.origin,
             maybeModdedAst: kclManager.ast,
+            selectionRanges,
           })
           sceneInfra.resetMouseListeners()
           sceneEntitiesManager.setupSketchIdleCallbacks({

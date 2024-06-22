@@ -275,9 +275,9 @@ export const ModelingMachineProvider = ({
         ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
-          if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
+            if (!editorManager.editorView) return
             editorManager.lastSelectionEvent = Date.now()
             setTimeout(() => {
               if (editorManager.editorView) {

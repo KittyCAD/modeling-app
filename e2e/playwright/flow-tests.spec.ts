@@ -6,6 +6,7 @@ import {
   wiggleMove,
   doExport,
   metaModifier,
+  TEST_COLORS,
 } from './test-utils'
 import waitOn from 'wait-on'
 import { XOR, roundOff, uuidv4 } from 'lib/utils'
@@ -77,13 +78,21 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-test('Basic sketch', async ({ page }) => {
+async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
+
+  // If we have the code pane open, we should see the code.
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator).toHaveText(``)
+  } else {
+    // Ensure we don't see the code.
+    await expect(u.codeLocator).not.toBeVisible()
+  }
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -98,51 +107,72 @@ test('Basic sketch', async ({ page }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(u.codeLocator).toHaveText(
-    `const sketch001 = startSketchOn('XZ')`
-  )
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+  }
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(1000) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
-  await page.waitForTimeout(100)
+  }
+  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
 
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  }
+  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
-  await page.waitForTimeout(100)
+  }
+  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
+  }
 
   // deselect line tool
   await page.getByRole('button', { name: 'Line' }).click()
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
-  await expect(await u.getGreatestPixDiff(line1, [249, 249, 249])).toBeLessThan(
-    3
-  )
+  if (openPanes.includes('code')) {
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
+    await expect(
+      await u.getGreatestPixDiff(line1, [249, 249, 249])
+    ).toBeLessThan(3)
+  }
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
-  await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+  if (openPanes.includes('code')) {
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+  }
 
   // hold down shift
   await page.keyboard.down('Shift')
@@ -150,16 +180,55 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
 
   // selected two lines therefore there should be two cursors
-  await expect(page.locator('.cm-cursor')).toHaveCount(2)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-cursor')).toHaveCount(2)
+  }
 
   await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
+  // Open the code pane.
+  await u.openKclCodePanel()
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
+}
+
+test.describe('Basic sketch', () => {
+  test('code pane open at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+
+    await doBasicSketch(page, ['code'])
+  })
+
+  test('code pane closed at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: [],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doBasicSketch(page, [])
+  })
 })
 
 test.describe('Testing Camera Movement', () => {
@@ -2559,7 +2628,173 @@ const part002 = startSketchOn('-XZ')
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
 })
 
-test('Can edit segments by dragging their handles', async ({ page }) => {
+async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
+  // Load the app with the code panes
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`
+    )
+  })
+
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.closeDebugPanel()
+
+  // If we have the code pane open, we should see the code.
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`)
+  } else {
+    // Ensure we don't see the code.
+    await expect(u.codeLocator).not.toBeVisible()
+  }
+
+  const startPX = [665, 458]
+
+  const dragPX = 30
+  let prevContent = ''
+
+  if (openPanes.includes('code')) {
+    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  } else {
+    // Wait for the render.
+    await page.waitForTimeout(1000)
+    // Select the sketch
+    await page.mouse.click(700, 370)
+  }
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  if (openPanes.includes('code')) {
+    prevContent = await page.locator('.cm-content').innerText()
+  }
+
+  const step5 = { steps: 5 }
+
+  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+  // drag startProfieAt handle
+  await page.mouse.move(startPX[0], startPX[1])
+  await page.mouse.down()
+  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+  await page.mouse.up()
+
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+  }
+
+  // drag line handle
+  await page.waitForTimeout(100)
+
+  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
+  await page.mouse.down()
+  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+  }
+
+  // drag tangentialArcTo handle
+  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
+  await page.mouse.down()
+  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  }
+
+  // Open the code pane
+  await u.openKclCodePanel()
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([6.44, -12.07], %)
+  |> line([14.72, 1.97], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)`)
+}
+
+test.describe('Can edit segments by dragging their handles', () => {
+  test('code pane open at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doEditSegmentsByDraggingHandle(page, ['code'])
+  })
+
+  test('code pane closed at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: [],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doEditSegmentsByDraggingHandle(page, [])
+  })
+})
+
+test('Can edit a sketch that has been extruded in the same pipe', async ({
+  page,
+}) => {
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
@@ -2567,7 +2802,9 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
       `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)`
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`
     )
   })
 
@@ -2648,8 +2885,111 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 1.97], %)
-  |> tangentialArcTo([26.92, -3.32], %)`)
+  |> line([14.72, 2.01], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)
+  |> extrude(5, %)`)
+})
+
+test('Can edit a sketch that has been revolved in the same pipe', async ({
+  page,
+}) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> revolve({ axis: "X",}, %)`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+
+  const startPX = [665, 458]
+
+  const dragPX = 30
+
+  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  let prevContent = await page.locator('.cm-content').innerText()
+
+  const step5 = { steps: 5 }
+
+  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+  // drag startProfieAt handle
+  await page.mouse.move(startPX[0], startPX[1])
+  await page.mouse.down()
+  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+  await page.mouse.up()
+
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag line handle
+  await page.waitForTimeout(100)
+
+  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
+  await page.mouse.down()
+  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag tangentialArcTo handle
+  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
+  await page.mouse.down()
+  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([6.44, -12.07], %)
+  |> line([14.72, 2.01], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)
+  |> revolve({ axis: "X" }, %)`)
 })
 
 const doSnapAtDifferentScales = async (
@@ -3768,6 +4108,81 @@ const part002 = startSketchOn('XZ')
         await expect(page.locator('.cm-activeLine')).toHaveText(codeAfter)
       })
     }
+  })
+
+  test('Horizontally constrained line remains selected after applying constraint', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-1.05, -1.07], %)
+  |> line([3.79, 2.68], %, 'seg01')
+  |> line([3.13, -2.4], %)`
+      )
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText("line([3.79, 2.68], %, 'seg01')").click()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+    await page.waitForTimeout(100)
+    const lineBefore = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
+    ).toBeLessThan(3)
+    await page.mouse.move(lineBefore.x, lineBefore.y)
+    await page.waitForTimeout(50)
+    await page.mouse.click(lineBefore.x, lineBefore.y)
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
+
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page.getByRole('button', { name: 'horizontal', exact: true }).click()
+
+    let activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+
+    // If the overlay-angle is updated the THREE.js scene is in a good state
+    await expect(
+      await page.locator('[data-overlay-index="1"]')
+    ).toHaveAttribute('data-overlay-angle', '0')
+
+    const lineAfter = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
+
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page.getByRole('button', { name: 'length', exact: true }).click()
+
+    await page.getByLabel('length Value').fill('10')
+    await page.getByRole('button', { name: 'Add constraining value' }).click()
+
+    activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
+
+    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
   })
 })
 

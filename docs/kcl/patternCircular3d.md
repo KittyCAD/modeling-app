@@ -56,8 +56,80 @@ const example = extrude(-5, exampleSketch)
 	height: number,
 	// The id of the extrude group.
 	id: uuid,
-	// The sketch group paths.
-	sketchGroupValues: [{
+	// The sketch group.
+	sketchGroup: {
+	// The id of the sketch group.
+	id: uuid,
+	// What the sketch is on (can be a plane or a face).
+	on: {
+	// The id of the plane.
+	id: uuid,
+	// Origin of the plane.
+	origin: {
+	x: number,
+	y: number,
+	z: number,
+},
+	type: "plane",
+	// Type for a plane.
+	value: "XY" | "XZ" | "YZ" | "Custom",
+	// What should the plane’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the plane’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the face.
+	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
+	type: "face",
+	// The tag of the face.
+	value: string,
+	// What should the face’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the face’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+},
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
 	// The from point.
 	from: [number, number],
 	// The name of the path.
@@ -121,6 +193,7 @@ const example = extrude(-5, exampleSketch)
 	to: [number, number],
 	type: "Base",
 }],
+},
 	// The id of the extrusion start cap
 	startCapId: uuid,
 	type: "extrudeGroup",
@@ -147,24 +220,6 @@ const example = extrude(-5, exampleSketch)
 	sourceRange: [number, number],
 	type: "extrudeArc",
 }],
-	// The x-axis of the extrude group base plane in the 3D space
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The y-axis of the extrude group base plane in the 3D space
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis of the extrude group base plane in the 3D space
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
 } |
 {
 	type: "extrudeGroups",

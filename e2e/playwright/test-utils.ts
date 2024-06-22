@@ -8,6 +8,13 @@ import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
 import { APP_NAME } from 'lib/constants'
 
+type TestColor = [number, number, number]
+export const TEST_COLORS = {
+  WHITE: [249, 249, 249] as TestColor,
+  YELLOW: [255, 255, 0] as TestColor,
+  BLUE: [0, 0, 255] as TestColor,
+} as const
+
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
   await page.getByTestId('loading-stream').waitFor()

@@ -73,7 +73,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { normaliseAngle, roundOff, throttle } from 'lib/utils'
+import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -83,6 +83,7 @@ import {
   findUniqueName,
 } from 'lang/modifyAst'
 import {
+  Selections,
   getEventForSegmentSelection,
   sendSelectEventToEngine,
 } from 'lib/selections'
@@ -300,6 +301,7 @@ export class SceneEntities {
     position,
     maybeModdedAst,
     draftExpressionsIndices,
+    selectionRanges,
   }: {
     sketchPathToNode: PathToNode
     maybeModdedAst: Program
@@ -307,6 +309,7 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
+    selectionRanges?: Selections
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
@@ -396,6 +399,12 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
+      const isSelected = selectionRanges?.codeBasedSelections.some(
+        (selection) => {
+          return isOverlap(selection.range, segment.__geoMeta.sourceRange)
+        }
+      )
+
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
         maybeModdedAst,
@@ -413,6 +422,7 @@ export class SceneEntities {
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          isSelected,
         })
         callbacks.push(
           this.updateTangentialArcToSegment({
@@ -434,6 +444,7 @@ export class SceneEntities {
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          isSelected,
         })
         callbacks.push(
           this.updateStraightSegment({
@@ -1388,11 +1399,12 @@ export class SceneEntities {
       },
       onClick: async (args) => {
         const { streamDimensions } = useStore.getState()
-        const { entity_id, ...rest } = await sendSelectEventToEngine(
+        const { entity_id } = await sendSelectEventToEngine(
           args?.mouseEvent,
           document.getElementById('video-stream') as HTMLVideoElement,
           streamDimensions
         )
+
         let _entity_id = entity_id
         if (!_entity_id) return
         if (
@@ -1762,7 +1774,11 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
-  return programMemory.root[varDec?.id?.name || ''] as SketchGroup
+  const result = programMemory.root[varDec?.id?.name || '']
+  if (result?.type === 'ExtrudeGroup') {
+    return result.sketchGroup
+  }
+  return result as SketchGroup
 }
 
 function colorSegment(object: any, color: number) {

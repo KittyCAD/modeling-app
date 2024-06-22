@@ -278,7 +278,7 @@ export function processCodeMirrorRanges({
   }
 }
 
-function updateSceneObjectColors(codeBasedSelections: Selection[]) {
+export function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   let updated: Program
   try {
     updated = parse(recast(kclManager.ast))
@@ -301,6 +301,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     const groupHasCursor = codeBasedSelections.some((selection) => {
       return isOverlap(selection.range, [node.start, node.end])
     })
+
     const color = groupHasCursor
       ? 0x0000ff
       : segmentGroup?.userData?.baseColor || 0xffffff
