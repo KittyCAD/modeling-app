@@ -153,6 +153,34 @@ pub enum MemoryItem {
     },
 }
 
+impl MemoryItem {
+    pub fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
+        match self {
+            MemoryItem::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
+            MemoryItem::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
+            MemoryItem::UserVal(value) => {
+                let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
+                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
+                Ok(SketchGroupSet::SketchGroups(sg.clone()))
+            }
+            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
+        }
+    }
+
+    pub fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+        match self {
+            MemoryItem::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
+            MemoryItem::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
+            MemoryItem::UserVal(value) => {
+                let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
+                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
+                Ok(ExtrudeGroupSet::ExtrudeGroups(eg.clone()))
+            }
+            _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+}
+
 /// A geometry.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -261,8 +289,6 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
-    /// the face id the sketch is on
-    pub face_id: uuid::Uuid,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -428,18 +454,6 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// The position of the sketch group.
-    pub position: Position,
-    /// The rotation of the sketch group base plane.
-    pub rotation: Rotation,
-    /// The x-axis of the sketch group base plane in the 3D space
-    pub x_axis: Point3d,
-    /// The y-axis of the sketch group base plane in the 3D space
-    pub y_axis: Point3d,
-    /// The z-axis of the sketch group base plane in the 3D space
-    pub z_axis: Point3d,
-    /// The plane id or face id of the sketch group.
-    pub entity_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -556,20 +570,10 @@ pub struct ExtrudeGroup {
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch group paths.
-    pub sketch_group_values: Vec<Path>,
+    /// The sketch group.
+    pub sketch_group: SketchGroup,
     /// The height of the extrude group.
     pub height: f64,
-    /// The position of the extrude group.
-    pub position: Position,
-    /// The rotation of the extrude group.
-    pub rotation: Rotation,
-    /// The x-axis of the extrude group base plane in the 3D space
-    pub x_axis: Point3d,
-    /// The y-axis of the extrude group base plane in the 3D space
-    pub y_axis: Point3d,
-    /// The z-axis of the extrude group base plane in the 3D space
-    pub z_axis: Point3d,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -597,24 +601,6 @@ pub enum BodyType {
     Sketch,
     Block,
 }
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
-
-impl From<Position> for Point3d {
-    fn from(p: Position) -> Self {
-        Self {
-            x: p.0[0],
-            y: p.0[1],
-            z: p.0[2],
-        }
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
@@ -645,7 +631,7 @@ impl SourceRange {
     pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code[..self.start()].lines().count();
+        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
         if line > 0 {
             line = line.saturating_sub(1);
         }
@@ -658,7 +644,7 @@ impl SourceRange {
     }
 
     pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
-        let lines = code[..self.end()].lines();
+        let lines = code.get(..self.end()).unwrap_or_default().lines();
         if lines.clone().count() == 0 {
             return LspPosition { line: 0, character: 0 };
         }
@@ -896,10 +882,6 @@ pub enum ExtrudeSurface {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
-    /// The position.
-    pub position: Position,
-    /// The rotation.
-    pub rotation: Rotation,
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
@@ -914,10 +896,6 @@ pub struct ExtrudePlane {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {
-    /// The position.
-    pub position: Position,
-    /// The rotation.
-    pub rotation: Rotation,
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
@@ -939,20 +917,6 @@ impl ExtrudeSurface {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.name.to_string(),
-        }
-    }
-
-    pub fn get_position(&self) -> Position {
-        match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.position,
-            ExtrudeSurface::ExtrudeArc(ea) => ea.position,
-        }
-    }
-
-    pub fn get_rotation(&self) -> Rotation {
-        match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
-            ExtrudeSurface::ExtrudeArc(ea) => ea.rotation,
         }
     }
 }

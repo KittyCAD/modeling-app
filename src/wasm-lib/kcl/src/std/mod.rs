@@ -437,18 +437,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = first_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the first argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match first_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the first argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         let second_value = self.args.get(1).ok_or_else(|| {
@@ -672,18 +668,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match second_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((data, sketch_set))
@@ -813,18 +805,14 @@ impl Args {
             })
         })?;
 
-        let extrude_set = if let MemoryItem::ExtrudeGroup(eg) = second_value {
-            ExtrudeGroupSet::ExtrudeGroup(eg.clone())
-        } else if let MemoryItem::ExtrudeGroups { value } = second_value {
-            ExtrudeGroupSet::ExtrudeGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a ExtrudeGroup or Vector of ExtrudeGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let extrude_set = match second_value.get_extrude_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an ExtrudeGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((data, extrude_set))
@@ -953,18 +941,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match second_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((number, sketch_set))

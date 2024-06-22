@@ -39,7 +39,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     <Popover className="relative">
       {user?.image && !imageLoadFailed ? (
         <Popover.Button
-          className="border-0 rounded-full w-fit min-w-max p-0 group"
+          className="relative border-0 rounded-full w-fit min-w-max p-0 group"
           data-testid="user-sidebar-toggle"
         >
           <div className="rounded-full border overflow-hidden">
@@ -51,6 +51,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               onError={() => setImageLoadFailed(true)}
             />
           </div>
+          <Tooltip position="bottom-right" delay={1000}>
+            User menu
+          </Tooltip>
         </Popover.Button>
       ) : (
         <ActionButton
@@ -59,7 +62,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           className="border-transparent !px-0"
           data-testid="user-sidebar-toggle"
         >
-          <Tooltip position="left" delay={1000}>
+          <Tooltip position="bottom-right" delay={1000}>
             User menu
           </Tooltip>
         </ActionButton>

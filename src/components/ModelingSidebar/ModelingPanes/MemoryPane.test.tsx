@@ -43,20 +43,16 @@ describe('processMemory', () => {
       theExtrude: [
         {
           type: 'extrudePlane',
-          position: [0, 0, 0],
-          rotation: [0, 0, 0, 1],
-          faceId: expect.any(String),
           name: '',
           id: expect.any(String),
+          faceId: expect.any(String),
           sourceRange: [170, 194],
         },
         {
           type: 'extrudePlane',
-          position: [0, 0, 0],
-          rotation: [0, 0, 0, 1],
-          faceId: expect.any(String),
           name: '',
           id: expect.any(String),
+          faceId: expect.any(String),
           sourceRange: [202, 230],
         },
       ],
