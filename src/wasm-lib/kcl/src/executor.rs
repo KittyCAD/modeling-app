@@ -1248,7 +1248,14 @@ impl ExecutorContext {
 
         if BodyType::Root == body_type {
             // Flush the batch queue.
-            self.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+            self.engine
+                .flush_batch(
+                    // True here tells the engine to flush all the end commands as well like fillets
+                    // and chamfers where the engine would otherwise eat the ID of the segments.
+                    true,
+                    SourceRange([program.end, program.end]),
+                )
+                .await?;
         }
 
         Ok(memory.clone())

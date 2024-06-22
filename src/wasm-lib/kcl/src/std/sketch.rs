@@ -1173,6 +1173,12 @@ pub(crate) async fn inner_start_profile_at(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
+    if let SketchSurface::Face(_) = &sketch_surface {
+        // Flush the batch for our fillets/chamfers if there are any.
+        // If we do not do these for sketch on face, things will fail with face does not exist.
+        args.flush_batch().await?;
+    }
+
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
     let id = uuid::Uuid::new_v4();

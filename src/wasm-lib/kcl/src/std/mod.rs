@@ -224,6 +224,17 @@ impl Args {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
 
+    // Add a modeling command to the batch that gets executed at the end of the file.
+    // This is good for something like fillet or chamfer where the engine would
+    // eat the path id if we executed it right away.
+    pub async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+    }
+
     /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,
@@ -231,6 +242,16 @@ impl Args {
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+    }
+
+    /// Flush the batch for our fillets/chamfers if there are any.
+    pub async fn flush_batch(&self) -> Result<(), KclError> {
+        if self.ctx.engine.batch_end().lock().unwrap().is_empty() {
+            return Ok(());
+        }
+        self.ctx.engine.flush_batch(true, SourceRange::default()).await?;
+
+        Ok(())
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
