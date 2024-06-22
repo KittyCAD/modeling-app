@@ -2692,14 +2692,17 @@ async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
   if (openPanes.includes('code')) {
     await page.getByText('startProfileAt([4.61, -14.01], %)').click()
   } else {
+    // Wait for the render.
+    await page.waitForTimeout(1000)
     // Select the sketch
-    await page.mouse.move(800, 350)
-    await page.mouse.down()
+    await page.mouse.click(700, 370)
   }
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(400)
-  let prevContent = await page.locator('.cm-content').innerText()
+  if (openPanes.includes('code')) {
+    let prevContent = await page.locator('.cm-content').innerText()
+  }
 
   const step5 = { steps: 5 }
 
