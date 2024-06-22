@@ -202,6 +202,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 let ws_resp = self
                     .inner_send_modeling_cmd(batch_id, source_range, final_req, id_to_source_range.clone())
                     .await?;
+                let source_range = id_to_source_range.get(&last_id).cloned().ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get source range for command ID: {:?}", last_id),
+                        source_ranges: vec![],
+                    })
+                })?;
                 let response = self.parse_websocket_response(ws_resp, source_range)?;
 
                 // If we have a batch response, we want to return the specific id we care about.
