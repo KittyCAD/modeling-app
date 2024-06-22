@@ -394,8 +394,8 @@ export function sketchOnExtrudedFace(
     'const'
   )
 
-    console.log('sketchPathToNode', sketchPathToNode)
-    console.log('extrudePathToNode', extrudePathToNode)
+  console.log('sketchPathToNode', sketchPathToNode)
+  console.log('extrudePathToNode', extrudePathToNode)
   _node.body = [..._node.body, newSurface]
 
   // Create the variable for the sketch.
