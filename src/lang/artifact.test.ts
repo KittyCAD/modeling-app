@@ -51,13 +51,7 @@ const mySketch001 = startSketchOn('XY')
           },
         },
       ],
-      position: [0, 0, 0],
-      rotation: [0, 0, 0, 1],
-      xAxis: { x: 1, y: 0, z: 0 },
-      yAxis: { x: 0, y: 1, z: 0 },
-      zAxis: { x: 0, y: 0, z: 1 },
       id: expect.any(String),
-      entityId: expect.any(String),
       __meta: [{ sourceRange: [46, 71] }],
     })
   })
@@ -79,8 +73,6 @@ const mySketch001 = startSketchOn('XY')
       value: [
         {
           type: 'extrudePlane',
-          position: [0, 0, 0],
-          rotation: [0, 0, 0, 1],
           faceId: expect.any(String),
           name: '',
           id: expect.any(String),
@@ -88,8 +80,6 @@ const mySketch001 = startSketchOn('XY')
         },
         {
           type: 'extrudePlane',
-          position: [0, 0, 0],
-          rotation: [0, 0, 0, 1],
           faceId: expect.any(String),
           name: '',
           id: expect.any(String),
@@ -162,8 +152,6 @@ const sk2 = startSketchOn('XY')
         value: [
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
             faceId: expect.any(String),
             name: '',
             id: expect.any(String),
@@ -171,8 +159,6 @@ const sk2 = startSketchOn('XY')
           },
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
             faceId: expect.any(String),
             name: 'p',
             id: expect.any(String),
@@ -180,8 +166,6 @@ const sk2 = startSketchOn('XY')
           },
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
             faceId: expect.any(String),
             name: '',
             id: expect.any(String),
@@ -221,8 +205,6 @@ const sk2 = startSketchOn('XY')
           },
         ],
         height: 2,
-        position: [0, 0, 0],
-        rotation: [0, 0, 0, 1],
         xAxis: { x: 1, y: 0, z: 0 },
         yAxis: { x: 0, y: 1, z: 0 },
         zAxis: { x: 0, y: 0, z: 1 },
@@ -236,8 +218,6 @@ const sk2 = startSketchOn('XY')
         value: [
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
             faceId: expect.any(String),
             name: '',
             id: expect.any(String),
@@ -245,8 +225,6 @@ const sk2 = startSketchOn('XY')
           },
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
             faceId: expect.any(String),
             name: 'p',
             id: expect.any(String),
@@ -254,8 +232,6 @@ const sk2 = startSketchOn('XY')
           },
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
             faceId: expect.any(String),
             name: '',
             id: expect.any(String),
@@ -295,8 +271,6 @@ const sk2 = startSketchOn('XY')
           },
         ],
         height: 2,
-        position: [0, 0, 0],
-        rotation: [0, 0, 0, 1],
         xAxis: { x: 1, y: 0, z: 0 },
         yAxis: { x: 0, y: 1, z: 0 },
         zAxis: { x: 0, y: 0, z: 1 },

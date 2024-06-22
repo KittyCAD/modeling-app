@@ -177,13 +177,7 @@ const newVar = myVar + 1`
           },
         },
       ],
-      position: [0, 0, 0],
-      rotation: [0, 0, 0, 1],
-      xAxis: { x: 1, y: 0, z: 0 },
-      yAxis: { x: 0, y: 1, z: 0 },
-      zAxis: { x: 0, y: 0, z: 1 },
       id: expect.any(String),
-      entityId: expect.any(String),
       __meta: [{ sourceRange: [39, 63] }],
     })
   })
