@@ -167,6 +167,7 @@ export class LanguageServerPlugin implements PluginValue {
     if (pos === null) return null
     const dom = document.createElement('div')
     dom.classList.add('documentation')
+    dom.classList.add('hover-tooltip')
     dom.style.zIndex = '99999999'
     if (this.allowHTMLContent) dom.innerHTML = formatContents(contents)
     else dom.textContent = formatContents(contents)
