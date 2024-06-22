@@ -1388,7 +1388,7 @@ export class SceneEntities {
       },
       onClick: async (args) => {
         const { streamDimensions } = useStore.getState()
-        const { entity_id, ...rest } = await sendSelectEventToEngine(
+        const { entity_id } = await sendSelectEventToEngine(
           args?.mouseEvent,
           document.getElementById('video-stream') as HTMLVideoElement,
           streamDimensions
