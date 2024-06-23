@@ -11,7 +11,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -55,7 +55,7 @@ async fn inner_line_to(
     let from = sketch_group.current_pen_position()?;
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -217,7 +217,7 @@ async fn inner_line(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -409,7 +409,7 @@ async fn inner_angled_line(
         },
     };
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -1069,30 +1069,15 @@ async fn start_sketch_on_face(
         })?,
     };
 
-    // Enter sketch mode on the face.
-    let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(
-        id,
-        ModelingCmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: extrude_plane_id,
-            adjust_camera: false,
-            planar_normal: None,
-        },
-    )
-    .await?;
-
     Ok(Box::new(Face {
-        id,
+        id: extrude_plane_id,
         value: tag.to_string(),
         sketch_group_id: extrude_group.id,
         // TODO: get this from the extrude plane data.
-        x_axis: extrude_group.x_axis,
-        y_axis: extrude_group.y_axis,
-        z_axis: extrude_group.z_axis,
+        x_axis: extrude_group.sketch_group.on.x_axis(),
+        y_axis: extrude_group.sketch_group.on.y_axis(),
+        z_axis: extrude_group.sketch_group.on.z_axis(),
         meta: vec![args.source_range.into()],
-        face_id: extrude_plane_id,
     }))
 }
 
@@ -1117,7 +1102,7 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
         } => {
             // Create the custom plane on the fly.
             let id = uuid::Uuid::new_v4();
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::MakePlane {
                     clobber: false,
@@ -1133,20 +1118,6 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
             id
         }
     };
-
-    // Enter sketch mode on the plane.
-    args.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: plane.id,
-            // We pass in the normal for the plane here.
-            planar_normal: Some(plane.z_axis.clone().into()),
-            adjust_camera: false,
-        },
-    )
-    .await?;
 
     Ok(Box::new(plane))
 }
@@ -1202,11 +1173,37 @@ pub(crate) async fn inner_start_profile_at(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
+    if let SketchSurface::Face(_) = &sketch_surface {
+        // Flush the batch for our fillets/chamfers if there are any.
+        // If we do not do these for sketch on face, things will fail with face does not exist.
+        args.flush_batch().await?;
+    }
+
+    // Enter sketch mode on the surface.
+    // We call this here so you can reuse the sketch surface for multiple sketches.
+    let id = uuid::Uuid::new_v4();
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::EnableSketchMode {
+            animated: false,
+            ortho: false,
+            entity_id: sketch_surface.id(),
+            adjust_camera: false,
+            planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
+                // We pass in the normal for the plane here.
+                Some(plane.z_axis.clone().into())
+            } else {
+                None
+            },
+        },
+    )
+    .await?;
+
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(path_id, ModelingCmd::StartPath {}).await?;
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(path_id, ModelingCmd::StartPath {}).await?;
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::MovePathPen {
             path: path_id,
@@ -1232,12 +1229,6 @@ pub(crate) async fn inner_start_profile_at(
     let sketch_group = SketchGroup {
         id: path_id,
         on: sketch_surface.clone(),
-        position: Position([0.0, 0.0, 0.0]),
-        rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
-        x_axis: sketch_surface.x_axis(),
-        y_axis: sketch_surface.y_axis(),
-        z_axis: sketch_surface.z_axis(),
-        entity_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
@@ -1359,7 +1350,7 @@ pub(crate) async fn inner_close(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ClosePath {
             path_id: sketch_group.id,
@@ -1370,7 +1361,7 @@ pub(crate) async fn inner_close(
     // If we are sketching on a plane we can close the sketch group now.
     if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 
@@ -1436,7 +1427,6 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)
-///
 // const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
@@ -1469,7 +1459,7 @@ pub(crate) async fn inner_arc(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -1565,7 +1555,7 @@ async fn inner_tangential_arc(
             let start_angle = Angle::from_degrees(0.0);
             let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
 
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::ExtendPath {
                     path: sketch_group.id,
@@ -1582,7 +1572,7 @@ async fn inner_tangential_arc(
             to.into()
         }
         TangentialArcData::Point(to) => {
-            args.send_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
+            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
 
             *to
         }
@@ -1692,7 +1682,7 @@ async fn inner_tangential_arc_to(
 
     let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
+    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
@@ -1769,7 +1759,7 @@ async fn inner_bezier_curve(
 
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
@@ -1864,7 +1854,7 @@ async fn inner_hole(
 
     match hole_sketch_group {
         SketchGroupSet::SketchGroup(hole_sketch_group) => {
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 ModelingCmd::Solid2DAddHole {
                     object_id: sketch_group.id,
@@ -1874,7 +1864,7 @@ async fn inner_hole(
             .await?;
             // suggestion (mike)
             // we also hide the source hole since its essentially "consumed" by this operation
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 ModelingCmd::ObjectVisible {
                     object_id: hole_sketch_group.id,
@@ -1885,7 +1875,7 @@ async fn inner_hole(
         }
         SketchGroupSet::SketchGroups(hole_sketch_groups) => {
             for hole_sketch_group in hole_sketch_groups {
-                args.send_modeling_cmd(
+                args.batch_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     ModelingCmd::Solid2DAddHole {
                         object_id: sketch_group.id,
@@ -1895,7 +1885,7 @@ async fn inner_hole(
                 .await?;
                 // suggestion (mike)
                 // we also hide the source hole since its essentially "consumed" by this operation
-                args.send_modeling_cmd(
+                args.batch_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     ModelingCmd::ObjectVisible {
                         object_id: hole_sketch_group.id,

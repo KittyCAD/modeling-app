@@ -1,8 +1,7 @@
-use super::{walk, Node};
-use crate::{ast::types::Program, executor::SourceRange, lsp::IntoDiagnostic};
 use anyhow::Result;
-use std::sync::{Arc, Mutex};
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+
+use crate::{executor::SourceRange, lint::Node, lsp::IntoDiagnostic};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -24,6 +23,7 @@ where
 
 /// Specific discovered lint rule Violation of a particular Finding.
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct Discovered {
     /// Zoo Lint Finding information.
     pub finding: Finding,
@@ -36,6 +36,30 @@ pub struct Discovered {
 
     /// Is this discovered issue overridden by the programmer?
     pub overridden: bool,
+}
+
+#[cfg(feature = "pyo3")]
+#[pyo3::pymethods]
+impl Discovered {
+    #[getter]
+    pub fn finding(&self) -> Finding {
+        self.finding.clone()
+    }
+
+    #[getter]
+    pub fn description(&self) -> String {
+        self.description.clone()
+    }
+
+    #[getter]
+    pub fn pos(&self) -> SourceRange {
+        self.pos
+    }
+
+    #[getter]
+    pub fn overridden(&self) -> bool {
+        self.overridden
+    }
 }
 
 impl IntoDiagnostic for Discovered {
@@ -60,6 +84,7 @@ impl IntoDiagnostic for Discovered {
 
 /// Abstract lint problem type.
 #[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct Finding {
     /// Unique identifier for this particular issue.
     pub code: &'static str,
@@ -86,6 +111,30 @@ impl Finding {
     }
 }
 
+#[cfg(feature = "pyo3")]
+#[pyo3::pymethods]
+impl Finding {
+    #[getter]
+    pub fn code(&self) -> &'static str {
+        self.code
+    }
+
+    #[getter]
+    pub fn title(&self) -> &'static str {
+        self.title
+    }
+
+    #[getter]
+    pub fn description(&self) -> &'static str {
+        self.description
+    }
+
+    #[getter]
+    pub fn experimental(&self) -> bool {
+        self.experimental
+    }
+}
+
 macro_rules! def_finding {
     ( $code:ident, $title:expr, $description:expr ) => {
         /// Generated Finding
@@ -105,24 +154,8 @@ macro_rules! finding {
     };
 }
 pub(crate) use finding;
-
 #[cfg(test)]
 pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_finding};
-
-/// Check the provided Program for any Findings.
-pub fn lint<'a, RuleT>(prog: &'a Program, rule: RuleT) -> Result<Vec<Discovered>>
-where
-    RuleT: Rule<'a>,
-{
-    let v = Arc::new(Mutex::new(vec![]));
-    walk(prog, &|node: Node<'a>| {
-        let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-        findings.append(&mut rule.check(node)?);
-        Ok(true)
-    })?;
-    let x = v.lock().unwrap();
-    Ok(x.clone())
-}
 
 #[cfg(test)]
 mod test {
@@ -132,7 +165,7 @@ mod test {
             let tokens = $crate::token::lexer($kcl).unwrap();
             let parser = $crate::parser::Parser::new(tokens);
             let prog = parser.ast().unwrap();
-            for discovered_finding in $crate::lint::lint(&prog, $check).unwrap() {
+            for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     assert!(false, "Finding {:?} was emitted", $finding.code);
                 }
@@ -146,7 +179,7 @@ mod test {
             let parser = $crate::parser::Parser::new(tokens);
             let prog = parser.ast().unwrap();
 
-            for discovered_finding in $crate::lint::lint(&prog, $check).unwrap() {
+            for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     return;
                 }

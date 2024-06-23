@@ -48,8 +48,6 @@ const example = extrude(10, exampleSketch)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The plane id or face id of the sketch group.
-	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
@@ -85,8 +83,6 @@ const example = extrude(10, exampleSketch)
 },
 } |
 {
-	// the face id the sketch is on
-	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
@@ -113,10 +109,6 @@ const example = extrude(10, exampleSketch)
 	z: number,
 },
 },
-	// The position of the sketch group.
-	position: [number, number, number],
-	// The rotation of the sketch group base plane.
-	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
@@ -191,24 +183,6 @@ const example = extrude(10, exampleSketch)
 	to: [number, number],
 	type: "Base",
 }],
-	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
 }
 ```
 * `tag`: `String` (OPTIONAL)
@@ -218,8 +192,6 @@ const example = extrude(10, exampleSketch)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The plane id or face id of the sketch group.
-	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
@@ -255,8 +227,6 @@ const example = extrude(10, exampleSketch)
 },
 } |
 {
-	// the face id the sketch is on
-	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
@@ -283,10 +253,6 @@ const example = extrude(10, exampleSketch)
 	z: number,
 },
 },
-	// The position of the sketch group.
-	position: [number, number, number],
-	// The rotation of the sketch group base plane.
-	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
@@ -361,24 +327,6 @@ const example = extrude(10, exampleSketch)
 	to: [number, number],
 	type: "Base",
 }],
-	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
 }
 ```
 

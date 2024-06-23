@@ -32,9 +32,7 @@ import {
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
-  XZ_PLANE,
   Y_AXIS,
-  YZ_PLANE,
 } from './sceneInfra'
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
@@ -75,7 +73,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { normaliseAngle, roundOff, throttle } from 'lib/utils'
+import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -85,6 +83,7 @@ import {
   findUniqueName,
 } from 'lang/modifyAst'
 import {
+  Selections,
   getEventForSegmentSelection,
   sendSelectEventToEngine,
 } from 'lib/selections'
@@ -302,6 +301,7 @@ export class SceneEntities {
     position,
     maybeModdedAst,
     draftExpressionsIndices,
+    selectionRanges,
   }: {
     sketchPathToNode: PathToNode
     maybeModdedAst: Program
@@ -309,6 +309,7 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
+    selectionRanges?: Selections
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
@@ -345,11 +346,8 @@ export class SceneEntities {
       pathToNode: sketchPathToNode,
     }
     const dummy = new Mesh()
-    dummy.position.set(
-      sketchGroup.position[0],
-      sketchGroup.position[1],
-      sketchGroup.position[2]
-    )
+    // TODO: When we actually have sketch positions and rotations we can use them here.
+    dummy.position.set(0, 0, 0)
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
       (sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -401,6 +399,12 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
+      const isSelected = selectionRanges?.codeBasedSelections.some(
+        (selection) => {
+          return isOverlap(selection.range, segment.__geoMeta.sourceRange)
+        }
+      )
+
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
         maybeModdedAst,
@@ -418,6 +422,7 @@ export class SceneEntities {
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          isSelected,
         })
         callbacks.push(
           this.updateTangentialArcToSegment({
@@ -439,6 +444,7 @@ export class SceneEntities {
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          isSelected,
         })
         callbacks.push(
           this.updateStraightSegment({
@@ -1329,13 +1335,6 @@ export class SceneEntities {
         to,
       })
   }
-  async animateAfterSketch() {
-    // if (isReducedMotion()) {
-    //   sceneInfra.camControls.usePerspectiveCamera()
-    //   return
-    // }
-    await sceneInfra.camControls.animateToPerspective()
-  }
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)
   }
@@ -1399,114 +1398,133 @@ export class SceneEntities {
         selected.material.color = defaultPlaneColor(type)
       },
       onClick: async (args) => {
-        const checkExtrudeFaceClick = async (): Promise<
-          ['face' | 'plane' | 'other', string]
-        > => {
-          const { streamDimensions } = useStore.getState()
-          const { entity_id } = await sendSelectEventToEngine(
-            args?.mouseEvent,
-            document.getElementById('video-stream') as HTMLVideoElement,
-            streamDimensions
-          )
-          if (!entity_id) return ['other', '']
-          if (
-            engineCommandManager.defaultPlanes?.xy === entity_id ||
-            engineCommandManager.defaultPlanes?.xz === entity_id ||
-            engineCommandManager.defaultPlanes?.yz === entity_id
-          ) {
-            return ['plane', entity_id]
+        const { streamDimensions } = useStore.getState()
+        const { entity_id } = await sendSelectEventToEngine(
+          args?.mouseEvent,
+          document.getElementById('video-stream') as HTMLVideoElement,
+          streamDimensions
+        )
+
+        let _entity_id = entity_id
+        if (!_entity_id) return
+        if (
+          engineCommandManager.defaultPlanes?.xy === _entity_id ||
+          engineCommandManager.defaultPlanes?.xz === _entity_id ||
+          engineCommandManager.defaultPlanes?.yz === _entity_id ||
+          engineCommandManager.defaultPlanes?.negXy === _entity_id ||
+          engineCommandManager.defaultPlanes?.negXz === _entity_id ||
+          engineCommandManager.defaultPlanes?.negYz === _entity_id
+        ) {
+          const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+            [engineCommandManager.defaultPlanes.xy]: 'XY',
+            [engineCommandManager.defaultPlanes.xz]: 'XZ',
+            [engineCommandManager.defaultPlanes.yz]: 'YZ',
+            [engineCommandManager.defaultPlanes.negXy]: '-XY',
+            [engineCommandManager.defaultPlanes.negXz]: '-XZ',
+            [engineCommandManager.defaultPlanes.negYz]: '-YZ',
           }
-          const artifact = this.engineCommandManager.artifactMap[entity_id]
-          // If we clicked on an extrude wall, we climb up the parent Id
-          // to get the sketch profile's face ID. If we clicked on an endcap,
-          // we already have it.
-          const targetId =
-            'additionalData' in artifact &&
-            artifact.additionalData?.type === 'cap'
-              ? entity_id
-              : artifact.parentId
+          // TODO can we get this information from rust land when it creates the default planes?
+          // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+          let zAxis: [number, number, number] = [0, 0, 1]
+          let yAxis: [number, number, number] = [0, 1, 0]
 
-          // tsc cannot infer that target can have extrusions
-          // from the commandType (why?) so we need to cast it
-          const target = this.engineCommandManager.artifactMap?.[
-            targetId || ''
-          ] as ArtifactMapCommand & { extrusions?: string[] }
+          // get unit vector from camera position to target
+          const camVector = sceneInfra.camControls.camera.position
+            .clone()
+            .sub(sceneInfra.camControls.target)
 
-          // TODO: We get the first extrusion command ID,
-          // which is fine while backend systems only support one extrusion.
-          // but we need to more robustly handle resolving to the correct extrusion
-          // if there are multiple.
-          const extrusions =
-            this.engineCommandManager.artifactMap?.[
-              target?.extrusions?.[0] || ''
-            ]
-
-          if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
-            return ['other', entity_id]
-
-          const faceInfo = await getFaceDetails(entity_id)
-          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-            return ['other', entity_id]
-          const { z_axis, y_axis, origin } = faceInfo
-          const sketchPathToNode = getNodePathFromSourceRange(
-            kclManager.ast,
-            artifact.range
-          )
-          const extrudePathToNode = extrusions?.range
-            ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
-            : []
+          if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
+            zAxis = [0, 0, 1]
+            yAxis = [0, 1, 0]
+            if (camVector.z < 0) {
+              zAxis = [0, 0, -1]
+              _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
+            }
+          } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
+            zAxis = [1, 0, 0]
+            yAxis = [0, 0, 1]
+            if (camVector.x < 0) {
+              zAxis = [-1, 0, 0]
+              _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
+            }
+          } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
+            zAxis = [0, 1, 0]
+            yAxis = [0, 0, 1]
+            _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
+            if (camVector.y < 0) {
+              zAxis = [0, -1, 0]
+              _entity_id = engineCommandManager.defaultPlanes?.xz || ''
+            }
+          }
 
           sceneInfra.modelingSend({
             type: 'Select default plane',
             data: {
-              type: 'extrudeFace',
-              zAxis: [z_axis.x, z_axis.y, z_axis.z],
-              yAxis: [y_axis.x, y_axis.y, y_axis.z],
-              position: [origin.x, origin.y, origin.z].map(
-                (num) => num / sceneInfra._baseUnitMultiplier
-              ) as [number, number, number],
-              sketchPathToNode,
-              extrudePathToNode,
-              cap:
-                artifact?.additionalData?.type === 'cap'
-                  ? artifact.additionalData.info
-                  : 'none',
-              faceId: entity_id,
+              type: 'defaultPlane',
+              planeId: _entity_id,
+              plane: defaultPlaneStrMap[_entity_id],
+              zAxis,
+              yAxis,
             },
           })
-          return ['face', entity_id]
+          return
         }
+        const artifact = this.engineCommandManager.artifactMap[_entity_id]
+        // If we clicked on an extrude wall, we climb up the parent Id
+        // to get the sketch profile's face ID. If we clicked on an endcap,
+        // we already have it.
+        const targetId =
+          'additionalData' in artifact &&
+          artifact.additionalData?.type === 'cap'
+            ? _entity_id
+            : artifact.parentId
 
-        const faceResult = await checkExtrudeFaceClick()
-        if (faceResult[0] === 'face') return
+        // tsc cannot infer that target can have extrusions
+        // from the commandType (why?) so we need to cast it
+        const target = this.engineCommandManager.artifactMap?.[
+          targetId || ''
+        ] as ArtifactMapCommand & { extrusions?: string[] }
 
-        if (!args || !args.intersects?.[0]) return
-        if (args.mouseEvent.which !== 1) return
-        const { intersects } = args
-        const type = intersects?.[0].object.name || ''
-        const posNorm = Number(intersects?.[0]?.normal?.z) > 0
-        let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
-        let zAxis: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
-        let yAxis: [number, number, number] = [0, 1, 0]
-        if (type === YZ_PLANE) {
-          planeString = posNorm ? 'YZ' : '-YZ'
-          zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
-          yAxis = [0, 0, 1]
-        } else if (type === XZ_PLANE) {
-          planeString = posNorm ? '-XZ' : 'XZ'
-          zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
-          yAxis = [0, 0, 1]
-        }
+        // TODO: We get the first extrusion command ID,
+        // which is fine while backend systems only support one extrusion.
+        // but we need to more robustly handle resolving to the correct extrusion
+        // if there are multiple.
+        const extrusions =
+          this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
+
+        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
+
+        const faceInfo = await getFaceDetails(_entity_id)
+        if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
+        const { z_axis, y_axis, origin } = faceInfo
+        const sketchPathToNode = getNodePathFromSourceRange(
+          kclManager.ast,
+          artifact.range
+        )
+
+        const extrudePathToNode = extrusions?.range
+          ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+          : []
+
         sceneInfra.modelingSend({
           type: 'Select default plane',
           data: {
-            type: 'defaultPlane',
-            plane: planeString,
-            zAxis,
-            yAxis,
-            planeId: faceResult[1],
+            type: 'extrudeFace',
+            zAxis: [z_axis.x, z_axis.y, z_axis.z],
+            yAxis: [y_axis.x, y_axis.y, y_axis.z],
+            position: [origin.x, origin.y, origin.z].map(
+              (num) => num / sceneInfra._baseUnitMultiplier
+            ) as [number, number, number],
+            sketchPathToNode,
+            extrudePathToNode,
+            cap:
+              artifact?.additionalData?.type === 'cap'
+                ? artifact.additionalData.info
+                : 'none',
+            faceId: _entity_id,
           },
         })
+        return
       },
     })
   }
@@ -1756,7 +1774,11 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
-  return programMemory.root[varDec?.id?.name || ''] as SketchGroup
+  const result = programMemory.root[varDec?.id?.name || '']
+  if (result?.type === 'ExtrudeGroup') {
+    return result.sketchGroup
+  }
+  return result as SketchGroup
 }
 
 function colorSegment(object: any, color: number) {
@@ -1792,7 +1814,7 @@ export function getSketchQuaternion(
     ast: kclManager.ast,
     programMemory: kclManager.programMemory,
   })
-  const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  const zAxis = sketchGroup?.on.zAxis || sketchNormalBackUp
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
 export async function getSketchOrientationDetails(
@@ -1807,20 +1829,24 @@ export async function getSketchOrientationDetails(
     programMemory: kclManager.programMemory,
   })
   if (sketchGroup.on.type === 'plane') {
-    const zAxis = sketchGroup?.zAxis
+    const zAxis = sketchGroup?.on.zAxis
     return {
       quat: getQuaternionFromZAxis(massageFormats(zAxis)),
       sketchDetails: {
         sketchPathToNode,
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
-        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        yAxis: [
+          sketchGroup.on.yAxis.x,
+          sketchGroup.on.yAxis.y,
+          sketchGroup.on.yAxis.z,
+        ],
         origin: [0, 0, 0],
         faceId: sketchGroup.on.id,
       },
     }
   }
   if (sketchGroup.on.type === 'face') {
-    const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
+    const faceInfo = await getFaceDetails(sketchGroup.on.id)
 
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       throw new Error('faceInfo')
@@ -1836,7 +1862,7 @@ export async function getSketchOrientationDetails(
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
-        faceId: sketchGroup.on.faceId,
+        faceId: sketchGroup.on.id,
       },
     }
   }

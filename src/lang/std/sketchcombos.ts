@@ -1583,7 +1583,10 @@ export function transformAstSketchLines({
     })
 
     const varName = varDec.id.name
-    const sketchGroup = programMemory.root?.[varName]
+    let sketchGroup = programMemory.root?.[varName]
+    if (sketchGroup.type === 'ExtrudeGroup') {
+      sketchGroup = sketchGroup.sketchGroup
+    }
     if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
       throw new Error('not a sketch group')
     const seg = getSketchSegmentFromPathToNode(

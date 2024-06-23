@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use kittycad::types::{WebSocketRequest, WebSocketResponse};
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
@@ -31,6 +31,7 @@ pub struct EngineConnection {
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -40,23 +41,54 @@ pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
 }
 
+/// Occurs when client couldn't read from the WebSocket to the engine.
+// #[derive(Debug)]
+pub enum WebSocketReadError {
+    /// Could not read a message due to WebSocket errors.
+    Read(tokio_tungstenite::tungstenite::Error),
+    /// WebSocket message didn't contain a valid message that the KCL Executor could parse.
+    Deser(anyhow::Error),
+}
+
+impl From<anyhow::Error> for WebSocketReadError {
+    fn from(e: anyhow::Error) -> Self {
+        Self::Deser(e)
+    }
+}
+
 impl TcpRead {
-    pub async fn read(&mut self) -> Result<WebSocketResponse> {
+    pub async fn read(&mut self) -> std::result::Result<WebSocketResponse, WebSocketReadError> {
         let Some(msg) = self.stream.next().await else {
-            anyhow::bail!("Failed to read from websocket");
+            return Err(anyhow::anyhow!("Failed to read from WebSocket").into());
         };
-        let msg: WebSocketResponse = match msg? {
-            WsMsg::Text(text) => serde_json::from_str(&text)?,
-            WsMsg::Binary(bin) => bson::from_slice(&bin)?,
-            other => anyhow::bail!("Unexpected websocket message from server: {}", other),
+        let msg = match msg {
+            Ok(msg) => msg,
+            Err(e) if matches!(e, tokio_tungstenite::tungstenite::Error::Protocol(_)) => {
+                return Err(WebSocketReadError::Read(e))
+            }
+            Err(e) => return Err(anyhow::anyhow!("Error reading from engine's WebSocket: {e}").into()),
+        };
+        let msg: WebSocketResponse = match msg {
+            WsMsg::Text(text) => serde_json::from_str(&text)
+                .map_err(anyhow::Error::from)
+                .map_err(WebSocketReadError::from)?,
+            WsMsg::Binary(bin) => bson::from_slice(&bin)
+                .map_err(anyhow::Error::from)
+                .map_err(WebSocketReadError::from)?,
+            other => return Err(anyhow::anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
         };
         Ok(msg)
     }
 }
 
-#[derive(Debug)]
 pub struct TcpReadHandle {
-    handle: Arc<tokio::task::JoinHandle<Result<()>>>,
+    handle: Arc<tokio::task::JoinHandle<Result<(), WebSocketReadError>>>,
+}
+
+impl std::fmt::Debug for TcpReadHandle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "TcpReadHandle")
+    }
 }
 
 impl Drop for TcpReadHandle {
@@ -149,15 +181,47 @@ impl EngineConnection {
             loop {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
-                        for e in ws_resp.errors.iter().flatten() {
-                            println!("got error message: {e}");
+                        // If we got a batch response, add all the inner responses.
+                        if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) =
+                            &ws_resp.resp
+                        {
+                            for (resp_id, batch_response) in responses {
+                                let id: uuid::Uuid = resp_id.parse().unwrap();
+                                if let Some(response) = &batch_response.response {
+                                    responses_clone.insert(
+                                        id,
+                                        kittycad::types::WebSocketResponse {
+                                            request_id: Some(id),
+                                            resp: Some(kittycad::types::OkWebSocketResponseData::Modeling {
+                                                modeling_response: response.clone(),
+                                            }),
+                                            errors: None,
+                                            success: Some(true),
+                                        },
+                                    );
+                                } else {
+                                    responses_clone.insert(
+                                        id,
+                                        kittycad::types::WebSocketResponse {
+                                            request_id: Some(id),
+                                            resp: None,
+                                            errors: batch_response.errors.clone(),
+                                            success: Some(false),
+                                        },
+                                    );
+                                }
+                            }
                         }
+
                         if let Some(id) = ws_resp.request_id {
                             responses_clone.insert(id, ws_resp.clone());
                         }
                     }
                     Err(e) => {
-                        println!("got ws error: {:?}", e);
+                        match &e {
+                            WebSocketReadError::Read(e) => eprintln!("could not read from WS: {:?}", e),
+                            WebSocketReadError::Deser(e) => eprintln!("could not deserialize msg from WS: {:?}", e),
+                        }
                         *socket_health_tcp_read.lock().unwrap() = SocketHealth::Inactive;
                         return Err(e);
                     }
@@ -173,6 +237,7 @@ impl EngineConnection {
             responses,
             socket_health,
             batch: Arc::new(Mutex::new(Vec::new())),
+            batch_end: Arc::new(Mutex::new(Vec::new())),
             default_planes: Default::default(),
         })
     }
@@ -182,6 +247,10 @@ impl EngineConnection {
 impl EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
+    }
+
+    fn batch_end(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+        self.batch_end.clone()
     }
 
     async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
@@ -212,7 +281,7 @@ impl EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<OkWebSocketResponseData, KclError> {
+    ) -> Result<WebSocketResponse, KclError> {
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -257,14 +326,7 @@ impl EngineManager for EngineConnection {
             }
             // We pop off the responses to cleanup our mappings.
             if let Some((_, resp)) = self.responses.remove(&id) {
-                return if let Some(data) = &resp.resp {
-                    Ok(data.clone())
-                } else {
-                    Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Modeling command failed: {:?}", resp.errors),
-                        source_ranges: vec![source_range],
-                    }))
-                };
+                return Ok(resp);
             }
         }
 

@@ -1,5 +1,6 @@
 //! Functions implemented for language execution.
 
+pub mod chamfer;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -10,6 +11,7 @@ pub mod patterns;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
+pub mod shell;
 pub mod sketch;
 pub mod types;
 pub mod utils;
@@ -29,7 +31,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, SketchGroup, SketchGroupSet,
+        SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -81,11 +84,13 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
+        Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::shell::Shell),
         Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::revolve::GetEdge),
         Box::new(crate::std::import::Import),
@@ -210,12 +215,43 @@ impl Args {
         }
     }
 
+    // Add a modeling command to the batch but don't fire it right away.
+    pub async fn batch_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
+    }
+
+    // Add a modeling command to the batch that gets executed at the end of the file.
+    // This is good for something like fillet or chamfer where the engine would
+    // eat the path id if we executed it right away.
+    pub async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+    }
+
+    /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+    }
+
+    /// Flush the batch for our fillets/chamfers if there are any.
+    pub async fn flush_batch(&self) -> Result<(), KclError> {
+        if self.ctx.engine.batch_end().lock().unwrap().is_empty() {
+            return Ok(());
+        }
+        self.ctx.engine.flush_batch(true, SourceRange::default()).await?;
+
+        Ok(())
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
@@ -422,18 +458,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = first_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the first argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match first_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the first argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         let second_value = self.args.get(1).ok_or_else(|| {
@@ -657,18 +689,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match second_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((data, sketch_set))
@@ -767,6 +795,48 @@ impl Args {
         };
 
         Ok((data, sketch_surface, tag))
+    }
+
+    fn get_data_and_extrude_group_set<T: serde::de::DeserializeOwned>(&self) -> Result<(T, ExtrudeGroupSet), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_set = match second_value.get_extrude_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an ExtrudeGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
+        };
+
+        Ok((data, extrude_set))
     }
 
     fn get_data_and_extrude_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<ExtrudeGroup>), KclError> {
@@ -892,18 +962,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match second_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((number, sketch_set))

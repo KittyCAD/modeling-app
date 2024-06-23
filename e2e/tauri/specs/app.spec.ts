@@ -69,7 +69,6 @@ describe('ZMA sign in flow', () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
 
-
     // Refresh once before the authorized user flows
     await browser.execute(`window.location.href = "${tauriProtocol}/home"`)
     await new Promise((resolve) => setTimeout(resolve, 10000))
@@ -152,6 +151,7 @@ describe('ZMA authorized user flows', () => {
       expect(await errorText.getText()).toContain('unexpected error')
     }
     await browser.execute(`window.location.href = "${tauriProtocol}/home"`)
+
   })
 })
 

@@ -95,7 +95,8 @@ async fn inner_fillet(
             EdgeReference::Uuid(uuid) => uuid,
             EdgeReference::Tag(tag) => {
                 extrude_group
-                    .sketch_group_values
+                    .sketch_group
+                    .value
                     .iter()
                     .find(|p| p.get_name() == tag)
                     .ok_or_else(|| {
@@ -110,13 +111,14 @@ async fn inner_fillet(
             }
         };
 
-        args.send_modeling_cmd(
+        args.batch_end_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
                 tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
+                cut_type: Some(kittycad::types::CutType::Fillet),
             },
         )
         .await?;
@@ -176,7 +178,8 @@ async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, 
         return Ok(Uuid::new_v4());
     }
     let tagged_path = extrude_group
-        .sketch_group_values
+        .sketch_group
+        .value
         .iter()
         .find(|p| p.get_name() == tag)
         .ok_or_else(|| {
@@ -267,7 +270,8 @@ async fn inner_get_next_adjacent_edge(
         return Ok(Uuid::new_v4());
     }
     let tagged_path = extrude_group
-        .sketch_group_values
+        .sketch_group
+        .value
         .iter()
         .find(|p| p.get_name() == tag)
         .ok_or_else(|| {
@@ -363,7 +367,8 @@ async fn inner_get_previous_adjacent_edge(
         return Ok(Uuid::new_v4());
     }
     let tagged_path = extrude_group
-        .sketch_group_values
+        .sketch_group
+        .value
         .iter()
         .find(|p| p.get_name() == tag)
         .ok_or_else(|| {

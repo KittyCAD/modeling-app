@@ -15,6 +15,7 @@ use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
+    settings::types::UnitLength,
     std::{FunctionKind, StdLib},
 };
 
@@ -152,6 +153,34 @@ pub enum MemoryItem {
     },
 }
 
+impl MemoryItem {
+    pub fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
+        match self {
+            MemoryItem::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
+            MemoryItem::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
+            MemoryItem::UserVal(value) => {
+                let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
+                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
+                Ok(SketchGroupSet::SketchGroups(sg.clone()))
+            }
+            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
+        }
+    }
+
+    pub fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+        match self {
+            MemoryItem::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
+            MemoryItem::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
+            MemoryItem::UserVal(value) => {
+                let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
+                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
+                Ok(ExtrudeGroupSet::ExtrudeGroups(eg.clone()))
+            }
+            _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+}
+
 /// A geometry.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -260,8 +289,6 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
-    /// the face id the sketch is on
-    pub face_id: uuid::Uuid,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -427,18 +454,6 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// The position of the sketch group.
-    pub position: Position,
-    /// The rotation of the sketch group base plane.
-    pub rotation: Rotation,
-    /// The x-axis of the sketch group base plane in the 3D space
-    pub x_axis: Point3d,
-    /// The y-axis of the sketch group base plane in the 3D space
-    pub y_axis: Point3d,
-    /// The z-axis of the sketch group base plane in the 3D space
-    pub z_axis: Point3d,
-    /// The plane id or face id of the sketch group.
-    pub entity_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -555,20 +570,10 @@ pub struct ExtrudeGroup {
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch group paths.
-    pub sketch_group_values: Vec<Path>,
+    /// The sketch group.
+    pub sketch_group: SketchGroup,
     /// The height of the extrude group.
     pub height: f64,
-    /// The position of the extrude group.
-    pub position: Position,
-    /// The rotation of the extrude group.
-    pub rotation: Rotation,
-    /// The x-axis of the extrude group base plane in the 3D space
-    pub x_axis: Point3d,
-    /// The y-axis of the extrude group base plane in the 3D space
-    pub y_axis: Point3d,
-    /// The z-axis of the extrude group base plane in the 3D space
-    pub z_axis: Point3d,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -597,25 +602,8 @@ pub enum BodyType {
     Block,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
-
-impl From<Position> for Point3d {
-    fn from(p: Position) -> Self {
-        Self {
-            x: p.0[0],
-            y: p.0[1],
-            z: p.0[2],
-        }
-    }
-}
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
-
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
@@ -643,7 +631,7 @@ impl SourceRange {
     pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code[..self.start()].lines().count();
+        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
         if line > 0 {
             line = line.saturating_sub(1);
         }
@@ -656,7 +644,7 @@ impl SourceRange {
     }
 
     pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
-        let lines = code[..self.end()].lines();
+        let lines = code.get(..self.end()).unwrap_or_default().lines();
         if lines.clone().count() == 0 {
             return LspPosition { line: 0, character: 0 };
         }
@@ -894,10 +882,6 @@ pub enum ExtrudeSurface {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
-    /// The position.
-    pub position: Position,
-    /// The rotation.
-    pub rotation: Rotation,
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
@@ -912,10 +896,6 @@ pub struct ExtrudePlane {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {
-    /// The position.
-    pub position: Position,
-    /// The rotation.
-    pub rotation: Rotation,
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
@@ -937,20 +917,6 @@ impl ExtrudeSurface {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.name.to_string(),
-        }
-    }
-
-    pub fn get_position(&self) -> Position {
-        match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.position,
-            ExtrudeSurface::ExtrudeArc(ea) => ea.position,
-        }
-    }
-
-    pub fn get_rotation(&self) -> Rotation {
-        match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
-            ExtrudeSurface::ExtrudeArc(ea) => ea.rotation,
         }
     }
 }
@@ -992,7 +958,7 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone)]
 pub struct ExecutorSettings {
     /// The unit to use in modeling dimensions.
-    pub units: crate::settings::types::UnitLength,
+    pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -1065,10 +1031,10 @@ impl ExecutorContext {
 
         // Set the edge visibility.
         engine
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                kittycad::types::ModelingCmd::EdgeLinesVisible {
+                &kittycad::types::ModelingCmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
                 },
             )
@@ -1083,6 +1049,57 @@ impl ExecutorContext {
         })
     }
 
+    /// For executing unit tests.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_for_unit_test(units: UnitLength) -> Result<Self> {
+        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+        let http_client = reqwest::Client::builder()
+            .user_agent(user_agent)
+            // For file conversions we need this to be long.
+            .timeout(std::time::Duration::from_secs(600))
+            .connect_timeout(std::time::Duration::from_secs(60));
+        let ws_client = reqwest::Client::builder()
+            .user_agent(user_agent)
+            // For file conversions we need this to be long.
+            .timeout(std::time::Duration::from_secs(600))
+            .connect_timeout(std::time::Duration::from_secs(60))
+            .connection_verbose(true)
+            .tcp_keepalive(std::time::Duration::from_secs(600))
+            .http1_only();
+
+        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+
+        // Create the client.
+        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+        // Set a local engine address if it's set.
+        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+            client.set_base_url(addr);
+        }
+
+        let ctx = ExecutorContext::new(
+            &client,
+            ExecutorSettings {
+                units,
+                highlight_edges: true,
+                enable_ssao: false,
+            },
+        )
+        .await?;
+        Ok(ctx)
+    }
+
+    /// Clear everything in the scene.
+    pub async fn reset_scene(&self) -> Result<()> {
+        self.engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                kittycad::types::ModelingCmd::SceneClearAll {},
+            )
+            .await?;
+        Ok(())
+    }
+
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
@@ -1093,11 +1110,11 @@ impl ExecutorContext {
     ) -> Result<ProgramMemory, KclError> {
         // Before we even start executing the program, set the units.
         self.engine
-            .send_modeling_cmd(
+            .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.clone().into(),
+                &kittycad::types::ModelingCmd::SetSceneUnits {
+                    unit: self.settings.units.into(),
                 },
             )
             .await?;
@@ -1231,7 +1248,14 @@ impl ExecutorContext {
 
         if BodyType::Root == body_type {
             // Flush the batch queue.
-            self.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+            self.engine
+                .flush_batch(
+                    // True here tells the engine to flush all the end commands as well like fillets
+                    // and chamfers where the engine would otherwise eat the ID of the segments.
+                    true,
+                    SourceRange([program.end, program.end]),
+                )
+                .await?;
         }
 
         Ok(memory.clone())
@@ -1309,7 +1333,7 @@ impl ExecutorContext {
     }
 
     /// Update the units for the executor.
-    pub fn update_units(&mut self, units: crate::settings::types::UnitLength) {
+    pub fn update_units(&mut self, units: UnitLength) {
         self.settings.units = units;
     }
 

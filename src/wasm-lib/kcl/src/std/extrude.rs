@@ -111,13 +111,13 @@ pub(crate) async fn do_post_extrude(
     // We need to do this after extrude for sketch on face.
     if let SketchSurface::Face(_) = sketch_group.on {
         // Disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         kittycad::types::ModelingCmd::ObjectBringToFront {
             object_id: sketch_group.id,
@@ -150,7 +150,7 @@ pub(crate) async fn do_post_extrude(
     let mut sketch_group = *sketch_group.clone();
 
     // If we were sketching on a face, we need the original face id.
-    if let SketchSurface::Face(face) = sketch_group.on {
+    if let SketchSurface::Face(ref face) = sketch_group.on {
         sketch_group.id = face.sketch_group_id;
     }
 
@@ -198,8 +198,6 @@ pub(crate) async fn do_post_extrude(
             match path {
                 Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
                     let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
-                        position: sketch_group.position, // TODO should be for the extrude surface
-                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
                         face_id: *actual_face_id,
                         name: path.get_base().name.clone(),
                         geo_meta: GeoMeta {
@@ -211,8 +209,6 @@ pub(crate) async fn do_post_extrude(
                 }
                 Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
                     let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                        position: sketch_group.position, // TODO should be for the extrude surface
-                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
                         face_id: *actual_face_id,
                         name: path.get_base().name.clone(),
                         geo_meta: GeoMeta {
@@ -226,8 +222,6 @@ pub(crate) async fn do_post_extrude(
         } else if args.ctx.is_mock {
             // Only pre-populate the extrude surface if we are in mock mode.
             new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                position: sketch_group.position, // TODO should be for the extrude surface
-                rotation: sketch_group.rotation, // TODO should be for the extrude surface
                 // pushing this values with a fake face_id to make extrudes mock-execute safe
                 face_id: Uuid::new_v4(),
                 name: path.get_base().name.clone(),
@@ -245,13 +239,8 @@ pub(crate) async fn do_post_extrude(
         // sketch group.
         id: sketch_group.id,
         value: new_value,
-        sketch_group_values: sketch_group.value.clone(),
+        sketch_group: sketch_group.clone(),
         height: length,
-        position: sketch_group.position,
-        rotation: sketch_group.rotation,
-        x_axis: sketch_group.x_axis,
-        y_axis: sketch_group.y_axis,
-        z_axis: sketch_group.z_axis,
         start_cap_id,
         end_cap_id,
         meta: sketch_group.meta,

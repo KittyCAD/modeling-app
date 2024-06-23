@@ -47,7 +47,6 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
   getSketchOrientationDetails,
-  getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
 import {
   moveValueIntoNewVariablePath,
@@ -64,6 +63,7 @@ import {
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
+  hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { TEST } from 'env'
@@ -76,6 +76,7 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -121,7 +122,24 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
-  useHotkeyWrapper(['meta + shift + .'], () => coreDump(coreDumpManager, true))
+  useHotkeyWrapper(['meta + shift + .'], () => {
+    console.warn('CoreDump: Initializing core dump')
+    toast.promise(
+      coreDump(coreDumpManager, true),
+      {
+        loading: 'Starting core dump...',
+        success: 'Core dump completed successfully',
+        error: 'Error while exporting core dump',
+      },
+      {
+        success: {
+          // Note: this extended duration is especially important for Playwright e2e testing
+          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+          duration: 6000,
+        },
+      }
+    )
+  })
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -141,7 +159,41 @@ export const ModelingMachineProvider = ({
     {
       actions: {
         'sketch exit execute': () => {
-          kclManager.executeCode(true)
+          ;(async () => {
+            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            const settings: Models['CameraSettings_type'] = (
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_get_settings',
+                },
+              })
+            )?.data?.data?.settings
+            if (settings.up.z !== 1) {
+              // workaround for gimbal lock situation
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_look_at',
+                  center: settings.center,
+                  vantage: {
+                    ...settings.pos,
+                    y:
+                      settings.pos.y +
+                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
+                  },
+                  up: { x: 0, y: 0, z: 1 },
+                },
+              })
+            }
+
+            kclManager.executeCode(true)
+          })()
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
@@ -223,9 +275,9 @@ export const ModelingMachineProvider = ({
         ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
-          if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
+            if (!editorManager.editorView) return
             editorManager.lastSelectionEvent = Date.now()
             setTimeout(() => {
               if (editorManager.editorView) {
@@ -396,8 +448,13 @@ export const ModelingMachineProvider = ({
           if (
             selectionRanges.codeBasedSelections.length === 0 ||
             isSelectionLastLine(selectionRanges, codeManager.code)
-          )
-            return true
+          ) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            if (hasExtrudableGeometry(kclManager.ast)) return true
+            return false
+          }
           if (!isPipe) return false
 
           return canExtrudeSelection(selectionRanges)
@@ -464,7 +521,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               data.faceId
             )
-
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
               zAxis: data.zAxis,
@@ -478,8 +535,10 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.syncDirection = 'clientToEngine'
-          const quat = await getSketchQuaternion(pathToNode, data.zAxis)
-          await sceneInfra.camControls.tweenCameraToQuaternion(quat)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            data.planeId
+          )
           return {
             sketchPathToNode: pathToNode,
             zAxis: data.zAxis,

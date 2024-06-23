@@ -13,8 +13,15 @@ import screenshot from 'lib/screenshot'
 import React from 'react'
 import { VITE_KC_API_BASE_URL } from 'env'
 
-// This is a class for getting all the values from the JS world to pass to the Rust world
-// for a core dump.
+/**
+ * CoreDumpManager module
+ * - for getting all the values from the JS world to pass to the Rust world for a core dump.
+ * @module lib/coredump
+ * @class
+ */
+// CoreDumpManager is instantiated in ModelingMachineProvider and passed to coreDump() in wasm.ts
+// The async function coreDump() handles any errors thrown in its Promise catch method and rethrows
+// them to so the toast handler in ModelingMachineProvider can show the user an error message toast
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
   htmlRef: React.RefObject<HTMLDivElement> | null
@@ -142,6 +149,293 @@ export class CoreDumpManager {
         }
         return JSON.stringify(webrtcStats)
       })
+  }
+
+  // Currently just a placeholder to begin loading singleton and xstate data into
+  getClientState(): Promise<string> {
+    /**
+     * Deep clone a JavaScript Object
+     * - NOTE: this function throws on parse errors from things like circular references
+     * - It is also synchronous and could be more performant
+     * - There is a whole rabbit hole to explore here if you like.
+     * - This works for our use case.
+     * @param {object} obj - The object to clone.
+     */
+    const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
+
+    /**
+     * Check if a function is private method
+     */
+    const isPrivateMethod = (key: string) => {
+      return key.length && key[0] === '_'
+    }
+
+    // Turn off verbose logging by default
+    const verboseLogging = false
+
+    /**
+     * Toggle verbose debug logging of step-by-step client state coredump data
+     */
+    const debugLog = verboseLogging ? console.log : () => {}
+
+    console.warn('CoreDump: Gathering client state')
+
+    // Initialize the clientState object
+    let clientState = {
+      // singletons
+      engine_command_manager: {
+        artifact_map: {},
+        command_logs: [],
+        engine_connection: { state: { type: '' } },
+        default_planes: {},
+        scene_command_artifacts: {},
+      },
+      kcl_manager: {
+        ast: {},
+        kcl_errors: [],
+      },
+      scene_infra: {},
+      scene_entities_manager: {},
+      editor_manager: {},
+      // xstate
+      auth_machine: {},
+      command_bar_machine: {},
+      file_machine: {},
+      home_machine: {},
+      modeling_machine: {},
+      settings_machine: {},
+    }
+    debugLog('CoreDump: initialized clientState', clientState)
+    debugLog('CoreDump: globalThis.window', globalThis.window)
+
+    try {
+      // Singletons
+
+      // engine_command_manager
+      debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
+
+      // artifact map - this.engineCommandManager.artifactMap
+      if (this.engineCommandManager?.artifactMap) {
+        debugLog(
+          'CoreDump: Engine Command Manager artifact map',
+          this.engineCommandManager.artifactMap
+        )
+        clientState.engine_command_manager.artifact_map = deepClone(
+          this.engineCommandManager.artifactMap
+        )
+      }
+
+      // command logs - this.engineCommandManager.commandLogs
+      if (this.engineCommandManager?.commandLogs) {
+        debugLog(
+          'CoreDump: Engine Command Manager command logs',
+          this.engineCommandManager.commandLogs
+        )
+        clientState.engine_command_manager.command_logs = deepClone(
+          this.engineCommandManager.commandLogs
+        )
+      }
+
+      // default planes - this.engineCommandManager.defaultPlanes
+      if (this.engineCommandManager?.defaultPlanes) {
+        debugLog(
+          'CoreDump: Engine Command Manager default planes',
+          this.engineCommandManager.defaultPlanes
+        )
+        clientState.engine_command_manager.default_planes = deepClone(
+          this.engineCommandManager.defaultPlanes
+        )
+      }
+
+      // engine connection state
+      if (this.engineCommandManager?.engineConnection?.state) {
+        debugLog(
+          'CoreDump: Engine Command Manager engine connection state',
+          this.engineCommandManager.engineConnection.state
+        )
+        clientState.engine_command_manager.engine_connection.state =
+          this.engineCommandManager.engineConnection.state
+      }
+
+      // in sequence - this.engineCommandManager.inSequence
+      if (this.engineCommandManager?.inSequence) {
+        debugLog(
+          'CoreDump: Engine Command Manager in sequence',
+          this.engineCommandManager.inSequence
+        )
+        ;(clientState.engine_command_manager as any).in_sequence =
+          this.engineCommandManager.inSequence
+      }
+
+      // out sequence - this.engineCommandManager.outSequence
+      if (this.engineCommandManager?.outSequence) {
+        debugLog(
+          'CoreDump: Engine Command Manager out sequence',
+          this.engineCommandManager.outSequence
+        )
+        ;(clientState.engine_command_manager as any).out_sequence =
+          this.engineCommandManager.outSequence
+      }
+
+      // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
+      if (this.engineCommandManager?.sceneCommandArtifacts) {
+        debugLog(
+          'CoreDump: Engine Command Manager scene command artifacts',
+          this.engineCommandManager.sceneCommandArtifacts
+        )
+        clientState.engine_command_manager.scene_command_artifacts = deepClone(
+          this.engineCommandManager.sceneCommandArtifacts
+        )
+      }
+
+      // KCL Manager - globalThis?.window?.kclManager
+      const kclManager = (globalThis?.window as any)?.kclManager
+      debugLog('CoreDump: kclManager', kclManager)
+
+      if (kclManager) {
+        // KCL Manager AST
+        debugLog('CoreDump: KCL Manager AST', kclManager?.ast)
+        if (kclManager?.ast) {
+          clientState.kcl_manager.ast = deepClone(kclManager.ast)
+        }
+
+        // KCL Errors
+        debugLog('CoreDump: KCL Errors', kclManager?.kclErrors)
+        if (kclManager?.kclErrors) {
+          clientState.kcl_manager.kcl_errors = deepClone(kclManager.kclErrors)
+        }
+
+        // KCL isExecuting
+        debugLog('CoreDump: KCL isExecuting', kclManager?.isExecuting)
+        if (kclManager?.isExecuting) {
+          ;(clientState.kcl_manager as any).isExecuting = kclManager.isExecuting
+        }
+
+        // KCL logs
+        debugLog('CoreDump: KCL logs', kclManager?.logs)
+        if (kclManager?.logs) {
+          ;(clientState.kcl_manager as any).logs = deepClone(kclManager.logs)
+        }
+
+        // KCL programMemory
+        debugLog('CoreDump: KCL programMemory', kclManager?.programMemory)
+        if (kclManager?.programMemory) {
+          ;(clientState.kcl_manager as any).programMemory = deepClone(
+            kclManager.programMemory
+          )
+        }
+
+        // KCL wasmInitFailed
+        debugLog('CoreDump: KCL wasmInitFailed', kclManager?.wasmInitFailed)
+        if (kclManager?.wasmInitFailed) {
+          ;(clientState.kcl_manager as any).wasmInitFailed =
+            kclManager.wasmInitFailed
+        }
+      }
+
+      // Scene Infra - globalThis?.window?.sceneInfra
+      const sceneInfra = (globalThis?.window as any)?.sceneInfra
+      debugLog('CoreDump: Scene Infra', sceneInfra)
+
+      if (sceneInfra) {
+        const sceneInfraSkipKeys = ['camControls']
+        const sceneInfraKeys = Object.keys(sceneInfra)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof sceneInfra[entry] !== 'function' &&
+              !sceneInfraSkipKeys.includes(entry)
+            )
+          })
+
+        debugLog('CoreDump: Scene Infra keys', sceneInfraKeys)
+        sceneInfraKeys.forEach((key: string) => {
+          debugLog('CoreDump: Scene Infra', key, sceneInfra[key])
+          try {
+            ;(clientState.scene_infra as any)[key] = sceneInfra[key]
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse Scene Infra ' + key + ' data due to ',
+              error
+            )
+          }
+        })
+      }
+
+      // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
+      const sceneEntitiesManager = (globalThis?.window as any)
+        ?.sceneEntitiesManager
+      debugLog('CoreDump: sceneEntitiesManager', sceneEntitiesManager)
+
+      if (sceneEntitiesManager) {
+        // Scene Entities Manager active segments
+        debugLog(
+          'CoreDump: Scene Entities Manager active segments',
+          sceneEntitiesManager?.activeSegments
+        )
+        if (sceneEntitiesManager?.activeSegments) {
+          ;(clientState.scene_entities_manager as any).activeSegments =
+            deepClone(sceneEntitiesManager.activeSegments)
+        }
+      }
+
+      // Editor Manager - globalThis?.window?.editorManager
+      const editorManager = (globalThis?.window as any)?.editorManager
+      debugLog('CoreDump: editorManager', editorManager)
+
+      if (editorManager) {
+        const editorManagerSkipKeys = ['camControls']
+        const editorManagerKeys = Object.keys(editorManager)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof editorManager[entry] !== 'function' &&
+              !isPrivateMethod(entry) &&
+              !editorManagerSkipKeys.includes(entry)
+            )
+          })
+
+        debugLog('CoreDump: Editor Manager keys', editorManagerKeys)
+        editorManagerKeys.forEach((key: string) => {
+          debugLog('CoreDump: Editor Manager', key, editorManager[key])
+          try {
+            ;(clientState.editor_manager as any)[key] = deepClone(
+              editorManager[key]
+            )
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse Editor Manager ' +
+                key +
+                ' data due to ',
+              error
+            )
+          }
+        })
+      }
+
+      // enableMousePositionLogs - Not coredumped
+      // See https://github.com/KittyCAD/modeling-app/issues/2338#issuecomment-2136441998
+      debugLog(
+        'CoreDump: enableMousePositionLogs [not coredumped]',
+        (globalThis?.window as any)?.enableMousePositionLogs
+      )
+
+      // XState Machines
+      debugLog(
+        'CoreDump: xstate services',
+        (globalThis?.window as any)?.__xstate__?.services
+      )
+
+      debugLog('CoreDump: final clientState', clientState)
+
+      const clientStateJson = JSON.stringify(clientState)
+      debugLog('CoreDump: final clientState JSON', clientStateJson)
+
+      return Promise.resolve(clientStateJson)
+    } catch (error) {
+      console.error('CoreDump: unable to return data due to ', error)
+      return Promise.reject(JSON.stringify(error))
+    }
   }
 
   // Return a data URL (png format) of the screenshot of the current page.

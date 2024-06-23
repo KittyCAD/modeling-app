@@ -8,6 +8,13 @@ import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
 import { APP_NAME } from 'lib/constants'
 
+type TestColor = [number, number, number]
+export const TEST_COLORS = {
+  WHITE: [249, 249, 249] as TestColor,
+  YELLOW: [255, 255, 0] as TestColor,
+  BLUE: [0, 0, 255] as TestColor,
+} as const
+
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
   await page.getByTestId('loading-stream').waitFor()
@@ -132,8 +139,8 @@ export const getMovementUtils = (opts: any) => {
   // NOTE: these pretty much can't be perfect because of screen scaling.
   // Handle on a case-by-case.
   const toU = (x: number, y: number) => [
-    kcRound(x * 0.0854),
-    kcRound(-y * 0.0854), // Y is inverted in our coordinate system
+    kcRound(x * 0.0678),
+    kcRound(-y * 0.0678), // Y is inverted in our coordinate system
   ]
 
   // Turn the array into a string with specific formatting
@@ -226,6 +233,7 @@ export async function getUtils(page: Page) {
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,

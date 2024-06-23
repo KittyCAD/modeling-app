@@ -1,14 +1,16 @@
 //! Functions for generating docs for our stdlib functions.
 
-use crate::std::Primitive;
+use std::path::Path;
+
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
+
+use crate::std::Primitive;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]
@@ -63,9 +65,10 @@ impl StdLibFnArg {
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
         if self.type_ == "SketchGroup"
-            || self.type_ == "ExtrudeGroup"
-            || self.type_ == "SketchSurface"
             || self.type_ == "SketchGroupSet"
+            || self.type_ == "ExtrudeGroup"
+            || self.type_ == "ExtrudeGroupSet"
+            || self.type_ == "SketchSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         }

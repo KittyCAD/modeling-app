@@ -28,12 +28,22 @@ pub async fn execute_wasm(
     let memory: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
     let units = kcl_lib::settings::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
 
-    let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
+    let engine: std::sync::Arc<Box<dyn kcl_lib::engine::EngineManager>> = if is_mock {
+        Arc::new(Box::new(
+            kcl_lib::engine::conn_mock::EngineConnection::new()
+                .await
+                .map_err(|e| format!("{:?}", e))?,
+        ))
+    } else {
+        Arc::new(Box::new(
+            kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
+                .await
+                .map_err(|e| format!("{:?}", e))?,
+        ))
+    };
     let fs = Arc::new(kcl_lib::fs::FileManager::new(fs_manager));
     let ctx = kcl_lib::executor::ExecutorContext {
-        engine: Arc::new(Box::new(engine)),
+        engine,
         fs,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
         settings: ExecutorSettings {

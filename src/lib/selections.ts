@@ -16,6 +16,7 @@ import { Program } from 'lang/wasm'
 import {
   doesPipeHaveCallExp,
   getNodeFromPath,
+  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -277,7 +278,7 @@ export function processCodeMirrorRanges({
   }
 }
 
-function updateSceneObjectColors(codeBasedSelections: Selection[]) {
+export function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   let updated: Program
   try {
     updated = parse(recast(kclManager.ast))
@@ -300,6 +301,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     const groupHasCursor = codeBasedSelections.some((selection) => {
       return isOverlap(selection.range, [node.start, node.end])
     })
+
     const color = groupHasCursor
       ? 0x0000ff
       : segmentGroup?.userData?.baseColor || 0xffffff
@@ -387,6 +389,7 @@ export function canExtrudeSelection(selection: Selections) {
   )
   return (
     !!isSketchPipe(selection) &&
+    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     commonNodes.every((n) => nodeHasClose(n)) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
@@ -540,7 +543,7 @@ function codeToIdSelections(
     .filter(Boolean) as any
 }
 
-export function sendSelectEventToEngine(
+export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
   el: HTMLVideoElement,
   streamDimensions: { streamWidth: number; streamHeight: number }
@@ -551,7 +554,7 @@ export function sendSelectEventToEngine(
     el,
     ...streamDimensions,
   })
-  const result: Promise<Models['SelectWithPoint_type']> = engineCommandManager
+  const result: Models['SelectWithPoint_type'] = await engineCommandManager
     .sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
