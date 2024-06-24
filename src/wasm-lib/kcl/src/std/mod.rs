@@ -13,6 +13,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub mod string_or_struct;
 pub mod types;
 pub mod utils;
 

@@ -71,6 +71,10 @@ impl StdLibFnArg {
             || self.type_ == "SketchSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
+        } else if self.type_ == "TagDeclarator" {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
+        } else if self.type_ == "TagIdentifier" {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
     }
