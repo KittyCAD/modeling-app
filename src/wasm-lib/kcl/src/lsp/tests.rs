@@ -790,6 +790,67 @@ st"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_tags() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line([28.67, -13.25], %, $here)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part002 = startSketchOn(part001, he"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 16 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the completions.
+    if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
+        assert!(completions.len() > 10);
+        // Make sure that `here` is in the completions.
+        println!("{:#?}", completions.iter().map(|c| c.label.clone()).collect::<Vec<_>>());
+        let const_completion = completions
+            .iter()
+            .find(|completion| completion.label == "here")
+            .unwrap();
+        assert_eq!(
+            const_completion.kind,
+            Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)
+        );
+    } else {
+        panic!("Expected array of completions");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions_const_raw() {
     let server = kcl_lsp_server(false).await.unwrap();
 

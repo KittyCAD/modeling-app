@@ -168,6 +168,26 @@ impl Program {
         Ok(x.clone())
     }
 
+    /// Walk the ast and get all the variables and tags as completion items.
+    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
+        let completions = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::lint::Node::TagDeclarator(tag) => {
+                    findings.push(tag.into());
+                }
+                crate::lint::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                }
+                _ => {}
+            }
+            Ok(true)
+        })?;
+        let x = completions.lock().unwrap();
+        Ok(x.clone())
+    }
+
     /// Returns the body item that includes the given character position.
     pub fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
         for item in &self.body {
@@ -1329,6 +1349,40 @@ pub struct VariableDeclaration {
     pub kind: VariableKind, // Change to enum if there are specific values
 }
 
+impl From<&VariableDeclaration> for Vec<CompletionItem> {
+    fn from(declaration: &VariableDeclaration) -> Self {
+        let mut completions = vec![];
+        for variable in &declaration.declarations {
+            completions.push(CompletionItem {
+                label: variable.id.name.to_string(),
+                label_details: None,
+                kind: Some(match declaration.kind {
+                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
+                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                }),
+                detail: Some(declaration.kind.to_string()),
+                documentation: None,
+                deprecated: None,
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            })
+        }
+        completions
+    }
+}
+
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
@@ -1722,6 +1776,31 @@ impl From<&Box<TagDeclarator>> for MemoryItem {
 impl From<&TagDeclarator> for MemoryItem {
     fn from(tag: &TagDeclarator) -> Self {
         MemoryItem::TagDeclarator(Box::new(tag.clone()))
+    }
+}
+
+impl From<&TagDeclarator> for CompletionItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        CompletionItem {
+            label: tag.name.to_string(),
+            label_details: None,
+            kind: Some(CompletionItemKind::VARIABLE),
+            detail: Some("tag (A reference to an entity you previously named)".to_string()),
+            documentation: None,
+            deprecated: None,
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
     }
 }
 
