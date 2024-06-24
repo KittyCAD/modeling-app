@@ -19,8 +19,12 @@ export default function UserMenu() {
       '[data-testid="user-sidebar-toggle"] img'
     )
 
+    const onError = () => setAvatarErrored(true)
     if (element?.tagName === 'IMG') {
-      element.addEventListener('error', () => setAvatarErrored(true))
+      element?.addEventListener('error', onError)
+    }
+    return () => {
+      element?.removeEventListener('error', onError)
     }
   }, [])
 

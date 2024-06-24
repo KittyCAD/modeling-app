@@ -1646,8 +1646,10 @@ test.describe('Onboarding tests', () => {
     await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
     // Test that the text in this step is correct
-    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
-    const onboardingOverlayLocator = page
+    const avatarLocator = await page
+      .getByTestId('user-sidebar-toggle')
+      .locator('img')
+    const onboardingOverlayLocator = await page
       .getByTestId('onboarding-content')
       .locator('div')
       .nth(1)
@@ -1657,7 +1659,7 @@ test.describe('Onboarding tests', () => {
     await expect(onboardingOverlayLocator).toBeVisible()
     await expect(onboardingOverlayLocator).toContainText('your avatar')
 
-    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+    await page.route('/cat.jpg', async (route) => {
       await route.fulfill({
         status: 404,
         contentType: 'text/plain',
