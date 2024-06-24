@@ -20,10 +20,7 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 
     let result = inner_extrude(length, sketch_group_set, args).await?;
 
-    match result {
-        ExtrudeGroupSet::ExtrudeGroup(extrude_group) => Ok(MemoryItem::ExtrudeGroup(extrude_group)),
-        ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups { value: extrude_groups }),
-    }
+    Ok(result.into())
 }
 
 /// Extrudes by a given amount.

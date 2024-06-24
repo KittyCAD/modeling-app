@@ -172,7 +172,7 @@ impl MemoryItem {
             MemoryItem::UserVal(value) => {
                 let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
-                Ok(SketchGroupSet::SketchGroups(sg.clone()))
+                Ok(sg.into())
             }
             _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
         }
@@ -185,9 +185,27 @@ impl MemoryItem {
             MemoryItem::UserVal(value) => {
                 let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
-                Ok(ExtrudeGroupSet::ExtrudeGroups(eg.clone()))
+                Ok(eg.into())
             }
             _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+}
+
+impl From<SketchGroupSet> for MemoryItem {
+    fn from(sg: SketchGroupSet) -> Self {
+        match sg {
+            SketchGroupSet::SketchGroup(sg) => MemoryItem::SketchGroup(sg),
+            SketchGroupSet::SketchGroups(sgs) => MemoryItem::SketchGroups { value: sgs },
+        }
+    }
+}
+
+impl From<ExtrudeGroupSet> for MemoryItem {
+    fn from(eg: ExtrudeGroupSet) -> Self {
+        match eg {
+            ExtrudeGroupSet::ExtrudeGroup(eg) => MemoryItem::ExtrudeGroup(eg),
+            ExtrudeGroupSet::ExtrudeGroups(egs) => MemoryItem::ExtrudeGroups { value: egs },
         }
     }
 }
