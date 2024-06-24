@@ -574,6 +574,47 @@ impl MemoryItem {
             .map(Some)
     }
 
+    /// Backwards compatibility for getting a tag from a memory item.
+    pub fn get_tag(&self) -> Result<Tag, KclError> {
+        match self {
+            MemoryItem::Tag(t) => Ok(*t.clone()),
+            MemoryItem::UserVal(u) => {
+                let name: String = self.get_json()?;
+                Ok(Tag {
+                    name,
+                    start: u.meta[0].source_range.start(),
+                    end: u.meta[0].source_range.end(),
+                })
+            }
+            _ => Err(KclError::Semantic(KclErrorDetails {
+                message: "Not a tag".to_string(),
+                source_ranges: self.clone().into(),
+            })),
+        }
+    }
+
+    /// Backwards compatibility for getting an optional tag from a memory item.
+    pub fn get_tag_opt(&self) -> Result<Option<Tag>, KclError> {
+        match self {
+            MemoryItem::Tag(t) => Ok(Some(*t.clone())),
+            MemoryItem::UserVal(u) => {
+                if let Some(name) = self.get_json_opt::<String>()? {
+                    Ok(Some(Tag {
+                        name,
+                        start: u.meta[0].source_range.start(),
+                        end: u.meta[0].source_range.end(),
+                    }))
+                } else {
+                    Ok(None)
+                }
+            }
+            _ => Err(KclError::Semantic(KclErrorDetails {
+                message: "Not a tag".to_string(),
+                source_ranges: self.clone().into(),
+            })),
+        }
+    }
+
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
     /// If it's not a function, return Err.
     pub async fn call_fn(
