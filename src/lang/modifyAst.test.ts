@@ -181,7 +181,7 @@ describe('Testing giveSketchFnCallTag', () => {
     expect(isTagExisting).toBe(false)
   })
   it('Should return existing tag if it already exists', () => {
-    const lineButWithTag = "line([-2.57, -0.13], %, $butts)"
+    const lineButWithTag = 'line([-2.57, -0.13], %, $butts)'
     let _code = code.replace('line([-2.57, -0.13], %)', lineButWithTag)
     const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       _code,
@@ -501,42 +501,42 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %, $b)
 ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
-      !replace1 ? "segLen(a, %)" : replace1
+      !replace1 ? 'segLen(a, %)' : replace1
     }], %)
   |> line([306.21, 198.87], %)
-  |> angledLine([65, ${!replace2 ? "segAng(a, %)" : replace2}], %)
+  |> angledLine([65, ${!replace2 ? 'segAng(a, %)' : replace2}], %)
   |> line([-963.39, -154.67], %)
 `
     test.each([
-      ['line', "line([306.21, 198.85], %, $a)", ['365.11', '33']],
-      ['lineTo', "lineTo([306.21, 198.85], %, $a)", ['110.48', '119.73']],
-      ['yLine', "yLine(198.85, %, $a)", ['198.85', '90']],
-      ['xLine', "xLine(198.85, %, $a)", ['198.85', '0']],
-      ['yLineTo', "yLineTo(198.85, %, $a)", ['95.94', '90']],
-      ['xLineTo', "xLineTo(198.85, %, $a)", ['162.14', '180']],
+      ['line', 'line([306.21, 198.85], %, $a)', ['365.11', '33']],
+      ['lineTo', 'lineTo([306.21, 198.85], %, $a)', ['110.48', '119.73']],
+      ['yLine', 'yLine(198.85, %, $a)', ['198.85', '90']],
+      ['xLine', 'xLine(198.85, %, $a)', ['198.85', '0']],
+      ['yLineTo', 'yLineTo(198.85, %, $a)', ['95.94', '90']],
+      ['xLineTo', 'xLineTo(198.85, %, $a)', ['162.14', '180']],
       [
         'angledLine',
-        "angledLine({ angle: 45.5, length: 198.85 }, %, $a)",
+        'angledLine({ angle: 45.5, length: 198.85 }, %, $a)',
         ['198.85', '45.5'],
       ],
       [
         'angledLineOfXLength',
-        "angledLineOfXLength({ angle: 45.5, length: 198.85 }, %, $a)",
+        'angledLineOfXLength({ angle: 45.5, length: 198.85 }, %, $a)',
         ['283.7', '45.5'],
       ],
       [
         'angledLineOfYLength',
-        "angledLineOfYLength({ angle: 45.5, length: 198.85 }, %, $a)",
+        'angledLineOfYLength({ angle: 45.5, length: 198.85 }, %, $a)',
         ['278.79', '45.5'],
       ],
       [
         'angledLineToX',
-        "angledLineToX({ angle: 45.5, to: 198.85 }, %, $a)",
+        'angledLineToX({ angle: 45.5, to: 198.85 }, %, $a)',
         ['231.33', '134.5'],
       ],
       [
         'angledLineToY',
-        "angledLineToY({ angle: 45.5, to: 198.85 }, %, $a)",
+        'angledLineToY({ angle: 45.5, to: 198.85 }, %, $a)',
         ['134.51', '45.5'],
       ],
       [
@@ -601,7 +601,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['lineTo([6.14, 3.14 + 0], %)', 'arrayIndex', 0],
       ['xLineTo(8, %)', '', ''],
       ['yLineTo(5, %)', '', ''],
-      ["yLine(3.14, %, $a)", '', ''],
+      ['yLine(3.14, %, $a)', '', ''],
       ['xLine(3.14, %)', '', ''],
       [
         'angledLineOfXLength({ angle: 3, length: 3.14 + 0 }, %)',
