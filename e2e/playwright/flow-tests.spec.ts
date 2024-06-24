@@ -184,7 +184,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
   }
 
-  await page.getByRole('button', { name: 'Constrain' }).click()
+  await page.getByRole('button', { name: 'Constraints' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   // Open the code pane.
@@ -1761,7 +1761,7 @@ test.describe('Testing selections', () => {
       // click a segment hold shift and click an axis, see that a relevant constraint is enabled
       await topHorzSegmentClick()
       await page.keyboard.down('Shift')
-      const constrainButton = page.getByRole('button', { name: 'Constrain' })
+      const constrainButton = page.getByRole('button', { name: 'Constraints' })
       const absYButton = page.getByRole('button', { name: 'ABS Y' })
       await constrainButton.click()
       await expect(absYButton).toBeDisabled()
@@ -3313,7 +3313,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.mouse.click(834, 244)
   await page.keyboard.up('Shift')
 
-  await page.getByRole('button', { name: 'Constrain', exact: true }).click()
+  await page.getByRole('button', { name: 'Constraints', exact: true }).click()
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 
@@ -3411,7 +3411,7 @@ const part002 = startSketchOn('XZ')
     // await page.keyboard.up('Shift')
     await page
       .getByRole('button', {
-        name: 'Constrain',
+        name: 'Constraints',
       })
       .click()
     await page
@@ -3476,7 +3476,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constrain',
+            name: 'Constraints',
           })
           .click()
         await page
@@ -3573,7 +3573,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constrain',
+            name: 'Constraints',
           })
           .click()
         await page
@@ -3684,7 +3684,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constrain',
+            name: 'Constraints',
           })
           .click()
         await page
@@ -3792,7 +3792,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constrain',
+            name: 'Constraints',
           })
           .click()
         await page.getByTestId('angle').click()
@@ -3893,7 +3893,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Constrain',
+            name: 'Constraints',
           })
           .click()
         await page.getByTestId(constraint).click()
@@ -3979,7 +3979,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line4.x, line4.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constrain',
+          name: 'Constraints',
         })
         const constraintButton = page
           .getByRole('button', {
@@ -4065,7 +4065,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x - 3, line3.y + 20)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constrain',
+          name: 'Constraints',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -4142,7 +4142,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(axisClick.x, axisClick.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constrain',
+          name: 'Constraints',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -4197,7 +4197,7 @@ const part002 = startSketchOn('XZ')
 
     await page
       .getByRole('button', {
-        name: 'Constrain',
+        name: 'Constraints',
       })
       .click()
     await page.getByRole('button', { name: 'horizontal', exact: true }).click()
@@ -4220,7 +4220,7 @@ const part002 = startSketchOn('XZ')
 
     await page
       .getByRole('button', {
-        name: 'Constrain',
+        name: 'Constraints',
       })
       .click()
     await page.getByRole('button', { name: 'length', exact: true }).click()
