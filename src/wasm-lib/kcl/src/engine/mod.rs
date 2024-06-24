@@ -28,7 +28,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
+    fn batch_end(
+        &self,
+    ) -> Arc<Mutex<HashMap<uuid::Uuid, (kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the default planes.
     async fn default_planes(
@@ -103,7 +105,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         };
 
         // Add cmd to the batch end.
-        self.batch_end().lock().unwrap().push((req, source_range));
+        self.batch_end().lock().unwrap().insert(id, (req, source_range));
         Ok(())
     }
 
@@ -130,7 +132,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
             let mut requests = self.batch().lock().unwrap().clone();
-            requests.extend(self.batch_end().lock().unwrap().clone());
+            requests.extend(self.batch_end().lock().unwrap().values().cloned());
             requests
         } else {
             self.batch().lock().unwrap().clone()

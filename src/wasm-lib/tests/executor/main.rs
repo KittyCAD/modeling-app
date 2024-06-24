@@ -2269,3 +2269,100 @@ async fn serial_test_engine_error_source_range_on_last_command() {
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([262, 320])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_linear_pattern3d_filleted_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> fillet({
+    radius: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn1 = patternLinear3d({
+       axis: [1, 0, 0],
+       repetitions: 3,
+       distance: 40
+     }, part001)
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/linear_pattern3d_filleted_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_filleted_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> fillet({
+    radius: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/circular_pattern3d_filleted_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_chamfered_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/circular_pattern3d_chamfered_sketch.png",
+        &result,
+        1.0,
+    );
+}

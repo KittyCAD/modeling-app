@@ -5,6 +5,8 @@ pub mod local;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
 
+use std::path::Path;
+
 use anyhow::Result;
 use base64::Engine;
 use kittycad::Client;
@@ -12,7 +14,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
-use std::path::Path;
 use uuid::Uuid;
 
 #[async_trait::async_trait(?Send)]

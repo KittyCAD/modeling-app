@@ -244,12 +244,41 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
-    /// Flush the batch for our fillets/chamfers if there are any.
-    pub async fn flush_batch(&self) -> Result<(), KclError> {
-        if self.ctx.engine.batch_end().lock().unwrap().is_empty() {
+    /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
+    pub async fn flush_batch_for_extrude_group_set(&self, extrude_group_set: &ExtrudeGroupSet) -> Result<(), KclError> {
+        let extrude_groups = match extrude_group_set {
+            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg.clone()],
+            ExtrudeGroupSet::ExtrudeGroups(egs) => egs.clone(),
+        };
+
+        // Collect all the fillet/chamfer ids for the extrude groups.
+        let mut ids = Vec::new();
+        for extrude_group in extrude_groups {
+            ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
+        }
+
+        // We can return early if there are no fillets or chamfers.
+        if ids.is_empty() {
             return Ok(());
         }
-        self.ctx.engine.flush_batch(true, SourceRange::default()).await?;
+
+        println!("Flushing batch for extrude group set: {:?}", ids);
+
+        // We want to move these fillets and chamfers from batch_end to batch so they get executed
+        // before what ever we call next.
+        for id in ids {
+            // Pop it off the batch_end and add it to the batch.
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+                // It might be in the batch already.
+                continue;
+            };
+            // Add it to the batch.
+            self.ctx.engine.batch().lock().unwrap().push(item);
+        }
+
+        // Run flush.
+        // Yes, we do need to actually flush the batch here, or references will fail later.
+        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
 
         Ok(())
     }
