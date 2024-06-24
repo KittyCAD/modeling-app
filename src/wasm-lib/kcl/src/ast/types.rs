@@ -1699,6 +1699,12 @@ pub struct Tag {
 
 impl_value_meta!(Tag);
 
+impl std::fmt::Display for Tag {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "${}", self.name)
+    }
+}
+
 impl From<&Box<Tag>> for MemoryItem {
     fn from(tag: &Box<Tag>) -> Self {
         MemoryItem::Tag(tag.clone())
