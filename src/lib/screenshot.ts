@@ -6,16 +6,16 @@ export default async function screenshot(
   htmlRef: React.RefObject<HTMLDivElement> | null
 ): Promise<string> {
   if (htmlRef === null) {
-    throw new Error('htmlRef is null')
+    return Promise.reject(new Error('htmlRef is null'))
   }
   if (htmlRef.current === null) {
-    throw new Error('htmlRef is null')
+    return Promise.reject(new Error('htmlRef is null'))
   }
   return html2canvas(htmlRef.current)
     .then((canvas) => {
       return canvas.toDataURL()
     })
     .catch((error) => {
-      throw error
+      return Promise.reject(error)
     })
 }

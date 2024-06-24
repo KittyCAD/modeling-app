@@ -501,7 +501,7 @@ export const commandBarMachine = createMachine(
               }
             } catch (e) {
               console.error('Error validating argument', context, e)
-              throw e
+              return reject(e)
             }
           }
 

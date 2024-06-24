@@ -17,6 +17,7 @@ import {
   createLiteral,
   createPipeSubstitution,
 } from './modifyAst'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -42,6 +43,7 @@ const variableBelowShouldNotBeIncluded = 3
 `
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = parse(code)
+    if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
@@ -76,53 +78,65 @@ const yo = 5 + 6
 const yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('100 + 100') + 2
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe('100 + 100')
-    const { modifiedAst } = result.replacer(
+    const replaced = result.replacer(
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast(modifiedAst)
+    if (err(replaced)) throw replaced
+    const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find a safe Identifier', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('abc')
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('Identifier')
     expect(code.slice(result.value.start, result.value.end)).toBe('abc')
   })
   it('find a safe CallExpression', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('def')
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('CallExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe("def('yo')")
-    const { modifiedAst } = result.replacer(
+    const replaced = result.replacer(
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast(modifiedAst)
+    if (err(replaced)) throw replaced
+    const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('ghi')
     const range: [number, number] = [rangeStart, rangeStart]
     const result = isNodeSafeToReplace(ast, range)
+    if (err(result)) throw result
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe('ghi(%)')
   })
   it('find an UNsafe Identifier, as it is a callee', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('ine([2.8,')
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe(
@@ -131,47 +145,60 @@ const yo2 = hmm([identifierGuy + 5])`
   })
   it("find a safe BinaryExpression that's assigned to a variable", () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('5 + 6') + 1
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe('5 + 6')
-    const { modifiedAst } = result.replacer(
+    const replaced = result.replacer(
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast(modifiedAst)
+    if (err(replaced)) throw replaced
+    const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`const yo = replaceName`)
   })
   it('find a safe BinaryExpression that has a CallExpression within', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
     const rangeStart = code.indexOf('jkl') + 1
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe(
       "jkl('yo') + 2"
     )
-    const { modifiedAst } = result.replacer(
+    const replaced = result.replacer(
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
+    if (err(replaced)) throw replaced
+    const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find a safe BinaryExpression within a CallExpression', () => {
     const ast = parse(code)
+    if (err(ast)) throw ast
+
     const rangeStart = code.indexOf('identifierGuy') + 1
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
+    if (err(result)) throw result
+
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe(
       'identifierGuy + 5'
     )
-    const { modifiedAst } = result.replacer(
+    const replaced = result.replacer(
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
+    if (err(replaced)) throw replaced
+    const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
     expect(outCode).toContain(`const yo2 = hmm([replaceName])`)
   })
@@ -209,6 +236,8 @@ describe('testing getNodePathFromSourceRange', () => {
     const searchLn = `line([0.94, 2.61], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = parse(code)
+    if (err(ast)) throw ast
+
     const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
     expect(result).toEqual([
       ['body', ''],
@@ -224,6 +253,8 @@ describe('testing getNodePathFromSourceRange', () => {
     const searchLn = `line([-0.21, -1.4], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = parse(code)
+    if (err(ast)) throw ast
+
     const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
     const expected = [
       ['body', ''],
@@ -262,6 +293,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> close(%)
 `
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
@@ -280,6 +313,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> extrude(1, %)
 `
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const result = doesPipeHaveCallExp({
       calleeName: 'extrude',
       ast,
@@ -296,6 +331,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> angledLine([-175, segLen('seg01', %)], %)
 `
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
@@ -306,6 +343,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('returns false if not a pipe', () => {
     const exampleCode = `const length001 = 2`
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
@@ -324,6 +363,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> line([-3.22, -7.36], %)
   |> angledLine([-175, segLen('seg01', %)], %)`
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const programMemory = await enginelessExecutor(ast)
     const result = hasExtrudeSketchGroup({
       ast,
@@ -341,6 +382,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> angledLine([-175, segLen('seg01', %)], %)
   |> extrude(1, %)`
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const programMemory = await enginelessExecutor(ast)
     const result = hasExtrudeSketchGroup({
       ast,
@@ -352,6 +395,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('finds nothing', async () => {
     const exampleCode = `const length001 = 2`
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const programMemory = await enginelessExecutor(ast)
     const result = hasExtrudeSketchGroup({
       ast,
@@ -372,6 +417,8 @@ describe('Testing findUsesOfTagInPipe', () => {
 |> angledLine([65, segLen('seg01', %)], %)`
   it('finds the current segment', async () => {
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const lineOfInterest = `198.85], %, 'seg01'`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
@@ -387,6 +434,8 @@ describe('Testing findUsesOfTagInPipe', () => {
   })
   it('find no tag if line has no tag', () => {
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+
     const lineOfInterest = `line([306.21, 198.82], %)`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
@@ -423,6 +472,7 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
 `
   it('finds sketch001 pipe to be extruded', async () => {
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
     const lineOfInterest = `line([4.99, -0.46], %, 'seg01')`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
@@ -437,6 +487,7 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
   })
   it('find sketch002 NOT pipe to be extruded', async () => {
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
     const lineOfInterest = `line([2.45, -0.2], %)`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
@@ -468,6 +519,7 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
   |> close(%)
 `
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
     const extrudable = hasExtrudableGeometry(ast)
     expect(extrudable).toBeTruthy()
   })
@@ -481,6 +533,7 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
 const extrude001 = extrude(10, sketch001)
 `
     const ast = parse(exampleCode)
+    if (err(ast)) throw ast
     const extrudable = hasExtrudableGeometry(ast)
     expect(extrudable).toBeFalsy()
   })

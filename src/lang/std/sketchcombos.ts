@@ -1,6 +1,7 @@
 import { TransformCallback, VarValues } from './stdTypes'
 import { toolTips, ToolTip } from '../../useStore'
 import { Selections, Selection } from 'lib/selections'
+import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
   Program,
@@ -75,8 +76,18 @@ function createCallWrapper(
   if (tag) {
     args.push(tag)
   }
+
+  const [hasErr, argsWOutErr] = cleanErrs(args)
+  if (hasErr) {
+    console.error(args)
+    return {
+      callExp: createCallExpression('', []),
+      valueUsedInTransform: 0,
+    }
+  }
+
   return {
-    callExp: createCallExpression(a, args),
+    callExp: createCallExpression(a, argsWOutErr),
     valueUsedInTransform,
   }
 }
@@ -1173,6 +1184,11 @@ export function getRemoveConstraintsTransform(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
+  if (err(firstArg)) {
+    console.error(firstArg)
+    return false
+  }
+
   if (isNotLiteralArrayOrStatic(firstArg.val)) {
     return transformInfo
   }
@@ -1213,11 +1229,18 @@ export function removeSingleConstraint({
     ast,
     pathToCallExp,
     'CallExpression'
-  ).node
-  if (callExp.type !== 'CallExpression') throw new Error('Invalid node type')
+  )
+  if (err(callExp)) {
+    console.error(callExp)
+    return false
+  }
+  if (callExp.node.type !== 'CallExpression') {
+    console.error(new Error('Invalid node type'))
+    return false
+  }
 
   const transform: TransformInfo = {
-    tooltip: callExp.callee.name as any,
+    tooltip: callExp.node.callee.name as any,
     createNode:
       ({ tag, referenceSegName, varValues }) =>
       (_, rawValues) => {
@@ -1241,7 +1264,7 @@ export function removeSingleConstraint({
           })
           const objExp = createObjectExpression(expression)
           return createStdlibCallExpression(
-            callExp.callee.name as any,
+            callExp.node.callee.name as any,
             objExp,
             tag
           )
@@ -1266,7 +1289,7 @@ export function removeSingleConstraint({
             return varValue.value
           })
           return createStdlibCallExpression(
-            callExp.callee.name as any,
+            callExp.node.callee.name as any,
             createArrayExpression(values),
             tag
           )
@@ -1275,7 +1298,7 @@ export function removeSingleConstraint({
         // if (typeof arrayIndex !== 'number' || !objectProperty) must be single value input xLine, yLineTo etc
 
         return createCallWrapper(
-          callExp.callee.name as any,
+          callExp.node.callee.name as any,
           rawValues[0].value,
           tag
         )
@@ -1301,6 +1324,11 @@ function getTransformMapPath(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
+  if (err(firstArg)) {
+    console.error(firstArg)
+    return false
+  }
+
   if (isNotLiteralArrayOrStatic(firstArg.val)) {
     return false
   }
@@ -1387,13 +1415,18 @@ export function getTransformInfos(
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(ast, range)
   )
-  const nodes = paths.map(
-    (pathToNode) =>
-      getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
+  const nodes = paths.map((pathToNode) =>
+    getNodeFromPath<Value>(ast, pathToNode, 'CallExpression')
   )
 
   try {
-    const theTransforms = nodes.map((node) => {
+    const theTransforms = nodes.map((nodeMeta) => {
+      if (err(nodeMeta)) {
+        console.error(nodeMeta)
+        return false
+      }
+
+      const node = nodeMeta.node
       if (node?.type === 'CallExpression')
         return getTransformInfo(node, constraintType)
 
@@ -1410,16 +1443,24 @@ export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType
-): TransformInfo[] {
+): TransformInfo[] | Error {
   // return ()
   const paths = selectionRanges.codeBasedSelections.map((selectionRange) =>
     getNodePathFromSourceRange(ast, selectionRange.range)
   )
-  const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+  const nodes = paths.map((pathToNode) =>
+    getNodeFromPath<Value>(ast, pathToNode)
   )
 
-  const theTransforms = nodes.map((node) => {
+  const theTransforms = nodes.map((nodeMeta) => {
+    // Typescript is not smart enough to know node will never be Error
+    // here, but we'll place a condition anyway
+    if (err(nodeMeta)) {
+      console.error(nodeMeta)
+      return false
+    }
+
+    const node = nodeMeta.node
     if (node?.type === 'CallExpression')
       return getRemoveConstraintsTransform(node, constraintType)
 
@@ -1444,23 +1485,23 @@ export function transformSecondarySketchLinesTagFirst({
   programMemory: ProgramMemory
   forceSegName?: string
   forceValueUsedInTransform?: Value
-}): {
-  modifiedAst: Program
-  valueUsedInTransform?: number
-  pathToNodeMap: PathToNodeMap
-  tagInfo: {
-    tag: string
-    isTagExisting: boolean
-  }
-} {
+}):
+  | {
+      modifiedAst: Program
+      valueUsedInTransform?: number
+      pathToNodeMap: PathToNodeMap
+      tagInfo: {
+        tag: string
+        isTagExisting: boolean
+      }
+    }
+  | Error {
   // let node = JSON.parse(JSON.stringify(ast))
   const primarySelection = selectionRanges.codeBasedSelections[0].range
 
-  const { modifiedAst, tag, isTagExisting, pathToNode } = giveSketchFnCallTag(
-    ast,
-    primarySelection,
-    forceSegName
-  )
+  const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
+  if (err(_tag)) return _tag
+  const { modifiedAst, tag, isTagExisting, pathToNode } = _tag
 
   const result = transformAstSketchLines({
     ast: modifiedAst,
@@ -1474,6 +1515,8 @@ export function transformSecondarySketchLinesTagFirst({
     referenceSegName: tag,
     forceValueUsedInTransform,
   })
+  if (err(result)) return result
+
   const updatedPathToNodeMap = incrementPathToNodeMap(result.pathToNodeMap)
   updatedPathToNodeMap[0] = pathToNode
 
@@ -1514,11 +1557,13 @@ export function transformAstSketchLines({
   referenceSegName: string
   forceValueUsedInTransform?: Value
   referencedSegmentRange?: Selection['range']
-}): {
-  modifiedAst: Program
-  valueUsedInTransform?: number
-  pathToNodeMap: PathToNodeMap
-} {
+}):
+  | {
+      modifiedAst: Program
+      valueUsedInTransform?: number
+      pathToNodeMap: PathToNodeMap
+    }
+  | Error {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
   let _valueUsedInTransform // TODO should this be an array?
@@ -1528,18 +1573,21 @@ export function transformAstSketchLines({
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
 
-    if (!callBack || !transformTo) throw new Error('no callback helper')
+    if (!callBack || !transformTo) return new Error('no callback helper')
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
-    const callExp = getNode<CallExpression>('CallExpression')?.node
-    const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
+    const callExp = getNode<CallExpression>('CallExpression')
+    if (err(callExp)) return callExp
+    const varDec = getNode<VariableDeclarator>('VariableDeclarator')
+    if (err(varDec)) return varDec
 
-    const { val } = getFirstArg(callExp)
-    const callBackTag = callExp.arguments[2]
+    const firstArg = getFirstArg(callExp.node)
+    if (err(firstArg)) return firstArg
+    const callBackTag = callExp.node.arguments[2]
     const _referencedSegmentNameVal =
-      callExp.arguments[0]?.type === 'ObjectExpression' &&
-      callExp.arguments[0].properties?.find(
+      callExp.node.arguments[0]?.type === 'ObjectExpression' &&
+      callExp.node.arguments[0].properties?.find(
         (prop) => prop.key.name === 'intersectTag'
       )?.value
     const _referencedSegmentName =
@@ -1548,77 +1596,94 @@ export function transformAstSketchLines({
         _referencedSegmentNameVal.type === 'Literal' &&
         String(_referencedSegmentNameVal.value)) ||
       ''
+    const { val } = firstArg
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
     const varValues: VarValues = []
 
-    getConstraintInfo(callExp, '', _pathToNode).forEach((a) => {
+    getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
         a.type === 'horizontal' ||
         a.type === 'vertical'
       )
         return
+
+      const nodeMeta = getNodeFromPath<Value>(ast, a.pathToNode)
+      if (err(nodeMeta)) return
+
       if (a?.argPosition?.type === 'arrayItem') {
         varValues.push({
           type: 'arrayItem',
           index: a.argPosition.index,
-          value: getNodeFromPath<Value>(ast, a.pathToNode).node,
+          value: nodeMeta.node,
           argType: a.type,
         })
       } else if (a?.argPosition?.type === 'objectProperty') {
         varValues.push({
           type: 'objectProperty',
           key: a.argPosition.key,
-          value: getNodeFromPath<Value>(ast, a.pathToNode).node,
+          value: nodeMeta.node,
           argType: a.type,
         })
       } else if (a?.argPosition?.type === 'singleValue') {
         varValues.push({
           type: 'singleValue',
           argType: a.type,
-          value: getNodeFromPath<Value>(ast, a.pathToNode).node,
+          value: nodeMeta.node,
         })
       }
     })
 
-    const varName = varDec.id.name
+    const varName = varDec.node.id.name
     let sketchGroup = programMemory.root?.[varName]
     if (sketchGroup.type === 'ExtrudeGroup') {
       sketchGroup = sketchGroup.sketchGroup
     }
     if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
-      throw new Error('not a sketch group')
-    const seg = getSketchSegmentFromPathToNode(
+      return new Error('not a sketch group')
+    const segMeta = getSketchSegmentFromPathToNode(
       sketchGroup,
       ast,
       _pathToNode
-    ).segment
-    const referencedSegment = referencedSegmentRange
-      ? getSketchSegmentFromSourceRange(sketchGroup, referencedSegmentRange)
-          .segment
-      : sketchGroup.value.find((path) => path.name === _referencedSegmentName)
-    const { to, from } = seg
-    const { modifiedAst, valueUsedInTransform, pathToNode } = replaceSketchLine(
-      {
-        node: node,
-        programMemory,
-        pathToNode: _pathToNode,
-        referencedSegment,
-        fnName: transformTo || (callExp.callee.name as ToolTip),
-        to,
-        from,
-        createCallback: callBack({
-          referenceSegName: _referencedSegmentName,
-          varValues,
-          varValA,
-          varValB,
-          tag: callBackTag,
-          forceValueUsedInTransform,
-        }),
-      }
     )
+    if (err(segMeta)) return segMeta
 
+    const seg = segMeta.segment
+    let referencedSegment
+    if (referencedSegmentRange) {
+      const _segment = getSketchSegmentFromSourceRange(
+        sketchGroup,
+        referencedSegmentRange
+      )
+      if (err(_segment)) return _segment
+      referencedSegment = _segment.segment
+    } else {
+      referencedSegment = sketchGroup.value.find(
+        (path) => path.name === _referencedSegmentName
+      )
+    }
+    const { to, from } = seg
+    const replacedSketchLine = replaceSketchLine({
+      node: node,
+      programMemory,
+      pathToNode: _pathToNode,
+      referencedSegment,
+      fnName: transformTo || (callExp.node.callee.name as ToolTip),
+      to,
+      from,
+      createCallback: callBack({
+        referenceSegName: _referencedSegmentName,
+        varValues,
+        varValA,
+        varValB,
+        tag: callBackTag,
+        forceValueUsedInTransform,
+      }),
+    })
+    if (err(replacedSketchLine)) return replacedSketchLine
+
+    const { modifiedAst, valueUsedInTransform, pathToNode } = replacedSketchLine
     node = modifiedAst
     pathToNodeMap[index] = pathToNode
     if (typeof valueUsedInTransform === 'number') {
@@ -1627,11 +1692,17 @@ export function transformAstSketchLines({
   }
 
   if ('codeBasedSelections' in selectionRanges) {
-    selectionRanges.codeBasedSelections.forEach(({ range }, index) =>
-      processSelection(getNodePathFromSourceRange(node, range), index)
-    )
+    // If the processing of any of the selections failed, return the first error
+    const maybeProcessErrors = selectionRanges.codeBasedSelections
+      .map(({ range }, index) =>
+        processSelection(getNodePathFromSourceRange(node, range), index)
+      )
+      .filter(err)
+
+    if (maybeProcessErrors.length) return maybeProcessErrors[0]
   } else {
-    selectionRanges.forEach(processSelection)
+    const maybeProcessErrors = selectionRanges.map(processSelection).filter(err)
+    if (maybeProcessErrors.length) return maybeProcessErrors[0]
   }
 
   return {
@@ -1672,20 +1743,27 @@ function getArgLiteralVal(arg: Value): number {
   return arg?.type === 'Literal' ? Number(arg.value) : 0
 }
 
+export type ConstraintLevel = 'free' | 'partial' | 'full'
+
 export function getConstraintLevelFromSourceRange(
   cursorRange: Selection['range'],
-  ast: Program
-): { range: [number, number]; level: 'free' | 'partial' | 'full' } {
-  const { node: sketchFnExp } = getNodeFromPath<CallExpression>(
+  ast: Program | Error
+): Error | { range: [number, number]; level: ConstraintLevel } {
+  if (err(ast)) return ast
+  const nodeMeta = getNodeFromPath<CallExpression>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'
   )
+  if (err(nodeMeta)) return nodeMeta
+
+  const { node: sketchFnExp } = nodeMeta
   const name = sketchFnExp?.callee?.name as ToolTip
   const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
   if (!toolTips.includes(name)) return { level: 'free', range: range }
 
   const firstArg = getFirstArg(sketchFnExp)
+  if (err(firstArg)) return firstArg
 
   // check if the function is fully constrained
   if (isNotLiteralArrayOrStatic(firstArg.val)) {

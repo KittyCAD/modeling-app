@@ -24,7 +24,7 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Hook up keyboard shortcuts
-  useHotkeyWrapper(['mod+k', 'mod+/'], () => {
+  useHotkeyWrapper(['mod+k', 'ctrl+c'], () => {
     if (commandBarState.context.commands.length === 0) return
     if (commandBarState.matches('Closed')) {
       commandBarSend({ type: 'Open' })

@@ -176,7 +176,7 @@ export class LanguageServerClient {
         },
       })
 
-      this.semanticTokens = deserializeTokens(
+      this.semanticTokens = await deserializeTokens(
         result.data,
         this.getServerCapabilities().semanticTokensProvider
       )
