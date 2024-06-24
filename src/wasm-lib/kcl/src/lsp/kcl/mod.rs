@@ -236,7 +236,10 @@ impl crate::lsp::backend::Backend for Backend {
             self.ast_map.insert(params.uri.to_string(), ast.clone()).await;
             // Update the symbols map.
             self.symbols_map
-                .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text))
+                .insert(
+                    params.uri.to_string(),
+                    ast.get_lsp_symbols(&params.text).unwrap_or_default(),
+                )
                 .await;
         }
 

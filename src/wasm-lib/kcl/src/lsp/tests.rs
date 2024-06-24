@@ -1197,6 +1197,53 @@ startSketchOn('XY')"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_document_symbol_tag() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line([28.67, -13.25], %, $here)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send document symbol request.
+    let document_symbol = server
+        .document_symbol(tower_lsp::lsp_types::DocumentSymbolParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the document symbol.
+    if let tower_lsp::lsp_types::DocumentSymbolResponse::Nested(document_symbol) = document_symbol {
+        assert_eq!(document_symbol.len(), 2);
+        assert_eq!(document_symbol[0].name, "part001");
+        assert_eq!(document_symbol[1].name, "here");
+    } else {
+        panic!("Expected document symbol");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_formatting() {
     let server = kcl_lsp_server(false).await.unwrap();
 

@@ -253,21 +253,23 @@ impl Program {
     }
 
     /// Returns all the lsp symbols in the program.
-    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
-        let mut symbols = vec![];
-        for item in &self.body {
-            match item {
-                BodyItem::ExpressionStatement(_expression_statement) => {
-                    continue;
+    pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
+        let symbols = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::lint::Node::TagDeclarator(tag) => {
+                    findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    symbols.extend(variable_declaration.get_lsp_symbols(code))
+                crate::lint::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                _ => {}
             }
-        }
-
-        symbols
+            Ok(true)
+        })?;
+        let x = symbols.lock().unwrap();
+        Ok(x.clone())
     }
 
     // Return all the lsp folding ranges in the program.
@@ -1784,7 +1786,7 @@ impl From<&TagDeclarator> for CompletionItem {
         CompletionItem {
             label: tag.name.to_string(),
             label_details: None,
-            kind: Some(CompletionItemKind::VARIABLE),
+            kind: Some(CompletionItemKind::REFERENCE),
             detail: Some("tag (A reference to an entity you previously named)".to_string()),
             documentation: None,
             deprecated: None,
@@ -1844,6 +1846,24 @@ impl TagDeclarator {
         memory.add(&self.name, memory_item.clone(), self.into())?;
 
         Ok(self.into())
+    }
+
+    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
+        let source_range: SourceRange = self.into();
+
+        vec![
+            #[allow(deprecated)]
+            DocumentSymbol {
+                name: self.name.to_string(),
+                detail: None,
+                kind: SymbolKind::CONSTANT,
+                range: source_range.to_lsp_range(code),
+                selection_range: source_range.to_lsp_range(code),
+                children: None,
+                tags: None,
+                deprecated: None,
+            },
+        ]
     }
 }
 
@@ -3462,7 +3482,7 @@ fn ghi = (x) => {
         let tokens = crate::token::lexer(code).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let symbols = program.get_lsp_symbols(code);
+        let symbols = program.get_lsp_symbols(code).unwrap();
         assert_eq!(symbols.len(), 7);
     }
 
