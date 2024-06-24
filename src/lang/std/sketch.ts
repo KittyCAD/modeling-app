@@ -1418,7 +1418,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const varName = varDec.declarations[0].id.name
     const sketchGroup = previousProgramMemory.root[varName] as SketchGroup
     const intersectPath = sketchGroup.value.find(
-      ({ name }: Path) => name === intersectTagName
+      ({ tag }: Path) => tag && tag.value === intersectTagName
     )
     let offset = 0
     if (intersectPath) {

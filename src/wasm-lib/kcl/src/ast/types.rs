@@ -1695,6 +1695,7 @@ impl Identifier {
 pub struct TagDeclarator {
     pub start: usize,
     pub end: usize,
+    #[serde(rename = "value")]
     pub name: String,
 }
 
