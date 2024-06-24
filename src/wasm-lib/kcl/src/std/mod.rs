@@ -27,12 +27,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::{parse_json_number_as_f64, Tag},
+    ast::types::{parse_json_number_as_f64, TagDeclarator},
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata, ProgramMemory,
-        SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::FaceTag},
 };
@@ -361,7 +361,15 @@ impl Args {
 
     fn get_circle_args(
         &self,
-    ) -> Result<([f64; 2], f64, crate::std::shapes::SketchSurfaceOrGroup, Option<Tag>), KclError> {
+    ) -> Result<
+        (
+            [f64; 2],
+            f64,
+            crate::std::shapes::SketchSurfaceOrGroup,
+            Option<TagDeclarator>,
+        ),
+        KclError,
+    > {
         let first_value = self
             .args
             .first()
@@ -444,7 +452,7 @@ impl Args {
         };
 
         let tag = if let Some(tag) = self.args.get(3) {
-            tag.get_tag_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
@@ -452,7 +460,7 @@ impl Args {
         Ok((center, radius, sketch_group_or_surface, tag))
     }
 
-    fn get_segment_name_sketch_group(&self) -> Result<(Tag, Box<SketchGroup>), KclError> {
+    fn get_segment_name_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a SketchGroup.
         let first_value = self.args.first().ok_or_else(|| {
@@ -462,7 +470,7 @@ impl Args {
             })
         })?;
 
-        let segment_name = first_value.get_tag()?;
+        let segment_name = first_value.get_tag_identifier()?;
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -594,7 +602,7 @@ impl Args {
         }
     }
 
-    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<Tag>), KclError> {
+    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -612,7 +620,7 @@ impl Args {
         };
 
         let tag = if let Some(tag) = self.args.get(1) {
-            tag.get_tag_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
@@ -731,7 +739,7 @@ impl Args {
 
     fn get_data_and_sketch_group_and_tag<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, Box<SketchGroup>, Option<Tag>), KclError> {
+    ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError> {
         let first_value = self
             .args
             .first()
@@ -766,7 +774,7 @@ impl Args {
             }));
         };
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_tag_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
@@ -776,7 +784,7 @@ impl Args {
 
     fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, SketchSurface, Option<Tag>), KclError> {
+    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError> {
         let first_value = self
             .args
             .first()
@@ -817,7 +825,7 @@ impl Args {
         };
 
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_tag_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
@@ -913,7 +921,7 @@ impl Args {
 
     fn get_data_and_extrude_group_and_tag<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, Box<ExtrudeGroup>, Option<Tag>), KclError> {
+    ) -> Result<(T, Box<ExtrudeGroup>, Option<TagDeclarator>), KclError> {
         let first_value = self
             .args
             .first()
@@ -955,7 +963,7 @@ impl Args {
         };
 
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_tag_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
@@ -963,7 +971,7 @@ impl Args {
         Ok((data, extrude_group, tag))
     }
 
-    fn get_segment_name_to_number_sketch_group(&self) -> Result<(Tag, f64, Box<SketchGroup>), KclError> {
+    fn get_segment_name_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a number.
         // The third argument should be a SketchGroup.
@@ -974,7 +982,7 @@ impl Args {
             })
         })?;
 
-        let segment_name = first_value.get_tag()?;
+        let segment_name = first_value.get_tag_identifier()?;
 
         let second_value = self
             .args
@@ -1047,10 +1055,10 @@ impl Args {
     pub async fn get_adjacent_face_to_tag(
         &self,
         extrude_group: &ExtrudeGroup,
-        tag: &Tag,
+        tag: &TagIdentifier,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
-        if tag.name.is_empty() {
+        if tag.value.is_empty() {
             return Err(KclError::Type(KclErrorDetails {
                 message: "Expected a non-empty tag for the face".to_string(),
                 source_ranges: vec![self.source_range],
@@ -1063,7 +1071,7 @@ impl Args {
             .find_map(|extrude_surface| match extrude_surface {
                 ExtrudeSurface::ExtrudePlane(extrude_plane) => {
                     if let Some(plane_tag) = &extrude_plane.tag {
-                        if plane_tag.name == tag.name {
+                        if plane_tag.name == tag.value {
                             Some(Ok(extrude_plane.face_id))
                         } else {
                             None
@@ -1074,12 +1082,12 @@ impl Args {
                 }
                 // The must be planar check must be called before the arc check.
                 ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                    message: format!("Tag `{}` is a non-planar surface", tag.name),
+                    message: format!("Tag `{}` is a non-planar surface", tag.value),
                     source_ranges: vec![self.source_range],
                 }))),
                 ExtrudeSurface::ExtrudeArc(extrude_arc) => {
                     if let Some(arc_tag) = &extrude_arc.tag {
-                        if arc_tag.name == tag.name {
+                        if arc_tag.name == tag.value {
                             Some(Ok(extrude_arc.face_id))
                         } else {
                             None
@@ -1095,8 +1103,12 @@ impl Args {
 
         // A face could also be the result of a chamfer or fillet.
         if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
-            if fc.tag() == Some(tag.clone()) {
-                Some(Ok(fc.id()))
+            if let Some(ntag) = &fc.tag() {
+                if ntag.name == tag.value {
+                    Some(Ok(fc.id()))
+                } else {
+                    None
+                }
             } else {
                 None
             }
@@ -1109,7 +1121,7 @@ impl Args {
 
         // If we still haven't found the face, return an error.
         Err(KclError::Type(KclErrorDetails {
-            message: format!("Expected a face with the tag `{}`", tag.name),
+            message: format!("Expected a face with the tag `{}`", tag.value),
             source_ranges: vec![self.source_range],
         }))
     }

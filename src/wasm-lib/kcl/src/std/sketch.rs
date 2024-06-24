@@ -8,11 +8,11 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::Tag,
+    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, UserVal,
+        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -31,8 +31,8 @@ use crate::{
 pub enum FaceTag {
     StartOrEnd(StartOrEnd),
     /// A tag for the face.
-    #[display("{0}.name")]
-    Tag(Tag),
+    #[display("{0}")]
+    Tag(TagIdentifier),
 }
 
 impl FaceTag {
@@ -80,7 +80,7 @@ pub enum StartOrEnd {
 
 /// Draw a line to a point.
 pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (to, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<Tag>) =
+    let (to, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_line_to(to, sketch_group, tag, args).await?;
@@ -105,7 +105,7 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_line_to(
     to: [f64; 2],
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -147,7 +147,8 @@ async fn inner_line_to(
 
 /// Draw a line to a point on the x-axis.
 pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<Tag>) = args.get_data_and_sketch_group_and_tag()?;
+    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_x_line_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -180,7 +181,7 @@ pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_x_line_to(
     to: f64,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -192,7 +193,8 @@ async fn inner_x_line_to(
 
 /// Draw a line to a point on the y-axis.
 pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<Tag>) = args.get_data_and_sketch_group_and_tag()?;
+    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_y_line_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -218,7 +220,7 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_y_line_to(
     to: f64,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -229,7 +231,7 @@ async fn inner_y_line_to(
 
 /// Draw a line.
 pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
-    let (delta, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<Tag>) =
+    let (delta, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_line(delta, sketch_group, tag, args).await?;
@@ -265,7 +267,7 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_line(
     delta: [f64; 2],
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -309,7 +311,8 @@ async fn inner_line(
 
 /// Draw a line on the x-axis.
 pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<Tag>) = args.get_data_and_sketch_group_and_tag()?;
+    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_x_line(length, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -342,7 +345,7 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_x_line(
     length: f64,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     inner_line([length, 0.0], sketch_group, tag, args).await
@@ -350,7 +353,8 @@ async fn inner_x_line(
 
 /// Draw a line on the y-axis.
 pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<Tag>) = args.get_data_and_sketch_group_and_tag()?;
+    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_y_line(length, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -378,7 +382,7 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_y_line(
     length: f64,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     inner_line([0.0, length], sketch_group, tag, args).await
@@ -402,7 +406,7 @@ pub enum AngledLineData {
 
 /// Draw an angled line.
 pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line(data, sketch_group, tag, args).await?;
@@ -431,7 +435,7 @@ pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_angled_line(
     data: AngledLineData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -486,7 +490,7 @@ async fn inner_angled_line(
 
 /// Draw an angled line of a given x length.
 pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, tag, args).await?;
@@ -511,7 +515,7 @@ pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError>
 async fn inner_angled_line_of_x_length(
     data: AngledLineData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let (angle, length) = match data {
@@ -539,7 +543,7 @@ pub struct AngledLineToData {
 
 /// Draw an angled line to a given x coordinate.
 pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_to_x(data, sketch_group, tag, args).await?;
@@ -564,7 +568,7 @@ pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_angled_line_to_x(
     data: AngledLineToData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -580,7 +584,7 @@ async fn inner_angled_line_to_x(
 
 /// Draw an angled line of a given y length.
 pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_of_y_length(data, sketch_group, tag, args).await?;
@@ -608,7 +612,7 @@ pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError>
 async fn inner_angled_line_of_y_length(
     data: AngledLineData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let (angle, length) = match data {
@@ -625,7 +629,7 @@ async fn inner_angled_line_of_y_length(
 
 /// Draw an angled line to a given y coordinate.
 pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_to_y(data, sketch_group, tag, args).await?;
@@ -650,7 +654,7 @@ pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_angled_line_to_y(
     data: AngledLineToData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -673,14 +677,14 @@ pub struct AngledLineThatIntersectsData {
     /// The angle of the line.
     pub angle: f64,
     /// The tag of the line to intersect with.
-    pub intersect_tag: Tag,
+    pub intersect_tag: TagIdentifier,
     /// The offset from the intersecting line.
     pub offset: Option<f64>,
 }
 
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineThatIntersectsData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (AngledLineThatIntersectsData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
     let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -709,7 +713,7 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 async fn inner_angled_line_that_intersects(
     data: AngledLineThatIntersectsData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let intersect_path = sketch_group
@@ -717,8 +721,8 @@ async fn inner_angled_line_that_intersects(
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!(
-                    "Expected a line that exists in the given SketchGroup, found `{}`",
-                    data.intersect_tag
+                    "Expected a line to exist in the given SketchGroup with tag `{}`",
+                    data.intersect_tag.value
                 ),
                 source_ranges: vec![args.source_range],
             })
@@ -1104,7 +1108,8 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
-    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<Tag>) = args.get_data_and_sketch_surface()?;
+    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagDeclarator>) =
+        args.get_data_and_sketch_surface()?;
 
     let sketch_group = inner_start_profile_at(start, sketch_surface, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
@@ -1150,7 +1155,7 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 pub(crate) async fn inner_start_profile_at(
     to: [f64; 2],
     sketch_surface: SketchSurface,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     if let SketchSurface::Face(face) = &sketch_surface {
@@ -1291,7 +1296,7 @@ pub(crate) fn inner_profile_start(sketch_group: Box<SketchGroup>) -> Result<[f64
 
 /// Close the current sketch.
 pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
-    let (sketch_group, tag): (Box<SketchGroup>, Option<Tag>) = args.get_sketch_group_and_optional_tag()?;
+    let (sketch_group, tag): (Box<SketchGroup>, Option<TagDeclarator>) = args.get_sketch_group_and_optional_tag()?;
 
     let new_sketch_group = inner_close(sketch_group, tag, args).await?;
 
@@ -1323,7 +1328,7 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 }]
 pub(crate) async fn inner_close(
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -1389,7 +1394,7 @@ pub enum ArcData {
 
 /// Draw an arc.
 pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (ArcData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (ArcData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_arc(data, sketch_group, tag, args).await?;
@@ -1416,7 +1421,7 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 pub(crate) async fn inner_arc(
     data: ArcData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
@@ -1491,7 +1496,7 @@ pub enum TangentialArcData {
 
 /// Draw a tangential arc.
 pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (TangentialArcData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (TangentialArcData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_tangential_arc(data, sketch_group, tag, args).await?;
@@ -1522,7 +1527,7 @@ pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_tangential_arc(
     data: TangentialArcData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
@@ -1643,7 +1648,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_tangential_arc_to(
     to: [f64; 2],
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
@@ -1700,7 +1705,7 @@ pub struct BezierData {
 
 /// Draw a bezier curve.
 pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (BezierData, Box<SketchGroup>, Option<Tag>) =
+    let (data, sketch_group, tag): (BezierData, Box<SketchGroup>, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_bezier_curve(data, sketch_group, tag, args).await?;
@@ -1729,7 +1734,7 @@ pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_bezier_curve(
     data: BezierData,
     sketch_group: Box<SketchGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
@@ -1862,7 +1867,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::ast::types::Tag;
+    use crate::executor::TagIdentifier;
     use crate::std::sketch::PlaneData;
 
     #[test]
@@ -1901,10 +1906,9 @@ mod tests {
         let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            crate::std::sketch::FaceTag::Tag(Tag {
-                name: "thing".to_string(),
-                start: 0,
-                end: 0
+            crate::std::sketch::FaceTag::Tag(TagIdentifier {
+                value: "thing".to_string(),
+                meta: Default::default()
             })
         );
 

@@ -7,7 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::Tag,
+    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem},
     std::{fillet::EdgeReference, Args},
@@ -28,7 +28,7 @@ pub struct ChamferData {
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<Tag>) =
+    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
     let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
@@ -67,7 +67,7 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_chamfer(
     data: ChamferData,
     extrude_group: Box<ExtrudeGroup>,
-    tag: Option<Tag>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -100,7 +100,7 @@ async fn inner_chamfer(
                     .get_path_by_tag(&edge_tag)
                     .ok_or_else(|| {
                         KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", edge_tag.name),
+                            message: format!("No edge found with tag: `{}`", edge_tag.value),
                             source_ranges: vec![args.source_range],
                         })
                     })?

@@ -115,7 +115,7 @@ where
         Value::Literal(lit) => {
             f.walk(lit.as_ref().into())?;
         }
-        Value::Tag(tag) => {
+        Value::TagDeclarator(tag) => {
             f.walk(tag.as_ref().into())?;
         }
 

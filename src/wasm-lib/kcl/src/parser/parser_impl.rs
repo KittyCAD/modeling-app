@@ -13,8 +13,8 @@ use crate::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
         ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Tag, UnaryExpression,
-        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -335,7 +335,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                         message: "cannot use a KCL None value as an operand".to_owned(),
                     }));
                 }
-                Value::Tag(_) => {
+                Value::TagDeclarator(_) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         source_ranges,
                         // TODO: Better error message here.
@@ -913,7 +913,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Literal),
         literal.map(Box::new).map(Value::Literal),
-        tag.map(Box::new).map(Value::Tag),
+        tag.map(Box::new).map(Value::TagDeclarator),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
         array.map(Box::new).map(Value::ArrayExpression),
@@ -1047,12 +1047,12 @@ fn identifier(i: TokenSlice) -> PResult<Identifier> {
         .parse_next(i)
 }
 
-impl TryFrom<Token> for Tag {
+impl TryFrom<Token> for TagDeclarator {
     type Error = KclError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(Tag {
+            Ok(TagDeclarator {
                 // We subtract 1 from the start because the tag starts with a `$`.
                 start: token.start - 1,
                 end: token.end,
@@ -1068,9 +1068,9 @@ impl TryFrom<Token> for Tag {
 }
 
 /// Parse a Kcl tag that starts with a `$`.
-fn tag(i: TokenSlice) -> PResult<Tag> {
+fn tag(i: TokenSlice) -> PResult<TagDeclarator> {
     dollar.parse_next(i)?;
-    any.try_map(Tag::try_from)
+    any.try_map(TagDeclarator::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
 }

@@ -494,7 +494,7 @@ impl From<&BodyItem> for SourceRange {
 pub enum Value {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
-    Tag(Box<Tag>),
+    TagDeclarator(Box<TagDeclarator>),
     BinaryExpression(Box<BinaryExpression>),
     FunctionExpression(Box<FunctionExpression>),
     CallExpression(Box<CallExpression>),
@@ -518,7 +518,7 @@ impl Value {
             Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
             Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
             Value::Identifier(ident) => ident.name.to_string(),
-            Value::Tag(tag) => tag.recast(),
+            Value::TagDeclarator(tag) => tag.recast(),
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
@@ -559,7 +559,7 @@ impl Value {
             Value::FunctionExpression(_func_exp) => None,
             Value::CallExpression(_call_exp) => None,
             Value::Identifier(_ident) => None,
-            Value::Tag(_tag) => None,
+            Value::TagDeclarator(_tag) => None,
             Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Value::UnaryExpression(_unary_exp) => None,
             Value::PipeSubstitution(_pipe_substitution) => None,
@@ -582,7 +582,7 @@ impl Value {
             Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Value::Identifier(_) => {}
-            Value::Tag(_) => {}
+            Value::TagDeclarator(_) => {}
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
@@ -594,7 +594,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.start(),
             Value::Identifier(identifier) => identifier.start(),
-            Value::Tag(tag) => tag.start(),
+            Value::TagDeclarator(tag) => tag.start(),
             Value::BinaryExpression(binary_expression) => binary_expression.start(),
             Value::FunctionExpression(function_expression) => function_expression.start(),
             Value::CallExpression(call_expression) => call_expression.start(),
@@ -612,7 +612,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.end(),
             Value::Identifier(identifier) => identifier.end(),
-            Value::Tag(tag) => tag.end(),
+            Value::TagDeclarator(tag) => tag.end(),
             Value::BinaryExpression(binary_expression) => binary_expression.end(),
             Value::FunctionExpression(function_expression) => function_expression.end(),
             Value::CallExpression(call_expression) => call_expression.end(),
@@ -644,7 +644,7 @@ impl Value {
             Value::None(_) => None,
             Value::Literal(_) => None,
             Value::Identifier(_) => None,
-            Value::Tag(_) => None,
+            Value::TagDeclarator(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Value::PipeSubstitution(_) => None,
         }
@@ -655,7 +655,7 @@ impl Value {
         match self {
             Value::Literal(_literal) => {}
             Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
-            Value::Tag(ref mut tag) => tag.rename(old_name, new_name),
+            Value::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
             Value::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -680,7 +680,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.get_constraint_level(),
             Value::Identifier(identifier) => identifier.get_constraint_level(),
-            Value::Tag(tag) => tag.get_constraint_level(),
+            Value::TagDeclarator(tag) => tag.get_constraint_level(),
             Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
@@ -1691,78 +1691,39 @@ impl Identifier {
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct Tag {
+pub struct TagDeclarator {
     pub start: usize,
     pub end: usize,
     pub name: String,
 }
 
-impl_value_meta!(Tag);
+impl_value_meta!(TagDeclarator);
 
-impl std::fmt::Display for Tag {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "${}", self.name)
+impl From<&TagDeclarator> for MemoryItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        MemoryItem::TagDeclarator(Box::new(tag.clone()))
     }
 }
 
-impl std::str::FromStr for Tag {
-    type Err = KclError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Self {
-            start: 0,
-            end: 0,
-            name: if s.starts_with('$') && s.len() > 1 {
-                s[1..].to_string()
-            } else if s.starts_with('$') {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: "Tag name cannot be empty".to_string(),
-                    source_ranges: vec![],
-                }));
-            } else {
-                s.to_string()
-            },
-        })
+impl From<&Box<TagDeclarator>> for MemoryItem {
+    fn from(tag: &Box<TagDeclarator>) -> Self {
+        MemoryItem::TagDeclarator(tag.clone())
     }
 }
 
-impl From<&Box<Tag>> for MemoryItem {
-    fn from(tag: &Box<Tag>) -> Self {
-        MemoryItem::Tag(tag.clone())
-    }
-}
-
-impl From<Box<Tag>> for SourceRange {
-    fn from(tag: Box<Tag>) -> Self {
+impl From<Box<TagDeclarator>> for SourceRange {
+    fn from(tag: Box<TagDeclarator>) -> Self {
         Self([tag.start, tag.end])
     }
 }
 
-impl From<Box<Tag>> for Vec<SourceRange> {
-    fn from(tag: Box<Tag>) -> Self {
+impl From<Box<TagDeclarator>> for Vec<SourceRange> {
+    fn from(tag: Box<TagDeclarator>) -> Self {
         vec![tag.into()]
     }
 }
 
-impl Ord for Tag {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.name.cmp(&other.name)
-    }
-}
-
-impl PartialOrd for Tag {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl std::hash::Hash for Tag {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.name.hash(state);
-    }
-}
-
-impl Tag {
+impl TagDeclarator {
     pub fn new(name: &str) -> Self {
         Self {
             start: 0,
@@ -1772,12 +1733,12 @@ impl Tag {
     }
 
     pub fn recast(&self) -> String {
-        // Tags are always prefixed with a dollar sign.
+        // TagDeclarators are always prefixed with a dollar sign.
         format!("${}", self.name)
     }
 
     /// Get the constraint level for this identifier.
-    /// Tag are always fully constrained.
+    /// TagDeclarator are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
@@ -1789,6 +1750,14 @@ impl Tag {
         if self.name == old_name {
             self.name = new_name.to_string();
         }
+    }
+
+    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
+        let memory_item: MemoryItem = self.into();
+
+        memory.add(&self.name, memory_item.clone(), self.into())?;
+
+        Ok(memory_item)
     }
 }
 
@@ -1928,7 +1897,7 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
-                Value::Tag(tag) => tag.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -2087,7 +2056,7 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
-                Value::Tag(tag) => tag.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;

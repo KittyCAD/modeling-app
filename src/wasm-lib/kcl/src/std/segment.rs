@@ -5,8 +5,8 @@ use derive_docs::stdlib;
 use schemars::JsonSchema;
 
 use crate::{
-    ast::types::Tag,
     errors::{KclError, KclErrorDetails},
+    executor::TagIdentifier,
     executor::{MemoryItem, SketchGroup},
     std::{utils::between, Args},
 };
@@ -35,7 +35,11 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndX",
 }]
-fn inner_segment_end_x(segment_name: &Tag, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_end_x(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
     let line = sketch_group.get_base_by_tag_or_start(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -74,7 +78,11 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndY",
 }]
-fn inner_segment_end_y(segment_name: &Tag, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_end_y(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
     let line = sketch_group.get_base_by_tag_or_start(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -203,7 +211,11 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segLen",
 }]
-fn inner_segment_length(segment_name: &Tag, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_length(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_tag(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -246,7 +258,11 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(segment_name: &Tag, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_angle(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_tag(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -288,7 +304,7 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
     name = "angleToMatchLengthX",
 }]
 fn inner_angle_to_match_length_x(
-    segment_name: &Tag,
+    segment_name: &TagIdentifier,
     to: f64,
     sketch_group: Box<SketchGroup>,
     args: Args,
@@ -357,7 +373,7 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
     name = "angleToMatchLengthY",
 }]
 fn inner_angle_to_match_length_y(
-    segment_name: &Tag,
+    segment_name: &TagIdentifier,
     to: f64,
     sketch_group: Box<SketchGroup>,
     args: Args,

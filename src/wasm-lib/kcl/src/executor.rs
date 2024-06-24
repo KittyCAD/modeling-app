@@ -11,7 +11,7 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, KclNone, Program, Tag, Value},
+    ast::types::{BodyItem, FunctionExpression, KclNone, Program, TagDeclarator, Value},
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -143,7 +143,8 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
-    Tag(Box<Tag>),
+    TagIdentifier(Box<TagIdentifier>),
+    TagDeclarator(Box<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
     SketchGroup(Box<SketchGroup>),
@@ -480,6 +481,50 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct TagIdentifier {
+    pub value: String,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+impl std::fmt::Display for TagIdentifier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl std::str::FromStr for TagIdentifier {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            value: s.to_string(),
+            meta: Default::default(),
+        })
+    }
+}
+
+impl Ord for TagIdentifier {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.value.cmp(&other.value)
+    }
+}
+
+impl PartialOrd for TagIdentifier {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl std::hash::Hash for TagIdentifier {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.value.hash(state);
+    }
+}
+
 pub type MemoryFunction =
     fn(
         s: Vec<MemoryItem>,
@@ -507,7 +552,8 @@ impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
         match item {
             MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Tag(t) => t.into(),
+            MemoryItem::TagDeclarator(t) => t.into(),
+            MemoryItem::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroups { value } => value
                 .iter()
@@ -575,31 +621,49 @@ impl MemoryItem {
     }
 
     /// Backwards compatibility for getting a tag from a memory item.
-    pub fn get_tag(&self) -> Result<Tag, KclError> {
+    pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
-            MemoryItem::Tag(t) => Ok(*t.clone()),
+            MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
             MemoryItem::UserVal(u) => {
                 let name: String = self.get_json()?;
-                Ok(Tag {
+                Ok(TagIdentifier {
+                    value: name,
+                    meta: u.meta.clone(),
+                })
+            }
+            _ => Err(KclError::Semantic(KclErrorDetails {
+                message: "Not a tag identifier".to_string(),
+                source_ranges: self.clone().into(),
+            })),
+        }
+    }
+
+    /// Backwards compatibility for getting a tag from a memory item.
+    pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
+        match self {
+            MemoryItem::TagDeclarator(t) => Ok(*t.clone()),
+            MemoryItem::UserVal(u) => {
+                let name: String = self.get_json()?;
+                Ok(TagDeclarator {
                     name,
                     start: u.meta[0].source_range.start(),
                     end: u.meta[0].source_range.end(),
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Not a tag".to_string(),
+                message: "Not a tag declarator".to_string(),
                 source_ranges: self.clone().into(),
             })),
         }
     }
 
     /// Backwards compatibility for getting an optional tag from a memory item.
-    pub fn get_tag_opt(&self) -> Result<Option<Tag>, KclError> {
+    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
         match self {
-            MemoryItem::Tag(t) => Ok(Some(*t.clone())),
+            MemoryItem::TagDeclarator(t) => Ok(Some(*t.clone())),
             MemoryItem::UserVal(u) => {
                 if let Some(name) = self.get_json_opt::<String>()? {
-                    Ok(Some(Tag {
+                    Ok(Some(TagDeclarator {
                         name,
                         start: u.meta[0].source_range.start(),
                         end: u.meta[0].source_range.end(),
@@ -609,7 +673,7 @@ impl MemoryItem {
                 }
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Not a tag".to_string(),
+                message: "Not a tag declarator".to_string(),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -704,19 +768,19 @@ impl SketchGroup {
         self.value.iter().find(|p| p.get_id() == *id)
     }
 
-    pub fn get_path_by_tag(&self, tag: &Tag) -> Option<&Path> {
+    pub fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&Path> {
         self.value.iter().find(|p| {
             if let Some(ntag) = p.get_tag() {
-                ntag.name == tag.name
+                ntag.name == tag.value
             } else {
                 false
             }
         })
     }
 
-    pub fn get_base_by_tag_or_start(&self, tag: &Tag) -> Option<&BasePath> {
+    pub fn get_base_by_tag_or_start(&self, tag: &TagIdentifier) -> Option<&BasePath> {
         if let Some(ntag) = &self.start.tag {
-            if ntag.name == tag.name {
+            if ntag.name == tag.value {
                 return Some(&self.start);
             }
         }
@@ -797,10 +861,10 @@ impl ExtrudeGroup {
         self.value.iter().find(|p| p.get_id() == *id)
     }
 
-    pub fn get_path_by_tag(&self, tag: &Tag) -> Option<&ExtrudeSurface> {
+    pub fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&ExtrudeSurface> {
         self.value.iter().find(|p| {
             if let Some(ntag) = p.get_tag() {
-                ntag.name == tag.name
+                ntag.name == tag.value
             } else {
                 false
             }
@@ -832,7 +896,7 @@ pub enum FilletOrChamfer {
         length: f64,
         /// The engine id of the edge to chamfer.
         edge_id: uuid::Uuid,
-        tag: Option<Tag>,
+        tag: Option<TagDeclarator>,
     },
 }
 
@@ -851,7 +915,7 @@ impl FilletOrChamfer {
         }
     }
 
-    pub fn tag(&self) -> Option<Tag> {
+    pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
             FilletOrChamfer::Fillet { .. } => None,
             FilletOrChamfer::Chamfer { tag, .. } => tag.clone(),
@@ -995,7 +1059,7 @@ impl From<Point3d> for kittycad::types::Point3D {
 }
 
 /// Metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
@@ -1021,7 +1085,7 @@ pub struct BasePath {
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The tag of the path.
-    pub tag: Option<Tag>,
+    pub tag: Option<TagDeclarator>,
     /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
@@ -1099,7 +1163,7 @@ impl Path {
         }
     }
 
-    pub fn get_tag(&self) -> Option<Tag> {
+    pub fn get_tag(&self) -> Option<TagDeclarator> {
         match self {
             Path::ToPoint { base } => base.tag.clone(),
             Path::Horizontal { base, .. } => base.tag.clone(),
@@ -1151,7 +1215,7 @@ pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<Tag>,
+    pub tag: Option<TagDeclarator>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1165,7 +1229,7 @@ pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<Tag>,
+    pub tag: Option<TagDeclarator>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1179,7 +1243,7 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_tag(&self) -> Option<Tag> {
+    pub fn get_tag(&self) -> Option<TagDeclarator> {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
@@ -1483,7 +1547,7 @@ impl ExecutorContext {
                     Value::Literal(literal) => {
                         memory.return_ = Some(ProgramReturn::Value(literal.into()));
                     }
-                    Value::Tag(tag) => {
+                    Value::TagDeclarator(tag) => {
                         memory.return_ = Some(ProgramReturn::Value(tag.into()));
                     }
                     Value::ArrayExpression(array_expr) => {
@@ -1541,7 +1605,7 @@ impl ExecutorContext {
         let item = match init {
             Value::None(none) => none.into(),
             Value::Literal(literal) => literal.into(),
-            Value::Tag(tag) => tag.into(),
+            Value::TagDeclarator(tag) => tag.into(),
             Value::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 value.clone()
