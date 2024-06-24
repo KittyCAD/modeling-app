@@ -71,9 +71,10 @@ impl StdLibFnArg {
             || self.type_ == "SketchSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
-        } else if self.type_ == "TagDeclarator" {
+        } else if self.type_ == "TagDeclarator" && self.required {
             return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
-        } else if self.type_ == "TagIdentifier" {
+        } else if self.type_ == "TagIdentifier" && self.required {
+            // TODO: actually use the ast to populate this.
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
@@ -836,7 +837,7 @@ mod tests {
     fn get_autocomplete_snippet_line() {
         let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
         let snippet = line_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}], ${2:%}, ${3:$myTag})${}"#);
+        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}], ${2:%})${}"#);
     }
 
     #[test]
