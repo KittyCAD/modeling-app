@@ -40,6 +40,27 @@ pub enum EdgeReference {
     Tag(Box<TagIdentifier>),
 }
 
+impl EdgeReference {
+    pub fn get_engine_id(&self, sketch_group: &SketchGroup, args: &Args) -> Result<uuid::Uuid, KclError> {
+        match self {
+            EdgeReference::Uuid(uuid) => Ok(*uuid),
+            EdgeReference::Tag(tag) => Ok(sketch_group
+                .value
+                .iter()
+                .find(|p| p.get_name() == *tag)
+                .ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("No edge found with tag: `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?
+                .get_base()
+                .geo_meta
+                .id),
+        }
+    }
+}
+
 /// Create fillets on tagged paths.
 pub async fn fillet(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
@@ -128,10 +149,7 @@ async fn inner_fillet(
     let mut extrude_group = extrude_group.clone();
     let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
-        let edge_id = match edge_tag {
-            EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
-        };
+        let edge_id = tag.get_engine_id(&extrude_group.sketch_group, &args)?;
 
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
