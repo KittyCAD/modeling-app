@@ -108,10 +108,7 @@ async fn inner_pattern_linear_2d(
     sketch_group_set: SketchGroupSet,
     args: Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let starting_sketch_groups = match sketch_group_set {
-        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
-        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
-    };
+    let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
 
     if args.ctx.is_mock {
         return Ok(starting_sketch_groups);
@@ -380,10 +377,7 @@ async fn inner_pattern_circular_2d(
     sketch_group_set: SketchGroupSet,
     args: Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let starting_sketch_groups = match sketch_group_set {
-        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
-        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
-    };
+    let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
 
     if args.ctx.is_mock {
         return Ok(starting_sketch_groups);
