@@ -188,58 +188,6 @@ impl Program {
         Ok(x.clone())
     }
 
-    /// Validate no duplicate variables or tags.
-    pub fn validate_no_duplicate_variables_and_tags<'a>(&'a self) -> Result<(), KclError> {
-        let all: Arc<Mutex<HashMap<String, SourceRange>>> = Arc::new(Mutex::new(HashMap::new()));
-        let found_dupe: Arc<Mutex<Option<(String, Vec<SourceRange>)>>> = Arc::new(Mutex::new(None));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
-            let mut findings = all.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            let mut found = found_dupe.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            match node {
-                crate::lint::Node::TagDeclarator(tag) => {
-                    if let Some(existing) = findings.get(&tag.name) {
-                        *found = Some((tag.name.clone(), vec![*existing, tag.into()]));
-                        return Ok(true);
-                    }
-                    findings.insert(tag.name.to_string(), tag.into());
-                }
-
-                crate::lint::Node::VariableDeclaration(variables) => {
-                    for variable in &variables.declarations {
-                        if let Some(existing) = findings.get(&variable.id.name) {
-                            *found = Some((variable.id.name.clone(), vec![*existing, variable.id.clone().into()]));
-                            return Ok(true);
-                        }
-                        findings.insert(variable.id.name.to_string(), variable.into());
-                    }
-                }
-                _ => {}
-            }
-            Ok(true)
-        })
-        .map_err(|err| {
-            KclError::Internal(KclErrorDetails {
-                source_ranges: vec![],
-                message: format!("Error while validating no duplicate variables and tags: {}", err),
-            })
-        })?;
-
-        let f = found_dupe.lock().map_err(|err| {
-            KclError::Internal(KclErrorDetails {
-                source_ranges: vec![],
-                message: format!("Error while validating no duplicate variables and tags: {}", err),
-            })
-        })?;
-        if let Some((name, source_ranges)) = f.clone() {
-            return Err(KclError::Semantic(KclErrorDetails {
-                source_ranges,
-                message: format!("Duplicate variable or tag name: '{}'", name),
-            }));
-        }
-
-        Ok(())
-    }
-
     /// Returns the body item that includes the given character position.
     pub fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
         for item in &self.body {
@@ -5234,41 +5182,5 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         };
 
         assert_eq!(l.raw, "false");
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_parse_duplicate_identifier_tag_variable_first() {
-        let some_program_string = r#"const thing = 134
-startSketchOn('xy')
-    |> startProfileAt([0,0], %)
-    |> line([10, 10], %, $thing)"#;
-
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast();
-
-        assert!(program.is_err());
-        assert_eq!(
-            program.err().unwrap().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([6, 17]), SourceRange([95, 101])], message: "Duplicate variable or tag name: 'thing'" }"#
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_parse_duplicate_identifier_variable_tag_first() {
-        let some_program_string = r#"startSketchOn('xy')
-    |> startProfileAt([0,0], %)
-    |> line([10, 10], %, $thing)
-const thing = 1"#;
-
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast();
-
-        assert!(program.is_err());
-        assert_eq!(
-            program.err().unwrap().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([77, 83]), SourceRange([91, 96])], message: "Duplicate variable or tag name: 'thing'" }"#
-        );
     }
 }
