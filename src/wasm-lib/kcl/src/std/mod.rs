@@ -31,10 +31,10 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, SketchGroup, SketchGroupSet,
-        SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata, ProgramMemory,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
     },
-    std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
+    std::{kcl_stdlib::KclStdLibFn, sketch::FaceTag},
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + Send>>;
@@ -204,14 +204,21 @@ pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
+    pub current_program_memory: ProgramMemory,
 }
 
 impl Args {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(
+        args: Vec<MemoryItem>,
+        source_range: SourceRange,
+        ctx: ExecutorContext,
+        current_program_memory: ProgramMemory,
+    ) -> Self {
         Self {
             args,
             source_range,
             ctx,
+            current_program_memory,
         }
     }
 
@@ -224,6 +231,17 @@ impl Args {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
 
+    // Add a modeling command to the batch that gets executed at the end of the file.
+    // This is good for something like fillet or chamfer where the engine would
+    // eat the path id if we executed it right away.
+    pub async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+    }
+
     /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,
@@ -231,6 +249,57 @@ impl Args {
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+    }
+
+    /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
+    pub async fn flush_batch_for_extrude_group_set(
+        &self,
+        extrude_groups: Vec<Box<ExtrudeGroup>>,
+    ) -> Result<(), KclError> {
+        // Make sure we don't traverse sketch_groups more than once.
+        let mut traversed_sketch_groups = Vec::new();
+
+        // Collect all the fillet/chamfer ids for the extrude groups.
+        let mut ids = Vec::new();
+        for extrude_group in extrude_groups {
+            // We need to traverse the extrude groups that share the same sketch group.
+            let sketch_group_id = extrude_group.sketch_group.id;
+            if !traversed_sketch_groups.contains(&sketch_group_id) {
+                // Find all the extrude groups on the same shared sketch group.
+                ids.extend(
+                    self.current_program_memory
+                        .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
+                        .iter()
+                        .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                );
+                traversed_sketch_groups.push(sketch_group_id);
+            }
+
+            ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
+        }
+
+        // We can return early if there are no fillets or chamfers.
+        if ids.is_empty() {
+            return Ok(());
+        }
+
+        // We want to move these fillets and chamfers from batch_end to batch so they get executed
+        // before what ever we call next.
+        for id in ids {
+            // Pop it off the batch_end and add it to the batch.
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+                // It might be in the batch already.
+                continue;
+            };
+            // Add it to the batch.
+            self.ctx.engine.batch().lock().unwrap().push(item);
+        }
+
+        // Run flush.
+        // Yes, we do need to actually flush the batch here, or references will fail later.
+        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
+
+        Ok(())
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
@@ -570,9 +639,7 @@ impl Args {
         }
     }
 
-    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(
-        &self,
-    ) -> Result<(T, Option<SketchOnFaceTag>), KclError> {
+    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Option<FaceTag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -592,9 +659,9 @@ impl Args {
         })?;
 
         if let Some(second_value) = self.args.get(1) {
-            let tag: SketchOnFaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
+            let tag: FaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
                 KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize SketchOnFaceTag from JSON: {}", e),
+                    message: format!("Failed to deserialize FaceTag from JSON: {}", e),
                     source_ranges: vec![self.source_range],
                 })
             })?;
@@ -862,6 +929,57 @@ impl Args {
         Ok((data, extrude_group))
     }
 
+    fn get_data_and_extrude_group_and_tag<T: serde::de::DeserializeOwned>(
+        &self,
+    ) -> Result<(T, Box<ExtrudeGroup>, Option<String>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_group = if let MemoryItem::ExtrudeGroup(eg) = second_value {
+            eg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let tag = if let Some(tag) = self.args.get(2) {
+            tag.get_json_opt()?
+        } else {
+            None
+        };
+
+        Ok((data, extrude_group, tag))
+    }
+
     fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a number.
@@ -952,6 +1070,59 @@ impl Args {
         };
 
         Ok((number, sketch_set))
+    }
+
+    pub async fn get_adjacent_face_to_tag(
+        &self,
+        extrude_group: &ExtrudeGroup,
+        tag: &str,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        if tag.is_empty() {
+            return Err(KclError::Type(KclErrorDetails {
+                message: "Expected a non-empty tag for the face".to_string(),
+                source_ranges: vec![self.source_range],
+            }));
+        }
+
+        if let Some(face_from_surface) = extrude_group
+            .value
+            .iter()
+            .find_map(|extrude_surface| match extrude_surface {
+                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => {
+                    Some(Ok(extrude_plane.face_id))
+                }
+                // The must be planar check must be called before the arc check.
+                ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
+                    message: format!("Tag `{}` is a non-planar surface", tag),
+                    source_ranges: vec![self.source_range],
+                }))),
+                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == tag => Some(Ok(extrude_arc.face_id)),
+                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
+            })
+        {
+            return face_from_surface;
+        }
+
+        // A face could also be the result of a chamfer or fillet.
+        if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
+            if fc.tag() == Some(tag) {
+                Some(Ok(fc.id()))
+            } else {
+                None
+            }
+        }) {
+            // We want to make sure we execute the fillet before this operation.
+            self.flush_batch_for_extrude_group_set(extrude_group.into()).await?;
+
+            return face_from_chamfer_fillet;
+        }
+
+        // If we still haven't found the face, return an error.
+        Err(KclError::Type(KclErrorDetails {
+            message: format!("Expected a face with the tag `{}`", tag),
+            source_ranges: vec![self.source_range],
+        }))
     }
 }
 

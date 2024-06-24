@@ -89,6 +89,17 @@ impl ProgramMemory {
             })
         })
     }
+
+    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+        self.root
+            .values()
+            .filter_map(|item| match item {
+                MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                _ => None,
+            })
+            .collect()
+    }
 }
 
 impl Default for ProgramMemory {
@@ -161,7 +172,7 @@ impl MemoryItem {
             MemoryItem::UserVal(value) => {
                 let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
-                Ok(SketchGroupSet::SketchGroups(sg.clone()))
+                Ok(sg.into())
             }
             _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
         }
@@ -174,9 +185,47 @@ impl MemoryItem {
             MemoryItem::UserVal(value) => {
                 let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
-                Ok(ExtrudeGroupSet::ExtrudeGroups(eg.clone()))
+                Ok(eg.into())
             }
             _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+}
+
+impl From<SketchGroupSet> for MemoryItem {
+    fn from(sg: SketchGroupSet) -> Self {
+        match sg {
+            SketchGroupSet::SketchGroup(sg) => MemoryItem::SketchGroup(sg),
+            SketchGroupSet::SketchGroups(sgs) => MemoryItem::SketchGroups { value: sgs },
+        }
+    }
+}
+
+impl From<Vec<Box<SketchGroup>>> for MemoryItem {
+    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+        if sg.len() == 1 {
+            MemoryItem::SketchGroup(sg[0].clone())
+        } else {
+            MemoryItem::SketchGroups { value: sg }
+        }
+    }
+}
+
+impl From<ExtrudeGroupSet> for MemoryItem {
+    fn from(eg: ExtrudeGroupSet) -> Self {
+        match eg {
+            ExtrudeGroupSet::ExtrudeGroup(eg) => MemoryItem::ExtrudeGroup(eg),
+            ExtrudeGroupSet::ExtrudeGroups(egs) => MemoryItem::ExtrudeGroups { value: egs },
+        }
+    }
+}
+
+impl From<Vec<Box<ExtrudeGroup>>> for MemoryItem {
+    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+        if eg.len() == 1 {
+            MemoryItem::ExtrudeGroup(eg[0].clone())
+        } else {
+            MemoryItem::ExtrudeGroups { value: eg }
         }
     }
 }
@@ -217,6 +266,59 @@ pub enum SketchGroupSet {
     SketchGroups(Vec<Box<SketchGroup>>),
 }
 
+impl From<SketchGroup> for SketchGroupSet {
+    fn from(sg: SketchGroup) -> Self {
+        SketchGroupSet::SketchGroup(Box::new(sg))
+    }
+}
+
+impl From<Box<SketchGroup>> for SketchGroupSet {
+    fn from(sg: Box<SketchGroup>) -> Self {
+        SketchGroupSet::SketchGroup(sg)
+    }
+}
+
+impl From<Vec<SketchGroup>> for SketchGroupSet {
+    fn from(sg: Vec<SketchGroup>) -> Self {
+        if sg.len() == 1 {
+            SketchGroupSet::SketchGroup(Box::new(sg[0].clone()))
+        } else {
+            SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+        }
+    }
+}
+
+impl From<Vec<Box<SketchGroup>>> for SketchGroupSet {
+    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+        if sg.len() == 1 {
+            SketchGroupSet::SketchGroup(sg[0].clone())
+        } else {
+            SketchGroupSet::SketchGroups(sg)
+        }
+    }
+}
+
+impl From<SketchGroupSet> for Vec<Box<SketchGroup>> {
+    fn from(sg: SketchGroupSet) -> Self {
+        match sg {
+            SketchGroupSet::SketchGroup(sg) => vec![sg],
+            SketchGroupSet::SketchGroups(sgs) => sgs,
+        }
+    }
+}
+
+impl From<&SketchGroup> for Vec<Box<SketchGroup>> {
+    fn from(sg: &SketchGroup) -> Self {
+        vec![Box::new(sg.clone())]
+    }
+}
+
+impl From<Box<SketchGroup>> for Vec<Box<SketchGroup>> {
+    fn from(sg: Box<SketchGroup>) -> Self {
+        vec![sg]
+    }
+}
+
 /// A extrude group or a group of extrude groups.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -224,6 +326,59 @@ pub enum SketchGroupSet {
 pub enum ExtrudeGroupSet {
     ExtrudeGroup(Box<ExtrudeGroup>),
     ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+}
+
+impl From<ExtrudeGroup> for ExtrudeGroupSet {
+    fn from(eg: ExtrudeGroup) -> Self {
+        ExtrudeGroupSet::ExtrudeGroup(Box::new(eg))
+    }
+}
+
+impl From<Box<ExtrudeGroup>> for ExtrudeGroupSet {
+    fn from(eg: Box<ExtrudeGroup>) -> Self {
+        ExtrudeGroupSet::ExtrudeGroup(eg)
+    }
+}
+
+impl From<Vec<ExtrudeGroup>> for ExtrudeGroupSet {
+    fn from(eg: Vec<ExtrudeGroup>) -> Self {
+        if eg.len() == 1 {
+            ExtrudeGroupSet::ExtrudeGroup(Box::new(eg[0].clone()))
+        } else {
+            ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+        }
+    }
+}
+
+impl From<Vec<Box<ExtrudeGroup>>> for ExtrudeGroupSet {
+    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+        if eg.len() == 1 {
+            ExtrudeGroupSet::ExtrudeGroup(eg[0].clone())
+        } else {
+            ExtrudeGroupSet::ExtrudeGroups(eg)
+        }
+    }
+}
+
+impl From<ExtrudeGroupSet> for Vec<Box<ExtrudeGroup>> {
+    fn from(eg: ExtrudeGroupSet) -> Self {
+        match eg {
+            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg],
+            ExtrudeGroupSet::ExtrudeGroups(egs) => egs,
+        }
+    }
+}
+
+impl From<&ExtrudeGroup> for Vec<Box<ExtrudeGroup>> {
+    fn from(eg: &ExtrudeGroup) -> Self {
+        vec![Box::new(eg.clone())]
+    }
+}
+
+impl From<Box<ExtrudeGroup>> for Vec<Box<ExtrudeGroup>> {
+    fn from(eg: Box<ExtrudeGroup>) -> Self {
+        vec![eg]
+    }
 }
 
 /// Data for an imported geometry.
@@ -281,14 +436,14 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The tag of the face.
     pub value: String,
-    /// The original sketch group id of the object we are sketching on.
-    pub sketch_group_id: uuid::Uuid,
     /// What should the face’s X axis be?
     pub x_axis: Point3d,
     /// What should the face’s Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    /// The extrude group the face is on.
+    pub extrude_group: Box<ExtrudeGroup>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -578,6 +733,9 @@ pub struct ExtrudeGroup {
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
     pub end_cap_id: Option<uuid::Uuid>,
+    /// Chamfers or fillets on this extrude group.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fillet_or_chamfers: Vec<FilletOrChamfer>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -590,6 +748,57 @@ impl ExtrudeGroup {
 
     pub fn get_path_by_name(&self, name: &str) -> Option<&ExtrudeSurface> {
         self.value.iter().find(|p| p.get_name() == name)
+    }
+
+    pub fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
+        self.fillet_or_chamfers.iter().map(|foc| foc.id()).collect()
+    }
+}
+
+/// A fillet or a chamfer.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum FilletOrChamfer {
+    /// A fillet.
+    Fillet {
+        /// The id of the engine command that called this fillet.
+        id: uuid::Uuid,
+        radius: f64,
+        /// The engine id of the edge to fillet.
+        edge_id: uuid::Uuid,
+    },
+    /// A chamfer.
+    Chamfer {
+        /// The id of the engine command that called this chamfer.
+        id: uuid::Uuid,
+        length: f64,
+        /// The engine id of the edge to chamfer.
+        edge_id: uuid::Uuid,
+        tag: Option<String>,
+    },
+}
+
+impl FilletOrChamfer {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            FilletOrChamfer::Fillet { id, .. } => *id,
+            FilletOrChamfer::Chamfer { id, .. } => *id,
+        }
+    }
+
+    pub fn edge_id(&self) -> uuid::Uuid {
+        match self {
+            FilletOrChamfer::Fillet { edge_id, .. } => *edge_id,
+            FilletOrChamfer::Chamfer { edge_id, .. } => *edge_id,
+        }
+    }
+
+    pub fn tag(&self) -> Option<&str> {
+        match self {
+            FilletOrChamfer::Fillet { .. } => None,
+            FilletOrChamfer::Chamfer { tag, .. } => tag.as_deref(),
+        }
     }
 }
 
@@ -1157,7 +1366,7 @@ impl ExecutorContext {
                         }
                         match self.stdlib.get_either(&call_expr.callee.name) {
                             FunctionKind::Core(func) => {
-                                let args = crate::std::Args::new(args, call_expr.into(), self.clone());
+                                let args = crate::std::Args::new(args, call_expr.into(), self.clone(), memory.clone());
                                 let result = func.std_lib_fn()(args).await?;
                                 memory.return_ = Some(ProgramReturn::Value(result));
                             }
@@ -1248,7 +1457,14 @@ impl ExecutorContext {
 
         if BodyType::Root == body_type {
             // Flush the batch queue.
-            self.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+            self.engine
+                .flush_batch(
+                    // True here tells the engine to flush all the end commands as well like fillets
+                    // and chamfers where the engine would otherwise eat the ID of the segments.
+                    true,
+                    SourceRange([program.end, program.end]),
+                )
+                .await?;
         }
 
         Ok(memory.clone())

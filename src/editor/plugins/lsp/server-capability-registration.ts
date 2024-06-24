@@ -41,7 +41,7 @@ const ServerCapabilitiesProviders: IMethodServerCapabilityProviderDictionary = {
 function registerServerCapability(
   serverCapabilities: ServerCapabilities,
   registration: Registration
-): ServerCapabilities {
+): ServerCapabilities | Error {
   const serverCapabilitiesCopy = JSON.parse(
     JSON.stringify(serverCapabilities)
   ) as IFlexibleServerCapabilities
@@ -58,7 +58,7 @@ function registerServerCapability(
       )
     }
   } else {
-    throw new Error('Could not register server capability.')
+    return new Error('Could not register server capability.')
   }
 
   return serverCapabilitiesCopy

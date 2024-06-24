@@ -20,10 +20,7 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 
     let result = inner_extrude(length, sketch_group_set, args).await?;
 
-    match result {
-        ExtrudeGroupSet::ExtrudeGroup(extrude_group) => Ok(MemoryItem::ExtrudeGroup(extrude_group)),
-        ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups { value: extrude_groups }),
-    }
+    Ok(result.into())
 }
 
 /// Extrudes by a given amount.
@@ -77,12 +74,9 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
     let id = uuid::Uuid::new_v4();
 
     // Extrude the element(s).
-    let sketch_groups = match sketch_group_set {
-        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
-        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
-    };
+    let sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
     let mut extrude_groups = Vec::new();
-    for sketch_group in sketch_groups.iter() {
+    for sketch_group in &sketch_groups {
         args.send_modeling_cmd(
             id,
             kittycad::types::ModelingCmd::Extrude {
@@ -95,11 +89,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         extrude_groups.push(do_post_extrude(sketch_group.clone(), length, id, args.clone()).await?);
     }
 
-    if extrude_groups.len() == 1 {
-        Ok(ExtrudeGroupSet::ExtrudeGroup(extrude_groups.pop().unwrap()))
-    } else {
-        Ok(ExtrudeGroupSet::ExtrudeGroups(extrude_groups))
-    }
+    Ok(extrude_groups.into())
 }
 
 pub(crate) async fn do_post_extrude(
@@ -151,7 +141,7 @@ pub(crate) async fn do_post_extrude(
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch_group.on {
-        sketch_group.id = face.sketch_group_id;
+        sketch_group.id = face.extrude_group.sketch_group.id;
     }
 
     let solid3d_info = args
@@ -243,6 +233,7 @@ pub(crate) async fn do_post_extrude(
         height: length,
         start_cap_id,
         end_cap_id,
+        fillet_or_chamfers: vec![],
         meta: sketch_group.meta,
     }))
 }

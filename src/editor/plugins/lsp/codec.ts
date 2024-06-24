@@ -67,7 +67,13 @@ export interface FromServer extends WritableStream<Uint8Array> {
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FromServer {
-  export function create(): FromServer {
-    return new StreamDemuxer()
+  export function create(): FromServer | Error {
+    // Calls private method .start() which can throw.
+    // This is an odd one of the bunch but try/catch seems most suitable here.
+    try {
+      return new StreamDemuxer()
+    } catch (e: any) {
+      return e
+    }
   }
 }

@@ -22,7 +22,7 @@ return startSketchOn(p, tag)
   |> close(%)
 }
 
-const plumbus1 = 
+const plumbus1 =
   circl(-200, 'c')
   |> extrude(plumbusLen, %)
   |> fillet({
@@ -30,7 +30,7 @@ const plumbus1 =
        tags: ['arc-c', getOppositeEdge('arc-c', %)]
      }, %)
 
-const plumbus0 = 
+const plumbus0 =
   circl(200, 'a')
   |> extrude(plumbusLen, %)
   |> fillet({
