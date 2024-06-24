@@ -27,7 +27,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::parse_json_number_as_f64,
+    ast::types::{parse_json_number_as_f64, Tag},
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -361,7 +361,7 @@ impl Args {
 
     fn get_circle_args(
         &self,
-    ) -> Result<([f64; 2], f64, crate::std::shapes::SketchSurfaceOrGroup, Option<String>), KclError> {
+    ) -> Result<([f64; 2], f64, crate::std::shapes::SketchSurfaceOrGroup, Option<Tag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -443,17 +443,13 @@ impl Args {
             }));
         };
 
-        if let Some(fourth_value) = self.args.get(3) {
-            let tag: String = serde_json::from_value(fourth_value.get_json_value()?).map_err(|e| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize String from JSON: {}", e),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-            Ok((center, radius, sketch_group_or_surface, Some(tag)))
+        let tag = if let Some(tag) = self.args.get(3) {
+            tag.get_tag_opt()?
         } else {
-            Ok((center, radius, sketch_group_or_surface, None))
-        }
+            None
+        };
+
+        Ok((center, radius, sketch_group_or_surface, tag))
     }
 
     fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
@@ -609,7 +605,7 @@ impl Args {
         }
     }
 
-    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<String>), KclError> {
+    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<Tag>), KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -750,7 +746,7 @@ impl Args {
 
     fn get_data_and_sketch_group_and_tag<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, Box<SketchGroup>, Option<String>), KclError> {
+    ) -> Result<(T, Box<SketchGroup>, Option<Tag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -785,7 +781,7 @@ impl Args {
             }));
         };
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_json_opt()?
+            tag.get_tag_opt()?
         } else {
             None
         };
@@ -835,7 +831,7 @@ impl Args {
             }));
         };
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_json_opt()?
+            tag.get_tag_opt()?
         } else {
             None
         };
