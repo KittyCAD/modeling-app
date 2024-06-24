@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, MemoryItem, UserVal},
+    executor::{ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, MemoryItem, SketchGroup, UserVal},
     std::Args,
 };
 
@@ -35,6 +35,27 @@ pub enum EdgeReference {
     Uuid(uuid::Uuid),
     /// A tag name of an edge.
     Tag(String),
+}
+
+impl EdgeReference {
+    pub fn get_engine_id(&self, sketch_group: &SketchGroup, args: &Args) -> Result<uuid::Uuid, KclError> {
+        match self {
+            EdgeReference::Uuid(uuid) => Ok(*uuid),
+            EdgeReference::Tag(tag) => Ok(sketch_group
+                .value
+                .iter()
+                .find(|p| p.get_name() == *tag)
+                .ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("No edge found with tag: `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?
+                .get_base()
+                .geo_meta
+                .id),
+        }
+    }
 }
 
 /// Create fillets on tagged paths.
@@ -92,25 +113,7 @@ async fn inner_fillet(
 
     let mut fillet_or_chamfers = Vec::new();
     for tag in data.tags {
-        let edge_id = match tag {
-            EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(tag) => {
-                extrude_group
-                    .sketch_group
-                    .value
-                    .iter()
-                    .find(|p| p.get_name() == tag)
-                    .ok_or_else(|| {
-                        KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", tag),
-                            source_ranges: vec![args.source_range],
-                        })
-                    })?
-                    .get_base()
-                    .geo_meta
-                    .id
-            }
-        };
+        let edge_id = tag.get_engine_id(&extrude_group.sketch_group, &args)?;
 
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(

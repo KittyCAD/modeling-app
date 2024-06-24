@@ -25,25 +25,25 @@ pub struct RevolveData {
     #[serde(default)]
     pub angle: Option<f64>,
     /// Axis of revolution.
-    pub axis: RevolveAxis,
+    pub axis: AxisOrEdgeReference,
 }
 
-/// Axis of revolution or tagged edge.
+/// Axis or tagged edge.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
-pub enum RevolveAxis {
-    /// Axis of revolution.
-    Axis(RevolveAxisAndOrigin),
+pub enum AxisOrEdgeReference {
+    /// Axis and origin.
+    Axis(AxisAndOrigin),
     /// Tagged edge.
     Edge(EdgeReference),
 }
 
-/// Axis of revolution.
+/// Axis and origin.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub enum RevolveAxisAndOrigin {
+pub enum AxisAndOrigin {
     /// X-axis.
     #[serde(rename = "X", alias = "x")]
     X,
@@ -70,17 +70,17 @@ pub enum RevolveAxisAndOrigin {
     },
 }
 
-impl RevolveAxisAndOrigin {
+impl AxisAndOrigin {
     /// Get the axis and origin.
     pub fn axis_and_origin(&self) -> Result<(kittycad::types::Point3D, kittycad::types::Point3D), KclError> {
         let (axis, origin) = match self {
-            RevolveAxisAndOrigin::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::Z => ([0.0, 0.0, 1.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::NegZ => ([0.0, 0.0, -1.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::Custom { axis, origin } => (*axis, *origin),
+            AxisAndOrigin::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+            AxisAndOrigin::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
+            AxisAndOrigin::Z => ([0.0, 0.0, 1.0], [0.0, 0.0, 0.0]),
+            AxisAndOrigin::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+            AxisAndOrigin::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
+            AxisAndOrigin::NegZ => ([0.0, 0.0, -1.0], [0.0, 0.0, 0.0]),
+            AxisAndOrigin::Custom { axis, origin } => (*axis, *origin),
         };
 
         Ok((
@@ -240,7 +240,7 @@ async fn inner_revolve(
 
     let id = uuid::Uuid::new_v4();
     match data.axis {
-        RevolveAxis::Axis(axis) => {
+        AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
             args.batch_modeling_cmd(
                 id,
@@ -255,25 +255,9 @@ async fn inner_revolve(
             )
             .await?;
         }
-        RevolveAxis::Edge(edge) => {
-            let edge_id = match edge {
-                EdgeReference::Uuid(uuid) => uuid,
-                EdgeReference::Tag(tag) => {
-                    sketch_group
-                        .value
-                        .iter()
-                        .find(|p| p.get_name() == tag)
-                        .ok_or_else(|| {
-                            KclError::Type(KclErrorDetails {
-                                message: format!("No edge found with tag: `{}`", tag),
-                                source_ranges: vec![args.source_range],
-                            })
-                        })?
-                        .get_base()
-                        .geo_meta
-                        .id
-                }
-            };
+        AxisOrEdgeReference::Edge(edge) => {
+            let edge_id = edge.get_engine_id(&sketch_group, &args)?;
+
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::RevolveAboutEdge {
@@ -356,27 +340,27 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::std::revolve::{RevolveAxis, RevolveAxisAndOrigin};
+    use crate::std::revolve::{AxisAndOrigin, AxisOrEdgeReference};
 
     #[test]
     fn test_deserialize_revolve_axis() {
-        let data = RevolveAxis::Axis(RevolveAxisAndOrigin::X);
+        let data = AxisOrEdgeReference::Axis(AxisAndOrigin::X);
         let mut str_json = serde_json::to_string(&data).unwrap();
         assert_eq!(str_json, "\"X\"");
 
         str_json = "\"Y\"".to_string();
-        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, RevolveAxis::Axis(RevolveAxisAndOrigin::Y));
+        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, AxisOrEdgeReference::Axis(AxisAndOrigin::Y));
 
         str_json = "\"-Y\"".to_string();
-        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, RevolveAxis::Axis(RevolveAxisAndOrigin::NegY));
+        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, AxisOrEdgeReference::Axis(AxisAndOrigin::NegY));
 
         str_json = "\"-x\"".to_string();
-        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, RevolveAxis::Axis(RevolveAxisAndOrigin::NegX));
+        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, AxisOrEdgeReference::Axis(AxisAndOrigin::NegX));
 
-        let data = RevolveAxis::Axis(RevolveAxisAndOrigin::Custom {
+        let data = AxisOrEdgeReference::Axis(AxisAndOrigin::Custom {
             axis: [0.0, -1.0, 0.0],
             origin: [1.0, 0.0, 2.0],
         });
@@ -384,10 +368,10 @@ mod tests {
         assert_eq!(str_json, r#"{"custom":{"axis":[0.0,-1.0,0.0],"origin":[1.0,0.0,2.0]}}"#);
 
         str_json = r#"{"custom": {"axis": [0,-1,0], "origin": [1,0,2.0]}}"#.to_string();
-        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
+        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            RevolveAxis::Axis(RevolveAxisAndOrigin::Custom {
+            AxisOrEdgeReference::Axis(AxisAndOrigin::Custom {
                 axis: [0.0, -1.0, 0.0],
                 origin: [1.0, 0.0, 2.0]
             })
