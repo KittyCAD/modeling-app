@@ -9,7 +9,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
-    "@headlessui/tailwindcss": "^0.2.0",
+    "@headlessui/tailwindcss": "^0.2.1",
     "@kittycad/lib": "^0.0.67",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
