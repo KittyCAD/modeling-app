@@ -242,7 +242,21 @@ impl From<Box<SketchGroup>> for SketchGroupSet {
 
 impl From<Vec<SketchGroup>> for SketchGroupSet {
     fn from(sg: Vec<SketchGroup>) -> Self {
-        SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+        if sg.len() == 1 {
+            SketchGroupSet::SketchGroup(Box::new(sg[0].clone()))
+        } else {
+            SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+        }
+    }
+}
+
+impl From<Vec<Box<SketchGroup>>> for SketchGroupSet {
+    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+        if sg.len() == 1 {
+            SketchGroupSet::SketchGroup(sg[0].clone())
+        } else {
+            SketchGroupSet::SketchGroups(sg)
+        }
     }
 }
 
@@ -290,7 +304,21 @@ impl From<Box<ExtrudeGroup>> for ExtrudeGroupSet {
 
 impl From<Vec<ExtrudeGroup>> for ExtrudeGroupSet {
     fn from(eg: Vec<ExtrudeGroup>) -> Self {
-        ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+        if eg.len() == 1 {
+            ExtrudeGroupSet::ExtrudeGroup(Box::new(eg[0].clone()))
+        } else {
+            ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+        }
+    }
+}
+
+impl From<Vec<Box<ExtrudeGroup>>> for ExtrudeGroupSet {
+    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+        if eg.len() == 1 {
+            ExtrudeGroupSet::ExtrudeGroup(eg[0].clone())
+        } else {
+            ExtrudeGroupSet::ExtrudeGroups(eg)
+        }
     }
 }
 

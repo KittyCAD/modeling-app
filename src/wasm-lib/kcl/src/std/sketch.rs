@@ -1831,54 +1831,28 @@ async fn inner_hole(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    //TODO: batch these (once we have batch)
+    let hole_sketch_groups: Vec<Box<SketchGroup>> = hole_sketch_group.into();
+    for hole_sketch_group in hole_sketch_groups {
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::Solid2DAddHole {
+                object_id: sketch_group.id,
+                hole_id: hole_sketch_group.id,
+            },
+        )
+        .await?;
 
-    match hole_sketch_group {
-        SketchGroupSet::SketchGroup(hole_sketch_group) => {
-            args.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                ModelingCmd::Solid2DAddHole {
-                    object_id: sketch_group.id,
-                    hole_id: hole_sketch_group.id,
-                },
-            )
-            .await?;
-            // suggestion (mike)
-            // we also hide the source hole since its essentially "consumed" by this operation
-            args.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                ModelingCmd::ObjectVisible {
-                    object_id: hole_sketch_group.id,
-                    hidden: true,
-                },
-            )
-            .await?;
-        }
-        SketchGroupSet::SketchGroups(hole_sketch_groups) => {
-            for hole_sketch_group in hole_sketch_groups {
-                args.batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    ModelingCmd::Solid2DAddHole {
-                        object_id: sketch_group.id,
-                        hole_id: hole_sketch_group.id,
-                    },
-                )
-                .await?;
-                // suggestion (mike)
-                // we also hide the source hole since its essentially "consumed" by this operation
-                args.batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    ModelingCmd::ObjectVisible {
-                        object_id: hole_sketch_group.id,
-                        hidden: true,
-                    },
-                )
-                .await?;
-            }
-        }
+        // suggestion (mike)
+        // we also hide the source hole since its essentially "consumed" by this operation
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::ObjectVisible {
+                object_id: hole_sketch_group.id,
+                hidden: true,
+            },
+        )
+        .await?;
     }
-
-    // TODO: should we modify the sketch group to include the hole data, probably?
 
     Ok(sketch_group)
 }
