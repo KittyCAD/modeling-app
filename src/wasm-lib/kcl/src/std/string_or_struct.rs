@@ -1,11 +1,11 @@
 use std::{fmt, marker::PhantomData, str::FromStr};
 
-use crate::errors::KclError;
-
 use serde::{
     de::{self, MapAccess, Visitor},
     Deserialize, Deserializer,
 };
+
+use crate::errors::KclError;
 
 pub(crate) fn string_or_struct<'de, T, D>(deserializer: D) -> Result<T, D::Error>
 where
