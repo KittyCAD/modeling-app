@@ -89,6 +89,17 @@ impl ProgramMemory {
             })
         })
     }
+
+    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+        self.root
+            .values()
+            .filter_map(|item| match item {
+                MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                _ => None,
+            })
+            .collect()
+    }
 }
 
 impl Default for ProgramMemory {
@@ -1203,7 +1214,7 @@ impl ExecutorContext {
                         }
                         match self.stdlib.get_either(&call_expr.callee.name) {
                             FunctionKind::Core(func) => {
-                                let args = crate::std::Args::new(args, call_expr.into(), self.clone());
+                                let args = crate::std::Args::new(args, call_expr.into(), self.clone(), memory.clone());
                                 let result = func.std_lib_fn()(args).await?;
                                 memory.return_ = Some(ProgramReturn::Value(result));
                             }

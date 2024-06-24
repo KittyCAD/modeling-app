@@ -1135,7 +1135,7 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
+                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
                 let result = func.std_lib_fn()(args).await?;
                 Ok(result)
             }

@@ -31,8 +31,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, SketchGroup, SketchGroupSet,
-        SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, ProgramMemory, SketchGroup,
+        SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -204,14 +204,21 @@ pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
+    pub current_program_memory: ProgramMemory,
 }
 
 impl Args {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(
+        args: Vec<MemoryItem>,
+        source_range: SourceRange,
+        ctx: ExecutorContext,
+        current_program_memory: ProgramMemory,
+    ) -> Self {
         Self {
             args,
             source_range,
             ctx,
+            current_program_memory,
         }
     }
 
@@ -251,9 +258,25 @@ impl Args {
             ExtrudeGroupSet::ExtrudeGroups(egs) => egs.clone(),
         };
 
+        // Make sure we don't traverse sketch_groups more than once.
+        let mut traversed_sketch_groups = Vec::new();
+
         // Collect all the fillet/chamfer ids for the extrude groups.
         let mut ids = Vec::new();
         for extrude_group in extrude_groups {
+            // We need to traverse the extrude groups that share the same sketch group.
+            let sketch_group_id = extrude_group.sketch_group.id;
+            if !traversed_sketch_groups.contains(&sketch_group_id) {
+                // Find all the extrude groups on the same shared sketch group.
+                ids.extend(
+                    self.current_program_memory
+                        .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
+                        .iter()
+                        .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                );
+                traversed_sketch_groups.push(sketch_group_id);
+            }
+
             ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
         }
 
@@ -261,8 +284,6 @@ impl Args {
         if ids.is_empty() {
             return Ok(());
         }
-
-        println!("Flushing batch for extrude group set: {:?}", ids);
 
         // We want to move these fillets and chamfers from batch_end to batch so they get executed
         // before what ever we call next.
