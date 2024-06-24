@@ -121,7 +121,7 @@
     "@babel/preset-env": "^7.24.3",
     "@iarna/toml": "^2.2.5",
     "@playwright/test": "^1.43.1",
-    "@tauri-apps/cli": "^2.0.0-beta.13",
+    "@tauri-apps/cli": "^2.0.0-beta.20",
     "@types/crypto-js": "^4.2.2",
     "@types/debounce-promise": "^3.1.9",
     "@types/mocha": "^10.0.6",
