@@ -151,7 +151,7 @@ pub(crate) async fn do_post_extrude(
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch_group.on {
-        sketch_group.id = face.sketch_group_id;
+        sketch_group.id = face.extrude_group.sketch_group.id;
     }
 
     let solid3d_info = args
@@ -243,6 +243,7 @@ pub(crate) async fn do_post_extrude(
         height: length,
         start_cap_id,
         end_cap_id,
+        fillet_or_chamfers: vec![],
         meta: sketch_group.meta,
     }))
 }

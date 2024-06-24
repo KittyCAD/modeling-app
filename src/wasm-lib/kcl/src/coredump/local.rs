@@ -1,9 +1,9 @@
 //! Functions for getting core dump information via local rust.
 
 use anyhow::Result;
+use serde_json::Value as JValue;
 
 use crate::coredump::CoreDump;
-use serde_json::Value as JValue;
 
 #[derive(Debug, Clone)]
 pub struct CoreDumper {}

@@ -5,6 +5,7 @@
 #![recursion_limit = "1024"]
 #![allow(clippy::boxed_local)]
 
+#[allow(unused_macros)]
 macro_rules! println {
     ($($rest:tt)*) => {
         #[cfg(not(feature = "disable-println"))]

@@ -167,10 +167,7 @@ where
         Value::UnaryExpression(ue) => {
             walk_unary_expression(ue, f)?;
         }
-        _ => {
-            println!("{:?}", node);
-            unimplemented!()
-        }
+        Value::None(_) => {}
     }
 
     Ok(())

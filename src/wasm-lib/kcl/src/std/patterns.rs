@@ -181,6 +181,11 @@ async fn inner_pattern_linear_3d(
     extrude_group_set: ExtrudeGroupSet,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not flush these, then you won't be able to pattern something with fillets.
+    // Flush just the fillets/chamfers that apply to these extrude groups.
+    args.flush_batch_for_extrude_group_set(&extrude_group_set).await?;
+
     let starting_extrude_groups = match extrude_group_set {
         ExtrudeGroupSet::ExtrudeGroup(extrude_group) => vec![extrude_group],
         ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => extrude_groups,
@@ -439,6 +444,11 @@ async fn inner_pattern_circular_3d(
     extrude_group_set: ExtrudeGroupSet,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not flush these, then you won't be able to pattern something with fillets.
+    // Flush just the fillets/chamfers that apply to these extrude groups.
+    args.flush_batch_for_extrude_group_set(&extrude_group_set).await?;
+
     let starting_extrude_groups = match extrude_group_set {
         ExtrudeGroupSet::ExtrudeGroup(extrude_group) => vec![extrude_group],
         ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => extrude_groups,

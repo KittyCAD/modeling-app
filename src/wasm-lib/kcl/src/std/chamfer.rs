@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem},
+    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem},
     std::Args,
 };
 
@@ -89,6 +89,7 @@ async fn inner_chamfer(
         }));
     }
 
+    let mut fillet_or_chamfers = Vec::new();
     for tag in data.tags {
         let edge_id = match tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -110,8 +111,9 @@ async fn inner_chamfer(
             }
         };
 
+        let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
-            uuid::Uuid::new_v4(),
+            id,
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
@@ -121,7 +123,16 @@ async fn inner_chamfer(
             },
         )
         .await?;
+
+        fillet_or_chamfers.push(FilletOrChamfer::Chamfer {
+            id,
+            edge_id,
+            length: data.length,
+        });
     }
+
+    let mut extrude_group = extrude_group.clone();
+    extrude_group.fillet_or_chamfers = fillet_or_chamfers;
 
     Ok(extrude_group)
 }
