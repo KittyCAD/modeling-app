@@ -131,7 +131,7 @@ async fn inner_line_to(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -293,7 +293,7 @@ async fn inner_line(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -455,7 +455,7 @@ async fn inner_angled_line(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -673,7 +673,7 @@ pub struct AngledLineThatIntersectsData {
     /// The angle of the line.
     pub angle: f64,
     /// The tag of the line to intersect with.
-    pub intersect_tag: String,
+    pub intersect_tag: Tag,
     /// The offset from the intersecting line.
     pub offset: Option<f64>,
 }
@@ -713,7 +713,7 @@ async fn inner_angled_line_that_intersects(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let intersect_path = sketch_group
-        .get_path_by_name(&data.intersect_tag)
+        .get_path_by_tag(&data.intersect_tag)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!(
@@ -1200,7 +1200,7 @@ pub(crate) async fn inner_start_profile_at(
     let current_path = BasePath {
         from: to,
         to,
-        name: tag,
+        tag,
         geo_meta: GeoMeta {
             id,
             metadata: args.source_range.into(),
@@ -1351,7 +1351,7 @@ pub(crate) async fn inner_close(
         base: BasePath {
             from: from.into(),
             to: to.into(),
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1459,7 +1459,7 @@ pub(crate) async fn inner_arc(
         base: BasePath {
             from: from.into(),
             to: end.into(),
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1565,7 +1565,7 @@ async fn inner_tangential_arc(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1669,7 +1669,7 @@ async fn inner_tangential_arc_to(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1770,7 +1770,7 @@ async fn inner_bezier_curve(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag,
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

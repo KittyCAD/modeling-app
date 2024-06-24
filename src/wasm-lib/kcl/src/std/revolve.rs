@@ -261,7 +261,7 @@ async fn inner_revolve(
                 EdgeReference::Uuid(uuid) => uuid,
                 EdgeReference::Tag(tag) => {
                     sketch_group
-                        .get_path_by_name(&tag.name)
+                        .get_path_by_tag(&tag)
                         .ok_or_else(|| {
                             KclError::Type(KclErrorDetails {
                                 message: format!("No edge found with tag: `{}`", tag.name),
@@ -336,7 +336,7 @@ async fn inner_get_edge(tag: Tag, extrude_group: Box<ExtrudeGroup>, args: Args) 
     }
     let tagged_path = extrude_group
         .sketch_group
-        .get_path_by_name(&tag.name)
+        .get_path_by_tag(&tag)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("No edge found with tag: `{}`", tag.name),

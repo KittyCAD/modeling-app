@@ -97,7 +97,7 @@ async fn inner_chamfer(
             EdgeReference::Tag(edge_tag) => {
                 extrude_group
                     .sketch_group
-                    .get_path_by_name(&edge_tag.name)
+                    .get_path_by_tag(&edge_tag)
                     .ok_or_else(|| {
                         KclError::Type(KclErrorDetails {
                             message: format!("No edge found with tag: `{}`", edge_tag.name),

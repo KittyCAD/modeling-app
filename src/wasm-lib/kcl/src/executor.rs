@@ -704,24 +704,24 @@ impl SketchGroup {
         self.value.iter().find(|p| p.get_id() == *id)
     }
 
-    pub fn get_path_by_name(&self, name: &str) -> Option<&Path> {
+    pub fn get_path_by_tag(&self, tag: &Tag) -> Option<&Path> {
         self.value.iter().find(|p| {
-            if let Some(tag) = p.get_name() {
-                tag.name == name
+            if let Some(ntag) = p.get_tag() {
+                ntag.name == tag.name
             } else {
                 false
             }
         })
     }
 
-    pub fn get_base_by_name_or_start(&self, name: &str) -> Option<&BasePath> {
-        if let Some(tag) = &self.start.name {
-            if tag.name == name {
+    pub fn get_base_by_tag_or_start(&self, tag: &Tag) -> Option<&BasePath> {
+        if let Some(ntag) = &self.start.tag {
+            if ntag.name == tag.name {
                 return Some(&self.start);
             }
         }
 
-        self.get_path_by_name(name).map(|p| p.get_base())
+        self.get_path_by_tag(tag).map(|p| p.get_base())
     }
 
     /// Get the path most recently sketched.
@@ -797,10 +797,10 @@ impl ExtrudeGroup {
         self.value.iter().find(|p| p.get_id() == *id)
     }
 
-    pub fn get_path_by_name(&self, name: &str) -> Option<&ExtrudeSurface> {
+    pub fn get_path_by_tag(&self, tag: &Tag) -> Option<&ExtrudeSurface> {
         self.value.iter().find(|p| {
-            if let Some(tag) = p.get_name() {
-                tag.name == name
+            if let Some(ntag) = p.get_tag() {
+                ntag.name == tag.name
             } else {
                 false
             }
@@ -1020,8 +1020,8 @@ pub struct BasePath {
     /// The to point.
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
-    /// The name of the path.
-    pub name: Option<Tag>,
+    /// The tag of the path.
+    pub tag: Option<Tag>,
     /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
@@ -1099,14 +1099,14 @@ impl Path {
         }
     }
 
-    pub fn get_name(&self) -> Option<Tag> {
+    pub fn get_tag(&self) -> Option<Tag> {
         match self {
-            Path::ToPoint { base } => base.name.clone(),
-            Path::Horizontal { base, .. } => base.name.clone(),
-            Path::AngledLineTo { base, .. } => base.name.clone(),
-            Path::Base { base } => base.name.clone(),
-            Path::TangentialArcTo { base, .. } => base.name.clone(),
-            Path::TangentialArc { base } => base.name.clone(),
+            Path::ToPoint { base } => base.tag.clone(),
+            Path::Horizontal { base, .. } => base.tag.clone(),
+            Path::AngledLineTo { base, .. } => base.tag.clone(),
+            Path::Base { base } => base.tag.clone(),
+            Path::TangentialArcTo { base, .. } => base.tag.clone(),
+            Path::TangentialArc { base } => base.tag.clone(),
         }
     }
 
@@ -1150,8 +1150,8 @@ pub enum ExtrudeSurface {
 pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
-    /// The name.
-    pub name: Option<Tag>,
+    /// The tag.
+    pub tag: Option<Tag>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1164,8 +1164,8 @@ pub struct ExtrudePlane {
 pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
-    /// The name.
-    pub name: Option<Tag>,
+    /// The tag.
+    pub tag: Option<Tag>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1179,10 +1179,10 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_name(&self) -> Option<Tag> {
+    pub fn get_tag(&self) -> Option<Tag> {
         match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.name.clone(),
-            ExtrudeSurface::ExtrudeArc(ea) => ea.name.clone(),
+            ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
+            ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
         }
     }
 }

@@ -452,28 +452,17 @@ impl Args {
         Ok((center, radius, sketch_group_or_surface, tag))
     }
 
-    fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
+    fn get_segment_name_sketch_group(&self) -> Result<(Tag, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a SketchGroup.
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let segment_name = if let serde_json::Value::String(s) = first_value {
-            s.to_string()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
                 message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
-            }));
-        };
+            })
+        })?;
+
+        let segment_name = first_value.get_tag()?;
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -974,29 +963,18 @@ impl Args {
         Ok((data, extrude_group, tag))
     }
 
-    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
+    fn get_segment_name_to_number_sketch_group(&self) -> Result<(Tag, f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a number.
         // The third argument should be a SketchGroup.
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let segment_name = if let serde_json::Value::String(s) = first_value {
-            s.to_string()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
                 message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
-            }));
-        };
+            })
+        })?;
+
+        let segment_name = first_value.get_tag()?;
 
         let second_value = self
             .args
@@ -1084,7 +1062,7 @@ impl Args {
             .iter()
             .find_map(|extrude_surface| match extrude_surface {
                 ExtrudeSurface::ExtrudePlane(extrude_plane) => {
-                    if let Some(plane_tag) = &extrude_plane.name {
+                    if let Some(plane_tag) = &extrude_plane.tag {
                         if plane_tag.name == tag.name {
                             Some(Ok(extrude_plane.face_id))
                         } else {
@@ -1100,7 +1078,7 @@ impl Args {
                     source_ranges: vec![self.source_range],
                 }))),
                 ExtrudeSurface::ExtrudeArc(extrude_arc) => {
-                    if let Some(arc_tag) = &extrude_arc.name {
+                    if let Some(arc_tag) = &extrude_arc.tag {
                         if arc_tag.name == tag.name {
                             Some(Ok(extrude_arc.face_id))
                         } else {
