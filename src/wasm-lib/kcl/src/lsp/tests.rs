@@ -876,7 +876,7 @@ async fn test_kcl_lsp_on_hover() {
             hover.contents,
             tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent {
                 kind: tower_lsp::lsp_types::MarkupKind::Markdown,
-                value: "```startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string()
+                value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string()
             })
         );
     } else {
