@@ -235,9 +235,6 @@ jobs:
     - name: Run macos/safari flow retry failures
       id: retry
       continue-on-error: true
-      if: ${{ success() }}
-      id: retry
-      continue-on-error: true
       if: always()
       run: |
         if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
