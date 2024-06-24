@@ -281,6 +281,12 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The tag of the face.
     pub value: String,
+    /// What should the face’s X axis be?
+    pub x_axis: Point3d,
+    /// What should the face’s Y axis be?
+    pub y_axis: Point3d,
+    /// The z-axis (normal).
+    pub z_axis: Point3d,
     /// The extrude group the face is on.
     pub extrude_group: Box<ExtrudeGroup>,
     #[serde(rename = "__meta")]
@@ -472,19 +478,19 @@ impl SketchSurface {
     pub fn x_axis(&self) -> Point3d {
         match self {
             SketchSurface::Plane(plane) => plane.x_axis.clone(),
-            SketchSurface::Face(face) => face.extrude_group.sketch_group.on.x_axis(),
+            SketchSurface::Face(face) => face.x_axis.clone(),
         }
     }
     pub fn y_axis(&self) -> Point3d {
         match self {
             SketchSurface::Plane(plane) => plane.y_axis.clone(),
-            SketchSurface::Face(face) => face.extrude_group.sketch_group.on.y_axis(),
+            SketchSurface::Face(face) => face.y_axis.clone(),
         }
     }
     pub fn z_axis(&self) -> Point3d {
         match self {
             SketchSurface::Plane(plane) => plane.z_axis.clone(),
-            SketchSurface::Face(face) => face.extrude_group.sketch_group.on.z_axis(),
+            SketchSurface::Face(face) => face.z_axis.clone(),
         }
     }
 }

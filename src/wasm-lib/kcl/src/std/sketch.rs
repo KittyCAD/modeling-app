@@ -1072,6 +1072,10 @@ async fn start_sketch_on_face(
     Ok(Box::new(Face {
         id: extrude_plane_id,
         value: tag.to_string(),
+        // TODO: get this from the extrude plane data.
+        x_axis: extrude_group.sketch_group.on.x_axis(),
+        y_axis: extrude_group.sketch_group.on.y_axis(),
+        z_axis: extrude_group.sketch_group.on.z_axis(),
         extrude_group,
         meta: vec![args.source_range.into()],
     }))
