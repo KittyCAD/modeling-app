@@ -51,6 +51,7 @@ layout: manual
 * [`log2`](kcl/log2)
 * [`max`](kcl/max)
 * [`min`](kcl/min)
+* [`mirror`](kcl/mirror)
 * [`patternCircular2d`](kcl/patternCircular2d)
 * [`patternCircular3d`](kcl/patternCircular3d)
 * [`patternLinear2d`](kcl/patternLinear2d)
