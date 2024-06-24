@@ -1705,6 +1705,27 @@ impl std::fmt::Display for Tag {
     }
 }
 
+impl std::str::FromStr for Tag {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            start: 0,
+            end: 0,
+            name: if s.starts_with('$') && s.len() > 1 {
+                s[1..].to_string()
+            } else if s.starts_with('$') {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: "Tag name cannot be empty".to_string(),
+                    source_ranges: vec![],
+                }));
+            } else {
+                s.to_string()
+            },
+        })
+    }
+}
+
 impl From<&Box<Tag>> for MemoryItem {
     fn from(tag: &Box<Tag>) -> Self {
         MemoryItem::Tag(tag.clone())
