@@ -18,6 +18,7 @@ import {
   createPipeSubstitution,
 } from './modifyAst'
 import { err } from 'lib/trap'
+import { warn } from 'node:console'
 
 beforeAll(async () => {
   await initPromise
@@ -411,15 +412,15 @@ describe('Testing findUsesOfTagInPipe', () => {
   const exampleCode = `const part001 = startSketchOn('-XZ')
 |> startProfileAt([68.12, 156.65], %)
 |> line([306.21, 198.82], %)
-|> line([306.21, 198.85], %, 'seg01')
-|> angledLine([-65, segLen('seg01', %)], %)
+|> line([306.21, 198.85], %, $seg01)
+|> angledLine([-65, segLen(seg01, %)], %)
 |> line([306.21, 198.87], %)
-|> angledLine([65, segLen('seg01', %)], %)`
+|> angledLine([65, segLen(seg01, %)], %)`
   it('finds the current segment', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const lineOfInterest = `198.85], %, 'seg01'`
+    const lineOfInterest = `198.85], %, seg01`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const pathToNode = getNodePathFromSourceRange(ast, [
@@ -454,7 +455,7 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
   |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, 'seg01')
+  |> line([4.99, -0.46], %, $seg01)
   |> line([3.3, -2.12], %)
   |> line([2.16, -3.33], %)
   |> line([0.85, -3.08], %)
@@ -463,7 +464,7 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line([-17.67, 0.85], %)
   |> close(%)
 const extrude001 = extrude(10, sketch001)
-const sketch002 = startSketchOn(extrude001, 'seg01')
+const sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
@@ -473,7 +474,7 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
   it('finds sketch001 pipe to be extruded', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
-    const lineOfInterest = `line([4.99, -0.46], %, 'seg01')`
+    const lineOfInterest = `line([4.99, -0.46], %, $seg01)`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
@@ -511,7 +512,7 @@ describe('Testing hasExtrudableGeometry', () => {
   |> line([-17.67, 0.85], %)
   |> close(%)
 const extrude001 = extrude(10, sketch001)
-const sketch002 = startSketchOn(extrude001, 'seg01')
+const sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
