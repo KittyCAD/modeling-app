@@ -1,6 +1,11 @@
 //! Data types for the AST.
 
-use std::{collections::HashMap, fmt::Write, ops::RangeInclusive};
+use std::{
+    collections::HashMap,
+    fmt::Write,
+    ops::RangeInclusive,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::Result;
 use databake::*;
@@ -145,6 +150,21 @@ impl Program {
         } else {
             result
         }
+    }
+
+    /// Check the provided Program for any lint findings.
+    pub fn lint<'a, RuleT>(&'a self, rule: RuleT) -> Result<Vec<crate::lint::Discovered>>
+    where
+        RuleT: crate::lint::rule::Rule<'a>,
+    {
+        let v = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            findings.append(&mut rule.check(node)?);
+            Ok(true)
+        })?;
+        let x = v.lock().unwrap();
+        Ok(x.clone())
     }
 
     /// Returns the body item that includes the given character position.
@@ -1115,7 +1135,7 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
+                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
                 let result = func.std_lib_fn()(args).await?;
                 Ok(result)
             }
@@ -3004,6 +3024,7 @@ pub enum Hover {
 
 /// Format options.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {

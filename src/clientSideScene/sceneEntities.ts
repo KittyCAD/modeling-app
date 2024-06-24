@@ -73,7 +73,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { normaliseAngle, roundOff, throttle } from 'lib/utils'
+import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -83,6 +83,7 @@ import {
   findUniqueName,
 } from 'lang/modifyAst'
 import {
+  Selections,
   getEventForSegmentSelection,
   sendSelectEventToEngine,
 } from 'lib/selections'
@@ -300,6 +301,7 @@ export class SceneEntities {
     position,
     maybeModdedAst,
     draftExpressionsIndices,
+    selectionRanges,
   }: {
     sketchPathToNode: PathToNode
     maybeModdedAst: Program
@@ -307,6 +309,7 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
+    selectionRanges?: Selections
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
@@ -343,11 +346,8 @@ export class SceneEntities {
       pathToNode: sketchPathToNode,
     }
     const dummy = new Mesh()
-    dummy.position.set(
-      sketchGroup.position[0],
-      sketchGroup.position[1],
-      sketchGroup.position[2]
-    )
+    // TODO: When we actually have sketch positions and rotations we can use them here.
+    dummy.position.set(0, 0, 0)
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
       (sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -399,6 +399,12 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
+      const isSelected = selectionRanges?.codeBasedSelections.some(
+        (selection) => {
+          return isOverlap(selection.range, segment.__geoMeta.sourceRange)
+        }
+      )
+
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
         maybeModdedAst,
@@ -416,6 +422,7 @@ export class SceneEntities {
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          isSelected,
         })
         callbacks.push(
           this.updateTangentialArcToSegment({
@@ -437,6 +444,7 @@ export class SceneEntities {
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
           theme: sceneInfra._theme,
+          isSelected,
         })
         callbacks.push(
           this.updateStraightSegment({
@@ -1391,13 +1399,13 @@ export class SceneEntities {
       },
       onClick: async (args) => {
         const { streamDimensions } = useStore.getState()
-        const { entity_id, ...rest } = await sendSelectEventToEngine(
+        const { entity_id } = await sendSelectEventToEngine(
           args?.mouseEvent,
           document.getElementById('video-stream') as HTMLVideoElement,
           streamDimensions
         )
+
         let _entity_id = entity_id
-        console.log('things', _entity_id, rest)
         if (!_entity_id) return
         if (
           engineCommandManager.defaultPlanes?.xy === _entity_id ||
@@ -1426,7 +1434,6 @@ export class SceneEntities {
             .sub(sceneInfra.camControls.target)
 
           if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
-            console.log('XY')
             zAxis = [0, 0, 1]
             yAxis = [0, 1, 0]
             if (camVector.z < 0) {
@@ -1434,7 +1441,6 @@ export class SceneEntities {
               _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
             }
           } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
-            console.log('YZ')
             zAxis = [1, 0, 0]
             yAxis = [0, 0, 1]
             if (camVector.x < 0) {
@@ -1442,7 +1448,6 @@ export class SceneEntities {
               _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
             }
           } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
-            console.log('XZ')
             zAxis = [0, 1, 0]
             yAxis = [0, 0, 1]
             _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
@@ -1496,6 +1501,7 @@ export class SceneEntities {
           kclManager.ast,
           artifact.range
         )
+
         const extrudePathToNode = extrusions?.range
           ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
           : []
@@ -1768,7 +1774,11 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
-  return programMemory.root[varDec?.id?.name || ''] as SketchGroup
+  const result = programMemory.root[varDec?.id?.name || '']
+  if (result?.type === 'ExtrudeGroup') {
+    return result.sketchGroup
+  }
+  return result as SketchGroup
 }
 
 function colorSegment(object: any, color: number) {
@@ -1804,7 +1814,7 @@ export function getSketchQuaternion(
     ast: kclManager.ast,
     programMemory: kclManager.programMemory,
   })
-  const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  const zAxis = sketchGroup?.on.zAxis || sketchNormalBackUp
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
 export async function getSketchOrientationDetails(
@@ -1819,20 +1829,24 @@ export async function getSketchOrientationDetails(
     programMemory: kclManager.programMemory,
   })
   if (sketchGroup.on.type === 'plane') {
-    const zAxis = sketchGroup?.zAxis
+    const zAxis = sketchGroup?.on.zAxis
     return {
       quat: getQuaternionFromZAxis(massageFormats(zAxis)),
       sketchDetails: {
         sketchPathToNode,
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
-        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        yAxis: [
+          sketchGroup.on.yAxis.x,
+          sketchGroup.on.yAxis.y,
+          sketchGroup.on.yAxis.z,
+        ],
         origin: [0, 0, 0],
         faceId: sketchGroup.on.id,
       },
     }
   }
   if (sketchGroup.on.type === 'face') {
-    const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
+    const faceInfo = await getFaceDetails(sketchGroup.on.id)
 
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       throw new Error('faceInfo')
@@ -1848,7 +1862,7 @@ export async function getSketchOrientationDetails(
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
-        faceId: sketchGroup.on.faceId,
+        faceId: sketchGroup.on.id,
       },
     }
   }

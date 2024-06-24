@@ -1,11 +1,12 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
 
-export default function ParametricModeling() {
+export default function OnboardingParametricModeling() {
+  useDemoCode()
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
@@ -44,8 +45,10 @@ export default function ParametricModeling() {
 
           <p className="my-4">
             We've received this sketch from a designer highlighting an{' '}
-            <em className="text-primary">aluminum bracket</em> they need for
-            this shelf:
+            <em>
+              <strong>aluminum bracket</strong>
+            </em>{' '}
+            they need for this shelf:
           </p>
           <figure className="my-4 w-2/3 mx-auto">
             <img
@@ -59,8 +62,8 @@ export default function ParametricModeling() {
           <p className="my-4">
             We are able to easily calculate the thickness of the material based
             on the width of the bracket to meet a set safety factor on{' '}
-            <em className="text-primary">
-              line {bracketThicknessCalculationLine}
+            <em>
+              <strong>line {bracketThicknessCalculationLine}</strong>
             </em>
             .
           </p>

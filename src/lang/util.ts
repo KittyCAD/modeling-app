@@ -59,9 +59,11 @@ export function isCursorInSketchCommandRange(
           artifact.commandType === 'close_path')
     )
   )
-  return overlapingEntries.length && overlapingEntries[0][1].parentId
-    ? overlapingEntries[0][1].parentId
-    : overlapingEntries.find(
-        ([, artifact]) => artifact.commandType === 'start_path'
-      )?.[0] || false
+  let result =
+    overlapingEntries.length && overlapingEntries[0][1].parentId
+      ? overlapingEntries[0][1].parentId
+      : overlapingEntries.find(
+          ([, artifact]) => artifact.commandType === 'start_path'
+        )?.[0] || false
+  return result
 }

@@ -63,6 +63,7 @@ import {
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
+  hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { TEST } from 'env'
@@ -121,7 +122,24 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
-  useHotkeyWrapper(['meta + shift + .'], () => coreDump(coreDumpManager, true))
+  useHotkeyWrapper(['meta + shift + .'], () => {
+    console.warn('CoreDump: Initializing core dump')
+    toast.promise(
+      coreDump(coreDumpManager, true),
+      {
+        loading: 'Starting core dump...',
+        success: 'Core dump completed successfully',
+        error: 'Error while exporting core dump',
+      },
+      {
+        success: {
+          // Note: this extended duration is especially important for Playwright e2e testing
+          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+          duration: 6000,
+        },
+      }
+    )
+  })
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -257,9 +275,9 @@ export const ModelingMachineProvider = ({
         ),
         'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
-          if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
+            if (!editorManager.editorView) return
             editorManager.lastSelectionEvent = Date.now()
             setTimeout(() => {
               if (editorManager.editorView) {
@@ -430,8 +448,13 @@ export const ModelingMachineProvider = ({
           if (
             selectionRanges.codeBasedSelections.length === 0 ||
             isSelectionLastLine(selectionRanges, codeManager.code)
-          )
-            return true
+          ) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            if (hasExtrudableGeometry(kclManager.ast)) return true
+            return false
+          }
           if (!isPipe) return false
 
           return canExtrudeSelection(selectionRanges)

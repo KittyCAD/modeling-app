@@ -1218,7 +1218,7 @@ const part002 = startSketchOn(part001, "here")
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Cannot sketch on a non-planar surface: `here`" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Tag `here` is a non-planar surface" }"#
     );
 }
 
@@ -1873,7 +1873,7 @@ const bracket = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1443, 1443])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1336, 1442])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
     );
 }
 
@@ -1897,7 +1897,7 @@ const secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Expected a non-empty tag for the face to sketch on" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Expected a non-empty tag for the face" }"#
     );
 }
 
@@ -2008,4 +2008,425 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/circular_pattern3d_a_pattern.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_array_of_sketches() {
+    let code = r#"const plane001 = startSketchOn('XZ')
+
+const profile001 = plane001
+  |> startProfileAt([40.82, 240.82], %)
+  |> line([235.72, -8.16], %)
+  |> line([13.27, -253.07], %)
+  |> line([-247.97, -19.39], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+const profile002 = plane001
+  |> startProfileAt([47.17, -71.91], %)
+  |> line([247.96, -4.03], %)
+  |> line([-17.26, -116.79], %)
+  |> line([-235.87, 12.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+const sketch001 = [profile001, profile002]
+
+extrude(10, sketch001)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/array_of_sketches.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_after_fillets_referencing_face() {
+    let code = r#"// Shelf Bracket
+// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
+
+
+// Define our bracket feet lengths
+const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
+const wallMountL = 6 // the length of the bracket
+
+
+// Define constants required to calculate the thickness needed to support 300 lbs
+const sigmaAllow = 35000 // psi
+const width = 6 // inch
+const p = 300 // Force on shelf - lbs
+const L = 12 // inches
+const M = L * p / 2 // Moment experienced at fixed end of bracket
+const FOS = 2 // Factor of safety of 2 to be conservative
+
+
+// Calculate the thickness off the bending stress and factor of safety
+const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
+
+// 0.25 inch fillet radius
+const filletR = 0.25
+
+// Sketch the bracket and extrude with fillets
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, wallMountL], %, 'outerEdge')
+  |> line([-shelfMountL, 0], %, 'seg01')
+  |> line([0, -thickness], %)
+  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
+  |> line([0, -wallMountL + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+  |> fillet({
+       radius: filletR,
+       tags: [
+         getPreviousAdjacentEdge('innerEdge', %)
+       ]
+     }, %)
+  |> fillet({
+       radius: filletR + thickness,
+       tags: [
+         getPreviousAdjacentEdge('outerEdge', %)
+       ]
+     }, %)
+
+const sketch001 = startSketchOn(bracket, 'seg01')
+  |> startProfileAt([4.28, 3.83], %)
+  |> line([2.17, -0.03], %)
+  |> line([-0.07, -1.8], %)
+  |> line([-2.07, 0.05], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/sketch_on_face_after_fillets_referencing_face.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_array_of_extrudes() {
+    let code = r#"const plane001 = startSketchOn('XZ')
+
+const sketch001 = plane001
+  |> startProfileAt([40.82, 240.82], %)
+  |> line([235.72, -8.16], %)
+  |> line([13.27, -253.07], %)
+  |> line([-247.97, -19.39], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(10, %)
+
+const sketch002 = plane001
+  |> startProfileAt([47.17, -71.91], %)
+  |> line([247.96, -4.03], %)
+  |> line([-17.26, -116.79], %)
+  |> line([-235.87, 12.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(10, %)
+
+
+let extrudes = [sketch001, sketch002] 
+
+const pattn1 = patternLinear3d({
+       axis: [0, 1, 0],
+       repetitions: 2,
+       distance: 20
+     }, extrudes)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pattern3d_array_of_extrudes.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_fillets_referencing_other_fillets() {
+    let code = r#"// Z-Bracket
+
+// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
+
+// Define constants
+const foot1Length = 4
+const height = 4
+const foot2Length = 5
+const width = 4
+const filletRad = 0.25
+const thickness = 0.125
+
+const cornerFilletRad = 0.5
+
+const holeDia = 0.5
+
+const sketch001 = startSketchOn("XZ")
+  |> startProfileAt([-foot1Length, 0], %)
+  |> line([0, thickness], %, 'cornerFillet1')
+  |> line([foot1Length, 0], %)
+  |> line([0, height], %, 'fillet1')
+  |> line([foot2Length, 0], %)
+  |> line([0, -thickness], %, 'cornerFillet2')
+  |> line([-foot2Length+thickness, 0], %)
+  |> line([0, -height], %, 'fillet2')
+  |> close(%)
+
+const baseExtrusion = extrude(width, sketch001)
+  |> fillet({
+    radius: cornerFilletRad,
+    tags: ["cornerFillet1", "cornerFillet2", getOppositeEdge("cornerFillet1", %), getOppositeEdge("cornerFillet2", %)],
+  }, %)
+  |> fillet({
+    radius: filletRad,
+    tags: [getPreviousAdjacentEdge("fillet1", %), getPreviousAdjacentEdge("fillet2", %)]
+  }, %)
+  |> fillet({
+   radius: filletRad + thickness,
+   tags: [getNextAdjacentEdge("fillet1", %), getNextAdjacentEdge("fillet2", %)],
+ }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/fillets_referencing_other_fillets.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_chamfers_referencing_other_chamfers() {
+    let code = r#"// Z-Bracket
+
+// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
+
+// Define constants
+const foot1Length = 4
+const height = 4
+const foot2Length = 5
+const width = 4
+const chamferRad = 0.25
+const thickness = 0.125
+
+const cornerChamferRad = 0.5
+
+const holeDia = 0.5
+
+const sketch001 = startSketchOn("XZ")
+  |> startProfileAt([-foot1Length, 0], %)
+  |> line([0, thickness], %, 'cornerChamfer1')
+  |> line([foot1Length, 0], %)
+  |> line([0, height], %, 'chamfer1')
+  |> line([foot2Length, 0], %)
+  |> line([0, -thickness], %, 'cornerChamfer2')
+  |> line([-foot2Length+thickness, 0], %)
+  |> line([0, -height], %, 'chamfer2')
+  |> close(%)
+
+const baseExtrusion = extrude(width, sketch001)
+  |> chamfer({
+    length: cornerChamferRad,
+    tags: ["cornerChamfer1", "cornerChamfer2", getOppositeEdge("cornerChamfer1", %), getOppositeEdge("cornerChamfer2", %)],
+  }, %)
+  |> chamfer({
+    length: chamferRad,
+    tags: [getPreviousAdjacentEdge("chamfer1", %), getPreviousAdjacentEdge("chamfer2", %)]
+  }, %)
+  |> chamfer({
+   length: chamferRad + thickness,
+   tags: [getNextAdjacentEdge("chamfer1", %), getNextAdjacentEdge("chamfer2", %)],
+ }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/chamfers_referencing_other_chamfers.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_engine_error_source_range_on_last_command() {
+    let code = r#"const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([61.74, 206.13], %)
+  |> xLine(305.11, %, 'seg01')
+  |> yLine(-291.85, %)
+  |> xLine(-segLen('seg01', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(40.14, %)
+  |> shell({
+    faces: ["seg01"],
+    thickness: 3.14,
+  }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([262, 320])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_linear_pattern3d_filleted_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> fillet({
+    radius: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn1 = patternLinear3d({
+       axis: [1, 0, 0],
+       repetitions: 3,
+       distance: 40
+     }, part001)
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/linear_pattern3d_filleted_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_filleted_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> fillet({
+    radius: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/circular_pattern3d_filleted_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_chamfered_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/circular_pattern3d_chamfered_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_tag_chamfer_with_more_than_one_edge_should_fail() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: ['line1', getOppositeEdge('line1',%)]
+  }, %, 'chamfer1')
+
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 365])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+#[ignore] // Ignore until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
+async fn serial_test_sketch_on_face_of_chamfer() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %, 'chamfer1')
+
+const sketch001 = startSketchOn(part001, 'chamfer1')
+    |> startProfileAt([4.28, 3.83], %)
+    |> line([2.17, -0.03], %)
+    |> line([-0.07, -1.8], %)
+    |> line([-2.07, 0.05], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+    |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_chamfer.png", &result, 1.0);
 }

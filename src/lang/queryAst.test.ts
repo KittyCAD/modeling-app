@@ -7,6 +7,8 @@ import {
   doesPipeHaveCallExp,
   hasExtrudeSketchGroup,
   findUsesOfTagInPipe,
+  hasSketchPipeBeenExtruded,
+  hasExtrudableGeometry,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -394,5 +396,92 @@ describe('Testing findUsesOfTagInPipe', () => {
     ])
     const result = findUsesOfTagInPipe(ast, pathToNode)
     expect(result).toHaveLength(0)
+  })
+})
+
+describe('Testing hasSketchPipeBeenExtruded', () => {
+  const exampleCode = `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([2.66, 1.17], %)
+  |> line([3.75, 0.46], %)
+  |> line([4.99, -0.46], %, 'seg01')
+  |> line([3.3, -2.12], %)
+  |> line([2.16, -3.33], %)
+  |> line([0.85, -3.08], %)
+  |> line([-0.18, -3.36], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+const extrude001 = extrude(10, sketch001)
+const sketch002 = startSketchOn(extrude001, 'seg01')
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2, -1.25], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+  it('finds sketch001 pipe to be extruded', async () => {
+    const ast = parse(exampleCode)
+    const lineOfInterest = `line([4.99, -0.46], %, 'seg01')`
+    const characterIndex =
+      exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    const extruded = hasSketchPipeBeenExtruded(
+      {
+        range: [characterIndex, characterIndex],
+        type: 'default',
+      },
+      ast
+    )
+    expect(extruded).toBeTruthy()
+  })
+  it('find sketch002 NOT pipe to be extruded', async () => {
+    const ast = parse(exampleCode)
+    const lineOfInterest = `line([2.45, -0.2], %)`
+    const characterIndex =
+      exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    const extruded = hasSketchPipeBeenExtruded(
+      {
+        range: [characterIndex, characterIndex],
+        type: 'default',
+      },
+      ast
+    )
+    expect(extruded).toBeFalsy()
+  })
+})
+
+describe('Testing hasExtrudableGeometry', () => {
+  it('finds sketch001 pipe to be extruded', async () => {
+    const exampleCode = `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+const extrude001 = extrude(10, sketch001)
+const sketch002 = startSketchOn(extrude001, 'seg01')
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2, -1.25], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+    const ast = parse(exampleCode)
+    const extrudable = hasExtrudableGeometry(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('find sketch002 NOT pipe to be extruded', async () => {
+    const exampleCode = `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+const extrude001 = extrude(10, sketch001)
+`
+    const ast = parse(exampleCode)
+    const extrudable = hasExtrudableGeometry(ast)
+    expect(extrudable).toBeFalsy()
   })
 })

@@ -6,6 +6,7 @@ import {
   wiggleMove,
   doExport,
   metaModifier,
+  TEST_COLORS,
 } from './test-utils'
 import waitOn from 'wait-on'
 import { XOR, roundOff, uuidv4 } from 'lib/utils'
@@ -18,12 +19,16 @@ import {
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
+  TEST_SETTINGS_ONBOARDING_USER_MENU,
+  TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { EngineCommand } from 'lang/std/engineConnection'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+import { bracket } from 'lib/exampleKcl'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -73,13 +78,21 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-test('Basic sketch', async ({ page }) => {
+async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
+
+  // If we have the code pane open, we should see the code.
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator).toHaveText(``)
+  } else {
+    // Ensure we don't see the code.
+    await expect(u.codeLocator).not.toBeVisible()
+  }
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -94,51 +107,72 @@ test('Basic sketch', async ({ page }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(u.codeLocator).toHaveText(
-    `const sketch001 = startSketchOn('XZ')`
-  )
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+  }
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(1000) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
-  await page.waitForTimeout(100)
+  }
+  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
 
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  }
+  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
-  await page.waitForTimeout(100)
+  }
+  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
+  }
 
   // deselect line tool
   await page.getByRole('button', { name: 'Line' }).click()
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
-  await expect(await u.getGreatestPixDiff(line1, [249, 249, 249])).toBeLessThan(
-    3
-  )
+  if (openPanes.includes('code')) {
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
+    await expect(
+      await u.getGreatestPixDiff(line1, [249, 249, 249])
+    ).toBeLessThan(3)
+  }
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
-  await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+  if (openPanes.includes('code')) {
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+  }
 
   // hold down shift
   await page.keyboard.down('Shift')
@@ -146,16 +180,55 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
 
   // selected two lines therefore there should be two cursors
-  await expect(page.locator('.cm-cursor')).toHaveCount(2)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-cursor')).toHaveCount(2)
+  }
 
   await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
+  // Open the code pane.
+  await u.openKclCodePanel()
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1 + 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
+}
+
+test.describe('Basic sketch', () => {
+  test('code pane open at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+
+    await doBasicSketch(page, ['code'])
+  })
+
+  test('code pane closed at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: [],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doBasicSketch(page, [])
+  })
 })
 
 test.describe('Testing Camera Movement', () => {
@@ -491,6 +564,56 @@ test('if you click the format button it formats your code', async ({
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)`)
+})
+
+test('hover over functions shows function description', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // focus the editor
+  await u.codeLocator.click()
+
+  // Hover over  the startSketchOn function
+  await page.getByText('startSketchOn').hover()
+  await expect(page.locator('.hover-tooltip')).toBeVisible()
+  await expect(
+    page.getByText('Start a sketch on a specific plane or face')
+  ).toBeVisible()
+
+  // Hover over the line function
+  await page.getByText('line').first().hover()
+  await expect(page.locator('.hover-tooltip')).toBeVisible()
+  await expect(page.getByText('Draw a line')).toBeVisible()
 })
 
 test('if you use the format keyboard binding it formats your code', async ({
@@ -986,6 +1109,59 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 })
 
+test('Position _ Is Out Of Range... regression test', async ({ page }) => {
+  const u = await getUtils(page)
+  // const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const exampleSketch = startSketchOn("XZ")
+  |> startProfileAt([0, 0], %)
+  |> angledLine({ angle: 50, length: 45 }, %)
+  |> yLineTo(0, %)
+  |> close(%)
+  |>
+
+const example = extrude(5, exampleSketch)
+shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+    )
+  })
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  // error in guter
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-error')
+  await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+  // Okay execution finished, let's start editing text below the error.
+  await u.codeLocator.click()
+  // Go to the end of the editor
+  await page.keyboard.press('End')
+
+  // Get to the area where we want to type.
+  for (let i = 0; i < 20; i++) {
+    await page.keyboard.press('ArrowLeft')
+  }
+
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('thing: "blah"', { delay: 100 })
+  await page.keyboard.press('Enter')
+})
+
 test('Auto complete works', async ({ page }) => {
   const u = await getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -1287,87 +1463,214 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
   ).toBeAttached()
 })
 
-test('Click through each onboarding step', async ({ page }) => {
-  const u = await getUtils(page)
+test.describe('Onboarding tests', () => {
+  test('Onboarding code is shown in the editor', async ({ page }) => {
+    const u = await getUtils(page)
 
-  // Override beforeEach test setup
-  await page.addInitScript(
-    async ({ settingsKey, settings }) => {
-      // Give no initial code, so that the onboarding start is shown immediately
-      localStorage.setItem('persistCode', '')
-      localStorage.setItem(settingsKey, settings)
-    },
-    {
-      settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_START }),
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey }) => {
+        // Give no initial code, so that the onboarding start is shown immediately
+        localStorage.removeItem('persistCode')
+        localStorage.removeItem(settingsKey)
+      },
+      { settingsKey: TEST_SETTINGS_KEY }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+    // *and* that the code is shown in the editor
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+  })
+
+  test('Click through each onboarding step', async ({ page }) => {
+    const u = await getUtils(page)
+
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        // Give no initial code, so that the onboarding start is shown immediately
+        localStorage.setItem('persistCode', '')
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_START }),
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+    const nextButton = page.getByTestId('onboarding-next')
+
+    while ((await nextButton.innerText()) !== 'Finish') {
+      await expect(nextButton).toBeVisible()
+      await nextButton.click()
     }
-  )
 
-  await page.setViewportSize({ width: 1200, height: 1080 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-
-  // Test that the onboarding pane loaded
-  await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
-
-  const nextButton = page.getByTestId('onboarding-next')
-
-  while ((await nextButton.innerText()) !== 'Finish') {
+    // Finish the onboarding
     await expect(nextButton).toBeVisible()
     await nextButton.click()
-  }
 
-  // Finish the onboarding
-  await expect(nextButton).toBeVisible()
-  await nextButton.click()
+    // Test that the onboarding pane is gone
+    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+    await expect(page.url()).not.toContain('onboarding')
+  })
 
-  // Test that the onboarding pane is gone
-  await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-  await expect(page.url()).not.toContain('onboarding')
-})
+  test('Onboarding redirects and code updating', async ({ page }) => {
+    const u = await getUtils(page)
 
-test('Onboarding redirects and code updating', async ({ page }) => {
-  const u = await getUtils(page)
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        // Give some initial code, so we can test that it's cleared
+        localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_EXPORT }),
+      }
+    )
 
-  // Override beforeEach test setup
-  await page.addInitScript(
-    async ({ settingsKey, settings }) => {
-      // Give some initial code, so we can test that it's cleared
-      localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
-      localStorage.setItem(settingsKey, settings)
-    },
-    {
-      settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_EXPORT }),
-    }
-  )
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
 
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
+    // Test that the redirect happened
+    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+    )
 
-  // Test that the redirect happened
-  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-    `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
-  )
+    // Test that you come back to this page when you refresh
+    await page.reload()
+    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+    )
 
-  // Test that you come back to this page when you refresh
-  await page.reload()
-  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-    `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
-  )
+    // Test that the onboarding pane loaded
+    const title = page.locator('[data-testid="onboarding-content"]')
+    await expect(title).toBeAttached()
 
-  // Test that the onboarding pane loaded
-  const title = page.locator('[data-testid="onboarding-content"]')
-  await expect(title).toBeAttached()
+    // Test that the code changes when you advance to the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText('')
 
-  // Test that the code changes when you advance to the next step
-  await page.locator('[data-testid="onboarding-next"]').click()
-  await expect(page.locator('.cm-content')).toHaveText('')
+    // Test that the code is not empty when you click on the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  })
 
-  // Test that the code is not empty when you click on the next step
-  await page.locator('[data-testid="onboarding-next"]').click()
-  await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
+    page,
+  }) => {
+    test.skip(
+      process.platform === 'darwin',
+      "Skip on macOS, because Playwright isn't behaving the same as the actual browser"
+    )
+    const u = await getUtils(page)
+    const badCode = `// This is bad code we shouldn't see`
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings, badCode }) => {
+        localStorage.setItem('persistCode', badCode)
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
+        }),
+        badCode,
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    const bracketNoNewLines = bracket.replace(/\n/g, '')
+
+    // Check the code got reset on load
+    await expect(page.locator('#code-pane')).toBeVisible()
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
+      timeout: 10_000,
+    })
+
+    // Mess with the code again
+    await u.codeLocator.selectText()
+    await u.codeLocator.fill(badCode)
+    await expect(u.codeLocator).toHaveText(badCode)
+
+    // Click to the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    // Check that the code has been reset
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
+  })
+
+  test('Avatar text updates depending on image load success', async ({
+    page,
+  }) => {
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
+
+    await page.setViewportSize({ width: 1200, height: 1080 })
+    await page.goto('/')
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+    // Test that the text in this step is correct
+    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
+    const onboardingOverlayLocator = page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
+
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('your avatar')
+
+    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
+      })
+    })
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+
+    // Now expect the text to be different
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+  })
 })
 
 test.describe('Testing selections', () => {
@@ -1666,6 +1969,74 @@ test.describe('Testing selections', () => {
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+  })
+  test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([2.66, 1.17], %)
+  |> line([3.75, 0.46], %)
+  |> line([4.99, -0.46], %, 'seg01')
+  |> line([3.3, -2.12], %)
+  |> line([2.16, -3.33], %)
+  |> line([0.85, -3.08], %)
+  |> line([-0.18, -3.36], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+const extrude001 = extrude(10, sketch001)
+  `
+      )
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectUnExtrudable = () =>
+      page.getByText(`line([4.99, -0.46], %, 'seg01')`).click()
+    const clickEmpty = () => page.mouse.click(700, 460)
+    await selectUnExtrudable()
+    // expect extrude button to be disabled
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+
+    await clickEmpty()
+
+    // expect active line to contain nothing
+    await expect(page.locator('.cm-activeLine')).toHaveText('')
+    // and extrude to still be disabled
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+
+    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
+const sketch002 = startSketchOn(extrude001, 'seg01')
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2, -1.25], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+    await u.codeLocator.fill(codeToAdd)
+
+    await selectUnExtrudable()
+    // expect extrude button to be disabled
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+
+    await clickEmpty()
+    await expect(page.locator('.cm-activeLine')).toHaveText('')
+    // there's not extrudable geometry, so button should be enabled
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
   })
 
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
@@ -2307,7 +2678,173 @@ const part002 = startSketchOn('-XZ')
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
 })
 
-test('Can edit segments by dragging their handles', async ({ page }) => {
+async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
+  // Load the app with the code panes
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`
+    )
+  })
+
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.closeDebugPanel()
+
+  // If we have the code pane open, we should see the code.
+  if (openPanes.includes('code')) {
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`)
+  } else {
+    // Ensure we don't see the code.
+    await expect(u.codeLocator).not.toBeVisible()
+  }
+
+  const startPX = [665, 458]
+
+  const dragPX = 30
+  let prevContent = ''
+
+  if (openPanes.includes('code')) {
+    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  } else {
+    // Wait for the render.
+    await page.waitForTimeout(1000)
+    // Select the sketch
+    await page.mouse.click(700, 370)
+  }
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  if (openPanes.includes('code')) {
+    prevContent = await page.locator('.cm-content').innerText()
+  }
+
+  const step5 = { steps: 5 }
+
+  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+  // drag startProfieAt handle
+  await page.mouse.move(startPX[0], startPX[1])
+  await page.mouse.down()
+  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+  await page.mouse.up()
+
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+  }
+
+  // drag line handle
+  await page.waitForTimeout(100)
+
+  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
+  await page.mouse.down()
+  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+  }
+
+  // drag tangentialArcTo handle
+  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
+  await page.mouse.down()
+  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  if (openPanes.includes('code')) {
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  }
+
+  // Open the code pane
+  await u.openKclCodePanel()
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([6.44, -12.07], %)
+  |> line([14.72, 1.97], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)`)
+}
+
+test.describe('Can edit segments by dragging their handles', () => {
+  test('code pane open at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doEditSegmentsByDraggingHandle(page, ['code'])
+  })
+
+  test('code pane closed at start', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: [],
+          },
+          version: 0,
+        })
+      )
+    })
+    await doEditSegmentsByDraggingHandle(page, [])
+  })
+})
+
+test('Can edit a sketch that has been extruded in the same pipe', async ({
+  page,
+}) => {
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
@@ -2315,7 +2852,9 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
       `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)`
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`
     )
   })
 
@@ -2396,8 +2935,111 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 1.97], %)
-  |> tangentialArcTo([26.92, -3.32], %)`)
+  |> line([14.72, 2.01], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)
+  |> extrude(5, %)`)
+})
+
+test('Can edit a sketch that has been revolved in the same pipe', async ({
+  page,
+}) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> revolve({ axis: "X",}, %)`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+
+  const startPX = [665, 458]
+
+  const dragPX = 30
+
+  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  let prevContent = await page.locator('.cm-content').innerText()
+
+  const step5 = { steps: 5 }
+
+  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+  // drag startProfieAt handle
+  await page.mouse.move(startPX[0], startPX[1])
+  await page.mouse.down()
+  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+  await page.mouse.up()
+
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag line handle
+  await page.waitForTimeout(100)
+
+  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
+  await page.mouse.down()
+  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag tangentialArcTo handle
+  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
+  await page.mouse.down()
+  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([6.44, -12.07], %)
+  |> line([14.72, 2.01], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([1.97, 2.06], %)
+  |> close(%)
+  |> revolve({ axis: "X" }, %)`)
 })
 
 const doSnapAtDifferentScales = async (
@@ -3516,6 +4158,81 @@ const part002 = startSketchOn('XZ')
         await expect(page.locator('.cm-activeLine')).toHaveText(codeAfter)
       })
     }
+  })
+
+  test('Horizontally constrained line remains selected after applying constraint', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-1.05, -1.07], %)
+  |> line([3.79, 2.68], %, 'seg01')
+  |> line([3.13, -2.4], %)`
+      )
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText("line([3.79, 2.68], %, 'seg01')").click()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+    await page.waitForTimeout(100)
+    const lineBefore = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
+    ).toBeLessThan(3)
+    await page.mouse.move(lineBefore.x, lineBefore.y)
+    await page.waitForTimeout(50)
+    await page.mouse.click(lineBefore.x, lineBefore.y)
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
+
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page.getByRole('button', { name: 'horizontal', exact: true }).click()
+
+    let activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+
+    // If the overlay-angle is updated the THREE.js scene is in a good state
+    await expect(
+      await page.locator('[data-overlay-index="1"]')
+    ).toHaveAttribute('data-overlay-angle', '0')
+
+    const lineAfter = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
+
+    await page
+      .getByRole('button', {
+        name: 'Constrain',
+      })
+      .click()
+    await page.getByRole('button', { name: 'length', exact: true }).click()
+
+    await page.getByLabel('length Value').fill('10')
+    await page.getByRole('button', { name: 'Add constraining value' }).click()
+
+    activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
+
+    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
   })
 })
 

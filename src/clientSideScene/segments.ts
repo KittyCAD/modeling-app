@@ -45,18 +45,21 @@ export function profileStart({
   pathToNode,
   scale = 1,
   theme,
+  isSelected,
 }: {
   from: Coords2d
   id: string
   pathToNode: PathToNode
   scale?: number
   theme: Themes
+  isSelected?: boolean
 }) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
   group.add(mesh)
@@ -66,7 +69,8 @@ export function profileStart({
     id,
     from,
     pathToNode,
-    isSelected: false,
+    isSelected,
+    baseColor,
   }
   group.name = PROFILE_START
   group.position.set(from[0], from[1], 0)
@@ -84,6 +88,7 @@ export function straightSegment({
   callExpName,
   texture,
   theme,
+  isSelected = false,
 }: {
   from: Coords2d
   to: Coords2d
@@ -94,6 +99,7 @@ export function straightSegment({
   callExpName: string
   texture: Texture
   theme: Themes
+  isSelected?: boolean
 }): Group {
   const group = new Group()
 
@@ -119,7 +125,8 @@ export function straightSegment({
 
   const baseColor =
     callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
@@ -132,7 +139,7 @@ export function straightSegment({
     from,
     to,
     pathToNode,
-    isSelected: false,
+    isSelected,
     callExpName,
     baseColor,
   }
@@ -141,7 +148,7 @@ export function straightSegment({
   const length = Math.sqrt(
     Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
   )
-  const arrowGroup = createArrowhead(scale, theme)
+  const arrowGroup = createArrowhead(scale, theme, color)
   arrowGroup.position.set(to[0], to[1], 0)
   const dir = new Vector3()
     .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
@@ -169,9 +176,10 @@ export function straightSegment({
   return group
 }
 
-function createArrowhead(scale = 1, theme: Themes): Group {
+function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
+  const baseColor = getThemeColorForThreeJs(theme)
   const arrowMaterial = new MeshBasicMaterial({
-    color: getThemeColorForThreeJs(theme),
+    color: color || baseColor,
   })
   // specify the size of the geometry in pixels (i.e. cone height = 20px, cone radius = 4.5px)
   // we'll scale the group to the correct size later to match these sizes in screen space
@@ -232,6 +240,7 @@ export function tangentialArcToSegment({
   scale = 1,
   texture,
   theme,
+  isSelected,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -242,6 +251,7 @@ export function tangentialArcToSegment({
   scale?: number
   texture: Texture
   theme: Themes
+  isSelected?: boolean
 }): Group {
   const group = new Group()
 
@@ -273,7 +283,8 @@ export function tangentialArcToSegment({
   })
 
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -286,12 +297,12 @@ export function tangentialArcToSegment({
     to,
     prevSegment,
     pathToNode,
-    isSelected: false,
+    isSelected,
     baseColor,
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
 
-  const arrowGroup = createArrowhead(scale, theme)
+  const arrowGroup = createArrowhead(scale, theme, color)
   arrowGroup.position.set(to[0], to[1], 0)
   const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
   arrowGroup.quaternion.setFromUnitVectors(
