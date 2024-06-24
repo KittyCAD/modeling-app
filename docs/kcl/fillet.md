@@ -77,8 +77,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -144,8 +144,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -168,8 +168,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -183,8 +183,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -220,8 +220,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -233,8 +233,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -250,8 +250,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -263,8 +263,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -276,8 +276,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -291,8 +291,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -308,8 +308,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -329,8 +329,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -344,8 +344,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -376,8 +376,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -443,8 +443,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -467,8 +467,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -482,8 +482,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -519,8 +519,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -532,8 +532,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -549,8 +549,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -562,8 +562,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -575,8 +575,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -590,8 +590,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -607,8 +607,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -628,8 +628,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -643,8 +643,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],

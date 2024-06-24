@@ -180,8 +180,8 @@ const a1 = startSketchOn({
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -259,8 +259,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -272,8 +272,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -289,8 +289,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -302,8 +302,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -315,8 +315,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -330,8 +330,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -347,8 +347,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -368,8 +368,8 @@ const a1 = startSketchOn({
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -383,8 +383,8 @@ const a1 = startSketchOn({
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -455,8 +455,8 @@ const a1 = startSketchOn({
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -534,8 +534,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -547,8 +547,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -564,8 +564,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -577,8 +577,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -590,8 +590,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -605,8 +605,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -622,8 +622,8 @@ const a1 = startSketchOn({
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -643,8 +643,8 @@ const a1 = startSketchOn({
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -658,8 +658,8 @@ const a1 = startSketchOn({
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],

@@ -98,8 +98,8 @@ const extrusion = extrude(5, sketch001)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -120,8 +120,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -133,8 +133,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -150,8 +150,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -163,8 +163,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -176,8 +176,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -191,8 +191,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -208,8 +208,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -229,8 +229,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -244,8 +244,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -281,8 +281,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -294,8 +294,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -311,8 +311,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -324,8 +324,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -337,8 +337,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -352,8 +352,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -369,8 +369,8 @@ const extrusion = extrude(5, sketch001)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],

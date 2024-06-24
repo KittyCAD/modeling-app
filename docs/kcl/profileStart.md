@@ -90,8 +90,8 @@ const sketch001 = startSketchOn('XY')
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -112,8 +112,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -125,8 +125,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -142,8 +142,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -155,8 +155,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -168,8 +168,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -183,8 +183,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -200,8 +200,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -221,8 +221,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -236,8 +236,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -273,8 +273,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -286,8 +286,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -303,8 +303,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -316,8 +316,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -329,8 +329,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -344,8 +344,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -361,8 +361,8 @@ const sketch001 = startSketchOn('XY')
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],

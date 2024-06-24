@@ -836,7 +836,7 @@ mod tests {
     fn get_autocomplete_snippet_line() {
         let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
         let snippet = line_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}], ${2:%})${}"#);
+        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}], ${2:%}, ${3:$myTag})${}"#);
     }
 
     #[test]

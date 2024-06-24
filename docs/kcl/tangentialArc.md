@@ -98,8 +98,8 @@ const example = extrude(10, exampleSketch)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -120,8 +120,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -133,8 +133,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -150,8 +150,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -163,8 +163,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -176,8 +176,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -191,8 +191,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -208,8 +208,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -229,8 +229,8 @@ const example = extrude(10, exampleSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -244,8 +244,8 @@ const example = extrude(10, exampleSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -281,8 +281,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -294,8 +294,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -311,8 +311,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -324,8 +324,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -337,8 +337,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -352,8 +352,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -369,8 +369,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -382,8 +382,8 @@ const example = extrude(10, exampleSketch)
 ```js
 {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 }
 ```
 
@@ -448,8 +448,8 @@ const example = extrude(10, exampleSketch)
 	length: number,
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "chamfer",
 }],
@@ -470,8 +470,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -483,8 +483,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -500,8 +500,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -513,8 +513,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -526,8 +526,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -541,8 +541,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -558,8 +558,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -579,8 +579,8 @@ const example = extrude(10, exampleSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudePlane",
 } |
@@ -594,8 +594,8 @@ const example = extrude(10, exampleSketch)
 	// The tag.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	type: "extrudeArc",
 }],
@@ -631,8 +631,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -644,8 +644,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -661,8 +661,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -674,8 +674,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -687,8 +687,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -702,8 +702,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
@@ -719,8 +719,8 @@ const example = extrude(10, exampleSketch)
 	// The tag of the path.
 	tag: {
 	end: number,
-	name: string,
 	start: number,
+	value: string,
 },
 	// The to point.
 	to: [number, number],
