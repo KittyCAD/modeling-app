@@ -89,6 +89,17 @@ impl ProgramMemory {
             })
         })
     }
+
+    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+        self.root
+            .values()
+            .filter_map(|item| match item {
+                MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                _ => None,
+            })
+            .collect()
+    }
 }
 
 impl Default for ProgramMemory {
@@ -281,14 +292,14 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The tag of the face.
     pub value: String,
-    /// The original sketch group id of the object we are sketching on.
-    pub sketch_group_id: uuid::Uuid,
     /// What should the face’s X axis be?
     pub x_axis: Point3d,
     /// What should the face’s Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    /// The extrude group the face is on.
+    pub extrude_group: Box<ExtrudeGroup>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -578,6 +589,9 @@ pub struct ExtrudeGroup {
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
     pub end_cap_id: Option<uuid::Uuid>,
+    /// Chamfers or fillets on this extrude group.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fillet_or_chamfers: Vec<FilletOrChamfer>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -590,6 +604,49 @@ impl ExtrudeGroup {
 
     pub fn get_path_by_name(&self, name: &str) -> Option<&ExtrudeSurface> {
         self.value.iter().find(|p| p.get_name() == name)
+    }
+
+    pub fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
+        self.fillet_or_chamfers.iter().map(|foc| foc.id()).collect()
+    }
+}
+
+/// A fillet or a chamfer.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum FilletOrChamfer {
+    /// A fillet.
+    Fillet {
+        /// The id of the engine command that called this fillet.
+        id: uuid::Uuid,
+        radius: f64,
+        /// The engine id of the edge to fillet.
+        edge_id: uuid::Uuid,
+    },
+    /// A chamfer.
+    Chamfer {
+        /// The id of the engine command that called this chamfer.
+        id: uuid::Uuid,
+        length: f64,
+        /// The engine id of the edge to chamfer.
+        edge_id: uuid::Uuid,
+    },
+}
+
+impl FilletOrChamfer {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            FilletOrChamfer::Fillet { id, .. } => *id,
+            FilletOrChamfer::Chamfer { id, .. } => *id,
+        }
+    }
+
+    pub fn edge_id(&self) -> uuid::Uuid {
+        match self {
+            FilletOrChamfer::Fillet { edge_id, .. } => *edge_id,
+            FilletOrChamfer::Chamfer { edge_id, .. } => *edge_id,
+        }
     }
 }
 
@@ -1157,7 +1214,7 @@ impl ExecutorContext {
                         }
                         match self.stdlib.get_either(&call_expr.callee.name) {
                             FunctionKind::Core(func) => {
-                                let args = crate::std::Args::new(args, call_expr.into(), self.clone());
+                                let args = crate::std::Args::new(args, call_expr.into(), self.clone(), memory.clone());
                                 let result = func.std_lib_fn()(args).await?;
                                 memory.return_ = Some(ProgramReturn::Value(result));
                             }

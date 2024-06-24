@@ -52,6 +52,23 @@ const example = extrude(-5, exampleSketch)
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,
+	// Chamfers or fillets on this extrude group.
+	filletOrChamfers: [{
+	// The engine id of the edge to fillet.
+	edge_id: uuid,
+	// The id of the engine command that called this fillet.
+	id: uuid,
+	radius: number,
+	type: "fillet",
+} |
+{
+	// The engine id of the edge to chamfer.
+	edge_id: uuid,
+	// The id of the engine command that called this chamfer.
+	id: uuid,
+	length: number,
+	type: "chamfer",
+}],
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -93,10 +110,61 @@ const example = extrude(-5, exampleSketch)
 },
 } |
 {
+	// The extrude group the face is on.
+	extrudeGroup: {
+	// The id of the extrusion end cap
+	endCapId: uuid,
+	// Chamfers or fillets on this extrude group.
+	filletOrChamfers: [{
+	// The engine id of the edge to fillet.
+	edge_id: uuid,
+	// The id of the engine command that called this fillet.
+	id: uuid,
+	radius: number,
+	type: "fillet",
+} |
+{
+	// The engine id of the edge to chamfer.
+	edge_id: uuid,
+	// The id of the engine command that called this chamfer.
+	id: uuid,
+	length: number,
+	type: "chamfer",
+}],
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The sketch group.
+	sketchGroup: SketchGroup,
+	// The id of the extrusion start cap
+	startCapId: uuid,
+	// The extrude surfaces.
+	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
+}],
+},
 	// The id of the face.
 	id: uuid,
-	// The original sketch group id of the object we are sketching on.
-	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,

@@ -18,7 +18,7 @@ use crate::{
             arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
             get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
-        Args,
+        Args, ExtrudeGroupSet,
     },
 };
 
@@ -1072,11 +1072,11 @@ async fn start_sketch_on_face(
     Ok(Box::new(Face {
         id: extrude_plane_id,
         value: tag.to_string(),
-        sketch_group_id: extrude_group.id,
         // TODO: get this from the extrude plane data.
         x_axis: extrude_group.sketch_group.on.x_axis(),
         y_axis: extrude_group.sketch_group.on.y_axis(),
         z_axis: extrude_group.sketch_group.on.z_axis(),
+        extrude_group,
         meta: vec![args.source_range.into()],
     }))
 }
@@ -1173,10 +1173,11 @@ pub(crate) async fn inner_start_profile_at(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    if let SketchSurface::Face(_) = &sketch_surface {
+    if let SketchSurface::Face(face) = &sketch_surface {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch().await?;
+        args.flush_batch_for_extrude_group_set(&ExtrudeGroupSet::ExtrudeGroup(face.extrude_group.clone()))
+            .await?;
     }
 
     // Enter sketch mode on the surface.

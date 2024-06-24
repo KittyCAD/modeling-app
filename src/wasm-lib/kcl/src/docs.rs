@@ -452,6 +452,10 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 return Ok((Primitive::String.to_string(), false));
             }
 
+            if let Some(reference) = &o.reference {
+                return Ok((reference.replace("#/components/schemas/", ""), false));
+            }
+
             anyhow::bail!("unknown type: {:#?}", o)
         }
         schemars::schema::Schema::Bool(_) => Ok((Primitive::Bool.to_string(), false)),

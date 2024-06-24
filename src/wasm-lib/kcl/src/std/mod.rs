@@ -32,8 +32,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, SketchGroup, SketchGroupSet,
-        SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, MemoryItem, Metadata, ProgramMemory, SketchGroup,
+        SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -206,14 +206,21 @@ pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
+    pub current_program_memory: ProgramMemory,
 }
 
 impl Args {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(
+        args: Vec<MemoryItem>,
+        source_range: SourceRange,
+        ctx: ExecutorContext,
+        current_program_memory: ProgramMemory,
+    ) -> Self {
         Self {
             args,
             source_range,
             ctx,
+            current_program_memory,
         }
     }
 
@@ -246,12 +253,55 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
-    /// Flush the batch for our fillets/chamfers if there are any.
-    pub async fn flush_batch(&self) -> Result<(), KclError> {
-        if self.ctx.engine.batch_end().lock().unwrap().is_empty() {
+    /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
+    pub async fn flush_batch_for_extrude_group_set(&self, extrude_group_set: &ExtrudeGroupSet) -> Result<(), KclError> {
+        let extrude_groups = match extrude_group_set {
+            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg.clone()],
+            ExtrudeGroupSet::ExtrudeGroups(egs) => egs.clone(),
+        };
+
+        // Make sure we don't traverse sketch_groups more than once.
+        let mut traversed_sketch_groups = Vec::new();
+
+        // Collect all the fillet/chamfer ids for the extrude groups.
+        let mut ids = Vec::new();
+        for extrude_group in extrude_groups {
+            // We need to traverse the extrude groups that share the same sketch group.
+            let sketch_group_id = extrude_group.sketch_group.id;
+            if !traversed_sketch_groups.contains(&sketch_group_id) {
+                // Find all the extrude groups on the same shared sketch group.
+                ids.extend(
+                    self.current_program_memory
+                        .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
+                        .iter()
+                        .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                );
+                traversed_sketch_groups.push(sketch_group_id);
+            }
+
+            ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
+        }
+
+        // We can return early if there are no fillets or chamfers.
+        if ids.is_empty() {
             return Ok(());
         }
-        self.ctx.engine.flush_batch(true, SourceRange::default()).await?;
+
+        // We want to move these fillets and chamfers from batch_end to batch so they get executed
+        // before what ever we call next.
+        for id in ids {
+            // Pop it off the batch_end and add it to the batch.
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+                // It might be in the batch already.
+                continue;
+            };
+            // Add it to the batch.
+            self.ctx.engine.batch().lock().unwrap().push(item);
+        }
+
+        // Run flush.
+        // Yes, we do need to actually flush the batch here, or references will fail later.
+        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
 
         Ok(())
     }
