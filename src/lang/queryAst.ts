@@ -734,8 +734,14 @@ export function findUsesOfTagInPipe(
   if (node.type !== 'CallExpression') return []
   const tagIndex = node.callee.name === 'close' ? 1 : 2
   const thirdParam = node.arguments[tagIndex]
-  if (thirdParam?.type !== 'Literal') return []
-  const tag = String(thirdParam.value)
+  if (
+    !(thirdParam?.type === 'TagDeclarator' || thirdParam?.type === 'Identifier')
+  )
+    return []
+  const tag =
+    thirdParam?.type === 'TagDeclarator'
+      ? String(thirdParam.value)
+      : thirdParam.name
 
   const varDec = getNodeFromPath<VariableDeclaration>(
     ast,
@@ -756,9 +762,11 @@ export function findUsesOfTagInPipe(
       )
         return
       const tagArg = node.arguments[0]
-      if (tagArg.type !== 'Literal') return
-      if (String(tagArg.value) === tag)
-        dependentRanges.push([node.start, node.end])
+      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Identifier'))
+        return
+      const tagArgValue =
+        tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
+      if (tagArgValue === tag) dependentRanges.push([node.start, node.end])
     },
   })
   return dependentRanges

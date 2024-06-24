@@ -163,20 +163,20 @@ describe('Testing giveSketchFnCallTag', () => {
       code,
       'line([0, 0.83], %)'
     )
-    expect(newCode).toContain("line([0, 0.83], %, 'seg01')")
+    expect(newCode).toContain('line([0, 0.83], %, $seg01)')
     expect(tag).toBe('seg01')
     expect(isTagExisting).toBe(false)
   })
   it('Should create a unique tag if seg01 already exists', () => {
     let _code = code.replace(
       'line([-2.57, -0.13], %)',
-      "line([-2.57, -0.13], %, 'seg01')"
+      'line([-2.57, -0.13], %, $seg01)'
     )
     const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       _code,
       'line([0, 0.83], %)'
     )
-    expect(newCode).toContain("line([0, 0.83], %, 'seg02')")
+    expect(newCode).toContain('line([0, 0.83], %, $seg02)')
     expect(tag).toBe('seg02')
     expect(isTagExisting).toBe(false)
   })
@@ -328,11 +328,11 @@ describe('testing sketchOnExtrudedFace', () => {
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
-  |> line([9.7, 9.19], %, 'seg01')
+  |> line([9.7, 9.19], %, $seg01)
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)
-const sketch001 = startSketchOn(part001, 'seg01')`)
+const sketch001 = startSketchOn(part001, seg01)`)
   })
   test('it should be able to extrude on close segments', async () => {
     const code = `const part001 = startSketchOn('-XZ')
@@ -371,9 +371,9 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %)
   |> line([8.62, -9.57], %)
-  |> close(%, 'seg01')
+  |> close(%, $seg01)
   |> extrude(5 + 7, %)
-const sketch001 = startSketchOn(part001, 'seg01')`)
+const sketch001 = startSketchOn(part001, seg01)`)
   })
   test('it should be able to extrude on start-end caps', async () => {
     const code = `const part001 = startSketchOn('-XZ')
@@ -457,7 +457,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)
     expect(newCode).toContain(`const part001 = extrude(5 + 7, sketch001)
-const sketch002 = startSketchOn(part001, 'seg01')`)
+const sketch002 = startSketchOn(part001, seg01)`)
   })
 })
 

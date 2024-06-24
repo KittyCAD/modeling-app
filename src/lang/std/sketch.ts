@@ -40,6 +40,7 @@ import {
 
 import {
   createLiteral,
+  createTagDeclarator,
   createCallExpression,
   createArrayExpression,
   createPipeSubstitution,
@@ -51,6 +52,7 @@ import {
 import { roundOff, getLength, getAngle } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
+import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 
 export type Coords2d = [number, number]
 
@@ -1831,7 +1833,8 @@ function addTag(tagIndex = 2): addTagFn {
     // but we can come up with a better way to identify tag later.
     const thirdArg = primaryCallExp.arguments?.[tagIndex]
     const tagLiteral =
-      thirdArg || (createLiteral(findUniqueName(_node, 'seg', 2)) as Literal)
+      thirdArg ||
+      (createTagDeclarator(findUniqueName(_node, 'seg', 2)) as TagDeclarator)
     const isTagExisting = !!thirdArg
     if (!isTagExisting) {
       primaryCallExp.arguments[tagIndex] = tagLiteral

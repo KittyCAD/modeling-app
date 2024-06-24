@@ -675,7 +675,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthX',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValA,
                 createPipeSubstitution(),
               ]
@@ -708,7 +708,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthYCall = createCallExpression(
               'angleToMatchLengthY',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -973,7 +973,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthX',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -1023,7 +1023,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthY',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -1174,7 +1174,7 @@ export function getRemoveConstraintsTransform(
         //       fnName: name,
         //       angleVal: args[0],
         //       offsetVal: args[1],
-        //       intersectTag: createLiteral(referenceSegName),
+        //       intersectTag: createIdentifier(referenceSegName),
         //       tag,
         //     })
         //   }
@@ -1714,21 +1714,21 @@ export function transformAstSketchLines({
 
 function createSegLen(referenceSegName: string): Value {
   return createCallExpression('segLen', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
 
 function createSegAngle(referenceSegName: string): Value {
   return createCallExpression('segAng', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
