@@ -53,6 +53,10 @@ impl Parser {
             return Ok(Program::default());
         }
 
-        parser_impl::run_parser(&mut self.tokens.as_slice())
+        let program = parser_impl::run_parser(&mut self.tokens.as_slice())?;
+
+        program.validate_no_duplicate_variables_and_tags()?;
+
+        Ok(program)
     }
 }
