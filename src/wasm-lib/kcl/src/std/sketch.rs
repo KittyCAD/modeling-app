@@ -32,7 +32,7 @@ pub enum FaceTag {
     StartOrEnd(StartOrEnd),
     /// A tag for the face.
     #[display("{0}")]
-    Tag(TagIdentifier),
+    Tag(#[serde(deserialize_with = "crate::std::string_or_struct::string_or_struct")] TagIdentifier),
 }
 
 impl FaceTag {
@@ -677,6 +677,7 @@ pub struct AngledLineThatIntersectsData {
     /// The angle of the line.
     pub angle: f64,
     /// The tag of the line to intersect with.
+    #[serde(deserialize_with = "crate::std::string_or_struct::string_or_struct")]
     pub intersect_tag: TagIdentifier,
     /// The offset from the intersecting line.
     pub offset: Option<f64>,

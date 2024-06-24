@@ -1,16 +1,15 @@
 use std::{fmt, marker::PhantomData, str::FromStr};
 
+use crate::errors::KclError;
+
 use serde::{
     de::{self, MapAccess, Visitor},
     Deserialize, Deserializer,
 };
-// When we remove this file for backward compatibility, we should remove the
-// dependency on void crate.
-use void::Void;
 
 pub(crate) fn string_or_struct<'de, T, D>(deserializer: D) -> Result<T, D::Error>
 where
-    T: Deserialize<'de> + FromStr<Err = Void>,
+    T: Deserialize<'de> + FromStr<Err = KclError>,
     D: Deserializer<'de>,
 {
     // This is a Visitor that forwards string types to T's `FromStr` impl and
@@ -22,7 +21,7 @@ where
 
     impl<'de, T> Visitor<'de> for StringOrStruct<T>
     where
-        T: Deserialize<'de> + FromStr<Err = Void>,
+        T: Deserialize<'de> + FromStr<Err = KclError>,
     {
         type Value = T;
 

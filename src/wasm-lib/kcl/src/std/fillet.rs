@@ -34,7 +34,7 @@ pub enum EdgeReference {
     /// A uuid of an edge.
     Uuid(uuid::Uuid),
     /// A tag of an edge.
-    Tag(TagIdentifier),
+    Tag(#[serde(deserialize_with = "crate::std::string_or_struct::string_or_struct")] TagIdentifier),
 }
 
 /// Create fillets on tagged paths.
