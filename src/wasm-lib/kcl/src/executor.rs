@@ -632,7 +632,7 @@ impl MemoryItem {
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Not a tag identifier".to_string(),
+                message: format!("Not a tag identifier: {:?}", self),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -651,7 +651,7 @@ impl MemoryItem {
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Not a tag declarator".to_string(),
+                message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -673,7 +673,7 @@ impl MemoryItem {
                 }
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Not a tag declarator".to_string(),
+                message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -1605,7 +1605,7 @@ impl ExecutorContext {
         let item = match init {
             Value::None(none) => none.into(),
             Value::Literal(literal) => literal.into(),
-            Value::TagDeclarator(tag) => tag.into(),
+            Value::TagDeclarator(tag) => tag.execute(memory).await?,
             Value::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 value.clone()

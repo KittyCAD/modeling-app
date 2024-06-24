@@ -1718,6 +1718,12 @@ impl From<&Box<TagDeclarator>> for MemoryItem {
     }
 }
 
+impl From<&TagDeclarator> for MemoryItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        MemoryItem::TagDeclarator(Box::new(tag.clone()))
+    }
+}
+
 impl TagDeclarator {
     pub fn new(name: &str) -> Self {
         Self {
@@ -1757,7 +1763,7 @@ impl TagDeclarator {
 
         memory.add(&self.name, memory_item.clone(), self.into())?;
 
-        Ok(memory_item)
+        Ok(self.into())
     }
 }
 
