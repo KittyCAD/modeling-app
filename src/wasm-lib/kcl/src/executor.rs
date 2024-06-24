@@ -228,6 +228,45 @@ pub enum SketchGroupSet {
     SketchGroups(Vec<Box<SketchGroup>>),
 }
 
+impl From<SketchGroup> for SketchGroupSet {
+    fn from(sg: SketchGroup) -> Self {
+        SketchGroupSet::SketchGroup(Box::new(sg))
+    }
+}
+
+impl From<Box<SketchGroup>> for SketchGroupSet {
+    fn from(sg: Box<SketchGroup>) -> Self {
+        SketchGroupSet::SketchGroup(sg)
+    }
+}
+
+impl From<Vec<SketchGroup>> for SketchGroupSet {
+    fn from(sg: Vec<SketchGroup>) -> Self {
+        SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+    }
+}
+
+impl From<SketchGroupSet> for Vec<Box<SketchGroup>> {
+    fn from(sg: SketchGroupSet) -> Self {
+        match sg {
+            SketchGroupSet::SketchGroup(sg) => vec![sg],
+            SketchGroupSet::SketchGroups(sgs) => sgs,
+        }
+    }
+}
+
+impl From<&SketchGroup> for Vec<Box<SketchGroup>> {
+    fn from(sg: &SketchGroup) -> Self {
+        vec![Box::new(sg.clone())]
+    }
+}
+
+impl From<Box<SketchGroup>> for Vec<Box<SketchGroup>> {
+    fn from(sg: Box<SketchGroup>) -> Self {
+        vec![sg]
+    }
+}
+
 /// A extrude group or a group of extrude groups.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -235,6 +274,45 @@ pub enum SketchGroupSet {
 pub enum ExtrudeGroupSet {
     ExtrudeGroup(Box<ExtrudeGroup>),
     ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+}
+
+impl From<ExtrudeGroup> for ExtrudeGroupSet {
+    fn from(eg: ExtrudeGroup) -> Self {
+        ExtrudeGroupSet::ExtrudeGroup(Box::new(eg))
+    }
+}
+
+impl From<Box<ExtrudeGroup>> for ExtrudeGroupSet {
+    fn from(eg: Box<ExtrudeGroup>) -> Self {
+        ExtrudeGroupSet::ExtrudeGroup(eg)
+    }
+}
+
+impl From<Vec<ExtrudeGroup>> for ExtrudeGroupSet {
+    fn from(eg: Vec<ExtrudeGroup>) -> Self {
+        ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+    }
+}
+
+impl From<ExtrudeGroupSet> for Vec<Box<ExtrudeGroup>> {
+    fn from(eg: ExtrudeGroupSet) -> Self {
+        match eg {
+            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg],
+            ExtrudeGroupSet::ExtrudeGroups(egs) => egs,
+        }
+    }
+}
+
+impl From<&ExtrudeGroup> for Vec<Box<ExtrudeGroup>> {
+    fn from(eg: &ExtrudeGroup) -> Self {
+        vec![Box::new(eg.clone())]
+    }
+}
+
+impl From<Box<ExtrudeGroup>> for Vec<Box<ExtrudeGroup>> {
+    fn from(eg: Box<ExtrudeGroup>) -> Self {
+        vec![eg]
+    }
 }
 
 /// Data for an imported geometry.

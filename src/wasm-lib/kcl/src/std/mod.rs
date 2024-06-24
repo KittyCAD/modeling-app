@@ -252,12 +252,10 @@ impl Args {
     }
 
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
-    pub async fn flush_batch_for_extrude_group_set(&self, extrude_group_set: &ExtrudeGroupSet) -> Result<(), KclError> {
-        let extrude_groups = match extrude_group_set {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg.clone()],
-            ExtrudeGroupSet::ExtrudeGroups(egs) => egs.clone(),
-        };
-
+    pub async fn flush_batch_for_extrude_group_set(
+        &self,
+        extrude_groups: Vec<Box<ExtrudeGroup>>,
+    ) -> Result<(), KclError> {
         // Make sure we don't traverse sketch_groups more than once.
         let mut traversed_sketch_groups = Vec::new();
 
@@ -1074,7 +1072,7 @@ impl Args {
         Ok((number, sketch_set))
     }
 
-    pub fn get_adjacent_face_to_tag(
+    pub async fn get_adjacent_face_to_tag(
         &self,
         extrude_group: &ExtrudeGroup,
         tag: &str,
@@ -1114,6 +1112,9 @@ impl Args {
                 None
             }
         }) {
+            // We want to make sure we execute the fillet before this operation.
+            self.flush_batch_for_extrude_group_set(extrude_group.into()).await?;
+
             return face_from_chamfer_fillet;
         }
 

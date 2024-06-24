@@ -18,7 +18,7 @@ use crate::{
             arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
             get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
-        Args, ExtrudeGroupSet,
+        Args,
     },
 };
 
@@ -35,14 +35,14 @@ pub enum FaceTag {
 
 impl FaceTag {
     /// Get the face id from the tag.
-    pub fn get_face_id(
+    pub async fn get_face_id(
         &self,
         extrude_group: &ExtrudeGroup,
         args: &Args,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::String(ref s) => args.get_adjacent_face_to_tag(extrude_group, s, must_be_planar),
+            FaceTag::String(ref s) => args.get_adjacent_face_to_tag(extrude_group, s, must_be_planar).await,
             FaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: "Expected a start face".to_string(),
@@ -1047,7 +1047,7 @@ async fn start_sketch_on_face(
     tag: FaceTag,
     args: Args,
 ) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&extrude_group, &args, true)?;
+    let extrude_plane_id = tag.get_face_id(&extrude_group, &args, true).await?;
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
@@ -1156,7 +1156,7 @@ pub(crate) async fn inner_start_profile_at(
     if let SketchSurface::Face(face) = &sketch_surface {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_extrude_group_set(&ExtrudeGroupSet::ExtrudeGroup(face.extrude_group.clone()))
+        args.flush_batch_for_extrude_group_set(face.extrude_group.clone().into())
             .await?;
     }
 

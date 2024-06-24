@@ -65,7 +65,7 @@ async fn inner_shell(
 
     let mut face_ids = Vec::new();
     for tag in data.faces {
-        let extrude_plane_id = tag.get_face_id(&extrude_group, &args, false)?;
+        let extrude_plane_id = tag.get_face_id(&extrude_group, &args, false).await?;
 
         face_ids.push(extrude_plane_id);
     }

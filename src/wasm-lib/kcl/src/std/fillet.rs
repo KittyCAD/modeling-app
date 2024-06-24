@@ -201,7 +201,7 @@ async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, 
         })?
         .get_base();
 
-    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false)?;
+    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
@@ -293,7 +293,7 @@ async fn inner_get_next_adjacent_edge(
         })?
         .get_base();
 
-    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false)?;
+    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
@@ -390,7 +390,7 @@ async fn inner_get_previous_adjacent_edge(
         })?
         .get_base();
 
-    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false)?;
+    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(

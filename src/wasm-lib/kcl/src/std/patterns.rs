@@ -184,12 +184,10 @@ async fn inner_pattern_linear_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(&extrude_group_set).await?;
+    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+        .await?;
 
-    let starting_extrude_groups = match extrude_group_set {
-        ExtrudeGroupSet::ExtrudeGroup(extrude_group) => vec![extrude_group],
-        ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => extrude_groups,
-    };
+    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
 
     if args.ctx.is_mock {
         return Ok(starting_extrude_groups);
@@ -447,12 +445,10 @@ async fn inner_pattern_circular_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(&extrude_group_set).await?;
+    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+        .await?;
 
-    let starting_extrude_groups = match extrude_group_set {
-        ExtrudeGroupSet::ExtrudeGroup(extrude_group) => vec![extrude_group],
-        ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => extrude_groups,
-    };
+    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
 
     if args.ctx.is_mock {
         return Ok(starting_extrude_groups);
