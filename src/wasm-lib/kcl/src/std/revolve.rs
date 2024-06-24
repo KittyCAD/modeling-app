@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    ast::types::Tag,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, SketchGroup, UserVal},
     std::{
@@ -260,12 +261,10 @@ async fn inner_revolve(
                 EdgeReference::Uuid(uuid) => uuid,
                 EdgeReference::Tag(tag) => {
                     sketch_group
-                        .value
-                        .iter()
-                        .find(|p| p.get_name() == tag)
+                        .get_path_by_name(&tag.name)
                         .ok_or_else(|| {
                             KclError::Type(KclErrorDetails {
-                                message: format!("No edge found with tag: `{}`", tag),
+                                message: format!("No edge found with tag: `{}`", tag.name),
                                 source_ranges: vec![args.source_range],
                             })
                         })?
@@ -292,7 +291,7 @@ async fn inner_revolve(
 
 /// Get an edge on a 3D solid.
 pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group): (Tag, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -331,18 +330,16 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "getEdge",
 }]
-async fn inner_get_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_edge(tag: Tag, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = extrude_group
         .sketch_group
-        .value
-        .iter()
-        .find(|p| p.get_name() == tag)
+        .get_path_by_name(&tag.name)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
+                message: format!("No edge found with tag: `{}`", tag.name),
                 source_ranges: vec![args.source_range],
             })
         })?

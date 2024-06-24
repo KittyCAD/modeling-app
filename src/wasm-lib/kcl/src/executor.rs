@@ -705,15 +705,23 @@ impl SketchGroup {
     }
 
     pub fn get_path_by_name(&self, name: &str) -> Option<&Path> {
-        self.value.iter().find(|p| p.get_name() == name)
+        self.value.iter().find(|p| {
+            if let Some(tag) = p.get_name() {
+                tag.name == name
+            } else {
+                false
+            }
+        })
     }
 
     pub fn get_base_by_name_or_start(&self, name: &str) -> Option<&BasePath> {
-        if self.start.name == name {
-            Some(&self.start)
-        } else {
-            self.value.iter().find(|p| p.get_name() == name).map(|p| p.get_base())
+        if let Some(tag) = &self.start.name {
+            if tag.name == name {
+                return Some(&self.start);
+            }
         }
+
+        self.get_path_by_name(name).map(|p| p.get_base())
     }
 
     /// Get the path most recently sketched.
@@ -790,7 +798,13 @@ impl ExtrudeGroup {
     }
 
     pub fn get_path_by_name(&self, name: &str) -> Option<&ExtrudeSurface> {
-        self.value.iter().find(|p| p.get_name() == name)
+        self.value.iter().find(|p| {
+            if let Some(tag) = p.get_name() {
+                tag.name == name
+            } else {
+                false
+            }
+        })
     }
 
     pub fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
@@ -818,7 +832,7 @@ pub enum FilletOrChamfer {
         length: f64,
         /// The engine id of the edge to chamfer.
         edge_id: uuid::Uuid,
-        tag: Option<String>,
+        tag: Option<Tag>,
     },
 }
 
@@ -837,10 +851,10 @@ impl FilletOrChamfer {
         }
     }
 
-    pub fn tag(&self) -> Option<&str> {
+    pub fn tag(&self) -> Option<Tag> {
         match self {
             FilletOrChamfer::Fillet { .. } => None,
-            FilletOrChamfer::Chamfer { tag, .. } => tag.as_deref(),
+            FilletOrChamfer::Chamfer { tag, .. } => tag.clone(),
         }
     }
 }
@@ -1007,7 +1021,7 @@ pub struct BasePath {
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The name of the path.
-    pub name: String,
+    pub name: Option<Tag>,
     /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
@@ -1085,7 +1099,7 @@ impl Path {
         }
     }
 
-    pub fn get_name(&self) -> String {
+    pub fn get_name(&self) -> Option<Tag> {
         match self {
             Path::ToPoint { base } => base.name.clone(),
             Path::Horizontal { base, .. } => base.name.clone(),
@@ -1137,7 +1151,7 @@ pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
-    pub name: String,
+    pub name: Option<Tag>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1151,7 +1165,7 @@ pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The name.
-    pub name: String,
+    pub name: Option<Tag>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1165,10 +1179,10 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_name(&self) -> String {
+    pub fn get_name(&self) -> Option<Tag> {
         match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
-            ExtrudeSurface::ExtrudeArc(ea) => ea.name.to_string(),
+            ExtrudeSurface::ExtrudePlane(ep) => ep.name.clone(),
+            ExtrudeSurface::ExtrudeArc(ea) => ea.name.clone(),
         }
     }
 }

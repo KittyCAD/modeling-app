@@ -622,17 +622,13 @@ impl Args {
             }));
         };
 
-        if let Some(second_value) = self.args.get(1) {
-            let tag: String = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize String from JSON: {}", e),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-            Ok((sketch_group, Some(tag)))
+        let tag = if let Some(tag) = self.args.get(1) {
+            tag.get_tag_opt()?
         } else {
-            Ok((sketch_group, None))
-        }
+            None
+        };
+
+        Ok((sketch_group, tag))
     }
 
     fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Option<FaceTag>), KclError> {
@@ -791,7 +787,7 @@ impl Args {
 
     fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, SketchSurface, Option<String>), KclError> {
+    ) -> Result<(T, SketchSurface, Option<Tag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -830,6 +826,7 @@ impl Args {
                 source_ranges: vec![self.source_range],
             }));
         };
+
         let tag = if let Some(tag) = self.args.get(2) {
             tag.get_tag_opt()?
         } else {
@@ -927,7 +924,7 @@ impl Args {
 
     fn get_data_and_extrude_group_and_tag<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, Box<ExtrudeGroup>, Option<String>), KclError> {
+    ) -> Result<(T, Box<ExtrudeGroup>, Option<Tag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -967,8 +964,9 @@ impl Args {
                 source_ranges: vec![self.source_range],
             }));
         };
+
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_json_opt()?
+            tag.get_tag_opt()?
         } else {
             None
         };
@@ -1071,10 +1069,10 @@ impl Args {
     pub async fn get_adjacent_face_to_tag(
         &self,
         extrude_group: &ExtrudeGroup,
-        tag: &str,
+        tag: &Tag,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
-        if tag.is_empty() {
+        if tag.name.is_empty() {
             return Err(KclError::Type(KclErrorDetails {
                 message: "Expected a non-empty tag for the face".to_string(),
                 source_ranges: vec![self.source_range],
@@ -1085,16 +1083,33 @@ impl Args {
             .value
             .iter()
             .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => {
-                    Some(Ok(extrude_plane.face_id))
+                ExtrudeSurface::ExtrudePlane(extrude_plane) => {
+                    if let Some(plane_tag) = &extrude_plane.name {
+                        if plane_tag.name == tag.name {
+                            Some(Ok(extrude_plane.face_id))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
                 }
                 // The must be planar check must be called before the arc check.
                 ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                    message: format!("Tag `{}` is a non-planar surface", tag),
+                    message: format!("Tag `{}` is a non-planar surface", tag.name),
                     source_ranges: vec![self.source_range],
                 }))),
-                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == tag => Some(Ok(extrude_arc.face_id)),
-                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
+                ExtrudeSurface::ExtrudeArc(extrude_arc) => {
+                    if let Some(arc_tag) = &extrude_arc.name {
+                        if arc_tag.name == tag.name {
+                            Some(Ok(extrude_arc.face_id))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                }
             })
         {
             return face_from_surface;
@@ -1102,7 +1117,7 @@ impl Args {
 
         // A face could also be the result of a chamfer or fillet.
         if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
-            if fc.tag() == Some(tag) {
+            if fc.tag() == Some(tag.clone()) {
                 Some(Ok(fc.id()))
             } else {
                 None
@@ -1116,7 +1131,7 @@ impl Args {
 
         // If we still haven't found the face, return an error.
         Err(KclError::Type(KclErrorDetails {
-            message: format!("Expected a face with the tag `{}`", tag),
+            message: format!("Expected a face with the tag `{}`", tag.name),
             source_ranges: vec![self.source_range],
         }))
     }

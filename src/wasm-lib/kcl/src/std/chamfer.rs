@@ -7,9 +7,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    ast::types::Tag,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem},
-    std::Args,
+    std::{fillet::EdgeReference, Args},
 };
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
@@ -25,20 +26,9 @@ pub struct ChamferData {
     pub tags: Vec<EdgeReference>,
 }
 
-/// A string or a uuid.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
-#[ts(export)]
-#[serde(untagged)]
-pub enum EdgeReference {
-    /// A uuid of an edge.
-    Uuid(uuid::Uuid),
-    /// A tag name of an edge.
-    Tag(String),
-}
-
 /// Create chamfers on tagged paths.
 pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<String>) =
+    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<Tag>) =
         args.get_data_and_extrude_group_and_tag()?;
 
     let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
@@ -77,7 +67,7 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_chamfer(
     data: ChamferData,
     extrude_group: Box<ExtrudeGroup>,
-    tag: Option<String>,
+    tag: Option<Tag>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -107,12 +97,10 @@ async fn inner_chamfer(
             EdgeReference::Tag(edge_tag) => {
                 extrude_group
                     .sketch_group
-                    .value
-                    .iter()
-                    .find(|p| p.get_name() == edge_tag)
+                    .get_path_by_name(&edge_tag.name)
                     .ok_or_else(|| {
                         KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", edge_tag),
+                            message: format!("No edge found with tag: `{}`", edge_tag.name),
                             source_ranges: vec![args.source_range],
                         })
                     })?

@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    ast::types::Tag,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem, UserVal},
     std::Args,
@@ -26,15 +27,15 @@ pub struct FilletData {
     pub tags: Vec<EdgeReference>,
 }
 
-/// A string or a uuid.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
+/// A tag or a uuid of an edge.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Ord, PartialOrd, Hash)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum EdgeReference {
     /// A uuid of an edge.
     Uuid(uuid::Uuid),
-    /// A tag name of an edge.
-    Tag(String),
+    /// A tag of an edge.
+    Tag(Tag),
 }
 
 /// Create fillets on tagged paths.
@@ -94,15 +95,13 @@ async fn inner_fillet(
     for tag in data.tags {
         let edge_id = match tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(tag) => {
+            EdgeReference::Tag(edge_tag) => {
                 extrude_group
                     .sketch_group
-                    .value
-                    .iter()
-                    .find(|p| p.get_name() == tag)
+                    .get_path_by_name(&edge_tag.name)
                     .ok_or_else(|| {
                         KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", tag),
+                            message: format!("No edge found with tag: `{}`", edge_tag.name),
                             source_ranges: vec![args.source_range],
                         })
                     })?
@@ -140,7 +139,7 @@ async fn inner_fillet(
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group): (Tag, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_opposite_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -184,18 +183,16 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "getOppositeEdge",
 }]
-async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_opposite_edge(tag: Tag, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = extrude_group
         .sketch_group
-        .value
-        .iter()
-        .find(|p| p.get_name() == tag)
+        .get_path_by_name(&tag.name)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
+                message: format!("No edge found with tag: `{}`", tag.name),
                 source_ranges: vec![args.source_range],
             })
         })?
@@ -228,7 +225,7 @@ async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, 
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group): (Tag, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_next_adjacent_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -273,7 +270,7 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
     name = "getNextAdjacentEdge",
 }]
 async fn inner_get_next_adjacent_edge(
-    tag: String,
+    tag: Tag,
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Uuid, KclError> {
@@ -282,12 +279,10 @@ async fn inner_get_next_adjacent_edge(
     }
     let tagged_path = extrude_group
         .sketch_group
-        .value
-        .iter()
-        .find(|p| p.get_name() == tag)
+        .get_path_by_name(&tag.name)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
+                message: format!("No edge found with tag: `{}`", tag.name),
                 source_ranges: vec![args.source_range],
             })
         })?
@@ -317,7 +312,7 @@ async fn inner_get_next_adjacent_edge(
 
     ajacent_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No edge found next adjacent to tag: `{}`", tag),
+            message: format!("No edge found next adjacent to tag: `{}`", tag.name),
             source_ranges: vec![args.source_range],
         })
     })
@@ -325,7 +320,7 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group): (Tag, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -370,7 +365,7 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
     name = "getPreviousAdjacentEdge",
 }]
 async fn inner_get_previous_adjacent_edge(
-    tag: String,
+    tag: Tag,
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Uuid, KclError> {
@@ -379,12 +374,10 @@ async fn inner_get_previous_adjacent_edge(
     }
     let tagged_path = extrude_group
         .sketch_group
-        .value
-        .iter()
-        .find(|p| p.get_name() == tag)
+        .get_path_by_name(&tag.name)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
+                message: format!("No edge found with tag: `{}`", tag.name),
                 source_ranges: vec![args.source_range],
             })
         })?
@@ -414,7 +407,7 @@ async fn inner_get_previous_adjacent_edge(
 
     ajacent_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No edge found previous adjacent to tag: `{}`", tag),
+            message: format!("No edge found previous adjacent to tag: `{}`", tag.name),
             source_ranges: vec![args.source_range],
         })
     })

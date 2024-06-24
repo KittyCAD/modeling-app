@@ -1717,6 +1717,24 @@ impl From<Box<Tag>> for Vec<SourceRange> {
     }
 }
 
+impl Ord for Tag {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.name.cmp(&other.name)
+    }
+}
+
+impl PartialOrd for Tag {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl std::hash::Hash for Tag {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+    }
+}
+
 impl Tag {
     pub fn new(name: &str) -> Self {
         Self {
