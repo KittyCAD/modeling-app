@@ -2398,6 +2398,7 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore] // Ignore until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
 async fn serial_test_sketch_on_face_of_chamfer() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
