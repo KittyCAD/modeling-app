@@ -1867,8 +1867,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::executor::TagIdentifier;
-    use crate::std::sketch::PlaneData;
+    use crate::{executor::TagIdentifier, std::sketch::PlaneData};
 
     #[test]
     fn test_deserialize_plane_data() {

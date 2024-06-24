@@ -22,7 +22,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind, UserVal,
+        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
+        TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -1699,18 +1700,6 @@ pub struct TagDeclarator {
 
 impl_value_meta!(TagDeclarator);
 
-impl From<&TagDeclarator> for MemoryItem {
-    fn from(tag: &TagDeclarator) -> Self {
-        MemoryItem::TagDeclarator(Box::new(tag.clone()))
-    }
-}
-
-impl From<&Box<TagDeclarator>> for MemoryItem {
-    fn from(tag: &Box<TagDeclarator>) -> Self {
-        MemoryItem::TagDeclarator(tag.clone())
-    }
-}
-
 impl From<Box<TagDeclarator>> for SourceRange {
     fn from(tag: Box<TagDeclarator>) -> Self {
         Self([tag.start, tag.end])
@@ -1720,6 +1709,12 @@ impl From<Box<TagDeclarator>> for SourceRange {
 impl From<Box<TagDeclarator>> for Vec<SourceRange> {
     fn from(tag: Box<TagDeclarator>) -> Self {
         vec![tag.into()]
+    }
+}
+
+impl From<&Box<TagDeclarator>> for MemoryItem {
+    fn from(tag: &Box<TagDeclarator>) -> Self {
+        MemoryItem::TagDeclarator(tag.clone())
     }
 }
 
@@ -1753,7 +1748,12 @@ impl TagDeclarator {
     }
 
     pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let memory_item: MemoryItem = self.into();
+        let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
+            value: self.name.clone(),
+            meta: vec![Metadata {
+                source_range: self.into(),
+            }],
+        }));
 
         memory.add(&self.name, memory_item.clone(), self.into())?;
 

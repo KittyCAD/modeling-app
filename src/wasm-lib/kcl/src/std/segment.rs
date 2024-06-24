@@ -6,8 +6,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::TagIdentifier,
-    executor::{MemoryItem, SketchGroup},
+    executor::{MemoryItem, SketchGroup, TagIdentifier},
     std::{utils::between, Args},
 };
 
