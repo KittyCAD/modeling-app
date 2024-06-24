@@ -201,11 +201,31 @@ impl From<SketchGroupSet> for MemoryItem {
     }
 }
 
+impl From<Vec<Box<SketchGroup>>> for MemoryItem {
+    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+        if sg.len() == 1 {
+            MemoryItem::SketchGroup(sg[0].clone())
+        } else {
+            MemoryItem::SketchGroups { value: sg }
+        }
+    }
+}
+
 impl From<ExtrudeGroupSet> for MemoryItem {
     fn from(eg: ExtrudeGroupSet) -> Self {
         match eg {
             ExtrudeGroupSet::ExtrudeGroup(eg) => MemoryItem::ExtrudeGroup(eg),
             ExtrudeGroupSet::ExtrudeGroups(egs) => MemoryItem::ExtrudeGroups { value: egs },
+        }
+    }
+}
+
+impl From<Vec<Box<ExtrudeGroup>>> for MemoryItem {
+    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+        if eg.len() == 1 {
+            MemoryItem::ExtrudeGroup(eg[0].clone())
+        } else {
+            MemoryItem::ExtrudeGroups { value: eg }
         }
     }
 }

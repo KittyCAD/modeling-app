@@ -84,7 +84,7 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     }
 
     let sketch_groups = inner_pattern_linear_2d(data, sketch_group_set, args).await?;
-    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+    Ok(sketch_groups.into())
 }
 
 /// A linear pattern on a 2D sketch.
@@ -150,7 +150,7 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
     }
 
     let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, args).await?;
-    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+    Ok(extrude_groups.into())
 }
 
 /// A linear pattern on a 3D model.
@@ -348,7 +348,7 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group_set): (CircularPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     let sketch_groups = inner_pattern_circular_2d(data, sketch_group_set, args).await?;
-    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+    Ok(sketch_groups.into())
 }
 
 /// A circular pattern on a 2D sketch.
@@ -410,7 +410,7 @@ pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
     let (data, extrude_group_set): (CircularPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
     let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, args).await?;
-    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+    Ok(extrude_groups.into())
 }
 
 /// A circular pattern on a 3D model.
