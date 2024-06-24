@@ -138,7 +138,7 @@ async fn inner_fillet(
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (TagIdentifier, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
 
     let edge = inner_get_opposite_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -228,7 +228,7 @@ async fn inner_get_opposite_edge(
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (TagIdentifier, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
 
     let edge = inner_get_next_adjacent_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -323,7 +323,7 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (TagIdentifier, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {

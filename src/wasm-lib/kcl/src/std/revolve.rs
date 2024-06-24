@@ -290,7 +290,7 @@ async fn inner_revolve(
 
 /// Get an edge on a 3D solid.
 pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (TagIdentifier, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
 
     let edge = inner_get_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
