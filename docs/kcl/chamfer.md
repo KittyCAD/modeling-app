@@ -9,7 +9,7 @@ Create chamfers on tagged paths.
 
 
 ```js
-chamfer(data: ChamferData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
+chamfer(data: ChamferData, extrude_group: ExtrudeGroup, tag?: String) -> ExtrudeGroup
 ```
 
 ### Examples
@@ -73,6 +73,7 @@ string],
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -135,6 +136,7 @@ string],
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -295,6 +297,7 @@ string],
 }],
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 
@@ -318,6 +321,7 @@ string],
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -380,6 +384,7 @@ string],
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.

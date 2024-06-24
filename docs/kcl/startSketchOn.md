@@ -9,7 +9,7 @@ Start a sketch on a specific plane or face.
 
 
 ```js
-startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
+startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface
 ```
 
 ### Examples
@@ -178,6 +178,7 @@ const a1 = startSketchOn({
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -349,7 +350,7 @@ const a1 = startSketchOn({
 }],
 }
 ```
-* `tag`: `SketchOnFaceTag` - A tag for sketch on face. (OPTIONAL)
+* `tag`: `FaceTag` - A tag for a face. (OPTIONAL)
 ```js
 "start" | "end" |
 string
@@ -410,6 +411,7 @@ string
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
