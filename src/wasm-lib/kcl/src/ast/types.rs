@@ -494,6 +494,7 @@ impl From<&BodyItem> for SourceRange {
 pub enum Value {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
+    Tag(Box<Tag>),
     BinaryExpression(Box<BinaryExpression>),
     FunctionExpression(Box<FunctionExpression>),
     CallExpression(Box<CallExpression>),
@@ -517,6 +518,7 @@ impl Value {
             Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
             Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
             Value::Identifier(ident) => ident.name.to_string(),
+            Value::Tag(tag) => tag.recast(),
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
@@ -557,6 +559,7 @@ impl Value {
             Value::FunctionExpression(_func_exp) => None,
             Value::CallExpression(_call_exp) => None,
             Value::Identifier(_ident) => None,
+            Value::Tag(_tag) => None,
             Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Value::UnaryExpression(_unary_exp) => None,
             Value::PipeSubstitution(_pipe_substitution) => None,
@@ -579,6 +582,7 @@ impl Value {
             Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Value::Identifier(_) => {}
+            Value::Tag(_) => {}
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
@@ -590,6 +594,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.start(),
             Value::Identifier(identifier) => identifier.start(),
+            Value::Tag(tag) => tag.start(),
             Value::BinaryExpression(binary_expression) => binary_expression.start(),
             Value::FunctionExpression(function_expression) => function_expression.start(),
             Value::CallExpression(call_expression) => call_expression.start(),
@@ -607,6 +612,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.end(),
             Value::Identifier(identifier) => identifier.end(),
+            Value::Tag(tag) => tag.end(),
             Value::BinaryExpression(binary_expression) => binary_expression.end(),
             Value::FunctionExpression(function_expression) => function_expression.end(),
             Value::CallExpression(call_expression) => call_expression.end(),
@@ -638,6 +644,7 @@ impl Value {
             Value::None(_) => None,
             Value::Literal(_) => None,
             Value::Identifier(_) => None,
+            Value::Tag(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Value::PipeSubstitution(_) => None,
         }
@@ -648,6 +655,7 @@ impl Value {
         match self {
             Value::Literal(_literal) => {}
             Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Value::Tag(ref mut tag) => tag.rename(old_name, new_name),
             Value::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -672,6 +680,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.get_constraint_level(),
             Value::Identifier(identifier) => identifier.get_constraint_level(),
+            Value::Tag(tag) => tag.get_constraint_level(),
             Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
@@ -1678,6 +1687,66 @@ impl Identifier {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Tag {
+    pub start: usize,
+    pub end: usize,
+    pub name: String,
+}
+
+impl_value_meta!(Tag);
+
+impl From<&Box<Tag>> for MemoryItem {
+    fn from(tag: &Box<Tag>) -> Self {
+        MemoryItem::Tag(tag.clone())
+    }
+}
+
+impl From<Box<Tag>> for SourceRange {
+    fn from(tag: Box<Tag>) -> Self {
+        Self([tag.start, tag.end])
+    }
+}
+
+impl From<Box<Tag>> for Vec<SourceRange> {
+    fn from(tag: Box<Tag>) -> Self {
+        vec![tag.into()]
+    }
+}
+
+impl Tag {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+        }
+    }
+
+    pub fn recast(&self) -> String {
+        // Tags are always prefixed with a dollar sign.
+        format!("${}", self.name)
+    }
+
+    /// Get the constraint level for this identifier.
+    /// Tag are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if self.name == old_name {
+            self.name = new_name.to_string();
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1814,6 +1883,7 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
+                Value::Tag(tag) => tag.into(),
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -1972,6 +2042,7 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
+                Value::Tag(tag) => tag.into(),
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -2835,6 +2906,8 @@ pub enum FnArgPrimitive {
     #[display("bool")]
     #[serde(rename = "bool")]
     Boolean,
+    /// A tag.
+    Tag,
     /// A sketch group type.
     SketchGroup,
     /// A sketch surface type.

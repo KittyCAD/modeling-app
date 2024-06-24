@@ -115,6 +115,9 @@ where
         Value::Literal(lit) => {
             f.walk(lit.as_ref().into())?;
         }
+        Value::Tag(tag) => {
+            f.walk(tag.as_ref().into())?;
+        }
 
         Value::Identifier(id) => {
             // sometimes there's a bare Identifier without a Value::Identifier.

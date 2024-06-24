@@ -11,7 +11,7 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, KclNone, Program, Value},
+    ast::types::{BodyItem, FunctionExpression, KclNone, Program, Tag, Value},
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -143,6 +143,7 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
+    Tag(Box<Tag>),
     Plane(Box<Plane>),
     Face(Box<Face>),
     SketchGroup(Box<SketchGroup>),
@@ -506,6 +507,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
         match item {
             MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::Tag(t) => t.into(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroups { value } => value
                 .iter()
@@ -1426,6 +1428,9 @@ impl ExecutorContext {
                     Value::Literal(literal) => {
                         memory.return_ = Some(ProgramReturn::Value(literal.into()));
                     }
+                    Value::Tag(tag) => {
+                        memory.return_ = Some(ProgramReturn::Value(tag.into()));
+                    }
                     Value::ArrayExpression(array_expr) => {
                         let result = array_expr.execute(memory, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
@@ -1481,6 +1486,7 @@ impl ExecutorContext {
         let item = match init {
             Value::None(none) => none.into(),
             Value::Literal(literal) => literal.into(),
+            Value::Tag(tag) => tag.into(),
             Value::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 value.clone()
