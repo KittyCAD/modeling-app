@@ -110,12 +110,11 @@ expression: actual
                     "end": 65
                   },
                   {
-                    "type": "Literal",
-                    "type": "Literal",
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
                     "start": 67,
                     "end": 75,
-                    "value": "myPath",
-                    "raw": "'myPath'"
+                    "value": "myPath"
                   }
                 ],
                 "optional": false
@@ -208,12 +207,11 @@ expression: actual
                     "end": 133
                   },
                   {
-                    "type": "Literal",
-                    "type": "Literal",
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
                     "start": 135,
                     "end": 146,
-                    "value": "rightPath",
-                    "raw": "'rightPath'"
+                    "value": "rightPath"
                   }
                 ],
                 "optional": false

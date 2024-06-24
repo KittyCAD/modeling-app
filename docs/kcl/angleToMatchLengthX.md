@@ -17,11 +17,8 @@ angleToMatchLengthX(segment_name: TagIdentifier, to: number, sketch_group: Sketc
 ```js
 const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([2, 5], %, 'seg01')
-  |> angledLineToX([
-       -angleToMatchLengthX('seg01', 7, %),
-       10
-     ], %)
+  |> line([2, 5], %, $seg01)
+  |> angledLineToX([-angleToMatchLengthX(seg01, 7, %), 10], %)
   |> close(%)
 
 const extrusion = extrude(5, sketch001)

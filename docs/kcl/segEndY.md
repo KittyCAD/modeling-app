@@ -18,9 +18,9 @@ segEndY(segment_name: TagIdentifier, sketch_group: SketchGroup) -> number
 const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([20, 0], %)
-  |> line([0, 3], %, "thing")
+  |> line([0, 3], %, $thing)
   |> line([-10, 0], %)
-  |> line([0, segEndY("thing", %)], %)
+  |> line([0, segEndY(thing, %)], %)
   |> line([-10, 0], %)
   |> close(%)
 

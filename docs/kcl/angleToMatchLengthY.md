@@ -17,9 +17,9 @@ angleToMatchLengthY(segment_name: TagIdentifier, to: number, sketch_group: Sketc
 ```js
 const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([1, 2], %, 'seg01')
+  |> line([1, 2], %, $seg01)
   |> angledLine({
-       angle: angleToMatchLengthY('seg01', 15, %),
+       angle: angleToMatchLengthY(seg01, 15, %),
        length: 5
      }, %)
   |> yLineTo(0, %)

@@ -124,6 +124,10 @@ pub fn name_in_stdlib(name: &str) -> bool {
     CORE_FNS.iter().any(|f| f.name() == name)
 }
 
+pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
+    CORE_FNS.iter().find(|f| f.name() == name).cloned()
+}
+
 pub struct StdLib {
     pub fns: HashMap<String, Box<dyn StdLibFn>>,
     pub kcl_fns: HashMap<String, Box<dyn KclStdLibFn>>,
