@@ -843,7 +843,7 @@ async fn test_kcl_lsp_completions_tags() {
             .unwrap();
         assert_eq!(
             const_completion.kind,
-            Some(tower_lsp::lsp_types::CompletionItemKind::VARIABLE)
+            Some(tower_lsp::lsp_types::CompletionItemKind::REFERENCE)
         );
     } else {
         panic!("Expected array of completions");

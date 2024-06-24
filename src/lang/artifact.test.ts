@@ -23,7 +23,7 @@ const mySketch001 = startSketchOn('XY')
       start: {
         to: [0, 0],
         from: [0, 0],
-        name: '',
+        tag: null,
         __geoMeta: {
           id: expect.any(String),
           sourceRange: [46, 71],
@@ -32,7 +32,7 @@ const mySketch001 = startSketchOn('XY')
       value: [
         {
           type: 'ToPoint',
-          name: '',
+          tag: null,
           to: [-1.59, -1.54],
           from: [0, 0],
           __geoMeta: {
@@ -44,7 +44,7 @@ const mySketch001 = startSketchOn('XY')
           type: 'ToPoint',
           to: [0.46, -5.82],
           from: [-1.59, -1.54],
-          name: '',
+          tag: null,
           __geoMeta: {
             sourceRange: [108, 132],
             id: expect.any(String),
@@ -74,14 +74,14 @@ const mySketch001 = startSketchOn('XY')
         {
           type: 'extrudePlane',
           faceId: expect.any(String),
-          name: '',
+          tag: null,
           id: expect.any(String),
           sourceRange: [77, 102],
         },
         {
           type: 'extrudePlane',
           faceId: expect.any(String),
-          name: '',
+          tag: null,
           id: expect.any(String),
           sourceRange: [108, 132],
         },
@@ -97,7 +97,7 @@ const mySketch001 = startSketchOn('XY')
             type: 'ToPoint',
             from: [0, 0],
             to: [-1.59, -1.54],
-            name: '',
+            tag: null,
             __geoMeta: {
               id: expect.any(String),
               sourceRange: [77, 102],
@@ -107,7 +107,7 @@ const mySketch001 = startSketchOn('XY')
             type: 'ToPoint',
             from: [-1.59, -1.54],
             to: [0.46, -5.82],
-            name: '',
+            tag: null,
             __geoMeta: {
               id: expect.any(String),
               sourceRange: [108, 132],
@@ -155,21 +155,26 @@ const sk2 = startSketchOn('XY')
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
-            name: '',
+            tag: null,
             id: expect.any(String),
             sourceRange: [69, 89],
           },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
-            name: 'p',
+            tag: {
+              end: 117,
+              start: 114,
+              type: 'TagDeclarator',
+              value: 'p',
+            },
             id: expect.any(String),
             sourceRange: [95, 118],
           },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
-            name: '',
+            tag: null,
             id: expect.any(String),
             sourceRange: [124, 143],
           },
@@ -185,7 +190,7 @@ const sk2 = startSketchOn('XY')
               type: 'ToPoint',
               from: [0, 0],
               to: [-2.5, 0],
-              name: '',
+              tag: null,
               __geoMeta: {
                 id: expect.any(String),
                 sourceRange: [69, 89],
@@ -195,7 +200,12 @@ const sk2 = startSketchOn('XY')
               type: 'ToPoint',
               from: [-2.5, 0],
               to: [0, 10],
-              name: 'p',
+              tag: {
+                end: 117,
+                start: 114,
+                type: 'TagDeclarator',
+                value: 'p',
+              },
               __geoMeta: {
                 id: expect.any(String),
                 sourceRange: [95, 118],
@@ -205,7 +215,7 @@ const sk2 = startSketchOn('XY')
               type: 'ToPoint',
               from: [0, 10],
               to: [2.5, 0],
-              name: '',
+              tag: null,
               __geoMeta: {
                 id: expect.any(String),
                 sourceRange: [124, 143],
@@ -225,21 +235,26 @@ const sk2 = startSketchOn('XY')
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
-            name: '',
+            tag: null,
             id: expect.any(String),
             sourceRange: [374, 394],
           },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
-            name: 'p',
+            tag: {
+              end: 421,
+              start: 418,
+              type: 'TagDeclarator',
+              value: 'p',
+            },
             id: expect.any(String),
             sourceRange: [400, 422],
           },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
-            name: '',
+            tag: null,
             id: expect.any(String),
             sourceRange: [428, 447],
           },
@@ -255,7 +270,7 @@ const sk2 = startSketchOn('XY')
               type: 'ToPoint',
               from: [0, 0],
               to: [-2.5, 0],
-              name: '',
+              tag: null,
               __geoMeta: {
                 id: expect.any(String),
                 sourceRange: [374, 394],
@@ -265,7 +280,12 @@ const sk2 = startSketchOn('XY')
               type: 'ToPoint',
               from: [-2.5, 0],
               to: [0, 3],
-              name: 'p',
+              tag: {
+                end: 421,
+                start: 418,
+                type: 'TagDeclarator',
+                value: 'p',
+              },
               __geoMeta: {
                 id: expect.any(String),
                 sourceRange: [400, 422],
@@ -275,7 +295,7 @@ const sk2 = startSketchOn('XY')
               type: 'ToPoint',
               from: [0, 3],
               to: [2.5, 0],
-              name: '',
+              tag: null,
               __geoMeta: {
                 id: expect.any(String),
                 sourceRange: [428, 447],

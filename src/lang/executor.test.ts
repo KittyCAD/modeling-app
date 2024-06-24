@@ -62,7 +62,12 @@ const newVar = myVar + 1`
           sourceRange: [72, 98],
           id: expect.any(String),
         },
-        name: 'myPath',
+        tag: {
+          end: 97,
+          start: 89,
+          type: 'TagDeclarator',
+          value: 'myPath',
+        },
       },
       {
         type: 'ToPoint',
@@ -82,7 +87,12 @@ const newVar = myVar + 1`
           sourceRange: [126, 156],
           id: expect.any(String),
         },
-        name: 'rightPath',
+        tag: {
+          end: 155,
+          start: 144,
+          type: 'TagDeclarator',
+          value: 'rightPath',
+        },
       },
     ])
   })
@@ -164,7 +174,12 @@ const newVar = myVar + 1`
             sourceRange: [91, 118],
             id: expect.any(String),
           },
-          name: 'myPath',
+          tag: {
+            end: 117,
+            start: 109,
+            type: 'TagDeclarator',
+            value: 'myPath',
+          },
         },
         {
           type: 'ToPoint',
