@@ -49,6 +49,8 @@ export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
  * These are used to generate unique names for new objects.
  * */
 export const KCL_DEFAULT_CONSTANT_PREFIXES = {
+  SURFACE: 'surface',
+  PROFILE: 'profile',
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
 } as const
