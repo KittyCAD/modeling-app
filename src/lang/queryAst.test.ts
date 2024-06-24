@@ -420,7 +420,7 @@ describe('Testing findUsesOfTagInPipe', () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const lineOfInterest = `198.85], %, seg01`
+    const lineOfInterest = `198.85], %, $seg01`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const pathToNode = getNodePathFromSourceRange(ast, [
