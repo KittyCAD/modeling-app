@@ -69,7 +69,7 @@ impl ProgramMemory {
     pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
         if self.root.contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
-                message: format!("Cannot redefine {}", key),
+                message: format!("Cannot redefine `{}`", key),
                 source_ranges: vec![source_range],
             }));
         }

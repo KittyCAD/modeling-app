@@ -2430,3 +2430,30 @@ const sketch001 = startSketchOn(part001, 'chamfer1')
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_chamfer.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_duplicate_tags_should_error() {
+    let code = r#"fn triangle = (len) => {
+  return startSketchOn('XY')
+  |> startProfileAt([-len / 2, -len / 2], %)
+  |> angledLine({ angle: 0, length: len }, %, $a)
+  |> angledLine({
+       angle: segAng(a, %) + 120,
+       length: len
+     }, %, $b)
+  |> angledLine({
+       angle: segAng(b, %) + 120,
+       length: len
+     }, %, $a)
+}
+
+let p = triangle(200)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+    );
+}
