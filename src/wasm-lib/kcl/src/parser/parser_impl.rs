@@ -13,8 +13,8 @@ use crate::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
         ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
-        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -333,6 +333,15 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                         // Once we have ways to use None values (e.g. by replacing with a default value)
                         // we should suggest one of them here.
                         message: "cannot use a KCL None value as an operand".to_owned(),
+                    }));
+                }
+                Value::TagDeclarator(_) => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        // TODO: Better error message here.
+                        // Once we have ways to use None values (e.g. by replacing with a default value)
+                        // we should suggest one of them here.
+                        message: "cannot use a KCL tag declaration as an operand".to_owned(),
                     }));
                 }
                 Value::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
@@ -904,6 +913,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Literal),
         literal.map(Box::new).map(Value::Literal),
+        tag.map(Box::new).map(Value::TagDeclarator),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
         array.map(Box::new).map(Value::ArrayExpression),
@@ -1034,6 +1044,34 @@ impl TryFrom<Token> for Identifier {
 fn identifier(i: TokenSlice) -> PResult<Identifier> {
     any.try_map(Identifier::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+impl TryFrom<Token> for TagDeclarator {
+    type Error = KclError;
+
+    fn try_from(token: Token) -> Result<Self, Self::Error> {
+        if token.token_type == TokenType::Word {
+            Ok(TagDeclarator {
+                // We subtract 1 from the start because the tag starts with a `$`.
+                start: token.start - 1,
+                end: token.end,
+                name: token.value,
+            })
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
+            }))
+        }
+    }
+}
+
+/// Parse a Kcl tag that starts with a `$`.
+fn tag(i: TokenSlice) -> PResult<TagDeclarator> {
+    dollar.parse_next(i)?;
+    any.try_map(TagDeclarator::try_from)
+        .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
 }
 
@@ -1252,6 +1290,11 @@ fn hash(i: TokenSlice) -> PResult<()> {
 
 fn bang(i: TokenSlice) -> PResult<()> {
     TokenType::Bang.parse_from(i)?;
+    Ok(())
+}
+
+fn dollar(i: TokenSlice) -> PResult<()> {
+    TokenType::Dollar.parse_from(i)?;
     Ok(())
 }
 

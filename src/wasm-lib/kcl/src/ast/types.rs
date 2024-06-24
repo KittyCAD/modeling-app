@@ -22,7 +22,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind, UserVal,
+        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
+        TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -167,6 +168,26 @@ impl Program {
         Ok(x.clone())
     }
 
+    /// Walk the ast and get all the variables and tags as completion items.
+    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
+        let completions = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::lint::Node::TagDeclarator(tag) => {
+                    findings.push(tag.into());
+                }
+                crate::lint::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                }
+                _ => {}
+            }
+            Ok(true)
+        })?;
+        let x = completions.lock().unwrap();
+        Ok(x.clone())
+    }
+
     /// Returns the body item that includes the given character position.
     pub fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
         for item in &self.body {
@@ -232,21 +253,23 @@ impl Program {
     }
 
     /// Returns all the lsp symbols in the program.
-    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
-        let mut symbols = vec![];
-        for item in &self.body {
-            match item {
-                BodyItem::ExpressionStatement(_expression_statement) => {
-                    continue;
+    pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
+        let symbols = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::lint::Node::TagDeclarator(tag) => {
+                    findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    symbols.extend(variable_declaration.get_lsp_symbols(code))
+                crate::lint::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                _ => {}
             }
-        }
-
-        symbols
+            Ok(true)
+        })?;
+        let x = symbols.lock().unwrap();
+        Ok(x.clone())
     }
 
     // Return all the lsp folding ranges in the program.
@@ -494,6 +517,7 @@ impl From<&BodyItem> for SourceRange {
 pub enum Value {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
+    TagDeclarator(Box<TagDeclarator>),
     BinaryExpression(Box<BinaryExpression>),
     FunctionExpression(Box<FunctionExpression>),
     CallExpression(Box<CallExpression>),
@@ -517,6 +541,7 @@ impl Value {
             Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
             Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
             Value::Identifier(ident) => ident.name.to_string(),
+            Value::TagDeclarator(tag) => tag.recast(),
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
@@ -557,6 +582,7 @@ impl Value {
             Value::FunctionExpression(_func_exp) => None,
             Value::CallExpression(_call_exp) => None,
             Value::Identifier(_ident) => None,
+            Value::TagDeclarator(_tag) => None,
             Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Value::UnaryExpression(_unary_exp) => None,
             Value::PipeSubstitution(_pipe_substitution) => None,
@@ -579,6 +605,7 @@ impl Value {
             Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Value::Identifier(_) => {}
+            Value::TagDeclarator(_) => {}
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
@@ -590,6 +617,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.start(),
             Value::Identifier(identifier) => identifier.start(),
+            Value::TagDeclarator(tag) => tag.start(),
             Value::BinaryExpression(binary_expression) => binary_expression.start(),
             Value::FunctionExpression(function_expression) => function_expression.start(),
             Value::CallExpression(call_expression) => call_expression.start(),
@@ -607,6 +635,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.end(),
             Value::Identifier(identifier) => identifier.end(),
+            Value::TagDeclarator(tag) => tag.end(),
             Value::BinaryExpression(binary_expression) => binary_expression.end(),
             Value::FunctionExpression(function_expression) => function_expression.end(),
             Value::CallExpression(call_expression) => call_expression.end(),
@@ -638,6 +667,7 @@ impl Value {
             Value::None(_) => None,
             Value::Literal(_) => None,
             Value::Identifier(_) => None,
+            Value::TagDeclarator(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Value::PipeSubstitution(_) => None,
         }
@@ -648,6 +678,7 @@ impl Value {
         match self {
             Value::Literal(_literal) => {}
             Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Value::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
             Value::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -672,6 +703,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.get_constraint_level(),
             Value::Identifier(identifier) => identifier.get_constraint_level(),
+            Value::TagDeclarator(tag) => tag.get_constraint_level(),
             Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
@@ -1319,6 +1351,40 @@ pub struct VariableDeclaration {
     pub kind: VariableKind, // Change to enum if there are specific values
 }
 
+impl From<&VariableDeclaration> for Vec<CompletionItem> {
+    fn from(declaration: &VariableDeclaration) -> Self {
+        let mut completions = vec![];
+        for variable in &declaration.declarations {
+            completions.push(CompletionItem {
+                label: variable.id.name.to_string(),
+                label_details: None,
+                kind: Some(match declaration.kind {
+                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
+                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                }),
+                detail: Some(declaration.kind.to_string()),
+                documentation: None,
+                deprecated: None,
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            })
+        }
+        completions
+    }
+}
+
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
@@ -1678,6 +1744,129 @@ impl Identifier {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct TagDeclarator {
+    pub start: usize,
+    pub end: usize,
+    #[serde(rename = "value")]
+    pub name: String,
+}
+
+impl_value_meta!(TagDeclarator);
+
+impl From<Box<TagDeclarator>> for SourceRange {
+    fn from(tag: Box<TagDeclarator>) -> Self {
+        Self([tag.start, tag.end])
+    }
+}
+
+impl From<Box<TagDeclarator>> for Vec<SourceRange> {
+    fn from(tag: Box<TagDeclarator>) -> Self {
+        vec![tag.into()]
+    }
+}
+
+impl From<&Box<TagDeclarator>> for MemoryItem {
+    fn from(tag: &Box<TagDeclarator>) -> Self {
+        MemoryItem::TagDeclarator(tag.clone())
+    }
+}
+
+impl From<&TagDeclarator> for MemoryItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        MemoryItem::TagDeclarator(Box::new(tag.clone()))
+    }
+}
+
+impl From<&TagDeclarator> for CompletionItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        CompletionItem {
+            label: tag.name.to_string(),
+            label_details: None,
+            kind: Some(CompletionItemKind::REFERENCE),
+            detail: Some("tag (A reference to an entity you previously named)".to_string()),
+            documentation: None,
+            deprecated: None,
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+}
+
+impl TagDeclarator {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+        }
+    }
+
+    pub fn recast(&self) -> String {
+        // TagDeclarators are always prefixed with a dollar sign.
+        format!("${}", self.name)
+    }
+
+    /// Get the constraint level for this identifier.
+    /// TagDeclarator are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if self.name == old_name {
+            self.name = new_name.to_string();
+        }
+    }
+
+    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
+        let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
+            value: self.name.clone(),
+            meta: vec![Metadata {
+                source_range: self.into(),
+            }],
+        }));
+
+        memory.add(&self.name, memory_item.clone(), self.into())?;
+
+        Ok(self.into())
+    }
+
+    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
+        let source_range: SourceRange = self.into();
+
+        vec![
+            #[allow(deprecated)]
+            DocumentSymbol {
+                name: self.name.to_string(),
+                detail: None,
+                kind: SymbolKind::CONSTANT,
+                range: source_range.to_lsp_range(code),
+                selection_range: source_range.to_lsp_range(code),
+                children: None,
+                tags: None,
+                deprecated: None,
+            },
+        ]
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1814,6 +2003,7 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -1972,6 +2162,7 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -2835,6 +3026,8 @@ pub enum FnArgPrimitive {
     #[display("bool")]
     #[serde(rename = "bool")]
     Boolean,
+    /// A tag.
+    Tag,
     /// A sketch group type.
     SketchGroup,
     /// A sketch surface type.
@@ -3289,7 +3482,7 @@ fn ghi = (x) => {
         let tokens = crate::token::lexer(code).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let symbols = program.get_lsp_symbols(code);
+        let symbols = program.get_lsp_symbols(code).unwrap();
         assert_eq!(symbols.len(), 7);
     }
 

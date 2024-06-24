@@ -43,23 +43,23 @@ describe('processMemory', () => {
       theExtrude: [
         {
           type: 'extrudePlane',
-          name: '',
+          tag: null,
           id: expect.any(String),
           faceId: expect.any(String),
           sourceRange: [170, 194],
         },
         {
           type: 'extrudePlane',
-          name: '',
+          tag: null,
           id: expect.any(String),
           faceId: expect.any(String),
           sourceRange: [202, 230],
         },
       ],
       theSketch: [
-        { type: 'ToPoint', to: [-3.35, 0.17], from: [0, 0], name: '' },
-        { type: 'ToPoint', to: [0.98, 5.16], from: [-3.35, 0.17], name: '' },
-        { type: 'ToPoint', to: [2.15, 4.32], from: [0.98, 5.16], name: '' },
+        { type: 'ToPoint', to: [-3.35, 0.17], from: [0, 0], tag: null },
+        { type: 'ToPoint', to: [0.98, 5.16], from: [-3.35, 0.17], tag: null },
+        { type: 'ToPoint', to: [2.15, 4.32], from: [0.98, 5.16], tag: null },
       ],
     })
   })

@@ -1660,7 +1660,7 @@ export function transformAstSketchLines({
       referencedSegment = _segment.segment
     } else {
       referencedSegment = sketchGroup.value.find(
-        (path) => path.name === _referencedSegmentName
+        (path) => path.tag?.value === _referencedSegmentName
       )
     }
     const { to, from } = seg

@@ -156,7 +156,9 @@ const part001 = revolve({
 },
 } |
 uuid |
-string,
+{
+	value: string,
+},
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
@@ -216,7 +218,11 @@ string,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -233,8 +239,12 @@ string,
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -242,8 +252,12 @@ string,
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -255,8 +269,12 @@ string,
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -264,8 +282,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -273,8 +295,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -284,8 +310,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -297,8 +327,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",
@@ -312,10 +346,14 @@ string,
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -323,10 +361,14 @@ string,
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 },
@@ -358,8 +400,12 @@ string,
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -367,8 +413,12 @@ string,
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -380,8 +430,12 @@ string,
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -389,8 +443,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -398,8 +456,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -409,8 +471,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -422,8 +488,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",
@@ -453,7 +523,11 @@ string,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -516,7 +590,11 @@ string,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -533,10 +611,14 @@ string,
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -544,10 +626,14 @@ string,
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 },
@@ -579,8 +665,12 @@ string,
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -588,8 +678,12 @@ string,
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -601,8 +695,12 @@ string,
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -610,8 +708,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -619,8 +721,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -630,8 +736,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -643,8 +753,12 @@ string,
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",
@@ -658,10 +772,14 @@ string,
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -669,10 +787,14 @@ string,
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 }

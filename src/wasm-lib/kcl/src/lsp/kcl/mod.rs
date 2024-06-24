@@ -236,7 +236,10 @@ impl crate::lsp::backend::Backend for Backend {
             self.ast_map.insert(params.uri.to_string(), ast.clone()).await;
             // Update the symbols map.
             self.symbols_map
-                .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text))
+                .insert(
+                    params.uri.to_string(),
+                    ast.get_lsp_symbols(&params.text).unwrap_or_default(),
+                )
                 .await;
         }
 
@@ -460,51 +463,17 @@ impl Backend {
     }
 
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
-        let mut completions = vec![];
-
         let ast = match self.ast_map.get(file_name).await {
             Some(ast) => ast,
-            None => return completions,
+            None => return vec![],
         };
 
-        for item in &ast.body {
-            match item {
-                crate::ast::types::BodyItem::ExpressionStatement(_) => continue,
-                crate::ast::types::BodyItem::ReturnStatement(_) => continue,
-                crate::ast::types::BodyItem::VariableDeclaration(variable) => {
-                    // We only want to complete variables.
-                    for declaration in &variable.declarations {
-                        completions.push(CompletionItem {
-                            label: declaration.id.name.to_string(),
-                            label_details: None,
-                            kind: Some(match variable.kind {
-                                crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
-                                crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
-                                crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
-                                crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
-                            }),
-                            detail: Some(variable.kind.to_string()),
-                            documentation: None,
-                            deprecated: None,
-                            preselect: None,
-                            sort_text: None,
-                            filter_text: None,
-                            insert_text: None,
-                            insert_text_format: None,
-                            insert_text_mode: None,
-                            text_edit: None,
-                            additional_text_edits: None,
-                            command: None,
-                            commit_characters: None,
-                            data: None,
-                            tags: None,
-                        });
-                    }
-                }
-            }
+        // Get the completion items.
+        match ast.completion_items() {
+            Ok(items) => items,
+            // TODO: don't ignore an error here.
+            Err(_err) => vec![],
         }
-
-        completions
     }
 
     pub async fn create_zip(&self) -> Result<Vec<u8>> {
@@ -906,11 +875,12 @@ impl LanguageServer for Backend {
 
         completions.extend(self.stdlib_completions.values().cloned());
 
+        let variables = self
+            .completions_get_variables_from_ast(params.text_document_position.text_document.uri.as_ref())
+            .await;
+
         // Get our variables from our AST to include in our completions.
-        completions.extend(
-            self.completions_get_variables_from_ast(params.text_document_position.text_document.uri.as_ref())
-                .await,
-        );
+        completions.extend(variables);
 
         Ok(Some(CompletionResponse::Array(completions)))
     }
