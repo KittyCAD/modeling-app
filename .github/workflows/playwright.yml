@@ -95,21 +95,13 @@ jobs:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
-    - uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
     - name: check for changes
       id: git-check
       run: |
           git add .
           if git status | grep -q "Changes to be committed"
-          then
-            echo "::set-output name=modified::true"
-          else
-            echo "::set-output name=modified::false"
+          then echo "modified=true" >> $GITHUB_OUTPUT
+          else echo "modified=false" >> $GITHUB_OUTPUT
           fi
     - name: Commit changes, if any
       if: steps.git-check.outputs.modified == 'true'
@@ -125,17 +117,53 @@ jobs:
         git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
         git push
         git push origin ${{ github.head_ref }}
+    # only upload artifacts if there's actually changes
+    - uses: actions/upload-artifact@v4
+      if: steps.git-check.outputs.modified == 'true'
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+    # if have previous run results, use them
+    - uses: actions/download-artifact@v4
+      if: always()
+      continue-on-error: true
+      with:
+        name: test-results
+        path: test-results/
+    - name: Run ubuntu/chrome flow retry failures
+      id: retry
+      if: always()
+      run: |
+        ls -1 "test-results"
+        if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
+        then echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+        else echo "retried=true" >> $GITHUB_OUTPUT;
+        fi;
+        yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run ubuntu/chrome flow
+      if: steps.retry.outputs.retried == 'false'
       run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report-ubuntu
+        name: test-results
+        path: test-results/
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
         path: playwright-report/
         retention-days: 30
+        overwrite: true
 
   playwright-macos:
     timeout-minutes: 60
@@ -194,16 +222,46 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
+    # if have previous run results, use them
+    - uses: actions/download-artifact@v4
+      if: ${{ always() }}
+      continue-on-error: true
+      with:
+        name: test-results
+        path: test-results/
+    - name: Run macos/safari flow retry failures
+      id: retry
+      continue-on-error: true
+      if: ${{ success() }}
+      run: |
+        if [ -d "test-results" ];
+        then echo "retried=true" >> $GITHUB_OUTPUT;
+        else echo "retried=false" >> $GITHUB_OUTPUT;
+        fi;
+        yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run macos/safari flow
+      if: ${{ steps.retry.outputs.retried != 'true' }}
       # webkit doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
       run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v3
-      if: always()
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
       with:
-        name: playwright-report-macos
+        name: test-results
+        path: test-results/
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: playwright-report
         path: playwright-report/
         retention-days: 30
+        overwrite: true
+

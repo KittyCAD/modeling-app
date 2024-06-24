@@ -29,7 +29,6 @@ import {
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
-import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
 import {
   Selections,
@@ -37,6 +36,7 @@ import {
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
+  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -77,6 +77,7 @@ import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { uuidv4 } from 'lib/utils'
+import { err, trap } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -459,12 +460,17 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        'Sketch is empty': ({ sketchDetails }) =>
-          getNodeFromPath<VariableDeclaration>(
+        'Sketch is empty': ({ sketchDetails }) => {
+          const node = getNodeFromPath<VariableDeclaration>(
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
-          )?.node?.declarations?.[0]?.init.type !== 'PipeExpression',
+          )
+          // This should not be returning false, and it should be caught
+          // but we need to simulate old behavior to move on.
+          if (err(node)) return false
+          return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+        },
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -507,14 +513,16 @@ export const ModelingMachineProvider = ({
         },
         'animate-to-face': async (_, { data }) => {
           if (data.type === 'extrudeFace') {
-            const { modifiedAst, pathToNode: pathToNewSketchNode } =
-              sketchOnExtrudedFace(
-                kclManager.ast,
-                data.sketchPathToNode,
-                data.extrudePathToNode,
-                kclManager.programMemory,
-                data.cap
-              )
+            const sketched = sketchOnExtrudedFace(
+              kclManager.ast,
+              data.sketchPathToNode,
+              data.extrudePathToNode,
+              kclManager.programMemory,
+              data.cap
+            )
+            if (trap(sketched)) return Promise.reject(sketched)
+            const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
+
             await kclManager.executeAstMock(modifiedAst)
 
             await letEngineAnimateAndSyncCamAfter(
@@ -535,10 +543,12 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.syncDirection = 'clientToEngine'
+
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             data.planeId
           )
+
           return {
             sketchPathToNode: pathToNode,
             zAxis: data.zAxis,
@@ -576,25 +586,29 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -608,25 +622,29 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -634,9 +652,11 @@ export const ModelingMachineProvider = ({
           selectionRanges,
           sketchDetails,
         }): Promise<SetSelections> => {
-          const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
+          const info = angleBetweenInfo({
             selectionRanges,
-          }).enabled
+          })
+          if (err(info)) return Promise.reject(info)
+          const { modifiedAst, pathToNodeMap } = await (info.enabled
             ? applyConstraintAngleBetween({
                 selectionRanges,
               })
@@ -645,25 +665,31 @@ export const ModelingMachineProvider = ({
                 angleOrLength: 'setAngle',
               }))
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (err(_modifiedAst)) return Promise.reject(_modifiedAst)
+
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              _modifiedAst,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -674,25 +700,29 @@ export const ModelingMachineProvider = ({
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -706,25 +736,29 @@ export const ModelingMachineProvider = ({
             }
           )
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -738,25 +772,29 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
@@ -770,48 +808,77 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
           const _modifiedAst = parse(recast(modifiedAst))
-          if (!sketchDetails) throw new Error('No sketch details')
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const updatedPathToNode = updatePathToNodeFromMap(
             sketchDetails.sketchPathToNode,
             pathToNodeMap
           )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             updatedPathToNode,
             _modifiedAst,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
             updatedPathToNode,
           }
         },
-        'Get convert to variable info': async ({ sketchDetails }, { data }) => {
-          if (!sketchDetails) return []
+        'Get convert to variable info': async (
+          { sketchDetails, selectionRanges },
+          { data }
+        ): Promise<SetSelections> => {
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
           const { variableName } = await getVarNameModal({
             valueName: data.variableName || 'var',
           })
+          let parsed = parse(recast(kclManager.ast))
+          if (trap(parsed)) return Promise.reject(parsed)
+          parsed = parsed as Program
+
           const { modifiedAst: _modifiedAst, pathToReplacedNode } =
             moveValueIntoNewVariablePath(
-              parse(recast(kclManager.ast)),
+              parsed,
               kclManager.programMemory,
               data.pathToNode,
               variableName
             )
-          await sceneEntitiesManager.updateAstAndRejigSketch(
+          parsed = parse(recast(_modifiedAst))
+          if (trap(parsed)) return Promise.reject(parsed)
+          parsed = parsed as Program
+          if (!pathToReplacedNode)
+            return Promise.reject(new Error('No path to replaced node'))
+
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
             pathToReplacedNode || [],
-            parse(recast(_modifiedAst)),
+            parsed,
             sketchDetails.zAxis,
             sketchDetails.yAxis,
             sketchDetails.origin
           )
-          return pathToReplacedNode || sketchDetails.sketchPathToNode
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            { 0: pathToReplacedNode },
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
+          return {
+            selectionType: 'completeSelection',
+            selection,
+            updatedPathToNode: pathToReplacedNode,
+          }
         },
       },
       devTools: true,

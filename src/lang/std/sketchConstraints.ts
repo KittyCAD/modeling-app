@@ -10,31 +10,39 @@ import {
   PathToNode,
   Value,
 } from '../wasm'
+import { err } from 'lib/trap'
 
 export function getSketchSegmentFromPathToNode(
   sketchGroup: SketchGroup,
   ast: Program,
   pathToNode: PathToNode
-): {
-  segment: SketchGroup['value'][number]
-  index: number
-} {
+):
+  | {
+      segment: SketchGroup['value'][number]
+      index: number
+    }
+  | Error {
   // TODO: once pathTodNode is stored on program memory as part of execution,
   // we can check if the pathToNode matches the pathToNode of the sketchGroup.
   // For now we fall back to the sourceRange
-  const node = getNodeFromPath<Value>(ast, pathToNode).node
+  const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+  if (err(nodeMeta)) return nodeMeta
+
+  const node = nodeMeta.node
   if (!node || typeof node.start !== 'number' || !node.end)
-    throw new Error('no node found')
+    return new Error('no node found')
   const sourceRange: SourceRange = [node.start, node.end]
   return getSketchSegmentFromSourceRange(sketchGroup, sourceRange)
 }
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: SourceRange
-): {
-  segment: SketchGroup['value'][number]
-  index: number
-} {
+):
+  | {
+      segment: SketchGroup['value'][number]
+      index: number
+    }
+  | Error {
   const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
   if (
     startSourceRange &&
@@ -49,7 +57,7 @@ export function getSketchSegmentFromSourceRange(
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
   const line = sketchGroup.value[lineIndex]
-  if (!line) throw new Error('could not find matching line')
+  if (!line) return new Error('could not find matching line')
   return {
     segment: line,
     index: lineIndex,

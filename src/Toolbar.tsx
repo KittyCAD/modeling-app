@@ -339,7 +339,7 @@ export function Toolbar({
                 bgClassName,
               }}
             >
-              Constrain
+              Constraints
             </ActionButtonDropdown>
           )}
         {state.matches('idle') && (

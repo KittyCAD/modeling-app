@@ -7,6 +7,7 @@ import {
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -31,6 +32,8 @@ async function testingSwapSketchFnCall({
     range: [startIndex, startIndex + callToSwap.length],
   }
   const ast = parse(inputCode)
+  if (err(ast)) return Promise.reject(ast)
+
   const programMemory = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
@@ -38,16 +41,22 @@ async function testingSwapSketchFnCall({
   }
   const transformInfos = getTransformInfos(selections, ast, constraintType)
 
-  if (!transformInfos) throw new Error('nope')
-  const { modifiedAst } = transformAstSketchLines({
+  if (!transformInfos)
+    return Promise.reject(new Error('transformInfos undefined'))
+  const ast2 = transformAstSketchLines({
     ast,
     programMemory,
     selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
   })
+  if (err(ast2)) return Promise.reject(ast2)
+
+  const newCode = recast(ast2.modifiedAst)
+  if (err(newCode)) return Promise.reject(newCode)
+
   return {
-    newCode: recast(modifiedAst),
+    newCode,
     originalRange: range.range,
   }
 }
@@ -355,10 +364,12 @@ const part001 = startSketchOn('XY')
   it('normal case works', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+    const _segment = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    ).segment
+    )
+    if (err(_segment)) throw _segment
+    const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       type: 'ToPoint',
       to: [5.62, 1.79],
@@ -369,10 +380,12 @@ const part001 = startSketchOn('XY')
   it('verify it works when the segment is in the `start` property', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+    const _segment = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    ).segment
+    )
+    if (err(_segment)) throw _segment
+    const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],

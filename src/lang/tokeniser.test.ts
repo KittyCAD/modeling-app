@@ -1,4 +1,5 @@
 import { lexer, initPromise } from './wasm'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -369,10 +370,13 @@ const ya = 6 */' from 14  to 50`,
 
 // helpers
 
-const stringSummaryLexer = (input: string) =>
-  lexer(input).map(
+const stringSummaryLexer = (input: string) => {
+  const tokens = lexer(input)
+  if (err(tokens)) return []
+  return tokens.map(
     ({ type, value, start, end }) =>
       `${type.padEnd(12, ' ')} ${`'${value}'`.padEnd(10, ' ')} from ${String(
         start
       ).padEnd(3, ' ')} to ${end}`
   )
+}
