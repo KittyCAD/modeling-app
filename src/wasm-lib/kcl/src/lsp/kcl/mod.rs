@@ -227,11 +227,6 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
-        if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
-            // Return early if the ast did not change and we don't need to force.
-            return;
-        }
-
         if ast_changed {
             self.ast_map.insert(params.uri.to_string(), ast.clone()).await;
             // Update the symbols map.

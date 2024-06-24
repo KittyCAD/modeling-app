@@ -806,9 +806,7 @@ async fn test_kcl_lsp_completions_tags() {
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
   |> close(%)
-  |> extrude(5, %)
-
-const part002 = startSketchOn(part001, he"#
+  |> extrude(5, %)"#
                     .to_string(),
             },
         })
@@ -822,7 +820,10 @@ const part002 = startSketchOn(part001, he"#
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
                     uri: "file:///test.kcl".try_into().unwrap(),
                 },
-                position: tower_lsp::lsp_types::Position { line: 0, character: 16 },
+                position: tower_lsp::lsp_types::Position {
+                    line: 0,
+                    character: 198,
+                },
             },
             context: None,
             partial_result_params: Default::default(),
@@ -836,14 +837,13 @@ const part002 = startSketchOn(part001, he"#
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
         // Make sure that `here` is in the completions.
-        println!("{:#?}", completions.iter().map(|c| c.label.clone()).collect::<Vec<_>>());
         let const_completion = completions
             .iter()
             .find(|completion| completion.label == "here")
             .unwrap();
         assert_eq!(
             const_completion.kind,
-            Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)
+            Some(tower_lsp::lsp_types::CompletionItemKind::VARIABLE)
         );
     } else {
         panic!("Expected array of completions");
