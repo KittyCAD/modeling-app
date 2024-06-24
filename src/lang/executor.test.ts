@@ -68,7 +68,7 @@ const newVar = myVar + 1`
         type: 'ToPoint',
         to: [2, 3],
         from: [0, 2],
-        name: '',
+        tag: null,
         __geoMeta: {
           sourceRange: [104, 120],
           id: expect.any(String),
@@ -139,7 +139,7 @@ const newVar = myVar + 1`
       start: {
         to: [0, 0],
         from: [0, 0],
-        name: '',
+        tag: null,
         __geoMeta: {
           id: expect.any(String),
           sourceRange: [39, 63],
@@ -150,7 +150,7 @@ const newVar = myVar + 1`
           type: 'ToPoint',
           to: [1, 1],
           from: [0, 0],
-          name: '',
+          tag: null,
           __geoMeta: {
             sourceRange: [69, 85],
             id: expect.any(String),
@@ -170,7 +170,7 @@ const newVar = myVar + 1`
           type: 'ToPoint',
           to: [1, 1],
           from: [0, 1],
-          name: '',
+          tag: null,
           __geoMeta: {
             sourceRange: [124, 140],
             id: expect.any(String),
