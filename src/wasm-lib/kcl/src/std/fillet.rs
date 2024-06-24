@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, MemoryItem, UserVal},
+    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem, UserVal},
     std::Args,
 };
 
@@ -201,7 +201,7 @@ async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, 
         })?
         .get_base();
 
-    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -293,7 +293,7 @@ async fn inner_get_next_adjacent_edge(
         })?
         .get_base();
 
-    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -390,7 +390,7 @@ async fn inner_get_previous_adjacent_edge(
         })?
         .get_base();
 
-    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -418,21 +418,4 @@ async fn inner_get_previous_adjacent_edge(
             source_ranges: vec![args.source_range],
         })
     })
-}
-
-fn get_adjacent_face_to_tag(extrude_group: &ExtrudeGroup, tag: &str, args: &Args) -> Result<uuid::Uuid, KclError> {
-    extrude_group
-        .value
-        .iter()
-        .find_map(|extrude_surface| match extrude_surface {
-            ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => Some(Ok(extrude_plane.face_id)),
-            ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == tag => Some(Ok(extrude_arc.face_id)),
-            ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
-        })
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a face with the tag `{}`", tag),
-                source_ranges: vec![args.source_range],
-            })
-        })?
 }

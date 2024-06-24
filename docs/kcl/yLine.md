@@ -88,6 +88,7 @@ const example = extrude(10, exampleSketch)
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -362,6 +363,7 @@ const example = extrude(10, exampleSketch)
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.

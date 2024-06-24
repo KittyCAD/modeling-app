@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
+        BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
+        SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -21,6 +21,60 @@ use crate::{
         Args, ExtrudeGroupSet,
     },
 };
+
+/// A tag for a face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "snake_case", untagged)]
+#[display("{0}")]
+pub enum FaceTag {
+    StartOrEnd(StartOrEnd),
+    /// A string tag for the face you want to sketch on.
+    String(String),
+}
+
+impl FaceTag {
+    /// Get the face id from the tag.
+    pub fn get_face_id(
+        &self,
+        extrude_group: &ExtrudeGroup,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            FaceTag::String(ref s) => args.get_adjacent_face_to_tag(extrude_group, s, must_be_planar),
+            FaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: "Expected a start face".to_string(),
+                    source_ranges: vec![args.source_range],
+                })
+            }),
+            FaceTag::StartOrEnd(StartOrEnd::End) => extrude_group.end_cap_id.ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: "Expected an end face".to_string(),
+                    source_ranges: vec![args.source_range],
+                })
+            }),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum StartOrEnd {
+    /// The start face as in before you extruded. This could also be known as the bottom
+    /// face. But we do not call it bottom because it would be the top face if you
+    /// extruded it in the opposite direction or flipped the camera.
+    #[serde(rename = "start", alias = "START")]
+    Start,
+    /// The end face after you extruded. This could also be known as the top
+    /// face. But we do not call it top because it would be the bottom face if you
+    /// extruded it in the opposite direction or flipped the camera.
+    #[serde(rename = "end", alias = "END")]
+    End,
+}
 
 /// Draw a line to a point.
 pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
@@ -857,7 +911,7 @@ impl From<PlaneData> for Plane {
 
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, tag): (SketchData, Option<SketchOnFaceTag>) = args.get_data_and_optional_tag()?;
+    let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
     match inner_start_sketch_on(data, tag, args).await? {
         SketchSurface::Plane(plane) => Ok(MemoryItem::Plane(plane)),
@@ -969,11 +1023,7 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(
-    data: SketchData,
-    tag: Option<SketchOnFaceTag>,
-    args: Args,
-) -> Result<SketchSurface, KclError> {
+async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: Args) -> Result<SketchSurface, KclError> {
     match data {
         SketchData::Plane(plane_data) => {
             let plane = start_sketch_on_plane(plane_data, args).await?;
@@ -992,82 +1042,12 @@ async fn inner_start_sketch_on(
     }
 }
 
-/// A tag for sketch on face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
-#[ts(export)]
-#[serde(rename_all = "snake_case", untagged)]
-#[display("{0}")]
-pub enum SketchOnFaceTag {
-    StartOrEnd(StartOrEnd),
-    /// A string tag for the face you want to sketch on.
-    String(String),
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum StartOrEnd {
-    /// The start face as in before you extruded. This could also be known as the bottom
-    /// face. But we do not call it bottom because it would be the top face if you
-    /// extruded it in the opposite direction or flipped the camera.
-    #[serde(rename = "start", alias = "START")]
-    Start,
-    /// The end face after you extruded. This could also be known as the top
-    /// face. But we do not call it top because it would be the bottom face if you
-    /// extruded it in the opposite direction or flipped the camera.
-    #[serde(rename = "end", alias = "END")]
-    End,
-}
-
 async fn start_sketch_on_face(
     extrude_group: Box<ExtrudeGroup>,
-    tag: SketchOnFaceTag,
+    tag: FaceTag,
     args: Args,
 ) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = match tag {
-        SketchOnFaceTag::String(ref s) => {
-            if s.is_empty() {
-                return Err(KclError::Type(KclErrorDetails {
-                    message: "Expected a non-empty tag for the face to sketch on".to_string(),
-                    source_ranges: vec![args.source_range],
-                }));
-            }
-            extrude_group
-                .value
-                .iter()
-                .find_map(|extrude_surface| match extrude_surface {
-                    ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
-                        Some(Ok(extrude_plane.face_id))
-                    }
-                    ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
-                        Some(Err(KclError::Type(KclErrorDetails {
-                            message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
-                            source_ranges: vec![args.source_range],
-                        })))
-                    }
-                    ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
-                })
-                .ok_or_else(|| {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("Expected a face with the tag `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })
-                })??
-        }
-        SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: "Expected a start face to sketch on".to_string(),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
-        SketchOnFaceTag::StartOrEnd(StartOrEnd::End) => extrude_group.end_cap_id.ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: "Expected an end face to sketch on".to_string(),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
-    };
+    let extrude_plane_id = tag.get_face_id(&extrude_group, &args, true)?;
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
@@ -1936,35 +1916,35 @@ mod tests {
         assert_eq!(str_json, "\"start\"");
 
         str_json = "\"end\"".to_string();
-        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
+            crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
         );
 
         str_json = "\"thing\"".to_string();
-        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, crate::std::sketch::SketchOnFaceTag::String("thing".to_string()));
+        let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, crate::std::sketch::FaceTag::String("thing".to_string()));
 
         str_json = "\"END\"".to_string();
-        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
+            crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
         );
 
         str_json = "\"start\"".to_string();
-        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
+            crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
         );
 
         str_json = "\"START\"".to_string();
-        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
+            crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
         );
     }
 }

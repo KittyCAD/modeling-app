@@ -60,6 +60,7 @@ const revolution = startSketchOn(box, "revolveAxis")
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -122,6 +123,7 @@ const revolution = startSketchOn(box, "revolveAxis")
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
+	tag: string,
 	type: "chamfer",
 }],
 	// The height of the extrude group.

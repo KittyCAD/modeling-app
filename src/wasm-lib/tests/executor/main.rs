@@ -2366,3 +2366,66 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
         1.0,
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_tag_chamfer_with_more_than_one_edge_should_fail() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: ['line1', getOppositeEdge('line1',%)]
+  }, %, 'chamfer1')
+
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 365])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR seperate into individial chamfer functions for each tag." }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_of_chamfer() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %, 'chamfer1')
+
+const sketch001 = startSketchOn(part001, 'chamfer1')
+    |> startProfileAt([4.28, 3.83], %)
+    |> line([2.17, -0.03], %)
+    |> line([-0.07, -1.8], %)
+    |> line([-2.07, 0.05], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+    |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_chamfer.png", &result, 1.0);
+}

@@ -631,6 +631,7 @@ pub enum FilletOrChamfer {
         length: f64,
         /// The engine id of the edge to chamfer.
         edge_id: uuid::Uuid,
+        tag: Option<String>,
     },
 }
 
@@ -646,6 +647,13 @@ impl FilletOrChamfer {
         match self {
             FilletOrChamfer::Fillet { edge_id, .. } => *edge_id,
             FilletOrChamfer::Chamfer { edge_id, .. } => *edge_id,
+        }
+    }
+
+    pub fn tag(&self) -> Option<&str> {
+        match self {
+            FilletOrChamfer::Fillet { .. } => None,
+            FilletOrChamfer::Chamfer { tag, .. } => tag.as_deref(),
         }
     }
 }

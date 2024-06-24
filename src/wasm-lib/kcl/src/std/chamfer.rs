@@ -38,9 +38,10 @@ pub enum EdgeReference {
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (ChamferData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<String>) =
+        args.get_data_and_extrude_group_and_tag()?;
 
-    let extrude_group = inner_chamfer(data, extrude_group, args).await?;
+    let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
     Ok(MemoryItem::ExtrudeGroup(extrude_group))
 }
 
@@ -76,6 +77,7 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_chamfer(
     data: ChamferData,
     extrude_group: Box<ExtrudeGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -89,19 +91,28 @@ async fn inner_chamfer(
         }));
     }
 
+    // If you try and tag multiple edges with a tagged chamfer, we want to return an
+    // error to the user that they can only tag one edge at a time.
+    if tag.is_some() && data.tags.len() > 1 {
+        return Err(KclError::Type(KclErrorDetails {
+                message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR seperate into individial chamfer functions for each tag.".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+    }
+
     let mut fillet_or_chamfers = Vec::new();
-    for tag in data.tags {
-        let edge_id = match tag {
+    for edge_tag in data.tags {
+        let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(tag) => {
+            EdgeReference::Tag(edge_tag) => {
                 extrude_group
                     .sketch_group
                     .value
                     .iter()
-                    .find(|p| p.get_name() == tag)
+                    .find(|p| p.get_name() == edge_tag)
                     .ok_or_else(|| {
                         KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", tag),
+                            message: format!("No edge found with tag: `{}`", edge_tag),
                             source_ranges: vec![args.source_range],
                         })
                     })?
@@ -128,6 +139,7 @@ async fn inner_chamfer(
             id,
             edge_id,
             length: data.length,
+            tag: tag.clone(),
         });
     }
 
