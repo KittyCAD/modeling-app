@@ -270,7 +270,7 @@ export class CameraControls {
           ? this.zoomBuffer
           : this.zoomBuffer.filter((x, idx, list) => {
               if (idx === 0 || idx === listLength - 1) return true
-              // do not include adjcent copies to reduce redundant commands
+              // do not include adjacent copies to reduce redundant commands
               // we dont remove all uniques because that takes more time and memory
               // than its worth
               if (list[idx] === list[idx - 1]) return false
