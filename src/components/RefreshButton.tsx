@@ -8,12 +8,7 @@ import Tooltip from './Tooltip'
 import { useStore } from 'useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
-export const RefreshButton = ({
-    children,
-  }: {
-    children: React.ReactNode
-  }) => {
-
+export const RefreshButton = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
   const { htmlRef } = useStore((s) => ({
@@ -41,24 +36,26 @@ export const RefreshButton = ({
     }
 
     console.warn('CoreDump: Initializing core dump')
-    toast.promise(
-      coreDump(coreDumpManager, true),
-      {
-        loading: 'Starting core dump...',
-        success: 'Core dump completed successfully',
-        error: 'Error while exporting core dump',
-      },
-      {
-        success: {
-          // Note: this extended duration is especially important for Playwright e2e testing
-          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-          duration: 6000,
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
         },
-      }
-    ).then(() => {
-      // Window may not be available in some environments
-      window?.location.reload()
-    })    
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
+          },
+        }
+      )
+      .then(() => {
+        // Window may not be available in some environments
+        window?.location.reload()
+      })
   }
 
   return (
