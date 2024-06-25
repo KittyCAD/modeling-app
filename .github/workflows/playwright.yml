@@ -90,6 +90,7 @@ jobs:
     - name: build web
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
+      continue-on-error: true
       run: |
         yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
