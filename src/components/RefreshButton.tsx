@@ -1,7 +1,30 @@
+import { coreDump } from 'lang/wasm'
+import { CoreDumpManager } from 'lib/coredump'
 import { CustomIcon } from './CustomIcon'
+import { engineCommandManager } from 'lib/singletons'
+import React from 'react'
+import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
+import { useStore } from 'useStore'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
-export function RefreshButton() {
+export const RefreshButton = ({
+    children,
+  }: {
+    children: React.ReactNode
+  }) => {
+
+  const { auth } = useSettingsAuthContext()
+  const token = auth?.context?.token
+  const { htmlRef } = useStore((s) => ({
+    htmlRef: s.htmlRef,
+  }))
+  const coreDumpManager = new CoreDumpManager(
+    engineCommandManager,
+    htmlRef,
+    token
+  )
+
   async function refresh() {
     if (window && 'plausible' in window) {
       const p = window.plausible as (
@@ -17,8 +40,25 @@ export function RefreshButton() {
       })
     }
 
-    // Window may not be available in some environments
-    window?.location.reload()
+    console.warn('CoreDump: Initializing core dump')
+    toast.promise(
+      coreDump(coreDumpManager, true),
+      {
+        loading: 'Starting core dump...',
+        success: 'Core dump completed successfully',
+        error: 'Error while exporting core dump',
+      },
+      {
+        success: {
+          // Note: this extended duration is especially important for Playwright e2e testing
+          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+          duration: 6000,
+        },
+      }
+    ).then(() => {
+      // Window may not be available in some environments
+      window?.location.reload()
+    })    
   }
 
   return (
