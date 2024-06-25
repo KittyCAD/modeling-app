@@ -97,6 +97,8 @@ jobs:
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
     - name: Clean up test-results
+      if: always()
+      continue-on-error: true
       run: rm -r test-results
     - name: check for changes
       id: git-check
