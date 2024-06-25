@@ -124,7 +124,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report-ubuntu
+        name: playwright-report-ubuntu-${{ GITHUB_SHA }}
         path: playwright-report/
         retention-days: 30
     # if have previous run results, use them
@@ -132,7 +132,7 @@ jobs:
       if: always()
       continue-on-error: true
       with:
-        name: test-results-ubuntu
+        name: test-results-ubuntu-${{ GITHUB_SHA }}
         path: test-results/
     - name: Run ubuntu/chrome flow retry failures
       id: retry
@@ -158,14 +158,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-ubuntu
+        name: test-results-ubuntu-${{ GITHUB_SHA }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report-ubuntu
+        name: playwright-report-ubuntu-${{ GITHUB_SHA }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
@@ -232,7 +232,7 @@ jobs:
       if: ${{ always() }}
       continue-on-error: true
       with:
-        name: test-results-macos
+        name: test-results-macos-${{ GITHUB_SHA }}
         path: test-results/
     - name: Run macos/safari flow retry failures
       id: retry
@@ -260,14 +260,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: test-results-macos
+        name: test-results-macos-${{ GITHUB_SHA }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: playwright-report-macos
+        name: playwright-report-macos-${{ GITHUB_SHA }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
