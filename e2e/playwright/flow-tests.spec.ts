@@ -4643,9 +4643,9 @@ const part001 = startSketchOn('XZ')
       await clickUnconstrained({
         hoverPos: { x: yLineTo.x, y: yLineTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: "yLineTo(-10.77, %, $a)",
-        expectAfterUnconstrained: "yLineTo(yAbs002, %, $a)",
-        expectFinal: "yLineTo(-10.77, %, $a)",
+        expectBeforeUnconstrained: 'yLineTo(-10.77, %, $a)',
+        expectAfterUnconstrained: 'yLineTo(yAbs002, %, $a)',
+        expectFinal: 'yLineTo(-10.77, %, $a)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="4"]',
       })
@@ -5204,7 +5204,7 @@ const part001 = startSketchOn('XZ')
       ang = await u.getAngle(`[data-overlay-index="${4}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: "yLineTo(-10.77, %, $a)",
+        codeToBeDeleted: 'yLineTo(-10.77, %, $a)',
         stdLibFnName: 'yLineTo',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="4"]',
