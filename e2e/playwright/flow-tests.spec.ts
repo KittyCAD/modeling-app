@@ -1659,7 +1659,19 @@ test.describe('Onboarding tests', () => {
     await expect(onboardingOverlayLocator).toBeVisible()
     await expect(onboardingOverlayLocator).toContainText('your avatar')
 
+    // This is to force the avatar to 404.
+    // For our test image (only triggers locally. on CI, it's Kurt's /
+    // gravatar image )
     await page.route('/cat.jpg', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
+      })
+    })
+
+    // 404 the CI avatar image
+    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
       await route.fulfill({
         status: 404,
         contentType: 'text/plain',
@@ -3100,8 +3112,11 @@ const doSnapAtDifferentScales = async (
   await u.updateCamPosition(camPos)
   await u.closeDebugPanel()
 
+  await page.mouse.move(0, 0)
+
   // select a plane
-  await page.mouse.click(700, 200)
+  await page.mouse.move(700, 200, { steps: 10 })
+  await page.mouse.click(700, 200, { delay: 200 })
   await expect(page.locator('.cm-content')).toHaveText(
     `const sketch001 = startSketchOn('-XZ')`
   )
@@ -3114,26 +3129,29 @@ const doSnapAtDifferentScales = async (
 
   // draw three lines
   await page.waitForTimeout(500)
-  await page.mouse.click(pointA[0], pointA[1])
+  await page.mouse.move(pointA[0], pointA[1], { steps: 10 })
+  await page.mouse.click(pointA[0], pointA[1], { delay: 200 })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
 
-  await page.mouse.click(pointB[0], pointB[1])
+  await page.mouse.move(pointB[0], pointB[1], { steps: 10 })
+  await page.mouse.click(pointB[0], pointB[1], { delay: 200 })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
 
-  await page.mouse.click(pointC[0], pointC[1])
+  await page.mouse.move(pointC[0], pointC[1], { steps: 10 })
+  await page.mouse.click(pointC[0], pointC[1], { delay: 200 })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
 
-  await page.mouse.move(pointA[0] - 12, pointA[1] + 12)
+  await page.mouse.move(pointA[0] - 12, pointA[1] + 12, { steps: 10 })
   const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
   await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
 
-  await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1])
+  await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1], { delay: 200 })
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
 
