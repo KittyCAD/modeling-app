@@ -74,6 +74,8 @@ export class CameraControls {
   enableRotate = true
   enablePan = true
   enableZoom = true
+  // holds magnitudes
+  zoomBuffer: number[] = []
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -101,16 +103,12 @@ export class CameraControls {
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
-  private debounceTimer = 0
 
   handleStart = () => {
-    if (this.debounceTimer) clearTimeout(this.debounceTimer)
     this._isCamMovingCallback(true, false)
   }
   handleEnd = () => {
-    this.debounceTimer = setTimeout(() => {
-      this._isCamMovingCallback(false, false)
-    }, 400) as any as number
+    this._isCamMovingCallback(false, false)
   }
 
   setCam = (camProps: ReactCameraProperties) => {
@@ -258,6 +256,41 @@ export class CameraControls {
       }
       this.onCameraChange()
     }
+
+    // How many commands (+2 (start and end)) to include per
+    // slice of time.
+    const N_PER_TIME = 3
+    setInterval(() => {
+      const listLength = this.zoomBuffer.length
+      if (listLength === 0) return
+      const skip = Math.floor(listLength / N_PER_TIME)
+
+      const deltas = this.zoomBuffer.filter((x, idx, list) => {
+        if (idx === 0 || idx === listLength) return true
+        // do not include adjcent copies to reduce redundant commands
+        // we dont remove all uniques because that takes more time and memory
+        // than its worth
+        if (list[idx] === list[idx-1]) return false
+        return ((idx % skip) === 0)
+      })
+
+      this.zoomBuffer = []
+
+      deltas.forEach((d) => {
+        this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'default_camera_zoom',
+            magnitude: -1 * d / window.devicePixelRatio,
+          },
+          cmd_id: uuidv4(),
+        })
+      })
+     // Fastest human conscious reaction time is around 150ms
+     // Fastest unconscious is around 80ms
+     // Source: Uni of Edinburgh
+   }, 100)
+
     setTimeout(() => {
       this.engineCommandManager.subscribeTo({
         event: 'camera_drag_end',
@@ -398,26 +431,18 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
-    // Assume trackpad if the deltas are small and integers
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
-      const interactions = this.interactionGuards.zoom.scrollCallback(
-        event as any
-      )
-      if (!interactions) {
-        this.handleEnd()
-        return
-      }
-      this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'default_camera_zoom',
-          magnitude: -event.deltaY * 0.4,
-        },
-        cmd_id: uuidv4(),
-      })
-      this.handleEnd()
+      // const interactions = this.interactionGuards.zoom.scrollCallback(
+      //   event as any
+      // )
+      // if (!interactions) {
+      //   this.handleEnd()
+      //   return
+      // }
+      this.zoomBuffer.push(event.deltaY)
+      //this.handleEnd()
       return
     }
 
