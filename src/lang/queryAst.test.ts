@@ -1,4 +1,4 @@
-import { parse, recast, initPromise } from './wasm'
+import { parse, recast, initPromise, PathToNode } from './wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
@@ -9,6 +9,7 @@ import {
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
   hasExtrudableGeometry,
+  traverse,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -537,5 +538,55 @@ const extrude001 = extrude(10, sketch001)
     if (err(ast)) throw ast
     const extrudable = hasExtrudableGeometry(ast)
     expect(extrudable).toBeFalsy()
+  })
+})
+
+describe.only('Testing traverse and pathToNode', () => {
+  it.each([
+    ['basic', '2.73'],
+    [
+      'very nested, array, object, callExpression, array, memberExpression',
+      '.yo',
+    ],
+  ])('testing %s', async (testName, literalOfInterest) => {
+    const code = `const myVar = 5
+const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+const bing = { yo: 55 }
+const myNestedVar = [
+  {
+  prop:   line([bing.yo, 21], sketch001)
+}
+]
+  `
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    let pathToNode: PathToNode = []
+    traverse(ast, {
+      enter: (node, path) => {
+        if (
+          node.type === 'Literal' &&
+          String(node.value) === literalOfInterest
+        ) {
+          pathToNode = path
+        } else if (
+          node.type === 'Identifier' &&
+          literalOfInterest.includes(node.name)
+        ) {
+          pathToNode = path
+        }
+      },
+    })
+
+    const literalIndex = code.indexOf(literalOfInterest)
+    const pathToNode2 = getNodePathFromSourceRange(ast, [
+      literalIndex + 2,
+      literalIndex + 2,
+    ])
+    expect(pathToNode).toEqual(pathToNode2)
   })
 })

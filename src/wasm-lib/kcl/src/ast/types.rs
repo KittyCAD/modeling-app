@@ -2101,7 +2101,7 @@ impl ObjectExpression {
                     format!(
                         "{}: {}",
                         prop.key.name,
-                        prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
                     )
                 })
                 .collect::<Vec<String>>()
@@ -3744,6 +3744,56 @@ const outsideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_fn_in_object() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [{ prop: callExp(bing.yo) }]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_fn_in_array() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [callExp(bing.yo)]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_object_fn_in_array_weird_bracket() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [
+  {
+  prop:   line([bing.yo, 21], sketch001)
+}
+]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const bing = { yo: 55 }
+const myNestedVar = [
+  { prop: line([bing.yo, 21], sketch001) }
+]
 "#
         );
     }
