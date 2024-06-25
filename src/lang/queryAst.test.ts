@@ -540,7 +540,7 @@ const extrude001 = extrude(10, sketch001)
   })
 })
 
-describe.only('Testing traverse and pathToNode', () => {
+describe('Testing traverse and pathToNode', () => {
   it.each([
     ['basic', '2.73'],
     [
