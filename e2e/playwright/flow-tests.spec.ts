@@ -2912,7 +2912,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
 
   const startPX = [665, 458]
 
-  const dragPX = 80
+  const dragPX = 40
 
   await page.getByText('startProfileAt([4.61, -14.01], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
@@ -2925,7 +2925,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   // drag startProfieAt handle
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: startPX[0], y: startPX[1] },
-    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX },
+    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
   })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -2938,7 +2938,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   await page.waitForTimeout(100)
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y - dragPX },
+    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
   })
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
@@ -2949,7 +2949,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
     sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
     targetPosition: {
       x: tangentEnd.x + dragPX,
-      y: tangentEnd.y - dragPX,
+      y: tangentEnd.y + dragPX,
     },
   })
   await page.waitForTimeout(100)
@@ -2958,10 +2958,10 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   // expect the code to have changed
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 2.01], %)
+  |> startProfileAt([7.12, -16.82], %)
+  |> line([15.4, -2.74], %)
   |> tangentialArcTo([24.95, -5.38], %)
-  |> line([1.97, 2.06], %)
+  |> line([2.65, -2.69], %)
   |> close(%)
   |> extrude(5, %)`)
 })
