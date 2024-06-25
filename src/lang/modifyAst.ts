@@ -25,6 +25,7 @@ import {
   getNodeFromPath,
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
+  traverse,
 } from './queryAst'
 import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
@@ -861,4 +862,84 @@ export function removeSingleConstraintInfo(
   })
   if (err(retval)) return false
   return retval
+}
+
+export function deleteFromSelection(
+  ast: Program,
+  selection: Selection
+): Program | Error {
+  const astClone = JSON.parse(JSON.stringify(ast))
+  const range = selection.range
+  const path = getNodePathFromSourceRange(ast, range)
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    path,
+    'VariableDeclarator'
+  )
+  if (err(varDec)) return varDec
+  if (
+    selection.type === 'extrude-wall' &&
+    varDec.node.init.type === 'PipeExpression'
+  ) {
+    const varDecName = varDec.node.id.name
+    let pathToNode: PathToNode | null = null
+    let extrudeNameToDelete = ''
+    traverse(astClone, {
+      enter: (node, path) => {
+        if (node.type === 'VariableDeclaration') {
+          const dec = node.declarations[0]
+          // extrudeNameToDelete = dec.id.name
+          if (
+            dec.init.type === 'CallExpression' &&
+            dec.init.callee.name === 'extrude' &&
+            dec.init.arguments?.[1].type === 'Identifier' &&
+            dec.init.arguments?.[1].name === varDecName
+          ) {
+            pathToNode = path
+            extrudeNameToDelete = dec.id.name
+          }
+        }
+      },
+    })
+    if (!pathToNode) return new Error('Could not find extrude variable')
+
+    const expressionIndex = pathToNode[1][0] as number
+    astClone.body.splice(expressionIndex, 1)
+    if (extrudeNameToDelete) {
+      traverse(astClone, {
+        enter: (node, path) => {
+          if (
+            node.type === 'CallExpression' &&
+            node.callee.name === 'startSketchOn' &&
+            node.arguments[0].type === 'Identifier' &&
+            node.arguments[0].name === extrudeNameToDelete
+          ) {
+            const parent = getNodeFromPath<PipeExpression['body']>(
+              astClone,
+              path.slice(0, -1)
+            )
+            if (err(parent)) return
+            const lastKey = Number(path.slice(-1)[0][0])
+            parent.node[lastKey] = createCallExpressionStdLib('startSketchOn', [
+              createLiteral('XY'),
+            ])
+          }
+        },
+      })
+    }
+    return astClone
+  } else if (varDec.node.init.type === 'PipeExpression') {
+    const pipeBody = varDec.node.init.body
+    if (
+      pipeBody[0].type === 'CallExpression' &&
+      pipeBody[0].callee.name === 'startSketchOn'
+    ) {
+      // remove varDec
+      const varDecIndex = varDec.shallowPath[1][0] as number
+      astClone.body.splice(varDecIndex, 1)
+      return astClone
+    }
+  }
+
+  return new Error('Selection not recognised, could not delete')
 }
