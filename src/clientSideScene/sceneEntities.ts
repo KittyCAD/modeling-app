@@ -1727,6 +1727,7 @@ function prepareTruncatedMemoryAndAst(
     'VariableDeclaration'
   )
   if (err(_node)) return _node
+  console.log('node', _node)
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
   const lastSeg = (
     programMemory.root[variableDeclarationName] as SketchGroup
@@ -1782,10 +1783,24 @@ function prepareTruncatedMemoryAndAst(
   }
   const programMemoryOverride = programMemoryInit()
   if (err(programMemoryOverride)) return programMemoryOverride
+
   // Grab all the TagDeclarators and TagIdentifiers from memory.
+  let start = _node.node.start
   for (const key in programMemory.root) {
     const value = programMemory.root[key]
-    if (value.type === 'TagDeclarator' || value.type === 'TagIdentifier') {
+    if (!('__meta' in value)) {
+      continue
+    }
+    if (
+      value.__meta &&
+      value.__meta.length > 0 &&
+      value.__meta[0].sourceRange[0] >= start
+    ) {
+      // We only want things before our start point.
+      break
+    }
+
+    if (value.type === 'TagIdentifier') {
       programMemoryOverride.root[key] = JSON.parse(JSON.stringify(value))
     }
   }
