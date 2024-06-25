@@ -1727,7 +1727,6 @@ function prepareTruncatedMemoryAndAst(
     'VariableDeclaration'
   )
   if (err(_node)) return _node
-  console.log('node', _node)
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
   const lastSeg = (
     programMemory.root[variableDeclarationName] as SketchGroup
