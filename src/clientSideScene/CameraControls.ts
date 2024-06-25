@@ -265,31 +265,36 @@ export class CameraControls {
       if (listLength === 0) return
       const skip = Math.floor(listLength / N_PER_TIME)
 
-      const deltas = this.zoomBuffer.filter((x, idx, list) => {
-        if (idx === 0 || idx === listLength) return true
-        // do not include adjcent copies to reduce redundant commands
-        // we dont remove all uniques because that takes more time and memory
-        // than its worth
-        if (list[idx] === list[idx-1]) return false
-        return ((idx % skip) === 0)
-      })
+      const deltas =
+        listLength === 1
+          ? this.zoomBuffer
+          : this.zoomBuffer.filter((x, idx, list) => {
+              if (idx === 0 || idx === listLength - 1) return true
+              // do not include adjcent copies to reduce redundant commands
+              // we dont remove all uniques because that takes more time and memory
+              // than its worth
+              if (list[idx] === list[idx - 1]) return false
+              return idx % skip === 0
+            })
 
       this.zoomBuffer = []
 
+      this.handleStart()
       deltas.forEach((d) => {
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'default_camera_zoom',
-            magnitude: -1 * d / window.devicePixelRatio,
+            magnitude: (-1 * d) / window.devicePixelRatio,
           },
           cmd_id: uuidv4(),
         })
       })
-     // Fastest human conscious reaction time is around 150ms
-     // Fastest unconscious is around 80ms
-     // Source: Uni of Edinburgh
-   }, 100)
+      this.handleEnd()
+      // Fastest human conscious reaction time is around 150ms
+      // Fastest unconscious is around 80ms
+      // Source: Uni of Edinburgh
+    }, 100)
 
     setTimeout(() => {
       this.engineCommandManager.subscribeTo({
@@ -431,26 +436,19 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
-    this.handleStart()
-
     if (this.syncDirection === 'engineToClient') {
-      // const interactions = this.interactionGuards.zoom.scrollCallback(
-      //   event as any
-      // )
-      // if (!interactions) {
-      //   this.handleEnd()
-      //   return
-      // }
       this.zoomBuffer.push(event.deltaY)
-      //this.handleEnd()
       return
     }
 
-    // Else "clientToEngine" (Sketch Mode) or forceUpdate
+    // else "clientToEngine" (Sketch Mode) or forceUpdate
 
+    // We need to simulate similar behavior as when we send
+    // zoom commands to engine. This means dropping some zoom
+    // commands too.
     // From onMouseMove zoom handling which seems to be really smooth
-    this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-    this.pendingZoom *= 1 + event.deltaY * 0.01
+    this.handleStart()
+    this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
     this.handleEnd()
   }
 
