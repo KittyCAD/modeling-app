@@ -13,8 +13,8 @@ use crate::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
         ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
-        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -333,6 +333,15 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                         // Once we have ways to use None values (e.g. by replacing with a default value)
                         // we should suggest one of them here.
                         message: "cannot use a KCL None value as an operand".to_owned(),
+                    }));
+                }
+                Value::TagDeclarator(_) => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        // TODO: Better error message here.
+                        // Once we have ways to use None values (e.g. by replacing with a default value)
+                        // we should suggest one of them here.
+                        message: "cannot use a KCL tag declaration as an operand".to_owned(),
                     }));
                 }
                 Value::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
@@ -903,6 +912,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
     alt((
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Literal),
+        tag.map(Box::new).map(Value::TagDeclarator),
         literal.map(Box::new).map(Value::Literal),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
@@ -1034,6 +1044,47 @@ impl TryFrom<Token> for Identifier {
 fn identifier(i: TokenSlice) -> PResult<Identifier> {
     any.try_map(Identifier::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+impl TryFrom<Token> for TagDeclarator {
+    type Error = KclError;
+
+    fn try_from(token: Token) -> Result<Self, Self::Error> {
+        if token.token_type == TokenType::Word {
+            Ok(TagDeclarator {
+                // We subtract 1 from the start because the tag starts with a `$`.
+                start: token.start - 1,
+                end: token.end,
+                name: token.value,
+            })
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
+            }))
+        }
+    }
+}
+
+impl TagDeclarator {
+    fn into_valid_binding_name(self) -> Result<Self, KclError> {
+        // Make sure they are not assigning a variable to a stdlib function.
+        if crate::std::name_in_stdlib(&self.name) {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange([self.start, self.end])],
+                message: format!("Cannot assign a tag to a reserved keyword: {}", self.name),
+            }));
+        }
+        Ok(self)
+    }
+}
+
+/// Parse a Kcl tag that starts with a `$`.
+fn tag(i: TokenSlice) -> PResult<TagDeclarator> {
+    dollar.parse_next(i)?;
+    any.try_map(TagDeclarator::try_from)
+        .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
 }
 
@@ -1255,6 +1306,11 @@ fn bang(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn dollar(i: TokenSlice) -> PResult<()> {
+    TokenType::Dollar.parse_from(i)?;
+    Ok(())
+}
+
 fn period(i: TokenSlice) -> PResult<()> {
     TokenType::Period.parse_from(i)?;
     Ok(())
@@ -1425,7 +1481,99 @@ fn binding_name(i: TokenSlice) -> PResult<Identifier> {
 fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let fn_name = identifier(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
-    let args = arguments(i)?;
+    let mut args = arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        // Type check the arguments.
+        for (i, spec_arg) in std_fn.args().iter().enumerate() {
+            let Some(arg) = &args.get(i) else {
+                // The executor checks the number of arguments, so we don't need to check it here.
+                continue;
+            };
+            match spec_arg.type_.as_ref() {
+                "TagDeclarator" => {
+                    match &arg {
+                        Value::Identifier(_) => {
+                            // These are fine since we want someone to be able to map a variable to a tag declarator.
+                        }
+                        Value::TagDeclarator(tag) => {
+                            tag.clone()
+                                .into_valid_binding_name()
+                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+                        }
+                        Value::Literal(literal) => {
+                            let LiteralValue::String(name) = &literal.value else {
+                                return Err(ErrMode::Cut(
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
+                                    })
+                                    .into(),
+                                ));
+                            };
+
+                            // Convert this to a TagDeclarator.
+                            let tag = TagDeclarator {
+                                start: literal.start,
+                                end: literal.end,
+                                name: name.to_string(),
+                            };
+                            let tag = tag
+                                .into_valid_binding_name()
+                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+
+                            // Replace the literal with the tag.
+                            args[i] = Value::TagDeclarator(Box::new(tag));
+                        }
+                        e => {
+                            return Err(ErrMode::Cut(
+                                KclError::Syntax(KclErrorDetails {
+                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                    message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                                })
+                                .into(),
+                            ));
+                        }
+                    }
+                }
+                "TagIdentifier" => {
+                    match &arg {
+                        Value::Identifier(_) => {}
+                        Value::Literal(literal) => {
+                            let LiteralValue::String(name) = &literal.value else {
+                                return Err(ErrMode::Cut(
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
+                                    })
+                                    .into(),
+                                ));
+                            };
+
+                            // Convert this to a TagDeclarator.
+                            let tag = Identifier {
+                                start: literal.start,
+                                end: literal.end,
+                                name: name.to_string(),
+                            };
+
+                            // Replace the literal with the tag.
+                            args[i] = Value::Identifier(Box::new(tag));
+                        }
+                        e => {
+                            return Err(ErrMode::Cut(
+                                KclError::Syntax(KclErrorDetails {
+                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                    message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                                })
+                                .into(),
+                            ));
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
     Ok(CallExpression {
         start: fn_name.start,

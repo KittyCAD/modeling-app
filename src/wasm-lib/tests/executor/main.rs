@@ -66,13 +66,13 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
 async fn serial_test_sketch_on_face() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
-  |> line([28.67, -13.25], %, "here")
+  |> line([28.67, -13.25], %, $here)
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
   |> close(%)
   |> extrude(5, %)
 
-const part002 = startSketchOn(part001, "here")
+const part002 = startSketchOn(part001, here)
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -810,11 +810,11 @@ fn roundedRectangle = (pos, w, l, cornerRadius) => {
   const rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
-    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
+    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
     |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
     |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
     |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
-    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
+    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, $arc2)
     |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
     |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
     |> close(%)
@@ -1731,58 +1731,58 @@ const part002 = startSketchOn(part001, 'end')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_plumbus_fillets() {
-    let code = r#"fn make_circle = (face, tag, pos, radius) => {
-  const sg = startSketchOn(face, tag)
+    let code = r#"fn make_circle = (ext, face, tag ,pos, radius) => {
+  const sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
        angle_end: 360,
        angle_start: 0,
        radius: radius
-     }, %, 'arc-' + tag)
+     }, %, tag)
   |> close(%)
 
   return sg
 }
 
-fn pentagon = (len) => {
+fn pentagon = (len, taga, tagb, tagc) => {
   const sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, 'a')
+  |> angledLine({ angle: 0, length: len }, %,taga)
   |> angledLine({
-       angle: segAng('a', %) + 180 - 108,
+       angle: segAng(a, %) + 180 - 108,
        length: len
-     }, %, 'b')
+     }, %, tagb)
   |> angledLine({
-       angle: segAng('b', %) + 180 - 108,
+       angle: segAng(b, %) + 180 - 108,
        length: len
-     }, %, 'c')
+     }, %,tagc)
   |> angledLine({
-       angle: segAng('c', %) + 180 - 108,
+       angle: segAng(c, %) + 180 - 108,
        length: len
-     }, %, 'd')
+     }, %, $d)
   |> angledLine({
-       angle: segAng('d', %) + 180 - 108,
+       angle: segAng(d, %) + 180 - 108,
        length: len
      }, %)
 
   return sg
 }
 
-const p = pentagon(32)
+const p = pentagon(32, $a, $b, $c)
   |> extrude(10, %)
 
-const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
+const plumbus0 = make_circle(p,a,  $arc_a, [0, 0], 2.5)
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
-       tags: ['arc-a', getOppositeEdge('arc-a', %)]
+       tags: [arc_a, getOppositeEdge(arc_a, %)]
      }, %)
 
-const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
+const plumbus1 = make_circle(p, b,$arc_b, [0, 0], 2.5)
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
-        tags: ['arc-b', getOppositeEdge('arc-b', %)]
+        tags: [arc_b, getOppositeEdge(arc_b, %)]
       }, %)
 "#;
 
@@ -2429,4 +2429,38 @@ const sketch001 = startSketchOn(part001, 'chamfer1')
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_chamfer.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_duplicate_tags_should_error() {
+    let code = r#"fn triangle = (len) => {
+  return startSketchOn('XY')
+  |> startProfileAt([-len / 2, -len / 2], %)
+  |> angledLine({ angle: 0, length: len }, %, $a)
+  |> angledLine({
+       angle: segAng(a, %) + 120,
+       length: len
+     }, %, $b)
+  |> angledLine({
+       angle: segAng(b, %) + 120,
+       length: len
+     }, %, $a)
+}
+
+let p = triangle(200)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_global_tags() {
+    let code = include_str!("inputs/global-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, 0.999);
 }

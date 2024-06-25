@@ -1,4 +1,4 @@
-import { parse, recast, initPromise } from './wasm'
+import { parse, recast, initPromise, PathToNode } from './wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
@@ -9,6 +9,7 @@ import {
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
   hasExtrudableGeometry,
+  traverse,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -18,6 +19,7 @@ import {
   createPipeSubstitution,
 } from './modifyAst'
 import { err } from 'lib/trap'
+import { warn } from 'node:console'
 
 beforeAll(async () => {
   await initPromise
@@ -411,15 +413,15 @@ describe('Testing findUsesOfTagInPipe', () => {
   const exampleCode = `const part001 = startSketchOn('-XZ')
 |> startProfileAt([68.12, 156.65], %)
 |> line([306.21, 198.82], %)
-|> line([306.21, 198.85], %, 'seg01')
-|> angledLine([-65, segLen('seg01', %)], %)
+|> line([306.21, 198.85], %, $seg01)
+|> angledLine([-65, segLen(seg01, %)], %)
 |> line([306.21, 198.87], %)
-|> angledLine([65, segLen('seg01', %)], %)`
+|> angledLine([65, segLen(seg01, %)], %)`
   it('finds the current segment', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const lineOfInterest = `198.85], %, 'seg01'`
+    const lineOfInterest = `198.85], %, $seg01`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const pathToNode = getNodePathFromSourceRange(ast, [
@@ -454,7 +456,7 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
   |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, 'seg01')
+  |> line([4.99, -0.46], %, $seg01)
   |> line([3.3, -2.12], %)
   |> line([2.16, -3.33], %)
   |> line([0.85, -3.08], %)
@@ -463,7 +465,7 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line([-17.67, 0.85], %)
   |> close(%)
 const extrude001 = extrude(10, sketch001)
-const sketch002 = startSketchOn(extrude001, 'seg01')
+const sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
@@ -473,7 +475,7 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
   it('finds sketch001 pipe to be extruded', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
-    const lineOfInterest = `line([4.99, -0.46], %, 'seg01')`
+    const lineOfInterest = `line([4.99, -0.46], %, $seg01)`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
@@ -511,7 +513,7 @@ describe('Testing hasExtrudableGeometry', () => {
   |> line([-17.67, 0.85], %)
   |> close(%)
 const extrude001 = extrude(10, sketch001)
-const sketch002 = startSketchOn(extrude001, 'seg01')
+const sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
@@ -536,5 +538,55 @@ const extrude001 = extrude(10, sketch001)
     if (err(ast)) throw ast
     const extrudable = hasExtrudableGeometry(ast)
     expect(extrudable).toBeFalsy()
+  })
+})
+
+describe('Testing traverse and pathToNode', () => {
+  it.each([
+    ['basic', '2.73'],
+    [
+      'very nested, array, object, callExpression, array, memberExpression',
+      '.yo',
+    ],
+  ])('testing %s', async (testName, literalOfInterest) => {
+    const code = `const myVar = 5
+const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+const bing = { yo: 55 }
+const myNestedVar = [
+  {
+  prop:   line([bing.yo, 21], sketch001)
+}
+]
+  `
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    let pathToNode: PathToNode = []
+    traverse(ast, {
+      enter: (node, path) => {
+        if (
+          node.type === 'Literal' &&
+          String(node.value) === literalOfInterest
+        ) {
+          pathToNode = path
+        } else if (
+          node.type === 'Identifier' &&
+          literalOfInterest.includes(node.name)
+        ) {
+          pathToNode = path
+        }
+      },
+    })
+
+    const literalIndex = code.indexOf(literalOfInterest)
+    const pathToNode2 = getNodePathFromSourceRange(ast, [
+      literalIndex + 2,
+      literalIndex + 2,
+    ])
+    expect(pathToNode).toEqual(pathToNode2)
   })
 })

@@ -6,6 +6,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    ast::types::TagDeclarator,
     errors::KclError,
     executor::MemoryItem,
     std::{Args, SketchGroup, SketchSurface},
@@ -22,10 +23,10 @@ pub enum SketchSurfaceOrGroup {
 
 /// Sketch a circle.
 pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
-    let (center, radius, sketch_surface_or_group, tag): ([f64; 2], f64, SketchSurfaceOrGroup, Option<String>) =
+    let (center, radius, sketch_surface_or_group, tag): ([f64; 2], f64, SketchSurfaceOrGroup, Option<TagDeclarator>) =
         args.get_circle_args()?;
 
-    let sketch_group = inner_circle(center, radius, tag, sketch_surface_or_group, args).await?;
+    let sketch_group = inner_circle(center, radius, sketch_surface_or_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
@@ -54,8 +55,8 @@ pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_circle(
     center: [f64; 2],
     radius: f64,
-    tag: Option<String>,
     sketch_surface_or_group: SketchSurfaceOrGroup,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let sketch_surface = match sketch_surface_or_group {
