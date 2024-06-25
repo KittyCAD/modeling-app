@@ -1525,7 +1525,10 @@ impl ExecutorContext {
 
                                     // Add the global memory items to the memory.
                                     for (key, item) in global_memory_items {
-                                        memory.add(&key, item, call_expr.into())?;
+                                        // We don't care about errors here because any collisions
+                                        // would happened in the function call itself and already
+                                        // errored out.
+                                        memory.add(&key, item, call_expr.into()).unwrap_or_default();
                                     }
 
                                     memory.return_ = result;
