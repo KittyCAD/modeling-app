@@ -462,7 +462,7 @@ const setAngledIntersectLineForLines: TransformInfo['createNode'] =
       angleVal,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      intersectTag: createLiteral(referenceSegName),
+      intersectTag: createIdentifier(referenceSegName),
       tag,
       valueUsedInTransform,
     })
@@ -481,7 +481,7 @@ const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
       angleVal: varValA,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      intersectTag: createLiteral(referenceSegName),
+      intersectTag: createIdentifier(referenceSegName),
       tag,
       valueUsedInTransform,
     })

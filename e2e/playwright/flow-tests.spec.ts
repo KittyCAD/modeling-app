@@ -3206,6 +3206,7 @@ test('Sketch on face', async ({ page }) => {
     true
   )
   await page.waitForTimeout(150)
+  await u.closeDebugPanel()
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]

@@ -667,18 +667,18 @@ export function giveSketchFnCallTag(
   // Tag is always 3rd expression now, using arg index feels brittle
   // but we can come up with a better way to identify tag later.
   const thirdArg = primaryCallExp.arguments?.[2]
-  const tagLiteral =
+  const tagDeclarator =
     thirdArg ||
     (createTagDeclarator(tag || findUniqueName(ast, 'seg', 2)) as TagDeclarator)
   const isTagExisting = !!thirdArg
   if (!isTagExisting) {
-    primaryCallExp.arguments[2] = tagLiteral
+    primaryCallExp.arguments[2] = tagDeclarator
   }
-  if ('value' in tagLiteral) {
-    // Now TypeScript knows tagLiteral has a value property
+  if ('value' in tagDeclarator) {
+    // Now TypeScript knows tagDeclarator has a value property
     return {
       modifiedAst: ast,
-      tag: String(tagLiteral.value),
+      tag: String(tagDeclarator.value),
       isTagExisting,
       pathToNode: path,
     }

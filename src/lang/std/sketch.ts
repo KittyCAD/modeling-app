@@ -1832,18 +1832,18 @@ function addTag(tagIndex = 2): addTagFn {
     // Tag is always 3rd expression now, using arg index feels brittle
     // but we can come up with a better way to identify tag later.
     const thirdArg = primaryCallExp.arguments?.[tagIndex]
-    const tagLiteral =
+    const tagDeclarator =
       thirdArg ||
       (createTagDeclarator(findUniqueName(_node, 'seg', 2)) as TagDeclarator)
     const isTagExisting = !!thirdArg
     if (!isTagExisting) {
-      primaryCallExp.arguments[tagIndex] = tagLiteral
+      primaryCallExp.arguments[tagIndex] = tagDeclarator
     }
-    if ('value' in tagLiteral) {
-      // Now TypeScript knows tagLiteral has a value property
+    if ('value' in tagDeclarator) {
+      // Now TypeScript knows tagDeclarator has a value property
       return {
         modifiedAst: _node,
-        tag: String(tagLiteral.value),
+        tag: String(tagDeclarator.value),
       }
     } else {
       return new Error('Unable to assign tag without value')
