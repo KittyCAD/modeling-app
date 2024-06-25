@@ -13,6 +13,7 @@ pub enum Node<'a> {
     VariableDeclarator(&'a types::VariableDeclarator),
 
     Literal(&'a types::Literal),
+    TagDeclarator(&'a types::TagDeclarator),
     Identifier(&'a types::Identifier),
     BinaryExpression(&'a types::BinaryExpression),
     FunctionExpression(&'a types::FunctionExpression),
@@ -48,6 +49,7 @@ impl_from!(Node, VariableDeclaration);
 impl_from!(Node, ReturnStatement);
 impl_from!(Node, VariableDeclarator);
 impl_from!(Node, Literal);
+impl_from!(Node, TagDeclarator);
 impl_from!(Node, Identifier);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);

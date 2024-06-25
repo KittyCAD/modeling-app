@@ -374,7 +374,7 @@ const part001 = startSketchOn('XY')
       type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
-      name: '',
+      tag: null,
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
@@ -389,7 +389,7 @@ const part001 = startSketchOn('XY')
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],
-      name: '',
+      tag: null,
       type: 'Base',
     })
   })
