@@ -1791,12 +1791,16 @@ function prepareTruncatedMemoryAndAst(
       continue
     }
     if (
-      value.__meta &&
-      value.__meta.length > 0 &&
-      value.__meta[0].sourceRange[0] >= start
+      value.__meta === undefined ||
+      value.__meta.length === 0 ||
+      value.__meta[0].sourceRange === undefined
     ) {
+      continue
+    }
+
+    if (value.__meta[0].sourceRange[0] >= start) {
       // We only want things before our start point.
-      break
+      continue
     }
 
     if (value.type === 'TagIdentifier') {
