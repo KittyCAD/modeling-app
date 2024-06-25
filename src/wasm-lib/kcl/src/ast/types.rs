@@ -1232,27 +1232,33 @@ impl CallExpression {
                         source_ranges: vec![self.into()],
                     })
                 })?;
-                let result = result.get_value()?;
 
+                let result = result.get_value()?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
-                let result = func
-                    .call_fn(fn_args, memory.clone(), ctx.clone())
-                    .await
-                    .map_err(|e| {
+                let (result, global_memory_items) =
+                    func.call_fn(fn_args, memory.clone(), ctx.clone()).await.map_err(|e| {
                         // Add the call expression to the source ranges.
                         e.add_source_ranges(vec![self.into()])
-                    })?
-                    .ok_or_else(|| {
-                        KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of user-defined function {} is undefined", fn_name),
-                            source_ranges: vec![self.into()],
-                        })
                     })?;
 
+                let result = result.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
                 let result = result.get_value()?;
+
+                // Add the global memory items to the memory.
+                for (key, item) in global_memory_items {
+                    // We don't care about errors here because any collisions
+                    // would happened in the function call itself and already
+                    // errored out.
+                    memory.add(&key, item, self.into()).unwrap_or_default();
+                }
 
                 Ok(result)
             }

@@ -100,6 +100,18 @@ impl ProgramMemory {
             })
             .collect()
     }
+
+    /// Get all TagDeclarators and TagIdentifiers in the memory.
+    pub fn get_tags(&self) -> HashMap<String, MemoryItem> {
+        self.root
+            .values()
+            .filter_map(|item| match item {
+                MemoryItem::TagDeclarator(t) => Some((t.name.to_string(), item.clone())),
+                MemoryItem::TagIdentifier(t) => Some((t.value.to_string(), item.clone())),
+                _ => None,
+            })
+            .collect::<HashMap<String, MemoryItem>>()
+    }
 }
 
 impl Default for ProgramMemory {
@@ -525,14 +537,17 @@ impl std::hash::Hash for TagIdentifier {
     }
 }
 
-pub type MemoryFunction =
-    fn(
-        s: Vec<MemoryItem>,
-        memory: ProgramMemory,
-        expression: Box<FunctionExpression>,
-        metadata: Vec<Metadata>,
-        ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
+pub type MemoryFunction = fn(
+    s: Vec<MemoryItem>,
+    memory: ProgramMemory,
+    expression: Box<FunctionExpression>,
+    metadata: Vec<Metadata>,
+    ctx: ExecutorContext,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<Output = Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError>> + Send,
+    >,
+>;
 
 fn force_memory_function<
     F: Fn(
@@ -541,7 +556,12 @@ fn force_memory_function<
         Box<FunctionExpression>,
         Vec<Metadata>,
         ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
+    ) -> std::pin::Pin<
+        Box<
+            dyn std::future::Future<Output = Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError>>
+                + Send,
+        >,
+    >,
 >(
     f: F,
 ) -> F {
@@ -686,7 +706,7 @@ impl MemoryItem {
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
         ctx: ExecutorContext,
-    ) -> Result<Option<ProgramReturn>, KclError> {
+    ) -> Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError> {
         let MemoryItem::Function { func, expression, meta } = &self else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: "not a in memory function".to_string(),
@@ -1500,7 +1520,16 @@ impl ExecutorContext {
                             }
                             FunctionKind::UserDefined => {
                                 if let Some(func) = memory.clone().root.get(&fn_name) {
-                                    let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
+                                    let (result, global_memory_items) =
+                                        func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
+
+                                    // Add the global memory items to the memory.
+                                    for (key, item) in global_memory_items {
+                                        // We don't care about errors here because any collisions
+                                        // would happened in the function call itself and already
+                                        // errored out.
+                                        memory.add(&key, item, call_expr.into()).unwrap_or_default();
+                                    }
 
                                     memory.return_ = result;
                                 } else {
@@ -1625,7 +1654,7 @@ impl ExecutorContext {
                                 .inner_execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block)
                                 .await?;
 
-                            Ok(result.return_)
+                            Ok((result.return_, fn_memory.get_tags()))
                         })
                     },
                 );

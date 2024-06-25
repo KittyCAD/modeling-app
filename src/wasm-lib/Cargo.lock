@@ -1383,7 +1383,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.66"
+version = "0.1.67"
 dependencies = [
  "anyhow",
  "approx",
