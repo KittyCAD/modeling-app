@@ -1,5 +1,5 @@
 [package]
-name = "zoo-modeling-app"
+name = "app"
 version = "0.1.0"
 description = "The Zoo Modeling App"
 authors = ["Zoo Engineers <eng@zoo.dev>"]
