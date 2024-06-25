@@ -760,8 +760,9 @@ const extrude001 = extrude(10, sketch001)`
   |> line([-17.67, 0.85], %)
   |> close(%)\n`)
   })
-  test.only('delete extrude with sketch on it', async () => {
-    const code = `const sketch001 = startSketchOn('XZ')
+  test('delete extrude with sketch on it', async () => {
+    const code = `const myVar = 5
+const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.46, 5.12], %, 'tag')
   |> line([0.08, myVar], %)
   |> line([13.03, 2.02], %, 'seg01')
