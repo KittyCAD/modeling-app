@@ -46,6 +46,8 @@ export function trap<T>(
 
   console.error(value)
   opts?.suppress ||
-    toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString(), { id: "error" })
+    toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString(), {
+      id: 'error',
+    })
   return true
 }
