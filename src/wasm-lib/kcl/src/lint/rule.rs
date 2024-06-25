@@ -1,4 +1,6 @@
 use anyhow::Result;
+use schemars::JsonSchema;
+use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{executor::SourceRange, lint::Node, lsp::IntoDiagnostic};
@@ -22,8 +24,10 @@ where
 }
 
 /// Specific discovered lint rule Violation of a particular Finding.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, ts_rs::TS, Serialize, JsonSchema)]
+#[ts(export)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
     pub finding: Finding,
@@ -83,8 +87,10 @@ impl IntoDiagnostic for Discovered {
 }
 
 /// Abstract lint problem type.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize, JsonSchema)]
+#[ts(export)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[serde(rename_all = "camelCase")]
 pub struct Finding {
     /// Unique identifier for this particular issue.
     pub code: &'static str,

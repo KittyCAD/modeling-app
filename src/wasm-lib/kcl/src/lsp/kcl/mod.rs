@@ -37,7 +37,6 @@ use super::backend::{InnerHandle, UpdateHandle};
 use crate::{
     ast::types::VariableKind,
     executor::SourceRange,
-    lint::checks,
     lsp::{backend::Backend as _, safemap::SafeMap, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
 };
@@ -256,12 +255,7 @@ impl crate::lsp::backend::Backend for Backend {
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
         if self.execute(&params, ast.clone()).await.is_err() {
-            // if there was an issue, let's bail and avoid trying to lint.
             return;
-        }
-
-        for discovered_finding in ast.lint(checks::lint_variables).into_iter().flatten() {
-            self.add_to_diagnostics(&params, discovered_finding).await;
         }
     }
 }

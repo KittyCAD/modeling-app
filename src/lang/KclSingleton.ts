@@ -1,4 +1,4 @@
-import { executeAst } from 'useStore'
+import { executeAst, lintAst } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
@@ -211,6 +211,10 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
+    console.log('[lsp] errors', errors)
+
+    editorManager.addDiagnostics(await lintAst({ ast: ast }))
+
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
     defaultSelectionFilter(programMemory, this.engineCommandManager)
 
@@ -261,7 +265,10 @@ export class KclManager {
       return
     }
     const newAst = this.safeParse(newCode)
-    if (!newAst) return
+    if (!newAst) {
+      this.clearAst()
+      return
+    }
     codeManager.updateCodeEditor(newCode)
     // Write the file to disk.
     await codeManager.writeToFile()
@@ -349,10 +356,7 @@ export class KclManager {
     optionalParams?: {
       focusPath?: PathToNode
     }
-  ): Promise<{
-    newAst: Program
-    selections?: Selections
-  }> {
+  ): Promise<Selections | null> {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 

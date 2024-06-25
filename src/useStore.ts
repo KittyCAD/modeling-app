@@ -5,11 +5,13 @@ import {
   _executor,
   ProgramMemory,
   programMemoryInit,
+  kclLint,
 } from './lang/wasm'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
+import { Diagnostic } from '@codemirror/lint'
 
 export type ToolTip =
   | 'lineTo'
@@ -185,5 +187,26 @@ export async function executeAst({
         },
       }
     }
+  }
+}
+
+export async function lintAst({
+  ast,
+}: {
+  ast: Program
+}): Promise<Array<Diagnostic>> {
+  try {
+    const discovered_findings = await kclLint(ast)
+    return discovered_findings.map((lint) => {
+      return {
+        message: lint.description,
+        severity: 'info',
+        from: lint.pos[0],
+        to: lint.pos[1],
+      }
+    })
+  } catch (e: any) {
+    console.log(e)
+    return []
   }
 }
