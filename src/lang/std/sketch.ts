@@ -11,6 +11,7 @@ import {
   Value,
   Literal,
   VariableDeclaration,
+  Identifier,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -23,7 +24,11 @@ import {
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
 import { toolTips, ToolTip } from '../../useStore'
-import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
+import {
+  createIdentifier,
+  createPipeExpression,
+  splitPathAtPipeExpression,
+} from '../modifyAst'
 
 import {
   SketchLineHelper,
@@ -1350,7 +1355,6 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const { node: pipe } = nodeMeta
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
-    console.log('referencedSegment', referencedSegment)
     if (!referencedSegment) {
       return new Error('referencedSegment must be provided')
     }
@@ -1409,7 +1413,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
             ?.value || createLiteral('')
         : createLiteral('')
     const intersectTagName =
-      intersectTag.type === 'Literal' ? intersectTag.value : ''
+      intersectTag.type === 'Identifier' ? intersectTag.name : ''
     const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
       _node,
       pathToNode,
@@ -1500,24 +1504,23 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
     if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value
+      const tag = firstArg.properties[intersectTag]?.value as Identifier
       const pathToTagProp: PathToNode = [
         ...pathToObjectExp,
         [intersectTag, 'index'],
         ['value', 'Property'],
       ]
-      returnVal.push(
-        constrainInfo(
-          'intersectionTag',
-          // This will always be a tag identifier.
-          false,
-          code.slice(tag.start, tag.end),
-          'angledLineThatIntersects',
-          'intersectTag',
-          [tag.start, tag.end],
-          pathToTagProp
-        )
+      const info = constrainInfo(
+        'intersectionTag',
+        // This will always be a tag identifier.
+        false,
+        code.slice(tag.start, tag.end),
+        'angledLineThatIntersects',
+        'intersectTag',
+        [tag.start, tag.end],
+        pathToTagProp
       )
+      returnVal.push(info)
     }
     return returnVal
   },

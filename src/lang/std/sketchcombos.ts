@@ -1593,8 +1593,8 @@ export function transformAstSketchLines({
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
-        _referencedSegmentNameVal.type === 'Literal' &&
-        String(_referencedSegmentNameVal.value)) ||
+        _referencedSegmentNameVal.type === 'Identifier' &&
+        String(_referencedSegmentNameVal.name)) ||
       ''
     const { val } = firstArg
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
