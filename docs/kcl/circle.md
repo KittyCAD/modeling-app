@@ -9,7 +9,7 @@ Sketch a circle.
 
 
 ```js
-circle(center: [number], radius: number, tag?: TagDeclarator, sketch_surface_or_group: SketchSurfaceOrGroup) -> SketchGroup
+circle(center: [number], radius: number, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: TagDeclarator) -> SketchGroup
 ```
 
 ### Examples
@@ -41,14 +41,6 @@ const example = extrude(5, exampleSketch)
 
 * `center`: `[number]` (REQUIRED)
 * `radius`: `number` (REQUIRED)
-* `tag`: `TagDeclarator` (OPTIONAL)
-```js
-{
-	end: number,
-	start: number,
-	value: string,
-}
-```
 * `sketch_surface_or_group`: `SketchSurfaceOrGroup` - A sketch surface or a sketch group. (REQUIRED)
 ```js
 {
@@ -508,6 +500,14 @@ const example = extrude(5, exampleSketch)
 	to: [number, number],
 	type: "Base",
 }],
+}
+```
+* `tag`: `TagDeclarator` (OPTIONAL)
+```js
+{
+	end: number,
+	start: number,
+	value: string,
 }
 ```
 
