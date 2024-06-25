@@ -13,7 +13,7 @@ mod tokeniser;
 
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
