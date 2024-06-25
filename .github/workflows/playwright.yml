@@ -138,9 +138,12 @@ jobs:
       id: retry
       if: always()
       run: |
-        if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
-        then echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
-        else echo "retried=true" >> $GITHUB_OUTPUT;
+        if [[ -d "test-results" ]];
+        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
+          then echo "retried=true" >> $GITHUB_OUTPUT;
+          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+          fi;
+        else else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
         fi;
         yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
       env:
@@ -235,12 +238,12 @@ jobs:
       id: retry
       if: always()
       run: |
-        if [ -d "test-results" ];
-          then if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
-            then echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
-            else echo "retried=true" >> $GITHUB_OUTPUT;
-            fi;
+        if [[ -d "test-results" ]];
+        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
+          then echo "retried=true" >> $GITHUB_OUTPUT;
           else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+          fi;
+        else else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
         fi;
         yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts
       env:
