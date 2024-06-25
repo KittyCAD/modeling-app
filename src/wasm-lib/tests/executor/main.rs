@@ -2457,3 +2457,10 @@ let p = triangle(200)
         r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_global_tags() {
+    let code = include_str!("inputs/global-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, 0.999);
+}
