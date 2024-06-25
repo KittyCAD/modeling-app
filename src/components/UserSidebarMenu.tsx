@@ -20,6 +20,12 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const navigate = useNavigate()
   const send = useSettingsAuthContext()?.auth?.send
 
+  // This image host goes down sometimes. We will instead rewrite the
+  // resource to be a local one.
+  if (user?.image === 'https://placekitten.com/200/200') {
+    user.image = '/cat.jpg'
+  }
+
   // Fallback logic for displaying user's "name":
   // 1. user.name
   // 2. user.first_name + ' ' + user.last_name
