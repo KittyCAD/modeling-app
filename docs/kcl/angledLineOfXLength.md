@@ -17,10 +17,10 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDe
 ```js
 const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineOfXLength({ angle: 45, length: 10 }, %, "edge1")
-  |> angledLineOfXLength({ angle: -15, length: 20 }, %, "edge2")
+  |> angledLineOfXLength({ angle: 45, length: 10 }, %, $edge1)
+  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
   |> line([0, -5], %)
-  |> close(%, "edge3")
+  |> close(%, $edge3)
 
 const extrusion = extrude(10, sketch001)
 ```

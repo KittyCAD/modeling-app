@@ -17,12 +17,9 @@ segLen(segment_name: TagIdentifier, sketch_group: SketchGroup) -> number
 ```js
 const exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle: 60, length: 10 }, %, "thing")
+  |> angledLine({ angle: 60, length: 10 }, %, $thing)
   |> tangentialArc({ offset: -120, radius: 5 }, %)
-  |> angledLine({
-       angle: -60,
-       length: segLen("thing", %)
-     }, %)
+  |> angledLine({ angle: -60, length: segLen(thing, %) }, %)
   |> close(%)
 
 const example = extrude(5, exampleSketch)

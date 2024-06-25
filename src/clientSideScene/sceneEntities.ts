@@ -1783,6 +1783,31 @@ function prepareTruncatedMemoryAndAst(
   const programMemoryOverride = programMemoryInit()
   if (err(programMemoryOverride)) return programMemoryOverride
 
+  // Grab all the TagDeclarators and TagIdentifiers from memory.
+  let start = _node.node.start
+  for (const key in programMemory.root) {
+    const value = programMemory.root[key]
+    if (!('__meta' in value)) {
+      continue
+    }
+    if (
+      value.__meta === undefined ||
+      value.__meta.length === 0 ||
+      value.__meta[0].sourceRange === undefined
+    ) {
+      continue
+    }
+
+    if (value.__meta[0].sourceRange[0] >= start) {
+      // We only want things before our start point.
+      continue
+    }
+
+    if (value.type === 'TagIdentifier') {
+      programMemoryOverride.root[key] = JSON.parse(JSON.stringify(value))
+    }
+  }
+
   for (let i = 0; i < bodyIndex; i++) {
     const node = _ast.body[i]
     if (node.type !== 'VariableDeclaration') {

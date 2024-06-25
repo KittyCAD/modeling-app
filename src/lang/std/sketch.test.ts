@@ -230,7 +230,7 @@ describe('testing addTagForSketchOnFace', () => {
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
-    const expectedCode = genCode("lineTo([-1.59, -1.54], %, 'seg01')")
+    const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })

@@ -11,6 +11,7 @@ import {
   Value,
   Literal,
   VariableDeclaration,
+  Identifier,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -23,7 +24,11 @@ import {
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
 import { toolTips, ToolTip } from '../../useStore'
-import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
+import {
+  createIdentifier,
+  createPipeExpression,
+  splitPathAtPipeExpression,
+} from '../modifyAst'
 
 import {
   SketchLineHelper,
@@ -40,6 +45,7 @@ import {
 
 import {
   createLiteral,
+  createTagDeclarator,
   createCallExpression,
   createArrayExpression,
   createPipeSubstitution,
@@ -51,6 +57,7 @@ import {
 import { roundOff, getLength, getAngle } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
+import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 
 export type Coords2d = [number, number]
 
@@ -1406,7 +1413,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
             ?.value || createLiteral('')
         : createLiteral('')
     const intersectTagName =
-      intersectTag.type === 'Literal' ? intersectTag.value : ''
+      intersectTag.type === 'Identifier' ? intersectTag.name : ''
     const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
       _node,
       pathToNode,
@@ -1497,23 +1504,23 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
     if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value
+      const tag = firstArg.properties[intersectTag]?.value as Identifier
       const pathToTagProp: PathToNode = [
         ...pathToObjectExp,
         [intersectTag, 'index'],
         ['value', 'Property'],
       ]
-      returnVal.push(
-        constrainInfo(
-          'intersectionTag',
-          isNotLiteralArrayOrStatic(tag),
-          code.slice(tag.start, tag.end),
-          'angledLineThatIntersects',
-          'intersectTag',
-          [tag.start, tag.end],
-          pathToTagProp
-        )
+      const info = constrainInfo(
+        'intersectionTag',
+        // This will always be a tag identifier.
+        false,
+        code.slice(tag.start, tag.end),
+        'angledLineThatIntersects',
+        'intersectTag',
+        [tag.start, tag.end],
+        pathToTagProp
       )
+      returnVal.push(info)
     }
     return returnVal
   },
@@ -1830,17 +1837,18 @@ function addTag(tagIndex = 2): addTagFn {
     // Tag is always 3rd expression now, using arg index feels brittle
     // but we can come up with a better way to identify tag later.
     const thirdArg = primaryCallExp.arguments?.[tagIndex]
-    const tagLiteral =
-      thirdArg || (createLiteral(findUniqueName(_node, 'seg', 2)) as Literal)
+    const tagDeclarator =
+      thirdArg ||
+      (createTagDeclarator(findUniqueName(_node, 'seg', 2)) as TagDeclarator)
     const isTagExisting = !!thirdArg
     if (!isTagExisting) {
-      primaryCallExp.arguments[tagIndex] = tagLiteral
+      primaryCallExp.arguments[tagIndex] = tagDeclarator
     }
-    if ('value' in tagLiteral) {
-      // Now TypeScript knows tagLiteral has a value property
+    if ('value' in tagDeclarator) {
+      // Now TypeScript knows tagDeclarator has a value property
       return {
         modifiedAst: _node,
-        tag: String(tagLiteral.value),
+        tag: String(tagDeclarator.value),
       }
     } else {
       return new Error('Unable to assign tag without value')

@@ -17,7 +17,7 @@ getEdge(tag: TagIdentifier, extrude_group: ExtrudeGroup) -> Uuid
 ```js
 const box = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %, 'revolveAxis')
+  |> line([0, 10], %, $revolveAxis)
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
@@ -30,7 +30,7 @@ const revolution = startSketchOn(box, "revolveAxis")
   |> line([0, -10], %)
   |> close(%)
   |> revolve({
-       axis: getEdge('revolveAxis', box),
+       axis: getEdge(revolveAxis, box),
        angle: 90
      }, %)
 ```
