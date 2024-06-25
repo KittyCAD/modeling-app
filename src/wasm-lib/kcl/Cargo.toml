@@ -39,7 +39,7 @@ thiserror = "1.0.61"
 toml = "0.8.14"
 ts-rs = { version = "9.0.0", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings", "serde-json-impl"] }
 url = { version = "2.5.2", features = ["serde"] }
-uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
+uuid = { version = "1.9.1", features = ["v4", "js", "serde"] }
 validator = { version = "0.18.1", features = ["derive"] }
 winnow = "0.5.40"
 zip = { version = "2.0.0", default-features = false }
