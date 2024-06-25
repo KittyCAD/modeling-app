@@ -462,7 +462,7 @@ const setAngledIntersectLineForLines: TransformInfo['createNode'] =
       angleVal,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      intersectTag: createLiteral(referenceSegName),
+      intersectTag: createIdentifier(referenceSegName),
       tag,
       valueUsedInTransform,
     })
@@ -481,7 +481,7 @@ const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
       angleVal: varValA,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      intersectTag: createLiteral(referenceSegName),
+      intersectTag: createIdentifier(referenceSegName),
       tag,
       valueUsedInTransform,
     })
@@ -675,7 +675,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthX',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValA,
                 createPipeSubstitution(),
               ]
@@ -708,7 +708,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthYCall = createCallExpression(
               'angleToMatchLengthY',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -973,7 +973,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthX',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -1023,7 +1023,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthY',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -1174,7 +1174,7 @@ export function getRemoveConstraintsTransform(
         //       fnName: name,
         //       angleVal: args[0],
         //       offsetVal: args[1],
-        //       intersectTag: createLiteral(referenceSegName),
+        //       intersectTag: createIdentifier(referenceSegName),
         //       tag,
         //     })
         //   }
@@ -1593,8 +1593,8 @@ export function transformAstSketchLines({
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
-        _referencedSegmentNameVal.type === 'Literal' &&
-        String(_referencedSegmentNameVal.value)) ||
+        _referencedSegmentNameVal.type === 'Identifier' &&
+        String(_referencedSegmentNameVal.name)) ||
       ''
     const { val } = firstArg
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
@@ -1660,7 +1660,7 @@ export function transformAstSketchLines({
       referencedSegment = _segment.segment
     } else {
       referencedSegment = sketchGroup.value.find(
-        (path) => path.name === _referencedSegmentName
+        (path) => path.tag?.value === _referencedSegmentName
       )
     }
     const { to, from } = seg
@@ -1714,21 +1714,21 @@ export function transformAstSketchLines({
 
 function createSegLen(referenceSegName: string): Value {
   return createCallExpression('segLen', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
 
 function createSegAngle(referenceSegName: string): Value {
   return createCallExpression('segAng', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }

@@ -189,7 +189,7 @@ pub(crate) async fn do_post_extrude(
                 Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
                     let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
                         face_id: *actual_face_id,
-                        name: path.get_base().name.clone(),
+                        tag: path.get_base().tag.clone(),
                         geo_meta: GeoMeta {
                             id: path.get_base().geo_meta.id,
                             metadata: path.get_base().geo_meta.metadata.clone(),
@@ -200,7 +200,7 @@ pub(crate) async fn do_post_extrude(
                 Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
                     let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                         face_id: *actual_face_id,
-                        name: path.get_base().name.clone(),
+                        tag: path.get_base().tag.clone(),
                         geo_meta: GeoMeta {
                             id: path.get_base().geo_meta.id,
                             metadata: path.get_base().geo_meta.metadata.clone(),
@@ -214,7 +214,7 @@ pub(crate) async fn do_post_extrude(
             new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                 // pushing this values with a fake face_id to make extrudes mock-execute safe
                 face_id: Uuid::new_v4(),
-                name: path.get_base().name.clone(),
+                tag: path.get_base().tag.clone(),
                 geo_meta: GeoMeta {
                     id: path.get_base().geo_meta.id,
                     metadata: path.get_base().geo_meta.metadata.clone(),

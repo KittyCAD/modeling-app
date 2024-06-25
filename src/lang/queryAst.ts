@@ -270,6 +270,18 @@ function moreNodePathFromSourceRange(
       }
     }
   }
+  if (_node.type === 'MemberExpression' && isInRange) {
+    const { object, property } = _node
+    if (object.start <= start && object.end >= end) {
+      path.push(['object', 'MemberExpression'])
+      return moreNodePathFromSourceRange(object, sourceRange, path)
+    }
+    if (property.start <= start && property.end >= end) {
+      path.push(['property', 'MemberExpression'])
+      return moreNodePathFromSourceRange(property, sourceRange, path)
+    }
+    return path
+  }
   if (_node.type === 'PipeSubstitution' && isInRange) return path
   console.error('not implemented: ' + node.type)
   return path
@@ -307,48 +319,89 @@ type KCLNode =
   | ReturnStatement
 
 export function traverse(
-  node: KCLNode,
+  node: KCLNode | Program,
   option: {
-    enter?: (node: KCLNode) => void
+    enter?: (node: KCLNode, pathToNode: PathToNode) => void
     leave?: (node: KCLNode) => void
-  }
+  },
+  pathToNode: PathToNode = []
 ) {
-  option?.enter?.(node)
-  const _traverse = (node: KCLNode) => traverse(node, option)
+  const _node = node as KCLNode
+  option?.enter?.(_node, pathToNode)
+  const _traverse = (node: KCLNode, pathToNode: PathToNode) =>
+    traverse(node, option, pathToNode)
 
-  if (node.type === 'VariableDeclaration') {
-    node.declarations.forEach(_traverse)
-  } else if (node.type === 'VariableDeclarator') {
-    _traverse(node.init)
-  } else if (node.type === 'PipeExpression') {
-    node.body.forEach(_traverse)
-  } else if (node.type === 'CallExpression') {
-    _traverse(node.callee)
-    node.arguments.forEach(_traverse)
-  } else if (node.type === 'BinaryExpression') {
-    _traverse(node.left)
-    _traverse(node.right)
-  } else if (node.type === 'Identifier') {
+  if (_node.type === 'VariableDeclaration') {
+    _node.declarations.forEach((declaration, index) =>
+      _traverse(declaration, [
+        ...pathToNode,
+        ['declarations', 'VariableDeclaration'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'VariableDeclarator') {
+    _traverse(_node.init, [...pathToNode, ['init', '']])
+  } else if (_node.type === 'PipeExpression') {
+    _node.body.forEach((expression, index) =>
+      _traverse(expression, [
+        ...pathToNode,
+        ['body', 'PipeExpression'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'CallExpression') {
+    _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpression']])
+    _node.arguments.forEach((arg, index) =>
+      _traverse(arg, [
+        ...pathToNode,
+        ['arguments', 'CallExpression'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'BinaryExpression') {
+    _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
+    _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])
+  } else if (_node.type === 'Identifier') {
     // do nothing
-  } else if (node.type === 'Literal') {
+  } else if (_node.type === 'Literal') {
     // do nothing
-  } else if (node.type === 'ArrayExpression') {
-    node.elements.forEach(_traverse)
-  } else if (node.type === 'ObjectExpression') {
-    node.properties.forEach(({ key, value }) => {
-      _traverse(key)
-      _traverse(value)
+  } else if (_node.type === 'TagDeclarator') {
+    // do nothing
+  } else if (_node.type === 'ArrayExpression') {
+    _node.elements.forEach((el, index) =>
+      _traverse(el, [
+        ...pathToNode,
+        ['elements', 'ArrayExpression'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'ObjectExpression') {
+    _node.properties.forEach(({ key, value }, index) => {
+      _traverse(key, [
+        ...pathToNode,
+        ['properties', 'ObjectExpression'],
+        [index, 'index'],
+        ['key', 'Property'],
+      ])
+      _traverse(value, [
+        ...pathToNode,
+        ['properties', 'ObjectExpression'],
+        [index, 'index'],
+        ['value', 'Property'],
+      ])
     })
-  } else if (node.type === 'UnaryExpression') {
-    _traverse(node.argument)
-  } else if (node.type === 'MemberExpression') {
+  } else if (_node.type === 'UnaryExpression') {
+    _traverse(_node.argument, [...pathToNode, ['argument', 'UnaryExpression']])
+  } else if (_node.type === 'MemberExpression') {
     // hmm this smell
-    _traverse(node.object)
-    _traverse(node.property)
-  } else if ('body' in node && Array.isArray(node.body)) {
-    node.body.forEach(_traverse)
+    _traverse(_node.object, [...pathToNode, ['object', 'MemberExpression']])
+    _traverse(_node.property, [...pathToNode, ['property', 'MemberExpression']])
+  } else if ('body' in _node && Array.isArray(_node.body)) {
+    _node.body.forEach((expression, index) =>
+      _traverse(expression, [...pathToNode, ['body', ''], [index, 'index']])
+    )
   }
-  option?.leave?.(node)
+  option?.leave?.(_node)
 }
 
 export interface PrevVariable<T> {
@@ -734,8 +787,14 @@ export function findUsesOfTagInPipe(
   if (node.type !== 'CallExpression') return []
   const tagIndex = node.callee.name === 'close' ? 1 : 2
   const thirdParam = node.arguments[tagIndex]
-  if (thirdParam?.type !== 'Literal') return []
-  const tag = String(thirdParam.value)
+  if (
+    !(thirdParam?.type === 'TagDeclarator' || thirdParam?.type === 'Identifier')
+  )
+    return []
+  const tag =
+    thirdParam?.type === 'TagDeclarator'
+      ? String(thirdParam.value)
+      : thirdParam.name
 
   const varDec = getNodeFromPath<VariableDeclaration>(
     ast,
@@ -756,9 +815,11 @@ export function findUsesOfTagInPipe(
       )
         return
       const tagArg = node.arguments[0]
-      if (tagArg.type !== 'Literal') return
-      if (String(tagArg.value) === tag)
-        dependentRanges.push([node.start, node.end])
+      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Identifier'))
+        return
+      const tagArgValue =
+        tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
+      if (tagArgValue === tag) dependentRanges.push([node.start, node.end])
     },
   })
   return dependentRanges

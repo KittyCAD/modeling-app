@@ -9,7 +9,7 @@ Returns the angle to match the given length for x.
 
 
 ```js
-angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+angleToMatchLengthX(segment_name: TagIdentifier, to: number, sketch_group: SketchGroup) -> number
 ```
 
 ### Examples
@@ -17,11 +17,8 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 ```js
 const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([2, 5], %, 'seg01')
-  |> angledLineToX([
-       -angleToMatchLengthX('seg01', 7, %),
-       10
-     ], %)
+  |> line([2, 5], %, $seg01)
+  |> angledLineToX([-angleToMatchLengthX(seg01, 7, %), 10], %)
   |> close(%)
 
 const extrusion = extrude(5, sketch001)
@@ -31,7 +28,12 @@ const extrusion = extrude(5, sketch001)
 
 ### Arguments
 
-* `segment_name`: `string` (REQUIRED)
+* `segment_name`: `TagIdentifier` (REQUIRED)
+```js
+{
+	value: string,
+}
+```
 * `to`: `number` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
@@ -90,7 +92,11 @@ const extrusion = extrude(5, sketch001)
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -107,8 +113,12 @@ const extrusion = extrude(5, sketch001)
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -116,8 +126,12 @@ const extrusion = extrude(5, sketch001)
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -129,8 +143,12 @@ const extrusion = extrude(5, sketch001)
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -138,8 +156,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -147,8 +169,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -158,8 +184,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -171,8 +201,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",
@@ -186,10 +220,14 @@ const extrusion = extrude(5, sketch001)
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -197,10 +235,14 @@ const extrusion = extrude(5, sketch001)
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 },
@@ -232,8 +274,12 @@ const extrusion = extrude(5, sketch001)
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -241,8 +287,12 @@ const extrusion = extrude(5, sketch001)
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -254,8 +304,12 @@ const extrusion = extrude(5, sketch001)
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -263,8 +317,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -272,8 +330,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -283,8 +345,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -296,8 +362,12 @@ const extrusion = extrude(5, sketch001)
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",

@@ -37,6 +37,7 @@ import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { ConstrainInfo } from './std/stdTypes'
+import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 
 export function startSketchOnDefault(
   node: Program,
@@ -379,7 +380,7 @@ export function sketchOnExtrudedFace(
   const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
-  let _tag = ''
+  let _tag = null
   if (cap === 'none') {
     const __tag = addTagForSketchOnFace(
       {
@@ -391,17 +392,17 @@ export function sketchOnExtrudedFace(
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
-    _tag = tag
+    _tag = createIdentifier(tag)
     _node = modifiedAst
   } else {
-    _tag = cap.toUpperCase()
+    _tag = createLiteral(cap.toUpperCase())
   }
 
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
       createIdentifier(extrudeName ? extrudeName : oldSketchName),
-      createLiteral(_tag),
+      _tag,
     ]),
     'const'
   )
@@ -480,6 +481,15 @@ export function createLiteral(value: string | number): Literal {
     end: 0,
     value,
     raw: `${value}`,
+  }
+}
+
+export function createTagDeclarator(value: string): TagDeclarator {
+  return {
+    type: 'TagDeclarator',
+    start: 0,
+    end: 0,
+    value,
   }
 }
 
@@ -657,17 +667,18 @@ export function giveSketchFnCallTag(
   // Tag is always 3rd expression now, using arg index feels brittle
   // but we can come up with a better way to identify tag later.
   const thirdArg = primaryCallExp.arguments?.[2]
-  const tagLiteral =
-    thirdArg || (createLiteral(tag || findUniqueName(ast, 'seg', 2)) as Literal)
+  const tagDeclarator =
+    thirdArg ||
+    (createTagDeclarator(tag || findUniqueName(ast, 'seg', 2)) as TagDeclarator)
   const isTagExisting = !!thirdArg
   if (!isTagExisting) {
-    primaryCallExp.arguments[2] = tagLiteral
+    primaryCallExp.arguments[2] = tagDeclarator
   }
-  if ('value' in tagLiteral) {
-    // Now TypeScript knows tagLiteral has a value property
+  if ('value' in tagDeclarator) {
+    // Now TypeScript knows tagDeclarator has a value property
     return {
       modifiedAst: ast,
-      tag: String(tagLiteral.value),
+      tag: String(tagDeclarator.value),
       isTagExisting,
       pathToNode: path,
     }

@@ -191,9 +191,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await u.openKclCodePanel()
   await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %, 'seg01')
+  |> line([${commonPoints.num1}, 0], %, $seg01)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> angledLine([180, segLen('seg01', %)], %)`)
+  |> angledLine([180, segLen(seg01, %)], %)`)
 }
 
 test.describe('Basic sketch', () => {
@@ -786,7 +786,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText("found unknown token '$'")).toBeVisible()
+  await expect(page.getByText('syntax: Unexpected token')).toBeVisible()
 
   // select the line that's causing the error and delete it
   await page.getByText('$ error').click()
@@ -813,7 +813,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   await page.locator('.cm-lintRange.cm-lintRange-error').hover()
   await expect(page.locator('.cm-diagnosticText')).toBeVisible()
-  await expect(page.getByText('Cannot redefine topAng')).toBeVisible()
+  await expect(page.getByText('Cannot redefine `topAng`')).toBeVisible()
 
   const secondTopAng = await page.getByText('topAng').first()
   await secondTopAng?.dblclick()
@@ -1891,7 +1891,7 @@ test.describe('Testing selections', () => {
     |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
     |> lineTo([20.14 + 0, -0.14 + 0], %)
     |> xLineTo(29 + 0, %)
-    |> yLine(-3.14 + 0, %, 'a')
+    |> yLine(-3.14 + 0, %, $a)
     |> xLine(1.63, %)
     |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
     |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
@@ -1899,7 +1899,7 @@ test.describe('Testing selections', () => {
     |> angledLineToY({ angle: 30, to: 11.14 }, %)
     |> angledLineThatIntersects({
           angle: 3.14,
-          intersectTag: 'a',
+          intersectTag: a,
           offset: 0
         }, %)
     |> tangentialArcTo([13.14 + 0, 13.14], %)
@@ -1983,7 +1983,7 @@ test.describe('Testing selections', () => {
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
   |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, 'seg01')
+  |> line([4.99, -0.46], %, $seg01)
   |> line([3.3, -2.12], %)
   |> line([2.16, -3.33], %)
   |> line([0.85, -3.08], %)
@@ -2005,7 +2005,7 @@ const extrude001 = extrude(10, sketch001)
     await u.closeDebugPanel()
 
     const selectUnExtrudable = () =>
-      page.getByText(`line([4.99, -0.46], %, 'seg01')`).click()
+      page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
     const clickEmpty = () => page.mouse.click(700, 460)
     await selectUnExtrudable()
     // expect extrude button to be disabled
@@ -2019,7 +2019,7 @@ const extrude001 = extrude(10, sketch001)
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
 
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
-const sketch002 = startSketchOn(extrude001, 'seg01')
+const sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
@@ -2046,11 +2046,11 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
     const cases = [
       {
         pos: [694, 185],
-        expectedCode: "line([74.36, 130.4], %, 'seg01')",
+        expectedCode: 'line([74.36, 130.4], %, $seg01)',
       },
       {
         pos: [816, 244],
-        expectedCode: "angledLine([segAng('seg01', %), yo], %)",
+        expectedCode: 'angledLine([segAng(seg01, %), yo], %)',
       },
       {
         pos: [1107, 161],
@@ -2912,7 +2912,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
 
   const startPX = [665, 458]
 
-  const dragPX = 80
+  const dragPX = 40
 
   await page.getByText('startProfileAt([4.61, -14.01], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
@@ -2925,7 +2925,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   // drag startProfieAt handle
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: startPX[0], y: startPX[1] },
-    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX },
+    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
   })
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -2938,7 +2938,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   await page.waitForTimeout(100)
   await page.dragAndDrop('#stream', '#stream', {
     sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y - dragPX },
+    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
   })
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
@@ -2949,7 +2949,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
     sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
     targetPosition: {
       x: tangentEnd.x + dragPX,
-      y: tangentEnd.y - dragPX,
+      y: tangentEnd.y + dragPX,
     },
   })
   await page.waitForTimeout(100)
@@ -2958,10 +2958,10 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   // expect the code to have changed
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 2.01], %)
+  |> startProfileAt([7.12, -16.82], %)
+  |> line([15.4, -2.74], %)
   |> tangentialArcTo([24.95, -5.38], %)
-  |> line([1.97, 2.06], %)
+  |> line([2.65, -2.69], %)
   |> close(%)
   |> extrude(5, %)`)
 })
@@ -3206,6 +3206,7 @@ test('Sketch on face', async ({ page }) => {
     true
   )
   await page.waitForTimeout(150)
+  await u.closeDebugPanel()
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]
@@ -3231,7 +3232,7 @@ test('Sketch on face', async ({ page }) => {
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await expect(page.locator('.cm-content'))
-    .toContainText(`const sketch002 = startSketchOn(extrude001, 'seg01')
+    .toContainText(`const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2.6, -1.25], %)
@@ -3267,7 +3268,7 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, 'seg01')
+  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.83, 6.7], %)
   |> line([${[2.28, 2.35]}, -${0.07}], %)
   |> line([-3.05, -1.47], %)
@@ -3406,15 +3407,15 @@ test.describe('Testing constraints', () => {
         `const yo = 79
 const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
-  |> line([74.36, 130.4], %, 'seg01')
+  |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng('seg01', %), yo], %)
+  |> angledLine([segAng(seg01, %), yo], %)
   |> line([41.19, 28.97 + 5], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
       )
     })
@@ -3423,7 +3424,7 @@ const part002 = startSketchOn('XZ')
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await page.getByText("line([74.36, 130.4], %, 'seg01')").click()
+    await page.getByText('line([74.36, 130.4], %, $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     const line3 = await u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`)
@@ -3466,15 +3467,15 @@ const part002 = startSketchOn('XZ')
             `const yo = 5
 const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
-  |> line([74.36, 130.4], %, 'seg01')
+  |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng('seg01', %), 78.33], %)
+  |> angledLine([segAng(seg01, %), 78.33], %)
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -3483,7 +3484,7 @@ const part002 = startSketchOn('XZ')
         await page.goto('/')
         await u.waitForAuthSkipAppStart()
 
-        await page.getByText("line([74.36, 130.4], %, 'seg01')").click()
+        await page.getByText('line([74.36, 130.4], %, $seg01)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         const [line1, line3] = await Promise.all([
@@ -3525,7 +3526,7 @@ const part002 = startSketchOn('XZ')
 
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await expect(activeLinesContent[0]).toHaveText(
-          `|> line([74.36, 130.4], %, 'seg01')`
+          `|> line([74.36, 130.4], %, $seg01)`
         )
         await expect(activeLinesContent[1]).toHaveText(`}, %)`)
 
@@ -3539,22 +3540,22 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         constraint: 'horizontal distance',
-        value: "segEndX('seg01', %) + xDis001, 61.34",
+        value: 'segEndX(seg01, %) + xDis001, 61.34',
       },
       {
         testName: 'No variable',
         constraint: 'horizontal distance',
-        value: "segEndX('seg01', %) + 88.08, 61.34",
+        value: 'segEndX(seg01, %) + 88.08, 61.34',
       },
       {
         testName: 'Add variable',
         constraint: 'vertical distance',
-        value: "154.9, segEndY('seg01', %) - yDis001",
+        value: '154.9, segEndY(seg01, %) - yDis001',
       },
       {
         testName: 'No variable',
         constraint: 'vertical distance',
-        value: "154.9, segEndY('seg01', %) - 42.32",
+        value: '154.9, segEndY(seg01, %) - 42.32',
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
@@ -3571,9 +3572,9 @@ const part001 = startSketchOn('XZ')
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -3618,7 +3619,7 @@ const part002 = startSketchOn('XZ')
 
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [
-          `|> line([74.36, 130.4], %, 'seg01')`,
+          `|> line([74.36, 130.4], %, $seg01)`,
           `|> lineTo([${value}], %)`,
         ]
 
@@ -3679,9 +3680,9 @@ const part001 = startSketchOn('XZ')
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -3751,13 +3752,13 @@ const part002 = startSketchOn('XZ')
         testName: 'Add variable',
         addVariable: true,
         axisSelect: false,
-        value: "segAng('seg01', %) + angle001",
+        value: 'segAng(seg01, %) + angle001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         axisSelect: false,
-        value: "segAng('seg01', %) + 22.69",
+        value: 'segAng(seg01, %) + 22.69',
       },
       {
         testName: 'Add variable, selecting axis',
@@ -3786,9 +3787,9 @@ const part001 = startSketchOn('XZ')
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -3834,7 +3835,7 @@ const part002 = startSketchOn('XZ')
 
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [
-          "|> line([74.36, 130.4], %, 'seg01')",
+          '|> line([74.36, 130.4], %, $seg01)',
           `|> angledLine([${value}, 78.33], %)`,
         ]
         if (axisSelect) codeAfter.shift()
@@ -3896,9 +3897,9 @@ const part001 = startSketchOn('XZ')
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -3972,9 +3973,9 @@ const part001 = startSketchOn('XZ')
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4039,19 +4040,19 @@ const part002 = startSketchOn('XZ')
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine([83, segLen('seg01', %)], %)`,
+        codeAfter: `|> angledLine([83, segLen(seg01, %)], %)`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine([segAng('seg01', %), 78.33], %)`,
+        codeAfter: `|> angledLine([segAng(seg01, %), 78.33], %)`,
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> lineTo([segEndX('seg01', %), 61.34], %)`,
+        codeAfter: `|> lineTo([segEndX(seg01, %), 61.34], %)`,
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> lineTo([154.9, segEndY('seg01', %)], %)`,
+        codeAfter: `|> lineTo([154.9, segEndY(seg01, %)], %)`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -4068,9 +4069,9 @@ const part001 = startSketchOn('XZ')
   |> line([9.16, 77.79], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4113,7 +4114,7 @@ const part002 = startSketchOn('XZ')
 
         // check both cursors are where they should be after constraint is applied
         await expect(activeLinesContent[0]).toHaveText(
-          "|> line([74.36, 130.4], %, 'seg01')"
+          '|> line([74.36, 130.4], %, $seg01)'
         )
         await expect(activeLinesContent[1]).toHaveText(codeAfter)
       })
@@ -4145,9 +4146,9 @@ const part001 = startSketchOn('XZ')
   |> line([9.16, 77.79], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, 'seg-what')
+  |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen('seg-what', %), %)
+  |> xLine(segLen(seg_what, %), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4194,7 +4195,7 @@ const part002 = startSketchOn('XZ')
         'persistCode',
         `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-1.05, -1.07], %)
-  |> line([3.79, 2.68], %, 'seg01')
+  |> line([3.79, 2.68], %, $seg01)
   |> line([3.13, -2.4], %)`
       )
     })
@@ -4203,7 +4204,7 @@ const part002 = startSketchOn('XZ')
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await page.getByText("line([3.79, 2.68], %, 'seg01')").click()
+    await page.getByText('line([3.79, 2.68], %, $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(100)
@@ -4438,7 +4439,7 @@ test.describe('Testing segment overlays', () => {
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
     |> lineTo([5 + 33, 20 + 11.5 + 0], %)
     |> xLineTo(5 + 9 - 5, %)
-    |> yLineTo(20 + -10.77, %, 'a')
+    |> yLineTo(20 + -10.77, %, $a)
     |> xLine(26.04, %)
     |> yLine(21.14 + 0, %)
     |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
@@ -4447,7 +4448,7 @@ test.describe('Testing segment overlays', () => {
     |> angledLineToY({ angle: 89, to: 20 + 9.14 + 0 }, %)
     |> angledLineThatIntersects({
           angle: 4.14,
-          intersectTag: 'a',
+          intersectTag: a,
           offset: 9
         }, %)
     |> tangentialArcTo([5 + 3.14 + 13, 20 + 3.14], %)
@@ -4606,7 +4607,7 @@ const part001 = startSketchOn('XZ')
   |> angledLine({ angle: angle001, length: len001 }, %)
   |> lineTo([33, yAbs001], %)
   |> xLineTo(xAbs002, %)
-  |> yLineTo(-10.77, %, 'a')
+  |> yLineTo(-10.77, %, $a)
   |> xLine(26.04, %)
   |> yLine(21.14 + 0, %)
   |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
@@ -4643,9 +4644,9 @@ const part001 = startSketchOn('XZ')
       await clickUnconstrained({
         hoverPos: { x: yLineTo.x, y: yLineTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: "yLineTo(-10.77, %, 'a')",
-        expectAfterUnconstrained: "yLineTo(yAbs002, %, 'a')",
-        expectFinal: "yLineTo(-10.77, %, 'a')",
+        expectBeforeUnconstrained: 'yLineTo(-10.77, %, $a)',
+        expectAfterUnconstrained: 'yLineTo(yAbs002, %, $a)',
+        expectFinal: 'yLineTo(-10.77, %, $a)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="4"]',
       })
@@ -4676,7 +4677,7 @@ const part001 = startSketchOn('XZ')
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
     |> lineTo([33, 11.5 + 0], %)
     |> xLineTo(9 - 5, %)
-    |> yLineTo(-10.77, %, 'a')
+    |> yLineTo(-10.77, %, $a)
     |> xLine(26.04, %)
     |> yLine(21.14 + 0, %)
     |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
@@ -4685,7 +4686,7 @@ const part001 = startSketchOn('XZ')
     |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
     |> angledLineThatIntersects({
           angle: 4.14,
-          intersectTag: 'a',
+          intersectTag: a,
           offset: 9
         }, %)
     |> tangentialArcTo([3.14 + 13, 3.14], %)
@@ -4804,7 +4805,7 @@ const part001 = startSketchOn('XZ')
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
     |> lineTo([33, 11.5 + 0], %)
     |> xLineTo(9 - 5, %)
-    |> yLineTo(-10.77, %, 'a')
+    |> yLineTo(-10.77, %, $a)
     |> xLine(26.04, %)
     |> yLine(21.14 + 0, %)
     |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
@@ -4813,7 +4814,7 @@ const part001 = startSketchOn('XZ')
     |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
     |> angledLineThatIntersects({
           angle: 4.14,
-          intersectTag: 'a',
+          intersectTag: a,
           offset: 9
         }, %)
     |> tangentialArcTo([3.14 + 13, 1.14], %)
@@ -4908,18 +4909,18 @@ const part001 = startSketchOn('XZ')
         constraintType: 'angle',
         expectBeforeUnconstrained: `angledLineThatIntersects({
       angle: 4.14,
-      intersectTag: 'a',
+      intersectTag: a,
       offset: 9
     }, %)`,
         expectAfterUnconstrained: `angledLineThatIntersects({
       angle: angle003,
-      intersectTag: 'a',
+      intersectTag: a,
       offset: 9
     }, %)`,
         expectFinal: `angledLineThatIntersects({
       angle: -176,
       offset: 9,
-      intersectTag: 'a'
+      intersectTag: a
     }, %)`,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="11"]',
@@ -4934,17 +4935,17 @@ const part001 = startSketchOn('XZ')
         expectBeforeUnconstrained: `angledLineThatIntersects({
       angle: -176,
       offset: 9,
-      intersectTag: 'a'
+      intersectTag: a
     }, %)`,
         expectAfterUnconstrained: `angledLineThatIntersects({
       angle: -176,
       offset: perpDist001,
-      intersectTag: 'a'
+      intersectTag: a
     }, %)`,
         expectFinal: `angledLineThatIntersects({
       angle: -176,
       offset: 9,
-      intersectTag: 'a'
+      intersectTag: a
     }, %)`,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="11"]',
@@ -4960,7 +4961,7 @@ const part001 = startSketchOn('XZ')
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
     |> lineTo([33, 11.5 + 0], %)
     |> xLineTo(9 - 5, %)
-    |> yLineTo(-10.77, %, 'a')
+    |> yLineTo(-10.77, %, $a)
     |> xLine(26.04, %)
     |> yLine(21.14 + 0, %)
     |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
@@ -4969,7 +4970,7 @@ const part001 = startSketchOn('XZ')
     |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
     |> angledLineThatIntersects({
           angle: 4.14,
-          intersectTag: 'a',
+          intersectTag: a,
           offset: 9
         }, %)
     |> tangentialArcTo([3.14 + 13, -3.14], %)
@@ -5073,7 +5074,7 @@ const part001 = startSketchOn('XZ')
   |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
   |> lineTo([33, 11.5 + 0], %)
   |> xLineTo(9 - 5, %)
-  |> yLineTo(-10.77, %, 'a')
+  |> yLineTo(-10.77, %, $a)
   |> xLine(26.04, %)
   |> yLine(21.14 + 0, %)
   |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
@@ -5082,7 +5083,7 @@ const part001 = startSketchOn('XZ')
   |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
   |> angledLineThatIntersects({
        angle: 4.14,
-       intersectTag: 'a',
+       intersectTag: a,
        offset: 9
      }, %)
   |> tangentialArcTo([3.14 + 13, 1.14], %)
@@ -5129,7 +5130,7 @@ const part001 = startSketchOn('XZ')
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: `angledLineThatIntersects({
       angle: 4.14,
-      intersectTag: 'a',
+      intersectTag: a,
       offset: 9
     }, %)`,
         stdLibFnName: 'angledLineThatIntersects',
@@ -5204,7 +5205,7 @@ const part001 = startSketchOn('XZ')
       ang = await u.getAngle(`[data-overlay-index="${4}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: "yLineTo(-10.77, %, 'a')",
+        codeToBeDeleted: 'yLineTo(-10.77, %, $a)',
         stdLibFnName: 'yLineTo',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="4"]',
@@ -5278,20 +5279,20 @@ const part001 = startSketchOn('XZ')
   })
   test.describe('Testing delete with dependent segments', () => {
     const cases = [
-      "line([22, 2], %, 'seg01')",
-      "angledLine([5, 23.03], %, 'seg01')",
-      "xLine(23, %, 'seg01')",
-      "yLine(-8, %, 'seg01')",
-      "xLineTo(30, %, 'seg01')",
-      "yLineTo(-4, %, 'seg01')",
-      "angledLineOfXLength([3, 30], %, 'seg01')",
-      "angledLineOfXLength({ angle: 3, length: 30 }, %, 'seg01')",
-      "angledLineOfYLength([3, 1.5], %, 'seg01')",
-      "angledLineOfYLength({ angle: 3, length: 1.5 }, %, 'seg01')",
-      "angledLineToX([3, 30], %, 'seg01')",
-      "angledLineToX({ angle: 3, to: 30 }, %, 'seg01')",
-      "angledLineToY([3, 7], %, 'seg01')",
-      "angledLineToY({ angle: 3, to: 7 }, %, 'seg01')",
+      'line([22, 2], %, $seg01)',
+      'angledLine([5, 23.03], %, $seg01)',
+      'xLine(23, %, $seg01)',
+      'yLine(-8, %, $seg01)',
+      'xLineTo(30, %, $seg01)',
+      'yLineTo(-4, %, $seg01)',
+      'angledLineOfXLength([3, 30], %, $seg01)',
+      'angledLineOfXLength({ angle: 3, length: 30 }, %, $seg01)',
+      'angledLineOfYLength([3, 1.5], %, $seg01)',
+      'angledLineOfYLength({ angle: 3, length: 1.5 }, %, $seg01)',
+      'angledLineToX([3, 30], %, $seg01)',
+      'angledLineToX({ angle: 3, to: 30 }, %, $seg01)',
+      'angledLineToY([3, 7], %, $seg01)',
+      'angledLineToY({ angle: 3, to: 7 }, %, $seg01)',
     ]
     for (const doesHaveTagOutsideSketch of [true, false]) {
       for (const lineOfInterest of cases) {
@@ -5307,8 +5308,8 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen('seg01', %)], %)        
-${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
+  |> angledLine([-176, segLen(seg01, %)], %)        
+${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
               )
             },
             {
@@ -5394,61 +5395,61 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
   test.describe('Testing remove constraints segments', () => {
     const cases = [
       {
-        before: `line([22 + 0, 2 + 0], %, 'seg01')`,
-        after: `line([22, 2], %, 'seg01')`,
+        before: `line([22 + 0, 2 + 0], %, $seg01)`,
+        after: `line([22, 2], %, $seg01)`,
       },
 
       {
-        before: `angledLine([5 + 0, 23.03 + 0], %, 'seg01')`,
-        after: `line([22.94, 2.01], %, 'seg01')`,
+        before: `angledLine([5 + 0, 23.03 + 0], %, $seg01)`,
+        after: `line([22.94, 2.01], %, $seg01)`,
       },
       {
-        before: `xLine(23 + 0, %, 'seg01')`,
-        after: `line([23, 0], %, 'seg01')`,
+        before: `xLine(23 + 0, %, $seg01)`,
+        after: `line([23, 0], %, $seg01)`,
       },
       {
-        before: `yLine(-8 + 0, %, 'seg01')`,
-        after: `line([0, -8], %, 'seg01')`,
+        before: `yLine(-8 + 0, %, $seg01)`,
+        after: `line([0, -8], %, $seg01)`,
       },
       {
-        before: `xLineTo(30 + 0, %, 'seg01')`,
-        after: `line([25, 0], %, 'seg01')`,
+        before: `xLineTo(30 + 0, %, $seg01)`,
+        after: `line([25, 0], %, $seg01)`,
       },
       {
-        before: `yLineTo(-4 + 0, %, 'seg01')`,
-        after: `line([0, -10], %, 'seg01')`,
+        before: `yLineTo(-4 + 0, %, $seg01)`,
+        after: `line([0, -10], %, $seg01)`,
       },
       {
-        before: `angledLineOfXLength([3 + 0, 30 + 0], %, 'seg01')`,
-        after: `line([30, 1.57], %, 'seg01')`,
+        before: `angledLineOfXLength([3 + 0, 30 + 0], %, $seg01)`,
+        after: `line([30, 1.57], %, $seg01)`,
       },
       {
-        before: `angledLineOfYLength([3 + 0, 1.5 + 0], %, 'seg01')`,
-        after: `line([28.62, 1.5], %, 'seg01')`,
+        before: `angledLineOfYLength([3 + 0, 1.5 + 0], %, $seg01)`,
+        after: `line([28.62, 1.5], %, $seg01)`,
       },
       {
-        before: `angledLineToX([3 + 0, 30 + 0], %, 'seg01')`,
-        after: `line([25, 1.31], %, 'seg01')`,
+        before: `angledLineToX([3 + 0, 30 + 0], %, $seg01)`,
+        after: `line([25, 1.31], %, $seg01)`,
       },
       {
-        before: `angledLineToY([3 + 0, 7 + 0], %, 'seg01')`,
-        after: `line([19.08, 1], %, 'seg01')`,
+        before: `angledLineToY([3 + 0, 7 + 0], %, $seg01)`,
+        after: `line([19.08, 1], %, $seg01)`,
       },
       {
-        before: `angledLineOfXLength({ angle: 3 + 0, length: 30 + 0 }, %, 'seg01')`,
-        after: `line([30, 1.57], %, 'seg01')`,
+        before: `angledLineOfXLength({ angle: 3 + 0, length: 30 + 0 }, %, $seg01)`,
+        after: `line([30, 1.57], %, $seg01)`,
       },
       {
-        before: `angledLineOfYLength({ angle: 3 + 0, length: 1.5 + 0 }, %, 'seg01')`,
-        after: `line([28.62, 1.5], %, 'seg01')`,
+        before: `angledLineOfYLength({ angle: 3 + 0, length: 1.5 + 0 }, %, $seg01)`,
+        after: `line([28.62, 1.5], %, $seg01)`,
       },
       {
-        before: `angledLineToX({ angle: 3 + 0, to: 30 + 0 }, %, 'seg01')`,
-        after: `line([25, 1.31], %, 'seg01')`,
+        before: `angledLineToX({ angle: 3 + 0, to: 30 + 0 }, %, $seg01)`,
+        after: `line([25, 1.31], %, $seg01)`,
       },
       {
-        before: `angledLineToY({ angle: 3 + 0, to: 7 + 0 }, %, 'seg01')`,
-        after: `line([19.08, 1], %, 'seg01')`,
+        before: `angledLineToY({ angle: 3 + 0, to: 7 + 0 }, %, $seg01)`,
+        after: `line([19.08, 1], %, $seg01)`,
       },
     ]
 
@@ -5465,7 +5466,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen('seg01', %)], %)`
+  |> angledLine([-176, segLen(seg01, %)], %)`
             )
           },
           {
@@ -6143,27 +6144,27 @@ const part001 = startSketchOn('-XZ')
   |> angledLineToY({
         angle: topAng,
         to: totalHeightHalf,
-      }, %, 'seg04')
-  |> xLineTo(totalLen, %, 'seg03')
-  |> yLine(-armThick, %, 'seg01')
+      }, %, $seg04)
+  |> xLineTo(totalLen, %, $seg03)
+  |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg04'
+        intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
-      }, %, 'seg02')
-  |> xLineTo(segEndX('seg03', %) + 0, %)
-  |> yLine(-segLen('seg01', %), %)
+      }, %, $seg02)
+  |> xLineTo(segEndX(seg03, %) + 0, %)
+  |> yLine(-segLen(seg01, %), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg02'
+        intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`

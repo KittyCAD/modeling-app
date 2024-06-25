@@ -502,11 +502,10 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 82, end: 83 },
                     {
-                      type: 'Literal',
+                      type: 'TagDeclarator',
                       start: 85,
                       end: 93,
                       value: 'myPath',
-                      raw: '"myPath"',
                     },
                   ],
                   optional: false,
@@ -1657,11 +1656,10 @@ describe('should recognise callExpresions in binaryExpressions', () => {
           callee: { type: 'Identifier', start: 8, end: 15, name: 'segEndX' },
           arguments: [
             {
-              type: 'Literal',
+              type: 'Identifier',
               start: 16,
               end: 23,
-              value: 'seg02',
-              raw: "'seg02'",
+              name: 'seg02',
             },
             { type: 'PipeSubstitution', start: 25, end: 26 },
           ],
