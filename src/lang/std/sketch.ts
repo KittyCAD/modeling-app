@@ -1350,6 +1350,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const { node: pipe } = nodeMeta
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    console.log('referencedSegment', referencedSegment)
     if (!referencedSegment) {
       return new Error('referencedSegment must be provided')
     }
@@ -1508,7 +1509,8 @@ export const angledLineThatIntersects: SketchLineHelper = {
       returnVal.push(
         constrainInfo(
           'intersectionTag',
-          isNotLiteralArrayOrStatic(tag),
+          // This will always be a tag identifier.
+          false,
           code.slice(tag.start, tag.end),
           'angledLineThatIntersects',
           'intersectTag',

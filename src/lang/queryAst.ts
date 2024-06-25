@@ -365,6 +365,8 @@ export function traverse(
     // do nothing
   } else if (_node.type === 'Literal') {
     // do nothing
+  } else if (_node.type === 'TagDeclarator') {
+    // do nothing
   } else if (_node.type === 'ArrayExpression') {
     _node.elements.forEach((el, index) =>
       _traverse(el, [
