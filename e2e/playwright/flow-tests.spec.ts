@@ -786,7 +786,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText("found unknown token '$'")).toBeVisible()
+  await expect(page.getByText('syntax: Unexpected token')).toBeVisible()
 
   // select the line that's causing the error and delete it
   await page.getByText('$ error').click()
@@ -813,7 +813,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   await page.locator('.cm-lintRange.cm-lintRange-error').hover()
   await expect(page.locator('.cm-diagnosticText')).toBeVisible()
-  await expect(page.getByText('Cannot redefine topAng')).toBeVisible()
+  await expect(page.getByText('Cannot redefine `topAng`')).toBeVisible()
 
   const secondTopAng = await page.getByText('topAng').first()
   await secondTopAng?.dblclick()

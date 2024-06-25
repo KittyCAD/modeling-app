@@ -82,7 +82,11 @@ const sketch001 = startSketchOn('XY')
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -99,8 +103,12 @@ const sketch001 = startSketchOn('XY')
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -108,8 +116,12 @@ const sketch001 = startSketchOn('XY')
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -121,8 +133,12 @@ const sketch001 = startSketchOn('XY')
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -130,8 +146,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -139,8 +159,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -150,8 +174,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -163,8 +191,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",
@@ -178,10 +210,14 @@ const sketch001 = startSketchOn('XY')
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -189,10 +225,14 @@ const sketch001 = startSketchOn('XY')
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 },
@@ -224,8 +264,12 @@ const sketch001 = startSketchOn('XY')
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -233,8 +277,12 @@ const sketch001 = startSketchOn('XY')
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -246,8 +294,12 @@ const sketch001 = startSketchOn('XY')
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -255,8 +307,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -264,8 +320,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -275,8 +335,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -288,8 +352,12 @@ const sketch001 = startSketchOn('XY')
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",

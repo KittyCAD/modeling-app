@@ -66,13 +66,13 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
 async fn serial_test_sketch_on_face() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
-  |> line([28.67, -13.25], %, "here")
+  |> line([28.67, -13.25], %, $here)
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
   |> close(%)
   |> extrude(5, %)
 
-const part002 = startSketchOn(part001, "here")
+const part002 = startSketchOn(part001, here)
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -810,11 +810,11 @@ fn roundedRectangle = (pos, w, l, cornerRadius) => {
   const rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
-    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
+    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
     |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
     |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
     |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
-    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
+    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, $arc2)
     |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
     |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
     |> close(%)
@@ -2429,4 +2429,31 @@ const sketch001 = startSketchOn(part001, 'chamfer1')
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_chamfer.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_duplicate_tags_should_error() {
+    let code = r#"fn triangle = (len) => {
+  return startSketchOn('XY')
+  |> startProfileAt([-len / 2, -len / 2], %)
+  |> angledLine({ angle: 0, length: len }, %, $a)
+  |> angledLine({
+       angle: segAng(a, %) + 120,
+       length: len
+     }, %, $b)
+  |> angledLine({
+       angle: segAng(b, %) + 120,
+       length: len
+     }, %, $a)
+}
+
+let p = triangle(200)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+    );
 }

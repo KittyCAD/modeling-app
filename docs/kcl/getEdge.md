@@ -9,7 +9,7 @@ Get an edge on a 3D solid.
 
 
 ```js
-getEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
+getEdge(tag: TagIdentifier, extrude_group: ExtrudeGroup) -> Uuid
 ```
 
 ### Examples
@@ -39,7 +39,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 
 ### Arguments
 
-* `tag`: `String` (REQUIRED)
+* `tag`: `TagIdentifier` (REQUIRED)
+```js
+{
+	value: string,
+}
+```
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```js
 {
@@ -60,7 +65,11 @@ const revolution = startSketchOn(box, "revolveAxis")
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -123,7 +132,11 @@ const revolution = startSketchOn(box, "revolveAxis")
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
-	tag: string,
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "chamfer",
 }],
 	// The height of the extrude group.
@@ -140,10 +153,14 @@ const revolution = startSketchOn(box, "revolveAxis")
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -151,10 +168,14 @@ const revolution = startSketchOn(box, "revolveAxis")
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 },
@@ -186,8 +207,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 	start: {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 },
@@ -195,8 +220,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 	value: [{
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "ToPoint",
@@ -208,8 +237,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 	center: [number, number],
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
@@ -217,8 +250,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
@@ -226,8 +263,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Horizontal",
@@ -237,8 +278,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "AngledLineTo",
@@ -250,8 +295,12 @@ const revolution = startSketchOn(box, "revolveAxis")
 {
 	// The from point.
 	from: [number, number],
-	// The name of the path.
-	name: string,
+	// The tag of the path.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	// The to point.
 	to: [number, number],
 	type: "Base",
@@ -265,10 +314,14 @@ const revolution = startSketchOn(box, "revolveAxis")
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudePlane",
 } |
 {
@@ -276,10 +329,14 @@ const revolution = startSketchOn(box, "revolveAxis")
 	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
-	// The name.
-	name: string,
 	// The source range.
 	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "extrudeArc",
 }],
 }
