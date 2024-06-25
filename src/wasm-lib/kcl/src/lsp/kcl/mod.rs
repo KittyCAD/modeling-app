@@ -41,6 +41,9 @@ use crate::{
     parser::PIPE_OPERATOR,
 };
 
+#[cfg(not(target_arch = "wasm32"))]
+use crate::lint::checks;
+
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "cli", derive(Parser))]
@@ -256,6 +259,13 @@ impl crate::lsp::backend::Backend for Backend {
         // errors.
         if self.execute(&params, ast.clone()).await.is_err() {
             return;
+        }
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            for discovered_finding in ast.lint(checks::lint_variables).into_iter().flatten() {
+                self.add_to_diagnostics(&params, discovered_finding).await;
+            }
         }
     }
 }
