@@ -136,7 +136,6 @@ jobs:
         path: test-results/
     - name: Run ubuntu/chrome flow retry failures
       id: retry
-      continue-on-error: true
       if: always()
       run: |
         if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
@@ -234,12 +233,14 @@ jobs:
         path: test-results/
     - name: Run macos/safari flow retry failures
       id: retry
-      continue-on-error: true
       if: always()
       run: |
-        if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
-        then echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
-        else echo "retried=true" >> $GITHUB_OUTPUT;
+        if [ -d "test-results" ];
+          then if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
+            then echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+            else echo "retried=true" >> $GITHUB_OUTPUT;
+            fi;
+          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
         fi;
         yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts
       env:
