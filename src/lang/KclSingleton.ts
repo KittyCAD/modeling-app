@@ -211,7 +211,6 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
-    console.log('[lsp] errors', errors)
 
     editorManager.addDiagnostics(await lintAst({ ast: ast }))
 
@@ -356,7 +355,10 @@ export class KclManager {
     optionalParams?: {
       focusPath?: PathToNode
     }
-  ): Promise<Selections | null> {
+  ): Promise<{
+    newAst: Program
+    selections?: Selections
+  }> {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
