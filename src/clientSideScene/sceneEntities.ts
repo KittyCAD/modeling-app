@@ -1782,6 +1782,13 @@ function prepareTruncatedMemoryAndAst(
   }
   const programMemoryOverride = programMemoryInit()
   if (err(programMemoryOverride)) return programMemoryOverride
+  // Grab all the TagDeclarators and TagIdentifiers from memory.
+  for (const key in programMemory.root) {
+    const value = programMemory.root[key]
+    if (value.type === 'TagDeclarator' || value.type === 'TagIdentifier') {
+      programMemoryOverride.root[key] = JSON.parse(JSON.stringify(value))
+    }
+  }
 
   for (let i = 0; i < bodyIndex; i++) {
     const node = _ast.body[i]
