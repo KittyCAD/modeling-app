@@ -167,7 +167,7 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      - name: Install x86 target for Universal builds (MacOS only)
+      - name: Install x86 target for Universal builds
         run: |
           rustup target add x86_64-apple-darwin
 
@@ -276,7 +276,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: "yarn tauri build --config --target universal-apple-darwin --target universal-apple-darwin"
+        run: "yarn tauri build --config --target universal-apple-darwin"
 
       - uses: actions/upload-artifact@v3
         with:
@@ -326,6 +326,11 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
+      - name: Install arm target
+        run: |
+          rustup target add aarch64-pc-windows-msvc
+          rustup target list
+
       - name: Run build:wasm manually
         shell: bash
         env:
@@ -369,9 +374,13 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
-      - name: Build the app (debug)
+      - name: Build the app (debug) x86_64
         if: ${{ env.BUILD_RELEASE == 'false' }}
         run: "yarn run tauri build --debug"
+
+      - name: Build the app (debug) for aarch64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        run: "yarn run tauri build --debug --target aarch64-pc-windows-msvc"
 
       - name: Build the app (release) and sign
         if: ${{ env.BUILD_RELEASE == 'true' }}
