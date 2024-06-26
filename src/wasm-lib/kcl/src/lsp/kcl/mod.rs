@@ -526,14 +526,11 @@ impl Backend {
     }
 
     async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
-        let inner = self.diagnostics_map.inner().await;
-        let Some(DocumentDiagnosticReport::Full(ref report)) = inner.get(uri.as_str()) else {
+        let mut inner = self.diagnostics_map.write().await;
+        let Some(DocumentDiagnosticReport::Full(ref mut report)) = inner.get_mut(uri.as_str()) else {
             // We have nothing to clear.
             return;
         };
-
-        // TODO: fix clones here.
-        let mut report = report.clone();
 
         // If we only want to clear a specific severity, do that.
         if let Some(severity) = severity {
@@ -579,33 +576,47 @@ impl Backend {
                 .await;
         }
 
-        // TODO: fix clones here.
-        let mut items = match self.diagnostics_map.inner().await.get(params.uri.as_str()) {
-            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items.clone(),
-            _ => vec![],
+        let mut inner = self.diagnostics_map.write().await;
+        let report = match inner.get_mut(params.uri.as_str()) {
+            Some(DocumentDiagnosticReport::Full(ref mut report)) => report,
+            _ => &mut RelatedFullDocumentDiagnosticReport {
+                related_documents: None,
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items: vec![],
+                },
+            },
         };
 
         // Ensure we don't already have this diagnostic.
-        if items.iter().any(|x| x == &diagnostic) {
+        if report
+            .full_document_diagnostic_report
+            .items
+            .iter()
+            .any(|x| x == &diagnostic)
+        {
             self.client
-                .publish_diagnostics(params.uri.clone(), items.clone(), None)
+                .publish_diagnostics(
+                    params.uri.clone(),
+                    report.full_document_diagnostic_report.items.clone(),
+                    None,
+                )
                 .await;
             return;
         }
 
-        items.push(diagnostic);
-
-        let report = RelatedFullDocumentDiagnosticReport {
-            related_documents: None,
-            full_document_diagnostic_report: FullDocumentDiagnosticReport { result_id: None, items },
-        };
+        report.full_document_diagnostic_report.items.push(diagnostic);
 
         self.diagnostics_map
             .insert(params.uri.to_string(), DocumentDiagnosticReport::Full(report.clone()))
             .await;
 
         self.client
-            .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
+            .publish_diagnostics(
+                params.uri.clone(),
+                report.full_document_diagnostic_report.items.clone(),
+                None,
+            )
             .await;
     }
 

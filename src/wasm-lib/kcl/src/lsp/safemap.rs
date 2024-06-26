@@ -4,7 +4,7 @@
 
 use std::{collections::HashMap, hash::Hash, sync::Arc};
 
-use tokio::sync::{RwLock, RwLockReadGuard};
+use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 /// A thread-safe map type.
 #[derive(Clone, Debug)]
@@ -41,6 +41,11 @@ impl<'a, K: 'a + Eq + Hash, V: 'a> SafeMap<K, V> {
     /// Get a reference to the underlying map.
     pub async fn inner(&'a self) -> RwLockReadGuard<'a, HashMap<K, V>> {
         self.0.read().await
+    }
+
+    /// Get a mutable reference to the underlying map.
+    pub async fn write(&'a self) -> RwLockWriteGuard<'a, HashMap<K, V>> {
+        self.0.write().await
     }
 }
 
