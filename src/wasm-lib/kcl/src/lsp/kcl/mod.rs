@@ -1,6 +1,11 @@
 //! Functions for the `kcl` lsp server.
 
-use std::{collections::HashMap, io::Write, str::FromStr, sync::Arc};
+use std::{
+    collections::HashMap,
+    io::Write,
+    str::FromStr,
+    sync::{Arc, Mutex},
+};
 
 use tokio::sync::RwLock;
 
@@ -14,33 +19,58 @@ use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DidChangeConfigurationParams,
-        DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
-        DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams,
-        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
-        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
-        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover, HoverContents, HoverParams,
-        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
-        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
-        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions,
-        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions,
-        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp,
-        SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
-        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
+        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
+        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
+        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
+        DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
+        DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
+        Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
+        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
+        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
+        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
+        SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend,
+        SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
+        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
 
-use super::backend::{InnerHandle, UpdateHandle};
+#[cfg(not(target_arch = "wasm32"))]
+use crate::lint::checks;
 use crate::{
-    ast::types::VariableKind,
+    ast::types::{Value, VariableKind},
     executor::SourceRange,
-    lint::checks,
-    lsp::{backend::Backend as _, safemap::SafeMap, util::IntoDiagnostic},
+    lsp::{
+        backend::{Backend as _, InnerHandle, UpdateHandle},
+        safemap::SafeMap,
+        util::IntoDiagnostic,
+    },
     parser::PIPE_OPERATOR,
+    token::TokenType,
 };
+
+lazy_static::lazy_static! {
+    pub static ref SEMANTIC_TOKEN_TYPES: Vec<SemanticTokenType> = {
+        // This is safe to unwrap because we know all the token types are valid.
+        // And the test would fail if they were not.
+        let mut gen = TokenType::all_semantic_token_types().unwrap();
+        gen.extend(vec![
+            SemanticTokenType::PARAMETER,
+            SemanticTokenType::PROPERTY,
+        ]);
+        gen
+    };
+
+    pub static ref SEMANTIC_TOKEN_MODIFIERS: Vec<SemanticTokenModifier> = {
+        vec![
+            SemanticTokenModifier::DECLARATION,
+            SemanticTokenModifier::DEFINITION,
+        ]
+    };
+}
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -68,8 +98,6 @@ pub struct Backend {
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
-    /// The types of tokens the server supports.
-    pub token_types: Vec<SemanticTokenType>,
     /// Token maps.
     pub token_map: SafeMap<String, Vec<crate::token::Token>>,
     /// AST maps.
@@ -166,14 +194,18 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
-        self.clear_diagnostics_map(&params.uri).await;
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                self.add_to_diagnostics(&params, err, true).await;
+                self.token_map.remove(&params.uri.to_string()).await;
+                self.ast_map.remove(&params.uri.to_string()).await;
+                self.symbols_map.remove(&params.uri.to_string()).await;
+                self.semantic_tokens_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
                 return;
             }
         };
@@ -208,12 +240,15 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Lets update the ast.
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = crate::parser::Parser::new(tokens.clone());
         let result = parser.ast();
         let ast = match result {
             Ok(ast) => ast,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                self.add_to_diagnostics(&params, err, true).await;
+                self.ast_map.remove(&params.uri.to_string()).await;
+                self.symbols_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
                 return;
             }
         };
@@ -241,6 +276,24 @@ impl crate::lsp::backend::Backend for Backend {
                     ast.get_lsp_symbols(&params.text).unwrap_or_default(),
                 )
                 .await;
+
+            // Update our semantic tokens.
+            self.update_semantic_tokens(tokens, &params).await;
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                let discovered_findings = ast
+                    .lint(checks::lint_variables)
+                    .into_iter()
+                    .flatten()
+                    .collect::<Vec<_>>();
+                // Clear the lints before we lint.
+                self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
+                    .await;
+                for discovered_finding in &discovered_findings {
+                    self.add_to_diagnostics(&params, discovered_finding, false).await;
+                }
+            }
         }
 
         // Send the notification to the client that the ast was updated.
@@ -256,13 +309,12 @@ impl crate::lsp::backend::Backend for Backend {
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
         if self.execute(&params, ast.clone()).await.is_err() {
-            // if there was an issue, let's bail and avoid trying to lint.
             return;
         }
 
-        for discovered_finding in ast.lint(checks::lint_variables).into_iter().flatten() {
-            self.add_to_diagnostics(&params, discovered_finding).await;
-        }
+        // If we made it here we can clear the diagnostics.
+        self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
+            .await;
     }
 }
 
@@ -299,14 +351,14 @@ impl Backend {
                 token_type = SemanticTokenType::FUNCTION;
             }
 
-            let token_type_index = match self.get_semantic_token_type_index(token_type.clone()) {
+            let mut token_type_index = match self.get_semantic_token_type_index(token_type.clone()) {
                 Some(index) => index,
                 // This is actually bad this should not fail.
-                // TODO: ensure we never get here.
+                // The test for listing all semantic token types should make this never happen.
                 None => {
                     self.client
                         .log_message(
-                            MessageType::INFO,
+                            MessageType::ERROR,
                             format!("token type `{:?}` not accounted for", token_type),
                         )
                         .await;
@@ -316,6 +368,108 @@ impl Backend {
 
             let source_range: SourceRange = token.clone().into();
             let position = source_range.start_to_lsp_position(&params.text);
+
+            // Calculate the token modifiers.
+            // Get the value at the current position.
+            let token_modifiers_bitset: u32 = if let Some(ast) = self.ast_map.get(&params.uri.to_string()).await {
+                let token_index = Arc::new(Mutex::new(token_type_index));
+                let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+                crate::lint::walk(&ast, &|node: crate::lint::Node| {
+                    let node_range: SourceRange = (&node).into();
+                    if !node_range.contains(source_range.start()) {
+                        return Ok(true);
+                    }
+
+                    let get_modifier = |modifier: SemanticTokenModifier| -> Result<bool> {
+                        let mut mods = modifier_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                        let Some(token_modifier_index) = self.get_semantic_token_modifier_index(modifier) else {
+                            return Ok(true);
+                        };
+                        if *mods == 0 {
+                            *mods = token_modifier_index;
+                        } else {
+                            *mods |= token_modifier_index;
+                        }
+                        Ok(false)
+                    };
+
+                    match node {
+                        crate::lint::Node::TagDeclarator(_) => {
+                            return get_modifier(SemanticTokenModifier::DEFINITION);
+                        }
+                        crate::lint::Node::VariableDeclarator(variable) => {
+                            let sr: SourceRange = variable.id.clone().into();
+                            if sr.contains(source_range.start()) {
+                                if let Value::FunctionExpression(_) = &variable.init {
+                                    let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                    *ti = match self.get_semantic_token_type_index(SemanticTokenType::FUNCTION) {
+                                        Some(index) => index,
+                                        None => token_type_index,
+                                    };
+                                }
+
+                                return get_modifier(SemanticTokenModifier::DECLARATION);
+                            }
+                        }
+                        crate::lint::Node::Parameter(_) => {
+                            let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                            *ti = match self.get_semantic_token_type_index(SemanticTokenType::PARAMETER) {
+                                Some(index) => index,
+                                None => token_type_index,
+                            };
+                            return Ok(false);
+                        }
+                        crate::lint::Node::MemberExpression(member_expression) => {
+                            let sr: SourceRange = member_expression.property.clone().into();
+                            if sr.contains(source_range.start()) {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+                                return Ok(false);
+                            }
+                        }
+                        crate::lint::Node::ObjectProperty(object_property) => {
+                            let sr: SourceRange = object_property.key.clone().into();
+                            if sr.contains(source_range.start()) {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+                            }
+                            return get_modifier(SemanticTokenModifier::DECLARATION);
+                        }
+                        crate::lint::Node::CallExpression(call_expr) => {
+                            let sr: SourceRange = call_expr.callee.clone().into();
+                            if sr.contains(source_range.start()) {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::FUNCTION) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+                                return Ok(false);
+                            }
+                        }
+                        _ => {}
+                    }
+                    Ok(true)
+                })
+                .unwrap_or_default();
+
+                let t = if let Ok(guard) = token_index.lock() { *guard } else { 0 };
+                token_type_index = t;
+
+                let m = if let Ok(guard) = modifier_index.lock() {
+                    *guard
+                } else {
+                    0
+                };
+                m
+            } else {
+                0
+            };
 
             // We need to check if we are on the last token of the line.
             // If we are starting from the end of the last line just add 1 to the line.
@@ -328,8 +482,8 @@ impl Backend {
                         delta_line: position.line - last_position.line + 1,
                         delta_start: 0,
                         length: token.value.len() as u32,
-                        token_type: token_type_index as u32,
-                        token_modifiers_bitset: 0,
+                        token_type: token_type_index,
+                        token_modifiers_bitset,
                     };
 
                     semantic_tokens.push(semantic_token);
@@ -347,8 +501,8 @@ impl Backend {
                     position.character - last_position.character
                 },
                 length: token.value.len() as u32,
-                token_type: token_type_index as u32,
-                token_modifiers_bitset: 0,
+                token_type: token_type_index,
+                token_modifiers_bitset,
             };
 
             semantic_tokens.push(semantic_token);
@@ -360,7 +514,19 @@ impl Backend {
             .await;
     }
 
-    async fn clear_diagnostics_map(&self, uri: &url::Url) {
+    async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
+        let mut items = match self.diagnostics_map.get(uri.as_str()).await {
+            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items.clone(),
+            _ => vec![],
+        };
+
+        // If we only want to clear a specific severity, do that.
+        if let Some(severity) = severity {
+            items.retain(|x| x.severity != Some(severity));
+        } else {
+            items.clear();
+        }
+
         self.diagnostics_map
             .insert(
                 uri.to_string(),
@@ -368,7 +534,7 @@ impl Backend {
                     related_documents: None,
                     full_document_diagnostic_report: FullDocumentDiagnosticReport {
                         result_id: None,
-                        items: vec![],
+                        items: items.clone(),
                     },
                 }),
             )
@@ -376,7 +542,7 @@ impl Backend {
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            self.client.publish_diagnostics(uri.clone(), vec![], None).await;
+            self.client.publish_diagnostics(uri.clone(), items, None).await;
         }
     }
 
@@ -384,12 +550,23 @@ impl Backend {
         &self,
         params: &TextDocumentItem,
         diagnostic: DiagT,
+        clear_all_before_add: bool,
     ) {
         self.client
             .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostic))
             .await;
 
         let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
+
+        if clear_all_before_add {
+            self.clear_diagnostics_map(&params.uri, None).await;
+        } else if diagnostic.severity == Some(DiagnosticSeverity::ERROR) {
+            // If the diagnostic is an error, it will be the only error we get since that halts
+            // execution.
+            // Clear the diagnostics before we add a new one.
+            self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
+                .await;
+        }
 
         let DocumentDiagnosticReport::Full(mut report) = self
             .diagnostics_map
@@ -405,6 +582,19 @@ impl Backend {
         else {
             unreachable!();
         };
+
+        // Ensure we don't already have this diagnostic.
+        if report
+            .full_document_diagnostic_report
+            .items
+            .iter()
+            .any(|x| x == &diagnostic)
+        {
+            self.client
+                .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
+                .await;
+            return;
+        }
 
         report.full_document_diagnostic_report.items.push(diagnostic);
 
@@ -439,7 +629,8 @@ impl Backend {
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,
             Err(err) => {
-                self.add_to_diagnostics(params, err).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
+                self.add_to_diagnostics(params, err, false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
@@ -458,8 +649,18 @@ impl Backend {
         Ok(())
     }
 
-    fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
-        self.token_types.iter().position(|x| *x == token_type)
+    pub fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<u32> {
+        SEMANTIC_TOKEN_TYPES
+            .iter()
+            .position(|x| *x == token_type)
+            .map(|y| y as u32)
+    }
+
+    pub fn get_semantic_token_modifier_index(&self, token_type: SemanticTokenModifier) -> Option<u32> {
+        SEMANTIC_TOKEN_MODIFIERS
+            .iter()
+            .position(|x| *x == token_type)
+            .map(|y| y as u32)
     }
 
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
@@ -679,8 +880,8 @@ impl LanguageServer for Backend {
                         semantic_tokens_options: SemanticTokensOptions {
                             work_done_progress_options: WorkDoneProgressOptions::default(),
                             legend: SemanticTokensLegend {
-                                token_types: self.token_types.clone(),
-                                token_modifiers: vec![],
+                                token_types: SEMANTIC_TOKEN_TYPES.clone(),
+                                token_modifiers: SEMANTIC_TOKEN_MODIFIERS.clone(),
                             },
                             range: Some(false),
                             full: Some(SemanticTokensFullOptions::Bool(true)),
