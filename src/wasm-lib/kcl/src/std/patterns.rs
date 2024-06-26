@@ -8,7 +8,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryItem, SketchGroup, SketchGroupSet},
+    executor::{
+        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryItem, Point3d, ProgramReturn, SketchGroup,
+        SketchGroupSet, SourceRange, UserVal,
+    },
+    function_param::FunctionParam,
     std::{types::Uint, Args},
 };
 
@@ -68,6 +72,217 @@ impl LinearPattern {
             LinearPattern::ThreeD(lp) => lp.distance,
         }
     }
+}
+
+/// A linear pattern
+/// Each element in the pattern repeats a particular piece of geometry.
+/// The repetitions can be transformed by the `transform` parameter.
+pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
+    let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
+
+    let extrude_groups = inner_pattern_transform(
+        num_repetitions,
+        FunctionParam {
+            inner: transform.func,
+            fn_expr: transform.expr,
+            meta: vec![args.source_range.into()],
+            ctx: args.ctx.clone(),
+            memory: args.current_program_memory.clone(),
+        },
+        extr,
+        &args,
+    )
+    .await?;
+    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+}
+
+/// A linear pattern on a 2D or 3D solid.
+/// Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
+///
+/// ```no_run
+/// // base radius
+/// const r = 50
+/// // layer height
+/// const h = 10
+/// // taper factor [0 - 1)
+/// const t = 0.005
+/// // Each layer is just a pretty thin cylinder.
+/// fn layer = () => {
+///   return startSketchOn("XY") // or some other plane idk
+///     |> circle([0, 0], 1, %)
+///     |> extrude(h, %)
+/// // Change each replica's radius and shift it up the Z axis.
+/// fn transform = (replicaId) => {
+///   return {
+///     translate: [0, 0, replicaId*10]
+///     scale: r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+///   }
+/// }
+/// The vase is 100 layers tall.
+/// The 100 layers are replica of each other, with a slight transformation applied to each.
+/// let vase = layer() |> patternTransform(100, transform, %)
+/// ```
+#[stdlib {
+     name = "patternTransform",
+ }]
+async fn inner_pattern_transform<'a>(
+    num_repetitions: u32,
+    transform_function: FunctionParam<'a>,
+    extrude_group_set: ExtrudeGroupSet,
+    args: &'a Args,
+) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    // Build the vec of transforms, one for each repetition.
+    let mut transform = Vec::new();
+    for i in 0..num_repetitions {
+        let t = make_transform(i, &transform_function, args.source_range).await?;
+        transform.push(t);
+    }
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not flush these, then you won't be able to pattern something with fillets.
+    // Flush just the fillets/chamfers that apply to these extrude groups.
+    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+        .await?;
+
+    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
+
+    if args.ctx.is_mock {
+        return Ok(starting_extrude_groups);
+    }
+
+    let mut extrude_groups = Vec::new();
+    for e in starting_extrude_groups {
+        let new_extrude_groups = send_pattern_transform(transform.clone(), &e, &args).await?;
+        extrude_groups.extend(new_extrude_groups);
+    }
+    Ok(extrude_groups)
+}
+
+async fn send_pattern_transform(
+    // This should be passed via reference, see
+    // https://github.com/KittyCAD/modeling-app/issues/2821
+    transform: Vec<kittycad::types::LinearTransform>,
+    extrude_group: &ExtrudeGroup,
+    args: &Args,
+) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    let id = uuid::Uuid::new_v4();
+
+    let resp = args
+        .send_modeling_cmd(
+            id,
+            ModelingCmd::EntityLinearPatternTransform {
+                entity_id: extrude_group.id,
+                transform,
+            },
+        )
+        .await?;
+
+    let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPatternTransform { data: pattern_info },
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    let mut geometries = vec![Box::new(extrude_group.clone())];
+    for id in pattern_info.entity_ids.iter() {
+        let mut new_extrude_group = extrude_group.clone();
+        new_extrude_group.id = *id;
+        geometries.push(Box::new(new_extrude_group));
+    }
+    Ok(geometries)
+}
+
+async fn make_transform<'a>(
+    i: u32,
+    transform_function: &FunctionParam<'a>,
+    source_range: SourceRange,
+) -> Result<kittycad::types::LinearTransform, KclError> {
+    // Call the transform fn for this repetition.
+    let repetition_num = MemoryItem::UserVal(UserVal {
+        value: serde_json::Value::Number(i.into()),
+        meta: vec![source_range.into()],
+    });
+    let transform_fn_args = vec![repetition_num];
+    let transform_fn_return = transform_function.call(transform_fn_args).await?.0;
+
+    // Unpack the returned transform object.
+    let source_ranges = vec![source_range];
+    let transform_fn_return = transform_fn_return.ok_or_else(|| {
+        KclError::Semantic(KclErrorDetails {
+            message: "Transform function must return a value".to_string(),
+            source_ranges: source_ranges.clone(),
+        })
+    })?;
+    let ProgramReturn::Value(transform_fn_return) = transform_fn_return else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Transform function must return a value".to_string(),
+            source_ranges: source_ranges.clone(),
+        }));
+    };
+    let MemoryItem::UserVal(transform) = transform_fn_return else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Transform function must return a transform object".to_string(),
+            source_ranges: source_ranges.clone(),
+        }));
+    };
+
+    // Apply defaults to the transform.
+    let replicate = match transform.value.get("replicate") {
+        Some(serde_json::Value::Bool(true)) => true,
+        Some(serde_json::Value::Bool(false)) => false,
+        Some(_) => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "The 'replicate' key must be a bool".to_string(),
+                source_ranges: source_ranges.clone(),
+            }));
+        }
+        None => true,
+    };
+    let scale = match transform.value.get("scale") {
+        Some(x) => array_to_point3d(x, source_ranges.clone())?,
+        None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
+    };
+    let translate = match transform.value.get("translate") {
+        Some(x) => array_to_point3d(x, source_ranges.clone())?,
+        None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
+    };
+    let t = kittycad::types::LinearTransform {
+        replicate,
+        scale: Some(scale.into()),
+        translate: Some(translate.into()),
+    };
+    Ok(t)
+}
+
+fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+    let serde_json::Value::Array(arr) = dbg!(json) else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
+            source_ranges,
+        }));
+    };
+    let len = arr.len();
+    if len != 3 {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!("Expected an array of 3 numbers (i.e. a 3D point) but found {len} items"),
+            source_ranges,
+        }));
+    };
+    // Gets an f64 from a JSON value, returns Option.
+    let f = |j: &serde_json::Value| j.as_number().and_then(|num| num.as_f64()).map(|x| x.to_owned());
+    let err = |component| {
+        KclError::Semantic(KclErrorDetails {
+            message: format!("{component} component of this point was not a number"),
+            source_ranges: source_ranges.clone(),
+        })
+    };
+    let x = f(&arr[0]).ok_or_else(|| err("X"))?;
+    let y = f(&arr[1]).ok_or_else(|| err("Y"))?;
+    let z = f(&arr[2]).ok_or_else(|| err("Z"))?;
+    Ok(Point3d { x, y, z })
 }
 
 /// A linear pattern on a 2D sketch.
