@@ -87,6 +87,7 @@ fn non_code_node(i: TokenSlice) -> PResult<NonCodeNode> {
                     } else {
                         NonCodeValue::BlockComment { value, style }
                     },
+                    digest: None,
                 }),
                 _ => None,
             })
@@ -124,6 +125,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
                 start: token.start,
                 end: token.end,
                 value,
+                digest: None,
             })
         }
     })
@@ -193,6 +195,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
         end: values.last().unwrap().end().max(max_noncode_end),
         body: values,
         non_code_meta,
+        digest: None,
     })
 }
 
@@ -213,6 +216,7 @@ fn bool_value(i: TokenSlice) -> PResult<Literal> {
         end: token.end,
         value: LiteralValue::Bool(value),
         raw: value.to_string(),
+        digest: None,
     })
 }
 
@@ -242,6 +246,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         end: token.end,
         value,
         raw: token.value.clone(),
+        digest: None,
     })
 }
 
@@ -274,6 +279,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
         end: token.end,
         value,
         raw: token.value.clone(),
+        digest: None,
     })
 }
 
@@ -431,6 +437,7 @@ fn shebang(i: TokenSlice) -> PResult<NonCodeNode> {
         value: NonCodeValue::Shebang {
             value: format!("#!{}", value),
         },
+        digest: None,
     })
 }
 
@@ -452,7 +459,12 @@ fn array(i: TokenSlice) -> PResult<ArrayExpression> {
         .parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(ArrayExpression { start, end, elements })
+    Ok(ArrayExpression {
+        start,
+        end,
+        elements,
+        digest: None,
+    })
 }
 
 /// Parse n..m into a vec of numbers [n, n+1, ..., m]
@@ -468,6 +480,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
                 end: token0.end,
                 value: num.into(),
                 raw: num.to_string(),
+                digest: None,
             }))
         })
         .collect())
@@ -495,6 +508,7 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
         end: val.end(),
         key,
         value: val,
+        digest: None,
     })
 }
 
@@ -510,7 +524,12 @@ fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
-    Ok(ObjectExpression { start, end, properties })
+    Ok(ObjectExpression {
+        start,
+        end,
+        properties,
+        digest: None,
+    })
 }
 
 /// Parse the % symbol, used to substitute a curried argument from a |> (pipe).
@@ -520,6 +539,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
             Ok(PipeSubstitution {
                 start: token.start,
                 end: token.end,
+                digest: None,
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -559,6 +579,7 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
         params,
         body,
         return_type,
+        digest: None,
     })
 }
 
@@ -609,6 +630,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
         object: MemberObject::Identifier(Box::new(id)),
         computed,
         property,
+        digest: None,
     };
 
     // Each remaining member wraps the current member expression inside another member expression.
@@ -623,6 +645,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
                 object: MemberObject::MemberExpression(Box::new(accumulated)),
                 computed,
                 property,
+                digest: None,
             }
         }))
 }
@@ -769,6 +792,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                     start: ws_token.start,
                     end: ws_token.end,
                     value: NonCodeValue::NewLine,
+                    digest: None,
                 }));
             }
         }
@@ -850,6 +874,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         end,
         body,
         non_code_meta,
+        digest: None,
     })
 }
 
@@ -876,6 +901,7 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
         start,
         end: argument.end(),
         argument,
+        digest: None,
     })
 }
 
@@ -1013,8 +1039,10 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             end,
             id,
             init: val,
+            digest: None,
         }],
         kind,
+        digest: None,
     })
 }
 
@@ -1027,6 +1055,7 @@ impl TryFrom<Token> for Identifier {
                 start: token.start,
                 end: token.end,
                 name: token.value,
+                digest: None,
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -1057,6 +1086,7 @@ impl TryFrom<Token> for TagDeclarator {
                 start: token.start - 1,
                 end: token.end,
                 name: token.value,
+                digest: None,
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -1133,6 +1163,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
         end: argument.end(),
         operator,
         argument,
+        digest: None,
     })
 }
 
@@ -1210,6 +1241,7 @@ fn expression(i: TokenSlice) -> PResult<ExpressionStatement> {
         start: val.start(),
         end: val.end(),
         expression: val,
+        digest: None,
     })
 }
 
@@ -1427,6 +1459,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
                 identifier,
                 type_,
                 optional,
+                digest: None,
             })
         })
         .collect::<Result<_, _>>()
@@ -1516,6 +1549,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
                                 start: literal.start,
                                 end: literal.end,
                                 name: name.to_string(),
+                                digest: None,
                             };
                             let tag = tag
                                 .into_valid_binding_name()
@@ -1554,6 +1588,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
                                 start: literal.start,
                                 end: literal.end,
                                 name: name.to_string(),
+                                digest: None,
                             };
 
                             // Replace the literal with the tag.
@@ -1581,6 +1616,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
         callee: fn_name,
         arguments: args,
         optional: false,
+        digest: None,
     })
 }
 
@@ -1757,18 +1793,24 @@ const mySk1 = startSketchAt([0, 0])"#;
                             end: 33,
                             value: 2u32.into(),
                             raw: "2".to_owned(),
+                            digest: None,
                         })),
+                        digest: None,
                     })],
                     non_code_meta: NonCodeMeta {
                         non_code_nodes: Default::default(),
                         start: vec![NonCodeNode {
                             start: 7,
                             end: 25,
-                            value: NonCodeValue::NewLine
+                            value: NonCodeValue::NewLine,
+                            digest: None
                         }],
+                        digest: None,
                     },
+                    digest: None,
                 },
                 return_type: None,
+                digest: None,
             }
         );
     }
@@ -1817,6 +1859,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     value: "this is a comment".to_owned(),
                     style: CommentStyle::Line,
                 },
+                digest: None,
             }],
             non_code_meta.start,
         );
@@ -1829,11 +1872,13 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "block\n  comment".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
                 NonCodeNode {
                     start: 82,
                     end: 86,
                     value: NonCodeValue::NewLine,
+                    digest: None,
                 },
             ]),
             non_code_meta.non_code_nodes.get(&0),
@@ -1846,6 +1891,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     value: "this is also a comment".to_owned(),
                     style: CommentStyle::Line,
                 },
+                digest: None,
             }]),
             non_code_meta.non_code_nodes.get(&1),
         );
@@ -1913,6 +1959,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 10,
                 value: 3u32.into(),
                 raw: "3".to_owned(),
+                digest: None,
             }))
         );
     }
@@ -2046,6 +2093,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hi".to_owned(),
                         style: CommentStyle::Line,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2057,6 +2105,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2068,6 +2117,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2079,6 +2129,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2091,6 +2142,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2105,6 +2157,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2119,6 +2172,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -2131,6 +2185,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "block\n                    comment".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
         ]
@@ -2274,18 +2329,22 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 1,
                 value: 5u32.into(),
                 raw: "5".to_owned(),
+                digest: None,
             })),
             right: BinaryPart::Literal(Box::new(Literal {
                 start: 4,
                 end: 7,
                 value: "a".into(),
                 raw: r#""a""#.to_owned(),
+                digest: None,
             })),
+            digest: None,
         };
         let expected = vec![BodyItem::ExpressionStatement(ExpressionStatement {
             start: 0,
             end: 7,
             expression: Value::BinaryExpression(Box::new(expr)),
+            digest: None,
         })];
         assert_eq!(expected, actual);
     }
@@ -2387,6 +2446,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         end: 1,
                         value: 5u32.into(),
                         raw: "5".to_string(),
+                        digest: None,
                     })),
                     operator: BinaryOperator::Add,
                     right: BinaryPart::Literal(Box::new(Literal {
@@ -2394,10 +2454,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                         end: 4,
                         value: 6u32.into(),
                         raw: "6".to_string(),
+                        digest: None,
                     })),
+                    digest: None,
                 })),
+                digest: None,
             })],
             non_code_meta: NonCodeMeta::default(),
+            digest: None,
         };
 
         assert_eq!(result, expected_result);
@@ -2666,9 +2730,11 @@ e
                         start: 0,
                         end: 0,
                         name: "a".to_owned(),
+                        digest: None,
                     },
                     type_: None,
                     optional: true,
+                    digest: None,
                 }],
                 true,
             ),
@@ -2678,9 +2744,11 @@ e
                         start: 0,
                         end: 0,
                         name: "a".to_owned(),
+                        digest: None,
                     },
                     type_: None,
                     optional: false,
+                    digest: None,
                 }],
                 true,
             ),
@@ -2691,18 +2759,22 @@ e
                             start: 0,
                             end: 0,
                             name: "a".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 0,
                             end: 0,
                             name: "b".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     },
                 ],
                 true,
@@ -2714,18 +2786,22 @@ e
                             start: 0,
                             end: 0,
                             name: "a".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 0,
                             end: 0,
                             name: "b".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     },
                 ],
                 false,
@@ -2757,6 +2833,7 @@ e
                         start: 6,
                         end: 13,
                         name: "myArray".to_string(),
+                        digest: None,
                     },
                     init: Value::ArrayExpression(Box::new(ArrayExpression {
                         start: 16,
@@ -2767,73 +2844,88 @@ e
                                 end: 18,
                                 value: 0u32.into(),
                                 raw: "0".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 1u32.into(),
                                 raw: "1".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 2u32.into(),
                                 raw: "2".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 3u32.into(),
                                 raw: "3".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 4u32.into(),
                                 raw: "4".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 5u32.into(),
                                 raw: "5".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 6u32.into(),
                                 raw: "6".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 7u32.into(),
                                 raw: "7".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 8u32.into(),
                                 raw: "8".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 9u32.into(),
                                 raw: "9".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 10u32.into(),
                                 raw: "10".to_string(),
+                                digest: None,
                             })),
                         ],
+                        digest: None,
                     })),
+                    digest: None,
                 }],
                 kind: VariableKind::Const,
+                digest: None,
             })],
             non_code_meta: NonCodeMeta::default(),
+            digest: None,
         };
 
         assert_eq!(result, expected_result);

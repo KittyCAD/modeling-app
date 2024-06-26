@@ -374,7 +374,7 @@ impl Backend {
             let token_modifiers_bitset: u32 = if let Some(ast) = self.ast_map.get(&params.uri.to_string()).await {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::lint::walk(&ast, &|node: crate::lint::Node| {
+                crate::walk::walk(&ast, &|node: crate::walk::Node| {
                     let node_range: SourceRange = (&node).into();
                     if !node_range.contains(source_range.start()) {
                         return Ok(true);
@@ -394,10 +394,10 @@ impl Backend {
                     };
 
                     match node {
-                        crate::lint::Node::TagDeclarator(_) => {
+                        crate::walk::Node::TagDeclarator(_) => {
                             return get_modifier(SemanticTokenModifier::DEFINITION);
                         }
-                        crate::lint::Node::VariableDeclarator(variable) => {
+                        crate::walk::Node::VariableDeclarator(variable) => {
                             let sr: SourceRange = variable.id.clone().into();
                             if sr.contains(source_range.start()) {
                                 if let Value::FunctionExpression(_) = &variable.init {
@@ -411,7 +411,7 @@ impl Backend {
                                 return get_modifier(SemanticTokenModifier::DECLARATION);
                             }
                         }
-                        crate::lint::Node::Parameter(_) => {
+                        crate::walk::Node::Parameter(_) => {
                             let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                             *ti = match self.get_semantic_token_type_index(SemanticTokenType::PARAMETER) {
                                 Some(index) => index,
@@ -419,7 +419,7 @@ impl Backend {
                             };
                             return Ok(false);
                         }
-                        crate::lint::Node::MemberExpression(member_expression) => {
+                        crate::walk::Node::MemberExpression(member_expression) => {
                             let sr: SourceRange = member_expression.property.clone().into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
@@ -430,7 +430,7 @@ impl Backend {
                                 return Ok(false);
                             }
                         }
-                        crate::lint::Node::ObjectProperty(object_property) => {
+                        crate::walk::Node::ObjectProperty(object_property) => {
                             let sr: SourceRange = object_property.key.clone().into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
@@ -441,7 +441,7 @@ impl Backend {
                             }
                             return get_modifier(SemanticTokenModifier::DECLARATION);
                         }
-                        crate::lint::Node::CallExpression(call_expr) => {
+                        crate::walk::Node::CallExpression(call_expr) => {
                             let sr: SourceRange = call_expr.callee.clone().into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;

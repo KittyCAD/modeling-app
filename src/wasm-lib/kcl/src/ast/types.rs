@@ -32,6 +32,9 @@ use crate::{
 mod literal_value;
 mod none;
 
+/// Position-independent digest of the AST node.
+pub type Digest = [u8; 32];
+
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -41,6 +44,8 @@ pub struct Program {
     pub end: usize,
     pub body: Vec<BodyItem>,
     pub non_code_meta: NonCodeMeta,
+
+    pub digest: Option<Digest>,
 }
 
 impl Program {
@@ -159,7 +164,7 @@ impl Program {
         RuleT: crate::lint::rule::Rule<'a>,
     {
         let v = Arc::new(Mutex::new(vec![]));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             findings.append(&mut rule.check(node)?);
             Ok(true)
@@ -171,13 +176,13 @@ impl Program {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
-                crate::lint::Node::TagDeclarator(tag) => {
+                crate::walk::Node::TagDeclarator(tag) => {
                     findings.push(tag.into());
                 }
-                crate::lint::Node::VariableDeclaration(variable) => {
+                crate::walk::Node::VariableDeclaration(variable) => {
                     findings.extend::<Vec<CompletionItem>>(variable.into());
                 }
                 _ => {}
@@ -255,13 +260,13 @@ impl Program {
     /// Returns all the lsp symbols in the program.
     pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
         let symbols = Arc::new(Mutex::new(vec![]));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
-                crate::lint::Node::TagDeclarator(tag) => {
+                crate::walk::Node::TagDeclarator(tag) => {
                     findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
-                crate::lint::Node::VariableDeclaration(variable) => {
+                crate::walk::Node::VariableDeclaration(variable) => {
                     findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
                 }
                 _ => {}
@@ -888,6 +893,8 @@ pub struct NonCodeNode {
     pub start: usize,
     pub end: usize,
     pub value: NonCodeValue,
+
+    pub digest: Option<Digest>,
 }
 
 impl From<NonCodeNode> for SourceRange {
@@ -1021,6 +1028,8 @@ pub enum NonCodeValue {
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
     pub start: Vec<NonCodeNode>,
+
+    pub digest: Option<Digest>,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1046,6 +1055,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         Ok(NonCodeMeta {
             non_code_nodes,
             start: helper.start,
+            digest: None,
         })
     }
 }
@@ -1074,6 +1084,8 @@ pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
     pub expression: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ExpressionStatement);
@@ -1088,6 +1100,8 @@ pub struct CallExpression {
     pub callee: Identifier,
     pub arguments: Vec<Value>,
     pub optional: bool,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(CallExpression);
@@ -1106,6 +1120,7 @@ impl CallExpression {
             callee: Identifier::new(name),
             arguments,
             optional: false,
+            digest: None,
         })
     }
 
@@ -1355,6 +1370,8 @@ pub struct VariableDeclaration {
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
     pub kind: VariableKind, // Change to enum if there are specific values
+
+    pub digest: Option<Digest>,
 }
 
 impl From<&VariableDeclaration> for Vec<CompletionItem> {
@@ -1400,6 +1417,7 @@ impl VariableDeclaration {
             end: 0,
             declarations,
             kind,
+            digest: None,
         }
     }
 
@@ -1622,6 +1640,8 @@ pub struct VariableDeclarator {
     pub id: Identifier,
     /// The value of the variable.
     pub init: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(VariableDeclarator);
@@ -1633,6 +1653,7 @@ impl VariableDeclarator {
             end: 0,
             id: Identifier::new(name),
             init,
+            digest: None,
         }
     }
 
@@ -1650,6 +1671,8 @@ pub struct Literal {
     pub end: usize,
     pub value: LiteralValue,
     pub raw: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(Literal);
@@ -1661,6 +1684,7 @@ impl Literal {
             end: 0,
             raw: JValue::from(value.clone()).to_string(),
             value,
+            digest: None,
         }
     }
 
@@ -1721,6 +1745,8 @@ pub struct Identifier {
     pub start: usize,
     pub end: usize,
     pub name: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(Identifier);
@@ -1731,6 +1757,7 @@ impl Identifier {
             start: 0,
             end: 0,
             name: name.to_string(),
+            digest: None,
         }
     }
 
@@ -1759,6 +1786,8 @@ pub struct TagDeclarator {
     pub end: usize,
     #[serde(rename = "value")]
     pub name: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(TagDeclarator);
@@ -1818,6 +1847,7 @@ impl TagDeclarator {
             start: 0,
             end: 0,
             name: name.to_string(),
+            digest: None,
         }
     }
 
@@ -1880,13 +1910,19 @@ impl TagDeclarator {
 pub struct PipeSubstitution {
     pub start: usize,
     pub end: usize,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(PipeSubstitution);
 
 impl PipeSubstitution {
     pub fn new() -> Self {
-        Self { start: 0, end: 0 }
+        Self {
+            start: 0,
+            end: 0,
+            digest: None,
+        }
     }
 }
 
@@ -1910,6 +1946,8 @@ pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Value>,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ArrayExpression);
@@ -1926,6 +1964,7 @@ impl ArrayExpression {
             start: 0,
             end: 0,
             elements,
+            digest: None,
         }
     }
 
@@ -2066,6 +2105,8 @@ pub struct ObjectExpression {
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
+
+    pub digest: Option<Digest>,
 }
 
 impl ObjectExpression {
@@ -2074,6 +2115,7 @@ impl ObjectExpression {
             start: 0,
             end: 0,
             properties,
+            digest: None,
         }
     }
 
@@ -2227,6 +2269,8 @@ pub struct ObjectProperty {
     pub end: usize,
     pub key: Identifier,
     pub value: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ObjectProperty);
@@ -2355,6 +2399,8 @@ pub struct MemberExpression {
     pub object: MemberObject,
     pub property: LiteralIdentifier,
     pub computed: bool,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(MemberExpression);
@@ -2520,6 +2566,8 @@ pub struct BinaryExpression {
     pub operator: BinaryOperator,
     pub left: BinaryPart,
     pub right: BinaryPart,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(BinaryExpression);
@@ -2532,6 +2580,7 @@ impl BinaryExpression {
             operator,
             left,
             right,
+            digest: None,
         }
     }
 
@@ -2756,6 +2805,8 @@ pub struct UnaryExpression {
     pub end: usize,
     pub operator: UnaryOperator,
     pub argument: BinaryPart,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(UnaryExpression);
@@ -2767,6 +2818,7 @@ impl UnaryExpression {
             end: argument.end(),
             operator,
             argument,
+            digest: None,
         }
     }
 
@@ -2857,6 +2909,8 @@ pub struct PipeExpression {
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Value>,
     pub non_code_meta: NonCodeMeta,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(PipeExpression);
@@ -2874,6 +2928,7 @@ impl PipeExpression {
             end: 0,
             body,
             non_code_meta: Default::default(),
+            digest: None,
         }
     }
 
@@ -3070,6 +3125,8 @@ pub struct Parameter {
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
+
+    pub digest: Option<Digest>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -3083,6 +3140,8 @@ pub struct FunctionExpression {
     pub body: Program,
     #[serde(skip)]
     pub return_type: Option<FnArgType>,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -3118,6 +3177,7 @@ impl FunctionExpression {
             end,
             params,
             body,
+            digest: _,
             return_type: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
@@ -3198,6 +3258,8 @@ pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
     pub argument: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ReturnStatement);
@@ -4931,28 +4993,34 @@ const firstExtrude = startSketchOn('XY')
                         identifier: Identifier {
                             start: 35,
                             end: 40,
-                            name: "thing".to_owned()
+                            name: "thing".to_owned(),
+                            digest: None,
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 50,
                             end: 56,
-                            name: "things".to_owned()
+                            name: "things".to_owned(),
+                            digest: None,
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 68,
                             end: 72,
-                            name: "more".to_owned()
+                            name: "more".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true
+                        optional: true,
+                        digest: None
                     }
                 ]
             })
@@ -4987,28 +5055,34 @@ const firstExtrude = startSketchOn('XY')
                         identifier: Identifier {
                             start: 18,
                             end: 23,
-                            name: "thing".to_owned()
+                            name: "thing".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 33,
                             end: 39,
-                            name: "things".to_owned()
+                            name: "things".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 51,
                             end: 55,
-                            name: "more".to_owned()
+                            name: "more".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true
+                        optional: true,
+                        digest: None
                     }
                 ]
             })
@@ -5101,8 +5175,10 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -5116,17 +5192,21 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     }],
                     body: Program {
                         start: 0,
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -5140,17 +5220,21 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     }],
                     body: Program {
                         start: 0,
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -5165,18 +5249,22 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 start: 0,
                                 end: 0,
                                 name: "foo".to_owned(),
+                                digest: None,
                             },
                             type_: None,
                             optional: false,
+                            digest: None,
                         },
                         Parameter {
                             identifier: Identifier {
                                 start: 0,
                                 end: 0,
                                 name: "bar".to_owned(),
+                                digest: None,
                             },
                             type_: None,
                             optional: true,
+                            digest: None,
                         },
                     ],
                     body: Program {
@@ -5184,8 +5272,10 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
         ]
@@ -5210,6 +5300,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             expression,
             start: _,
             end: _,
+            digest: None,
         }) = program.body.first().unwrap()
         else {
             panic!("expected a function!");
