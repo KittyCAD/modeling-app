@@ -14,21 +14,21 @@ use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DidChangeConfigurationParams,
-        DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
-        DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams,
-        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
-        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
-        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover, HoverContents, HoverParams,
-        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
-        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
-        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions,
-        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions,
-        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp,
-        SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
-        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
+        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
+        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
+        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
+        DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
+        DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
+        Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
+        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
+        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
+        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
+        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
+        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -168,14 +168,18 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
-        self.clear_diagnostics_map(&params.uri).await;
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                self.add_to_diagnostics(&params, err, true).await;
+                self.token_map.remove(&params.uri.to_string()).await;
+                self.ast_map.remove(&params.uri.to_string()).await;
+                self.symbols_map.remove(&params.uri.to_string()).await;
+                self.semantic_tokens_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
                 return;
             }
         };
@@ -215,7 +219,10 @@ impl crate::lsp::backend::Backend for Backend {
         let ast = match result {
             Ok(ast) => ast,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                self.add_to_diagnostics(&params, err, true).await;
+                self.ast_map.remove(&params.uri.to_string()).await;
+                self.symbols_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
                 return;
             }
         };
@@ -243,6 +250,21 @@ impl crate::lsp::backend::Backend for Backend {
                     ast.get_lsp_symbols(&params.text).unwrap_or_default(),
                 )
                 .await;
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                let discovered_findings = ast
+                    .lint(checks::lint_variables)
+                    .into_iter()
+                    .flatten()
+                    .collect::<Vec<_>>();
+                // Clear the lints before we lint.
+                self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
+                    .await;
+                for discovered_finding in &discovered_findings {
+                    self.add_to_diagnostics(&params, discovered_finding, false).await;
+                }
+            }
         }
 
         // Send the notification to the client that the ast was updated.
@@ -261,12 +283,9 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            for discovered_finding in ast.lint(checks::lint_variables).into_iter().flatten() {
-                self.add_to_diagnostics(&params, discovered_finding).await;
-            }
-        }
+        // If we made it here we can clear the diagnostics.
+        self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
+            .await;
     }
 }
 
@@ -364,7 +383,19 @@ impl Backend {
             .await;
     }
 
-    async fn clear_diagnostics_map(&self, uri: &url::Url) {
+    async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
+        let mut items = match self.diagnostics_map.get(uri.as_str()).await {
+            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items.clone(),
+            _ => vec![],
+        };
+
+        // If we only want to clear a specific severity, do that.
+        if let Some(severity) = severity {
+            items.retain(|x| x.severity != Some(severity));
+        } else {
+            items.clear();
+        }
+
         self.diagnostics_map
             .insert(
                 uri.to_string(),
@@ -372,7 +403,7 @@ impl Backend {
                     related_documents: None,
                     full_document_diagnostic_report: FullDocumentDiagnosticReport {
                         result_id: None,
-                        items: vec![],
+                        items: items.clone(),
                     },
                 }),
             )
@@ -380,7 +411,7 @@ impl Backend {
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            self.client.publish_diagnostics(uri.clone(), vec![], None).await;
+            self.client.publish_diagnostics(uri.clone(), items, None).await;
         }
     }
 
@@ -388,12 +419,23 @@ impl Backend {
         &self,
         params: &TextDocumentItem,
         diagnostic: DiagT,
+        clear_all_before_add: bool,
     ) {
         self.client
             .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostic))
             .await;
 
         let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
+
+        if clear_all_before_add {
+            self.clear_diagnostics_map(&params.uri, None).await;
+        } else if diagnostic.severity == Some(DiagnosticSeverity::ERROR) {
+            // If the diagnostic is an error, it will be the only error we get since that halts
+            // execution.
+            // Clear the diagnostics before we add a new one.
+            self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
+                .await;
+        }
 
         let DocumentDiagnosticReport::Full(mut report) = self
             .diagnostics_map
@@ -409,6 +451,19 @@ impl Backend {
         else {
             unreachable!();
         };
+
+        // Ensure we don't already have this diagnostic.
+        if report
+            .full_document_diagnostic_report
+            .items
+            .iter()
+            .any(|x| x == &diagnostic)
+        {
+            self.client
+                .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
+                .await;
+            return;
+        }
 
         report.full_document_diagnostic_report.items.push(diagnostic);
 
@@ -443,7 +498,8 @@ impl Backend {
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,
             Err(err) => {
-                self.add_to_diagnostics(params, err).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
+                self.add_to_diagnostics(params, err, false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.

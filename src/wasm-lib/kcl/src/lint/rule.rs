@@ -68,6 +68,12 @@ impl Discovered {
 
 impl IntoDiagnostic for Discovered {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+        (&self).to_lsp_diagnostic(code)
+    }
+}
+
+impl IntoDiagnostic for &Discovered {
+    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
 
