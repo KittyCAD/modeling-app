@@ -235,9 +235,6 @@ pub async fn kcl_lsp_run(
     let stdlib = kcl_lib::std::StdLib::new();
     let stdlib_completions = kcl_lib::lsp::kcl::get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
     let stdlib_signatures = kcl_lib::lsp::kcl::get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
-    // We can unwrap here because we know the tokeniser is valid, since
-    // we have a test for it.
-    let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
@@ -287,7 +284,6 @@ pub async fn kcl_lsp_run(
         workspace_folders: Default::default(),
         stdlib_completions,
         stdlib_signatures,
-        token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
         memory_map: Default::default(),
