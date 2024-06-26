@@ -974,6 +974,11 @@ export const modelingMachine = createMachine(
 
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'start_path',
+          },
         })
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
