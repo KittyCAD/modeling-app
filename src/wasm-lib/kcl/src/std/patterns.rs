@@ -96,7 +96,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
 }
 
-/// A linear pattern on a 2D or 3D solid.
+/// A linear pattern on a 3D solid.
 /// Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
 ///
 /// ```no_run
