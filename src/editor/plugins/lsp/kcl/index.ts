@@ -1,4 +1,14 @@
-import { autocompletion } from '@codemirror/autocomplete'
+import {
+  acceptCompletion,
+  autocompletion,
+  clearSnippet,
+  closeCompletion,
+  hasNextSnippetField,
+  moveCompletionSelection,
+  nextSnippetField,
+  prevSnippetField,
+  startCompletion,
+} from '@codemirror/autocomplete'
 import { Extension, EditorState, Prec } from '@codemirror/state'
 import {
   ViewPlugin,
@@ -7,6 +17,8 @@ import {
   keymap,
   KeyBinding,
   tooltips,
+  PluginValue,
+  ViewUpdate,
 } from '@codemirror/view'
 import { CompletionTriggerKind } from 'vscode-languageserver-protocol'
 import { offsetToPos } from 'editor/plugins/lsp/util'
@@ -14,11 +26,18 @@ import { LanguageServerOptions } from 'editor/plugins/lsp'
 import { syntaxTree, indentService, foldService } from '@codemirror/language'
 import { linter, forEachDiagnostic, Diagnostic } from '@codemirror/lint'
 import {
+  docPathFacet,
   LanguageServerPlugin,
-  documentUri,
   languageId,
   workspaceFolders,
+  updateInfo,
+  RelevantUpdate,
+  TransactionAnnotation,
 } from 'editor/plugins/lsp/plugin'
+import { deferExecution } from 'lib/utils'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
+
+const changesDelay = 600
 
 export const kclIndentService = () => {
   // Match the indentation of the previous line (if present).
@@ -37,6 +56,83 @@ export const kclIndentService = () => {
     }
     return null
   })
+}
+
+export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
+  const infos = updateInfo(update)
+  // Make sure we are not in a snippet
+  if (infos.some((info) => info.inSnippet)) {
+    return {
+      overall: false,
+      userSelect: false,
+      time: null,
+    }
+  }
+  return {
+    overall: infos.some(
+      (info) =>
+        info.docChanged ||
+        info.annotations.includes(TransactionAnnotation.UserSelect) ||
+        info.annotations.includes(TransactionAnnotation.UserInput) ||
+        info.annotations.includes(TransactionAnnotation.UserDelete) ||
+        info.annotations.includes(TransactionAnnotation.UserUndo) ||
+        info.annotations.includes(TransactionAnnotation.UserRedo) ||
+        info.annotations.includes(TransactionAnnotation.UserMove) ||
+        info.annotations.includes(TransactionAnnotation.CodeManager)
+    ),
+    userSelect: infos.some((info) =>
+      info.annotations.includes(TransactionAnnotation.UserSelect)
+    ),
+    time: infos.length ? infos[0].time : null,
+  }
+}
+
+// A view plugin that requests completions from the server after a delay
+export class KclPlugin implements PluginValue {
+  private viewUpdate: ViewUpdate | null = null
+
+  private _deffererCodeUpdate = deferExecution(() => {
+    if (this.viewUpdate === null) {
+      return
+    }
+
+    kclManager.executeCode()
+  }, changesDelay)
+
+  private _deffererUserSelect = deferExecution(() => {
+    if (this.viewUpdate === null) {
+      return
+    }
+
+    editorManager.handleOnViewUpdate(this.viewUpdate)
+  }, 50)
+
+  update(viewUpdate: ViewUpdate) {
+    this.viewUpdate = viewUpdate
+    editorManager.setEditorView(viewUpdate.view)
+
+    const isRelevant = relevantUpdate(viewUpdate)
+    if (!isRelevant.overall) {
+      return
+    }
+
+    // If we have a user select event, we want to update what parts are
+    // highlighted.
+    if (isRelevant.userSelect) {
+      this._deffererUserSelect(true)
+      return
+    }
+
+    if (!viewUpdate.docChanged) {
+      return
+    }
+
+    const newCode = viewUpdate.state.doc.toString()
+    codeManager.code = newCode
+    codeManager.writeToFile()
+
+    this._deffererCodeUpdate(true)
+  }
 }
 
 export function kclPlugin(options: LanguageServerOptions): Extension {
@@ -58,8 +154,8 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
 
         // Get the current plugin from the map.
         const p = view.plugin(viewPlugin)
-
         if (p === null) return false
+
         p.requestFormatting()
         return true
       },
@@ -67,6 +163,39 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
   ]
   // Create an extension for the key mappings.
   const kclKeymapExt = Prec.highest(keymap.computeN([], () => [kclKeymap]))
+
+  const autocompleteKeymap: readonly KeyBinding[] = [
+    { key: 'Ctrl-Space', run: startCompletion },
+    {
+      key: 'Escape',
+      run: (view: EditorView): boolean => {
+        if (clearSnippet(view)) return true
+
+        return closeCompletion(view)
+      },
+    },
+    { key: 'ArrowDown', run: moveCompletionSelection(true) },
+    { key: 'ArrowUp', run: moveCompletionSelection(false) },
+    { key: 'PageDown', run: moveCompletionSelection(true, 'page') },
+    { key: 'PageUp', run: moveCompletionSelection(false, 'page') },
+    { key: 'Enter', run: acceptCompletion },
+    {
+      key: 'Tab',
+      run: (view: EditorView): boolean => {
+        if (hasNextSnippetField(view.state)) {
+          const result = nextSnippetField(view)
+          return result
+        }
+
+        return acceptCompletion(view)
+      },
+      shift: prevSnippetField,
+    },
+  ]
+
+  const autocompleteKeymapExt = Prec.highest(
+    keymap.computeN([], () => [autocompleteKeymap])
+  )
 
   const folding = foldService.of(
     (state: EditorState, lineStart: number, lineEnd: number) => {
@@ -79,10 +208,11 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
   )
 
   return [
-    documentUri.of(options.documentUri),
+    docPathFacet.of(options.documentUri),
     languageId.of('kcl'),
     workspaceFolders.of(options.workspaceFolders),
     viewPlugin,
+    ViewPlugin.define((view) => new KclPlugin()),
     kclKeymapExt,
     kclIndentService(),
     hoverTooltip(
@@ -104,8 +234,9 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
       return diagnostics
     }),
     folding,
+    autocompleteKeymapExt,
     autocompletion({
-      defaultKeymap: true,
+      defaultKeymap: false,
       override: [
         async (context) => {
           if (plugin == null) return null

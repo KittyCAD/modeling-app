@@ -19,7 +19,6 @@ import {
   createPipeSubstitution,
 } from './modifyAst'
 import { err } from 'lib/trap'
-import { warn } from 'node:console'
 
 beforeAll(async () => {
   await initPromise

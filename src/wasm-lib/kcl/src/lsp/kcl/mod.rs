@@ -39,11 +39,10 @@ use tower_lsp::{
     Client, LanguageServer,
 };
 
-#[cfg(not(target_arch = "wasm32"))]
-use crate::lint::checks;
 use crate::{
     ast::types::{Value, VariableKind},
     executor::SourceRange,
+    lint::checks,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -269,15 +268,12 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
 
-            #[cfg(not(target_arch = "wasm32"))]
-            {
-                let discovered_findings = ast
-                    .lint(checks::lint_variables)
-                    .into_iter()
-                    .flatten()
-                    .collect::<Vec<_>>();
-                self.add_to_diagnostics(&params, &discovered_findings, false).await;
-            }
+            let discovered_findings = ast
+                .lint(checks::lint_variables)
+                .into_iter()
+                .flatten()
+                .collect::<Vec<_>>();
+            self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
 
         // Send the notification to the client that the ast was updated.
@@ -643,20 +639,6 @@ impl Backend {
             }
         }
         modifier
-    }
-
-    async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
-        let ast = match self.ast_map.get(file_name) {
-            Some(ast) => ast,
-            None => return vec![],
-        };
-
-        // Get the completion items.
-        match ast.completion_items() {
-            Ok(items) => items,
-            // TODO: don't ignore an error here.
-            Err(_err) => vec![],
-        }
     }
 
     pub async fn create_zip(&self) -> Result<Vec<u8>> {
@@ -1055,9 +1037,34 @@ impl LanguageServer for Backend {
 
         completions.extend(self.stdlib_completions.values().cloned());
 
-        let variables = self
-            .completions_get_variables_from_ast(params.text_document_position.text_document.uri.as_ref())
-            .await;
+        // Add more to the completions if we have more.
+        let Some(ast) = self
+            .ast_map
+            .get(params.text_document_position.text_document.uri.as_ref())
+        else {
+            return Ok(Some(CompletionResponse::Array(completions)));
+        };
+
+        let Some(current_code) = self
+            .code_map
+            .get(params.text_document_position.text_document.uri.as_ref())
+        else {
+            return Ok(Some(CompletionResponse::Array(completions)));
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(Some(CompletionResponse::Array(completions)));
+        };
+
+        let position = position_to_char_index(params.text_document_position.position, current_code);
+        if ast.get_non_code_meta_for_position(position).is_some() {
+            // If we are in a code comment we don't want to show completions.
+            return Ok(None);
+        }
+
+        // Get the completion items forem the ast.
+        let Ok(variables) = ast.completion_items() else {
+            return Ok(Some(CompletionResponse::Array(completions)));
+        };
 
         // Get our variables from our AST to include in our completions.
         completions.extend(variables);

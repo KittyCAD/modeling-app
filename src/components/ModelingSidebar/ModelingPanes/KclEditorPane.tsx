@@ -84,6 +84,10 @@ export const KclEditorPane = () => {
 
   const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor
+  // DO NOT ADD THE CODEMIRROR HOTKEYS HERE TO THE DEPENDENCY ARRAY
+  // It reloads the editor every time we do _anything_ in the editor
+  // I have no idea why.
+  // Instead, hot load hotkeys via code mirror native.
   const codeMirrorHotkeys = codeManager.getCodemirrorHotkeys()
 
   const editorExtensions = useMemo(() => {
@@ -173,13 +177,7 @@ export const KclEditorPane = () => {
     }
 
     return extensions
-  }, [
-    kclLSP,
-    copilotLSP,
-    textWrapping.current,
-    cursorBlinking.current,
-    codeMirrorHotkeys,
-  ])
+  }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
   const initialCode = useRef(codeManager.code)
 
@@ -192,9 +190,9 @@ export const KclEditorPane = () => {
         value={initialCode.current}
         extensions={editorExtensions}
         theme={theme}
-        onCreateEditor={(_editorView) =>
+        onCreateEditor={(_editorView) => {
           editorManager.setEditorView(_editorView)
-        }
+        }}
         indentWithTab={false}
         basicSetup={false}
       />

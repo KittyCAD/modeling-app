@@ -282,8 +282,10 @@ function moreNodePathFromSourceRange(
     }
     return path
   }
+
   if (_node.type === 'PipeSubstitution' && isInRange) return path
   console.error('not implemented: ' + node.type)
+
   return path
 }
 

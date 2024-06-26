@@ -6,9 +6,12 @@ import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
-import { KeyBinding } from '@uiw/react-codemirror'
+import { Annotation, KeyBinding, Transaction } from '@uiw/react-codemirror'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
+
+const codeManagerUpdateAnnotation = Annotation.define<null>()
+export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(null)
 
 export default class CodeManager {
   private _code: string = bracket
@@ -90,6 +93,10 @@ export default class CodeManager {
           to: editorManager.editorView.state.doc.length,
           insert: code,
         },
+        annotations: [
+          codeManagerUpdateEvent,
+          Transaction.addToHistory.of(true),
+        ],
       })
     }
   }

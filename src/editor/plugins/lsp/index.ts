@@ -1,6 +1,5 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
-import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
 import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
 import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
 import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
@@ -68,7 +67,7 @@ export interface LanguageServerOptions {
 
 export class LanguageServerClient {
   private client: Client
-  readonly name: string
+  readonly name: LspWorker
 
   public ready: boolean
 
@@ -76,8 +75,6 @@ export class LanguageServerClient {
 
   public initializePromise: Promise<void>
 
-  private isUpdatingSemanticTokens: boolean = false
-  private semanticTokens: SemanticToken[] = []
   private queuedUids: string[] = []
 
   constructor(options: LanguageServerClientOptions) {
@@ -111,19 +108,10 @@ export class LanguageServerClient {
 
   textDocumentDidOpen(params: LSP.DidOpenTextDocumentParams) {
     this.notify('textDocument/didOpen', params)
-
-    // Update the facet of the plugins to the correct value.
-    for (const plugin of this.plugins) {
-      plugin.documentUri = params.textDocument.uri
-      plugin.languageId = params.textDocument.languageId
-    }
-
-    this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidChange(params: LSP.DidChangeTextDocumentParams) {
     this.notify('textDocument/didChange', params)
-    this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidClose(params: LSP.DidCloseTextDocumentParams) {
@@ -134,18 +122,9 @@ export class LanguageServerClient {
     added: LSP.WorkspaceFolder[],
     removed: LSP.WorkspaceFolder[]
   ) {
-    // Add all the current workspace folders in the plugin to removed.
-    for (const plugin of this.plugins) {
-      removed.push(...plugin.workspaceFolders)
-    }
     this.notify('workspace/didChangeWorkspaceFolders', {
       event: { added, removed },
     })
-
-    // Add all the new workspace folders to the plugins.
-    for (const plugin of this.plugins) {
-      plugin.workspaceFolders = added
-    }
   }
 
   workspaceDidCreateFiles(params: LSP.CreateFilesParams) {
@@ -160,33 +139,13 @@ export class LanguageServerClient {
     this.notify('workspace/didDeleteFiles', params)
   }
 
-  async updateSemanticTokens(uri: string) {
+  async textDocumentSemanticTokensFull(params: LSP.SemanticTokensParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.semanticTokensProvider) {
       return
     }
 
-    // Make sure we can only run, if we aren't already running.
-    if (!this.isUpdatingSemanticTokens) {
-      this.isUpdatingSemanticTokens = true
-
-      const result = await this.request('textDocument/semanticTokens/full', {
-        textDocument: {
-          uri,
-        },
-      })
-
-      this.semanticTokens = await deserializeTokens(
-        result.data,
-        this.getServerCapabilities().semanticTokensProvider
-      )
-
-      this.isUpdatingSemanticTokens = false
-    }
-  }
-
-  getSemanticTokens(): SemanticToken[] {
-    return this.semanticTokens
+    return this.request('textDocument/semanticTokens/full', params)
   }
 
   async textDocumentHover(params: LSP.HoverParams) {
