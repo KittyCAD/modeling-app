@@ -35,7 +35,6 @@ export const RefreshButton = ({ children }: { children: React.ReactNode }) => {
       })
     }
 
-    console.warn('CoreDump: Initializing core dump')
     toast
       .promise(
         coreDump(coreDumpManager, true),

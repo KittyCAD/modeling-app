@@ -334,6 +334,7 @@ export async function coreDump(
   openGithubIssue: boolean = false
 ): Promise<CoreDumpInfo> {
   try {
+    console.warn('CoreDump: Initializing core dump')
     const dump: CoreDumpInfo = await coredump(coreDumpManager)
     /* NOTE: this console output of the coredump should include the field
        `github_issue_url` which is not in the uploaded coredump file.

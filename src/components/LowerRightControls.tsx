@@ -33,7 +33,6 @@ export function LowerRightControls({
       // open default reporting option
       openWindow('https://github.com/KittyCAD/modeling-app/issues/new/choose')
     } else {
-      console.warn('CoreDump: Initializing core dump')
       toast
         .promise(
           coreDump(coreDumpManager, true),
