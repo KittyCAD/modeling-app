@@ -1168,10 +1168,23 @@ fn myFn = (param1) => {
             .unwrap();
 
         let declaration_index = server
-            .get_semantic_token_modifier_index(SemanticTokenModifier::DECLARATION)
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DECLARATION])
             .unwrap();
         let definition_index = server
-            .get_semantic_token_modifier_index(SemanticTokenModifier::DEFINITION)
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DEFINITION])
+            .unwrap();
+        let default_library_index = server
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DEFAULT_LIBRARY])
+            .unwrap();
+
+        let variable_modifiers = server
+            .get_semantic_token_modifier_index(vec![
+                SemanticTokenModifier::DECLARATION,
+                SemanticTokenModifier::READONLY,
+            ])
+            .unwrap();
+        let tag_modifiers = server
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DEFINITION, SemanticTokenModifier::STATIC])
             .unwrap();
 
         // Iterate over the tokens and check the token types.
@@ -1181,9 +1194,15 @@ fn myFn = (param1) => {
         let mut found_function_declaration = false;
         let mut found_variable_declaration = false;
         let mut found_property_declaration = false;
+        let mut found_tag_declaration = false;
+        let mut found_default_library = false;
         for token in semantic_tokens.data {
             if token.token_modifiers_bitset == definition_index {
                 found_definition = true;
+            }
+
+            if token.token_type == function_index && token.token_modifiers_bitset == default_library_index {
+                found_default_library = true;
             }
 
             if token.token_type == parameter_index {
@@ -1192,11 +1211,15 @@ fn myFn = (param1) => {
                 found_property = true;
             }
 
-            if token.token_type == function_index && token.token_modifiers_bitset == declaration_index {
+            if token.token_type == definition_index && token.token_modifiers_bitset == tag_modifiers {
+                found_tag_declaration = true;
+            }
+
+            if token.token_type == function_index && token.token_modifiers_bitset == variable_modifiers {
                 found_function_declaration = true;
             }
 
-            if token.token_type == variable_index && token.token_modifiers_bitset == declaration_index {
+            if token.token_type == variable_index && token.token_modifiers_bitset == variable_modifiers {
                 found_variable_declaration = true;
             }
 
@@ -1210,6 +1233,8 @@ fn myFn = (param1) => {
                 && found_function_declaration
                 && found_variable_declaration
                 && found_property_declaration
+                && found_tag_declaration
+                && found_default_library
             {
                 break;
             }
@@ -1237,6 +1262,14 @@ fn myFn = (param1) => {
 
         if !found_property_declaration {
             panic!("Expected property declaration token");
+        }
+
+        if !found_tag_declaration {
+            panic!("Expected tag declaration token");
+        }
+
+        if !found_default_library {
+            panic!("Expected default library token");
         }
     } else {
         panic!("Expected semantic tokens");

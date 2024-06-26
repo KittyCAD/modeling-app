@@ -68,6 +68,9 @@ lazy_static::lazy_static! {
         vec![
             SemanticTokenModifier::DECLARATION,
             SemanticTokenModifier::DEFINITION,
+            SemanticTokenModifier::DEFAULT_LIBRARY,
+            SemanticTokenModifier::READONLY,
+            SemanticTokenModifier::STATIC,
         ]
     };
 }
@@ -340,16 +343,11 @@ impl Backend {
         let mut semantic_tokens = vec![];
         let mut last_position = Position::new(0, 0);
         for token in &tokens {
-            let Ok(mut token_type) = SemanticTokenType::try_from(token.token_type) else {
+            let Ok(token_type) = SemanticTokenType::try_from(token.token_type) else {
                 // We continue here because not all tokens can be converted this way, we will get
                 // the rest from the ast.
                 continue;
             };
-
-            if token.token_type == crate::token::TokenType::Word && self.stdlib_completions.contains_key(&token.value) {
-                // This is a stdlib function.
-                token_type = SemanticTokenType::FUNCTION;
-            }
 
             let mut token_type_index = match self.get_semantic_token_type_index(token_type.clone()) {
                 Some(index) => index,
@@ -371,7 +369,7 @@ impl Backend {
 
             // Calculate the token modifiers.
             // Get the value at the current position.
-            let token_modifiers_bitset: u32 = if let Some(ast) = self.ast_map.get(&params.uri.to_string()).await {
+            let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(&params.uri.to_string()).await {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
                 crate::walk::walk(&ast, &|node: crate::walk::Node| {
@@ -380,7 +378,7 @@ impl Backend {
                         return Ok(true);
                     }
 
-                    let get_modifier = |modifier: SemanticTokenModifier| -> Result<bool> {
+                    let get_modifier = |modifier: Vec<SemanticTokenModifier>| -> Result<bool> {
                         let mut mods = modifier_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                         let Some(token_modifier_index) = self.get_semantic_token_modifier_index(modifier) else {
                             return Ok(true);
@@ -395,7 +393,10 @@ impl Backend {
 
                     match node {
                         crate::walk::Node::TagDeclarator(_) => {
-                            return get_modifier(SemanticTokenModifier::DEFINITION);
+                            return get_modifier(vec![
+                                SemanticTokenModifier::DEFINITION,
+                                SemanticTokenModifier::STATIC,
+                            ]);
                         }
                         crate::walk::Node::VariableDeclarator(variable) => {
                             let sr: SourceRange = variable.id.clone().into();
@@ -408,7 +409,10 @@ impl Backend {
                                     };
                                 }
 
-                                return get_modifier(SemanticTokenModifier::DECLARATION);
+                                return get_modifier(vec![
+                                    SemanticTokenModifier::DECLARATION,
+                                    SemanticTokenModifier::READONLY,
+                                ]);
                             }
                         }
                         crate::walk::Node::Parameter(_) => {
@@ -439,7 +443,7 @@ impl Backend {
                                     None => token_type_index,
                                 };
                             }
-                            return get_modifier(SemanticTokenModifier::DECLARATION);
+                            return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
                         }
                         crate::walk::Node::CallExpression(call_expr) => {
                             let sr: SourceRange = call_expr.callee.clone().into();
@@ -449,6 +453,12 @@ impl Backend {
                                     Some(index) => index,
                                     None => token_type_index,
                                 };
+
+                                if self.stdlib_completions.contains_key(&call_expr.callee.name) {
+                                    // This is a stdlib function.
+                                    return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
+                                }
+
                                 return Ok(false);
                             }
                         }
@@ -656,11 +666,25 @@ impl Backend {
             .map(|y| y as u32)
     }
 
-    pub fn get_semantic_token_modifier_index(&self, token_type: SemanticTokenModifier) -> Option<u32> {
-        SEMANTIC_TOKEN_MODIFIERS
-            .iter()
-            .position(|x| *x == token_type)
-            .map(|y| y as u32)
+    pub fn get_semantic_token_modifier_index(&self, token_types: Vec<SemanticTokenModifier>) -> Option<u32> {
+        if token_types.is_empty() {
+            return None;
+        }
+
+        let mut modifier = None;
+        for token_type in token_types {
+            if let Some(index) = SEMANTIC_TOKEN_MODIFIERS
+                .iter()
+                .position(|x| *x == token_type)
+                .map(|y| y as u32)
+            {
+                modifier = match modifier {
+                    Some(modifier) => Some(modifier | index),
+                    None => Some(index),
+                };
+            }
+        }
+        modifier
     }
 
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
