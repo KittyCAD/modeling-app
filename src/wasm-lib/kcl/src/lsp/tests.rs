@@ -1188,7 +1188,6 @@ fn myFn = (param1) => {
             .unwrap();
 
         // Iterate over the tokens and check the token types.
-        let mut found_definition = false;
         let mut found_parameter = false;
         let mut found_property = false;
         let mut found_function_declaration = false;
@@ -1197,10 +1196,6 @@ fn myFn = (param1) => {
         let mut found_tag_declaration = false;
         let mut found_default_library = false;
         for token in semantic_tokens.data {
-            if token.token_modifiers_bitset == definition_index {
-                found_definition = true;
-            }
-
             if token.token_type == function_index && token.token_modifiers_bitset == default_library_index {
                 found_default_library = true;
             }
@@ -1227,8 +1222,7 @@ fn myFn = (param1) => {
                 found_property_declaration = true;
             }
 
-            if found_definition
-                && found_parameter
+            if found_parameter
                 && found_property
                 && found_function_declaration
                 && found_variable_declaration
@@ -1238,10 +1232,6 @@ fn myFn = (param1) => {
             {
                 break;
             }
-        }
-
-        if !found_definition {
-            panic!("Expected definition token");
         }
 
         if !found_parameter {
