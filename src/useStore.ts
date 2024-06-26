@@ -199,7 +199,7 @@ export async function lintAst({
     const discovered_findings = await kclLint(ast)
     return discovered_findings.map((lint) => {
       return {
-        message: lint.description,
+        message: lint.finding.title,
         severity: 'info',
         from: lint.pos[0],
         to: lint.pos[1],
