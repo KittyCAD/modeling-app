@@ -69,12 +69,12 @@ pub struct Backend {
 // Implement the shared backend trait for the language server.
 #[async_trait::async_trait]
 impl crate::lsp::backend::Backend for Backend {
-    fn client(&self) -> tower_lsp::Client {
-        self.client.clone()
+    fn client(&self) -> &tower_lsp::Client {
+        &self.client
     }
 
-    fn fs(&self) -> Arc<crate::fs::FileManager> {
-        self.fs.clone()
+    fn fs(&self) -> &Arc<crate::fs::FileManager> {
+        &self.fs
     }
 
     async fn is_initialized(&self) -> bool {
@@ -109,8 +109,8 @@ impl crate::lsp::backend::Backend for Backend {
         }
     }
 
-    fn code_map(&self) -> SafeMap<String, Vec<u8>> {
-        self.code_map.clone()
+    fn code_map(&self) -> &SafeMap<String, Vec<u8>> {
+        &self.code_map
     }
 
     async fn insert_code_map(&self, uri: String, text: Vec<u8>) {
