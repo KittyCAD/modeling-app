@@ -8,7 +8,7 @@ import Tooltip from './Tooltip'
 import { useStore } from 'useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
-export const RefreshButton = ({ children }: { children: React.ReactNode }) => {
+export const RefreshButton = ({ children }: React.PropsWithChildren ) => {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
   const { htmlRef } = useStore((s) => ({

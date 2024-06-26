@@ -26,8 +26,8 @@ export function LowerRightControls({
 
   const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
 
-  async function reportbug(event: Event) {
-    event.preventDefault()
+  async function reportbug(event: MouseEvent) {
+    event?.preventDefault()
 
     if (!coreDumpManager) {
       // open default reporting option
