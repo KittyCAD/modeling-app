@@ -17,7 +17,7 @@ mod test_examples_my_func {
             settings: Default::default(),
             is_mock: true,
         };
-        ctx.run(program, None).await.unwrap();
+        ctx.run(&program, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -47,7 +47,7 @@ mod test_examples_my_func {
         let ctx = crate::executor::ExecutorContext::new(&client, Default::default())
             .await
             .unwrap();
-        ctx.run(program, None).await.unwrap();
+        ctx.run(&program, None).await.unwrap();
         ctx.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
@@ -108,7 +108,7 @@ mod test_examples_my_func {
             settings: Default::default(),
             is_mock: true,
         };
-        ctx.run(program, None).await.unwrap();
+        ctx.run(&program, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -137,7 +137,7 @@ mod test_examples_my_func {
         let ctx = crate::executor::ExecutorContext::new(&client, Default::default())
             .await
             .unwrap();
-        ctx.run(program, None).await.unwrap();
+        ctx.run(&program, None).await.unwrap();
         ctx.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),

@@ -109,6 +109,7 @@ async fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
         telemetry: Default::default(),
         is_initialized: Default::default(),
         current_handle: Default::default(),
+        diagnostics_map: Default::default(),
     });
     let server = service.inner();
 
@@ -1087,6 +1088,45 @@ async fn test_kcl_lsp_semantic_tokens() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_semantic_tokens_large_file() {
+    let server = kcl_lsp_server(false).await.unwrap();
+    let code = include_str!("../../../tests/executor/inputs/global-tags.kcl");
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send semantic tokens request.
+    let semantic_tokens = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the semantic tokens.
+    if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
+        assert!(!semantic_tokens.data.is_empty());
+    } else {
+        panic!("Expected semantic tokens");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1155,35 +1195,49 @@ fn myFn = (param1) => {
     // Check the semantic tokens.
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         let function_index = server
-            .get_semantic_token_type_index(SemanticTokenType::FUNCTION)
+            .get_semantic_token_type_index(&SemanticTokenType::FUNCTION)
             .unwrap();
         let property_index = server
-            .get_semantic_token_type_index(SemanticTokenType::PROPERTY)
+            .get_semantic_token_type_index(&SemanticTokenType::PROPERTY)
             .unwrap();
         let parameter_index = server
-            .get_semantic_token_type_index(SemanticTokenType::PARAMETER)
+            .get_semantic_token_type_index(&SemanticTokenType::PARAMETER)
             .unwrap();
         let variable_index = server
-            .get_semantic_token_type_index(SemanticTokenType::VARIABLE)
+            .get_semantic_token_type_index(&SemanticTokenType::VARIABLE)
             .unwrap();
 
         let declaration_index = server
-            .get_semantic_token_modifier_index(SemanticTokenModifier::DECLARATION)
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DECLARATION])
             .unwrap();
         let definition_index = server
-            .get_semantic_token_modifier_index(SemanticTokenModifier::DEFINITION)
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DEFINITION])
+            .unwrap();
+        let default_library_index = server
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DEFAULT_LIBRARY])
+            .unwrap();
+
+        let variable_modifiers = server
+            .get_semantic_token_modifier_index(vec![
+                SemanticTokenModifier::DECLARATION,
+                SemanticTokenModifier::READONLY,
+            ])
+            .unwrap();
+        let tag_modifiers = server
+            .get_semantic_token_modifier_index(vec![SemanticTokenModifier::DEFINITION, SemanticTokenModifier::STATIC])
             .unwrap();
 
         // Iterate over the tokens and check the token types.
-        let mut found_definition = false;
         let mut found_parameter = false;
         let mut found_property = false;
         let mut found_function_declaration = false;
         let mut found_variable_declaration = false;
         let mut found_property_declaration = false;
+        let mut found_tag_declaration = false;
+        let mut found_default_library = false;
         for token in semantic_tokens.data {
-            if token.token_modifiers_bitset == definition_index {
-                found_definition = true;
+            if token.token_type == function_index && token.token_modifiers_bitset == default_library_index {
+                found_default_library = true;
             }
 
             if token.token_type == parameter_index {
@@ -1192,11 +1246,15 @@ fn myFn = (param1) => {
                 found_property = true;
             }
 
-            if token.token_type == function_index && token.token_modifiers_bitset == declaration_index {
+            if token.token_type == definition_index && token.token_modifiers_bitset == tag_modifiers {
+                found_tag_declaration = true;
+            }
+
+            if token.token_type == function_index && token.token_modifiers_bitset == variable_modifiers {
                 found_function_declaration = true;
             }
 
-            if token.token_type == variable_index && token.token_modifiers_bitset == declaration_index {
+            if token.token_type == variable_index && token.token_modifiers_bitset == variable_modifiers {
                 found_variable_declaration = true;
             }
 
@@ -1204,19 +1262,16 @@ fn myFn = (param1) => {
                 found_property_declaration = true;
             }
 
-            if found_definition
-                && found_parameter
+            if found_parameter
                 && found_property
                 && found_function_declaration
                 && found_variable_declaration
                 && found_property_declaration
+                && found_tag_declaration
+                && found_default_library
             {
                 break;
             }
-        }
-
-        if !found_definition {
-            panic!("Expected definition token");
         }
 
         if !found_parameter {
@@ -1237,6 +1292,14 @@ fn myFn = (param1) => {
 
         if !found_property_declaration {
             panic!("Expected property declaration token");
+        }
+
+        if !found_tag_declaration {
+            panic!("Expected tag declaration token");
+        }
+
+        if !found_default_library {
+            panic!("Expected default library token");
         }
     } else {
         panic!("Expected semantic tokens");

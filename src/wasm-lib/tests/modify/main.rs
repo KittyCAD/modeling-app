@@ -35,7 +35,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let memory = ctx.run(program.clone(), None).await?;
+    let memory = ctx.run(&program, None).await?;
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.

@@ -51,7 +51,7 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
 
-    let snapshot = ctx.execute_and_prepare_snapshot(program).await?;
+    let snapshot = ctx.execute_and_prepare_snapshot(&program).await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
