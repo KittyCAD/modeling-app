@@ -151,7 +151,7 @@ async fn inner_pattern_transform<'a>(
 
     let mut extrude_groups = Vec::new();
     for e in starting_extrude_groups {
-        let new_extrude_groups = send_pattern_transform(transform.clone(), &e, &args).await?;
+        let new_extrude_groups = send_pattern_transform(transform.clone(), &e, args).await?;
         extrude_groups.extend(new_extrude_groups);
     }
     Ok(extrude_groups)
