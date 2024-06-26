@@ -7,8 +7,7 @@ import React, {
   useContext,
   useState,
 } from 'react'
-import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
-import Client from '../editor/plugins/lsp/client'
+import LspServerClient from '../editor/plugins/lsp/client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
@@ -21,7 +20,6 @@ import { paths } from 'lib/paths'
 import { FileEntry } from 'lib/types'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
-  LspWorkerEventType,
   KclWorkerOptions,
   CopilotWorkerOptions,
   LspWorker,
@@ -30,7 +28,7 @@ import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { err, trap } from 'lib/trap'
+import { err } from 'lib/trap'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -107,32 +105,22 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       return { lspClient: null }
     }
 
-    const lspWorker = new Worker({ name: 'kcl' })
-    const initEvent: KclWorkerOptions = {
-      wasmUrl: wasmUrl(),
+    const options: KclWorkerOptions = {
       token: token,
       baseUnit: defaultUnit.current,
       apiBaseUrl: VITE_KC_API_BASE_URL,
+      callback: () => {
+        setIsLspReady(true)
+      },
     }
-    lspWorker.postMessage({
-      worker: LspWorker.Kcl,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
+
+    const lsp = new LspServerClient({ worker: LspWorker.Kcl, options })
+    lsp.startServer()
+
+    const lspClient = new LanguageServerClient({
+      client: lsp,
+      name: LspWorker.Kcl,
     })
-    lspWorker.onmessage = function (e) {
-      if (err(fromServer)) return
-      fromServer.add(e.data)
-    }
-
-    const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
-    const fromServer: FromServer | Error = FromServer.create()
-    if (err(fromServer)) return { lspClient: null }
-
-    const client = new Client(fromServer, intoServer)
-
-    setIsLspReady(true)
-
-    const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
     return { lspClient }
   }, [
     // We need a token for authenticating the server.
@@ -185,32 +173,18 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       return { lspClient: null }
     }
 
-    const lspWorker = new Worker({ name: 'copilot' })
-    const initEvent: CopilotWorkerOptions = {
-      wasmUrl: wasmUrl(),
+    const options: CopilotWorkerOptions = {
       token: token,
       apiBaseUrl: VITE_KC_API_BASE_URL,
+      callback: () => {
+        setIsCopilotReady(true)
+      },
     }
-    lspWorker.postMessage({
-      worker: LspWorker.Copilot,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
-    })
-    lspWorker.onmessage = function (e) {
-      if (err(fromServer)) return
-      fromServer.add(e.data)
-    }
-
-    const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
-    const fromServer: FromServer | Error = FromServer.create()
-    if (err(fromServer)) return { lspClient: null }
-
-    const client = new Client(fromServer, intoServer)
-
-    setIsCopilotReady(true)
+    const lsp = new LspServerClient({ worker: LspWorker.Copilot, options })
+    lsp.startServer()
 
     const lspClient = new LanguageServerClient({
-      client,
+      client: lsp,
       name: LspWorker.Copilot,
     })
     return { lspClient }

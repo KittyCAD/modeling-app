@@ -4,26 +4,20 @@ export enum LspWorker {
   Kcl = 'kcl',
   Copilot = 'copilot',
 }
-export interface KclWorkerOptions {
-  wasmUrl: string
+
+interface LspWorkerOptions {
   token: string
+  apiBaseUrl: string
+  callback: () => void
+}
+
+export interface KclWorkerOptions extends LspWorkerOptions {
   baseUnit: UnitLength
-  apiBaseUrl: string
 }
 
-export interface CopilotWorkerOptions {
-  wasmUrl: string
-  token: string
-  apiBaseUrl: string
-}
+export interface CopilotWorkerOptions extends LspWorkerOptions {}
 
-export enum LspWorkerEventType {
-  Init = 'init',
-  Call = 'call',
-}
-
-export interface LspWorkerEvent {
-  eventType: LspWorkerEventType
-  eventData: Uint8Array | KclWorkerOptions | CopilotWorkerOptions
+export interface LspContext {
   worker: LspWorker
+  options: KclWorkerOptions | CopilotWorkerOptions
 }

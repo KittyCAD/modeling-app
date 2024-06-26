@@ -1,5 +1,5 @@
 import type * as LSP from 'vscode-languageserver-protocol'
-import Client from './client'
+import LspServerClient from './client'
 import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
 import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
 import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
@@ -10,7 +10,7 @@ import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
 import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
-import { LspWorker } from './types'
+import { LspWorker } from 'editor/plugins/lsp/types'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -54,7 +54,7 @@ interface LSPNotifyMap {
 }
 
 export interface LanguageServerClientOptions {
-  client: Client
+  client: LspServerClient
   name: LspWorker
 }
 
@@ -67,7 +67,7 @@ export interface LanguageServerOptions {
 }
 
 export class LanguageServerClient {
-  private client: Client
+  private client: LspServerClient
   readonly name: string
 
   public ready: boolean
@@ -94,7 +94,7 @@ export class LanguageServerClient {
   async initialize() {
     // Start the client in the background.
     this.client.setNotifyFn(this.processNotifications.bind(this))
-    this.client.start()
+    this.client.startClient()
 
     this.ready = true
   }
