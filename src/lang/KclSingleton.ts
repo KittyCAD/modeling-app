@@ -284,6 +284,9 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })
+
+    editorManager.addDiagnostics(await lintAst({ ast: ast }))
+
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
