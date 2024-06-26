@@ -177,7 +177,7 @@ jobs:
 
   playwright-macos:
     timeout-minutes: 60
-    runs-on: macos-14
+    runs-on: macos-14-large
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
