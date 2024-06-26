@@ -3,10 +3,8 @@ use anyhow::Result;
 use crate::{
     ast::types::VariableDeclarator,
     executor::SourceRange,
-    lint::{
-        rule::{def_finding, Discovered, Finding},
-        Node,
-    },
+    lint::rule::{def_finding, Discovered, Finding},
+    walk::Node,
 };
 
 def_finding!(

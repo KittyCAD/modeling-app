@@ -5,7 +5,7 @@ use crate::{
         BinaryPart, BodyItem, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
         Parameter, Program, UnaryExpression, Value, VariableDeclarator,
     },
-    lint::Node,
+    walk::Node,
 };
 
 /// Walker is implemented by things that are able to walk an AST tree to
