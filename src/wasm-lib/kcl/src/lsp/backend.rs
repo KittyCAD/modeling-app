@@ -101,9 +101,8 @@ where
 
     /// Check if the file has diagnostics.
     async fn has_diagnostics(&self, uri: &str) -> bool {
-        if let Some(tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics)) =
-            self.current_diagnostics_map().get(uri).await
-        {
+        let inner = self.current_diagnostics_map().inner().await;
+        if let Some(tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics)) = inner.get(uri) {
             !diagnostics.full_document_diagnostic_report.items.is_empty()
         } else {
             false
@@ -114,7 +113,9 @@ where
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if let Some(current_code) = self.code_map().get(&filename).await {
+
+        let inner = self.code_map().inner().await;
+        if let Some(current_code) = inner.get(&filename) {
             if current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
                 return;
             }

@@ -198,32 +198,33 @@ impl crate::lsp::backend::Backend for Backend {
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
         // We already updated the code map in the shared backend.
+        let filename = params.uri.to_string();
 
         // Lets update the tokens.
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
             Err(err) => {
                 self.add_to_diagnostics(&params, err, true).await;
-                self.token_map.remove(&params.uri.to_string()).await;
-                self.ast_map.remove(&params.uri.to_string()).await;
-                self.symbols_map.remove(&params.uri.to_string()).await;
-                self.semantic_tokens_map.remove(&params.uri.to_string()).await;
-                self.memory_map.remove(&params.uri.to_string()).await;
+                self.token_map.remove(&filename).await;
+                self.ast_map.remove(&filename).await;
+                self.symbols_map.remove(&filename).await;
+                self.semantic_tokens_map.remove(&filename).await;
+                self.memory_map.remove(&filename).await;
                 return;
             }
         };
 
-        // Get the previous tokens.
-        let previous_tokens = self.token_map.get(&params.uri.to_string()).await;
-
         // Try to get the memory for the current code.
-        let has_memory = if let Some(memory) = self.memory_map.get(&params.uri.to_string()).await {
-            memory != crate::executor::ProgramMemory::default()
+        let inner = self.memory_map.inner().await;
+        let has_memory = if let Some(memory) = inner.get(&filename) {
+            *memory != crate::executor::ProgramMemory::default()
         } else {
             false
         };
 
-        let tokens_changed = if let Some(previous_tokens) = &previous_tokens {
+        // Get the previous tokens.
+        let inner = self.token_map.inner().await;
+        let tokens_changed = if let Some(previous_tokens) = inner.get(&filename) {
             *previous_tokens != tokens
         } else {
             true
@@ -249,18 +250,18 @@ impl crate::lsp::backend::Backend for Backend {
             Ok(ast) => ast,
             Err(err) => {
                 self.add_to_diagnostics(&params, err, true).await;
-                self.ast_map.remove(&params.uri.to_string()).await;
-                self.symbols_map.remove(&params.uri.to_string()).await;
-                self.memory_map.remove(&params.uri.to_string()).await;
+                self.ast_map.remove(&filename).await;
+                self.symbols_map.remove(&filename).await;
+                self.memory_map.remove(&filename).await;
                 return;
             }
         };
 
         // Check if the ast changed.
-        let ast_changed = match self.ast_map.get(&params.uri.to_string()).await {
+        let ast_changed = match self.ast_map.inner().await.get(&filename) {
             Some(old_ast) => {
                 // Check if the ast changed.
-                old_ast != ast
+                *old_ast != ast
             }
             None => true,
         };
@@ -369,10 +370,10 @@ impl Backend {
 
             // Calculate the token modifiers.
             // Get the value at the current position.
-            let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(&params.uri.to_string()).await {
+            let token_modifiers_bitset = if let Some(ast) = self.ast_map.inner().await.get(params.uri.as_str()) {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::walk::walk(&ast, &|node: crate::walk::Node| {
+                crate::walk::walk(ast, &|node: crate::walk::Node| {
                     let node_range: SourceRange = (&node).into();
                     if !node_range.contains(source_range.start()) {
                         return Ok(true);
@@ -525,34 +526,34 @@ impl Backend {
     }
 
     async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
-        let mut items = match self.diagnostics_map.get(uri.as_str()).await {
-            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items,
-            _ => vec![],
+        let inner = self.diagnostics_map.inner().await;
+        let Some(DocumentDiagnosticReport::Full(ref report)) = inner.get(uri.as_str()) else {
+            // We have nothing to clear.
+            return;
         };
+
+        // TODO: fix clones here.
+        let mut report = report.clone();
 
         // If we only want to clear a specific severity, do that.
         if let Some(severity) = severity {
-            items.retain(|x| x.severity != Some(severity));
+            report
+                .full_document_diagnostic_report
+                .items
+                .retain(|x| x.severity != Some(severity));
         } else {
-            items.clear();
+            report.full_document_diagnostic_report.items.clear();
         }
 
         self.diagnostics_map
-            .insert(
-                uri.to_string(),
-                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: items.clone(),
-                    },
-                }),
-            )
+            .insert(uri.to_string(), DocumentDiagnosticReport::Full(report.clone()))
             .await;
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            self.client.publish_diagnostics(uri.clone(), items, None).await;
+            self.client
+                .publish_diagnostics(uri.clone(), report.full_document_diagnostic_report.items.clone(), None)
+                .await;
         }
     }
 
@@ -578,35 +579,26 @@ impl Backend {
                 .await;
         }
 
-        let DocumentDiagnosticReport::Full(mut report) =
-            self.diagnostics_map
-                .get(params.uri.as_str())
-                .await
-                .unwrap_or(DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: vec![],
-                    },
-                }))
-        else {
-            unreachable!();
+        // TODO: fix clones here.
+        let mut items = match self.diagnostics_map.inner().await.get(params.uri.as_str()) {
+            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items.clone(),
+            _ => vec![],
         };
 
         // Ensure we don't already have this diagnostic.
-        if report
-            .full_document_diagnostic_report
-            .items
-            .iter()
-            .any(|x| x == &diagnostic)
-        {
+        if items.iter().any(|x| x == &diagnostic) {
             self.client
-                .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
+                .publish_diagnostics(params.uri.clone(), items.clone(), None)
                 .await;
             return;
         }
 
-        report.full_document_diagnostic_report.items.push(diagnostic);
+        items.push(diagnostic);
+
+        let report = RelatedFullDocumentDiagnosticReport {
+            related_documents: None,
+            full_document_diagnostic_report: FullDocumentDiagnosticReport { result_id: None, items },
+        };
 
         self.diagnostics_map
             .insert(params.uri.to_string(), DocumentDiagnosticReport::Full(report.clone()))
@@ -688,9 +680,9 @@ impl Backend {
     }
 
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
-        let ast = match self.ast_map.get(file_name).await {
-            Some(ast) => ast,
-            None => return vec![],
+        let inner = self.ast_map.inner().await;
+        let Some(ast) = inner.get(file_name) else {
+            return vec![];
         };
 
         // Get the completion items.
@@ -800,8 +792,8 @@ impl Backend {
                 .await;
 
             // Try to get the memory for the current code.
-            let has_memory = if let Some(memory) = self.memory_map.get(&filename).await {
-                memory != crate::executor::ProgramMemory::default()
+            let has_memory = if let Some(memory) = self.memory_map.inner().await.get(&filename) {
+                *memory != crate::executor::ProgramMemory::default()
             } else {
                 false
             };
@@ -1012,17 +1004,19 @@ impl LanguageServer for Backend {
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let inner = self.code_map.inner().await;
+        let Some(current_code) = inner.get(&filename) else {
             return Ok(None);
         };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Ok(current_code) = std::str::from_utf8(current_code) else {
             return Ok(None);
         };
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename).await else {
+        let inner = self.ast_map.inner().await;
+        let Some(ast) = inner.get(&filename) else {
             return Ok(None);
         };
 
@@ -1114,7 +1108,8 @@ impl LanguageServer for Backend {
         let filename = params.text_document.uri.to_string();
 
         // Get the current diagnostics for this file.
-        let Some(diagnostic) = self.diagnostics_map.get(&filename).await else {
+        let inner = self.diagnostics_map.inner().await;
+        let Some(diagnostic) = inner.get(&filename) else {
             // Send an empty report.
             return Ok(DocumentDiagnosticReportResult::Report(DocumentDiagnosticReport::Full(
                 RelatedFullDocumentDiagnosticReport {
@@ -1133,17 +1128,19 @@ impl LanguageServer for Backend {
     async fn signature_help(&self, params: SignatureHelpParams) -> RpcResult<Option<SignatureHelp>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let inner = self.code_map.inner().await;
+        let Some(current_code) = inner.get(&filename) else {
             return Ok(None);
         };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Ok(current_code) = std::str::from_utf8(current_code) else {
             return Ok(None);
         };
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename).await else {
+        let inner = self.ast_map.inner().await;
+        let Some(ast) = inner.get(&filename) else {
             return Ok(None);
         };
 
@@ -1194,33 +1191,36 @@ impl LanguageServer for Backend {
     async fn semantic_tokens_full(&self, params: SemanticTokensParams) -> RpcResult<Option<SemanticTokensResult>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(semantic_tokens) = self.semantic_tokens_map.get(&filename).await else {
+        let inner = self.semantic_tokens_map.inner().await;
+        let Some(semantic_tokens) = inner.get(&filename) else {
             return Ok(None);
         };
 
         Ok(Some(SemanticTokensResult::Tokens(SemanticTokens {
             result_id: None,
-            data: semantic_tokens.clone(),
+            data: semantic_tokens.to_vec(),
         })))
     }
 
     async fn document_symbol(&self, params: DocumentSymbolParams) -> RpcResult<Option<DocumentSymbolResponse>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(symbols) = self.symbols_map.get(&filename).await else {
+        let inner = self.symbols_map.inner().await;
+        let Some(symbols) = inner.get(&filename) else {
             return Ok(None);
         };
 
-        Ok(Some(DocumentSymbolResponse::Nested(symbols.clone())))
+        Ok(Some(DocumentSymbolResponse::Nested(symbols.to_vec())))
     }
 
     async fn formatting(&self, params: DocumentFormattingParams) -> RpcResult<Option<Vec<TextEdit>>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let inner = self.code_map.inner().await;
+        let Some(current_code) = inner.get(&filename) else {
             return Ok(None);
         };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Ok(current_code) = std::str::from_utf8(current_code) else {
             return Ok(None);
         };
 
@@ -1254,10 +1254,11 @@ impl LanguageServer for Backend {
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
         let filename = params.text_document_position.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let inner = self.code_map.inner().await;
+        let Some(current_code) = inner.get(&filename) else {
             return Ok(None);
         };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Ok(current_code) = std::str::from_utf8(current_code) else {
             return Ok(None);
         };
 
@@ -1297,7 +1298,8 @@ impl LanguageServer for Backend {
         let filename = params.text_document.uri.to_string();
 
         // Get the ast.
-        let Some(ast) = self.ast_map.get(&filename).await else {
+        let inner = self.ast_map.inner().await;
+        let Some(ast) = inner.get(&filename) else {
             return Ok(None);
         };
 

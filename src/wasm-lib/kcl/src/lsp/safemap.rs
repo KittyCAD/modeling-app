@@ -2,15 +2,15 @@
 //! But also in wasm.
 //! Previously, we used `dashmap::DashMap` for this purpose, but it doesn't work in wasm.
 
-use std::{borrow::Borrow, collections::HashMap, hash::Hash, sync::Arc};
+use std::{collections::HashMap, hash::Hash, sync::Arc};
 
-use tokio::sync::RwLock;
+use tokio::sync::{RwLock, RwLockReadGuard};
 
 /// A thread-safe map type.
 #[derive(Clone, Debug)]
-pub struct SafeMap<K: Eq + Hash + Clone, V: Clone>(Arc<RwLock<HashMap<K, V>>>);
+pub struct SafeMap<K: Eq + Hash, V>(Arc<RwLock<HashMap<K, V>>>);
 
-impl<K: Eq + Hash + Clone, V: Clone> SafeMap<K, V> {
+impl<'a, K: 'a + Eq + Hash, V: 'a> SafeMap<K, V> {
     /// Create a new empty map.
     pub fn new() -> Self {
         SafeMap(Arc::new(RwLock::new(HashMap::new())))
@@ -33,27 +33,18 @@ impl<K: Eq + Hash + Clone, V: Clone> SafeMap<K, V> {
         self.0.write().await.insert(key, value);
     }
 
-    /// Get a reference to the value associated with the given key.
-    pub async fn get<Q>(&self, key: &Q) -> Option<V>
-    where
-        K: Borrow<Q>,
-        Q: Hash + Eq + ?Sized,
-    {
-        self.0.read().await.get(key).cloned()
-    }
-
     /// Remove the key-value pair associated with the given key.
     pub async fn remove(&self, key: &K) -> Option<V> {
         self.0.write().await.remove(key)
     }
 
     /// Get a reference to the underlying map.
-    pub async fn inner(&self) -> HashMap<K, V> {
-        self.0.read().await.clone()
+    pub async fn inner(&'a self) -> RwLockReadGuard<'a, HashMap<K, V>> {
+        self.0.read().await
     }
 }
 
-impl<K: Eq + Hash + Clone, V: Clone> Default for SafeMap<K, V> {
+impl<K: Eq + Hash, V> Default for SafeMap<K, V> {
     fn default() -> Self {
         SafeMap::new()
     }
