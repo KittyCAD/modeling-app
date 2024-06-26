@@ -3026,7 +3026,7 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await;
-    assert!(ast == None);
+    assert!(ast.is_none());
 
     // Assure we have one diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
@@ -3054,7 +3054,7 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await;
-    assert!(ast == None);
+    assert!(ast.is_none());
 
     // Assure we have one diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
@@ -3160,7 +3160,7 @@ const part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await;
-    assert!(ast == None);
+    assert!(ast.is_none());
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
@@ -3188,7 +3188,7 @@ const part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await;
-    assert!(ast == None);
+    assert!(ast.is_none());
 
     // Assure we have one diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
@@ -3239,7 +3239,7 @@ const part001 = startSketchOn('XY')
     assert!(ast != crate::ast::types::Program::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
-    assert!(memory == None);
+    assert!(memory.is_none());
 
     // Send change file, but the code is the same.
     server
@@ -3262,7 +3262,7 @@ const part001 = startSketchOn('XY')
     assert!(ast != crate::ast::types::Program::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
-    assert!(memory == None);
+    assert!(memory.is_none());
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
@@ -3314,7 +3314,7 @@ const part001 = startSketchOn('XY')
     assert!(ast != crate::ast::types::Program::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
-    assert!(memory == None);
+    assert!(memory.is_none());
 
     // Send change file, but the code is the same.
     server
@@ -3345,7 +3345,7 @@ const NEW_LINT = 1"#
     assert!(ast != crate::ast::types::Program::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
-    assert!(memory == None);
+    assert!(memory.is_none());
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
@@ -3394,10 +3394,10 @@ const part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await;
-    assert!(ast == None);
+    assert!(ast.is_none());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
-    assert!(memory == None);
+    assert!(memory.is_none());
 
     // Send change file, but the code is the same.
     server
@@ -3425,10 +3425,10 @@ const NEW_LINT = 1"#
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await;
-    assert!(ast == None);
+    assert!(ast.is_none());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
-    assert!(memory == None);
+    assert!(memory.is_none());
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
