@@ -11,13 +11,17 @@ import {
 import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { isCursorInSketchCommandRange } from 'lang/util'
+import {
+  isCursorInSketchCommandRange,
+  updatePathToNodeFromMap,
+} from 'lang/util'
 import {
   kclManager,
   sceneInfra,
   engineCommandManager,
   codeManager,
   editorManager,
+  sceneEntitiesManager,
 } from 'lib/singletons'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -25,7 +29,6 @@ import {
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
-import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
 import {
   Selections,
@@ -33,20 +36,34 @@ import {
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
+  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  getParentGroup,
   getSketchOrientationDetails,
-  getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
-import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, VariableDeclaration, coreDump } from 'lang/wasm'
+import {
+  moveValueIntoNewVariablePath,
+  sketchOnExtrudedFace,
+  startSketchOnDefault,
+} from 'lang/modifyAst'
+import {
+  Program,
+  VariableDeclaration,
+  coreDump,
+  parse,
+  recast,
+} from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
+  hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { TEST } from 'env'
@@ -55,9 +72,12 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
+import { getVarNameModal } from 'hooks/useToolbarGuards'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import { uuidv4 } from 'lib/utils'
+import { err, trap } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -103,7 +123,24 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
-  useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
+  useHotkeyWrapper(['meta + shift + .'], () => {
+    console.warn('CoreDump: Initializing core dump')
+    toast.promise(
+      coreDump(coreDumpManager, true),
+      {
+        loading: 'Starting core dump...',
+        success: 'Core dump completed successfully',
+        error: 'Error while exporting core dump',
+      },
+      {
+        success: {
+          // Note: this extended duration is especially important for Playwright e2e testing
+          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+          duration: 6000,
+        },
+      }
+    )
+  })
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -123,17 +160,125 @@ export const ModelingMachineProvider = ({
     {
       actions: {
         'sketch exit execute': () => {
-          kclManager.executeCode(true)
+          ;(async () => {
+            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            const settings: Models['CameraSettings_type'] = (
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_get_settings',
+                },
+              })
+            )?.data?.data?.settings
+            if (settings.up.z !== 1) {
+              // workaround for gimbal lock situation
+              await engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'default_camera_look_at',
+                  center: settings.center,
+                  vantage: {
+                    ...settings.pos,
+                    y:
+                      settings.pos.y +
+                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
+                  },
+                  up: { x: 0, y: 0, z: 1 },
+                },
+              })
+            }
+
+            kclManager.executeCode(true)
+          })()
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
+          segmentHoverMap: ({ mouseState, segmentHoverMap }, event) => {
+            if (event.data.type === 'isHovering') {
+              const parent = getParentGroup(event.data.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              const pathToNode = parent?.userData?.pathToNode
+              const pathToNodeString = JSON.stringify(pathToNode)
+              if (!parent || !pathToNode) return segmentHoverMap
+              if (segmentHoverMap[pathToNodeString] !== undefined)
+                clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: 0,
+              }
+            } else if (
+              event.data.type === 'idle' &&
+              mouseState.type === 'isHovering'
+            ) {
+              const mouseOnParent = getParentGroup(mouseState.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
+                return segmentHoverMap
+              const pathToNodeString = JSON.stringify(
+                mouseOnParent?.userData?.pathToNode
+              )
+              const timeoutId = setTimeout(() => {
+                sceneInfra.modelingSend({
+                  type: 'Set mouse state',
+                  data: {
+                    type: 'timeoutEnd',
+                    pathToNodeString,
+                  },
+                })
+              }, 800) as unknown as number
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: timeoutId,
+              }
+            } else if (event.data.type === 'timeoutEnd') {
+              const copy = { ...segmentHoverMap }
+              delete copy[event.data.pathToNodeString]
+              return copy
+            }
+            return {}
+          },
         }),
-        'Set selection': assign(({ selectionRanges }, event) => {
-          if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
-          const setSelections = event.data
-          if (!editorManager.editorView) return {}
+        'Set Segment Overlays': assign({
+          segmentOverlays: ({ segmentOverlays }, { data }) => {
+            if (data.type === 'set-many') return data.overlays
+            if (data.type === 'set-one')
+              return {
+                ...segmentOverlays,
+                [data.pathToNodeString]: data.seg,
+              }
+            if (data.type === 'delete-one') {
+              const copy = { ...segmentOverlays }
+              delete copy[data.pathToNodeString]
+              return copy
+            }
+            // data.type === 'clear'
+            return {}
+          },
+        }),
+        'Set sketchDetails': assign(({ sketchDetails }, event) =>
+          sketchDetails
+            ? {
+                sketchDetails: {
+                  ...sketchDetails,
+                  sketchPathToNode: event.data,
+                },
+              }
+            : {}
+        ),
+        'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
+          const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
+            if (!editorManager.editorView) return
             editorManager.lastSelectionEvent = Date.now()
             setTimeout(() => {
               if (editorManager.editorView) {
@@ -217,11 +362,29 @@ export const ModelingMachineProvider = ({
               selectionRanges: selections,
             }
           }
+          if (setSelections.selectionType === 'completeSelection') {
+            editorManager.selectRange(setSelections.selection)
+            if (!sketchDetails)
+              return {
+                selectionRanges: setSelections.selection,
+              }
+            return {
+              selectionRanges: setSelections.selection,
+              sketchDetails: {
+                ...sketchDetails,
+                sketchPathToNode:
+                  setSelections.updatedPathToNode ||
+                  sketchDetails?.sketchPathToNode ||
+                  [],
+              },
+            }
+          }
 
           return {}
         }),
-        'Engine export': (_, event) => {
+        'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          console.log('exporting', event.data)
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>
@@ -265,9 +428,16 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          exportFromEngine({
-            format: format as Models['OutputFormat_type'],
-          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
+          toast.promise(
+            exportFromEngine({
+              format: format as Models['OutputFormat_type'],
+            }),
+            {
+              loading: 'Exporting...',
+              success: 'Exported successfully',
+              error: 'Error while exporting',
+            }
+          )
         },
       },
       guards: {
@@ -279,18 +449,28 @@ export const ModelingMachineProvider = ({
           if (
             selectionRanges.codeBasedSelections.length === 0 ||
             isSelectionLastLine(selectionRanges, codeManager.code)
-          )
-            return true
+          ) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            if (hasExtrudableGeometry(kclManager.ast)) return true
+            return false
+          }
           if (!isPipe) return false
 
           return canExtrudeSelection(selectionRanges)
         },
-        'Sketch is empty': ({ sketchDetails }) =>
-          getNodeFromPath<VariableDeclaration>(
+        'Sketch is empty': ({ sketchDetails }) => {
+          const node = getNodeFromPath<VariableDeclaration>(
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
-          )?.node?.declarations[0]?.init.type !== 'PipeExpression',
+          )
+          // This should not be returning false, and it should be caught
+          // but we need to simulate old behavior to move on.
+          if (err(node)) return false
+          return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+        },
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -300,8 +480,23 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has exportable geometry': () =>
-          kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0,
+        'Has exportable geometry': () => {
+          if (
+            kclManager.kclErrors.length === 0 &&
+            kclManager.ast.body.length > 0
+          )
+            return true
+          else {
+            let errorMessage = 'Unable to Export '
+            if (kclManager.kclErrors.length > 0)
+              errorMessage += 'due to KCL Errors'
+            else if (kclManager.ast.body.length === 0)
+              errorMessage += 'due to Empty Scene'
+            console.error(errorMessage)
+            toast.error(errorMessage)
+            return false
+          }
+        },
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {
@@ -318,20 +513,23 @@ export const ModelingMachineProvider = ({
         },
         'animate-to-face': async (_, { data }) => {
           if (data.type === 'extrudeFace') {
-            const { modifiedAst, pathToNode: pathToNewSketchNode } =
-              sketchOnExtrudedFace(
-                kclManager.ast,
-                data.extrudeSegmentPathToNode,
-                kclManager.programMemory,
-                data.cap
-              )
+            const sketched = sketchOnExtrudedFace(
+              kclManager.ast,
+              data.sketchPathToNode,
+              data.extrudePathToNode,
+              kclManager.programMemory,
+              data.cap
+            )
+            if (trap(sketched)) return Promise.reject(sketched)
+            const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
+
             await kclManager.executeAstMock(modifiedAst)
 
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
               data.faceId
             )
-
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
               zAxis: data.zAxis,
@@ -345,8 +543,12 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.syncDirection = 'clientToEngine'
-          const quat = await getSketchQuaternion(pathToNode, data.zAxis)
-          await sceneInfra.camControls.tweenCameraToQuaternion(quat)
+
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            data.planeId
+          )
+
           return {
             sketchPathToNode: pathToNode,
             zAxis: data.zAxis,
@@ -376,46 +578,85 @@ export const ModelingMachineProvider = ({
         },
         'Get horizontal info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
               constraint: 'setHorzDistance',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
           }
         },
         'Get vertical info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
               constraint: 'setVertDistance',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
           }
         },
         'Get angle info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
-          const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
+          const info = angleBetweenInfo({
             selectionRanges,
-          }).enabled
+          })
+          if (err(info)) return Promise.reject(info)
+          const { modifiedAst, pathToNodeMap } = await (info.enabled
             ? applyConstraintAngleBetween({
                 selectionRanges,
               })
@@ -423,83 +664,220 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
                 angleOrLength: 'setAngle',
               }))
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (err(_modifiedAst)) return Promise.reject(_modifiedAst)
+
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
           }
         },
         'Get length info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
           }
         },
         'Get perpendicular distance info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect(
             {
               selectionRanges,
             }
           )
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
           }
         },
         'Get ABS X info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'xAbs',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
           }
         },
         'Get ABS Y info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'yAbs',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
           return {
             selectionType: 'completeSelection',
-            selection: pathMapToSelections(
-              kclManager.ast,
-              selectionRanges,
-              pathToNodeMap
-            ),
+            selection,
+            updatedPathToNode,
+          }
+        },
+        'Get convert to variable info': async (
+          { sketchDetails, selectionRanges },
+          { data }
+        ): Promise<SetSelections> => {
+          if (!sketchDetails)
+            return Promise.reject(new Error('No sketch details'))
+          const { variableName } = await getVarNameModal({
+            valueName: data.variableName || 'var',
+          })
+          let parsed = parse(recast(kclManager.ast))
+          if (trap(parsed)) return Promise.reject(parsed)
+          parsed = parsed as Program
+
+          const { modifiedAst: _modifiedAst, pathToReplacedNode } =
+            moveValueIntoNewVariablePath(
+              parsed,
+              kclManager.programMemory,
+              data.pathToNode,
+              variableName
+            )
+          parsed = parse(recast(_modifiedAst))
+          if (trap(parsed)) return Promise.reject(parsed)
+          parsed = parsed as Program
+          if (!pathToReplacedNode)
+            return Promise.reject(new Error('No path to replaced node'))
+
+          const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+            pathToReplacedNode || [],
+            parsed,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          if (err(updatedAst)) return Promise.reject(updatedAst)
+          const selection = updateSelections(
+            { 0: pathToReplacedNode },
+            selectionRanges,
+            updatedAst.newAst
+          )
+          if (err(selection)) return Promise.reject(selection)
+          return {
+            selectionType: 'completeSelection',
+            selection,
+            updatedPathToNode: pathToReplacedNode,
           }
         },
       },
@@ -511,6 +889,12 @@ export const ModelingMachineProvider = ({
     kclManager.registerExecuteCallback(() => {
       modelingSend({ type: 'Re-execute' })
     })
+
+    // Before this component unmounts, call the 'Cancel'
+    // event to clean up any state in the modeling machine.
+    return () => {
+      modelingSend({ type: 'Cancel' })
+    }
   }, [modelingSend])
 
   // Give the state back to the editorManager.
@@ -526,6 +910,19 @@ export const ModelingMachineProvider = ({
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
 
+  useEffect(() => {
+    const offlineCallback = () => {
+      // If we are in sketch mode we need to exit it.
+      // TODO: how do i check if we are in a sketch mode, I only want to call
+      // this then.
+      modelingSend({ type: 'Cancel' })
+    }
+    window.addEventListener('offline', offlineCallback)
+    return () => {
+      window.removeEventListener('offline', offlineCallback)
+    }
+  }, [modelingSend])
+
   useStateMachineCommands({
     machineId: 'modeling',
     state: modelingState,
@@ -533,6 +930,10 @@ export const ModelingMachineProvider = ({
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
     allCommandsRequireNetwork: true,
+    // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
+    // but we need to support "SketchCancel" and basically
+    // make this function take the actor or state so it
+    // can call the correct event.
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 

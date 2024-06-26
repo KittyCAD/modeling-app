@@ -1,6 +1,12 @@
 import { LanguageServerClient } from 'editor/plugins/lsp'
 import type * as LSP from 'vscode-languageserver-protocol'
-import React, { createContext, useMemo, useEffect, useContext } from 'react'
+import React, {
+  createContext,
+  useMemo,
+  useEffect,
+  useContext,
+  useState,
+} from 'react'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Client from '../editor/plugins/lsp/client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
@@ -13,7 +19,6 @@ import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { FileEntry } from 'lib/types'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
   LspWorkerEventType,
@@ -22,8 +27,10 @@ import {
   LspWorker,
 } from 'editor/plugins/lsp/types'
 import { wasmUrl } from 'lang/wasm'
-
-const DEFAULT_FILE_NAME: string = 'main.kcl'
+import { PROJECT_ENTRYPOINT } from 'lib/constants'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { err, trap } from 'lib/trap'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -76,6 +83,8 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
     isStreamReady: s.isStreamReady,
   }))
+  const [isLspReady, setIsLspReady] = useState(false)
+  const [isCopilotReady, setIsCopilotReady] = useState(false)
 
   const {
     auth,
@@ -87,7 +96,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   } = useSettingsAuthContext()
   const token = auth?.context.token
   const navigate = useNavigate()
-  const { overallState } = useNetworkStatus()
+  const { overallState } = useNetworkContext()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -111,14 +120,17 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventData: initEvent,
     })
     lspWorker.onmessage = function (e) {
+      if (err(fromServer)) return
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
-    const fromServer: FromServer = FromServer.create()
+    const fromServer: FromServer | Error = FromServer.create()
+    if (err(fromServer)) return { lspClient: null }
+
     const client = new Client(fromServer, intoServer)
 
-    setIsKclLspServerReady(true)
+    setIsLspReady(true)
 
     const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
     return { lspClient }
@@ -137,7 +149,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isKclLspServerReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
-        documentUri: `file:///${DEFAULT_FILE_NAME}`,
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
       })
@@ -185,14 +197,17 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventData: initEvent,
     })
     lspWorker.onmessage = function (e) {
+      if (err(fromServer)) return
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
-    const fromServer: FromServer = FromServer.create()
+    const fromServer: FromServer | Error = FromServer.create()
+    if (err(fromServer)) return { lspClient: null }
+
     const client = new Client(fromServer, intoServer)
 
-    setIsCopilotLspServerReady(true)
+    setIsCopilotReady(true)
 
     const lspClient = new LanguageServerClient({
       client,
@@ -211,7 +226,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isCopilotLspServerReady && !TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
-        documentUri: `file:///${DEFAULT_FILE_NAME}`,
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: copilotLspClient,
         allowHTMLContent: true,
@@ -230,13 +245,20 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     lspClients.push(copilotLspClient)
   }
 
+  useEffect(() => {
+    setIsKclLspServerReady(isLspReady)
+  }, [isLspReady])
+  useEffect(() => {
+    setIsCopilotLspServerReady(isCopilotReady)
+  }, [isCopilotReady])
+
   const onProjectClose = (
     file: FileEntry | null,
     projectPath: string | null,
     redirect: boolean
   ) => {
     const currentFilePath = projectBasename(
-      file?.path || DEFAULT_FILE_NAME,
+      file?.path || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
     lspClients.forEach((lspClient) => {
@@ -267,7 +289,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (file) {
       // Send that the file was opened.
       const filename = projectBasename(
-        file?.path || DEFAULT_FILE_NAME,
+        file?.path || PROJECT_ENTRYPOINT,
         project?.path || ''
       )
       lspClients.forEach((lspClient) => {
@@ -285,7 +307,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
   const onFileOpen = (filePath: string | null, projectPath: string | null) => {
     const currentFilePath = projectBasename(
-      filePath || DEFAULT_FILE_NAME,
+      filePath || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
     lspClients.forEach((lspClient) => {
@@ -302,7 +324,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
   const onFileClose = (filePath: string | null, projectPath: string | null) => {
     const currentFilePath = projectBasename(
-      filePath || DEFAULT_FILE_NAME,
+      filePath || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
     lspClients.forEach((lspClient) => {

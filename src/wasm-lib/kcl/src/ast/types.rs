@@ -1,6 +1,11 @@
 //! Data types for the AST.
 
-use std::{collections::HashMap, fmt::Write, ops::RangeInclusive};
+use std::{
+    collections::HashMap,
+    fmt::Write,
+    ops::RangeInclusive,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::Result;
 use databake::*;
@@ -16,7 +21,10 @@ pub use crate::ast::types::{literal_value::LiteralValue, none::KclNone};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
-    executor::{BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
+    executor::{
+        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
+        TagIdentifier, UserVal,
+    },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
@@ -145,6 +153,41 @@ impl Program {
         }
     }
 
+    /// Check the provided Program for any lint findings.
+    pub fn lint<'a, RuleT>(&'a self, rule: RuleT) -> Result<Vec<crate::lint::Discovered>>
+    where
+        RuleT: crate::lint::rule::Rule<'a>,
+    {
+        let v = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            findings.append(&mut rule.check(node)?);
+            Ok(true)
+        })?;
+        let x = v.lock().unwrap();
+        Ok(x.clone())
+    }
+
+    /// Walk the ast and get all the variables and tags as completion items.
+    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
+        let completions = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::lint::Node::TagDeclarator(tag) => {
+                    findings.push(tag.into());
+                }
+                crate::lint::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                }
+                _ => {}
+            }
+            Ok(true)
+        })?;
+        let x = completions.lock().unwrap();
+        Ok(x.clone())
+    }
+
     /// Returns the body item that includes the given character position.
     pub fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
         for item in &self.body {
@@ -210,21 +253,23 @@ impl Program {
     }
 
     /// Returns all the lsp symbols in the program.
-    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
-        let mut symbols = vec![];
-        for item in &self.body {
-            match item {
-                BodyItem::ExpressionStatement(_expression_statement) => {
-                    continue;
+    pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
+        let symbols = Arc::new(Mutex::new(vec![]));
+        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+            let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::lint::Node::TagDeclarator(tag) => {
+                    findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    symbols.extend(variable_declaration.get_lsp_symbols(code))
+                crate::lint::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                _ => {}
             }
-        }
-
-        symbols
+            Ok(true)
+        })?;
+        let x = symbols.lock().unwrap();
+        Ok(x.clone())
     }
 
     // Return all the lsp folding ranges in the program.
@@ -472,6 +517,7 @@ impl From<&BodyItem> for SourceRange {
 pub enum Value {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
+    TagDeclarator(Box<TagDeclarator>),
     BinaryExpression(Box<BinaryExpression>),
     FunctionExpression(Box<FunctionExpression>),
     CallExpression(Box<CallExpression>),
@@ -495,6 +541,7 @@ impl Value {
             Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
             Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
             Value::Identifier(ident) => ident.name.to_string(),
+            Value::TagDeclarator(tag) => tag.recast(),
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
@@ -535,6 +582,7 @@ impl Value {
             Value::FunctionExpression(_func_exp) => None,
             Value::CallExpression(_call_exp) => None,
             Value::Identifier(_ident) => None,
+            Value::TagDeclarator(_tag) => None,
             Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Value::UnaryExpression(_unary_exp) => None,
             Value::PipeSubstitution(_pipe_substitution) => None,
@@ -557,6 +605,7 @@ impl Value {
             Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Value::Identifier(_) => {}
+            Value::TagDeclarator(_) => {}
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
@@ -568,6 +617,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.start(),
             Value::Identifier(identifier) => identifier.start(),
+            Value::TagDeclarator(tag) => tag.start(),
             Value::BinaryExpression(binary_expression) => binary_expression.start(),
             Value::FunctionExpression(function_expression) => function_expression.start(),
             Value::CallExpression(call_expression) => call_expression.start(),
@@ -585,6 +635,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.end(),
             Value::Identifier(identifier) => identifier.end(),
+            Value::TagDeclarator(tag) => tag.end(),
             Value::BinaryExpression(binary_expression) => binary_expression.end(),
             Value::FunctionExpression(function_expression) => function_expression.end(),
             Value::CallExpression(call_expression) => call_expression.end(),
@@ -616,6 +667,7 @@ impl Value {
             Value::None(_) => None,
             Value::Literal(_) => None,
             Value::Identifier(_) => None,
+            Value::TagDeclarator(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Value::PipeSubstitution(_) => None,
         }
@@ -626,6 +678,7 @@ impl Value {
         match self {
             Value::Literal(_literal) => {}
             Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Value::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
             Value::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -650,6 +703,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.get_constraint_level(),
             Value::Identifier(identifier) => identifier.get_constraint_level(),
+            Value::TagDeclarator(tag) => tag.get_constraint_level(),
             Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
@@ -1074,7 +1128,12 @@ impl CallExpression {
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
-            "{}({})",
+            "{}{}({})",
+            if is_in_pipe {
+                "".to_string()
+            } else {
+                options.get_indentation(indentation_level)
+            },
             self.callee.name,
             self.arguments
                 .iter()
@@ -1096,52 +1155,19 @@ impl CallExpression {
         let mut fn_args: Vec<MemoryItem> = Vec::with_capacity(self.arguments.len());
 
         for arg in &self.arguments {
-            let result: MemoryItem = match arg {
-                Value::None(none) => none.into(),
-                Value::Literal(literal) => literal.into(),
-                Value::Identifier(identifier) => {
-                    let value = memory.get(&identifier.name, identifier.into())?;
-                    value.clone()
-                }
-                Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
-                }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("PipeExpression not implemented here: {:?}", pipe_expression),
-                        source_ranges: vec![pipe_expression.into()],
-                    }));
-                }
-                Value::PipeSubstitution(pipe_substitution) => pipe_info
-                    .previous_results
-                    .as_ref()
-                    .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
-                            source_ranges: vec![pipe_substitution.into()],
-                        })
-                    })?
-                    .clone(),
-                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Value::FunctionExpression(function_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
-                        source_ranges: vec![function_expression.into()],
-                    }));
-                }
+            let metadata = Metadata {
+                source_range: SourceRange([arg.start(), arg.end()]),
             };
-
+            let result = ctx
+                .arg_into_mem_item(arg, memory, pipe_info, &metadata, StatementKind::Expression)
+                .await?;
             fn_args.push(result);
         }
 
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
+                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
                 let result = func.std_lib_fn()(args).await?;
                 Ok(result)
             }
@@ -1206,23 +1232,33 @@ impl CallExpression {
                         source_ranges: vec![self.into()],
                     })
                 })?;
-                let result = result.get_value()?;
 
+                let result = result.get_value()?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
-                let result = func
-                    .call_fn(fn_args, memory.clone(), ctx.clone())
-                    .await?
-                    .ok_or_else(|| {
-                        KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of user-defined function {} is undefined", fn_name),
-                            source_ranges: vec![self.into()],
-                        })
+                let (result, global_memory_items) =
+                    func.call_fn(fn_args, memory.clone(), ctx.clone()).await.map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        e.add_source_ranges(vec![self.into()])
                     })?;
 
+                let result = result.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
                 let result = result.get_value()?;
+
+                // Add the global memory items to the memory.
+                for (key, item) in global_memory_items {
+                    // We don't care about errors here because any collisions
+                    // would happened in the function call itself and already
+                    // errored out.
+                    memory.add(&key, item, self.into()).unwrap_or_default();
+                }
 
                 Ok(result)
             }
@@ -1321,6 +1357,40 @@ pub struct VariableDeclaration {
     pub kind: VariableKind, // Change to enum if there are specific values
 }
 
+impl From<&VariableDeclaration> for Vec<CompletionItem> {
+    fn from(declaration: &VariableDeclaration) -> Self {
+        let mut completions = vec![];
+        for variable in &declaration.declarations {
+            completions.push(CompletionItem {
+                label: variable.id.name.to_string(),
+                label_details: None,
+                kind: Some(match declaration.kind {
+                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
+                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                }),
+                detail: Some(declaration.kind.to_string()),
+                documentation: None,
+                deprecated: None,
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            })
+        }
+        completions
+    }
+}
+
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
@@ -1362,7 +1432,7 @@ impl VariableDeclaration {
                 indentation,
                 self.kind,
                 declaration.id.name,
-                declaration.init.recast(options, indentation_level, false)
+                declaration.init.recast(options, indentation_level, false).trim()
             );
             output
         })
@@ -1680,6 +1750,129 @@ impl Identifier {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct TagDeclarator {
+    pub start: usize,
+    pub end: usize,
+    #[serde(rename = "value")]
+    pub name: String,
+}
+
+impl_value_meta!(TagDeclarator);
+
+impl From<Box<TagDeclarator>> for SourceRange {
+    fn from(tag: Box<TagDeclarator>) -> Self {
+        Self([tag.start, tag.end])
+    }
+}
+
+impl From<Box<TagDeclarator>> for Vec<SourceRange> {
+    fn from(tag: Box<TagDeclarator>) -> Self {
+        vec![tag.into()]
+    }
+}
+
+impl From<&Box<TagDeclarator>> for MemoryItem {
+    fn from(tag: &Box<TagDeclarator>) -> Self {
+        MemoryItem::TagDeclarator(tag.clone())
+    }
+}
+
+impl From<&TagDeclarator> for MemoryItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        MemoryItem::TagDeclarator(Box::new(tag.clone()))
+    }
+}
+
+impl From<&TagDeclarator> for CompletionItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        CompletionItem {
+            label: tag.name.to_string(),
+            label_details: None,
+            kind: Some(CompletionItemKind::REFERENCE),
+            detail: Some("tag (A reference to an entity you previously named)".to_string()),
+            documentation: None,
+            deprecated: None,
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+}
+
+impl TagDeclarator {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+        }
+    }
+
+    pub fn recast(&self) -> String {
+        // TagDeclarators are always prefixed with a dollar sign.
+        format!("${}", self.name)
+    }
+
+    /// Get the constraint level for this identifier.
+    /// TagDeclarator are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if self.name == old_name {
+            self.name = new_name.to_string();
+        }
+    }
+
+    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
+        let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
+            value: self.name.clone(),
+            meta: vec![Metadata {
+                source_range: self.into(),
+            }],
+        }));
+
+        memory.add(&self.name, memory_item.clone(), self.into())?;
+
+        Ok(self.into())
+    }
+
+    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
+        let source_range: SourceRange = self.into();
+
+        vec![
+            #[allow(deprecated)]
+            DocumentSymbol {
+                name: self.name.to_string(),
+                detail: None,
+                kind: SymbolKind::CONSTANT,
+                range: source_range.to_lsp_range(code),
+                selection_range: source_range.to_lsp_range(code),
+                children: None,
+                tags: None,
+                deprecated: None,
+            },
+        ]
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1778,7 +1971,7 @@ impl ArrayExpression {
                 inner_indentation,
                 self.elements
                     .iter()
-                    .map(|el| el.recast(options, indentation_level, false))
+                    .map(|el| el.recast(options, indentation_level, is_in_pipe))
                     .collect::<Vec<String>>()
                     .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
@@ -1816,6 +2009,7 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -1913,7 +2107,7 @@ impl ObjectExpression {
                     format!(
                         "{}: {}",
                         prop.key.name,
-                        prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
                     )
                 })
                 .collect::<Vec<String>>()
@@ -1974,6 +2168,7 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -2705,7 +2900,8 @@ impl PipeExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        self.body
+        let pipe = self
+            .body
             .iter()
             .enumerate()
             .map(|(index, statement)| {
@@ -2737,7 +2933,8 @@ impl PipeExpression {
                 }
                 s
             })
-            .collect::<String>()
+            .collect::<String>();
+        format!("{}{}", options.get_indentation(indentation_level), pipe)
     }
 
     /// Returns a hover value that includes the given character position.
@@ -2769,6 +2966,7 @@ impl PipeExpression {
     }
 }
 
+#[async_recursion::async_recursion]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],
@@ -2787,18 +2985,12 @@ async fn execute_pipe_body(
     // They use the `pipe_info` from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
     // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
     // of its own.
-    let output = match first {
-        Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, ctx).await?,
-        Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-        Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
-        _ => {
-            // Return an error this should not happen.
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("PipeExpression not implemented here: {:?}", first),
-                source_ranges: vec![first.into()],
-            }));
-        }
+    let meta = Metadata {
+        source_range: SourceRange([first.start(), first.end()]),
     };
+    let output = ctx
+        .arg_into_mem_item(first, memory, pipe_info, &meta, StatementKind::Expression)
+        .await?;
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
     // This means there's no more need for the previous `pipe_info` from the parent AST node above this one.
@@ -2815,7 +3007,7 @@ async fn execute_pipe_body(
             _ => {
                 // Return an error this should not happen.
                 return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("PipeExpression not implemented here: {:?}", expression),
+                    message: format!("This cannot be in a PipeExpression: {:?}", expression),
                     source_ranges: vec![expression.into()],
                 }));
             }
@@ -2840,6 +3032,8 @@ pub enum FnArgPrimitive {
     #[display("bool")]
     #[serde(rename = "bool")]
     Boolean,
+    /// A tag.
+    Tag,
     /// A sketch group type.
     SketchGroup,
     /// A sketch surface type.
@@ -3029,6 +3223,7 @@ pub enum Hover {
 
 /// Format options.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {
@@ -3293,8 +3488,134 @@ fn ghi = (x) => {
         let tokens = crate::token::lexer(code).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let symbols = program.get_lsp_symbols(code);
+        let symbols = program.get_lsp_symbols(code).unwrap();
         assert_eq!(symbols.len(), 7);
+    }
+
+    #[test]
+    fn test_recast_bug_fn_in_fn() {
+        let some_program_string = r#"// Start point (top left)
+const zoo_x = -20
+const zoo_y = 7
+// Scale
+const s = 1 // s = 1 -> height of Z is 13.4mm
+// Depth
+const d = 1
+
+fn rect = (x, y, w, h) => {
+  startSketchOn('XY')
+    |> startProfileAt([x, y], %)
+    |> xLine(w, %)
+    |> yLine(h, %)
+    |> xLine(-w, %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+  startSketchOn('XY')
+    |> startProfileAt([x1, y1], %)
+    |> lineTo([x2, y2], %)
+    |> lineTo([x3, y3], %)
+    |> lineTo([x4, y4], %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn crosshair = (x, y) => {
+  startSketchOn('XY')
+    |> startProfileAt([x, y], %)
+    |> yLine(1, %)
+    |> yLine(-2, %)
+    |> yLine(1, %)
+    |> xLine(1, %)
+    |> xLine(-2, %)
+}
+
+fn z = (z_x, z_y) => {
+  const z_end_w = s * 8.4
+  const z_end_h = s * 3
+  const z_corner = s * 2
+  const z_w = z_end_w + 2 * z_corner
+  const z_h = z_w * 1.08130081300813
+  rect(z_x, z_y, z_end_w, -z_end_h)
+  rect(z_x + z_w, z_y, -z_corner, -z_corner)
+  rect(z_x + z_w, z_y - z_h, -z_end_w, z_end_h)
+  rect(z_x, z_y - z_h, z_corner, z_corner)
+  quad(z_x, z_y - z_h + z_corner, z_x + z_w - z_corner, z_y, z_x + z_w, z_y - z_corner, z_x + z_corner, z_y - z_h)
+}
+
+fn o = (c_x, c_y) => {
+  // Outer and inner radii
+  const o_r = s * 6.95
+  const i_r = 0.5652173913043478 * o_r
+
+  // Angle offset for diagonal break
+  const a = 7
+
+  // Start point for the top sketch
+  const o_x1 = c_x + o_r * cos((45 + a) / 360 * tau())
+  const o_y1 = c_y + o_r * sin((45 + a) / 360 * tau())
+
+  // Start point for the bottom sketch
+  const o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
+  const o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
+
+  // End point for the bottom startSketchAt
+  const o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
+  const o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
+
+  // Where is the center?
+  // crosshair(c_x, c_y)
+
+
+  startSketchOn('XY')
+    |> startProfileAt([o_x1, o_y1], %)
+    |> arc({
+         radius: o_r,
+         angle_start: 45 + a,
+         angle_end: 225 - a
+       }, %)
+    |> angledLine([45, o_r - i_r], %)
+    |> arc({
+         radius: i_r,
+         angle_start: 225 - a,
+         angle_end: 45 + a
+       }, %)
+    |> close(%)
+    |> extrude(d, %)
+
+  startSketchOn('XY')
+    |> startProfileAt([o_x2, o_y2], %)
+    |> arc({
+         radius: o_r,
+         angle_start: 225 + a,
+         angle_end: 360 + 45 - a
+       }, %)
+    |> angledLine([225, o_r - i_r], %)
+    |> arc({
+         radius: i_r,
+         angle_start: 45 - a,
+         angle_end: 225 + a - 360
+       }, %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn zoo = (x0, y0) => {
+  z(x0, y0)
+  o(x0 + s * 20, y0 - (s * 6.7))
+  o(x0 + s * 35, y0 - (s * 6.7))
+}
+
+zoo(zoo_x, zoo_y)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]
@@ -3364,8 +3685,6 @@ const outsideRevolve = startSketchOn('XZ')
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        println!("{:#?}", program);
-
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
@@ -3431,6 +3750,56 @@ const outsideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_fn_in_object() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [{ prop: callExp(bing.yo) }]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_fn_in_array() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [callExp(bing.yo)]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_object_fn_in_array_weird_bracket() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [
+  {
+  prop:   line([bing.yo, 21], sketch001)
+}
+]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const bing = { yo: 55 }
+const myNestedVar = [
+  { prop: line([bing.yo, 21], sketch001) }
+]
 "#
         );
     }
@@ -3584,10 +3953,10 @@ const hole_diam = 5
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-    |> close(%, "edge4")
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %,$edge1)
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
+    |> close(%, $edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -3597,10 +3966,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-  getEdge("edge2", %),
-  getEdge("edge4", %),
-  getOppositeEdge("edge2", %),
-  getOppositeEdge("edge4", %)
+  getEdge(edge2, %),
+  getEdge(edge4, %),
+  getOppositeEdge(edge2, %),
+  getOppositeEdge(edge4, %)
 ]
      }, %)
   // build the bracket sketch around the body
@@ -3614,14 +3983,14 @@ fn bracketSketch = (w, d, t) => {
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, "edge1")
-    |> lineTo([w / 2 + t, -t], %, "edge2")
-    |> lineTo([w / 2 + t, d + t], %, "edge3")
-    |> lineTo([w / 2, d + t], %, "edge4")
-    |> lineTo([w / 2, 0], %, "edge5")
-    |> lineTo([-w / 2, 0], %, "edge6")
-    |> lineTo([-w / 2, d + t], %, "edge7")
-    |> close(%, "edge8")
+    |> lineTo([-w / 2 - t, -t], %, $edge1)
+    |> lineTo([w / 2 + t, -t], %, $edge2)
+    |> lineTo([w / 2 + t, d + t], %, $edge3)
+    |> lineTo([w / 2, d + t], %, $edge4)
+    |> lineTo([w / 2, 0], %, $edge5)
+    |> lineTo([-w / 2, 0], %, $edge6)
+    |> lineTo([-w / 2, d + t], %, $edge7)
+    |> close(%, $edge8)
   return s
 }
 // build the body of the bracket
@@ -3630,10 +3999,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-  getNextAdjacentEdge("edge7", %),
-  getNextAdjacentEdge("edge2", %),
-  getNextAdjacentEdge("edge3", %),
-  getNextAdjacentEdge("edge6", %)
+  getNextAdjacentEdge(edge7, %),
+  getNextAdjacentEdge(edge2, %),
+  getNextAdjacentEdge(edge3, %),
+  getNextAdjacentEdge(edge6, %)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
@@ -3688,7 +4057,6 @@ const tabs_l = startSketchOn({
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        println!("{:#?}", program);
 
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
@@ -3705,10 +4073,10 @@ const hole_diam = 5
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-    |> close(%, "edge4")
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
+    |> close(%, $edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -3718,10 +4086,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-         getEdge("edge2", %),
-         getEdge("edge4", %),
-         getOppositeEdge("edge2", %),
-         getOppositeEdge("edge4", %)
+         getEdge(edge2, %),
+         getEdge(edge4, %),
+         getOppositeEdge(edge2, %),
+         getOppositeEdge(edge4, %)
        ]
      }, %)
 // build the bracket sketch around the body
@@ -3735,14 +4103,14 @@ fn bracketSketch = (w, d, t) => {
          }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, "edge1")
-    |> lineTo([w / 2 + t, -t], %, "edge2")
-    |> lineTo([w / 2 + t, d + t], %, "edge3")
-    |> lineTo([w / 2, d + t], %, "edge4")
-    |> lineTo([w / 2, 0], %, "edge5")
-    |> lineTo([-w / 2, 0], %, "edge6")
-    |> lineTo([-w / 2, d + t], %, "edge7")
-    |> close(%, "edge8")
+    |> lineTo([-w / 2 - t, -t], %, $edge1)
+    |> lineTo([w / 2 + t, -t], %, $edge2)
+    |> lineTo([w / 2 + t, d + t], %, $edge3)
+    |> lineTo([w / 2, d + t], %, $edge4)
+    |> lineTo([w / 2, 0], %, $edge5)
+    |> lineTo([-w / 2, 0], %, $edge6)
+    |> lineTo([-w / 2, d + t], %, $edge7)
+    |> close(%, $edge8)
   return s
 }
 // build the body of the bracket
@@ -3751,10 +4119,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge("edge7", %),
-         getNextAdjacentEdge("edge2", %),
-         getNextAdjacentEdge("edge3", %),
-         getNextAdjacentEdge("edge6", %)
+         getNextAdjacentEdge(edge7, %),
+         getNextAdjacentEdge(edge2, %),
+         getNextAdjacentEdge(edge3, %),
+         getNextAdjacentEdge(edge6, %)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)
@@ -4064,7 +4432,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %)
   /* and
   here
@@ -4087,7 +4455,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %)
   /* and
   here */
@@ -4105,12 +4473,12 @@ const mySk1 = startSketchOn('XY')
     fn test_recast_multiline_object() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.08], %)
-  |> line([0.62, 4.15], %, 'seg01')
+  |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,
        offset: -1.35,
-       intersectTag: 'seg01'
+       intersectTag: seg01
      }, %)
   |> line([-0.42, -1.72], %)"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -4195,13 +4563,13 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
+  |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
-       -angleToMatchLengthX('seg01', myVar, %),
+       -angleToMatchLengthX(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> angledLineToY([
-       -angleToMatchLengthY('seg01', myVar, %),
+       -angleToMatchLengthY(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -4221,13 +4589,13 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
    |> startProfileAt([0, 0], %)
-   |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
+   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
    |> angledLineToX([
-         -angleToMatchLengthX('seg01', myVar, %),
+         -angleToMatchLengthX(seg01, myVar, %),
          myVar
       ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
    |> angledLineToY([
-         -angleToMatchLengthY('seg01', myVar, %),
+         -angleToMatchLengthY(seg01, myVar, %),
          myVar
       ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
@@ -4870,5 +5238,39 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_tag_named_std_lib() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $xLine)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_empty_tag() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+        );
     }
 }

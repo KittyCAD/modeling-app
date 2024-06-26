@@ -21,12 +21,28 @@ export function getLength(a: [number, number], b: [number, number]): number {
   return Math.sqrt(x * x + y * y)
 }
 
+/**
+ * Calculates the angle in degrees between two points in a 2D space.
+ * The angle is normalized to the range [-180, 180].
+ *
+ * @param a The first point as a tuple [x, y].
+ * @param b The second point as a tuple [x, y].
+ * @returns The normalized angle in degrees between point a and point b.
+ */
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
   return normaliseAngle((Math.atan2(y, x) * 180) / Math.PI)
 }
 
+/**
+ * Normalizes an angle to the range [-180, 180].
+ *
+ * This function takes an angle in degrees and normalizes it so that the result is always within the range of -180 to 180 degrees. This is useful for ensuring consistent angle measurements where the direction (positive or negative) is significant.
+ *
+ * @param angle The angle in degrees to be normalized.
+ * @returns The normalized angle in the range [-180, 180].
+ */
 export function normaliseAngle(angle: number): number {
   const result = ((angle % 360) + 360) % 360
   return result > 180 ? result - 360 : result
@@ -110,4 +126,8 @@ export function isReducedMotion(): boolean {
     // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
     window.matchMedia('(prefers-reduced-motion)').matches
   )
+}
+
+export function XOR(bool1: boolean, bool2: boolean): boolean {
+  return (bool1 || bool2) && !(bool1 && bool2)
 }

@@ -1,6 +1,7 @@
-import { TransformCallback } from './stdTypes'
+import { TransformCallback, VarValues } from './stdTypes'
 import { toolTips, ToolTip } from '../../useStore'
 import { Selections, Selection } from 'lib/selections'
+import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
   Program,
@@ -17,6 +18,7 @@ import {
   isValueZero,
 } from '../queryAst'
 import {
+  createArrayExpression,
   createBinaryExpression,
   createBinaryExpressionWithUnary,
   createCallExpression,
@@ -27,17 +29,27 @@ import {
   createUnaryExpression,
   giveSketchFnCallTag,
 } from '../modifyAst'
-import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { getSketchSegmentFromSourceRange } from './sketchConstraints'
+import {
+  createFirstArg,
+  getConstraintInfo,
+  getFirstArg,
+  replaceSketchLine,
+} from './sketch'
+import {
+  getSketchSegmentFromPathToNode,
+  getSketchSegmentFromSourceRange,
+} from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 
-type LineInputsType =
+export type LineInputsType =
   | 'xAbsolute'
   | 'yAbsolute'
   | 'xRelative'
   | 'yRelative'
   | 'angle'
   | 'length'
+  | 'intersectionOffset'
+  | 'intersectionTag'
 
 export type ConstraintType =
   | 'equalLength'
@@ -64,8 +76,43 @@ function createCallWrapper(
   if (tag) {
     args.push(tag)
   }
+
+  const [hasErr, argsWOutErr] = cleanErrs(args)
+  if (hasErr) {
+    console.error(args)
+    return {
+      callExp: createCallExpression('', []),
+      valueUsedInTransform: 0,
+    }
+  }
+
   return {
-    callExp: createCallExpression(a, args),
+    callExp: createCallExpression(a, argsWOutErr),
+    valueUsedInTransform,
+  }
+}
+
+/**
+ * Abstracts creation of a callExpression ready for use for a sketchCombo transform
+ * Assume it exists within a pipe and adds the pipe substitution
+ * @param tool line, lineTo, angledLine, etc
+ * @param val The first argument to the function
+ * @param tag
+ * @param valueUsedInTransform
+ * @returns
+ */
+function createStdlibCallExpression(
+  tool: ToolTip,
+  val: Value,
+  tag?: Value,
+  valueUsedInTransform?: number
+): ReturnType<TransformCallback> {
+  const args = [val, createPipeSubstitution()]
+  if (tag) {
+    args.push(tag)
+  }
+  return {
+    callExp: createCallExpression(tool, args),
     valueUsedInTransform,
   }
 }
@@ -106,6 +153,7 @@ function intersectCallWrapper({
 export type TransformInfo = {
   tooltip: ToolTip
   createNode: (a: {
+    varValues: VarValues
     varValA: Value // x / angle
     varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
@@ -145,7 +193,7 @@ const basicAngledLineCreateNode =
     varValToUse: 'ang' | 'len' | 'none' = 'none'
   ): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform, varValA, varValB }) =>
-  (args, path) => {
+  (args, _, path) => {
     const refAng = path ? getAngle(path?.from, path?.to) : 0
     const nonForcedAng =
       varValToUse === 'ang'
@@ -252,7 +300,7 @@ const setHorzVertDistanceCreateNode =
     index = xOrY === 'x' ? 0 : 1
   ): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform }) => {
-    return (args, referencedSegment) => {
+    return (args, _, referencedSegment) => {
       const valueUsedInTransform = roundOff(
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
         2
@@ -279,7 +327,7 @@ const setHorzVertDistanceForAngleLineCreateNode =
     index = xOrY === 'x' ? 0 : 1
   ): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform, varValA }) => {
-    return (args, referencedSegment) => {
+    return (args, _, referencedSegment) => {
       const valueUsedInTransform = roundOff(
         getArgLiteralVal(args?.[1]) - (referencedSegment?.to?.[index] || 0),
         2
@@ -304,38 +352,31 @@ const setAbsDistanceCreateNode =
     isXOrYLine = false,
     index = xOrY === 'x' ? 0 : 1
   ): TransformInfo['createNode'] =>
-  ({ tag, forceValueUsedInTransform }) => {
-    return (args, referencedSegment) => {
-      const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
-        2
-      )
-      const val =
-        (forceValueUsedInTransform as BinaryPart) ||
-        createLiteral(valueUsedInTransform)
-      if (isXOrYLine) {
-        return createCallWrapper(
-          xOrY === 'x' ? 'xLineTo' : 'yLineTo',
-          val,
-          tag,
-          valueUsedInTransform
-        )
-      }
+  ({ tag, forceValueUsedInTransform }) =>
+  (args) => {
+    const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[index]), 2)
+    const val =
+      (forceValueUsedInTransform as BinaryPart) ||
+      createLiteral(valueUsedInTransform)
+    if (isXOrYLine) {
       return createCallWrapper(
-        'lineTo',
-        !index ? [val, args[1]] : [args[0], val],
+        xOrY === 'x' ? 'xLineTo' : 'yLineTo',
+        val,
         tag,
         valueUsedInTransform
       )
     }
+    return createCallWrapper(
+      'lineTo',
+      !index ? [val, args[1]] : [args[0], val],
+      tag,
+      valueUsedInTransform
+    )
   }
 const setAbsDistanceForAngleLineCreateNode =
-  (
-    xOrY: 'x' | 'y',
-    index = xOrY === 'x' ? 0 : 1
-  ): TransformInfo['createNode'] =>
+  (xOrY: 'x' | 'y'): TransformInfo['createNode'] =>
   ({ tag, forceValueUsedInTransform, varValA }) => {
-    return (args, referencedSegment) => {
+    return (args) => {
       const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[1]), 2)
       const val =
         (forceValueUsedInTransform as BinaryPart) ||
@@ -352,7 +393,7 @@ const setAbsDistanceForAngleLineCreateNode =
 const setHorVertDistanceForXYLines =
   (xOrY: 'x' | 'y'): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform }) => {
-    return (args, referencedSegment) => {
+    return (args, _, referencedSegment) => {
       const index = xOrY === 'x' ? 0 : 1
       const valueUsedInTransform = roundOff(
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
@@ -381,7 +422,7 @@ const setHorzVertDistanceConstraintLineCreateNode =
       varVal,
     ])
 
-    return (args, referencedSegment) => {
+    return (args, _, referencedSegment) => {
       const makeBinExp = (index: 0 | 1) => {
         const arg = getArgLiteralVal(args?.[index])
         return createBinaryExpressionWithUnary([
@@ -421,7 +462,7 @@ const setAngledIntersectLineForLines: TransformInfo['createNode'] =
       angleVal,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      intersectTag: createLiteral(referenceSegName),
+      intersectTag: createIdentifier(referenceSegName),
       tag,
       valueUsedInTransform,
     })
@@ -440,7 +481,7 @@ const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
       angleVal: varValA,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
-      intersectTag: createLiteral(referenceSegName),
+      intersectTag: createIdentifier(referenceSegName),
       tag,
       valueUsedInTransform,
     })
@@ -449,7 +490,7 @@ const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
 const setAngleBetweenCreateNode =
   (tranformToType: 'none' | 'xAbs' | 'yAbs'): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform, varValA, varValB }) => {
-    return (args, referencedSegment) => {
+    return (args, _, referencedSegment) => {
       const refAngle = referencedSegment
         ? getAngle(referencedSegment?.from, referencedSegment?.to)
         : 0
@@ -634,7 +675,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthX',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValA,
                 createPipeSubstitution(),
               ]
@@ -667,7 +708,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthYCall = createCallExpression(
               'angleToMatchLengthY',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -932,7 +973,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthX',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -982,7 +1023,7 @@ const transformMap: TransformMap = {
             const angleToMatchLengthXCall = createCallExpression(
               'angleToMatchLengthY',
               [
-                createLiteral(referenceSegName),
+                createIdentifier(referenceSegName),
                 varValB,
                 createPipeSubstitution(),
               ]
@@ -1133,7 +1174,7 @@ export function getRemoveConstraintsTransform(
         //       fnName: name,
         //       angleVal: args[0],
         //       offsetVal: args[1],
-        //       intersectTag: createLiteral(referenceSegName),
+        //       intersectTag: createIdentifier(referenceSegName),
         //       tag,
         //     })
         //   }
@@ -1143,6 +1184,11 @@ export function getRemoveConstraintsTransform(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
+  if (err(firstArg)) {
+    console.error(firstArg)
+    return false
+  }
+
   if (isNotLiteralArrayOrStatic(firstArg.val)) {
     return transformInfo
   }
@@ -1168,6 +1214,99 @@ export function getRemoveConstraintsTransform(
   return false
 }
 
+export function removeSingleConstraint({
+  pathToCallExp,
+  arrayIndex,
+  objectProperty,
+  ast,
+}: {
+  pathToCallExp: PathToNode
+  arrayIndex?: number
+  objectProperty?: string
+  ast: Program
+}): TransformInfo | false {
+  const callExp = getNodeFromPath<CallExpression>(
+    ast,
+    pathToCallExp,
+    'CallExpression'
+  )
+  if (err(callExp)) {
+    console.error(callExp)
+    return false
+  }
+  if (callExp.node.type !== 'CallExpression') {
+    console.error(new Error('Invalid node type'))
+    return false
+  }
+
+  const transform: TransformInfo = {
+    tooltip: callExp.node.callee.name as any,
+    createNode:
+      ({ tag, referenceSegName, varValues }) =>
+      (_, rawValues) => {
+        if (objectProperty) {
+          const expression: Parameters<typeof createObjectExpression>[0] = {}
+          varValues.forEach((varValue) => {
+            if (
+              varValue.type !== 'objectProperty' &&
+              varValue.type !== 'arrayOrObjItem'
+            )
+              return
+            const literal = rawValues.find(
+              (rawValue) =>
+                (rawValue.type === 'objectProperty' ||
+                  rawValue.type === 'arrayOrObjItem') &&
+                rawValue.key === objectProperty
+            )?.value
+            const value =
+              (varValue.key === objectProperty && literal) || varValue.value
+            expression[varValue.key] = value
+          })
+          const objExp = createObjectExpression(expression)
+          return createStdlibCallExpression(
+            callExp.node.callee.name as any,
+            objExp,
+            tag
+          )
+        }
+        if (typeof arrayIndex === 'number') {
+          const values = varValues.map((varValue) => {
+            if (
+              (varValue.type === 'arrayItem' ||
+                varValue.type === 'arrayOrObjItem') &&
+              varValue.index === arrayIndex
+            ) {
+              const literal = rawValues.find(
+                (rawValue) =>
+                  (rawValue.type === 'arrayItem' ||
+                    rawValue.type === 'arrayOrObjItem') &&
+                  rawValue.index === arrayIndex
+              )?.value
+              return (
+                (varValue.index === arrayIndex && literal) || varValue.value
+              )
+            }
+            return varValue.value
+          })
+          return createStdlibCallExpression(
+            callExp.node.callee.name as any,
+            createArrayExpression(values),
+            tag
+          )
+        }
+
+        // if (typeof arrayIndex !== 'number' || !objectProperty) must be single value input xLine, yLineTo etc
+
+        return createCallWrapper(
+          callExp.node.callee.name as any,
+          rawValues[0].value,
+          tag
+        )
+      },
+  }
+  return transform
+}
+
 function getTransformMapPath(
   sketchFnExp: CallExpression,
   constraintType: ConstraintType
@@ -1185,6 +1324,11 @@ function getTransformMapPath(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
+  if (err(firstArg)) {
+    console.error(firstArg)
+    return false
+  }
+
   if (isNotLiteralArrayOrStatic(firstArg.val)) {
     return false
   }
@@ -1271,13 +1415,18 @@ export function getTransformInfos(
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(ast, range)
   )
-  const nodes = paths.map(
-    (pathToNode) =>
-      getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
+  const nodes = paths.map((pathToNode) =>
+    getNodeFromPath<Value>(ast, pathToNode, 'CallExpression')
   )
 
   try {
-    const theTransforms = nodes.map((node) => {
+    const theTransforms = nodes.map((nodeMeta) => {
+      if (err(nodeMeta)) {
+        console.error(nodeMeta)
+        return false
+      }
+
+      const node = nodeMeta.node
       if (node?.type === 'CallExpression')
         return getTransformInfo(node, constraintType)
 
@@ -1294,16 +1443,24 @@ export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType
-): TransformInfo[] {
+): TransformInfo[] | Error {
   // return ()
   const paths = selectionRanges.codeBasedSelections.map((selectionRange) =>
     getNodePathFromSourceRange(ast, selectionRange.range)
   )
-  const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+  const nodes = paths.map((pathToNode) =>
+    getNodeFromPath<Value>(ast, pathToNode)
   )
 
-  const theTransforms = nodes.map((node) => {
+  const theTransforms = nodes.map((nodeMeta) => {
+    // Typescript is not smart enough to know node will never be Error
+    // here, but we'll place a condition anyway
+    if (err(nodeMeta)) {
+      console.error(nodeMeta)
+      return false
+    }
+
+    const node = nodeMeta.node
     if (node?.type === 'CallExpression')
       return getRemoveConstraintsTransform(node, constraintType)
 
@@ -1328,23 +1485,23 @@ export function transformSecondarySketchLinesTagFirst({
   programMemory: ProgramMemory
   forceSegName?: string
   forceValueUsedInTransform?: Value
-}): {
-  modifiedAst: Program
-  valueUsedInTransform?: number
-  pathToNodeMap: PathToNodeMap
-  tagInfo: {
-    tag: string
-    isTagExisting: boolean
-  }
-} {
+}):
+  | {
+      modifiedAst: Program
+      valueUsedInTransform?: number
+      pathToNodeMap: PathToNodeMap
+      tagInfo: {
+        tag: string
+        isTagExisting: boolean
+      }
+    }
+  | Error {
   // let node = JSON.parse(JSON.stringify(ast))
   const primarySelection = selectionRanges.codeBasedSelections[0].range
 
-  const { modifiedAst, tag, isTagExisting, pathToNode } = giveSketchFnCallTag(
-    ast,
-    primarySelection,
-    forceSegName
-  )
+  const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
+  if (err(_tag)) return _tag
+  const { modifiedAst, tag, isTagExisting, pathToNode } = _tag
 
   const result = transformAstSketchLines({
     ast: modifiedAst,
@@ -1358,6 +1515,8 @@ export function transformSecondarySketchLinesTagFirst({
     referenceSegName: tag,
     forceValueUsedInTransform,
   })
+  if (err(result)) return result
+
   const updatedPathToNodeMap = incrementPathToNodeMap(result.pathToNodeMap)
   updatedPathToNodeMap[0] = pathToNode
 
@@ -1392,85 +1551,160 @@ export function transformAstSketchLines({
   referencedSegmentRange,
 }: {
   ast: Program
-  selectionRanges: Selections
+  selectionRanges: Selections | PathToNode[]
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
   forceValueUsedInTransform?: Value
   referencedSegmentRange?: Selection['range']
-}): {
-  modifiedAst: Program
-  valueUsedInTransform?: number
-  pathToNodeMap: PathToNodeMap
-} {
+}):
+  | {
+      modifiedAst: Program
+      valueUsedInTransform?: number
+      pathToNodeMap: PathToNodeMap
+    }
+  | Error {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
   let _valueUsedInTransform // TODO should this be an array?
   const pathToNodeMap: PathToNodeMap = {}
 
-  selectionRanges.codeBasedSelections.forEach(({ range }, index) => {
+  const processSelection = (_pathToNode: PathToNode, index: number) => {
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
-    if (!callBack || !transformTo) throw new Error('no callback helper')
 
-    const getNode = getNodeFromPathCurry(
-      node,
-      getNodePathFromSourceRange(node, range)
-    )
+    if (!callBack || !transformTo) return new Error('no callback helper')
 
-    const callExp = getNode<CallExpression>('CallExpression')?.node
-    const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
+    const getNode = getNodeFromPathCurry(node, _pathToNode)
 
-    const { val } = getFirstArg(callExp)
-    const callBackTag = callExp.arguments[2]
+    const callExp = getNode<CallExpression>('CallExpression')
+    if (err(callExp)) return callExp
+    const varDec = getNode<VariableDeclarator>('VariableDeclarator')
+    if (err(varDec)) return varDec
+
+    const firstArg = getFirstArg(callExp.node)
+    if (err(firstArg)) return firstArg
+    const callBackTag = callExp.node.arguments[2]
     const _referencedSegmentNameVal =
-      callExp.arguments[0]?.type === 'ObjectExpression' &&
-      callExp.arguments[0].properties?.find(
+      callExp.node.arguments[0]?.type === 'ObjectExpression' &&
+      callExp.node.arguments[0].properties?.find(
         (prop) => prop.key.name === 'intersectTag'
       )?.value
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
-        _referencedSegmentNameVal.type === 'Literal' &&
-        String(_referencedSegmentNameVal.value)) ||
+        _referencedSegmentNameVal.type === 'Identifier' &&
+        String(_referencedSegmentNameVal.name)) ||
       ''
+    const { val } = firstArg
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
-    const varName = varDec.id.name
-    const sketchGroup = programMemory.root?.[varName]
-    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
-      throw new Error('not a sketch group')
-    const seg = getSketchSegmentFromSourceRange(sketchGroup, range).segment
-    const referencedSegment = referencedSegmentRange
-      ? getSketchSegmentFromSourceRange(sketchGroup, referencedSegmentRange)
-          .segment
-      : sketchGroup.value.find((path) => path.name === _referencedSegmentName)
-    const { to, from } = seg
-    const { modifiedAst, valueUsedInTransform, pathToNode } = replaceSketchLine(
-      {
-        node: node,
-        programMemory,
-        sourceRange: range,
-        referencedSegment,
-        fnName: transformTo || (callExp.callee.name as ToolTip),
-        to,
-        from,
-        createCallback: callBack({
-          referenceSegName: _referencedSegmentName,
-          varValA,
-          varValB,
-          tag: callBackTag,
-          forceValueUsedInTransform,
-        }),
-      }
-    )
+    const varValues: VarValues = []
 
+    getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
+      if (
+        a.type === 'tangentialWithPrevious' ||
+        a.type === 'horizontal' ||
+        a.type === 'vertical'
+      )
+        return
+
+      const nodeMeta = getNodeFromPath<Value>(ast, a.pathToNode)
+      if (err(nodeMeta)) return
+
+      if (a?.argPosition?.type === 'arrayItem') {
+        varValues.push({
+          type: 'arrayItem',
+          index: a.argPosition.index,
+          value: nodeMeta.node,
+          argType: a.type,
+        })
+      } else if (a?.argPosition?.type === 'objectProperty') {
+        varValues.push({
+          type: 'objectProperty',
+          key: a.argPosition.key,
+          value: nodeMeta.node,
+          argType: a.type,
+        })
+      } else if (a?.argPosition?.type === 'singleValue') {
+        varValues.push({
+          type: 'singleValue',
+          argType: a.type,
+          value: nodeMeta.node,
+        })
+      }
+    })
+
+    const varName = varDec.node.id.name
+    let sketchGroup = programMemory.root?.[varName]
+    if (sketchGroup.type === 'ExtrudeGroup') {
+      sketchGroup = sketchGroup.sketchGroup
+    }
+    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
+      return new Error('not a sketch group')
+    const segMeta = getSketchSegmentFromPathToNode(
+      sketchGroup,
+      ast,
+      _pathToNode
+    )
+    if (err(segMeta)) return segMeta
+
+    const seg = segMeta.segment
+    let referencedSegment
+    if (referencedSegmentRange) {
+      const _segment = getSketchSegmentFromSourceRange(
+        sketchGroup,
+        referencedSegmentRange
+      )
+      if (err(_segment)) return _segment
+      referencedSegment = _segment.segment
+    } else {
+      referencedSegment = sketchGroup.value.find(
+        (path) => path.tag?.value === _referencedSegmentName
+      )
+    }
+    const { to, from } = seg
+    const replacedSketchLine = replaceSketchLine({
+      node: node,
+      programMemory,
+      pathToNode: _pathToNode,
+      referencedSegment,
+      fnName: transformTo || (callExp.node.callee.name as ToolTip),
+      to,
+      from,
+      createCallback: callBack({
+        referenceSegName: _referencedSegmentName,
+        varValues,
+        varValA,
+        varValB,
+        tag: callBackTag,
+        forceValueUsedInTransform,
+      }),
+    })
+    if (err(replacedSketchLine)) return replacedSketchLine
+
+    const { modifiedAst, valueUsedInTransform, pathToNode } = replacedSketchLine
     node = modifiedAst
     pathToNodeMap[index] = pathToNode
     if (typeof valueUsedInTransform === 'number') {
       _valueUsedInTransform = valueUsedInTransform
     }
-  })
+  }
+
+  if ('codeBasedSelections' in selectionRanges) {
+    // If the processing of any of the selections failed, return the first error
+    const maybeProcessErrors = selectionRanges.codeBasedSelections
+      .map(({ range }, index) =>
+        processSelection(getNodePathFromSourceRange(node, range), index)
+      )
+      .filter(err)
+
+    if (maybeProcessErrors.length) return maybeProcessErrors[0]
+  } else {
+    const maybeProcessErrors = selectionRanges.map(processSelection).filter(err)
+    if (maybeProcessErrors.length) return maybeProcessErrors[0]
+  }
+
   return {
     modifiedAst: node,
     valueUsedInTransform: _valueUsedInTransform,
@@ -1480,21 +1714,21 @@ export function transformAstSketchLines({
 
 function createSegLen(referenceSegName: string): Value {
   return createCallExpression('segLen', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
 
 function createSegAngle(referenceSegName: string): Value {
   return createCallExpression('segAng', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
-    createLiteral(referenceSegName),
+    createIdentifier(referenceSegName),
     createPipeSubstitution(),
   ])
 }
@@ -1509,20 +1743,27 @@ function getArgLiteralVal(arg: Value): number {
   return arg?.type === 'Literal' ? Number(arg.value) : 0
 }
 
+export type ConstraintLevel = 'free' | 'partial' | 'full'
+
 export function getConstraintLevelFromSourceRange(
   cursorRange: Selection['range'],
-  ast: Program
-): { range: [number, number]; level: 'free' | 'partial' | 'full' } {
-  const { node: sketchFnExp } = getNodeFromPath<CallExpression>(
+  ast: Program | Error
+): Error | { range: [number, number]; level: ConstraintLevel } {
+  if (err(ast)) return ast
+  const nodeMeta = getNodeFromPath<CallExpression>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'
   )
+  if (err(nodeMeta)) return nodeMeta
+
+  const { node: sketchFnExp } = nodeMeta
   const name = sketchFnExp?.callee?.name as ToolTip
   const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
   if (!toolTips.includes(name)) return { level: 'free', range: range }
 
   const firstArg = getFirstArg(sketchFnExp)
+  if (err(firstArg)) return firstArg
 
   // check if the function is fully constrained
   if (isNotLiteralArrayOrStatic(firstArg.val)) {

@@ -96,10 +96,16 @@ fn do_stdlib_inner(
     }
 
     if !ast.sig.generics.params.is_empty() {
-        errors.push(Error::new_spanned(
-            &ast.sig.generics,
-            "generics are not permitted for stdlib functions",
-        ));
+        if ast.sig.generics.params.iter().any(|generic_type| match generic_type {
+            syn::GenericParam::Lifetime(_) => false,
+            syn::GenericParam::Type(_) => true,
+            syn::GenericParam::Const(_) => true,
+        }) {
+            errors.push(Error::new_spanned(
+                &ast.sig.generics,
+                "Stdlib functions may not be generic over types or constants, only lifetimes.",
+            ));
+        }
     }
 
     if ast.sig.variadic.is_some() {
@@ -201,7 +207,7 @@ fn do_stdlib_inner(
         .code_blocks
         .iter()
         .enumerate()
-        .map(|(index, code_block)| generate_code_block_test(&fn_name_str, code_block, index, &metadata.tags))
+        .map(|(index, code_block)| generate_code_block_test(&fn_name_str, code_block, index))
         .collect::<Vec<_>>();
 
     let tags = metadata
@@ -650,7 +656,12 @@ impl Parse for ItemFnForSignature {
 }
 
 fn clean_ty_string(t: &str) -> (String, proc_macro2::TokenStream) {
-    let mut ty_string = t.replace('&', "").replace("mut", "").replace(' ', "");
+    let mut ty_string = t
+        .replace("& 'a", "")
+        .replace('&', "")
+        .replace("mut", "")
+        .replace("< 'a >", "")
+        .replace(' ', "");
     if ty_string.starts_with("Args") {
         ty_string = "Args".to_string();
     }
@@ -731,27 +742,13 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 
 // For each kcl code block, we want to generate a test that checks that the
 // code block is valid kcl code and compiles and executes.
-fn generate_code_block_test(
-    fn_name: &str,
-    code_block: &str,
-    index: usize,
-    tags: &[String],
-) -> proc_macro2::TokenStream {
+fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
     let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
     let test_name_mock = format_ident!("test_mock_example_{}{}", fn_name, index);
     let test_name_str = format!("serial_test_example_{}{}", fn_name, index);
 
-    // TODO: We ignore import for now, because the files don't exist and we just want
-    // to show easy imports.
-    let ignored = if tags.contains(&"norun".to_string()) {
-        quote! { #[ignore] }
-    } else {
-        quote! {}
-    };
-
     quote! {
         #[tokio::test(flavor = "multi_thread")]
-        #ignored
         async fn #test_name_mock() {
             let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
@@ -768,7 +765,6 @@ fn generate_code_block_test(
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-        #ignored
         async fn #test_name() {
             let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
             let http_client = reqwest::Client::builder()

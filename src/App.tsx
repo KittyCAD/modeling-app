@@ -23,6 +23,8 @@ import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
 import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import Gizmo from 'components/Gizmo'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -57,14 +59,13 @@ export function App() {
   const {
     app: { onboardingStatus },
   } = settings.context
-  const { state, send } = useModelingContext()
+  const { state } = useModelingContext()
 
-  useHotkeys('esc', () => send('Cancel'))
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
-  useHotkeys(
-    isTauri() ? 'mod + ,' : 'shift + mod + ,',
+  useHotkeyWrapper(
+    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + paths.SETTINGS),
     {
       splitKey: '|',
@@ -126,9 +127,11 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream className="absolute inset-0 z-0" />
+      <Stream />
       {/* <CamToggle /> */}
-      <LowerRightControls />
+      <LowerRightControls>
+        <Gizmo />
+      </LowerRightControls>
     </div>
   )
 }

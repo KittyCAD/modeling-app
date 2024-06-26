@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { SettingsAuthProviderJest } from './SettingsAuthProvider'
-import { APP_NAME } from 'lib/constants'
 import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 
@@ -21,13 +20,17 @@ const projectWellFormed = {
     created: now.toISOString(),
     modified: now.toISOString(),
     size: 32,
+    accessed: null,
+    type: null,
+    permission: null,
   },
   kcl_file_count: 1,
   directory_count: 0,
+  default_file: '/some/path/Simple Box/main.kcl',
 } satisfies Project
 
 describe('ProjectSidebarMenu tests', () => {
-  test('Renders the project name', () => {
+  test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
@@ -38,48 +41,7 @@ describe('ProjectSidebarMenu tests', () => {
       </BrowserRouter>
     )
 
-    fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-
-    expect(screen.getByTestId('projectName')).toHaveTextContent(
-      projectWellFormed.name
-    )
-    expect(screen.getByTestId('createdAt')).toHaveTextContent(
-      `Created ${now.toLocaleDateString()}`
-    )
-  })
-
-  test('Renders app name if given no project', () => {
-    render(
-      <BrowserRouter>
-        <CommandBarProvider>
-          <SettingsAuthProviderJest>
-            <ProjectSidebarMenu />
-          </SettingsAuthProviderJest>
-        </CommandBarProvider>
-      </BrowserRouter>
-    )
-
-    fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-
-    expect(screen.getByTestId('projectName')).toHaveTextContent(APP_NAME)
-  })
-
-  test('Renders as a link if set to do so', () => {
-    render(
-      <BrowserRouter>
-        <CommandBarProvider>
-          <SettingsAuthProviderJest>
-            <ProjectSidebarMenu
-              project={projectWellFormed}
-              renderAsLink={true}
-            />
-          </SettingsAuthProviderJest>
-        </CommandBarProvider>
-      </BrowserRouter>
-    )
-
-    expect(screen.getByTestId('project-sidebar-link')).toBeInTheDocument()
-    expect(screen.getByTestId('project-sidebar-link-name')).toHaveTextContent(
+    expect(screen.getByTestId('project-name')).toHaveTextContent(
       projectWellFormed.name
     )
   })

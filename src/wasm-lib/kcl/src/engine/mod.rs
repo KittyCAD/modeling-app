@@ -13,7 +13,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use kittycad::types::{Color, ModelingCmd, OkWebSocketResponseData, WebSocketRequest};
+use kittycad::types::{Color, ModelingCmd, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -26,6 +26,11 @@ use crate::{
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
     fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
+
+    /// Get the batch of end commands to be sent to the engine.
+    fn batch_end(
+        &self,
+    ) -> Arc<Mutex<HashMap<uuid::Uuid, (kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the default planes.
     async fn default_planes(
@@ -47,19 +52,19 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
+    ) -> Result<kittycad::types::WebSocketResponse, crate::errors::KclError>;
 
     async fn clear_scene(&self, source_range: crate::executor::SourceRange) -> Result<(), crate::errors::KclError> {
-        self.send_modeling_cmd(
+        self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
-            kittycad::types::ModelingCmd::SceneClearAll {},
+            &kittycad::types::ModelingCmd::SceneClearAll {},
         )
         .await?;
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
-        self.flush_batch(source_range).await?;
+        self.flush_batch(false, source_range).await?;
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(source_range).await?;
@@ -67,12 +72,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
-    async fn send_modeling_cmd(
+    // Add a modeling command to the batch but don't fire it right away.
+    async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        cmd: &kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
         let req = WebSocketRequest::ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id,
@@ -81,37 +87,65 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Add cmd to the batch.
         self.batch().lock().unwrap().push((req, source_range));
 
-        // If the batch only has this one command that expects a return value,
-        // fire it right away, or if we want to flush batch queue.
-        let is_sending = is_cmd_with_return_values(&cmd);
+        Ok(())
+    }
 
-        // Return a fake modeling_request empty response.
-        if !is_sending {
-            return Ok(OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-            });
-        }
+    /// Add a command to the batch that needs to be executed at the very end.
+    /// This for stuff like fillets or chamfers where if we execute too soon the
+    /// engine will eat the ID and we can't reference it for other commands.
+    async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: &kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        let req = WebSocketRequest::ModelingCmdReq {
+            cmd: cmd.clone(),
+            cmd_id: id,
+        };
+
+        // Add cmd to the batch end.
+        self.batch_end().lock().unwrap().insert(id, (req, source_range));
+        Ok(())
+    }
+
+    /// Send the modeling cmd and wait for the response.
+    async fn send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        self.batch_modeling_cmd(id, source_range, &cmd).await?;
 
         // Flush the batch queue.
-        self.flush_batch(source_range).await
+        self.flush_batch(false, source_range).await
     }
 
     /// Force flush the batch queue.
     async fn flush_batch(
         &self,
+        // Whether or not to flush the end commands as well.
+        // We only do this at the very end of the file.
+        batch_end: bool,
         source_range: crate::executor::SourceRange,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        let all_requests = if batch_end {
+            let mut requests = self.batch().lock().unwrap().clone();
+            requests.extend(self.batch_end().lock().unwrap().values().cloned());
+            requests
+        } else {
+            self.batch().lock().unwrap().clone()
+        };
+
         // Return early if we have no commands to send.
-        if self.batch().lock().unwrap().is_empty() {
+        if all_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
                 modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
             });
         }
 
-        let requests = self
-            .batch()
-            .lock()
-            .unwrap()
+        let requests: Vec<ModelingCmdReq> = all_requests
             .iter()
             .filter_map(|(val, _)| match val {
                 WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => Some(kittycad::types::ModelingCmdReq {
@@ -121,15 +155,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 _ => None,
             })
             .collect();
+
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
             batch_id: uuid::Uuid::new_v4(),
-            responses: false,
+            responses: true,
         };
 
-        let final_req = if self.batch().lock().unwrap().len() == 1 {
+        let final_req = if all_requests.len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            self.batch().lock().unwrap().first().unwrap().0.clone()
+            all_requests.first().unwrap().0.clone()
         } else {
             batched_requests
         };
@@ -137,7 +172,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = std::collections::HashMap::new();
-        for (req, range) in self.batch().lock().unwrap().iter() {
+        for (req, range) in all_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
                     id_to_source_range.insert(*cmd_id, *range);
@@ -153,25 +188,59 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Throw away the old batch queue.
         self.batch().lock().unwrap().clear();
+        if batch_end {
+            self.batch_end().lock().unwrap().clear();
+        }
 
         // We pop off the responses to cleanup our mappings.
-        let id_final = match final_req {
+        match final_req {
             WebSocketRequest::ModelingCmdBatchReq {
-                requests: _,
+                ref requests,
                 batch_id,
                 responses: _,
-            } => batch_id,
-            WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
-            _ => {
-                return Err(KclError::Engine(KclErrorDetails {
-                    message: format!("The final request is not a modeling command: {:?}", final_req),
-                    source_ranges: vec![source_range],
-                }));
-            }
-        };
+            } => {
+                // Get the last command ID.
+                let last_id = requests.last().unwrap().cmd_id;
+                let ws_resp = self
+                    .inner_send_modeling_cmd(batch_id, source_range, final_req, id_to_source_range.clone())
+                    .await?;
+                let response = self.parse_websocket_response(ws_resp, source_range)?;
 
-        self.inner_send_modeling_cmd(id_final, source_range, final_req, id_to_source_range)
-            .await
+                // If we have a batch response, we want to return the specific id we care about.
+                if let kittycad::types::OkWebSocketResponseData::ModelingBatch { responses } = &response {
+                    self.parse_batch_responses(last_id, id_to_source_range, responses.clone())
+                } else {
+                    // We should never get here.
+                    Err(KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get batch response: {:?}", response),
+                        source_ranges: vec![source_range],
+                    }))
+                }
+            }
+            WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
+                // You are probably wondering why we can't just return the source range we were
+                // passed with the function. Well this is actually really important.
+                // If this is the last command in the batch and there is only one and we've reached
+                // the end of the file, this will trigger a flush batch function, but it will just
+                // send default or the end of the file as it's source range not the origin of the
+                // request so we need the original request source range in case the engine returns
+                // an error.
+                let source_range = id_to_source_range.get(&cmd_id).cloned().ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        source_ranges: vec![],
+                    })
+                })?;
+                let ws_resp = self
+                    .inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
+                    .await?;
+                self.parse_websocket_response(ws_resp, source_range)
+            }
+            _ => Err(KclError::Engine(KclErrorDetails {
+                message: format!("The final request is not a modeling command: {:?}", final_req),
+                source_ranges: vec![source_range],
+            })),
+        }
     }
 
     async fn make_default_plane(
@@ -186,10 +255,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
 
         let plane_id = uuid::Uuid::new_v4();
-        self.send_modeling_cmd(
+        self.batch_modeling_cmd(
             plane_id,
             source_range,
-            ModelingCmd::MakePlane {
+            &ModelingCmd::MakePlane {
                 clobber: false,
                 origin: default_origin,
                 size: default_size,
@@ -202,10 +271,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         if let Some(color) = color {
             // Set the color.
-            self.send_modeling_cmd(
+            self.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 source_range,
-                ModelingCmd::PlaneSetColor { color, plane_id },
+                &ModelingCmd::PlaneSetColor { color, plane_id },
             )
             .await?;
         }
@@ -244,11 +313,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 (
-                    Point3d {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
+                    Point3d { x: 1.0, y: 0.0, z: 0.0 },
                     Point3d { x: 0.0, y: 0.0, z: 1.0 },
                     Some(Color {
                         r: 0.28,
@@ -286,7 +351,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 PlaneName::NegXz,
                 (
                     Point3d {
-                        x: 1.0, // TODO this should be -1.0
+                        x: -1.0,
                         y: 0.0,
                         z: 0.0,
                     },
@@ -305,7 +370,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Flush the batch queue, so these planes are created right away.
-        self.flush_batch(source_range).await?;
+        self.flush_batch(false, source_range).await?;
 
         Ok(DefaultPlanes {
             xy: planes[&PlaneName::Xy],
@@ -316,62 +381,79 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             neg_yz: planes[&PlaneName::NegYz],
         })
     }
-}
 
-pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
-    let (kittycad::types::ModelingCmd::Export { .. }
-    | kittycad::types::ModelingCmd::Extrude { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraLookAt { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraFocusOn { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraPerspectiveSettings { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
-    | kittycad::types::ModelingCmd::SketchModeDisable { .. }
-    | kittycad::types::ModelingCmd::ObjectBringToFront { .. }
-    | kittycad::types::ModelingCmd::SelectWithPoint { .. }
-    | kittycad::types::ModelingCmd::HighlightSetEntity { .. }
-    | kittycad::types::ModelingCmd::EntityGetChildUuid { .. }
-    | kittycad::types::ModelingCmd::EntityGetNumChildren { .. }
-    | kittycad::types::ModelingCmd::EntityGetParentId { .. }
-    | kittycad::types::ModelingCmd::EntityGetAllChildUuids { .. }
-    | kittycad::types::ModelingCmd::CameraDragMove { .. }
-    | kittycad::types::ModelingCmd::CameraDragEnd { .. }
-    | kittycad::types::ModelingCmd::SelectGet { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetAllEdgeFaces { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetAllOppositeEdges { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetOppositeEdge { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetNextAdjacentEdge { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge { .. }
-    | kittycad::types::ModelingCmd::GetEntityType { .. }
-    | kittycad::types::ModelingCmd::CurveGetControlPoints { .. }
-    | kittycad::types::ModelingCmd::CurveGetType { .. }
-    | kittycad::types::ModelingCmd::MouseClick { .. }
-    | kittycad::types::ModelingCmd::TakeSnapshot { .. }
-    | kittycad::types::ModelingCmd::PathGetInfo { .. }
-    | kittycad::types::ModelingCmd::PathGetCurveUuidsForVertices { .. }
-    | kittycad::types::ModelingCmd::PathGetVertexUuids { .. }
-    | kittycad::types::ModelingCmd::CurveGetEndPoints { .. }
-    | kittycad::types::ModelingCmd::FaceIsPlanar { .. }
-    | kittycad::types::ModelingCmd::FaceGetPosition { .. }
-    | kittycad::types::ModelingCmd::FaceGetGradient { .. }
-    | kittycad::types::ModelingCmd::PlaneIntersectAndProject { .. }
-    | kittycad::types::ModelingCmd::ImportFiles { .. }
-    | kittycad::types::ModelingCmd::Mass { .. }
-    | kittycad::types::ModelingCmd::Volume { .. }
-    | kittycad::types::ModelingCmd::Density { .. }
-    | kittycad::types::ModelingCmd::SurfaceArea { .. }
-    | kittycad::types::ModelingCmd::CenterOfMass { .. }
-    | kittycad::types::ModelingCmd::GetSketchModePlane { .. }
-    | kittycad::types::ModelingCmd::EntityGetDistance { .. }
-    | kittycad::types::ModelingCmd::EntityLinearPattern { .. }
-    | kittycad::types::ModelingCmd::EntityCircularPattern { .. }
-    | kittycad::types::ModelingCmd::ZoomToFit { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo { .. }) = cmd
-    else {
-        return false;
-    };
+    fn parse_websocket_response(
+        &self,
+        response: kittycad::types::WebSocketResponse,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        if let Some(data) = &response.resp {
+            Ok(data.clone())
+        } else if let Some(errors) = &response.errors {
+            Err(KclError::Engine(KclErrorDetails {
+                message: format!("Modeling command failed: {:?}", errors),
+                source_ranges: vec![source_range],
+            }))
+        } else {
+            // We should never get here.
+            Err(KclError::Engine(KclErrorDetails {
+                message: "Modeling command failed: no response or errors".to_string(),
+                source_ranges: vec![source_range],
+            }))
+        }
+    }
 
-    true
+    fn parse_batch_responses(
+        &self,
+        // The last response we are looking for.
+        id: uuid::Uuid,
+        // The mapping of source ranges to command IDs.
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        // The response from the engine.
+        responses: HashMap<String, kittycad::types::BatchResponse>,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        // Iterate over the responses and check for errors.
+        for (cmd_id, resp) in responses.iter() {
+            let cmd_id = uuid::Uuid::parse_str(cmd_id).map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to parse command ID: {:?}", e),
+                    source_ranges: vec![id_to_source_range[&id]],
+                })
+            })?;
+
+            if let Some(errors) = resp.errors.as_ref() {
+                // Get the source range for the command.
+                let source_range = id_to_source_range.get(&cmd_id).cloned().ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: format!("Failed to get source range for command ID: {:?}", cmd_id),
+                        source_ranges: vec![],
+                    })
+                })?;
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!("Modeling command failed: {:?}", errors),
+                    source_ranges: vec![source_range],
+                }));
+            }
+            if let Some(response) = resp.response.as_ref() {
+                if cmd_id == id {
+                    // This is the response we care about.
+                    return Ok(kittycad::types::OkWebSocketResponseData::Modeling {
+                        modeling_response: response.clone(),
+                    });
+                } else {
+                    // Continue the loop if this is not the response we care about.
+                    continue;
+                }
+            }
+        }
+
+        // Return an error that we did not get an error or the response we wanted.
+        // This should never happen but who knows.
+        Err(KclError::Engine(KclErrorDetails {
+            message: format!("Failed to find response for command ID: {:?}", id),
+            source_ranges: vec![],
+        }))
+    }
 }
 
 #[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

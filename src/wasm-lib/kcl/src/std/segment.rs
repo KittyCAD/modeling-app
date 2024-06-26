@@ -4,11 +4,10 @@ use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
 
-use super::utils::between;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SketchGroup},
-    std::Args,
+    executor::{MemoryItem, SketchGroup, TagIdentifier},
+    std::{utils::between, Args},
 };
 
 /// Returns the segment end of x.
@@ -22,7 +21,7 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the segment end of x.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %, "thing")
 ///   |> line([0, 5], %)
@@ -35,8 +34,12 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndX",
 }]
-fn inner_segment_end_x(segment_name: &str, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
-    let line = sketch_group.get_base_by_name_or_start(segment_name).ok_or_else(|| {
+fn inner_segment_end_x(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
+    let line = sketch_group.get_base_by_tag_or_start(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
                 "Expected a segment name that exists in the given SketchGroup, found `{}`",
@@ -60,7 +63,7 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the segment end of y.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %)
 ///   |> line([0, 3], %, "thing")
@@ -74,8 +77,12 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndY",
 }]
-fn inner_segment_end_y(segment_name: &str, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
-    let line = sketch_group.get_base_by_name_or_start(segment_name).ok_or_else(|| {
+fn inner_segment_end_y(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
+    let line = sketch_group.get_base_by_tag_or_start(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
                 "Expected a segment name that exists in the given SketchGroup, found `{}`",
@@ -99,7 +106,7 @@ pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of x.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
@@ -141,7 +148,7 @@ pub async fn last_segment_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of y.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
@@ -182,7 +189,7 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the length of the segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle: 60,
@@ -203,8 +210,12 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segLen",
 }]
-fn inner_segment_length(segment_name: &str, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
-    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+fn inner_segment_length(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
+    let path = sketch_group.get_path_by_tag(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
                 "Expected a segment name that exists in the given SketchGroup, found `{}`",
@@ -231,7 +242,7 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the angle of the segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([5, 10], %, 'seg01')
@@ -246,8 +257,12 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(segment_name: &str, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
-    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+fn inner_segment_angle(
+    segment_name: &TagIdentifier,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<f64, KclError> {
+    let path = sketch_group.get_path_by_tag(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
                 "Expected a segment name that exists in the given SketchGroup, found `{}`",
@@ -273,7 +288,7 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
 /// Returns the angle to match the given length for x.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('-XZ')
+/// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([2, 5], %, 'seg01')
 ///   |> angledLineToX([
@@ -288,12 +303,12 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
     name = "angleToMatchLengthX",
 }]
 fn inner_angle_to_match_length_x(
-    segment_name: &str,
+    segment_name: &TagIdentifier,
     to: f64,
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<f64, KclError> {
-    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+    let path = sketch_group.get_path_by_tag(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
                 "Expected a segment name that exists in the given SketchGroup, found `{}`",
@@ -341,7 +356,7 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
 /// Returns the angle to match the given length for y.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('-XZ')
+/// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([1, 2], %, 'seg01')
 ///   |> angledLine({
@@ -357,12 +372,12 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
     name = "angleToMatchLengthY",
 }]
 fn inner_angle_to_match_length_y(
-    segment_name: &str,
+    segment_name: &TagIdentifier,
     to: f64,
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<f64, KclError> {
-    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+    let path = sketch_group.get_path_by_tag(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
                 "Expected a segment name that exists in the given SketchGroup, found `{}`",

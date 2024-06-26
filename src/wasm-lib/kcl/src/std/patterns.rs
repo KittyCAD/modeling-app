@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, Geometries, Geometry, MemoryItem, SketchGroup, SketchGroupSet},
+    executor::{ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryItem, SketchGroup, SketchGroupSet},
     std::{types::Uint, Args},
 };
 
@@ -84,13 +84,13 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     }
 
     let sketch_groups = inner_pattern_linear_2d(data, sketch_group_set, args).await?;
-    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+    Ok(sketch_groups.into())
 }
 
 /// A linear pattern on a 2D sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
@@ -108,10 +108,7 @@ async fn inner_pattern_linear_2d(
     sketch_group_set: SketchGroupSet,
     args: Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let starting_sketch_groups = match sketch_group_set {
-        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
-        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
-    };
+    let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
 
     if args.ctx.is_mock {
         return Ok(starting_sketch_groups);
@@ -141,7 +138,7 @@ async fn inner_pattern_linear_2d(
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (LinearPattern3dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group_set): (LinearPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
     if data.axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -152,14 +149,14 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
         }));
     }
 
-    let extrude_groups = inner_pattern_linear_3d(data, extrude_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+    let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, args).await?;
+    Ok(extrude_groups.into())
 }
 
 /// A linear pattern on a 3D model.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
 ///   |> line([3, 1], %)
@@ -178,45 +175,45 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
-    extrude_group: Box<ExtrudeGroup>,
+    extrude_group_set: ExtrudeGroupSet,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not flush these, then you won't be able to pattern something with fillets.
+    // Flush just the fillets/chamfers that apply to these extrude groups.
+    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+        .await?;
+
+    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
+
     if args.ctx.is_mock {
-        return Ok(vec![extrude_group.clone()]);
+        return Ok(starting_extrude_groups);
     }
 
-    let geometries = pattern_linear(
-        LinearPattern::ThreeD(data),
-        Geometry::ExtrudeGroup(extrude_group),
-        args.clone(),
-    )
-    .await?;
+    let mut extrude_groups = Vec::new();
+    for extrude_group in starting_extrude_groups.iter() {
+        let geometries = pattern_linear(
+            LinearPattern::ThreeD(data.clone()),
+            Geometry::ExtrudeGroup(extrude_group.clone()),
+            args.clone(),
+        )
+        .await?;
 
-    let Geometries::ExtrudeGroups(extrude_groups) = geometries else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected a vec of extrude groups".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    };
+        let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a vec of extrude groups".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        extrude_groups.extend(new_extrude_groups);
+    }
 
     Ok(extrude_groups)
 }
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
-    println!(
-        "id: {:#?}",
-        ModelingCmd::EntityLinearPattern {
-            axis: kittycad::types::Point3D {
-                x: data.axis()[0],
-                y: data.axis()[1],
-                z: data.axis()[2],
-            },
-            entity_id: geometry.id(),
-            num_repetitions: data.repetitions(),
-            spacing: data.distance(),
-        }
-    );
 
     let resp = args
         .send_modeling_cmd(
@@ -348,16 +345,16 @@ impl CircularPattern {
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (CircularPattern2dData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group_set): (CircularPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
-    let sketch_groups = inner_pattern_circular_2d(data, sketch_group, args).await?;
-    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+    let sketch_groups = inner_pattern_circular_2d(data, sketch_group_set, args).await?;
+    Ok(sketch_groups.into())
 }
 
 /// A circular pattern on a 2D sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
 ///   |> line([0, 5], %)
 ///   |> line([-1, 0], %)
@@ -377,42 +374,49 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_pattern_circular_2d(
     data: CircularPattern2dData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group_set: SketchGroupSet,
     args: Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
+    let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
+
     if args.ctx.is_mock {
-        return Ok(vec![sketch_group]);
+        return Ok(starting_sketch_groups);
     }
 
-    let geometries = pattern_circular(
-        CircularPattern::TwoD(data),
-        Geometry::SketchGroup(sketch_group),
-        args.clone(),
-    )
-    .await?;
+    let mut sketch_groups = Vec::new();
+    for sketch_group in starting_sketch_groups.iter() {
+        let geometries = pattern_circular(
+            CircularPattern::TwoD(data.clone()),
+            Geometry::SketchGroup(sketch_group.clone()),
+            args.clone(),
+        )
+        .await?;
 
-    let Geometries::SketchGroups(sketch_groups) = geometries else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected a vec of sketch groups".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    };
+        let Geometries::SketchGroups(new_sketch_groups) = geometries else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a vec of sketch groups".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        sketch_groups.extend(new_sketch_groups);
+    }
 
     Ok(sketch_groups)
 }
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (CircularPattern3dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group_set): (CircularPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
-    let extrude_groups = inner_pattern_circular_3d(data, extrude_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+    let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, args).await?;
+    Ok(extrude_groups.into())
 }
 
 /// A circular pattern on a 3D model.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
 ///
 /// const example = extrude(-5, exampleSketch)
@@ -429,26 +433,39 @@ pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,
-    extrude_group: Box<ExtrudeGroup>,
+    extrude_group_set: ExtrudeGroupSet,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not flush these, then you won't be able to pattern something with fillets.
+    // Flush just the fillets/chamfers that apply to these extrude groups.
+    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+        .await?;
+
+    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
+
     if args.ctx.is_mock {
-        return Ok(vec![extrude_group]);
+        return Ok(starting_extrude_groups);
     }
 
-    let geometries = pattern_circular(
-        CircularPattern::ThreeD(data),
-        Geometry::ExtrudeGroup(extrude_group),
-        args.clone(),
-    )
-    .await?;
+    let mut extrude_groups = Vec::new();
+    for extrude_group in starting_extrude_groups.iter() {
+        let geometries = pattern_circular(
+            CircularPattern::ThreeD(data.clone()),
+            Geometry::ExtrudeGroup(extrude_group.clone()),
+            args.clone(),
+        )
+        .await?;
 
-    let Geometries::ExtrudeGroups(extrude_groups) = geometries else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected a vec of extrude groups".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    };
+        let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a vec of extrude groups".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        extrude_groups.extend(new_extrude_groups);
+    }
 
     Ok(extrude_groups)
 }

@@ -22,20 +22,20 @@ const filletR = 0.25
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, 'outerEdge')
+  |> line([0, wallMountL], %, $outerEdge)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
+  |> line([shelfMountL - thickness, 0], %, $innerEdge)
   |> line([0, -wallMountL + thickness], %)
   |> close(%)
   |> extrude(width, %)
   |> fillet({
        radius: filletR,
-       tags: [getPreviousAdjacentEdge('innerEdge', %)]
+       tags: [getPreviousAdjacentEdge(innerEdge, %)]
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getPreviousAdjacentEdge('outerEdge', %)]
+       tags: [getPreviousAdjacentEdge(outerEdge, %)]
      }, %)`
 
 function findLineInExampleCode({

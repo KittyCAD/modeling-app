@@ -7,10 +7,8 @@ import {
   getSelectionType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { StateFrom } from 'xstate'
 
 const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
@@ -41,23 +39,9 @@ function CommandBarSelectionInput({
     canSubmitSelectionArg(selectionsByType, arg)
   )
 
-  useHotkeys('tab', () => onSubmit(selection), {
-    enableOnFormTags: true,
-    enableOnContentEditable: true,
-    keyup: true,
-  })
-
   useEffect(() => {
     inputRef.current?.focus()
   }, [selection, inputRef])
-
-  // Exit engine's edit mode when this input step is active,
-  // and re-enter it when it's not.
-  // In future the engine's edit mode will go away and this will be handled differently.
-  useEffect(() => {
-    kclManager.exitEditMode()
-    return () => kclManager.enterEditMode()
-  }, [])
 
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already

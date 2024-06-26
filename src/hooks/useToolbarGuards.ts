@@ -3,14 +3,18 @@ import {
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
 import { editorManager, kclManager } from 'lib/singletons'
+import { trap } from 'lib/trap'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from './useModelingContext'
+import { PathToNode, SourceRange, parse, recast } from 'lang/wasm'
+import { useKclContext } from 'lang/KclProvider'
 
-const getModalInfo = createSetVarNameModal(SetVarNameModal)
+export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
-export function useConvertToVariable() {
+export function useConvertToVariable(range?: SourceRange) {
+  const { ast } = useKclContext()
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
 
@@ -19,32 +23,41 @@ export function useConvertToVariable() {
   }, [enable])
 
   useEffect(() => {
-    const { isSafe, value } = isNodeSafeToReplace(
-      kclManager.ast,
-      context.selectionRanges.codeBasedSelections?.[0]?.range || []
+    const parsed = parse(recast(ast))
+    if (trap(parsed)) return
+
+    const meta = isNodeSafeToReplace(
+      parsed,
+      range || context.selectionRanges.codeBasedSelections?.[0]?.range || []
     )
+    if (trap(meta)) return
+
+    const { isSafe, value } = meta
     const canReplace = isSafe && value.type !== 'Identifier'
     const isOnlyOneSelection =
-      context.selectionRanges.codeBasedSelections.length === 1
+      !!range || context.selectionRanges.codeBasedSelections.length === 1
 
-    const _enableHorz = canReplace && isOnlyOneSelection
-    setEnabled(_enableHorz)
+    setEnabled(canReplace && isOnlyOneSelection)
   }, [context.selectionRanges])
 
-  const handleClick = async () => {
+  const handleClick = async (
+    valueName?: string
+  ): Promise<PathToNode | undefined> => {
     try {
-      const { variableName } = await getModalInfo({
-        valueName: 'var',
+      const { variableName } = await getVarNameModal({
+        valueName: valueName || 'var',
       })
 
-      const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
-        kclManager.ast,
-        kclManager.programMemory,
-        context.selectionRanges.codeBasedSelections[0].range,
-        variableName
-      )
+      const { modifiedAst: _modifiedAst, pathToReplacedNode } =
+        moveValueIntoNewVariable(
+          ast,
+          kclManager.programMemory,
+          range || context.selectionRanges.codeBasedSelections[0].range,
+          variableName
+        )
 
-      kclManager.updateAst(_modifiedAst, true)
+      await kclManager.updateAst(_modifiedAst, true)
+      return pathToReplacedNode
     } catch (e) {
       console.log('error', e)
     }

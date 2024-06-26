@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup, UserVal},
+    executor::{ExtrudeGroup, MemoryItem, SketchGroup, TagIdentifier, UserVal},
     std::{
         extrude::do_post_extrude,
         fillet::{EdgeReference, DEFAULT_TOLERANCE},
@@ -200,6 +200,24 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///         axis: getOppositeEdge('revolveAxis', box)
 ///     }, %)
 /// ```
+///
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///   |> startProfileAt([10, 0], %)
+///   |> line([5, -5], %)
+///   |> line([5, 5], %)
+///   |> lineTo([profileStartX(%), profileStartY(%)], %)
+///   |> close(%)
+///
+/// const part001 = revolve({
+///   axis: {
+///     custom: {
+///       axis: [0.0, 1.0, 0.0],
+///       origin: [0.0, 0.0, 0.0]
+///     }
+///   }
+/// }, sketch001)
+/// ```
 #[stdlib {
     name = "revolve",
 }]
@@ -224,7 +242,7 @@ async fn inner_revolve(
     match data.axis {
         RevolveAxis::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::Revolve {
                     angle,
@@ -242,12 +260,10 @@ async fn inner_revolve(
                 EdgeReference::Uuid(uuid) => uuid,
                 EdgeReference::Tag(tag) => {
                     sketch_group
-                        .value
-                        .iter()
-                        .find(|p| p.get_name() == tag)
+                        .get_path_by_tag(&tag)
                         .ok_or_else(|| {
                             KclError::Type(KclErrorDetails {
-                                message: format!("No edge found with tag: `{}`", tag),
+                                message: format!("No edge found with tag: `{}`", tag.value),
                                 source_ranges: vec![args.source_range],
                             })
                         })?
@@ -256,7 +272,7 @@ async fn inner_revolve(
                         .id
                 }
             };
-            args.send_modeling_cmd(
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::RevolveAboutEdge {
                     angle,
@@ -274,7 +290,7 @@ async fn inner_revolve(
 
 /// Get an edge on a 3D solid.
 pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
 
     let edge = inner_get_edge(tag, extrude_group, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
@@ -292,38 +308,37 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// ```no_run
 /// const box = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> line([0, 10], %, 'revolveAxis')
-///   |> line([10, 0], %)
-///   |> line([0, -10], %)
-///   |> close(%)
-///   |> extrude(10, %)
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %, 'revolveAxis')
+///     |> line([10, 0], %)
+///     |> line([0, -10], %)
+///     |> close(%)
+///     |> extrude(10, %)
 ///
-/// const revolution = startSketchOn('XZ')
-///   |> startProfileAt([-10, 0], %)
-///   |> line([0, 10], %)
-///   |> line([2, 0], %)
-///   |> line([0, -10], %)
-///   |> close(%)
-///   |> revolve({
-///        axis: getEdge('revolveAxis', box),
-///        angle: 90
-///      }, %)
+/// const revolution = startSketchOn(box, "revolveAxis")
+///     |> startProfileAt([5, 10], %)
+///     |> line([0, 10], %)
+///     |> line([2, 0], %)
+///     |> line([0, -10], %)
+///     |> close(%)
+///     |> revolve({
+///         axis: getEdge('revolveAxis', box),
+///         angle: 90
+///     }, %)
 /// ```
 #[stdlib {
     name = "getEdge",
 }]
-async fn inner_get_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_edge(tag: TagIdentifier, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = extrude_group
-        .sketch_group_values
-        .iter()
-        .find(|p| p.get_name() == tag)
+        .sketch_group
+        .get_path_by_tag(&tag)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
+                message: format!("No edge found with tag: `{}`", tag.value),
                 source_ranges: vec![args.source_range],
             })
         })?

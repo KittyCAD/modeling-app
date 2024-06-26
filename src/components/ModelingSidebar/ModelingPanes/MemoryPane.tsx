@@ -1,12 +1,52 @@
+import toast from 'react-hot-toast'
 import ReactJson from 'react-json-view'
 import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
+import { ActionButton } from 'components/ActionButton'
+import { trap } from 'lib/trap'
+import Tooltip from 'components/Tooltip'
+import { useModelingContext } from 'hooks/useModelingContext'
+
+export const MemoryPaneMenu = () => {
+  const { programMemory } = useKclContext()
+
+  function copyProgramMemoryToClipboard() {
+    if (globalThis && 'navigator' in globalThis) {
+      navigator.clipboard
+        .writeText(JSON.stringify(programMemory))
+        .then(() => toast.success('Program memory copied to clipboard'))
+        .catch((e) =>
+          trap(new Error('Failed to copy program memory to clipboard'))
+        )
+    }
+  }
+
+  return (
+    <>
+      <ActionButton
+        Element="button"
+        iconStart={{
+          icon: 'clipboardPlus',
+          iconClassName: '!text-current',
+          bgClassName: 'bg-transparent',
+        }}
+        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        onClick={copyProgramMemoryToClipboard}
+      >
+        <Tooltip position="bottom-right" delay={750}>
+          Copy to clipboard
+        </Tooltip>
+      </ActionButton>
+    </>
+  )
+}
 
 export const MemoryPane = () => {
   const theme = useResolvedTheme()
   const { programMemory } = useKclContext()
+  const { state } = useModelingContext()
   const ProcessedMemory = useMemo(
     () => processMemory(programMemory),
     [programMemory]
@@ -24,11 +64,18 @@ export const MemoryPane = () => {
             displayObjectSize={true}
             indentWidth={2}
             quotesOnKeys={false}
+            sortKeys={true}
             name={false}
             theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
         </div>
       </div>
+      {state.matches('Sketch') && (
+        <div
+          className="absolute inset-0 dark:bg-chalkboard-90/80 bg-chalkboard-10/80 cursor-not-allowed"
+          title="Variables won't update in sketch mode"
+        ></div>
+      )}
     </div>
   )
 }
@@ -46,6 +93,10 @@ export const processMemory = (programMemory: ProgramMemory) => {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
+      } else if ((val.type as any) === 'Function') {
+        processedMemory[key] = `__function(${(val as any)?.expression?.params
+          ?.map?.(({ identifier }: any) => identifier?.name || '')
+          .join(', ')})__`
       } else {
         processedMemory[key] = val.value
       }

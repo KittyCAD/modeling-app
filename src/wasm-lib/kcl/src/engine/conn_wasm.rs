@@ -1,6 +1,9 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::Result;
 use kittycad::types::WebSocketRequest;
@@ -39,6 +42,7 @@ extern "C" {
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -50,6 +54,7 @@ impl EngineConnection {
         Ok(EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(Mutex::new(Vec::new())),
+            batch_end: Arc::new(Mutex::new(HashMap::new())),
         })
     }
 }
@@ -58,6 +63,10 @@ impl EngineConnection {
 impl crate::engine::EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
+    }
+
+    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+        self.batch_end.clone()
     }
 
     async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
@@ -130,7 +139,7 @@ impl crate::engine::EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
+    ) -> Result<kittycad::types::WebSocketResponse, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
@@ -182,18 +191,6 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        if let Some(data) = &ws_result.resp {
-            Ok(data.clone())
-        } else if let Some(errors) = &ws_result.errors {
-            Err(KclError::Engine(KclErrorDetails {
-                message: format!("Modeling command failed: {:?}", errors),
-                source_ranges: vec![source_range],
-            }))
-        } else {
-            Err(KclError::Engine(KclErrorDetails {
-                message: format!("Modeling command failed: {:?}", ws_result),
-                source_ranges: vec![source_range],
-            }))
-        }
+        Ok(ws_result)
     }
 }

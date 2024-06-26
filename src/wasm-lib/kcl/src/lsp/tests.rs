@@ -5,7 +5,10 @@ use std::{
 
 use anyhow::Result;
 use pretty_assertions::assert_eq;
-use tower_lsp::LanguageServer;
+use tower_lsp::{
+    lsp_types::{SemanticTokenModifier, SemanticTokenType},
+    LanguageServer,
+};
 
 use crate::{executor::ProgramMemory, lsp::backend::Backend};
 
@@ -42,9 +45,6 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
-    // We can unwrap here because we know the tokeniser is valid, since
-    // we have a test for it.
-    let token_types = crate::token::TokenType::all_semantic_token_types()?;
 
     let zoo_client = new_zoo_client();
 
@@ -63,7 +63,6 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         workspace_folders: Default::default(),
         stdlib_completions,
         stdlib_signatures,
-        token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
         memory_map: Default::default(),
@@ -790,6 +789,67 @@ st"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_tags() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line([28.67, -13.25], %, $here)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position {
+                    line: 0,
+                    character: 198,
+                },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the completions.
+    if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
+        assert!(completions.len() > 10);
+        // Make sure that `here` is in the completions.
+        let const_completion = completions
+            .iter()
+            .find(|completion| completion.label == "here")
+            .unwrap();
+        assert_eq!(
+            const_completion.kind,
+            Some(tower_lsp::lsp_types::CompletionItemKind::REFERENCE)
+        );
+    } else {
+        panic!("Expected array of completions");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions_const_raw() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -876,7 +936,7 @@ async fn test_kcl_lsp_on_hover() {
             hover.contents,
             tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent {
                 kind: tower_lsp::lsp_types::MarkupKind::Markdown,
-                value: "```startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string()
+                value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string()
             })
         );
     } else {
@@ -1027,6 +1087,163 @@ async fn test_kcl_lsp_semantic_tokens() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> extrude(3.14, %)
+
+const thing = {blah: "foo"}
+const bar = thing.blah
+
+fn myFn = (param1) => {
+    return param1
+}"#
+                .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have no diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        if !diagnostics.full_document_diagnostic_report.items.is_empty() {
+            panic!(
+                "Expected no diagnostics, {:?}",
+                diagnostics.full_document_diagnostic_report.items
+            );
+        }
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the token map.
+    let token_map = server.token_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(token_map != vec![]);
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Send semantic tokens request.
+    let semantic_tokens = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the semantic tokens.
+    if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
+        let function_index = server
+            .get_semantic_token_type_index(SemanticTokenType::FUNCTION)
+            .unwrap();
+        let property_index = server
+            .get_semantic_token_type_index(SemanticTokenType::PROPERTY)
+            .unwrap();
+        let parameter_index = server
+            .get_semantic_token_type_index(SemanticTokenType::PARAMETER)
+            .unwrap();
+        let variable_index = server
+            .get_semantic_token_type_index(SemanticTokenType::VARIABLE)
+            .unwrap();
+
+        let declaration_index = server
+            .get_semantic_token_modifier_index(SemanticTokenModifier::DECLARATION)
+            .unwrap();
+        let definition_index = server
+            .get_semantic_token_modifier_index(SemanticTokenModifier::DEFINITION)
+            .unwrap();
+
+        // Iterate over the tokens and check the token types.
+        let mut found_definition = false;
+        let mut found_parameter = false;
+        let mut found_property = false;
+        let mut found_function_declaration = false;
+        let mut found_variable_declaration = false;
+        let mut found_property_declaration = false;
+        for token in semantic_tokens.data {
+            if token.token_modifiers_bitset == definition_index {
+                found_definition = true;
+            }
+
+            if token.token_type == parameter_index {
+                found_parameter = true;
+            } else if token.token_type == property_index {
+                found_property = true;
+            }
+
+            if token.token_type == function_index && token.token_modifiers_bitset == declaration_index {
+                found_function_declaration = true;
+            }
+
+            if token.token_type == variable_index && token.token_modifiers_bitset == declaration_index {
+                found_variable_declaration = true;
+            }
+
+            if token.token_type == property_index && token.token_modifiers_bitset == declaration_index {
+                found_property_declaration = true;
+            }
+
+            if found_definition
+                && found_parameter
+                && found_property
+                && found_function_declaration
+                && found_variable_declaration
+                && found_property_declaration
+            {
+                break;
+            }
+        }
+
+        if !found_definition {
+            panic!("Expected definition token");
+        }
+
+        if !found_parameter {
+            panic!("Expected parameter token");
+        }
+
+        if !found_property {
+            panic!("Expected property token");
+        }
+
+        if !found_function_declaration {
+            panic!("Expected function declaration token");
+        }
+
+        if !found_variable_declaration {
+            panic!("Expected variable declaration token");
+        }
+
+        if !found_property_declaration {
+            panic!("Expected property declaration token");
+        }
+    } else {
+        panic!("Expected semantic tokens");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1130,6 +1347,53 @@ startSketchOn('XY')"#
     if let tower_lsp::lsp_types::DocumentSymbolResponse::Nested(document_symbol) = document_symbol {
         assert_eq!(document_symbol.len(), 1);
         assert_eq!(document_symbol[0].name, "myVar");
+    } else {
+        panic!("Expected document symbol");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_document_symbol_tag() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line([28.67, -13.25], %, $here)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send document symbol request.
+    let document_symbol = server
+        .document_symbol(tower_lsp::lsp_types::DocumentSymbolParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the document symbol.
+    if let tower_lsp::lsp_types::DocumentSymbolResponse::Nested(document_symbol) = document_symbol {
+        assert_eq!(document_symbol.len(), 2);
+        assert_eq!(document_symbol[0].name, "part001");
+        assert_eq!(document_symbol[1].name, "here");
     } else {
         panic!("Expected document symbol");
     }
@@ -1489,6 +1753,53 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
             assert_eq!(
                 diagnostics.full_document_diagnostic_report.items[0].message,
                 "lexical: found unknown token ';'"
+            );
+        } else {
+            panic!("Expected full diagnostics");
+        }
+    } else {
+        panic!("Expected diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_diagnostic_has_lints() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"let THING = 10"#.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
+        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+            assert_eq!(
+                diagnostics.full_document_diagnostic_report.items[0].message,
+                "Identifiers must be lowerCamelCase"
             );
         } else {
             panic!("Expected full diagnostics");
@@ -2842,4 +3153,675 @@ async fn test_kcl_lsp_folding() {
             collapsed_text: Some("startSketchOn('XY')".to_string()),
         }
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> ^^^things(3.14, %)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+
+    // Assure we have one diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: code.to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+
+    // Assure we have one diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_reparse() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> extrude(3.14, %)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Assure we have one diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: code.to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Assure we have one diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> ^^^^thing(3.14, %)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: code.to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+
+    // Assure we have one diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexecute() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %, $seg01)
+  |> close(%)
+  |> extrude(3.14, %)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: code.to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_lint_reexecute_new_lint() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %, $seg01)
+  |> close(%)
+  |> extrude(3.14, %)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %, $seg01)
+  |> close(%)
+  |> extrude(3.14, %)
+const NEW_LINT = 1"#
+                    .to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %, $seg01)
+  |> close(%)
+  |> ^^^extrude(3.14, %)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: r#"const part001 = startSketchOn('XY')
+  |> ^^^^startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %, $seg01)
+  |> close(%)
+  |> extrude(3.14, %)
+const NEW_LINT = 1"#
+                    .to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  "#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Get the symbols map.
+    let symbols_map = server.symbols_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(symbols_map != vec![]);
+
+    // Get the semantic tokens map.
+    let semantic_tokens_map = server
+        .semantic_tokens_map
+        .get("file:///test.kcl")
+        .await
+        .unwrap()
+        .clone();
+    assert!(semantic_tokens_map != vec![]);
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(memory != ProgramMemory::default());
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: r#"const part001 = startSketchOn('XY')
+  |> ^^^^startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> extrude(3.14, %)
+const NEW_LINT = 1"#
+                    .to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast.is_none());
+
+    // Get the symbols map.
+    let symbols_map = server.symbols_map.get("file:///test.kcl").await;
+    assert!(symbols_map.is_none());
+
+    // Get the semantic tokens map.
+    let semantic_tokens_map = server
+        .semantic_tokens_map
+        .get("file:///test.kcl")
+        .await
+        .unwrap()
+        .clone();
+    assert!(semantic_tokens_map != vec![]);
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let code = r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  "#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the token map.
+    let token_map = server.token_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(token_map != vec![]);
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Get the symbols map.
+    let symbols_map = server.symbols_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(symbols_map != vec![]);
+
+    // Get the semantic tokens map.
+    let semantic_tokens_map = server
+        .semantic_tokens_map
+        .get("file:///test.kcl")
+        .await
+        .unwrap()
+        .clone();
+    assert!(semantic_tokens_map != vec![]);
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(memory != ProgramMemory::default());
+
+    // Send change file, but the code is the same.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: r#"const LINT = 1
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %, $seg01)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %)
+  |> close(%)
+  "#
+                .to_string(),
+            }],
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Get the token map.
+    let token_map = server.token_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(token_map != vec![]);
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Get the symbols map.
+    let symbols_map = server.symbols_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(symbols_map != vec![]);
+
+    // Get the semantic tokens map.
+    let semantic_tokens_map = server
+        .semantic_tokens_map
+        .get("file:///test.kcl")
+        .await
+        .unwrap()
+        .clone();
+    assert!(semantic_tokens_map != vec![]);
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").await;
+    assert!(memory.is_none());
+
+    // Assure we have diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
+    } else {
+        panic!("Expected full diagnostics");
+    }
 }

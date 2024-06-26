@@ -38,6 +38,8 @@ jobs:
     runs-on: ubuntu-latest-8-cores
     needs: check-rust-changes
     steps:
+    - name: Tune GitHub-hosted runner network
+      uses: smorimoto/tune-github-hosted-runner-network@v1
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
@@ -46,12 +48,18 @@ jobs:
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright/
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v3
+      uses: dawidd6/action-download-artifact@v6
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -84,26 +92,24 @@ jobs:
     - name: build web
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
-      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      continue-on-error: true
+      run: |
+        yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
-    - uses: actions/upload-artifact@v3
+    - name: Clean up test-results
       if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      continue-on-error: true
+      run: rm -r test-results
     - name: check for changes
       id: git-check
       run: |
           git add .
           if git status | grep -q "Changes to be committed"
-          then
-            echo "::set-output name=modified::true"
-          else
-            echo "::set-output name=modified::false"
+          then echo "modified=true" >> $GITHUB_OUTPUT
+          else echo "modified=false" >> $GITHUB_OUTPUT
           fi
     - name: Commit changes, if any
       if: steps.git-check.outputs.modified == 'true'
@@ -115,27 +121,67 @@ jobs:
         git fetch origin
         echo ${{ github.head_ref }}
         git checkout ${{ github.head_ref }}
-        # TODO when safari works on ubuntu remove the os part of the commit message
+        # TODO when webkit works on ubuntu remove the os part of the commit message
         git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
         git push
         git push origin ${{ github.head_ref }}
+    # only upload artifacts if there's actually changes
+    - uses: actions/upload-artifact@v4
+      if: steps.git-check.outputs.modified == 'true'
+      with:
+        name: playwright-report-ubuntu-${{ github.sha }}
+        path: playwright-report/
+        retention-days: 30
+    # if have previous run results, use them
+    - uses: actions/download-artifact@v4
+      if: always()
+      continue-on-error: true
+      with:
+        name: test-results-ubuntu-${{ github.sha }}
+        path: test-results/
+    - name: Run ubuntu/chrome flow retry failures
+      id: retry
+      if: always()
+      run: |
+        if [[ -d "test-results" ]];
+        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
+          then echo "retried=true" >> $GITHUB_OUTPUT;
+          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+          fi;
+        else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+        fi;
+        yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run ubuntu/chrome flow
+      if: steps.retry.outputs.retried == 'false'
       run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report
+        name: test-results-ubuntu-${{ github.sha }}
+        path: test-results/
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-ubuntu-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
+        overwrite: true
 
   playwright-macos:
     timeout-minutes: 60
-    runs-on: macos-14
+    runs-on: macos-14-large
     needs: check-rust-changes
     steps:
+    - name: Tune GitHub-hosted runner network
+      uses: smorimoto/tune-github-hosted-runner-network@v1
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
@@ -143,12 +189,20 @@ jobs:
         cache: 'yarn'
     - name: Install dependencies
       run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v3
+      uses: dawidd6/action-download-artifact@v6
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -180,16 +234,48 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
+    # if have previous run results, use them
+    - uses: actions/download-artifact@v4
+      if: ${{ always() }}
+      continue-on-error: true
+      with:
+        name: test-results-macos-${{ github.sha }}
+        path: test-results/
+    - name: Run macos/safari flow retry failures
+      id: retry
+      if: always()
+      run: |
+        if [[ -d "test-results" ]];
+        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
+          then echo "retried=true" >> $GITHUB_OUTPUT;
+          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+          fi;
+        else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+        fi;
+        yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run macos/safari flow
-      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
+      if: steps.retry.outputs.retried == 'false'
+      # webkit doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
       run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v3
-      if: always()
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
       with:
-        name: playwright-report
+        name: test-results-macos-${{ github.sha }}
+        path: test-results/
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: playwright-report-macos-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
+        overwrite: true
+

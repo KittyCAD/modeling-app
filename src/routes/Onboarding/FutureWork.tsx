@@ -1,24 +1,19 @@
-import { OnboardingButtons, useDismiss } from '.'
+import { OnboardingButtons, useDemoCode, useDismiss } from '.'
 import { useEffect } from 'react'
-import { bracket } from 'lib/exampleKcl'
-import { codeManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { APP_NAME } from 'lib/constants'
 import { onboardingPaths } from './paths'
+import { sceneInfra } from 'lib/singletons'
 
 export default function FutureWork() {
   const { send } = useModelingContext()
   const dismiss = useDismiss()
 
+  // Reset the code, the camera, and the modeling state
+  useDemoCode()
   useEffect(() => {
-    // We do want to update both the state and editor here.
-    codeManager.updateCodeEditor(bracket)
-    if (kclManager.engineCommandManager.engineConnection?.isReady()) {
-      // If the engine is ready, promptly execute the loaded code
-      kclManager.executeCode(true)
-    }
-
     send({ type: 'Cancel' }) // in case the user hit 'Next' while still in sketch mode
+    sceneInfra.camControls.resetCameraPosition()
   }, [send])
 
   return (

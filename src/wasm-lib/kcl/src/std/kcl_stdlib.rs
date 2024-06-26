@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -17,21 +19,30 @@ pub trait KclStdLibFn: StdLibFn {
 }
 
 impl ts_rs::TS for dyn KclStdLibFn {
-    const EXPORT_TO: Option<&'static str> = Some("bindings/StdLibFnData");
+    type WithoutGenerics = Self;
 
     fn name() -> String {
         "StdLibFnData".to_string()
     }
 
-    fn dependencies() -> Vec<ts_rs::Dependency>
-    where
-        Self: 'static,
-    {
-        StdLibFnData::dependencies()
+    fn decl() -> String {
+        StdLibFnData::decl()
     }
 
-    fn transparent() -> bool {
-        StdLibFnData::transparent()
+    fn decl_concrete() -> String {
+        StdLibFnData::decl_concrete()
+    }
+
+    fn inline() -> String {
+        StdLibFnData::inline()
+    }
+
+    fn inline_flattened() -> String {
+        StdLibFnData::inline_flattened()
+    }
+
+    fn output_path() -> Option<&'static Path> {
+        StdLibFnData::output_path()
     }
 }
 

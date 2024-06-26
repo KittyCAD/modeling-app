@@ -123,7 +123,7 @@ async function getUser(context: UserContext) {
     'Content-Type': 'application/json',
   }
 
-  if (!token && isTauri()) throw new Error('No token found')
+  if (!token && isTauri()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${context.token}`
 
   if (SKIP_AUTH)
@@ -144,7 +144,7 @@ async function getUser(context: UserContext) {
 
   const user = await userPromise
 
-  if ('error_code' in user) throw new Error(user.message)
+  if ('error_code' in user) return Promise.reject(new Error(user.message))
 
   return {
     user: user as Models['User_type'],

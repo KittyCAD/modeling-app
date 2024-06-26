@@ -20,6 +20,7 @@ import {
   EngineCommand,
   Subscription,
   EngineCommandManager,
+  UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
@@ -47,12 +48,14 @@ export type ReactCameraProperties =
       type: 'perspective'
       fov?: number
       position: [number, number, number]
+      target: [number, number, number]
       quaternion: [number, number, number, number]
     }
   | {
       type: 'orthographic'
       zoom?: number
       position: [number, number, number]
+      target: [number, number, number]
       quaternion: [number, number, number, number]
     }
 
@@ -171,41 +174,6 @@ export class CameraControls {
     }
   }
 
-  throttledUpdateEngineFov = throttle(
-    (vals: {
-      position: Vector3
-      quaternion: Quaternion
-      zoom: number
-      fov: number
-      target: Vector3
-    }) => {
-      const cmd: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_perspective_settings',
-          ...convertThreeCamValuesToEngineCam({
-            ...vals,
-            isPerspective: true,
-          }),
-          fov_y: vals.fov,
-          ...calculateNearFarFromFOV(vals.fov),
-        },
-      }
-      this.engineCommandManager.sendSceneCommand(cmd)
-      this.lastPerspectiveCmd = cmd
-      this.lastPerspectiveCmdTime = Date.now()
-      if (this.lastPerspectiveCmdTimeoutId !== null) {
-        clearTimeout(this.lastPerspectiveCmdTimeoutId)
-      }
-      this.lastPerspectiveCmdTimeoutId = setTimeout(
-        this.sendLastPerspectiveReliableChannel,
-        lastCmdDelay
-      ) as any as number
-    },
-    1000 / 30
-  )
-
   constructor(
     isOrtho = false,
     domElement: HTMLCanvasElement,
@@ -232,9 +200,19 @@ export class CameraControls {
     this.update()
     this._usePerspectiveCamera()
 
-    const cb: Subscription<
-      'default_camera_zoom' | 'camera_drag_end' | 'default_camera_get_settings'
-    >['callback'] = ({ data, type }) => {
+    type CallBackParam = Parameters<
+      (
+        | Subscription<
+            | 'default_camera_zoom'
+            | 'camera_drag_end'
+            | 'default_camera_get_settings'
+            | 'zoom_to_fit'
+          >
+        | UnreliableSubscription<'camera_drag_move'>
+      )['callback']
+    >[0]
+
+    const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -246,7 +224,13 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
-      this.camera.up.set(camSettings.up.x, camSettings.up.y, camSettings.up.z)
+      const quat = new Quaternion(
+        camSettings.orientation.x,
+        camSettings.orientation.y,
+        camSettings.orientation.z,
+        camSettings.orientation.w
+      ).invert()
+      this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
@@ -285,6 +269,14 @@ export class CameraControls {
       })
       this.engineCommandManager.subscribeTo({
         event: 'default_camera_get_settings',
+        callback: cb,
+      })
+      this.engineCommandManager.subscribeTo({
+        event: 'zoom_to_fit',
+        callback: cb,
+      })
+      this.engineCommandManager.subscribeToUnreliable({
+        event: 'camera_drag_move',
         callback: cb,
       })
     })
@@ -417,7 +409,7 @@ export class CameraControls {
         this.handleEnd()
         return
       }
-      this.throttledEngCmd({
+      this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'default_camera_zoom',
@@ -429,11 +421,11 @@ export class CameraControls {
       return
     }
 
-    const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
+    // Else "clientToEngine" (Sketch Mode) or forceUpdate
 
-    const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
+    // From onMouseMove zoom handling which seems to be really smooth
     this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-    this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
+    this.pendingZoom *= 1 + event.deltaY * 0.01
     this.handleEnd()
   }
 
@@ -507,26 +499,28 @@ export class CameraControls {
     direction.normalize()
     this.camera.position.copy(this.target).addScaledVector(direction, distance)
   }
-  usePerspectiveCamera = () => {
+  usePerspectiveCamera = async () => {
     this._usePerspectiveCamera()
-    this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_perspective',
-        parameters: {
-          fov_y:
-            this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
-          ...calculateNearFarFromFOV(this.lastPerspectiveFov),
+    if (this.syncDirection === 'clientToEngine') {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_perspective',
+          parameters: {
+            fov_y:
+              this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
+            ...calculateNearFarFromFOV(this.lastPerspectiveFov),
+          },
         },
-      },
-    })
+      })
+    }
     this.onCameraChange()
     this.update()
     return this.camera
   }
 
-  dollyZoom = (newFov: number) => {
+  dollyZoom = async (newFov: number, splitEngineCalls = false) => {
     if (!(this.camera instanceof PerspectiveCamera)) {
       console.warn('Dolly zoom is only applicable to perspective cameras.')
       return
@@ -577,13 +571,52 @@ export class CameraControls {
     this.camera.near = z_near
     this.camera.far = z_far
 
-    this.throttledUpdateEngineFov({
-      fov: newFov,
-      position: newPosition,
-      quaternion: this.camera.quaternion,
-      zoom: this.camera.zoom,
-      target: this.target,
-    })
+    if (splitEngineCalls) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          ...convertThreeCamValuesToEngineCam({
+            isPerspective: true,
+            position: newPosition,
+            quaternion: this.camera.quaternion,
+            zoom: this.camera.zoom,
+            target: this.target,
+          }),
+        },
+      })
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_perspective',
+          parameters: {
+            fov_y: newFov,
+            z_near: 0.01,
+            z_far: 1000,
+          },
+        },
+      })
+    } else {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_perspective_settings',
+          ...convertThreeCamValuesToEngineCam({
+            isPerspective: true,
+            position: newPosition,
+            quaternion: this.camera.quaternion,
+            zoom: this.camera.zoom,
+            target: this.target,
+          }),
+          fov_y: newFov,
+          z_near: 0.01,
+          z_far: 1000,
+        },
+      })
+    }
   }
 
   update = (forceUpdate = false) => {
@@ -745,6 +778,75 @@ export class CameraControls {
         .onUpdate(camAtTime)
         .onComplete(onComplete)
         .start()
+    })
+  }
+
+  async updateCameraToAxis(
+    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
+  ): Promise<void> {
+    const distance = this.camera.position.distanceTo(this.target)
+
+    const vantage = this.target.clone()
+    let up = { x: 0, y: 0, z: 1 }
+
+    if (axis === 'x') {
+      vantage.x += distance
+    } else if (axis === 'y') {
+      vantage.y += distance
+    } else if (axis === 'z') {
+      vantage.z += distance
+      up = { x: -1, y: 0, z: 0 }
+    } else if (axis === '-x') {
+      vantage.x -= distance
+    } else if (axis === '-y') {
+      vantage.y -= distance
+    } else if (axis === '-z') {
+      vantage.z -= distance
+      up = { x: -1, y: 0, z: 0 }
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: this.target,
+        vantage: vantage,
+        up: up,
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  async resetCameraPosition(): Promise<void> {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: this.target,
+        vantage: {
+          x: this.target.x,
+          y: this.target.y - 128,
+          z: this.target.z + 64,
+        },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'zoom_to_fit',
+        object_ids: [], // leave empty to zoom to all objects
+        padding: 0.2, // padding around the objects
+      },
     })
   }
 
@@ -919,6 +1021,29 @@ export class CameraControls {
         .onComplete(onComplete)
         .start()
     })
+  snapToPerspectiveBeforeHandingBackControlToEngine = async (
+    targetCamUp = new Vector3(0, 0, 1)
+  ) => {
+    if (this.syncDirection === 'engineToClient') {
+      console.warn(
+        'animate To Perspective not design to work with engineToClient syncDirection.'
+      )
+    }
+    this.isFovAnimationInProgress = true
+    const targetFov = this.fovBeforeOrtho // Target FOV for perspective
+    this.lastPerspectiveFov = 4
+    let currentFov = 4
+    const initialCameraUp = this.camera.up.clone()
+    this.usePerspectiveCamera()
+    const tempVec = new Vector3()
+
+    currentFov = this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
+    const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
+    this.camera.up.copy(currentUp)
+    await this.dollyZoom(currentFov, true)
+
+    this.isFovAnimationInProgress = false
+  }
 
   get reactCameraProperties(): ReactCameraProperties {
     return {
@@ -931,6 +1056,11 @@ export class CameraControls {
         roundOff(this.camera.position.x, 2),
         roundOff(this.camera.position.y, 2),
         roundOff(this.camera.position.z, 2),
+      ],
+      target: [
+        roundOff(this.target.x, 2),
+        roundOff(this.target.y, 2),
+        roundOff(this.target.z, 2),
       ],
       quaternion: [
         roundOff(this.camera.quaternion.x, 2),
@@ -986,7 +1116,7 @@ function calculateNearFarFromFOV(fov: number) {
   // const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   // const z_far = 1000 + nearFarRatio * (100000 - 1000)
-  return { z_near: 0.1, z_far: 1000 }
+  return { z_near: 0.01, z_far: 1000 }
 }
 
 function convertThreeCamValuesToEngineCam({
@@ -1005,11 +1135,6 @@ function convertThreeCamValuesToEngineCam({
   // leaving for now since it's working but maybe revisit later
   const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
 
-  const lookAtVector = new Vector3(0, 0, -1)
-    .applyEuler(euler)
-    .normalize()
-    .add(position)
-
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
   if (isPerspective) {
     return {
@@ -1018,6 +1143,10 @@ function convertThreeCamValuesToEngineCam({
       vantage: position,
     }
   }
+  const lookAtVector = new Vector3(0, 0, -1)
+    .applyEuler(euler)
+    .normalize()
+    .add(position)
   const fudgeFactor2 = zoom * 0.9979224466814468 - 0.03473692325839295
   const zoomFactor = (-ZOOM_MAGIC_NUMBER + fudgeFactor2) / zoom
   const direction = lookAtVector.clone().sub(position).normalize()

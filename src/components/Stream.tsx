@@ -4,8 +4,9 @@ import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 
@@ -28,8 +29,43 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
-  const { overallState } = useNetworkStatus()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
+  const { overallState } = useNetworkContext()
+
+  const isNetworkOkay =
+    overallState === NetworkHealthState.Ok ||
+    overallState === NetworkHealthState.Weak
+
+  // Linux has a default behavior to paste text on middle mouse up
+  // This adds a listener to block that pasting if the click target
+  // is not a text input, so users can move in the 3D scene with
+  // middle mouse drag with a text input focused without pasting.
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const isHtmlElement = e.target && e.target instanceof HTMLElement
+      const isEditable =
+        (isHtmlElement && !('explicitOriginalTarget' in e)) ||
+        ('explicitOriginalTarget' in e &&
+          ((e.explicitOriginalTarget as HTMLElement).contentEditable ===
+            'true' ||
+            ['INPUT', 'TEXTAREA'].some(
+              (tagName) =>
+                tagName === (e.explicitOriginalTarget as HTMLElement).tagName
+            )))
+      if (!isEditable) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+      }
+    }
+
+    globalThis?.window?.document?.addEventListener('paste', handlePaste, {
+      capture: true,
+    })
+    return () =>
+      globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
+        capture: true,
+      })
+  }, [])
 
   useEffect(() => {
     if (
@@ -43,6 +79,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
@@ -58,6 +95,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
     if (!videoRef.current) return
     setButtonDownInStream(undefined)
     if (state.matches('Sketch')) return
@@ -72,6 +110,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
+    if (!isNetworkOkay) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
     if (!clickCoords) return
@@ -87,8 +126,9 @@ export const Stream = ({ className = '' }: { className?: string }) => {
 
   return (
     <div
+      className="absolute inset-0 z-0"
       id="stream"
-      className={className}
+      data-testid="stream"
       onMouseUp={handleMouseUp}
       onMouseDown={handleMouseDown}
       onContextMenu={(e) => e.preventDefault()}
@@ -103,7 +143,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         onMouseMoveCapture={handleMouseMove}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
-        style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
         id="video-stream"
       />
       <ClientSideScene
@@ -112,7 +151,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
       {!isNetworkOkay && !isLoading && (
         <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Stream disconnected</span>
+            <span data-testid="loading-stream">Stream disconnected...</span>
           </Loading>
         </div>
       )}

@@ -1,5 +1,6 @@
 //! Functions implemented for language execution.
 
+pub mod chamfer;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -10,7 +11,9 @@ pub mod patterns;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
+pub mod shell;
 pub mod sketch;
+pub mod string_or_struct;
 pub mod types;
 pub mod utils;
 
@@ -25,13 +28,14 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::parse_json_number_as_f64,
+    ast::types::{parse_json_number_as_f64, TagDeclarator},
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata, ProgramMemory,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
-    std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
+    std::{kcl_stdlib::KclStdLibFn, sketch::FaceTag},
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + Send>>;
@@ -68,6 +72,9 @@ lazy_static! {
         Box::new(crate::std::sketch::StartSketchAt),
         Box::new(crate::std::sketch::StartSketchOn),
         Box::new(crate::std::sketch::StartProfileAt),
+        Box::new(crate::std::sketch::ProfileStartX),
+        Box::new(crate::std::sketch::ProfileStartY),
+        Box::new(crate::std::sketch::ProfileStart),
         Box::new(crate::std::sketch::Close),
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::TangentialArc),
@@ -78,11 +85,13 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
+        Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::shell::Shell),
         Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::revolve::GetEdge),
         Box::new(crate::std::import::Import),
@@ -113,6 +122,10 @@ lazy_static! {
 
 pub fn name_in_stdlib(name: &str) -> bool {
     CORE_FNS.iter().any(|f| f.name() == name)
+}
+
+pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
+    CORE_FNS.iter().find(|f| f.name() == name).cloned()
 }
 
 pub struct StdLib {
@@ -196,23 +209,102 @@ pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
+    pub current_program_memory: ProgramMemory,
 }
 
 impl Args {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(
+        args: Vec<MemoryItem>,
+        source_range: SourceRange,
+        ctx: ExecutorContext,
+        current_program_memory: ProgramMemory,
+    ) -> Self {
         Self {
             args,
             source_range,
             ctx,
+            current_program_memory,
         }
     }
 
+    // Add a modeling command to the batch but don't fire it right away.
+    pub async fn batch_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
+    }
+
+    // Add a modeling command to the batch that gets executed at the end of the file.
+    // This is good for something like fillet or chamfer where the engine would
+    // eat the path id if we executed it right away.
+    pub async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+    }
+
+    /// Send the modeling cmd and wait for the response.
     pub async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+    }
+
+    /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
+    pub async fn flush_batch_for_extrude_group_set(
+        &self,
+        extrude_groups: Vec<Box<ExtrudeGroup>>,
+    ) -> Result<(), KclError> {
+        // Make sure we don't traverse sketch_groups more than once.
+        let mut traversed_sketch_groups = Vec::new();
+
+        // Collect all the fillet/chamfer ids for the extrude groups.
+        let mut ids = Vec::new();
+        for extrude_group in extrude_groups {
+            // We need to traverse the extrude groups that share the same sketch group.
+            let sketch_group_id = extrude_group.sketch_group.id;
+            if !traversed_sketch_groups.contains(&sketch_group_id) {
+                // Find all the extrude groups on the same shared sketch group.
+                ids.extend(
+                    self.current_program_memory
+                        .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
+                        .iter()
+                        .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                );
+                traversed_sketch_groups.push(sketch_group_id);
+            }
+
+            ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
+        }
+
+        // We can return early if there are no fillets or chamfers.
+        if ids.is_empty() {
+            return Ok(());
+        }
+
+        // We want to move these fillets and chamfers from batch_end to batch so they get executed
+        // before what ever we call next.
+        for id in ids {
+            // Pop it off the batch_end and add it to the batch.
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+                // It might be in the batch already.
+                continue;
+            };
+            // Add it to the batch.
+            self.ctx.engine.batch().lock().unwrap().push(item);
+        }
+
+        // Run flush.
+        // Yes, we do need to actually flush the batch here, or references will fail later.
+        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
+
+        Ok(())
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
@@ -274,7 +366,15 @@ impl Args {
 
     fn get_circle_args(
         &self,
-    ) -> Result<([f64; 2], f64, crate::std::shapes::SketchSurfaceOrGroup, Option<String>), KclError> {
+    ) -> Result<
+        (
+            [f64; 2],
+            f64,
+            crate::std::shapes::SketchSurfaceOrGroup,
+            Option<TagDeclarator>,
+        ),
+        KclError,
+    > {
         let first_value = self
             .args
             .first()
@@ -356,41 +456,26 @@ impl Args {
             }));
         };
 
-        if let Some(fourth_value) = self.args.get(3) {
-            let tag: String = serde_json::from_value(fourth_value.get_json_value()?).map_err(|e| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize String from JSON: {}", e),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-            Ok((center, radius, sketch_group_or_surface, Some(tag)))
+        let tag = if let Some(tag) = self.args.get(3) {
+            tag.get_tag_declarator_opt()?
         } else {
-            Ok((center, radius, sketch_group_or_surface, None))
-        }
+            None
+        };
+
+        Ok((center, radius, sketch_group_or_surface, tag))
     }
 
-    fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
+    fn get_segment_name_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a SketchGroup.
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let segment_name = if let serde_json::Value::String(s) = first_value {
-            s.to_string()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
                 message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
-            }));
-        };
+            })
+        })?;
+
+        let segment_name = first_value.get_tag_identifier()?;
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -419,18 +504,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = first_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the first argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match first_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the first argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         let second_value = self.args.get(1).ok_or_else(|| {
@@ -526,7 +607,7 @@ impl Args {
         }
     }
 
-    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<String>), KclError> {
+    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -543,22 +624,16 @@ impl Args {
             }));
         };
 
-        if let Some(second_value) = self.args.get(1) {
-            let tag: String = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize String from JSON: {}", e),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-            Ok((sketch_group, Some(tag)))
+        let tag = if let Some(tag) = self.args.get(1) {
+            tag.get_tag_declarator_opt()?
         } else {
-            Ok((sketch_group, None))
-        }
+            None
+        };
+
+        Ok((sketch_group, tag))
     }
 
-    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(
-        &self,
-    ) -> Result<(T, Option<SketchOnFaceTag>), KclError> {
+    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Option<FaceTag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -578,9 +653,9 @@ impl Args {
         })?;
 
         if let Some(second_value) = self.args.get(1) {
-            let tag: SketchOnFaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
+            let tag: FaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
                 KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize SketchOnFaceTag from JSON: {}", e),
+                    message: format!("Failed to deserialize FaceTag from JSON: {}", e),
                     source_ranges: vec![self.source_range],
                 })
             })?;
@@ -654,18 +729,14 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match second_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((data, sketch_set))
@@ -673,7 +744,7 @@ impl Args {
 
     fn get_data_and_sketch_group_and_tag<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, Box<SketchGroup>, Option<String>), KclError> {
+    ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError> {
         let first_value = self
             .args
             .first()
@@ -708,7 +779,7 @@ impl Args {
             }));
         };
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_json_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
@@ -718,7 +789,7 @@ impl Args {
 
     fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(
         &self,
-    ) -> Result<(T, SketchSurface, Option<String>), KclError> {
+    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError> {
         let first_value = self
             .args
             .first()
@@ -757,13 +828,56 @@ impl Args {
                 source_ranges: vec![self.source_range],
             }));
         };
+
         let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_json_opt()?
+            tag.get_tag_declarator_opt()?
         } else {
             None
         };
 
         Ok((data, sketch_surface, tag))
+    }
+
+    fn get_data_and_extrude_group_set<T: serde::de::DeserializeOwned>(&self) -> Result<(T, ExtrudeGroupSet), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_set = match second_value.get_extrude_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an ExtrudeGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
+        };
+
+        Ok((data, extrude_set))
     }
 
     fn get_data_and_extrude_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<ExtrudeGroup>), KclError> {
@@ -810,29 +924,105 @@ impl Args {
         Ok((data, extrude_group))
     }
 
-    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
-        // Iterate over our args, the first argument should be a UserVal with a string value.
-        // The second argument should be a number.
-        // The third argument should be a SketchGroup.
+    fn get_data_and_extrude_group_and_tag<T: serde::de::DeserializeOwned>(
+        &self,
+    ) -> Result<(T, Box<ExtrudeGroup>, Option<TagDeclarator>), KclError> {
         let first_value = self
             .args
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
             .get_json_value()?;
 
-        let segment_name = if let serde_json::Value::String(s) = first_value {
-            s.to_string()
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_group = if let MemoryItem::ExtrudeGroup(eg) = second_value {
+            eg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a string as the first argument, found `{:?}`", self.args),
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
                 source_ranges: vec![self.source_range],
             }));
         };
+
+        let tag = if let Some(tag) = self.args.get(2) {
+            tag.get_tag_declarator_opt()?
+        } else {
+            None
+        };
+
+        Ok((data, extrude_group, tag))
+    }
+
+    fn get_tag_and_extrude_group(&self) -> Result<(TagIdentifier, Box<ExtrudeGroup>), KclError> {
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let tag = first_value.get_tag_identifier()?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_group = if let MemoryItem::ExtrudeGroup(eg) = second_value {
+            eg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((tag, extrude_group))
+    }
+
+    fn get_segment_name_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
+        // Iterate over our args, the first argument should be a UserVal with a string value.
+        // The second argument should be a number.
+        // The third argument should be a SketchGroup.
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a string as the first argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let segment_name = first_value.get_tag_identifier()?;
 
         let second_value = self
             .args
@@ -889,21 +1079,91 @@ impl Args {
             })
         })?;
 
-        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
-            SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups { value } = second_value {
-            SketchGroupSet::SketchGroups(value.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
+        let sketch_set = match second_value.get_sketch_group_set() {
+            Ok(set) => set,
+            Err(err) => {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
+                    source_ranges: vec![self.source_range],
+                }))
+            }
         };
 
         Ok((number, sketch_set))
+    }
+
+    pub async fn get_adjacent_face_to_tag(
+        &self,
+        extrude_group: &ExtrudeGroup,
+        tag: &TagIdentifier,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        if tag.value.is_empty() {
+            return Err(KclError::Type(KclErrorDetails {
+                message: "Expected a non-empty tag for the face".to_string(),
+                source_ranges: vec![self.source_range],
+            }));
+        }
+
+        if let Some(face_from_surface) = extrude_group
+            .value
+            .iter()
+            .find_map(|extrude_surface| match extrude_surface {
+                ExtrudeSurface::ExtrudePlane(extrude_plane) => {
+                    if let Some(plane_tag) = &extrude_plane.tag {
+                        if plane_tag.name == tag.value {
+                            Some(Ok(extrude_plane.face_id))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                }
+                // The must be planar check must be called before the arc check.
+                ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
+                    message: format!("Tag `{}` is a non-planar surface", tag.value),
+                    source_ranges: vec![self.source_range],
+                }))),
+                ExtrudeSurface::ExtrudeArc(extrude_arc) => {
+                    if let Some(arc_tag) = &extrude_arc.tag {
+                        if arc_tag.name == tag.value {
+                            Some(Ok(extrude_arc.face_id))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                }
+            })
+        {
+            return face_from_surface;
+        }
+
+        // A face could also be the result of a chamfer or fillet.
+        if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
+            if let Some(ntag) = &fc.tag() {
+                if ntag.name == tag.value {
+                    Some(Ok(fc.id()))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        }) {
+            // We want to make sure we execute the fillet before this operation.
+            self.flush_batch_for_extrude_group_set(extrude_group.into()).await?;
+
+            return face_from_chamfer_fillet;
+        }
+
+        // If we still haven't found the face, return an error.
+        Err(KclError::Type(KclErrorDetails {
+            message: format!("Expected a face with the tag `{}`", tag.value),
+            source_ranges: vec![self.source_range],
+        }))
     }
 }
 
@@ -1058,9 +1318,7 @@ layout: manual
             fn_docs.push_str("\n```\n\n");
 
             // If the function has tags, we should add them to the docs.
-            let mut tags = internal_fn.tags().clone();
-            // Remove norun tag from the list of tags.
-            tags.retain(|tag| tag != "norun");
+            let tags = internal_fn.tags().clone();
             if !tags.is_empty() {
                 fn_docs.push_str("### Tags\n\n");
                 for tag in tags {
@@ -1079,9 +1337,7 @@ layout: manual
 
                     // If this is not a "utilities" function,
                     // we should add the image to the docs.
-                    if !internal_fn.tags().contains(&"utilities".to_string())
-                        && !internal_fn.tags().contains(&"norun".to_string())
-                    {
+                    if !internal_fn.tags().contains(&"utilities".to_string()) {
                         // Get the path to this specific rust file.
                         let dir = env!("CARGO_MANIFEST_DIR");
 

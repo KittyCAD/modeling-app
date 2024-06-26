@@ -1,46 +1,37 @@
-fn make_circle = (face, tag, pos, radius) => {
-  const sg = startSketchOn(face, tag)
-  |> startProfileAt([pos[0] + radius, pos[1]], %)
-  |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: radius
-     }, %, 'arc-' + tag)
+let triangleHeight = 200
+let plumbusLen = 100
+let radius = 80
+let circ = {angle_start: 0, angle_end: 360, radius: radius}
+
+let triangleLen = 500
+const p = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLine({angle: 60, length:triangleLen}, %, $a)
+  |> angledLine({angle: 180, length: triangleLen}, %, $b)
+  |> angledLine({angle: 300, length: triangleLen}, %, $c)
+  |> extrude(triangleHeight, %)
+
+fn circl = (x, face, tag) => {
+return startSketchOn(p, face)
+  |> startProfileAt([x + radius, triangleHeight/2], %)
+  |> arc(circ, %,  tag)
   |> close(%)
-
-  return sg
 }
 
-fn pentagon = (len) => {
-  const sg = startSketchOn('XY')
-  |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, 'a')
-  |> angledLine({
-       angle: segAng('a', %) + 180 - 108,
-       length: len
-     }, %, 'b')
-  |> angledLine({
-       angle: segAng('b', %) + 180 - 108,
-       length: len
-     }, %, 'c')
-  |> angledLine({
-       angle: segAng('c', %) + 180 - 108,
-       length: len
-     }, %, 'd')
-  |> angledLine({
-       angle: segAng('d', %) + 180 - 108,
-       length: len
-     }, %)
-
-  return sg
-}
-
-const p = pentagon(48)
-  |> extrude(30, %)
-
-const plumbus0 = make_circle(p, 'a', [0, 0], 9)
-  |> extrude(18, %)
+const plumbus1 =
+  circl(-200,c,  $arc_c)
+  |> extrude(plumbusLen, %)
   |> fillet({
-       radius: 0.5,
-       tags: ['arc-a', getOppositeEdge('arc-a', %)]
+       radius: 5,
+       tags: [arc_c, getOppositeEdge(arc_c, %)]
      }, %)
+
+const plumbus0 =
+  circl(200, a, $arc_a)
+  |> extrude(plumbusLen, %)
+  |> fillet({
+       radius: 5,
+       tags: [arc_a, getOppositeEdge(arc_a, %)]
+     }, %)
+
+

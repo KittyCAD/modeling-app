@@ -36,6 +36,56 @@ fn test_get_inner_array_type() {
 }
 
 #[test]
+fn test_args_with_refs() {
+    let (item, mut errors) = do_stdlib(
+        quote! {
+            name = "someFn",
+        },
+        quote! {
+            /// Docs
+            /// ```
+            /// someFn()
+            /// ```
+            fn someFn(
+                data: &'a str,
+            ) -> i32 {
+                3
+            }
+        },
+    )
+    .unwrap();
+    if let Some(e) = errors.pop() {
+        panic!("{e}");
+    }
+    expectorate::assert_contents("tests/args_with_refs.gen", &get_text_fmt(&item).unwrap());
+}
+
+#[test]
+fn test_args_with_lifetime() {
+    let (item, mut errors) = do_stdlib(
+        quote! {
+            name = "someFn",
+        },
+        quote! {
+            /// Docs
+            /// ```
+            /// someFn()
+            /// ```
+            fn someFn<'a>(
+                data: Foo<'a>,
+            ) -> i32 {
+                3
+            }
+        },
+    )
+    .unwrap();
+    if let Some(e) = errors.pop() {
+        panic!("{e}");
+    }
+    expectorate::assert_contents("tests/args_with_lifetime.gen", &get_text_fmt(&item).unwrap());
+}
+
+#[test]
 fn test_stdlib_line_to() {
     let (item, errors) = do_stdlib(
         quote! {
@@ -64,7 +114,6 @@ fn test_stdlib_line_to() {
         },
     )
     .unwrap();
-    let _expected = quote! {};
 
     assert!(errors.is_empty());
     expectorate::assert_contents("tests/lineTo.gen", &get_text_fmt(&item).unwrap());
@@ -338,43 +387,6 @@ fn test_stdlib_doc_comment_with_code() {
 
     assert!(errors.is_empty());
     expectorate::assert_contents("tests/doc_comment_with_code.gen", &get_text_fmt(&item).unwrap());
-}
-
-#[test]
-fn test_stdlib_doc_comment_with_code_on_ignored_function() {
-    let (item, errors) = do_stdlib(
-        quote! {
-            name = "import",
-            tags = ["norun"]
-        },
-        quote! {
-            /// This is some function.
-            /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     import
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// import
-            /// ```
-            fn inner_import(
-                /// The args to do shit to.
-                args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
-                args
-            }
-        },
-    )
-    .unwrap();
-
-    assert!(errors.is_empty());
-    expectorate::assert_contents(
-        "tests/doc_comment_with_code_on_ignored_function.gen",
-        &get_text_fmt(&item).unwrap(),
-    );
 }
 
 #[test]

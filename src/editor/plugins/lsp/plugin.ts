@@ -167,6 +167,7 @@ export class LanguageServerPlugin implements PluginValue {
     if (pos === null) return null
     const dom = document.createElement('div')
     dom.classList.add('documentation')
+    dom.classList.add('hover-tooltip')
     dom.style.zIndex = '99999999'
     if (this.allowHTMLContent) dom.innerHTML = formatContents(contents)
     else dom.textContent = formatContents(contents)
@@ -382,9 +383,14 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          //const params = notification.params as PublishDiagnosticsParams
+          console.log(
+            '[lsp] [window/publishDiagnostics]',
+            this.client.getName(),
+            notification.params
+          )
+          const params = notification.params as PublishDiagnosticsParams
           // this is sometimes slower than our actual typing.
-          //this.processDiagnostics(params)
+          this.processDiagnostics(params)
           break
         case 'window/logMessage':
           console.log(

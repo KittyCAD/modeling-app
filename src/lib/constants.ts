@@ -24,6 +24,8 @@ export const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
+/** Thumbnail file name */
+export const PROJECT_IMAGE_NAME = `main.jpg` as const
 /** The localStorage key for last-opened projects */
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
@@ -42,5 +44,13 @@ export const RELEVANT_FILE_TYPES = [
 ] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+/**
+ * The default starting constant name for various modeling operations.
+ * These are used to generate unique names for new objects.
+ * */
+export const KCL_DEFAULT_CONSTANT_PREFIXES = {
+  SKETCH: 'sketch',
+  EXTRUDE: 'extrude',
+} as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`

@@ -1,5 +1,7 @@
 //! Functions for generating docs for our stdlib functions.
 
+use std::path::Path;
+
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -63,11 +65,17 @@ impl StdLibFnArg {
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
         if self.type_ == "SketchGroup"
-            || self.type_ == "ExtrudeGroup"
-            || self.type_ == "SketchSurface"
             || self.type_ == "SketchGroupSet"
+            || self.type_ == "ExtrudeGroup"
+            || self.type_ == "ExtrudeGroupSet"
+            || self.type_ == "SketchSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
+        } else if self.type_ == "TagDeclarator" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
+        } else if self.type_ == "TagIdentifier" && self.required {
+            // TODO: actually use the ast to populate this.
+            return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
     }
@@ -262,21 +270,30 @@ impl<'de> Deserialize<'de> for Box<dyn StdLibFn> {
 }
 
 impl ts_rs::TS for dyn StdLibFn {
-    const EXPORT_TO: Option<&'static str> = Some("bindings/StdLibFnData");
+    type WithoutGenerics = Self;
 
     fn name() -> String {
         "StdLibFnData".to_string()
     }
 
-    fn dependencies() -> Vec<ts_rs::Dependency>
-    where
-        Self: 'static,
-    {
-        StdLibFnData::dependencies()
+    fn decl() -> String {
+        StdLibFnData::decl()
     }
 
-    fn transparent() -> bool {
-        StdLibFnData::transparent()
+    fn decl_concrete() -> String {
+        StdLibFnData::decl_concrete()
+    }
+
+    fn inline() -> String {
+        StdLibFnData::inline()
+    }
+
+    fn inline_flattened() -> String {
+        StdLibFnData::inline_flattened()
+    }
+
+    fn output_path() -> Option<&'static Path> {
+        StdLibFnData::output_path()
     }
 }
 
@@ -438,6 +455,10 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
 
             if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
                 return Ok((Primitive::String.to_string(), false));
+            }
+
+            if let Some(reference) = &o.reference {
+                return Ok((reference.replace("#/components/schemas/", ""), false));
             }
 
             anyhow::bail!("unknown type: {:#?}", o)

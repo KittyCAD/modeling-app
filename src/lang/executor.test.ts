@@ -62,13 +62,18 @@ const newVar = myVar + 1`
           sourceRange: [72, 98],
           id: expect.any(String),
         },
-        name: 'myPath',
+        tag: {
+          end: 97,
+          start: 89,
+          type: 'TagDeclarator',
+          value: 'myPath',
+        },
       },
       {
         type: 'ToPoint',
         to: [2, 3],
         from: [0, 2],
-        name: '',
+        tag: null,
         __geoMeta: {
           sourceRange: [104, 120],
           id: expect.any(String),
@@ -82,7 +87,12 @@ const newVar = myVar + 1`
           sourceRange: [126, 156],
           id: expect.any(String),
         },
-        name: 'rightPath',
+        tag: {
+          end: 155,
+          start: 144,
+          type: 'TagDeclarator',
+          value: 'rightPath',
+        },
       },
     ])
   })
@@ -139,7 +149,7 @@ const newVar = myVar + 1`
       start: {
         to: [0, 0],
         from: [0, 0],
-        name: '',
+        tag: null,
         __geoMeta: {
           id: expect.any(String),
           sourceRange: [39, 63],
@@ -150,7 +160,7 @@ const newVar = myVar + 1`
           type: 'ToPoint',
           to: [1, 1],
           from: [0, 0],
-          name: '',
+          tag: null,
           __geoMeta: {
             sourceRange: [69, 85],
             id: expect.any(String),
@@ -164,26 +174,25 @@ const newVar = myVar + 1`
             sourceRange: [91, 118],
             id: expect.any(String),
           },
-          name: 'myPath',
+          tag: {
+            end: 117,
+            start: 109,
+            type: 'TagDeclarator',
+            value: 'myPath',
+          },
         },
         {
           type: 'ToPoint',
           to: [1, 1],
           from: [0, 1],
-          name: '',
+          tag: null,
           __geoMeta: {
             sourceRange: [124, 140],
             id: expect.any(String),
           },
         },
       ],
-      position: [0, 0, 0],
-      rotation: [0, 0, 0, 1],
-      xAxis: { x: 1, y: 0, z: 0 },
-      yAxis: { x: 0, y: 1, z: 0 },
-      zAxis: { x: 0, y: 0, z: 1 },
       id: expect.any(String),
-      entityId: expect.any(String),
       __meta: [{ sourceRange: [39, 63] }],
     })
   })

@@ -1,9 +1,16 @@
-import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
+import {
+  OnboardingButtons,
+  kbdClasses,
+  useDemoCode,
+  useDismiss,
+  useNextClick,
+} from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { bracketWidthConstantLine } from 'lib/exampleKcl'
 
-export default function InteractiveNumbers() {
+export default function OnboardingInteractiveNumbers() {
+  useDemoCode()
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
@@ -33,8 +40,10 @@ export default function InteractiveNumbers() {
               <kbd className={kbdClasses}>Option</kbd>) key
             </li>
             <li>
-              Hover over the number assigned to <code>width</code> on line{' '}
-              {bracketWidthConstantLine}
+              Hover over the number assigned to "width" on{' '}
+              <em>
+                <strong>line {bracketWidthConstantLine}</strong>
+              </em>
             </li>
             <li>Drag the number left and right to change its value</li>
           </ol>

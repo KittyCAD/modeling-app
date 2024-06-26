@@ -1,4 +1,4 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -10,7 +10,6 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
-import { useEffect } from 'react'
 import { codeManager, kclManager } from 'lib/singletons'
 import { join } from '@tauri-apps/api/path'
 import {
@@ -57,7 +56,7 @@ function OnboardingWithNewFile() {
               next={() => {
                 // We do want to update both the state and editor here.
                 codeManager.updateCodeEditor(bracket)
-                kclManager.executeCode(true)
+                kclManager.executeCode(true, true)
                 next()
               }}
               nextText="Overwrite code and continue"
@@ -92,7 +91,7 @@ function OnboardingWithNewFile() {
   )
 }
 
-export default function Introduction() {
+export default function OnboardingIntroduction() {
   const {
     settings: {
       state: {
@@ -112,9 +111,7 @@ export default function Introduction() {
   const currentCode = codeManager.code
   const isStarterCode = currentCode === '' || currentCode === bracket
 
-  useEffect(() => {
-    if (codeManager.code === '') codeManager.updateCodeEditor(bracket)
-  }, [])
+  useDemoCode()
 
   return isStarterCode ? (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
@@ -158,6 +155,12 @@ export default function Introduction() {
             </a>
             ! We are trying to release as early as possible to get feedback from
             users like you.
+          </p>
+          <p>
+            As you go through the onboarding, we'll be changing and resetting
+            your code occasionally, so that we can reference specific code
+            features. So hold off on writing production KCL code until you're
+            done with the onboarding 😉
           </p>
         </section>
         <OnboardingButtons
