@@ -9,7 +9,6 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
-import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
 import openWindow from 'lib/openWindow'
 
 export function LowerRightControls({
