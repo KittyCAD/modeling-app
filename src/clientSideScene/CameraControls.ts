@@ -76,6 +76,8 @@ export class CameraControls {
   enableZoom = true
   // holds magnitudes
   zoomBuffer: number[] = []
+  // holds coordinates, and interaction
+  panBuffer: [number, number, string][] = []
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -296,6 +298,39 @@ export class CameraControls {
       // Source: Uni of Edinburgh
     }, 100)
 
+    // Do similar for panning
+    setInterval(() => {
+      const listLength = this.panBuffer.length
+      if (listLength === 0) return
+      const skip = Math.floor(listLength / N_PER_TIME)
+
+      const deltas =
+        listLength === 1
+          ? this.panBuffer
+          : this.panBuffer.filter((x, idx, list) => {
+              if (idx === 0 || idx === listLength - 1) return true
+              // do not include adjacent copies to reduce redundant commands
+              // we dont remove all uniques because that takes more time and memory
+              // than its worth
+              if (list[idx] === list[idx - 1]) return false
+              return idx % skip === 0
+            })
+
+      this.panBuffer = []
+
+      deltas.forEach(([x, y, interaction]) => {
+        this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'camera_drag_move',
+            interaction: interaction as any,
+            window: { x, y },
+          },
+          cmd_id: uuidv4(),
+        })
+      })
+    }, 80)
+
     setTimeout(() => {
       this.engineCommandManager.subscribeTo({
         event: 'camera_drag_end',
@@ -380,15 +415,7 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        this.throttledEngCmd({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'camera_drag_move',
-            interaction,
-            window: { x: event.clientX, y: event.clientY },
-          },
-          cmd_id: uuidv4(),
-        })
+        this.panBuffer.push([event.clientX, event.clientY, interaction])
         return
       }
 
