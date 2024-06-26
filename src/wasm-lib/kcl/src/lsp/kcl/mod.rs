@@ -223,8 +223,8 @@ impl crate::lsp::backend::Backend for Backend {
             false
         };
 
-        let tokens_changed = if let Some(previous_tokens) = previous_tokens.clone() {
-            previous_tokens != tokens
+        let tokens_changed = if let Some(previous_tokens) = &previous_tokens {
+            *previous_tokens != tokens
         } else {
             true
         };
@@ -349,7 +349,7 @@ impl Backend {
                 continue;
             };
 
-            let mut token_type_index = match self.get_semantic_token_type_index(token_type.clone()) {
+            let mut token_type_index = match self.get_semantic_token_type_index(&token_type) {
                 Some(index) => index,
                 // This is actually bad this should not fail.
                 // The test for listing all semantic token types should make this never happen.
@@ -403,7 +403,7 @@ impl Backend {
                             if sr.contains(source_range.start()) {
                                 if let Value::FunctionExpression(_) = &variable.init {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                    *ti = match self.get_semantic_token_type_index(SemanticTokenType::FUNCTION) {
+                                    *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
                                         Some(index) => index,
                                         None => token_type_index,
                                     };
@@ -417,7 +417,7 @@ impl Backend {
                         }
                         crate::walk::Node::Parameter(_) => {
                             let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                            *ti = match self.get_semantic_token_type_index(SemanticTokenType::PARAMETER) {
+                            *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PARAMETER) {
                                 Some(index) => index,
                                 None => token_type_index,
                             };
@@ -427,7 +427,7 @@ impl Backend {
                             let sr: SourceRange = (&member_expression.property).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
+                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
                                     Some(index) => index,
                                     None => token_type_index,
                                 };
@@ -438,7 +438,7 @@ impl Backend {
                             let sr: SourceRange = (&object_property.key).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
+                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
                                     Some(index) => index,
                                     None => token_type_index,
                                 };
@@ -449,7 +449,7 @@ impl Backend {
                             let sr: SourceRange = (&call_expr.callee).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::FUNCTION) {
+                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
                                     Some(index) => index,
                                     None => token_type_index,
                                 };
@@ -526,7 +526,7 @@ impl Backend {
 
     async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
         let mut items = match self.diagnostics_map.get(uri.as_str()).await {
-            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items.clone(),
+            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items,
             _ => vec![],
         };
 
@@ -578,17 +578,17 @@ impl Backend {
                 .await;
         }
 
-        let DocumentDiagnosticReport::Full(mut report) = self
-            .diagnostics_map
-            .get(params.uri.clone().as_str())
-            .await
-            .unwrap_or(DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                related_documents: None,
-                full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                    result_id: None,
-                    items: vec![],
-                },
-            }))
+        let DocumentDiagnosticReport::Full(mut report) =
+            self.diagnostics_map
+                .get(params.uri.as_str())
+                .await
+                .unwrap_or(DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                    related_documents: None,
+                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                        result_id: None,
+                        items: vec![],
+                    },
+                }))
         else {
             unreachable!();
         };
@@ -659,10 +659,10 @@ impl Backend {
         Ok(())
     }
 
-    pub fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<u32> {
+    pub fn get_semantic_token_type_index(&self, token_type: &SemanticTokenType) -> Option<u32> {
         SEMANTIC_TOKEN_TYPES
             .iter()
-            .position(|x| *x == token_type)
+            .position(|x| *x == *token_type)
             .map(|y| y as u32)
     }
 

@@ -1195,16 +1195,16 @@ fn myFn = (param1) => {
     // Check the semantic tokens.
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         let function_index = server
-            .get_semantic_token_type_index(SemanticTokenType::FUNCTION)
+            .get_semantic_token_type_index(&SemanticTokenType::FUNCTION)
             .unwrap();
         let property_index = server
-            .get_semantic_token_type_index(SemanticTokenType::PROPERTY)
+            .get_semantic_token_type_index(&SemanticTokenType::PROPERTY)
             .unwrap();
         let parameter_index = server
-            .get_semantic_token_type_index(SemanticTokenType::PARAMETER)
+            .get_semantic_token_type_index(&SemanticTokenType::PARAMETER)
             .unwrap();
         let variable_index = server
-            .get_semantic_token_type_index(SemanticTokenType::VARIABLE)
+            .get_semantic_token_type_index(&SemanticTokenType::VARIABLE)
             .unwrap();
 
         let declaration_index = server
