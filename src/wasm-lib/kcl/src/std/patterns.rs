@@ -285,6 +285,21 @@ fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -
     Ok(Point3d { x, y, z })
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_array_to_point3d() {
+        let input = serde_json::json! {
+            [1.1, 2.2, 3.3]
+        };
+        let expected = Point3d { x: 1.1, y: 2.2, z: 3.3 };
+        let actual = array_to_point3d(&input, Vec::new());
+        assert_eq!(actual.unwrap(), expected);
+    }
+}
+
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
