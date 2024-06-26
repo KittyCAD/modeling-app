@@ -112,6 +112,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       callback: () => {
         setIsLspReady(true)
       },
+      wasmUrl: wasmUrl(),
     }
 
     const lsp = new LspServerClient({ worker: LspWorker.Kcl, options })
@@ -179,6 +180,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       callback: () => {
         setIsCopilotReady(true)
       },
+      wasmUrl: wasmUrl(),
     }
     const lsp = new LspServerClient({ worker: LspWorker.Copilot, options })
     lsp.startServer()

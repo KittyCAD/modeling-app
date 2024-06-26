@@ -9,6 +9,7 @@ interface LspWorkerOptions {
   token: string
   apiBaseUrl: string
   callback: () => void
+  wasmUrl: string
 }
 
 export interface KclWorkerOptions extends LspWorkerOptions {
@@ -20,4 +21,14 @@ export interface CopilotWorkerOptions extends LspWorkerOptions {}
 export interface LspContext {
   worker: LspWorker
   options: KclWorkerOptions | CopilotWorkerOptions
+}
+
+export enum LspWorkerEventType {
+  Init = 'init',
+}
+
+export interface LspWorkerEvent {
+  eventType: LspWorkerEventType
+  eventData: Uint8Array | KclWorkerOptions | CopilotWorkerOptions
+  worker: LspWorker
 }
