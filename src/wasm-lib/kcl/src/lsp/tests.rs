@@ -1174,7 +1174,6 @@ fn myFn = (param1) => {
             .get_semantic_token_modifier_index(SemanticTokenModifier::DEFINITION)
             .unwrap();
 
-        println!("{:#?}", semantic_tokens.data);
         // Iterate over the tokens and check the token types.
         let mut found_definition = false;
         let mut found_parameter = false;
