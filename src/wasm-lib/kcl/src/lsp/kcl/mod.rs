@@ -174,7 +174,12 @@ impl crate::lsp::backend::Backend for Backend {
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                self.add_to_diagnostics(&params, err, true).await;
+                self.token_map.remove(&params.uri.to_string()).await;
+                self.ast_map.remove(&params.uri.to_string()).await;
+                self.symbols_map.remove(&params.uri.to_string()).await;
+                self.semantic_tokens_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
                 return;
             }
         };
@@ -214,7 +219,10 @@ impl crate::lsp::backend::Backend for Backend {
         let ast = match result {
             Ok(ast) => ast,
             Err(err) => {
-                self.add_to_diagnostics(&params, err).await;
+                self.add_to_diagnostics(&params, err, true).await;
+                self.ast_map.remove(&params.uri.to_string()).await;
+                self.symbols_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
                 return;
             }
         };
@@ -254,7 +262,7 @@ impl crate::lsp::backend::Backend for Backend {
                 self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
                     .await;
                 for discovered_finding in &discovered_findings {
-                    self.add_to_diagnostics(&params, discovered_finding).await;
+                    self.add_to_diagnostics(&params, discovered_finding, false).await;
                 }
             }
         }
@@ -411,6 +419,7 @@ impl Backend {
         &self,
         params: &TextDocumentItem,
         diagnostic: DiagT,
+        clear_all_before_add: bool,
     ) {
         self.client
             .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostic))
@@ -418,10 +427,12 @@ impl Backend {
 
         let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
 
-        // If the diagnostic is an error, it will be the only error we get since that halts
-        // execution.
-        // Clear the diagnostics before we add a new one.
-        if diagnostic.severity == Some(DiagnosticSeverity::ERROR) {
+        if clear_all_before_add {
+            self.clear_diagnostics_map(&params.uri, None).await;
+        } else if diagnostic.severity == Some(DiagnosticSeverity::ERROR) {
+            // If the diagnostic is an error, it will be the only error we get since that halts
+            // execution.
+            // Clear the diagnostics before we add a new one.
             self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
                 .await;
         }
@@ -487,7 +498,8 @@ impl Backend {
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,
             Err(err) => {
-                self.add_to_diagnostics(params, err).await;
+                self.memory_map.remove(&params.uri.to_string()).await;
+                self.add_to_diagnostics(params, err, false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
