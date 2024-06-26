@@ -5,7 +5,10 @@ use std::{
 
 use anyhow::Result;
 use pretty_assertions::assert_eq;
-use tower_lsp::LanguageServer;
+use tower_lsp::{
+    lsp_types::{SemanticTokenModifier, SemanticTokenType},
+    LanguageServer,
+};
 
 use crate::{executor::ProgramMemory, lsp::backend::Backend};
 
@@ -42,9 +45,6 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
-    // We can unwrap here because we know the tokeniser is valid, since
-    // we have a test for it.
-    let token_types = crate::token::TokenType::all_semantic_token_types()?;
 
     let zoo_client = new_zoo_client();
 
@@ -63,7 +63,6 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         workspace_folders: Default::default(),
         stdlib_completions,
         stdlib_signatures,
-        token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
         memory_map: Default::default(),
@@ -1082,6 +1081,154 @@ async fn test_kcl_lsp_semantic_tokens() {
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
         assert_eq!(semantic_tokens.data[1].delta_line, 0);
         assert_eq!(semantic_tokens.data[1].token_type, 3);
+    } else {
+        panic!("Expected semantic tokens");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %, $seg01)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> extrude(3.14, %)
+
+const thing = {blah: "foo"}
+const bar = thing.blah
+
+fn myFn = (param1) => {
+    return param1
+}"#
+                .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Assure we have no diagnostics.
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+        if !diagnostics.full_document_diagnostic_report.items.is_empty() {
+            panic!(
+                "Expected no diagnostics, {:?}",
+                diagnostics.full_document_diagnostic_report.items
+            );
+        }
+    } else {
+        panic!("Expected full diagnostics");
+    }
+
+    // Get the token map.
+    let token_map = server.token_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(token_map != vec![]);
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
+    assert!(ast != crate::ast::types::Program::default());
+
+    // Send semantic tokens request.
+    let semantic_tokens = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the semantic tokens.
+    if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
+        let function_index = server
+            .get_semantic_token_type_index(SemanticTokenType::FUNCTION)
+            .unwrap();
+        let property_index = server
+            .get_semantic_token_type_index(SemanticTokenType::PROPERTY)
+            .unwrap();
+        let parameter_index = server
+            .get_semantic_token_type_index(SemanticTokenType::PARAMETER)
+            .unwrap();
+        let variable_index = server
+            .get_semantic_token_type_index(SemanticTokenType::VARIABLE)
+            .unwrap();
+
+        let declaration_index = server
+            .get_semantic_token_modifier_index(SemanticTokenModifier::DECLARATION)
+            .unwrap();
+        let definition_index = server
+            .get_semantic_token_modifier_index(SemanticTokenModifier::DEFINITION)
+            .unwrap();
+
+        println!("{:#?}", semantic_tokens.data);
+        // Iterate over the tokens and check the token types.
+        let mut found_definition = false;
+        let mut found_parameter = false;
+        let mut found_property = false;
+        let mut found_function_declaration = false;
+        let mut found_variable_declaration = false;
+        for token in semantic_tokens.data {
+            if token.token_modifiers_bitset == definition_index {
+                found_definition = true;
+            }
+
+            if token.token_type == parameter_index {
+                found_parameter = true;
+            } else if token.token_type == property_index {
+                found_property = true;
+            }
+
+            if token.token_type == function_index && token.token_modifiers_bitset == declaration_index {
+                found_function_declaration = true;
+            }
+
+            if token.token_type == variable_index && token.token_modifiers_bitset == declaration_index {
+                found_variable_declaration = true;
+            }
+
+            if found_definition
+                && found_parameter
+                && found_property
+                && found_function_declaration
+                && found_variable_declaration
+            {
+                break;
+            }
+        }
+
+        if !found_definition {
+            panic!("Expected definition token");
+        }
+
+        if !found_parameter {
+            panic!("Expected parameter token");
+        }
+
+        if !found_property {
+            panic!("Expected property token");
+        }
+
+        if !found_function_declaration {
+            panic!("Expected function declaration token");
+        }
+
+        if !found_variable_declaration {
+            panic!("Expected variable declaration token");
+        }
     } else {
         panic!("Expected semantic tokens");
     }
