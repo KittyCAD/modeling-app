@@ -11,19 +11,13 @@ import {
 } from 'editor/plugins/lsp/types'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { err } from 'lib/trap'
-import {
-  WriteableStreamMessageWriter,
-  ReadableStreamMessageReader,
-  Message,
-} from 'vscode-languageclient'
+import { Message } from 'vscode-languageserver'
 import { LspWorkerEvent, LspWorkerEventType } from 'editor/plugins/lsp/types'
-import { WritableStreamImpl } from 'editor/plugins/lsp/writer'
 import Queue from 'editor/plugins/lsp/queue'
 import {
   BrowserMessageReader,
   BrowserMessageWriter,
 } from 'vscode-languageserver-protocol/browser'
-import * as jsrpc from 'json-rpc-2.0'
 
 class Headers {
   static add(message: string): string {

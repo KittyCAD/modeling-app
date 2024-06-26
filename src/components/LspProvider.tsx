@@ -18,7 +18,6 @@ import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { FileEntry } from 'lib/types'
-import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
   KclWorkerOptions,
   CopilotWorkerOptions,
@@ -28,7 +27,6 @@ import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { err } from 'lib/trap'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
