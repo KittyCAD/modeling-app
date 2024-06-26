@@ -1,4 +1,4 @@
-import { executeAst } from 'useStore'
+import { executeAst, lintAst } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
@@ -211,6 +211,9 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
+
+    editorManager.addDiagnostics(await lintAst({ ast: ast }))
+
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
     defaultSelectionFilter(programMemory, this.engineCommandManager)
 
@@ -261,7 +264,10 @@ export class KclManager {
       return
     }
     const newAst = this.safeParse(newCode)
-    if (!newAst) return
+    if (!newAst) {
+      this.clearAst()
+      return
+    }
     codeManager.updateCodeEditor(newCode)
     // Write the file to disk.
     await codeManager.writeToFile()
@@ -278,6 +284,9 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })
+
+    editorManager.addDiagnostics(await lintAst({ ast: ast }))
+
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
