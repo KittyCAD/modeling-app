@@ -100,26 +100,31 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
 /// Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
 ///
 /// ```no_run
-/// // base radius
-/// const r = 50
-/// // layer height
-/// const h = 10
-/// // taper factor [0 - 1)
-/// const t = 0.005
-/// // Each layer is just a pretty thin cylinder.
-/// fn layer = () => {
-///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %)
-///     |> extrude(h, %)
-/// // Change each replica's radius and shift it up the Z axis.
+/// // Parameters
+/// const r = 50    // base radius
+/// const h = 10    // layer height
+/// const t = 0.005 // taper factor [0-1)
+/// // Defines how to modify each layer of the vase.
+/// // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 /// fn transform = (replicaId) => {
+///   let scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
 ///   return {
-///     translate: [0, 0, replicaId*10]
-///     scale: r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+///     translate: [0, 0, replicaId * 10],
+///     scale: [scale, scale, 0],
 ///   }
 /// }
-/// The vase is 100 layers tall.
-/// The 100 layers are replica of each other, with a slight transformation applied to each.
+/// // Each layer is just a pretty thin cylinder with a fillet.
+/// fn layer = () => {
+///   return startSketchOn("XY") // or some other plane idk
+///     |> circle([0, 0], 1, %, 'tag1')
+///     |> extrude(h, %)
+///     // |> fillet({
+///     //        radius: h / 2.01,
+///     //        tags: ["tag1", getOppositeEdge("tag1", %)]
+///     //    }, %)
+/// }
+/// // The vase is 100 layers tall.
+/// // The 100 layers are replica of each other, with a slight transformation applied to each.
 /// let vase = layer() |> patternTransform(100, transform, %)
 /// ```
 #[stdlib {
