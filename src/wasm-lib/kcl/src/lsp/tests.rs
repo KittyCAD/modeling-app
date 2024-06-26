@@ -1181,6 +1181,7 @@ fn myFn = (param1) => {
         let mut found_property = false;
         let mut found_function_declaration = false;
         let mut found_variable_declaration = false;
+        let mut found_property_declaration = false;
         for token in semantic_tokens.data {
             if token.token_modifiers_bitset == definition_index {
                 found_definition = true;
@@ -1200,11 +1201,16 @@ fn myFn = (param1) => {
                 found_variable_declaration = true;
             }
 
+            if token.token_type == property_index && token.token_modifiers_bitset == declaration_index {
+                found_property_declaration = true;
+            }
+
             if found_definition
                 && found_parameter
                 && found_property
                 && found_function_declaration
                 && found_variable_declaration
+                && found_property_declaration
             {
                 break;
             }
@@ -1228,6 +1234,10 @@ fn myFn = (param1) => {
 
         if !found_variable_declaration {
             panic!("Expected variable declaration token");
+        }
+
+        if !found_property_declaration {
+            panic!("Expected property declaration token");
         }
     } else {
         panic!("Expected semantic tokens");

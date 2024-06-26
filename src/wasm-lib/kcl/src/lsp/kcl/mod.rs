@@ -430,6 +430,17 @@ impl Backend {
                                 return Ok(false);
                             }
                         }
+                        crate::lint::Node::ObjectProperty(object_property) => {
+                            let sr: SourceRange = object_property.key.clone().into();
+                            if sr.contains(source_range.start()) {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+                            }
+                            return get_modifier(SemanticTokenModifier::DECLARATION);
+                        }
                         crate::lint::Node::CallExpression(call_expr) => {
                             let sr: SourceRange = call_expr.callee.clone().into();
                             if sr.contains(source_range.start()) {
