@@ -29,7 +29,10 @@ export function cleanErrs<T>(
   return [argsWOutErr.length !== value.length, argsWOutErr, argsWErr]
 }
 
-// Used to report errors to user at a certain point in execution
+/**
+ *  Used to report errors to user at a certain point in execution
+ *  @returns boolean
+ */
 export function trap<T>(
   value: ExcludeErr<T> | Error,
   opts?: {
@@ -43,6 +46,8 @@ export function trap<T>(
 
   console.error(value)
   opts?.suppress ||
-    toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString())
+    toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString(), {
+      id: 'error',
+    })
   return true
 }
