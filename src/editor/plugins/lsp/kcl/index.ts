@@ -122,13 +122,13 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
           const line = state.doc.lineAt(pos)
           let trigKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
           let trigChar: string | undefined
+          const serverCapabilities = plugin.client.getServerCapabilities()
           if (
+            serverCapabilities &&
             !explicit &&
-            plugin.client
-              .getServerCapabilities()
-              .completionProvider?.triggerCharacters?.includes(
-                line.text[pos - line.from - 1]
-              )
+            serverCapabilities.completionProvider?.triggerCharacters?.includes(
+              line.text[pos - line.from - 1]
+            )
           ) {
             trigKind = CompletionTriggerKind.TriggerCharacter
             trigChar = line.text[pos - line.from - 1]

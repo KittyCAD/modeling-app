@@ -145,11 +145,7 @@ export class LanguageServerPlugin implements PluginValue {
     view: EditorView,
     { line, character }: { line: number; character: number }
   ): Promise<Tooltip | null> {
-    if (
-      !this.client.ready ||
-      !this.client.getServerCapabilities().hoverProvider
-    )
-      return null
+    if (!this.client.ready) return null
 
     this.sendChange({ documentText: view.state.doc.toString() })
     const result = await this.client.textDocumentHover({
@@ -175,11 +171,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   async getFoldingRanges(): Promise<LSP.FoldingRange[] | null> {
-    if (
-      !this.client.ready ||
-      !this.client.getServerCapabilities().foldingRangeProvider
-    )
-      return null
+    if (!this.client.ready) return null
     const result = await this.client.textDocumentFoldingRange({
       textDocument: { uri: this.documentUri },
     })
@@ -259,11 +251,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   async requestFormatting() {
-    if (
-      !this.client.ready ||
-      !this.client.getServerCapabilities().documentFormattingProvider
-    )
-      return null
+    if (!this.client.ready) return null
 
     this.client.textDocumentDidChange({
       textDocument: {
@@ -309,11 +297,7 @@ export class LanguageServerPlugin implements PluginValue {
       triggerCharacter: string | undefined
     }
   ): Promise<CompletionResult | null> {
-    if (
-      !this.client.ready ||
-      !this.client.getServerCapabilities().completionProvider
-    )
-      return null
+    if (!this.client.ready) return null
 
     this.sendChange({
       documentText: context.state.doc.toString(),

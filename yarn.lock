@@ -2508,32 +2508,6 @@
   dependencies:
     debug "^4.3.4"
 
-"@vscode/sync-api-client@0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@vscode/sync-api-client/-/sync-api-client-0.8.1.tgz#43acbf1c84e5e20301f5d320ceaa6427fd018f57"
-  integrity sha512-82NRZpZlvRtlFoqi/J8xGw964F8ZfJJeJu2D9QMAAzq8BMDCXqkhO2qHApnyEV4gG2mQSaHtfw0f30GOPExgUg==
-  dependencies:
-    "@vscode/sync-api-common" "0.8.1"
-    vscode-uri "^3.0.6"
-
-"@vscode/sync-api-common@0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@vscode/sync-api-common/-/sync-api-common-0.8.1.tgz#3a74b5ee2c89e913bc1d5d8149d5f585fb60b3b7"
-  integrity sha512-XfanQNxkUlCpAsQ2+1SzNEdoY7jtcu48jYBR0n864ZWAWrH7m2QBK32YoNlrDN2V0eh8tdF0WH1NuHOm3Y021A==
-
-"@vscode/wasm-wasi-lsp@^0.1.0-pre.1":
-  version "0.1.0-pre.1"
-  resolved "https://registry.yarnpkg.com/@vscode/wasm-wasi-lsp/-/wasm-wasi-lsp-0.1.0-pre.1.tgz#de8ecb15398f800e625d5d9b70e93d03150a23dd"
-  integrity sha512-xB6Jjo7v1JnJsxH18/d1GyhXqi3wqLe20cyvfQQp2XOKzapgGJC+CGL+Hc5w3BubOKwwcbHe6mtaMEKgArrv5A==
-
-"@vscode/wasm-wasi@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@vscode/wasm-wasi/-/wasm-wasi-0.8.2.tgz#9d7e18b28d623958e7d2d09e7490a3ae575c327a"
-  integrity sha512-TazXvphINUEoXVX2dEPdXhrwrQ9I6Z6t9LCDfALTmL43D/2Zmlc89KfNE/cO36n2uo+SDlPPP/6vWyF9TBbnnw==
-  dependencies:
-    "@vscode/sync-api-client" "0.8.1"
-    vscode-uri "^3.0.6"
-
 "@wdio/cli@^8.24.3":
   version "8.38.2"
   resolved "https://registry.yarnpkg.com/@wdio/cli/-/cli-8.38.2.tgz#a9c7cfa3df7ad18815a6e8024bfb2f90afba09ed"
@@ -5742,6 +5716,11 @@ json-parse-even-better-errors@^3.0.0:
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-3.0.2.tgz#b43d35e89c0f3be6b5fbbe9dc6c82467b30c28da"
   integrity sha512-fi0NG4bPjCHunUJffmLd0gxssIgkNmArMvis4iNah6Owg1MCJjWhEcDLmsK6iGkJq3tHwbDkTlce70/tmXN4cQ==
 
+json-rpc-2.0@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/json-rpc-2.0/-/json-rpc-2.0-1.7.0.tgz#840deb0bc168463e12bceb462f7fe225e793fc17"
+  integrity sha512-asnLgC1qD5ytP+fvBP8uL0rvj+l8P6iYICbzZ8dVxCpESffVjzA7KkYkbKCIbavs7cllwH1ZUaNtJwphdeRqpg==
+
 json-schema-traverse@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz#69f6a87d9513ab8bb8fe63bdb0979c448e684660"
@@ -8358,11 +8337,6 @@ vscode-languageserver@^9.0.1:
   integrity sha512-woByF3PDpkHFUreUa7Hos7+pUWdeWMXRd26+ZX2A8cFx6v/JPTtd4/uN0/jB6XQHYaOlHbio03NTHCqrgG5n7g==
   dependencies:
     vscode-languageserver-protocol "3.17.5"
-
-vscode-uri@^3.0.6:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-3.0.8.tgz#1770938d3e72588659a172d0fd4642780083ff9f"
-  integrity sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==
 
 w3c-keyname@^2.2.4:
   version "2.2.8"

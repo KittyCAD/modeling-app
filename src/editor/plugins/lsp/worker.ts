@@ -12,13 +12,72 @@ import {
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { err } from 'lib/trap'
 import {
+  WriteableStreamMessageWriter,
+  ReadableStreamMessageReader,
+  Message,
+} from 'vscode-languageclient'
+import { LspWorkerEvent, LspWorkerEventType } from 'editor/plugins/lsp/types'
+import { WritableStreamImpl } from 'editor/plugins/lsp/writer'
+import Queue from 'editor/plugins/lsp/queue'
+import {
   BrowserMessageReader,
   BrowserMessageWriter,
-} from 'vscode-languageserver/browser'
-import { LspWorkerEvent, LspWorkerEventType } from 'editor/plugins/lsp/types'
+} from 'vscode-languageserver-protocol/browser'
+import * as jsrpc from 'json-rpc-2.0'
 
-const messageReader = new BrowserMessageReader(self)
-const messageWriter = new BrowserMessageWriter(self)
+class Headers {
+  static add(message: string): string {
+    return `Content-Length: ${message.length}\r\n\r\n${message}`
+  }
+
+  static remove(delimited: string): string {
+    return delimited.replace(/^Content-Length:\s*\d+\s*/, '')
+  }
+}
+
+export const encoder = new TextEncoder()
+export const decoder = new TextDecoder()
+
+class Codec {
+  static encode(message: Message): Uint8Array {
+    const rpc = JSON.stringify(message.jsonrpc)
+    const delimited = Headers.add(rpc)
+    return encoder.encode(delimited)
+  }
+
+  static decode<T>(data: Uint8Array): T {
+    const delimited = decoder.decode(data)
+    const message = Headers.remove(delimited)
+    return JSON.parse(message) as T
+  }
+}
+
+class IntoServer extends Queue<Uint8Array> {
+  constructor(reader: BrowserMessageReader) {
+    super()
+    reader.listen((message: Message) => {
+      super.enqueue(Codec.encode(message))
+    })
+  }
+}
+
+class FromServer extends Queue<Uint8Array> {
+  constructor(writer: BrowserMessageWriter) {
+    super(
+      new WritableStream({
+        write(item: Uint8Array): void {
+          writer.write(Codec.decode(item))
+        },
+      })
+    )
+  }
+}
+
+const browserReader = new BrowserMessageReader(self)
+const browserWriter = new BrowserMessageWriter(self)
+
+const intoServer = new IntoServer(browserReader)
+const fromServer = new FromServer(browserWriter)
 
 // Initialise the wasm module.
 const initialise = async (wasmUrl: string) => {
@@ -58,7 +117,7 @@ export async function kclLspRun(
 }
 
 onmessage = function (event) {
-  if (err(messageReader)) return
+  if (err(intoServer)) return
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
 
   switch (eventType) {
@@ -70,8 +129,8 @@ onmessage = function (event) {
         .then((instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
           const config = new ServerConfig(
-            messageWriter,
-            messageReader,
+            intoServer,
+            fromServer,
             fileSystemManager
           )
           console.log('Starting worker', worker)
