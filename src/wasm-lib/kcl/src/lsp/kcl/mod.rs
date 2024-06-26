@@ -192,8 +192,8 @@ impl crate::lsp::backend::Backend for Backend {
         self.semantic_tokens_map.clear().await;
     }
 
-    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport> {
-        self.diagnostics_map.clone()
+    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport> {
+        &self.diagnostics_map
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
@@ -239,7 +239,7 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our token map.
             self.token_map.insert(params.uri.to_string(), tokens.clone()).await;
             // Update our semantic tokens.
-            self.update_semantic_tokens(tokens.clone(), &params).await;
+            self.update_semantic_tokens(&tokens, &params).await;
         }
 
         // Lets update the ast.
@@ -281,7 +281,7 @@ impl crate::lsp::backend::Backend for Backend {
                 .await;
 
             // Update our semantic tokens.
-            self.update_semantic_tokens(tokens, &params).await;
+            self.update_semantic_tokens(&tokens, &params).await;
 
             #[cfg(not(target_arch = "wasm32"))]
             {
@@ -311,7 +311,7 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        if self.execute(&params, ast.clone()).await.is_err() {
+        if self.execute(&params, &ast).await.is_err() {
             return;
         }
 
@@ -338,11 +338,11 @@ impl Backend {
         *self.executor_ctx.write().await = Some(executor_ctx);
     }
 
-    async fn update_semantic_tokens(&self, tokens: Vec<crate::token::Token>, params: &TextDocumentItem) {
+    async fn update_semantic_tokens(&self, tokens: &[crate::token::Token], params: &TextDocumentItem) {
         // Update the semantic tokens map.
         let mut semantic_tokens = vec![];
         let mut last_position = Position::new(0, 0);
-        for token in &tokens {
+        for token in tokens {
             let Ok(token_type) = SemanticTokenType::try_from(token.token_type) else {
                 // We continue here because not all tokens can be converted this way, we will get
                 // the rest from the ast.
@@ -617,7 +617,7 @@ impl Backend {
             .await;
     }
 
-    async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) -> Result<()> {
+    async fn execute(&self, params: &TextDocumentItem, ast: &crate::ast::types::Program) -> Result<()> {
         // Check if we can execute.
         if !self.can_execute().await {
             return Ok(());

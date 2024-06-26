@@ -357,6 +357,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, baseurl: Strin
 
         is_initialized: Default::default(),
         current_handle: Default::default(),
+        diagnostics_map: Default::default(),
     })
     .custom_method("copilot/setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
     .custom_method(

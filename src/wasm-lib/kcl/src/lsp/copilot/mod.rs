@@ -61,6 +61,8 @@ pub struct Backend {
     pub cache: Arc<cache::CopilotCache>,
     /// Storage so we can send telemetry data back out.
     pub telemetry: SafeMap<uuid::Uuid, CopilotCompletionTelemetry>,
+    /// Diagnostics.
+    pub diagnostics_map: SafeMap<String, DocumentDiagnosticReport>,
 
     pub is_initialized: Arc<tokio::sync::RwLock<bool>>,
     pub current_handle: UpdateHandle,
@@ -125,8 +127,8 @@ impl crate::lsp::backend::Backend for Backend {
         self.code_map.clear().await;
     }
 
-    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport> {
-        Default::default()
+    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport> {
+        &self.diagnostics_map
     }
 
     async fn inner_on_change(&self, _params: TextDocumentItem, _force: bool) {

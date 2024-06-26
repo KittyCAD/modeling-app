@@ -1455,7 +1455,7 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run(
         &self,
-        program: crate::ast::types::Program,
+        program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
     ) -> Result<ProgramMemory, KclError> {
         // Before we even start executing the program, set the units.
@@ -1481,7 +1481,7 @@ impl ExecutorContext {
     #[async_recursion]
     pub(crate) async fn inner_execute(
         &self,
-        program: crate::ast::types::Program,
+        program: &crate::ast::types::Program,
         memory: &mut ProgramMemory,
         body_type: BodyType,
     ) -> Result<ProgramMemory, KclError> {
@@ -1513,9 +1513,7 @@ impl ExecutorContext {
                             }
                             FunctionKind::Std(func) => {
                                 let mut newmem = memory.clone();
-                                let result = self
-                                    .inner_execute(func.program().to_owned(), &mut newmem, BodyType::Block)
-                                    .await?;
+                                let result = self.inner_execute(func.program(), &mut newmem, BodyType::Block).await?;
                                 memory.return_ = result.return_;
                             }
                             FunctionKind::UserDefined => {
@@ -1651,7 +1649,7 @@ impl ExecutorContext {
                             let mut fn_memory = assign_args_to_params(&function_expression, args, memory.clone())?;
 
                             let result = ctx
-                                .inner_execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block)
+                                .inner_execute(&function_expression.body, &mut fn_memory, BodyType::Block)
                                 .await?;
 
                             Ok((result.return_, fn_memory.get_tags()))
@@ -1701,7 +1699,7 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: Program) -> Result<kittycad::types::TakeSnapshot> {
+    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<kittycad::types::TakeSnapshot> {
         let _ = self.run(program, None).await?;
 
         // Zoom to fit.
@@ -1818,7 +1816,7 @@ mod tests {
             settings: Default::default(),
             is_mock: true,
         };
-        let memory = ctx.run(program, None).await?;
+        let memory = ctx.run(&program, None).await?;
 
         Ok(memory)
     }

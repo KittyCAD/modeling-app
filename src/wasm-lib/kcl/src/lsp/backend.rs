@@ -94,7 +94,7 @@ where
     async fn clear_code_state(&self);
 
     /// Get the current diagnostics map.
-    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport>;
+    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport>;
 
     /// On change event.
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool);

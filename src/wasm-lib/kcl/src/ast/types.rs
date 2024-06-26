@@ -1217,7 +1217,7 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match ctx.inner_execute(p, &mut fn_memory, BodyType::Block).await {
+                let results = match ctx.inner_execute(&p, &mut fn_memory, BodyType::Block).await {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
