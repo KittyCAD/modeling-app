@@ -3059,7 +3059,6 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
     // Assure we have one diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
     if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
-        println!("{:#?}", diagnostics);
         assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
     } else {
         panic!("Expected full diagnostics");
@@ -3230,7 +3229,6 @@ const part001 = startSketchOn('XY')
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
     // Check the diagnostics.
     if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
-        println!("{:#?}", diagnostics);
         assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
     } else {
         panic!("Expected full diagnostics");
@@ -3306,7 +3304,6 @@ const part001 = startSketchOn('XY')
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
     // Check the diagnostics.
     if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
-        println!("{:#?}", diagnostics);
         assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 2);
     } else {
         panic!("Expected full diagnostics");
@@ -3390,15 +3387,14 @@ const part001 = startSketchOn('XY')
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").await.unwrap().clone();
     // Check the diagnostics.
     if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(ref diagnostics) = diagnostics {
-        println!("{:#?}", diagnostics);
         assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
     } else {
         panic!("Expected full diagnostics");
     }
 
     // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
-    assert!(ast != crate::ast::types::Program::default());
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast == None);
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
     assert!(memory == None);
@@ -3428,8 +3424,8 @@ const NEW_LINT = 1"#
     server.wait_on_handle().await;
 
     // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
-    assert!(ast != crate::ast::types::Program::default());
+    let ast = server.ast_map.get("file:///test.kcl").await;
+    assert!(ast == None);
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").await;
     assert!(memory == None);
