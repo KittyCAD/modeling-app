@@ -7,7 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings};
+use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings, lint::checks};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -57,6 +57,20 @@ pub async fn execute_wasm(
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
+}
+
+// wasm_bindgen wrapper for execute
+#[wasm_bindgen]
+pub async fn kcl_lint(program_str: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let mut findings = vec![];
+    for discovered_finding in program.lint(checks::lint_variables).into_iter().flatten() {
+        findings.push(discovered_finding);
+    }
+
+    Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
 }
 
 // wasm_bindgen wrapper for creating default planes

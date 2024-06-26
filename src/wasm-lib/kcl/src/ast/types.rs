@@ -1232,27 +1232,33 @@ impl CallExpression {
                         source_ranges: vec![self.into()],
                     })
                 })?;
-                let result = result.get_value()?;
 
+                let result = result.get_value()?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
-                let result = func
-                    .call_fn(fn_args, memory.clone(), ctx.clone())
-                    .await
-                    .map_err(|e| {
+                let (result, global_memory_items) =
+                    func.call_fn(fn_args, memory.clone(), ctx.clone()).await.map_err(|e| {
                         // Add the call expression to the source ranges.
                         e.add_source_ranges(vec![self.into()])
-                    })?
-                    .ok_or_else(|| {
-                        KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of user-defined function {} is undefined", fn_name),
-                            source_ranges: vec![self.into()],
-                        })
                     })?;
 
+                let result = result.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
                 let result = result.get_value()?;
+
+                // Add the global memory items to the memory.
+                for (key, item) in global_memory_items {
+                    // We don't care about errors here because any collisions
+                    // would happened in the function call itself and already
+                    // errored out.
+                    memory.add(&key, item, self.into()).unwrap_or_default();
+                }
 
                 Ok(result)
             }
@@ -3947,10 +3953,10 @@ const hole_diam = 5
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-    |> close(%, "edge4")
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %,$edge1)
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
+    |> close(%, $edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -3960,10 +3966,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-  getEdge("edge2", %),
-  getEdge("edge4", %),
-  getOppositeEdge("edge2", %),
-  getOppositeEdge("edge4", %)
+  getEdge(edge2, %),
+  getEdge(edge4, %),
+  getOppositeEdge(edge2, %),
+  getOppositeEdge(edge4, %)
 ]
      }, %)
   // build the bracket sketch around the body
@@ -3977,14 +3983,14 @@ fn bracketSketch = (w, d, t) => {
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, "edge1")
-    |> lineTo([w / 2 + t, -t], %, "edge2")
-    |> lineTo([w / 2 + t, d + t], %, "edge3")
-    |> lineTo([w / 2, d + t], %, "edge4")
-    |> lineTo([w / 2, 0], %, "edge5")
-    |> lineTo([-w / 2, 0], %, "edge6")
-    |> lineTo([-w / 2, d + t], %, "edge7")
-    |> close(%, "edge8")
+    |> lineTo([-w / 2 - t, -t], %, $edge1)
+    |> lineTo([w / 2 + t, -t], %, $edge2)
+    |> lineTo([w / 2 + t, d + t], %, $edge3)
+    |> lineTo([w / 2, d + t], %, $edge4)
+    |> lineTo([w / 2, 0], %, $edge5)
+    |> lineTo([-w / 2, 0], %, $edge6)
+    |> lineTo([-w / 2, d + t], %, $edge7)
+    |> close(%, $edge8)
   return s
 }
 // build the body of the bracket
@@ -3993,10 +3999,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-  getNextAdjacentEdge("edge7", %),
-  getNextAdjacentEdge("edge2", %),
-  getNextAdjacentEdge("edge3", %),
-  getNextAdjacentEdge("edge6", %)
+  getNextAdjacentEdge(edge7, %),
+  getNextAdjacentEdge(edge2, %),
+  getNextAdjacentEdge(edge3, %),
+  getNextAdjacentEdge(edge6, %)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
@@ -4067,10 +4073,10 @@ const hole_diam = 5
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-    |> close(%, "edge4")
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
+    |> close(%, $edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -4080,10 +4086,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-         getEdge("edge2", %),
-         getEdge("edge4", %),
-         getOppositeEdge("edge2", %),
-         getOppositeEdge("edge4", %)
+         getEdge(edge2, %),
+         getEdge(edge4, %),
+         getOppositeEdge(edge2, %),
+         getOppositeEdge(edge4, %)
        ]
      }, %)
 // build the bracket sketch around the body
@@ -4097,14 +4103,14 @@ fn bracketSketch = (w, d, t) => {
          }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, "edge1")
-    |> lineTo([w / 2 + t, -t], %, "edge2")
-    |> lineTo([w / 2 + t, d + t], %, "edge3")
-    |> lineTo([w / 2, d + t], %, "edge4")
-    |> lineTo([w / 2, 0], %, "edge5")
-    |> lineTo([-w / 2, 0], %, "edge6")
-    |> lineTo([-w / 2, d + t], %, "edge7")
-    |> close(%, "edge8")
+    |> lineTo([-w / 2 - t, -t], %, $edge1)
+    |> lineTo([w / 2 + t, -t], %, $edge2)
+    |> lineTo([w / 2 + t, d + t], %, $edge3)
+    |> lineTo([w / 2, d + t], %, $edge4)
+    |> lineTo([w / 2, 0], %, $edge5)
+    |> lineTo([-w / 2, 0], %, $edge6)
+    |> lineTo([-w / 2, d + t], %, $edge7)
+    |> close(%, $edge8)
   return s
 }
 // build the body of the bracket
@@ -4113,10 +4119,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge("edge7", %),
-         getNextAdjacentEdge("edge2", %),
-         getNextAdjacentEdge("edge3", %),
-         getNextAdjacentEdge("edge6", %)
+         getNextAdjacentEdge(edge7, %),
+         getNextAdjacentEdge(edge2, %),
+         getNextAdjacentEdge(edge3, %),
+         getNextAdjacentEdge(edge6, %)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)
@@ -4426,7 +4432,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %)
   /* and
   here
@@ -4449,7 +4455,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %)
   /* and
   here */
@@ -4467,12 +4473,12 @@ const mySk1 = startSketchOn('XY')
     fn test_recast_multiline_object() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.08], %)
-  |> line([0.62, 4.15], %, 'seg01')
+  |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,
        offset: -1.35,
-       intersectTag: 'seg01'
+       intersectTag: seg01
      }, %)
   |> line([-0.42, -1.72], %)"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -4557,13 +4563,13 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
+  |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
-       -angleToMatchLengthX('seg01', myVar, %),
+       -angleToMatchLengthX(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> angledLineToY([
-       -angleToMatchLengthY('seg01', myVar, %),
+       -angleToMatchLengthY(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -4583,13 +4589,13 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
    |> startProfileAt([0, 0], %)
-   |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
+   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
    |> angledLineToX([
-         -angleToMatchLengthX('seg01', myVar, %),
+         -angleToMatchLengthX(seg01, myVar, %),
          myVar
       ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
    |> angledLineToY([
-         -angleToMatchLengthY('seg01', myVar, %),
+         -angleToMatchLengthY(seg01, myVar, %),
          myVar
       ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
@@ -5232,5 +5238,39 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_tag_named_std_lib() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $xLine)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_empty_tag() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+        );
     }
 }

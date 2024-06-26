@@ -2,6 +2,7 @@ import init, {
   parse_wasm,
   recast_wasm,
   execute_wasm,
+  kcl_lint,
   lexer_wasm,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
@@ -20,6 +21,7 @@ import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
 import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
+import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
@@ -202,6 +204,17 @@ export const _executor = async (
     )
 
     return Promise.reject(kclError)
+  }
+}
+
+export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
+  try {
+    const discovered_findings: Array<Discovered> = await kcl_lint(
+      JSON.stringify(ast)
+    )
+    return discovered_findings
+  } catch (e: any) {
+    return Promise.reject(e)
   }
 }
 

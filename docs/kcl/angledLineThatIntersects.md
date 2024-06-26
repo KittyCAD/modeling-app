@@ -18,7 +18,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> lineTo([5, 10], %)
-  |> lineTo([-10, 10], %, "lineToIntersect")
+  |> lineTo([-10, 10], %, $lineToIntersect)
   |> lineTo([0, 20], %)
   |> angledLineThatIntersects({
        angle: 80,

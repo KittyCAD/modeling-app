@@ -1141,6 +1141,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "dashmap"
+version = "6.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "804c8821570c3f8b70230c2ba75ffa5c0f9a4189b9a432b6656c536712acae28"
+dependencies = [
+ "cfg-if",
+ "crossbeam-utils",
+ "hashbrown 0.14.3",
+ "lock_api",
+ "once_cell",
+ "parking_lot_core 0.9.9",
+]
+
+[[package]]
 name = "data-encoding"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2562,7 +2576,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.66"
+version = "0.1.67"
 dependencies = [
  "anyhow",
  "approx",
@@ -2572,7 +2586,7 @@ dependencies = [
  "bson",
  "chrono",
  "clap",
- "dashmap",
+ "dashmap 6.0.1",
  "databake",
  "derive-docs",
  "form_urlencoded",
@@ -5860,7 +5874,7 @@ dependencies = [
  "async-trait",
  "auto_impl",
  "bytes",
- "dashmap",
+ "dashmap 5.5.3",
  "futures",
  "httparse",
  "lsp-types",

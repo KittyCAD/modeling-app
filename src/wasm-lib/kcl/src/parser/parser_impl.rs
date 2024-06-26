@@ -912,8 +912,8 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
     alt((
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Literal),
-        literal.map(Box::new).map(Value::Literal),
         tag.map(Box::new).map(Value::TagDeclarator),
+        literal.map(Box::new).map(Value::Literal),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
         array.map(Box::new).map(Value::ArrayExpression),
@@ -1064,6 +1064,19 @@ impl TryFrom<Token> for TagDeclarator {
                 message: format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
             }))
         }
+    }
+}
+
+impl TagDeclarator {
+    fn into_valid_binding_name(self) -> Result<Self, KclError> {
+        // Make sure they are not assigning a variable to a stdlib function.
+        if crate::std::name_in_stdlib(&self.name) {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange([self.start, self.end])],
+                message: format!("Cannot assign a tag to a reserved keyword: {}", self.name),
+            }));
+        }
+        Ok(self)
     }
 }
 
@@ -1468,7 +1481,99 @@ fn binding_name(i: TokenSlice) -> PResult<Identifier> {
 fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let fn_name = identifier(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
-    let args = arguments(i)?;
+    let mut args = arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        // Type check the arguments.
+        for (i, spec_arg) in std_fn.args().iter().enumerate() {
+            let Some(arg) = &args.get(i) else {
+                // The executor checks the number of arguments, so we don't need to check it here.
+                continue;
+            };
+            match spec_arg.type_.as_ref() {
+                "TagDeclarator" => {
+                    match &arg {
+                        Value::Identifier(_) => {
+                            // These are fine since we want someone to be able to map a variable to a tag declarator.
+                        }
+                        Value::TagDeclarator(tag) => {
+                            tag.clone()
+                                .into_valid_binding_name()
+                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+                        }
+                        Value::Literal(literal) => {
+                            let LiteralValue::String(name) = &literal.value else {
+                                return Err(ErrMode::Cut(
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
+                                    })
+                                    .into(),
+                                ));
+                            };
+
+                            // Convert this to a TagDeclarator.
+                            let tag = TagDeclarator {
+                                start: literal.start,
+                                end: literal.end,
+                                name: name.to_string(),
+                            };
+                            let tag = tag
+                                .into_valid_binding_name()
+                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+
+                            // Replace the literal with the tag.
+                            args[i] = Value::TagDeclarator(Box::new(tag));
+                        }
+                        e => {
+                            return Err(ErrMode::Cut(
+                                KclError::Syntax(KclErrorDetails {
+                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                    message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                                })
+                                .into(),
+                            ));
+                        }
+                    }
+                }
+                "TagIdentifier" => {
+                    match &arg {
+                        Value::Identifier(_) => {}
+                        Value::Literal(literal) => {
+                            let LiteralValue::String(name) = &literal.value else {
+                                return Err(ErrMode::Cut(
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
+                                    })
+                                    .into(),
+                                ));
+                            };
+
+                            // Convert this to a TagDeclarator.
+                            let tag = Identifier {
+                                start: literal.start,
+                                end: literal.end,
+                                name: name.to_string(),
+                            };
+
+                            // Replace the literal with the tag.
+                            args[i] = Value::Identifier(Box::new(tag));
+                        }
+                        e => {
+                            return Err(ErrMode::Cut(
+                                KclError::Syntax(KclErrorDetails {
+                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                    message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                                })
+                                .into(),
+                            ));
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
     Ok(CallExpression {
         start: fn_name.start,

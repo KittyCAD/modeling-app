@@ -49,7 +49,7 @@ const example003 = extrude(5, exampleSketch003)
 const exampleSketch = startSketchOn("XY")
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
-  |> line([0, 10], %, 'sketchingFace')
+  |> line([0, 10], %, $sketchingFace)
   |> line([-10, 0], %)
   |> close(%)
 
@@ -60,7 +60,7 @@ const exampleSketch002 = startSketchOn(example, 'sketchingFace')
   |> line([8, 0], %)
   |> line([0, 8], %)
   |> line([-8, 0], %)
-  |> close(%, 'sketchingFace002')
+  |> close(%, $sketchingFace002)
 
 const example002 = extrude(10, exampleSketch002)
 
