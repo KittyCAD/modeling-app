@@ -1087,6 +1087,45 @@ async fn test_kcl_lsp_semantic_tokens() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_semantic_tokens_large_file() {
+    let server = kcl_lsp_server(false).await.unwrap();
+    let code = include_str!("../../../tests/executor/inputs/global-tags.kcl");
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send semantic tokens request.
+    let semantic_tokens = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the semantic tokens.
+    if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
+        assert!(!semantic_tokens.data.is_empty());
+    } else {
+        panic!("Expected semantic tokens");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
     let server = kcl_lsp_server(false).await.unwrap();
 

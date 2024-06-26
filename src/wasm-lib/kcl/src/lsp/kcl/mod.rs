@@ -364,7 +364,7 @@ impl Backend {
                 }
             };
 
-            let source_range: SourceRange = token.clone().into();
+            let source_range: SourceRange = token.into();
             let position = source_range.start_to_lsp_position(&params.text);
 
             // Calculate the token modifiers.
@@ -399,7 +399,7 @@ impl Backend {
                             ]);
                         }
                         crate::walk::Node::VariableDeclarator(variable) => {
-                            let sr: SourceRange = variable.id.clone().into();
+                            let sr: SourceRange = (&variable.id).into();
                             if sr.contains(source_range.start()) {
                                 if let Value::FunctionExpression(_) = &variable.init {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
@@ -424,7 +424,7 @@ impl Backend {
                             return Ok(false);
                         }
                         crate::walk::Node::MemberExpression(member_expression) => {
-                            let sr: SourceRange = member_expression.property.clone().into();
+                            let sr: SourceRange = (&member_expression.property).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                 *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
@@ -435,7 +435,7 @@ impl Backend {
                             }
                         }
                         crate::walk::Node::ObjectProperty(object_property) => {
-                            let sr: SourceRange = object_property.key.clone().into();
+                            let sr: SourceRange = (&object_property.key).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                 *ti = match self.get_semantic_token_type_index(SemanticTokenType::PROPERTY) {
@@ -446,7 +446,7 @@ impl Backend {
                             return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
                         }
                         crate::walk::Node::CallExpression(call_expr) => {
-                            let sr: SourceRange = call_expr.callee.clone().into();
+                            let sr: SourceRange = (&call_expr.callee).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                 *ti = match self.get_semantic_token_type_index(SemanticTokenType::FUNCTION) {
