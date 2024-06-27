@@ -131,8 +131,15 @@ impl Backend {
     /// Get completions from the kittycad api.
     pub async fn get_completions(&self, language: String, prompt: String, suffix: String) -> Result<Vec<String>> {
         let body = kittycad::types::KclCodeCompletionRequest {
-            prompt: Some(prompt.clone()),
-            suffix: Some(suffix.clone()),
+            extra: Some(kittycad::types::KclCodeCompletionParams {
+                language: Some(language.to_string()),
+                next_indent: None,
+                trim_by_indentation: true,
+                prompt_tokens: Some(prompt.len() as u32),
+                suffix_tokens: Some(suffix.len() as u32),
+            }),
+            prompt: Some(prompt),
+            suffix: Some(suffix),
             max_tokens: Some(500),
             temperature: Some(1.0),
             top_p: Some(1.0),
@@ -142,13 +149,6 @@ impl Backend {
             nwo: None,
             // We haven't implemented streaming yet.
             stream: false,
-            extra: Some(kittycad::types::KclCodeCompletionParams {
-                language: Some(language.to_string()),
-                next_indent: None,
-                trim_by_indentation: true,
-                prompt_tokens: Some(prompt.len() as u32),
-                suffix_tokens: Some(suffix.len() as u32),
-            }),
         };
 
         let resp = self
@@ -333,7 +333,7 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        self.do_did_change(params.clone()).await;
+        self.do_did_change(params).await;
     }
 
     async fn did_save(&self, params: DidSaveTextDocumentParams) {
