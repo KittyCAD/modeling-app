@@ -526,11 +526,13 @@ impl Backend {
     }
 
     async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
-        let mut inner = self.diagnostics_map.write().await;
-        let Some(DocumentDiagnosticReport::Full(ref mut report)) = inner.get_mut(uri.as_str()) else {
+        let inner = self.diagnostics_map.inner().await;
+        let Some(DocumentDiagnosticReport::Full(ref report)) = inner.get(uri.as_str()) else {
             // We have nothing to clear.
             return;
         };
+
+        let mut report = report.clone();
 
         // If we only want to clear a specific severity, do that.
         if let Some(severity) = severity {
@@ -549,9 +551,11 @@ impl Backend {
         #[cfg(not(target_arch = "wasm32"))]
         {
             self.client
-                .publish_diagnostics(uri.clone(), report.full_document_diagnostic_report.items.clone(), None)
+                .publish_diagnostics(uri.clone(), report.full_document_diagnostic_report.items, None)
                 .await;
         }
+
+        drop(inner);
     }
 
     async fn add_to_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
@@ -576,10 +580,10 @@ impl Backend {
                 .await;
         }
 
-        let mut inner = self.diagnostics_map.write().await;
-        let report = match inner.get_mut(params.uri.as_str()) {
-            Some(DocumentDiagnosticReport::Full(ref mut report)) => report,
-            _ => &mut RelatedFullDocumentDiagnosticReport {
+        let inner = self.diagnostics_map.inner().await;
+        let report = match inner.get(params.uri.as_str()) {
+            Some(DocumentDiagnosticReport::Full(ref report)) => report,
+            _ => &RelatedFullDocumentDiagnosticReport {
                 related_documents: None,
                 full_document_diagnostic_report: FullDocumentDiagnosticReport {
                     result_id: None,
@@ -605,6 +609,7 @@ impl Backend {
             return;
         }
 
+        let mut report = report.clone();
         report.full_document_diagnostic_report.items.push(diagnostic);
 
         self.diagnostics_map
@@ -612,11 +617,7 @@ impl Backend {
             .await;
 
         self.client
-            .publish_diagnostics(
-                params.uri.clone(),
-                report.full_document_diagnostic_report.items.clone(),
-                None,
-            )
+            .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
             .await;
     }
 
