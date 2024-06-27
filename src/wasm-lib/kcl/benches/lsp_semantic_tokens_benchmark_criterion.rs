@@ -43,7 +43,7 @@ fn bench_kcl_lsp_semantic_tokens(c: &mut Criterion) {
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("global_tags", GLOBAL_TAGS_FILE),
     ] {
-        c.bench_with_input(BenchmarkId::new(name, code), &code, |b, &s| {
+        c.bench_with_input(BenchmarkId::new("semantic_tokens_", name), &code, |b, &s| {
             let rt = Runtime::new().unwrap();
 
             // Spawn a future onto the runtime
