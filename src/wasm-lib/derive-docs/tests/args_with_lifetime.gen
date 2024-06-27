@@ -1,8 +1,8 @@
 #[cfg(test)]
-mod test_examples_import {
+mod test_examples_someFn {
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_mock_example_import0() {
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport").unwrap();
+    async fn test_mock_example_someFn0() {
+        let tokens = crate::token::lexer("someFn()").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let ctx = crate::executor::ExecutorContext {
@@ -20,7 +20,7 @@ mod test_examples_import {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_import0() {
+    async fn serial_test_example_someFn0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -39,7 +39,7 @@ mod test_examples_import {
             client.set_base_url(addr);
         }
 
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport").unwrap();
+        let tokens = crate::token::lexer("someFn()").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let ctx = crate::executor::ExecutorContext::new(&client, Default::default())
@@ -84,7 +84,7 @@ mod test_examples_import {
             .decode()
             .unwrap();
         twenty_twenty::assert_image(
-            &format!("tests/outputs/{}.png", "serial_test_example_import0"),
+            &format!("tests/outputs/{}.png", "serial_test_example_someFn0"),
             &actual,
             1.0,
         );
@@ -92,15 +92,15 @@ mod test_examples_import {
 }
 
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: import\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: someFn\nDocs"]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
-pub(crate) struct Import {}
+pub(crate) struct SomeFn {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: import\nThis is some function.\nIt does shit."]
-pub(crate) const Import: Import = Import {};
-fn boxed_import(
+#[doc = "Std lib function: someFn\nDocs"]
+pub(crate) const SomeFn: SomeFn = SomeFn {};
+fn boxed_someFn(
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -109,20 +109,20 @@ fn boxed_import(
             > + Send,
     >,
 > {
-    Box::pin(import(args))
+    Box::pin(someFn(args))
 }
 
-impl crate::docs::StdLibFn for Import {
+impl crate::docs::StdLibFn for SomeFn {
     fn name(&self) -> String {
-        "import".to_string()
+        "someFn".to_string()
     }
 
     fn summary(&self) -> String {
-        "This is some function.".to_string()
+        "Docs".to_string()
     }
 
     fn description(&self) -> String {
-        "It does shit.".to_string()
+        "".to_string()
     }
 
     fn tags(&self) -> Vec<String> {
@@ -134,10 +134,10 @@ impl crate::docs::StdLibFn for Import {
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
-            name: "args".to_string(),
-            type_: "kittycad::types::InputFormat".to_string(),
-            schema: <Option<kittycad::types::InputFormat>>::json_schema(&mut generator),
-            required: false,
+            name: "data".to_string(),
+            type_: "Foo".to_string(),
+            schema: Foo::json_schema(&mut generator),
+            required: true,
         }]
     }
 
@@ -147,8 +147,8 @@ impl crate::docs::StdLibFn for Import {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "number".to_string(),
-            schema: <f64>::json_schema(&mut generator),
+            type_: "i32".to_string(),
+            schema: <i32>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -162,7 +162,7 @@ impl crate::docs::StdLibFn for Import {
     }
 
     fn examples(&self) -> Vec<String> {
-        let code_blocks = vec!["This is code.\nIt does other shit.\nimport"];
+        let code_blocks = vec!["someFn()"];
         code_blocks
             .iter()
             .map(|cb| {
@@ -177,7 +177,7 @@ impl crate::docs::StdLibFn for Import {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        boxed_import
+        boxed_someFn
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
@@ -185,14 +185,10 @@ impl crate::docs::StdLibFn for Import {
     }
 }
 
-#[doc = r" This is some function."]
-#[doc = r" It does shit."]
-#[doc = r""]
-#[doc = r"     This is code."]
-#[doc = r"     It does other shit."]
-#[doc = r"     import"]
-fn inner_import(
-    #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
-) -> Result<Box<f64>> {
-    args
+#[doc = r" Docs"]
+#[doc = r" ```"]
+#[doc = r" someFn()"]
+#[doc = r" ```"]
+fn someFn<'a>(data: Foo<'a>) -> i32 {
+    3
 }

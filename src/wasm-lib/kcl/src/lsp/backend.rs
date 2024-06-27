@@ -63,9 +63,9 @@ pub trait Backend: Clone + Send + Sync
 where
     Self: 'static,
 {
-    fn client(&self) -> tower_lsp::Client;
+    fn client(&self) -> &tower_lsp::Client;
 
-    fn fs(&self) -> Arc<crate::fs::FileManager>;
+    fn fs(&self) -> &Arc<crate::fs::FileManager>;
 
     async fn is_initialized(&self) -> bool;
 
@@ -82,7 +82,7 @@ where
     async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
 
     /// Get the current code map.
-    fn code_map(&self) -> SafeMap<String, Vec<u8>>;
+    fn code_map(&self) -> &SafeMap<String, Vec<u8>>;
 
     /// Insert a new code map.
     async fn insert_code_map(&self, uri: String, text: Vec<u8>);
@@ -94,7 +94,7 @@ where
     async fn clear_code_state(&self);
 
     /// Get the current diagnostics map.
-    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport>;
+    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport>;
 
     /// On change event.
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool);

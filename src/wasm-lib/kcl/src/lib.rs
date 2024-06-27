@@ -28,5 +28,6 @@ pub mod std;
 pub mod test_server;
 pub mod thread;
 pub mod token;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;

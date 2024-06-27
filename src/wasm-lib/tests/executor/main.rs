@@ -51,7 +51,7 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
 
-    let snapshot = ctx.execute_and_prepare_snapshot(program).await?;
+    let snapshot = ctx.execute_and_prepare_snapshot(&program).await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
@@ -2456,4 +2456,11 @@ let p = triangle(200)
         result.err().unwrap().to_string(),
         r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_global_tags() {
+    let code = include_str!("inputs/global-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, 0.999);
 }

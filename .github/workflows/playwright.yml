@@ -38,6 +38,8 @@ jobs:
     runs-on: ubuntu-latest-8-cores
     needs: check-rust-changes
     steps:
+    - name: Tune GitHub-hosted runner network
+      uses: smorimoto/tune-github-hosted-runner-network@v1
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
@@ -90,11 +92,17 @@ jobs:
     - name: build web
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
-      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      continue-on-error: true
+      run: |
+        yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - name: Clean up test-results
+      if: always()
+      continue-on-error: true
+      run: rm -r test-results
     - name: check for changes
       id: git-check
       run: |
@@ -121,7 +129,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report
+        name: playwright-report-ubuntu-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
     # if have previous run results, use them
@@ -129,16 +137,18 @@ jobs:
       if: always()
       continue-on-error: true
       with:
-        name: test-results
+        name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
     - name: Run ubuntu/chrome flow retry failures
       id: retry
       if: always()
       run: |
-        ls -1 "test-results"
-        if [[ $(ls -1 "test-results" | wc -l) == "0" ]];
-        then echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
-        else echo "retried=true" >> $GITHUB_OUTPUT;
+        if [[ -d "test-results" ]];
+        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
+          then echo "retried=true" >> $GITHUB_OUTPUT;
+          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+          fi;
+        else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
         fi;
         yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
       env:
@@ -153,23 +163,25 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results
+        name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report
+        name: playwright-report-ubuntu-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
 
   playwright-macos:
     timeout-minutes: 60
-    runs-on: macos-14
+    runs-on: macos-14-large
     needs: check-rust-changes
     steps:
+    - name: Tune GitHub-hosted runner network
+      uses: smorimoto/tune-github-hosted-runner-network@v1
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
@@ -227,23 +239,25 @@ jobs:
       if: ${{ always() }}
       continue-on-error: true
       with:
-        name: test-results
+        name: test-results-macos-${{ github.sha }}
         path: test-results/
     - name: Run macos/safari flow retry failures
       id: retry
-      continue-on-error: true
-      if: ${{ success() }}
+      if: always()
       run: |
-        if [ -d "test-results" ];
-        then echo "retried=true" >> $GITHUB_OUTPUT;
-        else echo "retried=false" >> $GITHUB_OUTPUT;
+        if [[ -d "test-results" ]];
+        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
+          then echo "retried=true" >> $GITHUB_OUTPUT;
+          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
+          fi;
+        else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
         fi;
         yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run macos/safari flow
-      if: ${{ steps.retry.outputs.retried != 'true' }}
+      if: steps.retry.outputs.retried == 'false'
       # webkit doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
       run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
@@ -253,14 +267,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: test-results
+        name: test-results-macos-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: playwright-report
+        name: playwright-report-macos-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true

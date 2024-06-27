@@ -9,12 +9,12 @@ const wallMountL = 6 // the length of the bracket
 const sigmaAllow = 35000 // psi
 const width = 6 // inch
 const p = 300 // Force on shelf - lbs
-const L = 12 // inches
-const M = L * p / 2 // Moment experienced at fixed end of bracket
-const FOS = 2 // Factor of safety of 2 to be conservative
+const shelfLength = 12 // inches
+const moment = shelfLength * p / 2 // Moment experienced at fixed end of bracket
+const factorOfSafety = 2 // Factor of safety of 2 to be conservative
 
 // Calculate the thickness off the bending stress and factor of safety
-const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
+const thickness = sqrt(6 * moment * factorOfSafety / (width * sigmaAllow))
 
 // 0.25 inch fillet radius
 const filletR = 0.25
