@@ -806,12 +806,15 @@ const sketch002 = startSketchOn(extrude001, seg01)
         type: 'extrude-wall',
       },
       programMemory,
-      async () => ({
-        origin: { x: 1, y: 2, z: 3 },
-        x_axis: { x: 4, y: 5, z: 6 },
-        y_axis: { x: 7, y: 8, z: 9 },
-        z_axis: { x: 10, y: 11, z: 12 },
-      })
+      async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        return {
+          origin: { x: 1, y: 2, z: 3 },
+          x_axis: { x: 4, y: 5, z: 6 },
+          y_axis: { x: 7, y: 8, z: 9 },
+          z_axis: { x: 10, y: 11, z: 12 },
+        }
+      }
     )
     if (err(newAst)) throw newAst
     const newCode = recast(newAst)

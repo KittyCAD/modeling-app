@@ -922,6 +922,7 @@ export async function deleteFromSelection(
     astClone.body.splice(expressionIndex, 1)
     if (extrudeNameToDelete) {
       let sketchName = ''
+      let hasEnteredStartSketchOnWithExtrude = false
       await new Promise((resolve) => {
         traverse(astClone, {
           leave: (node) => {
@@ -934,71 +935,83 @@ export async function deleteFromSelection(
               sketchName = node.declarations[0].id.name
             }
             if (
-              // looking for startSketchOn(${extrudeNameToDelete})
-              node.type === 'CallExpression' &&
-              node.callee.name === 'startSketchOn' &&
-              node.arguments[0].type === 'Identifier' &&
-              node.arguments[0].name === extrudeNameToDelete
-            ) {
-              const parent = getNodeFromPath<PipeExpression['body']>(
-                astClone,
-                path.slice(0, -1)
-              )
-              if (err(parent)) return
-              const lastKey = Number(path.slice(-1)[0][0])
-              const sketchToPreserve = programMemory.root[
-                sketchName
-              ] as SketchGroup
-              if (sketchToPreserve) {
-                const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
-                if (
-                  !(
-                    faceDetails.origin &&
-                    faceDetails.x_axis &&
-                    faceDetails.y_axis &&
-                    faceDetails.z_axis
-                  )
+              !(
+                // match startSketchOn(${extrudeNameToDelete})
+                (
+                  node.type === 'CallExpression' &&
+                  node.callee.name === 'startSketchOn' &&
+                  node.arguments[0].type === 'Identifier' &&
+                  node.arguments[0].name === extrudeNameToDelete
                 )
-                  return
-                parent.node[lastKey] = createCallExpressionStdLib(
-                  'startSketchOn',
-                  [
-                    createObjectExpression({
-                      plane: createObjectExpression({
-                        origin: createObjectExpression({
-                          x: createLiteral(faceDetails.origin.x),
-                          y: createLiteral(faceDetails.origin.y),
-                          z: createLiteral(faceDetails.origin.z),
-                        }),
-                        x_axis: createObjectExpression({
-                          x: createLiteral(faceDetails.x_axis.x),
-                          y: createLiteral(faceDetails.x_axis.y),
-                          z: createLiteral(faceDetails.x_axis.z),
-                        }),
-                        y_axis: createObjectExpression({
-                          x: createLiteral(faceDetails.y_axis.x),
-                          y: createLiteral(faceDetails.y_axis.y),
-                          z: createLiteral(faceDetails.y_axis.z),
-                        }),
-                        z_axis: createObjectExpression({
-                          x: createLiteral(faceDetails.z_axis.x),
-                          y: createLiteral(faceDetails.z_axis.y),
-                          z: createLiteral(faceDetails.z_axis.z),
-                        }),
+              )
+            )
+              return
+            hasEnteredStartSketchOnWithExtrude = true
+
+            const parent = getNodeFromPath<PipeExpression['body']>(
+              astClone,
+              path.slice(0, -1)
+            )
+            if (err(parent)) {
+              return
+            }
+            const lastKey = Number(path.slice(-1)[0][0])
+            const sketchToPreserve = programMemory.root[
+              sketchName
+            ] as SketchGroup
+            if (sketchToPreserve) {
+              const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
+              if (
+                !(
+                  faceDetails.origin &&
+                  faceDetails.x_axis &&
+                  faceDetails.y_axis &&
+                  faceDetails.z_axis
+                )
+              ) {
+                resolve(false)
+                return
+              }
+              const roundLiteral = (x: number) => createLiteral(roundOff(x))
+              parent.node[lastKey] = createCallExpressionStdLib(
+                'startSketchOn',
+                [
+                  createObjectExpression({
+                    plane: createObjectExpression({
+                      origin: createObjectExpression({
+                        x: roundLiteral(faceDetails.origin.x),
+                        y: roundLiteral(faceDetails.origin.y),
+                        z: roundLiteral(faceDetails.origin.z),
+                      }),
+                      x_axis: createObjectExpression({
+                        x: roundLiteral(faceDetails.x_axis.x),
+                        y: roundLiteral(faceDetails.x_axis.y),
+                        z: roundLiteral(faceDetails.x_axis.z),
+                      }),
+                      y_axis: createObjectExpression({
+                        x: roundLiteral(faceDetails.y_axis.x),
+                        y: roundLiteral(faceDetails.y_axis.y),
+                        z: roundLiteral(faceDetails.y_axis.z),
+                      }),
+                      z_axis: createObjectExpression({
+                        x: roundLiteral(faceDetails.z_axis.x),
+                        y: roundLiteral(faceDetails.z_axis.y),
+                        z: roundLiteral(faceDetails.z_axis.z),
                       }),
                     }),
-                  ]
-                )
-              } else {
-                parent.node[lastKey] = createCallExpressionStdLib(
-                  'startSketchOn',
-                  [createLiteral('XY')]
-                )
-              }
+                  }),
+                ]
+              )
+              resolve(true)
+            } else {
+              parent.node[lastKey] = createCallExpressionStdLib(
+                'startSketchOn',
+                [createLiteral('XY')]
+              )
             }
           },
         })
-        resolve(true)
+        if (!hasEnteredStartSketchOnWithExtrude) resolve(false)
       })
     }
     // await prom
