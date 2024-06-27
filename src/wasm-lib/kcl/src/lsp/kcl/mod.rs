@@ -14,12 +14,13 @@ pub mod custom_notifications;
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
+use dashmap::DashMap;
 use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
+        DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
         DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
         DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
         DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
@@ -45,7 +46,6 @@ use crate::{
     executor::SourceRange,
     lsp::{
         backend::{Backend as _, InnerHandle, UpdateHandle},
-        safemap::SafeMap,
         util::IntoDiagnostic,
     },
     parser::PIPE_OPERATOR,
@@ -96,25 +96,25 @@ pub struct Backend {
     /// The file system client to use.
     pub fs: Arc<crate::fs::FileManager>,
     /// The workspace folders.
-    pub workspace_folders: SafeMap<String, WorkspaceFolder>,
+    pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// Token maps.
-    pub token_map: SafeMap<String, Vec<crate::token::Token>>,
+    pub token_map: DashMap<String, Vec<crate::token::Token>>,
     /// AST maps.
-    pub ast_map: SafeMap<String, crate::ast::types::Program>,
+    pub ast_map: DashMap<String, crate::ast::types::Program>,
     /// Memory maps.
-    pub memory_map: SafeMap<String, crate::executor::ProgramMemory>,
+    pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.
-    pub code_map: SafeMap<String, Vec<u8>>,
+    pub code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
-    pub diagnostics_map: SafeMap<String, DocumentDiagnosticReport>,
+    pub diagnostics_map: DashMap<String, Vec<Diagnostic>>,
     /// Symbols map.
-    pub symbols_map: SafeMap<String, Vec<DocumentSymbol>>,
+    pub symbols_map: DashMap<String, Vec<DocumentSymbol>>,
     /// Semantic tokens map.
-    pub semantic_tokens_map: SafeMap<String, Vec<SemanticToken>>,
+    pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
     /// If we can send telemetry for this user.
@@ -156,47 +156,49 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
-        self.workspace_folders.inner().await.values().cloned().collect()
+        // TODO: fix clone
+        self.workspace_folders.iter().map(|i| i.clone()).collect()
     }
 
     async fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
         for folder in folders {
-            self.workspace_folders.insert(folder.name.to_string(), folder).await;
+            self.workspace_folders.insert(folder.name.to_string(), folder);
         }
     }
 
     async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
         for folder in folders {
-            self.workspace_folders.remove(&folder.name).await;
+            self.workspace_folders.remove(&folder.name);
         }
     }
 
-    fn code_map(&self) -> &SafeMap<String, Vec<u8>> {
+    fn code_map(&self) -> &DashMap<String, Vec<u8>> {
         &self.code_map
     }
 
     async fn insert_code_map(&self, uri: String, text: Vec<u8>) {
-        self.code_map.insert(uri, text).await;
+        self.code_map.insert(uri, text);
     }
 
     async fn remove_from_code_map(&self, uri: String) -> Option<Vec<u8>> {
-        self.code_map.remove(&uri).await
+        self.code_map.remove(&uri).map(|x| x.1)
     }
 
     async fn clear_code_state(&self) {
-        self.code_map.clear().await;
-        self.token_map.clear().await;
-        self.ast_map.clear().await;
-        self.diagnostics_map.clear().await;
-        self.symbols_map.clear().await;
-        self.semantic_tokens_map.clear().await;
+        self.code_map.clear();
+        self.token_map.clear();
+        self.ast_map.clear();
+        self.diagnostics_map.clear();
+        self.symbols_map.clear();
+        self.semantic_tokens_map.clear();
     }
 
-    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport> {
+    fn current_diagnostics_map(&self) -> &DashMap<String, Vec<Diagnostic>> {
         &self.diagnostics_map
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        let filename = params.uri.to_string();
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -204,26 +206,24 @@ impl crate::lsp::backend::Backend for Backend {
             Ok(tokens) => tokens,
             Err(err) => {
                 self.add_to_diagnostics(&params, err, true).await;
-                self.token_map.remove(&params.uri.to_string()).await;
-                self.ast_map.remove(&params.uri.to_string()).await;
-                self.symbols_map.remove(&params.uri.to_string()).await;
-                self.semantic_tokens_map.remove(&params.uri.to_string()).await;
-                self.memory_map.remove(&params.uri.to_string()).await;
+                self.token_map.remove(&filename);
+                self.ast_map.remove(&filename);
+                self.symbols_map.remove(&filename);
+                self.semantic_tokens_map.remove(&filename);
+                self.memory_map.remove(&filename);
                 return;
             }
         };
 
-        // Get the previous tokens.
-        let previous_tokens = self.token_map.get(&params.uri.to_string()).await;
-
         // Try to get the memory for the current code.
-        let has_memory = if let Some(memory) = self.memory_map.get(&params.uri.to_string()).await {
-            memory != crate::executor::ProgramMemory::default()
+        let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
+            *memory != crate::executor::ProgramMemory::default()
         } else {
             false
         };
 
-        let tokens_changed = if let Some(previous_tokens) = &previous_tokens {
+        // Get the previous tokens.
+        let tokens_changed = if let Some(previous_tokens) = self.token_map.get(&filename) {
             *previous_tokens != tokens
         } else {
             true
@@ -237,7 +237,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         if tokens_changed {
             // Update our token map.
-            self.token_map.insert(params.uri.to_string(), tokens.clone()).await;
+            self.token_map.insert(params.uri.to_string(), tokens.clone());
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
         }
@@ -249,18 +249,18 @@ impl crate::lsp::backend::Backend for Backend {
             Ok(ast) => ast,
             Err(err) => {
                 self.add_to_diagnostics(&params, err, true).await;
-                self.ast_map.remove(&params.uri.to_string()).await;
-                self.symbols_map.remove(&params.uri.to_string()).await;
-                self.memory_map.remove(&params.uri.to_string()).await;
+                self.ast_map.remove(&filename);
+                self.symbols_map.remove(&filename);
+                self.memory_map.remove(&filename);
                 return;
             }
         };
 
         // Check if the ast changed.
-        let ast_changed = match self.ast_map.get(&params.uri.to_string()).await {
+        let ast_changed = match self.ast_map.get(&filename) {
             Some(old_ast) => {
                 // Check if the ast changed.
-                old_ast != ast
+                *old_ast != ast
             }
             None => true,
         };
@@ -271,14 +271,12 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         if ast_changed {
-            self.ast_map.insert(params.uri.to_string(), ast.clone()).await;
+            self.ast_map.insert(params.uri.to_string(), ast.clone());
             // Update the symbols map.
-            self.symbols_map
-                .insert(
-                    params.uri.to_string(),
-                    ast.get_lsp_symbols(&params.text).unwrap_or_default(),
-                )
-                .await;
+            self.symbols_map.insert(
+                params.uri.to_string(),
+                ast.get_lsp_symbols(&params.text).unwrap_or_default(),
+            );
 
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
@@ -369,7 +367,7 @@ impl Backend {
 
             // Calculate the token modifiers.
             // Get the value at the current position.
-            let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(&params.uri.to_string()).await {
+            let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(params.uri.as_str()) {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
                 crate::walk::walk(&ast, &|node: crate::walk::Node| {
@@ -519,16 +517,16 @@ impl Backend {
 
             last_position = position;
         }
-        self.semantic_tokens_map
-            .insert(params.uri.to_string(), semantic_tokens)
-            .await;
+        self.semantic_tokens_map.insert(params.uri.to_string(), semantic_tokens);
     }
 
     async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
-        let mut items = match self.diagnostics_map.get(uri.as_str()).await {
-            Some(DocumentDiagnosticReport::Full(report)) => report.full_document_diagnostic_report.items,
-            _ => vec![],
+        let Some(items) = self.diagnostics_map.get(uri.as_str()) else {
+            return;
         };
+
+        // TODO: fix clone
+        let mut items = items.clone();
 
         // If we only want to clear a specific severity, do that.
         if let Some(severity) = severity {
@@ -537,18 +535,7 @@ impl Backend {
             items.clear();
         }
 
-        self.diagnostics_map
-            .insert(
-                uri.to_string(),
-                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: items.clone(),
-                    },
-                }),
-            )
-            .await;
+        self.diagnostics_map.insert(uri.to_string(), items.clone());
 
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -578,43 +565,24 @@ impl Backend {
                 .await;
         }
 
-        let DocumentDiagnosticReport::Full(mut report) =
-            self.diagnostics_map
-                .get(params.uri.as_str())
-                .await
-                .unwrap_or(DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                    related_documents: None,
-                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                        result_id: None,
-                        items: vec![],
-                    },
-                }))
-        else {
-            unreachable!();
+        // TODO: fix clone
+        let mut items = if let Some(items) = self.diagnostics_map.get(params.uri.as_str()) {
+            items.clone()
+        } else {
+            vec![]
         };
 
         // Ensure we don't already have this diagnostic.
-        if report
-            .full_document_diagnostic_report
-            .items
-            .iter()
-            .any(|x| x == &diagnostic)
-        {
-            self.client
-                .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
-                .await;
+        if items.iter().any(|x| x == &diagnostic) {
+            self.client.publish_diagnostics(params.uri.clone(), items, None).await;
             return;
         }
 
-        report.full_document_diagnostic_report.items.push(diagnostic);
+        items.push(diagnostic);
 
-        self.diagnostics_map
-            .insert(params.uri.to_string(), DocumentDiagnosticReport::Full(report.clone()))
-            .await;
+        self.diagnostics_map.insert(params.uri.to_string(), items.clone());
 
-        self.client
-            .publish_diagnostics(params.uri.clone(), report.full_document_diagnostic_report.items, None)
-            .await;
+        self.client.publish_diagnostics(params.uri.clone(), items, None).await;
     }
 
     async fn execute(&self, params: &TextDocumentItem, ast: &crate::ast::types::Program) -> Result<()> {
@@ -639,7 +607,7 @@ impl Backend {
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,
             Err(err) => {
-                self.memory_map.remove(&params.uri.to_string()).await;
+                self.memory_map.remove(params.uri.as_str());
                 self.add_to_diagnostics(params, err, false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
@@ -649,7 +617,7 @@ impl Backend {
         };
         drop(executor_ctx);
 
-        self.memory_map.insert(params.uri.to_string(), memory.clone()).await;
+        self.memory_map.insert(params.uri.to_string(), memory.clone());
 
         // Send the notification to the client that the memory was updated.
         self.client
@@ -688,7 +656,7 @@ impl Backend {
     }
 
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
-        let ast = match self.ast_map.get(file_name).await {
+        let ast = match self.ast_map.get(file_name) {
             Some(ast) => ast,
             None => return vec![],
         };
@@ -705,7 +673,9 @@ impl Backend {
         // Collect all the file data we know.
         let mut buf = vec![];
         let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-        for (entry, value) in self.code_map.inner().await.iter() {
+        for code in self.code_map.iter() {
+            let entry = code.key();
+            let value = code.value();
             let file_name = entry.replace("file://", "").to_string();
 
             let options = zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
@@ -800,8 +770,8 @@ impl Backend {
                 .await;
 
             // Try to get the memory for the current code.
-            let has_memory = if let Some(memory) = self.memory_map.get(&filename).await {
-                memory != crate::executor::ProgramMemory::default()
+            let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
+                *memory != crate::executor::ProgramMemory::default()
             } else {
                 false
             };
@@ -1012,7 +982,7 @@ impl LanguageServer for Backend {
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let Some(current_code) = self.code_map.get(&filename) else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -1022,7 +992,7 @@ impl LanguageServer for Backend {
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename).await else {
+        let Some(ast) = self.ast_map.get(&filename) else {
             return Ok(None);
         };
 
@@ -1114,7 +1084,7 @@ impl LanguageServer for Backend {
         let filename = params.text_document.uri.to_string();
 
         // Get the current diagnostics for this file.
-        let Some(diagnostic) = self.diagnostics_map.get(&filename).await else {
+        let Some(items) = self.diagnostics_map.get(&filename) else {
             // Send an empty report.
             return Ok(DocumentDiagnosticReportResult::Report(DocumentDiagnosticReport::Full(
                 RelatedFullDocumentDiagnosticReport {
@@ -1127,13 +1097,21 @@ impl LanguageServer for Backend {
             )));
         };
 
-        Ok(DocumentDiagnosticReportResult::Report(diagnostic.clone()))
+        Ok(DocumentDiagnosticReportResult::Report(DocumentDiagnosticReport::Full(
+            RelatedFullDocumentDiagnosticReport {
+                related_documents: None,
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items: items.clone(),
+                },
+            },
+        )))
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> RpcResult<Option<SignatureHelp>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let Some(current_code) = self.code_map.get(&filename) else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -1143,7 +1121,7 @@ impl LanguageServer for Backend {
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename).await else {
+        let Some(ast) = self.ast_map.get(&filename) else {
             return Ok(None);
         };
 
@@ -1194,7 +1172,7 @@ impl LanguageServer for Backend {
     async fn semantic_tokens_full(&self, params: SemanticTokensParams) -> RpcResult<Option<SemanticTokensResult>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(semantic_tokens) = self.semantic_tokens_map.get(&filename).await else {
+        let Some(semantic_tokens) = self.semantic_tokens_map.get(&filename) else {
             return Ok(None);
         };
 
@@ -1207,7 +1185,7 @@ impl LanguageServer for Backend {
     async fn document_symbol(&self, params: DocumentSymbolParams) -> RpcResult<Option<DocumentSymbolResponse>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(symbols) = self.symbols_map.get(&filename).await else {
+        let Some(symbols) = self.symbols_map.get(&filename) else {
             return Ok(None);
         };
 
@@ -1217,7 +1195,7 @@ impl LanguageServer for Backend {
     async fn formatting(&self, params: DocumentFormattingParams) -> RpcResult<Option<Vec<TextEdit>>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let Some(current_code) = self.code_map.get(&filename) else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -1254,7 +1232,7 @@ impl LanguageServer for Backend {
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
         let filename = params.text_document_position.text_document.uri.to_string();
 
-        let Some(current_code) = self.code_map.get(&filename).await else {
+        let Some(current_code) = self.code_map.get(&filename) else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -1297,7 +1275,7 @@ impl LanguageServer for Backend {
         let filename = params.text_document.uri.to_string();
 
         // Get the ast.
-        let Some(ast) = self.ast_map.get(&filename).await else {
+        let Some(ast) = self.ast_map.get(&filename) else {
             return Ok(None);
         };
 

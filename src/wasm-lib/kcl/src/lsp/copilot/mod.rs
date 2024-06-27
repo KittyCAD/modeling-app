@@ -9,28 +9,27 @@ use std::{
     sync::{Arc, RwLock},
 };
 
+use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use tower_lsp::{
     jsonrpc::{Error, Result},
     lsp_types::{
-        CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
         DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticReport, InitializeParams,
-        InitializeResult, InitializedParams, MessageType, OneOf, RenameFilesParams, ServerCapabilities,
-        TextDocumentItem, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder,
-        WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams,
+        MessageType, OneOf, RenameFilesParams, ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
     },
     LanguageServer,
 };
 
-use super::backend::{InnerHandle, UpdateHandle};
 use crate::lsp::{
-    backend::Backend as _,
+    backend::{Backend as _, InnerHandle, UpdateHandle},
     copilot::types::{
         CopilotAcceptCompletionParams, CopilotCompletionResponse, CopilotCompletionTelemetry, CopilotEditorInfo,
         CopilotLspCompletionParams, CopilotRejectCompletionParams, DocParams,
     },
-    safemap::SafeMap,
 };
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -50,9 +49,9 @@ pub struct Backend {
     /// The file system client to use.
     pub fs: Arc<crate::fs::FileManager>,
     /// The workspace folders.
-    pub workspace_folders: SafeMap<String, WorkspaceFolder>,
+    pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// Current code.
-    pub code_map: SafeMap<String, Vec<u8>>,
+    pub code_map: DashMap<String, Vec<u8>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
     /// The editor info is used to store information about the editor.
@@ -60,9 +59,9 @@ pub struct Backend {
     /// The cache is used to store the results of previous requests.
     pub cache: Arc<cache::CopilotCache>,
     /// Storage so we can send telemetry data back out.
-    pub telemetry: SafeMap<uuid::Uuid, CopilotCompletionTelemetry>,
+    pub telemetry: DashMap<uuid::Uuid, CopilotCompletionTelemetry>,
     /// Diagnostics.
-    pub diagnostics_map: SafeMap<String, DocumentDiagnosticReport>,
+    pub diagnostics_map: DashMap<String, Vec<Diagnostic>>,
 
     pub is_initialized: Arc<tokio::sync::RwLock<bool>>,
     pub current_handle: UpdateHandle,
@@ -96,38 +95,39 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
-        self.workspace_folders.inner().await.values().cloned().collect()
+        // TODO: fix clone
+        self.workspace_folders.iter().map(|i| i.clone()).collect()
     }
 
     async fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
         for folder in folders {
-            self.workspace_folders.insert(folder.name.to_string(), folder).await;
+            self.workspace_folders.insert(folder.name.to_string(), folder);
         }
     }
 
     async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
         for folder in folders {
-            self.workspace_folders.remove(&folder.name).await;
+            self.workspace_folders.remove(&folder.name);
         }
     }
 
-    fn code_map(&self) -> &SafeMap<String, Vec<u8>> {
+    fn code_map(&self) -> &DashMap<String, Vec<u8>> {
         &self.code_map
     }
 
     async fn insert_code_map(&self, uri: String, text: Vec<u8>) {
-        self.code_map.insert(uri, text).await;
+        self.code_map.insert(uri, text);
     }
 
     async fn remove_from_code_map(&self, uri: String) -> Option<Vec<u8>> {
-        self.code_map.remove(&uri).await
+        self.code_map.remove(&uri).map(|(_, v)| v)
     }
 
     async fn clear_code_state(&self) {
-        self.code_map.clear().await;
+        self.code_map.clear();
     }
 
-    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport> {
+    fn current_diagnostics_map(&self) -> &DashMap<String, Vec<Diagnostic>> {
         &self.diagnostics_map
     }
 
@@ -236,7 +236,7 @@ impl Backend {
                 completion: completion.clone(),
                 params: params.clone(),
             };
-            self.telemetry.insert(completion.uuid, telemetry).await;
+            self.telemetry.insert(completion.uuid, telemetry);
         }
         self.cache
             .set_cached_result(&doc_params.uri, &doc_params.pos.line, &response);
@@ -250,7 +250,7 @@ impl Backend {
             .await;
 
         // Get the original telemetry data.
-        let Some(original) = self.telemetry.remove(&params.uuid).await else {
+        let Some(original) = self.telemetry.remove(&params.uuid) else {
             return;
         };
 
@@ -269,7 +269,7 @@ impl Backend {
         // Get the original telemetry data.
         let mut originals: Vec<CopilotCompletionTelemetry> = Default::default();
         for uuid in params.uuids {
-            if let Some(original) = self.telemetry.remove(&uuid).await {
+            if let Some(original) = self.telemetry.remove(&uuid).map(|(_, v)| v) {
                 originals.push(original);
             }
         }

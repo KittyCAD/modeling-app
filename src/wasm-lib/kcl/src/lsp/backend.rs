@@ -3,17 +3,17 @@
 use std::sync::Arc;
 
 use anyhow::Result;
+use dashmap::DashMap;
 use tokio::sync::RwLock;
 use tower_lsp::lsp_types::{
-    CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+    CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
     DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticReport, InitializedParams, MessageType,
-    RenameFilesParams, TextDocumentItem, WorkspaceFolder,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
+    TextDocumentItem, WorkspaceFolder,
 };
 
 use crate::{
     fs::FileSystem,
-    lsp::safemap::SafeMap,
     thread::{JoinHandle, Thread},
 };
 
@@ -82,7 +82,7 @@ where
     async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
 
     /// Get the current code map.
-    fn code_map(&self) -> &SafeMap<String, Vec<u8>>;
+    fn code_map(&self) -> &DashMap<String, Vec<u8>>;
 
     /// Insert a new code map.
     async fn insert_code_map(&self, uri: String, text: Vec<u8>);
@@ -94,28 +94,26 @@ where
     async fn clear_code_state(&self);
 
     /// Get the current diagnostics map.
-    fn current_diagnostics_map(&self) -> &SafeMap<String, DocumentDiagnosticReport>;
+    fn current_diagnostics_map(&self) -> &DashMap<String, Vec<Diagnostic>>;
 
     /// On change event.
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool);
 
     /// Check if the file has diagnostics.
     async fn has_diagnostics(&self, uri: &str) -> bool {
-        if let Some(tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics)) =
-            self.current_diagnostics_map().get(uri).await
-        {
-            !diagnostics.full_document_diagnostic_report.items.is_empty()
-        } else {
-            false
-        }
+        let Some(diagnostics) = self.current_diagnostics_map().get(uri) else {
+            return false;
+        };
+
+        !diagnostics.is_empty()
     }
 
     async fn on_change(&self, params: TextDocumentItem) {
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if let Some(current_code) = self.code_map().get(&filename).await {
-            if current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
+        if let Some(current_code) = self.code_map().get(&filename) {
+            if *current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
                 return;
             }
         }
@@ -211,7 +209,7 @@ where
         self.remove_workspace_folders(params.event.removed).await;
         // Remove the code from the current code map.
         // We do this since it means the user is changing projects so let's refresh the state.
-        if !self.code_map().is_empty().await && should_clear {
+        if !self.code_map().is_empty() && should_clear {
             self.clear_code_state().await;
         }
         for added in params.event.added {

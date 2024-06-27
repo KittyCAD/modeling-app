@@ -474,11 +474,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
 }
 
 fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
-    let key = identifier
-        .context(expected(
-            "the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key",
-        ))
-        .parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     colon
         .context(expected(
             "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
@@ -588,12 +584,9 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
 fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
-    let id = identifier
-        .context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier"))
-        .parse_next(i)?;
+    let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
     // Now a sequence of members.
-    let member = alt((member_expression_dot, member_expression_subscript))
-        .context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
+    let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
         .parse_next(i)?;
@@ -1111,19 +1104,9 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
             // TODO: negation. Original parser doesn't support `not` yet.
             TokenType::Operator => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
-                message: format!(
-                    "{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)",
-                    token.value.as_str(),
-                ),
+                message: format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             })),
-            other => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!(
-                    "{EXPECTED} but found {} which is {}",
-                    token.value.as_str(),
-                    other,
-                ),
-            })),
+            other => Err(KclError::Syntax(KclErrorDetails { source_ranges: token.as_source_ranges(), message: format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) })),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
@@ -1691,7 +1674,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             start0.value,
             NonCodeValue::BlockComment {
                 value: "comment at start".to_owned(),
-                style: CommentStyle::Block,
+                style: CommentStyle::Block
             }
         );
         assert_eq!(start1.value, NonCodeValue::NewLine);
@@ -1756,8 +1739,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                             start: 32,
                             end: 33,
                             value: 2u32.into(),
-                            raw: "2".to_owned(),
-                        })),
+                            raw: "2".to_owned()
+                        }))
                     })],
                     non_code_meta: NonCodeMeta {
                         non_code_nodes: Default::default(),
@@ -1765,7 +1748,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                             start: 7,
                             end: 25,
                             value: NonCodeValue::NewLine
-                        }],
+                        }]
                     },
                 },
                 return_type: None,
@@ -1790,7 +1773,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             non_code_meta.non_code_nodes.get(&2).unwrap()[0].value,
             NonCodeValue::InlineComment {
                 value: "inline-comment".to_owned(),
-                style: CommentStyle::Line,
+                style: CommentStyle::Line
             }
         );
         assert_eq!(body.len(), 4);
@@ -1815,8 +1798,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 20,
                 value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_owned(),
-                    style: CommentStyle::Line,
-                },
+                    style: CommentStyle::Line
+                }
             }],
             non_code_meta.start,
         );
@@ -1827,13 +1810,13 @@ const mySk1 = startSketchAt([0, 0])"#;
                     end: 82,
                     value: NonCodeValue::InlineComment {
                         value: "block\n  comment".to_owned(),
-                        style: CommentStyle::Block,
-                    },
+                        style: CommentStyle::Block
+                    }
                 },
                 NonCodeNode {
                     start: 82,
                     end: 86,
-                    value: NonCodeValue::NewLine,
+                    value: NonCodeValue::NewLine
                 },
             ]),
             non_code_meta.non_code_nodes.get(&0),
@@ -1844,8 +1827,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 129,
                 value: NonCodeValue::BlockComment {
                     value: "this is also a comment".to_owned(),
-                    style: CommentStyle::Line,
-                },
+                    style: CommentStyle::Line
+                }
             }]),
             non_code_meta.non_code_nodes.get(&1),
         );
@@ -1864,7 +1847,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             actual.non_code_meta.non_code_nodes.get(&0).unwrap()[0].value,
             NonCodeValue::InlineComment {
                 value: "block\n  comment".to_owned(),
-                style: CommentStyle::Block,
+                style: CommentStyle::Block
             }
         );
     }
@@ -1912,7 +1895,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 start: 9,
                 end: 10,
                 value: 3u32.into(),
-                raw: "3".to_owned(),
+                raw: "3".to_owned()
             }))
         );
     }
