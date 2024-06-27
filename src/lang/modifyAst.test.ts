@@ -710,18 +710,23 @@ const sketch003 = startSketchOn('XZ')
     const lineOfInterest = 'line([-2.94, 2.7], %)'
     const ast = parse(code)
     if (err(ast)) throw ast
+    const programMemory = await enginelessExecutor(ast)
+
     // deleteFromSelection
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
     ]
-    const newAst = deleteFromSelection(ast, {
-      range,
-      type: 'default',
-    })
+    const newAst = await deleteFromSelection(
+      ast,
+      {
+        range,
+        type: 'default',
+      },
+      programMemory
+    )
     if (err(newAst)) throw newAst
     const newCode = recast(newAst)
-    console.log('newCode', newCode)
     expect(newCode).toBe(`const myVar = 5\n`)
   })
   test('delete extrude', async () => {
@@ -730,7 +735,7 @@ const sketch003 = startSketchOn('XZ')
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
   |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, 'seg01')
+  |> line([4.99, -0.46], %, $seg01)
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
@@ -738,24 +743,27 @@ const extrude001 = extrude(10, sketch001)`
     const lineOfInterest = 'line([2.66, 1.17], %)'
     const ast = parse(code)
     if (err(ast)) throw ast
-    // deleteFromSelection
+    const programMemory = await enginelessExecutor(ast)
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
     ]
-    const newAst = deleteFromSelection(ast, {
-      range,
-      type: 'extrude-wall',
-    })
+    const newAst = await deleteFromSelection(
+      ast,
+      {
+        range,
+        type: 'extrude-wall',
+      },
+      programMemory
+    )
     if (err(newAst)) throw newAst
     const newCode = recast(newAst)
-    console.log('newCode', newCode)
     expect(newCode).toBe(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
   |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, 'seg01')
+  |> line([4.99, -0.46], %, $seg01)
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)\n`)
@@ -763,9 +771,9 @@ const extrude001 = extrude(10, sketch001)`
   test('delete extrude with sketch on it', async () => {
     const code = `const myVar = 5
 const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.46, 5.12], %, 'tag')
+  |> startProfileAt([4.46, 5.12], %, $tag)
   |> line([0.08, myVar], %)
-  |> line([13.03, 2.02], %, 'seg01')
+  |> line([13.03, 2.02], %, $seg01)
   |> line([3.9, -7.6], %)
   |> line([-11.18, -2.15], %)
   |> line([5.41, -9.61], %)
@@ -773,11 +781,11 @@ const sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 const extrude001 = extrude(5, sketch001)
-const sketch002 = startSketchOn(extrude001, 'seg01')
+const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
-  |> line([1.82, -1.49], %, 'seg02')
-  |> angledLine([-86, segLen('seg02', %)], %)
+  |> line([1.82, -1.49], %, $seg02)
+  |> angledLine([-86, segLen(seg02, %)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -785,33 +793,51 @@ const sketch002 = startSketchOn(extrude001, 'seg01')
     const lineOfInterest = 'line([-11.18, -2.15], %)'
     const ast = parse(code)
     if (err(ast)) throw ast
-    // deleteFromSelection
+    const programMemory = await enginelessExecutor(ast)
+
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
     ]
-    const newAst = deleteFromSelection(ast, {
-      range,
-      type: 'extrude-wall',
-    })
+    const newAst = await deleteFromSelection(
+      ast,
+      {
+        range,
+        type: 'extrude-wall',
+      },
+      programMemory,
+      async () => ({
+        origin: { x: 1, y: 2, z: 3 },
+        x_axis: { x: 4, y: 5, z: 6 },
+        y_axis: { x: 7, y: 8, z: 9 },
+        z_axis: { x: 10, y: 11, z: 12 },
+      })
+    )
     if (err(newAst)) throw newAst
     const newCode = recast(newAst)
-    console.log('newCode', newCode)
-    expect(newCode).toBe(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.46, 5.12], %, 'tag')
+    expect(newCode).toBe(`const myVar = 5
+const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.46, 5.12], %, $tag)
   |> line([0.08, myVar], %)
-  |> line([13.03, 2.02], %, 'seg01')
+  |> line([13.03, 2.02], %, $seg01)
   |> line([3.9, -7.6], %)
   |> line([-11.18, -2.15], %)
   |> line([5.41, -9.61], %)
   |> line([-8.54, -2.51], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const sketch002 = startSketchOn('XY')
+const sketch002 = startSketchOn({
+       plane: {
+         origin: { x: 1, y: 2, z: 3 },
+         x_axis: { x: 4, y: 5, z: 6 },
+         y_axis: { x: 7, y: 8, z: 9 },
+         z_axis: { x: 10, y: 11, z: 12 }
+       }
+     })
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
-  |> line([1.82, -1.49], %, 'seg02')
-  |> angledLine([-86, segLen('seg02', %)], %)
+  |> line([1.82, -1.49], %, $seg02)
+  |> angledLine([-86, segLen(seg02, %)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)

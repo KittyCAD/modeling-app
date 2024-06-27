@@ -26,7 +26,11 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
+import {
+  addStartProfileAt,
+  deleteFromSelection,
+  extrudeSketch,
+} from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -50,7 +54,6 @@ import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import { removeNodeAtPath } from 'lang/std/sketchcombos'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -975,16 +978,48 @@ export const modelingMachine = createMachine(
         }
       },
       'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
-        console.log('selection', selectionRanges)
-        console.log('sketchDetails', sketchDetails)
         let ast = kclManager.ast
-        const pathToNode = getNodePathFromSourceRange(
-          ast,
-          selectionRanges.codeBasedSelections[0].range
-        )
+        const getFacePlane = async (
+          id: string
+        ): Promise<Models['FaceIsPlanar_type']> => {
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'enable_sketch_mode',
+              entity_id: id,
+              adjust_camera: false,
+              animated: false,
+              ortho: false,
+            },
+          })
+          const planeDetails: Models['GetSketchModePlane_type'] = (
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'get_sketch_mode_plane',
+              },
+            })
+          ).data.data
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'sketch_mode_disable',
+            },
+          })
+          return planeDetails
+        }
 
-        const modifiedAst = removeNodeAtPath(ast, pathToNode)
-        await kclManager.updateAst(modifiedAst, true, {})
+        const modifiedAst = await deleteFromSelection(
+          ast,
+          selectionRanges.codeBasedSelections[0],
+          kclManager.programMemory,
+          getFacePlane
+        )
+        if (err(modifiedAst)) return
+        await kclManager.updateAst(modifiedAst, true)
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {

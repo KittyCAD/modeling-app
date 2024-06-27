@@ -17,6 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
+  SketchGroup,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -39,6 +40,7 @@ import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { ConstrainInfo } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { Models } from '@kittycad/lib'
 
 export function startSketchOnDefault(
   node: Program,
@@ -875,10 +877,13 @@ export function removeSingleConstraintInfo(
   return retval
 }
 
-export function deleteFromSelection(
+export async function deleteFromSelection(
   ast: Program,
-  selection: Selection
-): Program | Error {
+  selection: Selection,
+  programMemory: ProgramMemory,
+  getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
+    ({} as any)
+): Promise<Program | Error> {
   const astClone = JSON.parse(JSON.stringify(ast))
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
@@ -899,7 +904,6 @@ export function deleteFromSelection(
       enter: (node, path) => {
         if (node.type === 'VariableDeclaration') {
           const dec = node.declarations[0]
-          // extrudeNameToDelete = dec.id.name
           if (
             dec.init.type === 'CallExpression' &&
             dec.init.callee.name === 'extrude' &&
@@ -917,27 +921,87 @@ export function deleteFromSelection(
     const expressionIndex = pathToNode[1][0] as number
     astClone.body.splice(expressionIndex, 1)
     if (extrudeNameToDelete) {
-      traverse(astClone, {
-        enter: (node, path) => {
-          if (
-            node.type === 'CallExpression' &&
-            node.callee.name === 'startSketchOn' &&
-            node.arguments[0].type === 'Identifier' &&
-            node.arguments[0].name === extrudeNameToDelete
-          ) {
-            const parent = getNodeFromPath<PipeExpression['body']>(
-              astClone,
-              path.slice(0, -1)
-            )
-            if (err(parent)) return
-            const lastKey = Number(path.slice(-1)[0][0])
-            parent.node[lastKey] = createCallExpressionStdLib('startSketchOn', [
-              createLiteral('XY'),
-            ])
-          }
-        },
+      let sketchName = ''
+      await new Promise((resolve) => {
+        traverse(astClone, {
+          leave: (node) => {
+            if (node.type === 'VariableDeclaration') {
+              sketchName = ''
+            }
+          },
+          enter: async (node, path) => {
+            if (node.type === 'VariableDeclaration') {
+              sketchName = node.declarations[0].id.name
+            }
+            if (
+              // looking for startSketchOn(${extrudeNameToDelete})
+              node.type === 'CallExpression' &&
+              node.callee.name === 'startSketchOn' &&
+              node.arguments[0].type === 'Identifier' &&
+              node.arguments[0].name === extrudeNameToDelete
+            ) {
+              const parent = getNodeFromPath<PipeExpression['body']>(
+                astClone,
+                path.slice(0, -1)
+              )
+              if (err(parent)) return
+              const lastKey = Number(path.slice(-1)[0][0])
+              const sketchToPreserve = programMemory.root[
+                sketchName
+              ] as SketchGroup
+              if (sketchToPreserve) {
+                const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
+                if (
+                  !(
+                    faceDetails.origin &&
+                    faceDetails.x_axis &&
+                    faceDetails.y_axis &&
+                    faceDetails.z_axis
+                  )
+                )
+                  return
+                parent.node[lastKey] = createCallExpressionStdLib(
+                  'startSketchOn',
+                  [
+                    createObjectExpression({
+                      plane: createObjectExpression({
+                        origin: createObjectExpression({
+                          x: createLiteral(faceDetails.origin.x),
+                          y: createLiteral(faceDetails.origin.y),
+                          z: createLiteral(faceDetails.origin.z),
+                        }),
+                        x_axis: createObjectExpression({
+                          x: createLiteral(faceDetails.x_axis.x),
+                          y: createLiteral(faceDetails.x_axis.y),
+                          z: createLiteral(faceDetails.x_axis.z),
+                        }),
+                        y_axis: createObjectExpression({
+                          x: createLiteral(faceDetails.y_axis.x),
+                          y: createLiteral(faceDetails.y_axis.y),
+                          z: createLiteral(faceDetails.y_axis.z),
+                        }),
+                        z_axis: createObjectExpression({
+                          x: createLiteral(faceDetails.z_axis.x),
+                          y: createLiteral(faceDetails.z_axis.y),
+                          z: createLiteral(faceDetails.z_axis.z),
+                        }),
+                      }),
+                    }),
+                  ]
+                )
+              } else {
+                parent.node[lastKey] = createCallExpressionStdLib(
+                  'startSketchOn',
+                  [createLiteral('XY')]
+                )
+              }
+            }
+          },
+        })
+        resolve(true)
       })
     }
+    // await prom
     return astClone
   } else if (varDec.node.init.type === 'PipeExpression') {
     const pipeBody = varDec.node.init.body

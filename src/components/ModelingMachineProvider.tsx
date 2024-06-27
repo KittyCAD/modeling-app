@@ -474,7 +474,7 @@ export const ModelingMachineProvider = ({
           return true
         },
         'Sketch is empty': ({ sketchDetails }) => {
-            const node = getNodeFromPath<VariableDeclaration>(
+          const node = getNodeFromPath<VariableDeclaration>(
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
