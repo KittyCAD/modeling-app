@@ -297,7 +297,6 @@ pub async fn kcl_lsp_run(
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
 
         is_initialized: Default::default(),
-        current_handle: Default::default(),
     })
     .custom_method("kcl/updateUnits", kcl_lib::lsp::kcl::Backend::update_units)
     .custom_method("kcl/updateCanExecute", kcl_lib::lsp::kcl::Backend::update_can_execute)
@@ -356,7 +355,6 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, baseurl: Strin
         zoo_client,
 
         is_initialized: Default::default(),
-        current_handle: Default::default(),
         diagnostics_map: Default::default(),
     })
     .custom_method("copilot/setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)

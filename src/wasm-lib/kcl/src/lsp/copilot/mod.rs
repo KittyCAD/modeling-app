@@ -25,7 +25,7 @@ use tower_lsp::{
 };
 
 use crate::lsp::{
-    backend::{Backend as _, InnerHandle, UpdateHandle},
+    backend::Backend as _,
     copilot::types::{
         CopilotAcceptCompletionParams, CopilotCompletionResponse, CopilotCompletionTelemetry, CopilotEditorInfo,
         CopilotLspCompletionParams, CopilotRejectCompletionParams, DocParams,
@@ -64,7 +64,6 @@ pub struct Backend {
     pub diagnostics_map: DashMap<String, Vec<Diagnostic>>,
 
     pub is_initialized: Arc<tokio::sync::RwLock<bool>>,
-    pub current_handle: UpdateHandle,
 }
 
 // Implement the shared backend trait for the language server.
@@ -84,14 +83,6 @@ impl crate::lsp::backend::Backend for Backend {
 
     async fn set_is_initialized(&self, is_initialized: bool) {
         *self.is_initialized.write().await = is_initialized;
-    }
-
-    async fn current_handle(&self) -> Option<InnerHandle> {
-        self.current_handle.read().await
-    }
-
-    async fn set_current_handle(&self, handle: Option<InnerHandle>) {
-        self.current_handle.write(handle).await;
     }
 
     async fn workspace_folders(&self) -> Vec<WorkspaceFolder> {

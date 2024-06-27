@@ -44,10 +44,7 @@ use crate::lint::checks;
 use crate::{
     ast::types::{Value, VariableKind},
     executor::SourceRange,
-    lsp::{
-        backend::{Backend as _, InnerHandle, UpdateHandle},
-        util::IntoDiagnostic,
-    },
+    lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
 };
@@ -125,7 +122,6 @@ pub struct Backend {
     pub can_execute: Arc<RwLock<bool>>,
 
     pub is_initialized: Arc<RwLock<bool>>,
-    pub current_handle: UpdateHandle,
 }
 
 // Implement the shared backend trait for the language server.
@@ -145,14 +141,6 @@ impl crate::lsp::backend::Backend for Backend {
 
     async fn set_is_initialized(&self, is_initialized: bool) {
         *self.is_initialized.write().await = is_initialized;
-    }
-
-    async fn current_handle(&self) -> Option<InnerHandle> {
-        self.current_handle.read().await
-    }
-
-    async fn set_current_handle(&self, handle: Option<InnerHandle>) {
-        self.current_handle.write(handle).await;
     }
 
     async fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
@@ -821,13 +809,6 @@ impl Backend {
 
         if can_execute == params.can_execute {
             return Ok(custom_notifications::UpdateCanExecuteResponse {});
-        }
-
-        if !params.can_execute {
-            // Kill any in progress executions.
-            if let Some(current_handle) = self.current_handle().await {
-                current_handle.cancel();
-            }
         }
 
         self.set_can_execute(params.can_execute).await;

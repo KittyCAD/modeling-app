@@ -10,7 +10,7 @@ use tower_lsp::{
     LanguageServer,
 };
 
-use crate::{executor::ProgramMemory, lsp::backend::Backend};
+use crate::executor::ProgramMemory;
 
 fn new_zoo_client() -> kittycad::Client {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
@@ -75,7 +75,6 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
         is_initialized: Default::default(),
-        current_handle: Default::default(),
     })
     .custom_method("kcl/updateUnits", crate::lsp::kcl::Backend::update_units)
     .custom_method("kcl/updateCanExecute", crate::lsp::kcl::Backend::update_can_execute)
@@ -108,7 +107,6 @@ async fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
         cache: Arc::new(crate::lsp::copilot::cache::CopilotCache::new()),
         telemetry: Default::default(),
         is_initialized: Default::default(),
-        current_handle: Default::default(),
         diagnostics_map: Default::default(),
     });
     let server = service.inner();
@@ -144,7 +142,6 @@ async fn test_updating_kcl_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -156,7 +153,7 @@ async fn test_updating_kcl_lsp_files() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 9);
 
     // Run open file.
     server
@@ -169,10 +166,9 @@ async fn test_updating_kcl_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 10);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -186,10 +182,9 @@ async fn test_updating_kcl_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 10);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -206,10 +201,9 @@ async fn test_updating_kcl_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -233,10 +227,9 @@ async fn test_updating_kcl_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -255,10 +248,9 @@ async fn test_updating_kcl_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -276,10 +268,9 @@ async fn test_updating_kcl_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -298,10 +289,9 @@ async fn test_updating_kcl_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -323,7 +313,6 @@ async fn test_updating_kcl_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -336,7 +325,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -362,7 +351,6 @@ async fn test_updating_kcl_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -373,7 +361,7 @@ async fn test_updating_kcl_lsp_files() {
             name: "my-project2".to_string()
         }
     );
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 9);
     // Just make sure that one of the current files read from disk is accurate.
     assert_eq!(
         server
@@ -407,7 +395,6 @@ async fn test_updating_copilot_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -432,7 +419,6 @@ async fn test_updating_copilot_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 10);
@@ -468,7 +454,6 @@ async fn test_updating_copilot_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 11);
@@ -495,7 +480,6 @@ async fn test_updating_copilot_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 11);
@@ -517,7 +501,6 @@ async fn test_updating_copilot_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 11);
@@ -538,7 +521,6 @@ async fn test_updating_copilot_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 12);
@@ -560,7 +542,6 @@ async fn test_updating_copilot_lsp_files() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 11);
@@ -585,7 +566,6 @@ async fn test_updating_copilot_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -617,7 +597,6 @@ async fn test_updating_copilot_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -656,7 +635,6 @@ async fn test_updating_copilot_lsp_files() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -692,7 +670,6 @@ async fn test_kcl_lsp_create_zip() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the workspace folders.
     assert_eq!(server.workspace_folders.len(), 1);
@@ -717,7 +694,6 @@ async fn test_kcl_lsp_create_zip() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 10);
@@ -744,7 +720,7 @@ async fn test_kcl_lsp_create_zip() {
         files.insert(file.name().to_string(), file.size());
     }
 
-    assert_eq!(files.len(), 11);
+    assert_eq!(files.len(), 10);
     let util_path = format!("{}/util.rs", string_path).replace("file://", "");
     assert!(files.contains_key(&util_path));
     assert_eq!(files.get("/test.kcl"), Some(&4));
@@ -815,7 +791,6 @@ async fn test_kcl_lsp_completions_tags() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send completion request.
     let completions = server
@@ -919,7 +894,6 @@ async fn test_kcl_lsp_on_hover() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send hover request.
     let hover = server
@@ -960,7 +934,6 @@ startSketchOn()"#
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send hover request.
     let hover = server
@@ -1008,7 +981,6 @@ async fn test_kcl_lsp_signature_help() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send signature help request.
     let signature_help = server
@@ -1054,7 +1026,6 @@ async fn test_kcl_lsp_semantic_tokens() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send semantic tokens request.
     let semantic_tokens = server
@@ -1101,7 +1072,6 @@ async fn test_kcl_lsp_semantic_tokens_large_file() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send semantic tokens request.
     let semantic_tokens = server
@@ -1153,11 +1123,10 @@ fn myFn = (param1) => {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();
@@ -1314,7 +1283,6 @@ const sphereDia = 0.5"#
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send semantic tokens request.
     let semantic_tokens = server
@@ -1380,7 +1348,6 @@ startSketchOn('XY')"#
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send document symbol request.
     let document_symbol = server
@@ -1426,7 +1393,6 @@ async fn test_kcl_lsp_document_symbol_tag() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send document symbol request.
     let document_symbol = server
@@ -1468,7 +1434,6 @@ async fn test_kcl_lsp_formatting() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send formatting request.
     let formatting = server
@@ -1575,7 +1540,6 @@ const outsideRevolve = startSketchOn('XZ')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send formatting request.
     let formatting = server
@@ -1691,7 +1655,6 @@ async fn test_kcl_lsp_rename() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send rename request.
     let rename = server
@@ -1739,7 +1702,6 @@ async fn test_kcl_lsp_diagnostic_no_errors() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send diagnostics request.
     let diagnostics = server
@@ -1782,7 +1744,6 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send diagnostics request.
     let diagnostics = server
@@ -1829,7 +1790,6 @@ async fn test_kcl_lsp_diagnostic_has_lints() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send diagnostics request.
     let diagnostics = server
@@ -1907,7 +1867,6 @@ async fn test_copilot_lsp_completions_raw() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send completion request.
     let completions = server
@@ -1962,7 +1921,6 @@ async fn test_copilot_lsp_completions() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send completion request.
     let params = crate::lsp::copilot::types::CopilotLspCompletionParams {
@@ -2026,7 +1984,6 @@ async fn test_copilot_on_save() {
             text: Some("my file".to_string()),
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 1);
@@ -2049,7 +2006,6 @@ async fn test_kcl_on_save() {
             text: Some("my file".to_string()),
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 1);
@@ -2072,7 +2028,6 @@ async fn test_copilot_rename_not_exists() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Check the code map.
     assert_eq!(server.code_map.len(), 1);
@@ -2137,7 +2092,6 @@ async fn test_kcl_lsp_on_change_update_ast() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2156,7 +2110,6 @@ async fn test_kcl_lsp_on_change_update_ast() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Make sure the ast is the same.
     assert_eq!(ast, server.ast_map.get("file:///test.kcl").unwrap().clone());
@@ -2177,7 +2130,6 @@ async fn test_kcl_lsp_on_change_update_ast() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     assert!(ast != server.ast_map.get("file:///test.kcl").unwrap().clone());
 
@@ -2202,7 +2154,6 @@ async fn serial_test_kcl_lsp_on_change_update_memory() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
@@ -2221,7 +2172,6 @@ async fn serial_test_kcl_lsp_on_change_update_memory() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Make sure the memory is the same.
     assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
@@ -2242,7 +2192,6 @@ async fn serial_test_kcl_lsp_on_change_update_memory() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
 }
@@ -2276,7 +2225,6 @@ const part001 = cube([0,0], 20)
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the tokens.
     let tokens = server.token_map.get("file:///test.kcl").unwrap().clone();
@@ -2303,7 +2251,6 @@ const part001 = cube([0,0], 20)
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Make sure the memory is the same.
     assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
@@ -2322,7 +2269,6 @@ const part001 = cube([0,0], 20)
         })
         .await
         .unwrap();
-    server.wait_on_handle().await;
 
     let units = server.executor_ctx().await.unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::M);
@@ -2346,7 +2292,6 @@ async fn serial_test_kcl_lsp_empty_file_execute_ok() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
@@ -2368,7 +2313,6 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -2390,12 +2334,10 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2424,7 +2366,6 @@ async fn serial_test_kcl_lsp_diagnostics_on_execution_error() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -2453,12 +2394,10 @@ async fn serial_test_kcl_lsp_diagnostics_on_execution_error() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2483,7 +2422,6 @@ async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2506,7 +2444,6 @@ async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2539,7 +2476,6 @@ async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2549,8 +2485,8 @@ async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Add some fake diagnostics.
     server.diagnostics_map.insert(
@@ -2600,7 +2536,6 @@ async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2610,8 +2545,8 @@ async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2637,7 +2572,6 @@ async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecut
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2647,9 +2581,8 @@ async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecut
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Add some fake diagnostics.
     server.diagnostics_map.insert(
@@ -2694,7 +2627,6 @@ async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecut
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2704,8 +2636,8 @@ async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecut
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2731,7 +2663,6 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2741,8 +2672,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Add some fake diagnostics.
     server.diagnostics_map.insert(
@@ -2763,8 +2694,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
         }],
     );
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Clear ONLY the memory.
     server
@@ -2787,7 +2718,6 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
         })
         .await
         .unwrap();
-    server.wait_on_handle().await;
 
     let units = server.executor_ctx().await.unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
@@ -2800,9 +2730,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2828,7 +2757,6 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2838,9 +2766,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Clear ONLY the memory.
     server
@@ -2863,7 +2790,6 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
         })
         .await
         .unwrap();
-    server.wait_on_handle().await;
 
     let units = server.executor_ctx().await.unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
@@ -2876,9 +2802,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2904,7 +2829,6 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2914,9 +2838,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Clear ONLY the memory.
     server
@@ -2938,7 +2861,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         })
         .await
         .unwrap();
-    server.wait_on_handle().await;
+
     let units = server.executor_ctx().await.unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
@@ -2950,9 +2873,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Clear ONLY the memory.
     server
@@ -2983,7 +2905,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         })
         .await
         .unwrap();
-    server.wait_on_handle().await;
+
     let units = server.executor_ctx().await.unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
@@ -2996,9 +2918,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert!(memory == ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 
     // Set that we CAN execute.
     server
@@ -3020,7 +2941,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         })
         .await
         .unwrap();
-    server.wait_on_handle().await;
+
     let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
@@ -3033,9 +2954,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 0);
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
+    assert!(diagnostics.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3055,7 +2975,6 @@ async fn test_kcl_lsp_folding() {
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Send folding request.
     let folding = server
@@ -3108,7 +3027,6 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3132,7 +3050,6 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3167,7 +3084,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3191,7 +3107,6 @@ const part001 = startSketchOn('XY')
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3226,7 +3141,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3250,7 +3164,6 @@ const part001 = startSketchOn('XY')
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3285,7 +3198,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -3313,7 +3225,6 @@ const part001 = startSketchOn('XY')
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3352,7 +3263,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -3388,7 +3298,6 @@ const NEW_LINT = 1"#
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3427,7 +3336,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -3463,7 +3371,6 @@ const NEW_LINT = 1"#
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3502,7 +3409,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -3547,7 +3453,6 @@ const NEW_LINT = 1"#
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3595,7 +3500,6 @@ const part001 = startSketchOn('XY')
             },
         })
         .await;
-    server.wait_on_handle().await;
 
     // Assure we have diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
@@ -3644,7 +3548,6 @@ const part001 = startSketchOn('XY')
             }],
         })
         .await;
-    server.wait_on_handle().await;
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();

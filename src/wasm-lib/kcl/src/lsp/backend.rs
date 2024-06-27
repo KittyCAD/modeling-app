@@ -4,7 +4,6 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use dashmap::DashMap;
-use tokio::sync::RwLock;
 use tower_lsp::lsp_types::{
     CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
     DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
@@ -12,50 +11,7 @@ use tower_lsp::lsp_types::{
     TextDocumentItem, WorkspaceFolder,
 };
 
-use crate::{
-    fs::FileSystem,
-    thread::{JoinHandle, Thread},
-};
-
-#[derive(Clone)]
-pub struct InnerHandle(Arc<JoinHandle>);
-
-impl InnerHandle {
-    pub fn new(handle: JoinHandle) -> Self {
-        Self(Arc::new(handle))
-    }
-
-    pub fn is_finished(&self) -> bool {
-        self.0.is_finished()
-    }
-
-    pub fn cancel(&self) {
-        self.0.abort();
-    }
-}
-
-#[derive(Clone)]
-pub struct UpdateHandle(Arc<RwLock<Option<InnerHandle>>>);
-
-impl UpdateHandle {
-    pub fn new(handle: InnerHandle) -> Self {
-        Self(Arc::new(RwLock::new(Some(handle))))
-    }
-
-    pub async fn read(&self) -> Option<InnerHandle> {
-        self.0.read().await.clone()
-    }
-
-    pub async fn write(&self, handle: Option<InnerHandle>) {
-        *self.0.write().await = handle;
-    }
-}
-
-impl Default for UpdateHandle {
-    fn default() -> Self {
-        Self(Arc::new(RwLock::new(None)))
-    }
-}
+use crate::fs::FileSystem;
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
@@ -70,10 +26,6 @@ where
     async fn is_initialized(&self) -> bool;
 
     async fn set_is_initialized(&self, is_initialized: bool);
-
-    async fn current_handle(&self) -> Option<InnerHandle>;
-
-    async fn set_current_handle(&self, handle: Option<InnerHandle>);
 
     async fn workspace_folders(&self) -> Vec<WorkspaceFolder>;
 
@@ -118,36 +70,9 @@ where
             }
         }
 
-        // Check if we already have a handle running.
-        if let Some(current_handle) = self.current_handle().await {
-            self.set_current_handle(None).await;
-            // Drop that handle to cancel it.
-            current_handle.cancel();
-        }
-
-        let cloned = self.clone();
-        let task = JoinHandle::new(async move {
-            cloned
-                .insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
-                .await;
-            cloned.inner_on_change(params, false).await;
-            cloned.set_current_handle(None).await;
-        });
-        let update_handle = InnerHandle::new(task);
-
-        // Set our new handle.
-        self.set_current_handle(Some(update_handle.clone())).await;
-    }
-
-    async fn wait_on_handle(&self) {
-        while let Some(handle) = self.current_handle().await {
-            if !handle.is_finished() {
-                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-            } else {
-                break;
-            }
-        }
-        self.set_current_handle(None).await;
+        self.insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
+            .await;
+        self.inner_on_change(params, false).await;
     }
 
     async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
