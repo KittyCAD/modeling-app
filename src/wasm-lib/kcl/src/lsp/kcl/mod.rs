@@ -699,7 +699,7 @@ impl Backend {
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
         let workspace_folders = self.workspace_folders().await;
-        let project_names: Vec<String> = workspace_folders.iter().map(|v| v.name.clone()).collect::<Vec<_>>();
+        let project_names: Vec<&str> = workspace_folders.iter().map(|v| v.name.as_str()).collect::<Vec<_>>();
         // Get the first name.
         let project_name = project_names
             .first()
