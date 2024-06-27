@@ -80,7 +80,7 @@ debug = true # Flamegraphs of benchmarks require accurate debug symbols
 [dev-dependencies]
 base64 = "0.22.1"
 convert_case = "0.6.0"
-criterion = { version = "0.5.1", features = ["async_futures"] }
+criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
 iai = "0.1"
 image = { version = "0.25.1", default-features = false, features = ["png"] }

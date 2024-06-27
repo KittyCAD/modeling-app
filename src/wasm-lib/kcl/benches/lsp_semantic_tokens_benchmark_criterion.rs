@@ -1,5 +1,6 @@
-use criterion::{async_executor::FuturesExecutor, black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 use kcl_lib::lsp::test_util::kcl_lsp_server;
+use tokio::runtime::Runtime;
 use tower_lsp::LanguageServer;
 
 async fn kcl_lsp_semantic_tokens(code: &str) {
@@ -43,9 +44,12 @@ fn bench_kcl_lsp_semantic_tokens(c: &mut Criterion) {
         ("global_tags", GLOBAL_TAGS_FILE),
     ] {
         c.bench_with_input(BenchmarkId::new(name, code), &code, |b, &s| {
-            // Insert a call to `to_async` to convert the bencher to async mode.
-            // The timing loops are the same as with the normal bencher.
-            b.to_async(FuturesExecutor).iter(|| kcl_lsp_semantic_tokens(s));
+            let rt = Runtime::new().unwrap();
+
+            // Spawn a future onto the runtime
+            b.iter(|| {
+                rt.block_on(kcl_lsp_semantic_tokens(s));
+            });
         });
     }
 }
