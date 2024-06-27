@@ -1140,7 +1140,7 @@ impl LanguageServer for Backend {
 
                 signature.active_parameter = Some(parameter_index);
 
-                Ok(Some(signature.clone()))
+                Ok(Some(signature))
             }
             crate::ast::types::Hover::Comment { value: _, range: _ } => {
                 return Ok(None);
