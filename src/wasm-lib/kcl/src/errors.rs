@@ -142,7 +142,7 @@ impl IntoDiagnostic for KclError {
 
         Diagnostic {
             range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
-            severity: Some(DiagnosticSeverity::ERROR),
+            severity: Some(self.severity()),
             code: None,
             // TODO: this is neat we can pass a URL to a help page here for this specific error.
             code_description: None,
@@ -152,6 +152,10 @@ impl IntoDiagnostic for KclError {
             tags: None,
             data: None,
         }
+    }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        DiagnosticSeverity::ERROR
     }
 }
 
