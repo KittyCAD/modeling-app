@@ -2270,7 +2270,7 @@ const part001 = cube([0,0], 20)
         .await
         .unwrap();
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::M);
 
     // Make sure it forced a memory update.
@@ -2704,7 +2704,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
@@ -2719,7 +2719,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
         .await
         .unwrap();
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
@@ -2776,7 +2776,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
@@ -2791,7 +2791,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
         .await
         .unwrap();
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
@@ -2849,7 +2849,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(memory, ProgramMemory::default());
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
@@ -2862,7 +2862,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
@@ -2893,7 +2893,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, false);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
@@ -2906,7 +2906,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
 
-    let units = server.executor_ctx().await.unwrap().settings.units;
+    let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.

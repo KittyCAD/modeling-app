@@ -316,8 +316,8 @@ impl Backend {
         *self.can_execute.write().await = can_execute;
     }
 
-    pub async fn executor_ctx(&self) -> Option<crate::executor::ExecutorContext> {
-        self.executor_ctx.read().await.clone()
+    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::executor::ExecutorContext>> {
+        self.executor_ctx.read().await
     }
 
     async fn set_executor_ctx(&self, executor_ctx: crate::executor::ExecutorContext) {
@@ -580,7 +580,8 @@ impl Backend {
         }
 
         // Execute the code if we have an executor context.
-        let Some(executor_ctx) = self.executor_ctx().await else {
+        let ctx = self.executor_ctx().await;
+        let Some(ref executor_ctx) = *ctx else {
             return Ok(());
         };
 
@@ -603,7 +604,6 @@ impl Backend {
                 return Err(anyhow::anyhow!("failed to execute code"));
             }
         };
-        drop(executor_ctx);
 
         self.memory_map.insert(params.uri.to_string(), memory.clone());
 
@@ -746,7 +746,8 @@ impl Backend {
         let filename = params.text_document.uri.to_string();
 
         {
-            let Some(mut executor_ctx) = self.executor_ctx().await else {
+            let ctx = self.executor_ctx().await;
+            let Some(ref executor_ctx) = *ctx else {
                 self.client
                     .log_message(MessageType::ERROR, "no executor context set to update units for")
                     .await;
@@ -773,11 +774,11 @@ impl Backend {
             }
 
             // Set the engine units.
+            let mut executor_ctx = executor_ctx.clone();
             executor_ctx.update_units(params.units);
 
             // Update the locked executor context.
-            self.set_executor_ctx(executor_ctx.clone()).await;
-            drop(executor_ctx);
+            self.set_executor_ctx(executor_ctx).await;
         }
         // Lock is dropped here since nested.
         // This is IMPORTANT.
@@ -1007,9 +1008,9 @@ impl LanguageServer for Backend {
                             "```{}{}```\n{}",
                             name,
                             if let Some(detail) = &label_details.detail {
-                                format!("({})", detail)
+                                detail
                             } else {
-                                "".to_string()
+                                ""
                             },
                             docs
                         ),
