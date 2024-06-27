@@ -70,8 +70,11 @@ where
             }
         }
 
+        println!("on_change after check: {:?}", params);
+
         self.insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
             .await;
+        println!("on_change after insert: {:?}", params);
         self.inner_on_change(params, false).await;
     }
 

@@ -230,6 +230,8 @@ impl crate::lsp::backend::Backend for Backend {
             self.update_semantic_tokens(&tokens, &params).await;
         }
 
+        println!("tokens: {:?}", tokens);
+
         // Lets update the ast.
         let parser = crate::parser::Parser::new(tokens.clone());
         let result = parser.ast();
@@ -244,6 +246,8 @@ impl crate::lsp::backend::Backend for Backend {
             }
         };
 
+        println!("parsed ast: {:?}", ast);
+
         // Check if the ast changed.
         let ast_changed = match self.ast_map.get(&filename) {
             Some(old_ast) => {
@@ -253,46 +257,62 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
+        println!("ast changed: {:?}", ast_changed);
+
         if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
             // Return early if the ast did not change and we don't need to force.
             return;
         }
 
+        println!("afer check ast");
+
         if ast_changed {
+            println!("before ast insert");
             self.ast_map.insert(params.uri.to_string(), ast.clone());
             // Update the symbols map.
+            println!("before symbols insert");
             self.symbols_map.insert(
                 params.uri.to_string(),
                 ast.get_lsp_symbols(&params.text).unwrap_or_default(),
             );
 
             // Update our semantic tokens.
+            println!("before semantic tokens insert");
             self.update_semantic_tokens(&tokens, &params).await;
 
             #[cfg(not(target_arch = "wasm32"))]
             {
+                println!("before lint");
                 let discovered_findings = ast
                     .lint(checks::lint_variables)
                     .into_iter()
                     .flatten()
                     .collect::<Vec<_>>();
                 // Clear the lints before we lint.
+                println!("before clear lints");
                 self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
                     .await;
+                println!("before add to diagnostics, {}", discovered_findings.len());
                 for discovered_finding in &discovered_findings {
+                    println!("before add to diagnostics");
                     self.add_to_diagnostics(&params, discovered_finding, false).await;
                 }
             }
         }
 
+        println!("ast: {:?}", ast);
+
         // Send the notification to the client that the ast was updated.
         if self.can_execute().await || self.executor_ctx().await.is_none() {
+            println!("sending ast updated");
             // Only send the notification if we can execute.
             // Otherwise it confuses the client.
             self.client
                 .send_notification::<custom_notifications::AstUpdated>(ast.clone())
                 .await;
         }
+
+        println!("ast updated");
 
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
@@ -301,9 +321,13 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
+        println!("executed");
+
         // If we made it here we can clear the diagnostics.
         self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
             .await;
+
+        println!("cleared diagnostics");
     }
 }
 
@@ -509,12 +533,9 @@ impl Backend {
     }
 
     async fn clear_diagnostics_map(&self, uri: &url::Url, severity: Option<DiagnosticSeverity>) {
-        let Some(items) = self.diagnostics_map.get(uri.as_str()) else {
+        let Some(mut items) = self.diagnostics_map.get_mut(uri.as_str()) else {
             return;
         };
-
-        // TODO: fix clone
-        let mut items = items.clone();
 
         // If we only want to clear a specific severity, do that.
         if let Some(severity) = severity {
@@ -523,11 +544,23 @@ impl Backend {
             items.clear();
         }
 
-        self.diagnostics_map.insert(uri.to_string(), items.clone());
+        if items.is_empty() {
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                self.client.publish_diagnostics(uri.clone(), items.clone(), None).await;
+            }
 
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            self.client.publish_diagnostics(uri.clone(), items, None).await;
+            // We need to drop the items here.
+            drop(items);
+
+            self.diagnostics_map.remove(uri.as_str());
+        } else {
+            // We don't need to update the map since we used get_mut.
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                self.client.publish_diagnostics(uri.clone(), items.clone(), None).await;
+            }
         }
     }
 
