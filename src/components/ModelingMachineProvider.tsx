@@ -326,6 +326,11 @@ export const ModelingMachineProvider = ({
               )
             updateSceneObjectColors()
 
+            // side effect to stop code mirror from updating the same selections again
+            editorManager.lastSelection = selections.codeBasedSelections
+              .map(({ range }) => `${range[1]}->${range[1]}`)
+              .join('&')
+
             return {
               selectionRanges: selections,
             }
