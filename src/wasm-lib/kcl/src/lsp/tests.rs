@@ -2694,8 +2694,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
         }],
     );
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+    assert_eq!(diagnostics.len(), 1);
 
     // Clear ONLY the memory.
     server
