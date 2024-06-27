@@ -179,11 +179,13 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Close the file.
-    server.did_close(tower_lsp::lsp_types::DidCloseTextDocumentParams {
-        text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-            uri: "file:///test.kcl".try_into().unwrap(),
-        },
-    });
+    server
+        .did_close(tower_lsp::lsp_types::DidCloseTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+        })
+        .await;
     server.wait_on_handle().await;
 
     // Check the code map.
@@ -417,7 +419,7 @@ async fn test_updating_copilot_lsp_files() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 9);
 
     // Run open file.
     server
@@ -433,7 +435,7 @@ async fn test_updating_copilot_lsp_files() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 10);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -449,7 +451,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 10);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -469,7 +471,7 @@ async fn test_updating_copilot_lsp_files() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -496,7 +498,7 @@ async fn test_updating_copilot_lsp_files() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -518,7 +520,7 @@ async fn test_updating_copilot_lsp_files() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -539,7 +541,7 @@ async fn test_updating_copilot_lsp_files() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -561,7 +563,7 @@ async fn test_updating_copilot_lsp_files() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -596,7 +598,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -628,7 +630,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -665,7 +667,7 @@ async fn test_updating_copilot_lsp_files() {
             name: "my-project2".to_string()
         }
     );
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 9);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -702,7 +704,7 @@ async fn test_kcl_lsp_create_zip() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 9);
 
     // Run open file.
     server
@@ -718,7 +720,7 @@ async fn test_kcl_lsp_create_zip() {
     server.wait_on_handle().await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 10);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
