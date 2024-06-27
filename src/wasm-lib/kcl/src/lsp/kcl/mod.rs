@@ -230,8 +230,6 @@ impl crate::lsp::backend::Backend for Backend {
             self.update_semantic_tokens(&tokens, &params).await;
         }
 
-        println!("tokens: {:?}", tokens);
-
         // Lets update the ast.
         let parser = crate::parser::Parser::new(tokens.clone());
         let result = parser.ast();
@@ -246,8 +244,6 @@ impl crate::lsp::backend::Backend for Backend {
             }
         };
 
-        println!("parsed ast: {:?}", ast);
-
         // Check if the ast changed.
         let ast_changed = match self.ast_map.get(&filename) {
             Some(old_ast) => {
@@ -257,55 +253,41 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
-        println!("ast changed: {:?}", ast_changed);
-
         if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
             // Return early if the ast did not change and we don't need to force.
             return;
         }
 
-        println!("afer check ast");
-
         if ast_changed {
-            println!("before ast insert");
             self.ast_map.insert(params.uri.to_string(), ast.clone());
             // Update the symbols map.
-            println!("before symbols insert");
             self.symbols_map.insert(
                 params.uri.to_string(),
                 ast.get_lsp_symbols(&params.text).unwrap_or_default(),
             );
 
             // Update our semantic tokens.
-            println!("before semantic tokens insert");
             self.update_semantic_tokens(&tokens, &params).await;
 
             #[cfg(not(target_arch = "wasm32"))]
             {
-                println!("before lint");
                 let discovered_findings = ast
                     .lint(checks::lint_variables)
                     .into_iter()
                     .flatten()
                     .collect::<Vec<_>>();
-                println!("before add to diagnostics, {}", discovered_findings.len());
                 self.add_to_diagnostics(&params, &discovered_findings, false).await;
             }
         }
 
-        println!("ast: {:?}", ast);
-
         // Send the notification to the client that the ast was updated.
         if self.can_execute().await || self.executor_ctx().await.is_none() {
-            println!("sending ast updated");
             // Only send the notification if we can execute.
             // Otherwise it confuses the client.
             self.client
                 .send_notification::<custom_notifications::AstUpdated>(ast.clone())
                 .await;
         }
-
-        println!("ast updated");
 
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
@@ -314,13 +296,9 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
-        println!("executed");
-
         // If we made it here we can clear the diagnostics.
         self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
             .await;
-
-        println!("cleared diagnostics");
     }
 }
 
@@ -335,10 +313,6 @@ impl Backend {
 
     pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::executor::ExecutorContext>> {
         self.executor_ctx.read().await
-    }
-
-    async fn set_executor_ctx(&self, executor_ctx: crate::executor::ExecutorContext) {
-        *self.executor_ctx.write().await = Some(executor_ctx);
     }
 
     async fn update_semantic_tokens(&self, tokens: &[crate::token::Token], params: &TextDocumentItem) {
@@ -778,8 +752,9 @@ impl Backend {
         let filename = params.text_document.uri.to_string();
 
         {
-            let ctx = self.executor_ctx().await;
-            let Some(ref executor_ctx) = *ctx else {
+            let mut ctx = self.executor_ctx.write().await;
+            // Borrow the executor context mutably.
+            let Some(ref mut executor_ctx) = *ctx else {
                 self.client
                     .log_message(MessageType::ERROR, "no executor context set to update units for")
                     .await;
@@ -806,11 +781,7 @@ impl Backend {
             }
 
             // Set the engine units.
-            let mut executor_ctx = executor_ctx.clone();
             executor_ctx.update_units(params.units);
-
-            // Update the locked executor context.
-            self.set_executor_ctx(executor_ctx).await;
         }
         // Lock is dropped here since nested.
         // This is IMPORTANT.

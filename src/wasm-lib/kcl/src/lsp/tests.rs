@@ -2303,7 +2303,6 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
-    println!("before open ",);
     server
         .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
             text_document: tower_lsp::lsp_types::TextDocumentItem {
@@ -2315,12 +2314,10 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
         })
         .await;
 
-    println!("before diag ",);
     // Get the diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(diagnostics.len(), 1);
 
-    println!("after diag {:?}", diagnostics);
     // Update the text.
     let new_text = r#"const thing = 2"#.to_string();
     // Send change file.
@@ -2337,12 +2334,10 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
             }],
         })
         .await;
-    println!("after change ",);
 
     // Get the diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl");
     assert!(diagnostics.is_none());
-    println!("after diag2 ",);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2843,7 +2838,6 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    println!("diagnostics_map: {:?}", server.diagnostics_map);
     let diagnostics = server.diagnostics_map.get("file:///test.kcl");
     assert!(diagnostics.is_none());
 
