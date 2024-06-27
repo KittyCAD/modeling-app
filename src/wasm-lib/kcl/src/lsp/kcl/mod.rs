@@ -193,7 +193,7 @@ impl crate::lsp::backend::Backend for Backend {
         let tokens = match crate::token::lexer(&params.text) {
             Ok(tokens) => tokens,
             Err(err) => {
-                self.add_to_diagnostics(&params, err, true).await;
+                self.add_to_diagnostics(&params, &[err], true).await;
                 self.token_map.remove(&filename);
                 self.ast_map.remove(&filename);
                 self.symbols_map.remove(&filename);
@@ -238,7 +238,7 @@ impl crate::lsp::backend::Backend for Backend {
         let ast = match result {
             Ok(ast) => ast,
             Err(err) => {
-                self.add_to_diagnostics(&params, err, true).await;
+                self.add_to_diagnostics(&params, &[err], true).await;
                 self.ast_map.remove(&filename);
                 self.symbols_map.remove(&filename);
                 self.memory_map.remove(&filename);
@@ -288,15 +288,8 @@ impl crate::lsp::backend::Backend for Backend {
                     .into_iter()
                     .flatten()
                     .collect::<Vec<_>>();
-                // Clear the lints before we lint.
-                println!("before clear lints");
-                self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
-                    .await;
                 println!("before add to diagnostics, {}", discovered_findings.len());
-                for discovered_finding in &discovered_findings {
-                    println!("before add to diagnostics");
-                    self.add_to_diagnostics(&params, discovered_finding, false).await;
-                }
+                self.add_to_diagnostics(&params, &discovered_findings, false).await;
             }
         }
 
@@ -567,39 +560,45 @@ impl Backend {
     async fn add_to_diagnostics<DiagT: IntoDiagnostic + std::fmt::Debug>(
         &self,
         params: &TextDocumentItem,
-        diagnostic: DiagT,
+        diagnostics: &[DiagT],
         clear_all_before_add: bool,
     ) {
         self.client
-            .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostic))
+            .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostics))
             .await;
-
-        let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
 
         if clear_all_before_add {
             self.clear_diagnostics_map(&params.uri, None).await;
-        } else if diagnostic.severity == Some(DiagnosticSeverity::ERROR) {
+        } else if diagnostics.iter().all(|x| x.severity() == DiagnosticSeverity::ERROR) {
             // If the diagnostic is an error, it will be the only error we get since that halts
             // execution.
             // Clear the diagnostics before we add a new one.
             self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::ERROR))
                 .await;
+        } else if diagnostics
+            .iter()
+            .all(|x| x.severity() == DiagnosticSeverity::INFORMATION)
+        {
+            // If the diagnostic is a lint, we will pass them all to add at once so we need to
+            // clear the old ones.
+            self.clear_diagnostics_map(&params.uri, Some(DiagnosticSeverity::INFORMATION))
+                .await;
         }
 
-        // TODO: fix clone
         let mut items = if let Some(items) = self.diagnostics_map.get(params.uri.as_str()) {
+            // TODO: Would be awesome to fix the clone here.
             items.clone()
         } else {
             vec![]
         };
 
-        // Ensure we don't already have this diagnostic.
-        if items.iter().any(|x| x == &diagnostic) {
-            self.client.publish_diagnostics(params.uri.clone(), items, None).await;
-            return;
+        for diagnostic in diagnostics {
+            let d = diagnostic.to_lsp_diagnostic(&params.text);
+            // Make sure we don't duplicate diagnostics.
+            if !items.iter().any(|x| x == &d) {
+                items.push(d);
+            }
         }
-
-        items.push(diagnostic);
 
         self.diagnostics_map.insert(params.uri.to_string(), items.clone());
 
@@ -630,7 +629,7 @@ impl Backend {
             Ok(memory) => memory,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());
-                self.add_to_diagnostics(params, err, false).await;
+                self.add_to_diagnostics(params, &[err], false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
