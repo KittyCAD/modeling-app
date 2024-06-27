@@ -67,6 +67,8 @@ cli = ["dep:clap"]
 disable-println = []
 engine = []
 pyo3 = ["dep:pyo3"]
+# Helper functions also used in benchmarks.
+lsp-test-util = []
 
 [profile.release]
 panic = "abort"
@@ -95,3 +97,13 @@ harness = false
 [[bench]]
 name = "compiler_benchmark_iai"
 harness = false
+
+[[bench]]
+name = "lsp_semantic_tokens_benchmark_criterion"
+harness = false
+features = ["lsp-test-util"]
+
+[[bench]]
+name = "lsp_semantic_tokens_benchmark_iai"
+harness = false
+features = ["lsp-test-util"]
