@@ -44,7 +44,7 @@ async fn test_updating_kcl_lsp_files() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 9);
+    assert_eq!(server.code_map.len(), 10);
 
     // Run open file.
     server
@@ -59,7 +59,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -75,7 +75,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -94,7 +94,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -120,7 +120,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -141,7 +141,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -161,7 +161,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -182,7 +182,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -216,7 +216,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -252,7 +252,7 @@ async fn test_updating_kcl_lsp_files() {
             name: "my-project2".to_string()
         }
     );
-    assert_eq!(server.code_map.len(), 9);
+    assert_eq!(server.code_map.len(), 10);
     // Just make sure that one of the current files read from disk is accurate.
     assert_eq!(
         server
@@ -297,7 +297,7 @@ async fn test_updating_copilot_lsp_files() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 9);
+    assert_eq!(server.code_map.len(), 10);
 
     // Run open file.
     server
@@ -312,7 +312,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -328,7 +328,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -347,7 +347,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -373,7 +373,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -394,7 +394,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -414,7 +414,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -435,7 +435,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -469,7 +469,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -500,7 +500,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -536,7 +536,7 @@ async fn test_updating_copilot_lsp_files() {
             name: "my-project2".to_string()
         }
     );
-    assert_eq!(server.code_map.len(), 9);
+    assert_eq!(server.code_map.len(), 10);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -572,7 +572,7 @@ async fn test_kcl_lsp_create_zip() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 9);
+    assert_eq!(server.code_map.len(), 10);
 
     // Run open file.
     server
@@ -587,7 +587,7 @@ async fn test_kcl_lsp_create_zip() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 10);
+    assert_eq!(server.code_map.len(), 11);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -611,7 +611,7 @@ async fn test_kcl_lsp_create_zip() {
         files.insert(file.name().to_string(), file.size());
     }
 
-    assert_eq!(files.len(), 10);
+    assert_eq!(files.len(), 11);
     let util_path = format!("{}/util.rs", string_path).replace("file://", "");
     assert!(files.contains_key(&util_path));
     assert_eq!(files.get("/test.kcl"), Some(&4));
