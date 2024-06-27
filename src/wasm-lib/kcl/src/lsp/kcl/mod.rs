@@ -307,10 +307,6 @@ impl Backend {
         *self.can_execute.read().await
     }
 
-    async fn set_can_execute(&self, can_execute: bool) {
-        *self.can_execute.write().await = can_execute;
-    }
-
     pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::executor::ExecutorContext>> {
         self.executor_ctx.read().await
     }
@@ -809,13 +805,13 @@ impl Backend {
         &self,
         params: custom_notifications::UpdateCanExecuteParams,
     ) -> RpcResult<custom_notifications::UpdateCanExecuteResponse> {
-        let can_execute = self.can_execute().await;
+        let mut can_execute = self.can_execute.write().await;
 
-        if can_execute == params.can_execute {
+        if *can_execute == params.can_execute {
             return Ok(custom_notifications::UpdateCanExecuteResponse {});
         }
 
-        self.set_can_execute(params.can_execute).await;
+        *can_execute = params.can_execute;
 
         Ok(custom_notifications::UpdateCanExecuteResponse {})
     }
