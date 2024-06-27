@@ -101,9 +101,9 @@ harness = false
 [[bench]]
 name = "lsp_semantic_tokens_benchmark_criterion"
 harness = false
-features = ["lsp-test-util"]
+required-features = ["lsp-test-util"]
 
 [[bench]]
 name = "lsp_semantic_tokens_benchmark_iai"
 harness = false
-features = ["lsp-test-util"]
+required-features = ["lsp-test-util"]
