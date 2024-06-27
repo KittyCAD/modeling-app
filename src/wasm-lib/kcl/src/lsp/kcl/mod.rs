@@ -924,7 +924,7 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        self.do_did_change(params.clone()).await;
+        self.do_did_change(params).await;
     }
 
     async fn did_save(&self, params: DidSaveTextDocumentParams) {
@@ -1006,7 +1006,11 @@ impl LanguageServer for Backend {
                         value: format!(
                             "```{}{}```\n{}",
                             name,
-                            label_details.detail.clone().unwrap_or_default(),
+                            if let Some(detail) = &label_details.detail {
+                                format!("({})", detail)
+                            } else {
+                                "".to_string()
+                            },
                             docs
                         ),
                     }),
