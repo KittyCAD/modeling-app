@@ -28,16 +28,12 @@ fn transform = (replicaId) => {
   scale: [scale, scale, 0]
 }
 }
-// Each layer is just a pretty thin cylinder with a fillet.
+// Each layer is just a pretty thin cylinder.
 fn layer = () => {
   return startSketchOn("XY")
   // or some other plane idk
   |> circle([0, 0], 1, %, $tag1)
   |> extrude(h, %)
-  // |> fillet({
-  // radius: h / 2.01,
-  // tags: ["tag1", getOppositeEdge("tag1", %)]
-// }, %)
 }
 // The vase is 100 layers tall.
 // The 100 layers are replica of each other, with a slight transformation applied to each.
