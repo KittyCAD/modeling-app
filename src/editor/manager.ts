@@ -23,7 +23,7 @@ export default class EditorManager {
   }
 
   private _lastSelectionEvent: number | null = null
-  lastSelection: string = ''
+  private _lastSelection: string = ''
   private _lastEvent: { event: string; time: number } | null = null
 
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
@@ -199,14 +199,12 @@ export default class EditorManager {
       viewUpdate?.state?.selection?.ranges || []
     )
 
-    if (selString === this.lastSelection) {
+    if (selString === this._lastSelection) {
       // onUpdate is noisy and is fired a lot by extensions
       // since we're only interested in selections changes we can ignore most of these.
       return
     }
-    // note this is also set from the "Set selection" action to stop code mirror from updating selections right after
-    // selections are made from the scene
-    this.lastSelection = selString
+    this._lastSelection = selString
 
     if (
       this._lastSelectionEvent &&
