@@ -658,7 +658,7 @@ textWrapping = true
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: false.into(),
-                        show_scale_grid: false.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
@@ -717,7 +717,7 @@ includeSettings = false
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: true.into(),
-                        show_scale_grid: false.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -781,7 +781,7 @@ defaultProjectName = "projects-$nnn"
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: true.into(),
-                        show_scale_grid: false.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -857,7 +857,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         highlight_edges: true.into(),
                         show_debug_panel: false,
                         enable_ssao: true.into(),
-                        show_scale_grid: false.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
