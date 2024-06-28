@@ -1156,6 +1156,7 @@ export class EngineCommandManager extends EventTarget {
       theme: Themes.Dark,
       highlightEdges: true,
       enableSSAO: true,
+      showScaleGrid: false,
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
@@ -1169,6 +1170,7 @@ export class EngineCommandManager extends EventTarget {
       theme: Themes
       highlightEdges: boolean
       enableSSAO: boolean
+      showScaleGrid: boolean
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
@@ -1250,27 +1252,7 @@ export class EngineCommandManager extends EventTarget {
 
         this.initPlanes().then(async () => {
           // Hide the grid and grid scale text.
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'object_visible' as any,
-              // Found in engine/constants.h
-              object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
-              hidden: true,
-            },
-          })
-
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'object_visible' as any,
-              // Found in engine/constants.h
-              object_id: '10782f33-f588-4668-8bcd-040502d26590',
-              hidden: true,
-            },
-          })
+          this.setScaleGridVisibility(settings.showScaleGrid)
 
           this.resolveReady()
           setIsStreamReady(true)
@@ -2086,6 +2068,34 @@ export class EngineCommandManager extends EventTarget {
         type: 'object_visible',
         object_id: id,
         hidden: hidden,
+      },
+    })
+  }
+
+  /**
+   * Set the visibility of the scale grid in the engine scene.
+   * @param visible - whether to show or hide the scale grid
+   */
+  setScaleGridVisibility(visible: boolean) {
+    this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'object_visible' as any,
+        // Found in engine/constants.h
+        object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
+        hidden: !visible,
+      },
+    })
+
+    this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'object_visible' as any,
+        // Found in engine/constants.h
+        object_id: '10782f33-f588-4668-8bcd-040502d26590',
+        hidden: !visible,
       },
     })
   }

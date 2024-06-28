@@ -134,6 +134,11 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
+        setEngineScaleGridVisibility: (context) => {
+          engineCommandManager.setScaleGridVisibility(
+            context.modeling.showScaleGrid.current
+          )
+        },
         setClientTheme: (context) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme

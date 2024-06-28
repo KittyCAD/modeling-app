@@ -11,7 +11,7 @@ import {
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IALAFYAnPgBMARgDsBsQDY969QGYjmzQBoQAT0SnrADnwePY61r0PAwNtMyMAX3CnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BD1PfFtfE3UzTUNNaydXBCD1b209PTEPTTMtdQNNSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmsGxfCMPM08PQaDNU0cXRG1tLwedTaKxif7+UJTKIgGJzPCERZJFYpfDpLJgC6lK6VaqIEx6fBmCw2Do2IJ6MxdRDvTT4MRDdRGEzWbQ6ELTGGzOIIxLLVbrTbbNKYKBpLaitAAUWgcExMjk11uoBqVgM3jMYhsAIMrVs6ipPWChOeYhC9KMFhGHNh3IS5AASnB0AACZZw0SSS4KnF3PFafADTV1YZ2IxiH7dNpGfCaIzAgE+IzWMzBa1c+Y88gxZ3UYjEV3pvBysrem5VX0IFq0y3aTXWOp6JmU34IKMxuz0joGEYWsxp2IZu1kABUxexZdxtRG+EmQMZmne3dNBs0jKewLBsbCwI81n77vwtDAHHksDhBYHeDIEGYYEI2AAbowANZ3o8nzBnm3zMelpWqRAAFp62sJ4jEsZ4AT0UJGwjPFzH6cwNW0AwWXpbRImhbABXgUpvzwL0KgnCtgJMMCII8KCYLsA11EGOkXneDxmXMCk92hfCFlIQjFXLZUgLjddWhaFkgRCaxOhbEYzBnXwXkmOjAjjfduXfU9zzdOIeJ9fiEEA6ckwMClQ2BFpmJXMF9DjYI6hZfxmMw8IgA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IALAFYAnPgBMARgDsBsQDY969QGYjmzQBoQAT0SnrADnwePY61r0PAwNtMyMAX3CnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BD1PfFtfE3UzTUNNaydXBCD1b209PTEPTTMtdQNNSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmusxPXx7bRt1DzMxI3UjD3UutwhAz4MyeHxiV5+AYRKIgGJzPCERZJFYpfDpLJgC6lK6VaqIExPMwWGwdGxBPRmAE9PSafCPMQ-EzWbQ6ELTOGzOJIxLLVbrTbbNKYKBpLaitAAUWgcGxMjk11uoBqVmBH0ZLKCrVs-xciCCwLCvhCjyMFhGHPh3IS5AASnB0AACZYI0SSS4KvF3AlafADRl1YZ2IxiRx6hBtIzPb7abQ+DxGaxmYKWrnzHnkGKO6jEYjOtN4OVlT03KrehAtOnm7Qaup6Ixm6mR6OaR4dAwjM1mVOxdM2lH8jZbXD4WBpRgAd2QAGMc2AAOIcIhF3Gl-EIRPA6yGcyh4whSnU0xGJ5GAat0OfFowma9xH9gBUK5LStUiECdMmfx+mg8hmNTY-PgMYQpoZoxh41g9q6+C0GAHDyLACL5nesBkBAzBgIQ2AAG6MAA1lhcEIZgSFWvMz4VGu5YALTbtYwEnj8HhxnooT1mG3QhmY-TmJ82gGCyjzaJEsLYAK8ClOReAelRr41HRJiMZYvysexdjUuohh+poBiGDuXzGKy0HWossmKmWyqIDR3zAZWLSahM2jWJ04YjDxHbDMmmhaYE3wmemxGIchLpxOZXpWQgNEjMB1h6WEYHqK8ZgJk2EL6N8wR1Cy-gJqJ4RAA */
     id: 'Settings',
     predictableActionArguments: true,
     context: {} as ReturnType<typeof createSettings>,
@@ -32,6 +32,7 @@ export const settingsMachine = createMachine(
             // No toast
             actions: ['setSettingAtLevel'],
           },
+
           'set.app.themeColor': {
             target: 'persisting settings',
 
@@ -40,7 +41,7 @@ export const settingsMachine = createMachine(
           },
 
           'set.modeling.defaultUnit': {
-            target: 'persisting settings',
+            target: "persisting settings",
 
             actions: [
               'setSettingAtLevel',
@@ -91,6 +92,15 @@ export const settingsMachine = createMachine(
               'setClientSideSceneUnits',
               'Execute AST',
               'setClientTheme',
+            ],
+          },
+
+          'set.modeling.showScaleGrid': {
+            target: 'persisting settings',
+            actions: [
+              'setSettingAtLevel',
+              'toastSuccess',
+              'setEngineScaleGridVisibility',
             ],
           },
         },

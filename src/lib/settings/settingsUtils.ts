@@ -48,6 +48,7 @@ function configurationToSettingsPayload(
       ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
