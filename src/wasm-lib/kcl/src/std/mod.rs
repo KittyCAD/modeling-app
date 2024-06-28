@@ -28,7 +28,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::{parse_json_number_as_f64, TagDeclarator},
+    ast::types::{parse_json_number_as_f64, FunctionExpression, TagDeclarator},
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -85,6 +85,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
+        Box::new(crate::std::patterns::PatternTransform),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
@@ -349,6 +350,39 @@ impl Args {
             numbers.push(parse_json_number_as_f64(&parsed, self.source_range)?);
         }
         Ok(numbers)
+    }
+
+    fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, ExtrudeGroupSet), KclError> {
+        let sr = vec![self.source_range];
+        let mut args = self.args.iter();
+        let num_repetitions = args.next().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Missing first argument (should be the number of repetitions)".to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        let num_repetitions = num_repetitions.get_u32(sr.clone())?;
+        let transform = args.next().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Missing second argument (should be the transform function)".to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        let func = transform.get_function(sr.clone())?;
+        let eg = args.next().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Missing third argument (should be a Sketch/ExtrudeGroup or an array of Sketch/ExtrudeGroups)"
+                    .to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        let eg = eg.get_extrude_group_set().map_err(|_e| {
+            KclError::Type(KclErrorDetails {
+                message: "Third argument was not an ExtrudeGroup".to_owned(),
+                source_ranges: sr.clone(),
+            })
+        })?;
+        Ok((num_repetitions, func, eg))
     }
 
     fn get_hypotenuse_leg(&self) -> Result<(f64, f64), KclError> {
@@ -1240,6 +1274,11 @@ pub enum Primitive {
     String,
     /// A uuid value.
     Uuid,
+}
+
+pub struct FnAsArg<'a> {
+    pub func: &'a crate::executor::MemoryFunction,
+    pub expr: Box<FunctionExpression>,
 }
 
 #[cfg(test)]
