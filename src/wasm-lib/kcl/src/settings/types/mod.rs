@@ -380,7 +380,7 @@ pub struct ModelingSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
     /// Whether or not to show a scale grid in the 3D modeling view
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
 }
 
