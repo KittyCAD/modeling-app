@@ -74,10 +74,9 @@ export class CameraControls {
   enableRotate = true
   enablePan = true
   enableZoom = true
-  // holds magnitudes
-  zoomBuffer: number[] = []
+  zoomDataFromLastFrame?: number = undefined
   // holds coordinates, and interaction
-  panBuffer: [number, number, string][] = []
+  moveDataFromLastFrame?: [number, number, string] = undefined
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -230,6 +229,7 @@ export class CameraControls {
         camSettings.orientation.z,
         camSettings.orientation.w
       ).invert()
+
       this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
@@ -259,77 +259,46 @@ export class CameraControls {
       this.onCameraChange()
     }
 
-    // How many commands (+2 (start and end)) to include per
-    // slice of time.
-    const N_PER_TIME = 3
-    setInterval(() => {
-      const listLength = this.zoomBuffer.length
-      if (listLength === 0) return
-      const skip = Math.floor(listLength / N_PER_TIME)
+    // Our stream is never more than 60fps.
+    // We can get away with capping our "virtual fps" to 60 then.
+    const FPS_VIRTUAL = 60
 
-      const deltas =
-        listLength === 1
-          ? this.zoomBuffer
-          : this.zoomBuffer.filter((x, idx, list) => {
-              if (idx === 0 || idx === listLength - 1) return true
-              // do not include adjacent copies to reduce redundant commands
-              // we dont remove all uniques because that takes more time and memory
-              // than its worth
-              if (list[idx] === list[idx - 1]) return false
-              return idx % skip === 0
-            })
-
-      this.zoomBuffer = []
-
-      this.handleStart()
-      deltas.forEach((d) => {
+    const doZoom = () => {
+      if (this.zoomDataFromLastFrame !== undefined) {
+        this.handleStart()
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'default_camera_zoom',
-            magnitude: (-1 * d) / window.devicePixelRatio,
+            magnitude:
+              (-1 * this.zoomDataFromLastFrame) / window.devicePixelRatio,
           },
           cmd_id: uuidv4(),
         })
-      })
-      this.handleEnd()
-      // Fastest human conscious reaction time is around 150ms
-      // Fastest unconscious is around 80ms
-      // Source: Uni of Edinburgh
-    }, 100)
+        this.handleEnd()
+      }
+      this.zoomDataFromLastFrame = undefined
+    }
+    setInterval(doZoom, 1000 / FPS_VIRTUAL)
 
-    // Do similar for panning
-    setInterval(() => {
-      const listLength = this.panBuffer.length
-      if (listLength === 0) return
-      const skip = Math.floor(listLength / N_PER_TIME)
-
-      const deltas =
-        listLength === 1
-          ? this.panBuffer
-          : this.panBuffer.filter((x, idx, list) => {
-              if (idx === 0 || idx === listLength - 1) return true
-              // do not include adjacent copies to reduce redundant commands
-              // we dont remove all uniques because that takes more time and memory
-              // than its worth
-              if (list[idx] === list[idx - 1]) return false
-              return idx % skip === 0
-            })
-
-      this.panBuffer = []
-
-      deltas.forEach(([x, y, interaction]) => {
+    const doMove = () => {
+      if (this.moveDataFromLastFrame !== undefined) {
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'camera_drag_move',
-            interaction: interaction as any,
-            window: { x, y },
+            interaction: this.moveDataFromLastFrame[2] as any,
+            window: {
+              x: this.moveDataFromLastFrame[0],
+              y: this.moveDataFromLastFrame[1],
+            },
           },
           cmd_id: uuidv4(),
         })
-      })
-    }, 80)
+      }
+      this.moveDataFromLastFrame = undefined
+    }
+    setInterval(doMove, 1000 / FPS_VIRTUAL)
 
     setTimeout(() => {
       this.engineCommandManager.subscribeTo({
@@ -415,7 +384,7 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        this.panBuffer.push([event.clientX, event.clientY, interaction])
+        this.moveDataFromLastFrame = [event.clientX, event.clientY, interaction]
         return
       }
 
@@ -464,7 +433,7 @@ export class CameraControls {
 
   onMouseWheel = (event: WheelEvent) => {
     if (this.syncDirection === 'engineToClient') {
-      this.zoomBuffer.push(event.deltaY)
+      this.zoomDataFromLastFrame = event.deltaY
       return
     }
 
