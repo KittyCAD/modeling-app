@@ -48,7 +48,7 @@ import {
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, trap } from 'lib/trap'
-import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
@@ -979,44 +979,12 @@ export const modelingMachine = createMachine(
       },
       'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
         let ast = kclManager.ast
-        const getFacePlane = async (
-          id: string
-        ): Promise<Models['FaceIsPlanar_type']> => {
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'enable_sketch_mode',
-              entity_id: id,
-              adjust_camera: false,
-              animated: false,
-              ortho: false,
-            },
-          })
-          const planeDetails: Models['GetSketchModePlane_type'] = (
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'get_sketch_mode_plane',
-              },
-            })
-          ).data.data
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'sketch_mode_disable',
-            },
-          })
-          return planeDetails
-        }
 
         const modifiedAst = await deleteFromSelection(
           ast,
           selectionRanges.codeBasedSelections[0],
           kclManager.programMemory,
-          getFacePlane
+          getFaceDetails
         )
         if (err(modifiedAst)) return
         await kclManager.updateAst(modifiedAst, true)
