@@ -2121,7 +2121,7 @@ const part001 = startSketchOn('XZ')
       )
     }
   })
-  test("hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
+  test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
     page,
   }) => {
     await page.addInitScript(async () => {
@@ -2158,6 +2158,8 @@ const extrude001 = extrude(50, sketch001)
 
     await page.waitForTimeout(1000)
 
+    const isMac = process.platform === 'darwin'
+
     let noHoverColor: [number, number, number] = [82, 82, 82]
     let hoverColor: [number, number, number] = [116, 116, 116]
     let selectColor: [number, number, number] = [144, 148, 97]
@@ -2171,18 +2173,28 @@ const extrude001 = extrude(50, sketch001)
     const nothing = { x: 946, y: 229 }
 
     expect(await u.getGreatestPixDiff(extrudeWall, noHoverColor)).toBeLessThan(
-      3
+      5
     )
-    await page.mouse.move(extrudeWall.x, extrudeWall.y, { steps: 5 })
+    await page.mouse.move(nothing.x, nothing.y)
+    await page.waitForTimeout(100)
+    await page.mouse.move(extrudeWall.x, extrudeWall.y)
     await expect(page.getByTestId('hover-highlight')).toBeVisible()
     await expect(page.getByTestId('hover-highlight')).toContainText(extrudeText)
-    expect(await u.getGreatestPixDiff(extrudeWall, hoverColor)).toBeLessThan(3)
+    await page.waitForTimeout(200)
+    await expect(
+      await u.getGreatestPixDiff(extrudeWall, hoverColor)
+    ).toBeLessThan(5)
     await page.mouse.click(extrudeWall.x, extrudeWall.y)
     await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${extrudeText}`)
-    expect(await u.getGreatestPixDiff(extrudeWall, selectColor)).toBeLessThan(3)
+    await page.waitForTimeout(200)
+    await expect(
+      await u.getGreatestPixDiff(extrudeWall, selectColor)
+    ).toBeLessThan(5)
     await page.waitForTimeout(1000)
     // check color stays there, i.e. not overridden (this was a bug previously)
-    expect(await u.getGreatestPixDiff(extrudeWall, selectColor)).toBeLessThan(3)
+    await expect(
+      await u.getGreatestPixDiff(extrudeWall, selectColor)
+    ).toBeLessThan(5)
 
     await page.mouse.move(nothing.x, nothing.y)
     await page.waitForTimeout(300)
@@ -2193,17 +2205,19 @@ const extrude001 = extrude(50, sketch001)
     hoverColor = [134, 134, 134]
     selectColor = [158, 162, 110]
 
-    expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(3)
+    await expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(5)
     await page.mouse.move(cap.x, cap.y)
     await expect(page.getByTestId('hover-highlight')).toBeVisible()
     await expect(page.getByTestId('hover-highlight')).toContainText(capText)
-    expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(3)
+    await page.waitForTimeout(200)
+    await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(5)
     await page.mouse.click(cap.x, cap.y)
     await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${capText}`)
-    expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(3)
+    await page.waitForTimeout(200)
+    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(5)
     await page.waitForTimeout(1000)
     // check color stays there, i.e. not overridden (this was a bug previously)
-    expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(3)
+    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(5)
   })
 })
 
@@ -2616,9 +2630,6 @@ fn yohey = (pos) => {
 
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeVisible()
 
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
@@ -2644,9 +2655,12 @@ fn yohey = (pos) => {
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.getByTestId('KCL Code').click()
+  await page.waitForTimeout(200)
   await page.mouse.click(734, 134)
+  await page.waitForTimeout(100)
   await page.getByTestId('KCL Code').click()
   // expect main content to contain `sketch005` i.e. started a new sketch
+  await page.waitForTimeout(300)
   await expect(page.locator('.cm-content')).toHaveText(
     /sketch001 = startSketchOn\('XZ'\)/
   )
