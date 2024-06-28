@@ -41,7 +41,7 @@ export const settingsMachine = createMachine(
           },
 
           'set.modeling.defaultUnit': {
-            target: "persisting settings",
+            target: 'persisting settings',
 
             actions: [
               'setSettingAtLevel',
