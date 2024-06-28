@@ -37,7 +37,7 @@ serde_json = "1.0.118"
 sha2 = "0.10.8"
 thiserror = "1.0.61"
 toml = "0.8.14"
-ts-rs = { version = "9.0.0", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings", "serde-json-impl"] }
+ts-rs = { version = "9.0.1", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings", "serde-json-impl"] }
 url = { version = "2.5.2", features = ["serde"] }
 uuid = { version = "1.9.1", features = ["v4", "js", "serde"] }
 validator = { version = "0.18.1", features = ["derive"] }
