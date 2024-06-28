@@ -300,19 +300,11 @@ export async function getUtils(page: Page) {
         (screenshot.width * coords.y * pixMultiplier +
           coords.x * pixMultiplier) *
         4 // rbga is 4 channels
-      const maxDiff = Math.max(
+      return Math.max(
         Math.abs(screenshot.data[index] - expected[0]),
         Math.abs(screenshot.data[index + 1] - expected[1]),
         Math.abs(screenshot.data[index + 2] - expected[2])
       )
-      if (maxDiff > 4) {
-        console.log(
-          `Expected: ${expected} Actual: [${screenshot.data[index]}, ${
-            screenshot.data[index + 1]
-          }, ${screenshot.data[index + 2]}]`
-        )
-      }
-      return maxDiff
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {
