@@ -761,7 +761,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 is_mock: true,
             };
 
-            ctx.run(program, None).await.unwrap();
+            ctx.run(&program, None).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -795,7 +795,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let program = parser.ast().unwrap();
             let ctx = crate::executor::ExecutorContext::new(&client, Default::default()).await.unwrap();
 
-            ctx.run(program, None).await.unwrap();
+            ctx.run(&program, None).await.unwrap();
 
             // Zoom to fit.
             ctx.engine

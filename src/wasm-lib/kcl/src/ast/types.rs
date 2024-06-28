@@ -159,7 +159,7 @@ impl Program {
         RuleT: crate::lint::rule::Rule<'a>,
     {
         let v = Arc::new(Mutex::new(vec![]));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             findings.append(&mut rule.check(node)?);
             Ok(true)
@@ -171,13 +171,13 @@ impl Program {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
-                crate::lint::Node::TagDeclarator(tag) => {
+                crate::walk::Node::TagDeclarator(tag) => {
                     findings.push(tag.into());
                 }
-                crate::lint::Node::VariableDeclaration(variable) => {
+                crate::walk::Node::VariableDeclaration(variable) => {
                     findings.extend::<Vec<CompletionItem>>(variable.into());
                 }
                 _ => {}
@@ -255,13 +255,13 @@ impl Program {
     /// Returns all the lsp symbols in the program.
     pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
         let symbols = Arc::new(Mutex::new(vec![]));
-        crate::lint::walk(self, &|node: crate::lint::Node<'a>| {
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
-                crate::lint::Node::TagDeclarator(tag) => {
+                crate::walk::Node::TagDeclarator(tag) => {
                     findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
-                crate::lint::Node::VariableDeclaration(variable) => {
+                crate::walk::Node::VariableDeclaration(variable) => {
                     findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
                 }
                 _ => {}
@@ -1217,7 +1217,7 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match ctx.inner_execute(p, &mut fn_memory, BodyType::Block).await {
+                let results = match ctx.inner_execute(&p, &mut fn_memory, BodyType::Block).await {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl

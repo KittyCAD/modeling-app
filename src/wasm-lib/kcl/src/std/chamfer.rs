@@ -85,9 +85,9 @@ async fn inner_chamfer(
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && data.tags.len() > 1 {
         return Err(KclError::Type(KclErrorDetails {
-                message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
     }
 
     let mut fillet_or_chamfers = Vec::new();

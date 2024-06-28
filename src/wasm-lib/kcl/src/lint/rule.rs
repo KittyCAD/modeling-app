@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{executor::SourceRange, lint::Node, lsp::IntoDiagnostic};
+use crate::{executor::SourceRange, lsp::IntoDiagnostic, walk::Node};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -70,6 +70,10 @@ impl IntoDiagnostic for Discovered {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         (&self).to_lsp_diagnostic(code)
     }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        (&self).severity()
+    }
 }
 
 impl IntoDiagnostic for &Discovered {
@@ -79,7 +83,7 @@ impl IntoDiagnostic for &Discovered {
 
         Diagnostic {
             range: source_range.to_lsp_range(code),
-            severity: Some(DiagnosticSeverity::INFORMATION),
+            severity: Some(self.severity()),
             code: None,
             // TODO: this is neat we can pass a URL to a help page here for this specific error.
             code_description: None,
@@ -89,6 +93,10 @@ impl IntoDiagnostic for &Discovered {
             tags: None,
             data: None,
         }
+    }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        DiagnosticSeverity::INFORMATION
     }
 }
 
