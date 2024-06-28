@@ -640,7 +640,7 @@ textWrapping = true
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: Default::default(),
+                            color: Default::default()
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -654,15 +654,15 @@ textWrapping = true
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: false.into(),
+                        enable_ssao: false.into()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
-                        blinking_cursor: true.into(),
+                        blinking_cursor: true.into()
                     },
                     project: Default::default(),
                     command_bar: CommandBarSettings {
-                        include_settings: true.into(),
+                        include_settings: true.into()
                     },
                 }
             }
@@ -698,7 +698,7 @@ includeSettings = false
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0.into(),
+                            color: 138.0.into()
                         },
                         onboarding_status: Default::default(),
                         project_directory: None,
@@ -712,15 +712,15 @@ includeSettings = false
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: true.into(),
+                        enable_ssao: true.into()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
-                        blinking_cursor: false.into(),
+                        blinking_cursor: false.into()
                     },
                     project: Default::default(),
                     command_bar: CommandBarSettings {
-                        include_settings: false.into(),
+                        include_settings: false.into()
                     },
                 }
             }
@@ -761,7 +761,7 @@ defaultProjectName = "projects-$nnn"
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0.into(),
+                            color: 138.0.into()
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -775,18 +775,18 @@ defaultProjectName = "projects-$nnn"
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: true.into(),
+                        enable_ssao: true.into()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
-                        blinking_cursor: false.into(),
+                        blinking_cursor: false.into()
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "projects-$nnn".to_string().into(),
+                        default_project_name: "projects-$nnn".to_string().into()
                     },
                     command_bar: CommandBarSettings {
-                        include_settings: false.into(),
+                        include_settings: false.into()
                     },
                 }
             }
@@ -836,7 +836,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::System,
-                            color: Default::default(),
+                            color: Default::default()
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -850,15 +850,15 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
                         show_debug_panel: false,
-                        enable_ssao: true.into(),
+                        enable_ssao: true.into()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
-                        blinking_cursor: true.into(),
+                        blinking_cursor: true.into()
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "project-$nnn".to_string().into(),
+                        default_project_name: "project-$nnn".to_string().into()
                     },
                     command_bar: CommandBarSettings {
                         include_settings: true.into()

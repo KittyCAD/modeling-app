@@ -314,10 +314,7 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
             } else if ext == "glb" {
                 kittycad::types::FileImportFormat::Gltf
             } else {
-                anyhow::bail!(
-                    "unknown source format for file extension: {}. Try setting the `--src-format` flag explicitly or use a valid format.",
-                    ext
-                )
+                anyhow::bail!("unknown source format for file extension: {}. Try setting the `--src-format` flag explicitly or use a valid format.", ext)
             }
         }
     };

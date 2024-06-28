@@ -20,6 +20,7 @@ pub mod engine;
 pub mod errors;
 pub mod executor;
 pub mod fs;
+mod function_param;
 pub mod lint;
 pub mod lsp;
 pub mod parser;

@@ -19,7 +19,7 @@ chrono = "0.4.38"
 clap = { version = "4.5.7", default-features = false, optional = true }
 dashmap = "6.0.1"
 databake = { version = "0.1.8", features = ["derive"] }
-derive-docs = { version = "0.1.19",  path = "../derive-docs" }
+derive-docs = { version = "0.1.19", path = "../derive-docs" }
 form_urlencoded = "1.2.1"
 futures = { version = "0.3.30" }
 git_rev = "0.1.0"
@@ -28,7 +28,7 @@ kittycad = { workspace = true, features = ["clap"] }
 lazy_static = "1.5.0"
 mime_guess = "2.0.4"
 parse-display = "0.9.1"
-pyo3 = {version = "0.22.0", optional = true}
+pyo3 = { version = "0.22.0", optional = true }
 reqwest = { version = "0.11.26", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = ["impl_json_schema", "url", "uuid1"] }
@@ -37,7 +37,7 @@ serde_json = "1.0.118"
 sha2 = "0.10.8"
 thiserror = "1.0.61"
 toml = "0.8.14"
-ts-rs = { version = "9.0.0", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings", "serde-json-impl"] }
+ts-rs = { version = "9.0.1", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings", "serde-json-impl"] }
 url = { version = "2.5.2", features = ["serde"] }
 uuid = { version = "1.9.1", features = ["v4", "js", "serde"] }
 validator = { version = "0.18.1", features = ["derive"] }
@@ -67,6 +67,8 @@ cli = ["dep:clap"]
 disable-println = []
 engine = []
 pyo3 = ["dep:pyo3"]
+# Helper functions also used in benchmarks.
+lsp-test-util = []
 
 [profile.release]
 panic = "abort"
@@ -78,10 +80,10 @@ debug = true # Flamegraphs of benchmarks require accurate debug symbols
 [dev-dependencies]
 base64 = "0.22.1"
 convert_case = "0.6.0"
-criterion = "0.5.1"
+criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
 iai = "0.1"
-image = {version = "0.25.1", default-features = false, features = ["png"] }
+image = { version = "0.25.1", default-features = false, features = ["png"] }
 insta = { version = "1.38.0", features = ["json"] }
 itertools = "0.13.0"
 pretty_assertions = "1.4.0"
@@ -95,3 +97,13 @@ harness = false
 [[bench]]
 name = "compiler_benchmark_iai"
 harness = false
+
+[[bench]]
+name = "lsp_semantic_tokens_benchmark_criterion"
+harness = false
+required-features = ["lsp-test-util"]
+
+[[bench]]
+name = "lsp_semantic_tokens_benchmark_iai"
+harness = false
+required-features = ["lsp-test-util"]
