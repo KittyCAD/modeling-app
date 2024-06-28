@@ -304,7 +304,7 @@ const Home = () => {
             </>
           )}
         </section>
-        <LowerRightControls coreDumpManager={undefined} />
+        <LowerRightControls />
       </div>
     </div>
   )

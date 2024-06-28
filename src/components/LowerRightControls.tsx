@@ -12,11 +12,11 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 
 export function LowerRightControls({
-  coreDumpManager,
   children,
+  coreDumpManager,
 }: {
+  children?: React.ReactNode
   coreDumpManager?: CoreDumpManager
-  children: React.ReactNode
 }) {
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -25,7 +25,7 @@ export function LowerRightControls({
 
   const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
 
-  async function reportbug(event: MouseEvent) {
+  async function reportbug(event: { preventDefault: () => void }) {
     event?.preventDefault()
 
     if (!coreDumpManager) {
