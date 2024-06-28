@@ -129,7 +129,8 @@ includeSettings = false
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: true.into()
+                        enable_ssao: true.into(),
+                        show_scale_grid: false.into(),
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),

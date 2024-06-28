@@ -163,6 +163,12 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
+      showScaleGrid: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Whether or not to show a scale grid in the 3D modeling view',
+        validate: (v) => typeof v === 'boolean',
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',

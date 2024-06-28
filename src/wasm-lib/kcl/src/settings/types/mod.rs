@@ -379,6 +379,9 @@ pub struct ModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not to show a scale grid in the 3D modeling view
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub show_scale_grid: bool,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -654,7 +657,8 @@ textWrapping = true
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: false.into()
+                        enable_ssao: false.into(),
+                        show_scale_grid: false.into(),
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
@@ -712,7 +716,8 @@ includeSettings = false
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: true.into()
+                        enable_ssao: true.into(),
+                        show_scale_grid: false.into(),
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -775,7 +780,8 @@ defaultProjectName = "projects-$nnn"
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: true.into()
+                        enable_ssao: true.into(),
+                        show_scale_grid: false.into(),
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -850,7 +856,8 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
                         show_debug_panel: false,
-                        enable_ssao: true.into()
+                        enable_ssao: true.into(),
+                        show_scale_grid: false.into(),
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
