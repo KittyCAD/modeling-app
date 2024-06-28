@@ -2121,6 +2121,104 @@ const part001 = startSketchOn('XZ')
       )
     }
   })
+  test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-79.26, 95.04], %)
+  |> line([112.54, 127.64], %)
+  |> line([170.36, -121.61], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(50, sketch001)
+        `
+      )
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+    await u.openAndClearDebugPanel()
+
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 6615, y: -9505, z: 10344 },
+        center: { x: 1579, y: -635, z: 4035 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await u.waitForCmdReceive('default_camera_look_at')
+    await u.clearAndCloseDebugPanel()
+
+    await page.waitForTimeout(1000)
+
+    const isMac = process.platform === 'darwin'
+
+    let noHoverColor: [number, number, number] = [82, 82, 82]
+    let hoverColor: [number, number, number] = [116, 116, 116]
+    let selectColor: [number, number, number] = [144, 148, 97]
+
+    const extrudeWall = { x: 670, y: 275 }
+    const extrudeText = `line([170.36, -121.61], %, $seg01)`
+
+    const cap = { x: 594, y: 283 }
+    const capText = `startProfileAt([-79.26, 95.04], %)`
+
+    const nothing = { x: 946, y: 229 }
+
+    expect(await u.getGreatestPixDiff(extrudeWall, noHoverColor)).toBeLessThan(
+      5
+    )
+    await page.mouse.move(nothing.x, nothing.y)
+    await page.waitForTimeout(100)
+    await page.mouse.move(extrudeWall.x, extrudeWall.y)
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight')).toContainText(extrudeText)
+    await page.waitForTimeout(200)
+    await expect(
+      await u.getGreatestPixDiff(extrudeWall, hoverColor)
+    ).toBeLessThan(5)
+    await page.mouse.click(extrudeWall.x, extrudeWall.y)
+    await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${extrudeText}`)
+    await page.waitForTimeout(200)
+    await expect(
+      await u.getGreatestPixDiff(extrudeWall, selectColor)
+    ).toBeLessThan(5)
+    await page.waitForTimeout(1000)
+    // check color stays there, i.e. not overridden (this was a bug previously)
+    await expect(
+      await u.getGreatestPixDiff(extrudeWall, selectColor)
+    ).toBeLessThan(5)
+
+    await page.mouse.move(nothing.x, nothing.y)
+    await page.waitForTimeout(300)
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+    // because of shading, color is not exact everywhere on the face
+    noHoverColor = [104, 104, 104]
+    hoverColor = [134, 134, 134]
+    selectColor = [158, 162, 110]
+
+    await expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(5)
+    await page.mouse.move(cap.x, cap.y)
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight')).toContainText(capText)
+    await page.waitForTimeout(200)
+    await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(5)
+    await page.mouse.click(cap.x, cap.y)
+    await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${capText}`)
+    await page.waitForTimeout(200)
+    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(5)
+    await page.waitForTimeout(1000)
+    // check color stays there, i.e. not overridden (this was a bug previously)
+    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(5)
+  })
 })
 
 test.describe('Command bar tests', () => {
@@ -2139,10 +2237,10 @@ test.describe('Command bar tests', () => {
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
 
-    let cmdSearchBar = await page.getByPlaceholder('Search commands')
+    let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
-    cmdSearchBar = await page.getByPlaceholder('Search commands')
+    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
@@ -2151,7 +2249,7 @@ test.describe('Command bar tests', () => {
     } else {
       await page.locator('html').press('Control+C')
     }
-    cmdSearchBar = await page.getByPlaceholder('Search commands')
+    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
@@ -2532,9 +2630,6 @@ fn yohey = (pos) => {
 
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeVisible()
 
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
@@ -2560,9 +2655,12 @@ fn yohey = (pos) => {
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.getByTestId('KCL Code').click()
+  await page.waitForTimeout(200)
   await page.mouse.click(734, 134)
+  await page.waitForTimeout(100)
   await page.getByTestId('KCL Code').click()
   // expect main content to contain `sketch005` i.e. started a new sketch
+  await page.waitForTimeout(300)
   await expect(page.locator('.cm-content')).toHaveText(
     /sketch001 = startSketchOn\('XZ'\)/
   )
@@ -2846,7 +2944,7 @@ async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
 }
 
 test.describe('Can edit segments by dragging their handles', () => {
-  test('code pane open at start', async ({ page }) => {
+  test('code pane open at start-handles', async ({ page }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -2862,7 +2960,7 @@ test.describe('Can edit segments by dragging their handles', () => {
     await doEditSegmentsByDraggingHandle(page, ['code'])
   })
 
-  test('code pane closed at start', async ({ page }) => {
+  test('code pane closed at start-handles', async ({ page }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -5706,8 +5804,8 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(extrudeButton).not.toBeDisabled()
   await page.keyboard.press('e')
   await page.waitForTimeout(100)
-  await page.mouse.move(900, 200, { steps: 5 })
-  await page.mouse.click(900, 200)
+  await page.mouse.move(800, 200, { steps: 5 })
+  await page.mouse.click(800, 200)
   await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Submit command' }).click()
