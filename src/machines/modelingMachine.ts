@@ -54,6 +54,8 @@ import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { executeAst } from 'useStore'
+import toast from 'react-hot-toast'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -987,6 +989,17 @@ export const modelingMachine = createMachine(
           getFaceDetails
         )
         if (err(modifiedAst)) return
+
+        const testExecute = await executeAst({
+          ast: modifiedAst,
+          useFakeExecutor: true,
+          engineCommandManager,
+        })
+        if (testExecute.errors.length) {
+          toast.error('Unable to delete part')
+          return
+        }
+
         await kclManager.updateAst(modifiedAst, true)
       },
       'conditionally equip line tool': (_, { type }) => {

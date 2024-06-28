@@ -466,16 +466,10 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        'has valid selection for deletion': ({
-          selectionRanges,
-          selection,
-        }) => {
-          console.log('selection', selection)
-          console.log('selectionRanges', selectionRanges)
+        'has valid selection for deletion': ({ selectionRanges }) => {
           if (selectionRanges.codeBasedSelections.length <= 0) return false
-          console.log('you are here')
-          // Get the sketch group for the path to node.
-
+          // TODO should probably check if there's anything in the artifact map?
+          // or maybe this guard is not needed at all?
           return true
         },
         'Sketch is empty': ({ sketchDetails }) => {
