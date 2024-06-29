@@ -121,7 +121,6 @@ export class SceneInfra {
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
-    console.log('setCallbacks', callbacks)
     this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
     this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
@@ -558,8 +557,6 @@ export class SceneInfra {
       -(mouseEvent.clientY / window.innerHeight) * 2 + 1
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
-
-    console.log('onMouseUp', this.onMouseUp)
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
