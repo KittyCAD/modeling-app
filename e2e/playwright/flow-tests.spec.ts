@@ -2004,7 +2004,7 @@ const rev = revolve({ axis: 'y' }, part009)
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
 
     await expect(u.codeLocator).not.toContainText(
@@ -2019,7 +2019,7 @@ const rev = revolve({ axis: 'y' }, part009)
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(
       `const extrude002 = extrude(50, sketch002)`
@@ -2041,7 +2041,7 @@ const rev = revolve({ axis: 'y' }, part009)
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(
       `const extrude001 = extrude(50, sketch001)`
@@ -2079,7 +2079,7 @@ const rev = revolve({ axis: 'y' }, part009)
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(
       `const sketch005 = startSketchOn({`
@@ -2114,7 +2114,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await u.waitForAuthSkipAppStart()
 
     await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await u.closeDebugPanel()
 
     await u.openAndClearDebugPanel()

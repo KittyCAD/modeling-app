@@ -45,8 +45,8 @@ async function clearCommandLogs(page: Page) {
   await page.getByTestId('clear-commands').click()
 }
 
-async function expectCmdLog(page: Page, locatorStr: string) {
-  await expect(page.locator(locatorStr).last()).toBeVisible()
+async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
+  await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
 async function waitForDefaultPlanesToBeVisible(page: Page) {
@@ -228,7 +228,8 @@ export async function getUtils(page: Page) {
       await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
-    expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    expectCmdLog: (locatorStr: string, timeout = 5000) =>
+      expectCmdLog(page, locatorStr, timeout),
     openKclCodePanel: () => openKclCodePanel(page),
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
