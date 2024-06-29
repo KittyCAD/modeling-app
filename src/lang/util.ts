@@ -33,7 +33,7 @@ export function updatePathToNodeFromMap(
   oldPath: PathToNode,
   pathToNodeMap: { [key: number]: PathToNode }
 ): PathToNode {
-  const updatedPathToNode = JSON.parse(JSON.stringify(oldPath))
+  const updatedPathToNode = oldPath
   let max = 0
   Object.values(pathToNodeMap).forEach((path) => {
     const index = Number(path[1][0])

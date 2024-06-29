@@ -84,7 +84,7 @@ export async function applyConstraintAngleLength({
 
   const { transforms } = angleLength
   const sketched = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
@@ -139,7 +139,7 @@ export async function applyConstraintAngleLength({
   }
 
   const retval = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,

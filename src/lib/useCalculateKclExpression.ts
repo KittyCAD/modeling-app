@@ -96,9 +96,7 @@ export function useCalculateKclExpression({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
-        programMemoryOverride: JSON.parse(
-          JSON.stringify(kclManager.programMemory)
-        ),
+        programMemoryOverride: kclManager.programMemory,
       })
       const resultDeclaration = ast.body.find(
         (a) =>

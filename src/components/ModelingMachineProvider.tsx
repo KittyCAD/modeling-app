@@ -513,7 +513,7 @@ export const ModelingMachineProvider = ({
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {
           if (!sketchDetails) return
-          const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+          const newAst: Program = kclManager.ast
           const varDecIndex = sketchDetails.sketchPathToNode[1][0]
           // remove body item at varDecIndex
           newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)

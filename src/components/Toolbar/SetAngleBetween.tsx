@@ -100,7 +100,7 @@ export async function applyConstraintAngleBetween({
   const transformInfos = info.transforms
 
   const transformed1 = transformSecondarySketchLinesTagFirst({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,

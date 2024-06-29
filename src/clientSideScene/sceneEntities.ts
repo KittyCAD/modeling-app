@@ -534,7 +534,7 @@ export class SceneEntities {
     segmentName: 'line' | 'tangentialArcTo' = 'line',
     shouldTearDown = true
   ) => {
-    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    const _ast = kclManager.ast
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -692,7 +692,7 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     rectangleOrigin: [x: number, y: number]
   ) => {
-    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    let _ast = kclManager.ast
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -723,7 +723,9 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    _ast = parse(recast(_ast))
+    let result = parse(recast(_ast))
+    if (trap(result)) return Promise.reject(result)
+    _ast = result
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -737,7 +739,7 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
-        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        const pathToNodeTwo = sketchPathToNode
         pathToNodeTwo[1][0] = 0
 
         const _node = getNodeFromPath<VariableDeclaration>(
@@ -799,7 +801,9 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
-          _ast = parse(recast(_ast))
+          let result = parse(recast(_ast))
+          if (trap(result)) return Promise.reject(result)
+          _ast = result
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1003,10 +1007,8 @@ export class SceneEntities {
       PROFILE_START,
     ])
     if (!group) return
-    const pathToNode: PathToNode = JSON.parse(
-      JSON.stringify(group.userData.pathToNode)
-    )
-    const varDecIndex = JSON.parse(JSON.stringify(pathToNode[1][0]))
+    const pathToNode: PathToNode = group.userData.pathToNode
+    const varDecIndex: number = pathToNode[1][0] as number
     if (draftInfo) {
       pathToNode[1][0] = 0
     }
@@ -1719,7 +1721,7 @@ function prepareTruncatedMemoryAndAst(
     }
   | Error {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
-  const _ast = JSON.parse(JSON.stringify(ast))
+  const _ast = ast
 
   const _node = getNodeFromPath<VariableDeclaration>(
     _ast,
@@ -1778,7 +1780,7 @@ function prepareTruncatedMemoryAndAst(
   }
   const truncatedAst: Program = {
     ..._ast,
-    body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
+    body: [_ast.body[bodyIndex]],
   }
   const programMemoryOverride = programMemoryInit()
   if (err(programMemoryOverride)) return programMemoryOverride
@@ -1804,7 +1806,7 @@ function prepareTruncatedMemoryAndAst(
     }
 
     if (value.type === 'TagIdentifier') {
-      programMemoryOverride.root[key] = JSON.parse(JSON.stringify(value))
+      programMemoryOverride.root[key] = value
     }
   }
 
@@ -1819,7 +1821,7 @@ function prepareTruncatedMemoryAndAst(
     if (!memoryItem) {
       continue
     }
-    programMemoryOverride.root[name] = JSON.parse(JSON.stringify(memoryItem))
+    programMemoryOverride.root[name] = memoryItem
   }
   return {
     truncatedAst,

@@ -710,7 +710,7 @@ export function moveValueIntoNewVariablePath(
     programMemory,
     pathToNode
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = ast
   const boop = replacer(_node, variableName)
   if (trap(boop)) return { modifiedAst: ast }
 
@@ -742,7 +742,7 @@ export function moveValueIntoNewVariable(
     programMemory,
     sourceRange
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = ast
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
 
@@ -767,7 +767,7 @@ export function deleteSegmentFromPipeExpression(
   code: string,
   pathToNode: PathToNode
 ): Program | Error {
-  let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
+  let _modifiedAst: Program = modifiedAst
 
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
@@ -884,7 +884,7 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Program | Error> {
-  const astClone = JSON.parse(JSON.stringify(ast))
+  const astClone = ast
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(

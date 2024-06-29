@@ -87,10 +87,7 @@ const yo2 = hmm([identifierGuy + 5])`
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe('100 + 100')
-    const replaced = result.replacer(
-      JSON.parse(JSON.stringify(ast)),
-      'replaceName'
-    )
+    const replaced = result.replacer(ast, 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
@@ -114,10 +111,7 @@ const yo2 = hmm([identifierGuy + 5])`
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('CallExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe("def('yo')")
-    const replaced = result.replacer(
-      JSON.parse(JSON.stringify(ast)),
-      'replaceName'
-    )
+    const replaced = result.replacer(ast, 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
@@ -154,10 +148,7 @@ const yo2 = hmm([identifierGuy + 5])`
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe('5 + 6')
-    const replaced = result.replacer(
-      JSON.parse(JSON.stringify(ast)),
-      'replaceName'
-    )
+    const replaced = result.replacer(ast, 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`const yo = replaceName`)
@@ -173,10 +164,7 @@ const yo2 = hmm([identifierGuy + 5])`
     expect(code.slice(result.value.start, result.value.end)).toBe(
       "jkl('yo') + 2"
     )
-    const replaced = result.replacer(
-      JSON.parse(JSON.stringify(ast)),
-      'replaceName'
-    )
+    const replaced = result.replacer(ast, 'replaceName')
     if (err(replaced)) throw replaced
     const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
@@ -195,10 +183,7 @@ const yo2 = hmm([identifierGuy + 5])`
     expect(code.slice(result.value.start, result.value.end)).toBe(
       'identifierGuy + 5'
     )
-    const replaced = result.replacer(
-      JSON.parse(JSON.stringify(ast)),
-      'replaceName'
-    )
+    const replaced = result.replacer(ast, 'replaceName')
     if (err(replaced)) throw replaced
     const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)

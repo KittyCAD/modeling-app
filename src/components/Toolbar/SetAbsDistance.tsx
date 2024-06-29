@@ -106,7 +106,7 @@ export async function applyConstraintAbsDistance({
   const transformInfos = info.transforms
 
   const transform1 = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
@@ -128,7 +128,7 @@ export async function applyConstraintAbsDistance({
   )
 
   const transform2 = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
@@ -176,7 +176,7 @@ export function applyConstraintAxisAlign({
   let finalValue = createIdentifier('ZERO')
 
   return transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,

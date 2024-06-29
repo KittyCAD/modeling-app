@@ -151,9 +151,7 @@ export function useCalc({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
-        programMemoryOverride: JSON.parse(
-          JSON.stringify(kclManager.programMemory)
-        ),
+        programMemoryOverride: kclManager.programMemory,
       }).then(({ programMemory }) => {
         const resultDeclaration = ast.body.find(
           (a) =>

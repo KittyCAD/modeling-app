@@ -108,7 +108,7 @@ export async function applyConstraintHorzVertDistance({
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
   const transformed = transformSecondarySketchLinesTagFirst({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,

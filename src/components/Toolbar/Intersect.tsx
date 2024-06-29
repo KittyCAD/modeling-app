@@ -145,7 +145,7 @@ export async function applyConstraintIntersect({
   const { transforms, forcedSelectionRanges } = info
 
   const transform1 = transformSecondarySketchLinesTagFirst({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: kclManager.ast,
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,

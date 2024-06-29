@@ -1496,7 +1496,7 @@ export function transformSecondarySketchLinesTagFirst({
       }
     }
   | Error {
-  // let node = JSON.parse(JSON.stringify(ast))
+  // let node = ast
   const primarySelection = selectionRanges.codeBasedSelections[0].range
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
@@ -1565,7 +1565,7 @@ export function transformAstSketchLines({
     }
   | Error {
   // deep clone since we are mutating in a loop, of which any could fail
-  let node = JSON.parse(JSON.stringify(ast))
+  let node = ast
   let _valueUsedInTransform // TODO should this be an array?
   const pathToNodeMap: PathToNodeMap = {}
 
