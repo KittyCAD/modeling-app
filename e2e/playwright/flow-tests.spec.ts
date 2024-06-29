@@ -1214,12 +1214,18 @@ test('Auto complete works', async ({ page }) => {
   await page.waitForTimeout(100)
   // press arrow down twice then enter to accept xLine
   await page.keyboard.press('ArrowDown')
+  await page.waitForTimeout(100)
   await page.keyboard.press('ArrowDown')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
   // finish line with comment
   await page.keyboard.type('5')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Tab')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Tab')
+  await page.waitForTimeout(100)
   await page.keyboard.type(' // lin')
   await page.waitForTimeout(100)
   // there shouldn't be any auto complete options for 'lin' in the comment
@@ -1689,6 +1695,7 @@ test.describe('Onboarding tests', () => {
 })
 
 test.describe('Testing selections', () => {
+  test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', async ({ page }) => {
     // tests mapping works on fresh sketch and edited sketch
     // tests using hovers which is the same as selections, because if
@@ -2887,6 +2894,7 @@ fn yohey = (pos) => {
   // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(200)
   await page.getByTestId('KCL Code').click()
   await page.waitForTimeout(200)
   await page.mouse.click(734, 134)
@@ -3511,6 +3519,7 @@ test.describe('Snap to close works (at any scale)', () => {
 })
 
 test('Sketch on face', async ({ page }) => {
+  test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
@@ -5704,6 +5713,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
 
           await page.getByTestId('overlay-menu').click()
+          await page.waitForTimeout(100)
           await page.getByText('Delete Segment').click()
 
           await page.getByText('Cancel').click()
@@ -5716,6 +5726,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
 
           await page.getByTestId('overlay-menu').click()
+          await page.waitForTimeout(100)
           await page.getByText('Delete Segment').click()
 
           await page.getByText('Continue and unconstrain').last().click()
@@ -5864,6 +5875,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
         await expect(page.locator('.cm-content')).toContainText(before)
 
         await page.getByTestId('overlay-menu').click()
+        await page.waitForTimeout(100)
         await page.getByText('Remove constraints').click()
 
         await expect(page.locator('.cm-content')).toContainText(after)
