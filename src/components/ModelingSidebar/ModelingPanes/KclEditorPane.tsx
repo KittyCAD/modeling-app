@@ -138,7 +138,6 @@ export const KclEditorPane = () => {
         highlightSelectionMatches(),
         syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
         rectangularSelection(),
-        drawSelection(),
         dropCursor(),
         interact({
           rules: [
