@@ -125,7 +125,6 @@ export const ModelingMachineProvider = ({
     token
   )
   useHotkeyWrapper(['meta + shift + .'], () => {
-    console.warn('CoreDump: Initializing core dump')
     toast.promise(
       coreDump(coreDumpManager, true),
       {

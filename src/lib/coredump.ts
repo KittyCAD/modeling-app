@@ -13,6 +13,14 @@ import screenshot from 'lib/screenshot'
 import React from 'react'
 import { VITE_KC_API_BASE_URL } from 'env'
 
+/* eslint-disable suggest-no-throw/suggest-no-throw --
+ * All the throws in CoreDumpManager are intentional and should be caught and handled properly
+ * by the calling Promises with a catch block. The throws are essential to properly handling
+ * when the app isn't ready enough or otherwise unable to produce a core dump. By throwing
+ * instead of simply erroring, the code halts execution at the first point which it cannot
+ * complete the core dump request.
+ **/
+
 /**
  * CoreDumpManager module
  * - for getting all the values from the JS world to pass to the Rust world for a core dump.
@@ -22,6 +30,7 @@ import { VITE_KC_API_BASE_URL } from 'env'
 // CoreDumpManager is instantiated in ModelingMachineProvider and passed to coreDump() in wasm.ts
 // The async function coreDump() handles any errors thrown in its Promise catch method and rethrows
 // them to so the toast handler in ModelingMachineProvider can show the user an error message toast
+// TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
   htmlRef: React.RefObject<HTMLDivElement> | null
