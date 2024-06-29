@@ -97,6 +97,8 @@ export const semanticTokenField = StateField.define<DecorationSet>({
       return highlights
     }
 
+    console.log('Updating semantic tokens')
+
     // Check if any of the changes are addToken
     const hasAddToken = tr.effects.some((e) => e.is(addToken))
     if (hasAddToken) {
@@ -658,6 +660,7 @@ export class LanguageServerPlugin implements PluginValue {
     ) {
       return null
     }
+    console.log('Requesting semantic tokens')
 
     const result = await this.client.textDocumentSemanticTokensFull({
       textDocument: { uri: this.getDocUri() },
