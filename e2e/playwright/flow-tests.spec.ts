@@ -1631,6 +1631,7 @@ test.describe('Onboarding tests', () => {
     )
 
     await page.setViewportSize({ width: 1200, height: 1080 })
+    await u.waitForAuthSkipAppStart()
 
     await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
       waitUntil: 'domcontentloaded',
