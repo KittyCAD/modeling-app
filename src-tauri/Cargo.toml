@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "zoo-modeling-app"
 version = "0.1.0"
 description = "The Zoo Modeling App"
 authors = ["Zoo Engineers <eng@zoo.dev>"]
 license = ""
 repository = "https://github.com/KittyCAD/modeling-app"
-default-run = "app"
+default-run = "zoo-modeling-app"
 edition = "2021"
 rust-version = "1.70"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
