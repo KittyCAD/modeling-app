@@ -1214,12 +1214,18 @@ test('Auto complete works', async ({ page }) => {
   await page.waitForTimeout(100)
   // press arrow down twice then enter to accept xLine
   await page.keyboard.press('ArrowDown')
+  await page.waitForTimeout(100)
   await page.keyboard.press('ArrowDown')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
   // finish line with comment
   await page.keyboard.type('5')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Tab')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Tab')
+  await page.waitForTimeout(100)
   await page.keyboard.type(' // lin')
   await page.waitForTimeout(100)
   // there shouldn't be any auto complete options for 'lin' in the comment
@@ -1689,6 +1695,7 @@ test.describe('Onboarding tests', () => {
 })
 
 test.describe('Testing selections', () => {
+  test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', async ({ page }) => {
     // tests mapping works on fresh sketch and edited sketch
     // tests using hovers which is the same as selections, because if
@@ -1894,6 +1901,239 @@ test.describe('Testing selections', () => {
     await selectionSequence()
   })
 
+  test('Solids should be select and deletable', async ({ page }) => {
+    test.setTimeout(90_000)
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+        |> startProfileAt([-79.26, 95.04], %)
+        |> line([112.54, 127.64], %, $seg02)
+        |> line([170.36, -121.61], %, $seg01)
+        |> lineTo([profileStartX(%), profileStartY(%)], %)
+        |> close(%)
+const extrude001 = extrude(50, sketch001)
+const sketch005 = startSketchOn(extrude001, 'END')
+  |> startProfileAt([23.24, 136.52], %)
+  |> line([-8.44, 36.61], %)
+  |> line([49.4, 2.05], %)
+  |> line([29.69, -46.95], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch003 = startSketchOn(extrude001, seg01)
+  |> startProfileAt([21.23, 17.81], %)
+  |> line([51.97, 21.32], %)
+  |> line([4.07, -22.75], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch002 = startSketchOn(extrude001, seg02)
+  |> startProfileAt([-100.54, 16.99], %)
+  |> line([0, 20.03], %)
+  |> line([62.61, 0], %, $seg03)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude002 = extrude(50, sketch002)
+const sketch004 = startSketchOn(extrude002, seg03)
+  |> startProfileAt([57.07, 134.77], %)
+  |> line([-4.72, 22.84], %)
+  |> line([28.8, 6.71], %)
+  |> line([9.19, -25.33], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude003 = extrude(20, sketch004)
+const pipeLength = 40
+const pipeSmallDia = 10
+const pipeLargeDia = 20
+const thickness = 0.5
+const part009 = startSketchOn('XY')
+  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
+  |> line([thickness, 0], %)
+  |> line([0, -1], %)
+  |> angledLineToX({
+       angle: 60,
+       to: pipeSmallDia + thickness
+     }, %)
+  |> line([0, -pipeLength], %)
+  |> angledLineToX({
+       angle: -60,
+       to: pipeLargeDia + thickness
+     }, %)
+  |> line([0, -1], %)
+  |> line([-thickness, 0], %)
+  |> line([0, 1], %)
+  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+  |> line([0, pipeLength], %)
+  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+  |> close(%)
+const rev = revolve({ axis: 'y' }, part009)
+`
+      )
+    }, KCL_DEFAULT_LENGTH)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 1139.49, y: -7053, z: 8597.31 },
+        center: { x: -2206.68, y: -1298.36, z: 60 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const revolve = { x: 646, y: 248 }
+    const parentExtrude = { x: 915, y: 133 }
+    const solid2d = { x: 770, y: 167 }
+
+    // DELETE REVOLVE
+    await page.mouse.click(revolve.x, revolve.y)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> line([0, -pipeLength], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+
+    await expect(u.codeLocator).not.toContainText(
+      `const rev = revolve({ axis: 'y' }, part009)`
+    )
+
+    // DELETE PARENT EXTRUDE
+    await page.mouse.click(parentExtrude.x, parentExtrude.y)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> line([170.36, -121.61], %, $seg01)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(
+      `const extrude001 = extrude(50, sketch001)`
+    )
+    await expect(u.codeLocator).toContainText(`const sketch005 = startSketchOn({
+       plane: {
+         origin: { x: 0, y: -50, z: 0 },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 0, z: 1 },
+         z_axis: { x: 0, y: -1, z: 0 }
+       }
+     })`)
+    await expect(u.codeLocator).toContainText(`const sketch003 = startSketchOn({
+       plane: {
+         origin: { x: 116.53, y: 0, z: 163.25 },
+         x_axis: { x: -0.81, y: 0, z: 0.58 },
+         y_axis: { x: 0, y: -1, z: 0 },
+         z_axis: { x: 0.58, y: 0, z: 0.81 }
+       }
+     })`)
+    await expect(u.codeLocator).toContainText(`const sketch002 = startSketchOn({
+       plane: {
+         origin: { x: -91.74, y: 0, z: 80.89 },
+         x_axis: { x: -0.66, y: 0, z: -0.75 },
+         y_axis: { x: 0, y: -1, z: 0 },
+         z_axis: { x: -0.75, y: 0, z: 0.66 }
+       }
+     })`)
+
+    // DELETE SOLID 2D
+    await page.mouse.click(solid2d.x, solid2d.y)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> startProfileAt([23.24, 136.52], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(
+      `const sketch005 = startSketchOn({`
+    )
+  })
+  test("Deleting solid that the AST mod can't handle results in a toast message", async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-79.26, 95.04], %)
+  |> line([112.54, 127.64], %, $seg02)
+  |> line([170.36, -121.61], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(50, sketch001)
+const launderExtrudeThroughVar = extrude001
+const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
+  |> startProfileAt([-100.54, 16.99], %)
+  |> line([0, 20.03], %)
+  |> line([62.61, 0], %, $seg03)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)      
+`
+      )
+    }, KCL_DEFAULT_LENGTH)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await u.closeDebugPanel()
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 1139.49, y: -7053, z: 8597.31 },
+        center: { x: -2206.68, y: -1298.36, z: 60 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    // attempt delete
+    await page.mouse.click(930, 139)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> line([170.36, -121.61], %, $seg01)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+
+    await expect(page.getByText('Unable to delete part')).toBeVisible()
+  })
   test('Hovering over 3d features highlights code', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
@@ -2654,6 +2894,7 @@ fn yohey = (pos) => {
   // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(200)
   await page.getByTestId('KCL Code').click()
   await page.waitForTimeout(200)
   await page.mouse.click(734, 134)
@@ -3278,6 +3519,7 @@ test.describe('Snap to close works (at any scale)', () => {
 })
 
 test('Sketch on face', async ({ page }) => {
+  test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
@@ -5471,6 +5713,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
 
           await page.getByTestId('overlay-menu').click()
+          await page.waitForTimeout(100)
           await page.getByText('Delete Segment').click()
 
           await page.getByText('Cancel').click()
@@ -5483,6 +5726,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
 
           await page.getByTestId('overlay-menu').click()
+          await page.waitForTimeout(100)
           await page.getByText('Delete Segment').click()
 
           await page.getByText('Continue and unconstrain').last().click()
@@ -5631,6 +5875,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
         await expect(page.locator('.cm-content')).toContainText(before)
 
         await page.getByTestId('overlay-menu').click()
+        await page.waitForTimeout(100)
         await page.getByText('Remove constraints').click()
 
         await expect(page.locator('.cm-content')).toContainText(after)

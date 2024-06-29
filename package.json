@@ -89,7 +89,7 @@
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e",
     "fetch:wasm": "./get-latest-wasm-bundle.sh",
     "build:wasm-dev": "(cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
-    "build:wasm": "(cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
+    "build:wasm": "(cd src/wasm-lib && wasm-pack build --release --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
     "build:wasm-clean": "yarn wasm-prep && yarn build:wasm",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",

@@ -23,6 +23,7 @@ import {
   editorManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
@@ -78,6 +79,7 @@ import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -124,7 +126,6 @@ export const ModelingMachineProvider = ({
     token
   )
   useHotkeyWrapper(['meta + shift + .'], () => {
-    console.warn('CoreDump: Initializing core dump')
     toast.promise(
       coreDump(coreDumpManager, true),
       {
@@ -141,6 +142,7 @@ export const ModelingMachineProvider = ({
       }
     )
   })
+  const { commandBarState } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -464,6 +466,11 @@ export const ModelingMachineProvider = ({
           if (!isPipe) return false
 
           return canExtrudeSelection(selectionRanges)
+        },
+        'has valid selection for deletion': ({ selectionRanges }) => {
+          if (!commandBarState.matches('Closed')) return false
+          if (selectionRanges.codeBasedSelections.length <= 0) return false
+          return true
         },
         'Sketch is empty': ({ sketchDetails }) => {
           const node = getNodeFromPath<VariableDeclaration>(
@@ -927,6 +934,11 @@ export const ModelingMachineProvider = ({
       window.removeEventListener('offline', offlineCallback)
     }
   }, [modelingSend])
+
+  // Allow using the delete key to delete solids
+  useHotkeys(['backspace', 'delete', 'del'], () => {
+    modelingSend({ type: 'Delete selection' })
+  })
 
   useStateMachineCommands({
     machineId: 'modeling',
