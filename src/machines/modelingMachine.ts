@@ -982,11 +982,24 @@ export const modelingMachine = createMachine(
       'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
         let ast = kclManager.ast
 
+        const getScaledFaceDetails = async (entityId: string) => {
+          const faceDetails = await getFaceDetails(entityId)
+          if (err(faceDetails)) return {}
+          return {
+            ...faceDetails,
+            origin: {
+              x: faceDetails.origin.x / sceneInfra._baseUnitMultiplier,
+              y: faceDetails.origin.y / sceneInfra._baseUnitMultiplier,
+              z: faceDetails.origin.z / sceneInfra._baseUnitMultiplier,
+            },
+          }
+        }
+
         const modifiedAst = await deleteFromSelection(
           ast,
           selectionRanges.codeBasedSelections[0],
           kclManager.programMemory,
-          getFaceDetails
+          getScaledFaceDetails
         )
         if (err(modifiedAst)) return
 
