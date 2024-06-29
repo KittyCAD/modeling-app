@@ -25,6 +25,7 @@ import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
+import { CoreDumpManager } from 'lib/coredump'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -55,7 +56,11 @@ export function App() {
     setHtmlRef(ref)
   }, [ref])
 
-  const { settings } = useSettingsAuthContext()
+  const { auth, settings } = useSettingsAuthContext()
+  const token = auth?.context?.token
+
+  const coreDumpManager = new CoreDumpManager(engineCommandManager, ref, token)
+
   const {
     app: { onboardingStatus },
   } = settings.context
@@ -129,7 +134,7 @@ export function App() {
       <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream />
       {/* <CamToggle /> */}
-      <LowerRightControls>
+      <LowerRightControls coreDumpManager={coreDumpManager}>
         <Gizmo />
       </LowerRightControls>
     </div>
