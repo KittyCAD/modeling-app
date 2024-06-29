@@ -13,7 +13,8 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  BUILD_RELEASE: true
+  # BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -384,15 +385,22 @@ jobs:
 
   publish-apps-release:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    if: true
+    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
-      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
-      PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
-      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
-      WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
+      VERSION: ${{ format('v{0}', needs.prepare-json-files.outputs.version) }}
+      PUB_DATE: '2011-10-05T14:48:00.000Z'
+      NOTES: 'test'
+      BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app/test' }}
+      WEBSITE_DIR: ${{ 'dl.zoo.dev/releases/modeling-app/test' }}
+      # VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
+      # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
+      # PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
+      # NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      # BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
+      # WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
       URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/download-artifact@v3
@@ -486,11 +494,11 @@ jobs:
           path: last_download.json
           destination: ${{ env.BUCKET_DIR }}
 
-      - name: Upload release files to Github
-        if: ${{ github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          files: 'artifact/*/Zoo*'
+      # - name: Upload release files to Github
+      #   if: ${{ github.event_name == 'release' }}
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: 'artifact/*/Zoo*'
 
   announce_release:
     needs: [publish-apps-release]
