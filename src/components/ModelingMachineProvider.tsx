@@ -470,8 +470,6 @@ export const ModelingMachineProvider = ({
         'has valid selection for deletion': ({ selectionRanges }) => {
           if (!commandBarState.matches('Closed')) return false
           if (selectionRanges.codeBasedSelections.length <= 0) return false
-          // TODO should probably check if there's anything in the artifact map?
-          // or maybe this guard is not needed at all?
           return true
         },
         'Sketch is empty': ({ sketchDetails }) => {
