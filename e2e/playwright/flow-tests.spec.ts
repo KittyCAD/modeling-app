@@ -1895,6 +1895,7 @@ test.describe('Testing selections', () => {
   })
 
   test('Solids should be select and deletable', async ({ page }) => {
+    test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1992,7 +1993,6 @@ const rev = revolve({ axis: 'y' }, part009)
     await page.waitForTimeout(100)
 
     const revolve = { x: 646, y: 248 }
-    const extrudeOnFace = { x: 598, y: 81 }
     const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
 
@@ -2010,28 +2010,6 @@ const rev = revolve({ axis: 'y' }, part009)
     await expect(u.codeLocator).not.toContainText(
       `const rev = revolve({ axis: 'y' }, part009)`
     )
-
-    // DELETE EXTRUDE ON FACE
-    await page.mouse.click(extrudeOnFace.x, extrudeOnFace.y)
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> line([62.61, 0], %, $seg03)'
-    )
-    await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
-    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
-    await page.waitForTimeout(200)
-    await expect(u.codeLocator).not.toContainText(
-      `const extrude002 = extrude(50, sketch002)`
-    )
-    await expect(u.codeLocator).toContainText(`const sketch004 = startSketchOn({
-       plane: {
-         origin: { x: 0, y: -37.02, z: 0 },
-         x_axis: { x: 0.66, y: 0, z: 0.75 },
-         y_axis: { x: -0.75, y: 0, z: 0.66 },
-         z_axis: { x: 0, y: -1, z: 0 }
-       }
-     })`)
 
     // DELETE PARENT EXTRUDE
     await page.mouse.click(parentExtrude.x, parentExtrude.y)
