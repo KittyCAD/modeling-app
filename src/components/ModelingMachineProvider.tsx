@@ -79,6 +79,7 @@ import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -141,6 +142,7 @@ export const ModelingMachineProvider = ({
       }
     )
   })
+  const { commandBarState } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -466,6 +468,7 @@ export const ModelingMachineProvider = ({
           return canExtrudeSelection(selectionRanges)
         },
         'has valid selection for deletion': ({ selectionRanges }) => {
+          if (!commandBarState.matches('Closed')) return false
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           // TODO should probably check if there's anything in the artifact map?
           // or maybe this guard is not needed at all?
