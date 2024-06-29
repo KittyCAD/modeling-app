@@ -26,7 +26,11 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
+import {
+  addStartProfileAt,
+  deleteFromSelection,
+  extrudeSketch,
+} from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -44,12 +48,14 @@ import {
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, trap } from 'lib/trap'
-import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { executeAst } from 'useStore'
+import toast from 'react-hot-toast'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -156,6 +162,9 @@ export type ModelingMachineEvent =
   | {
       type: 'Set selection'
       data: SetSelections
+    }
+  | {
+      type: 'Delete selection'
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
@@ -272,6 +281,13 @@ export const modelingMachine = createMachine(
             internal: true,
             cond: 'Has exportable geometry',
             actions: 'Engine export',
+          },
+
+          'Delete selection': {
+            target: 'idle',
+            cond: 'has valid selection for deletion',
+            actions: ['AST delete selection'],
+            internal: true,
           },
         },
 
@@ -962,6 +978,42 @@ export const modelingMachine = createMachine(
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
+      },
+      'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
+        let ast = kclManager.ast
+
+        const getScaledFaceDetails = async (entityId: string) => {
+          const faceDetails = await getFaceDetails(entityId)
+          if (err(faceDetails)) return {}
+          return {
+            ...faceDetails,
+            origin: {
+              x: faceDetails.origin.x / sceneInfra._baseUnitMultiplier,
+              y: faceDetails.origin.y / sceneInfra._baseUnitMultiplier,
+              z: faceDetails.origin.z / sceneInfra._baseUnitMultiplier,
+            },
+          }
+        }
+
+        const modifiedAst = await deleteFromSelection(
+          ast,
+          selectionRanges.codeBasedSelections[0],
+          kclManager.programMemory,
+          getScaledFaceDetails
+        )
+        if (err(modifiedAst)) return
+
+        const testExecute = await executeAst({
+          ast: modifiedAst,
+          useFakeExecutor: true,
+          engineCommandManager,
+        })
+        if (testExecute.errors.length) {
+          toast.error('Unable to delete part')
+          return
+        }
+
+        await kclManager.updateAst(modifiedAst, true)
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
