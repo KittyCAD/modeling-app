@@ -30,7 +30,7 @@ import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { err, trap } from 'lib/trap'
+import { err } from 'lib/trap'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
