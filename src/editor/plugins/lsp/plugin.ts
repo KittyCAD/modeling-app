@@ -247,13 +247,11 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
     overall: infos.some(
       (info) =>
         info.docChanged ||
-        info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
         info.annotations.includes(TransactionAnnotation.UserDelete) ||
         info.annotations.includes(TransactionAnnotation.UserUndo) ||
         info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove) ||
-        info.annotations.includes(TransactionAnnotation.CodeManager)
+        info.annotations.includes(TransactionAnnotation.UserMove)
     ),
     userSelect: infos.some((info) =>
       info.annotations.includes(TransactionAnnotation.UserSelect)

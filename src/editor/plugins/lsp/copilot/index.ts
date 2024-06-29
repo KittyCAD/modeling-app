@@ -195,14 +195,13 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
   return {
     overall: infos.some(
       (info) =>
-        info.docChanged ||
+        update.focusChanged ||
         info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
         info.annotations.includes(TransactionAnnotation.UserDelete) ||
         info.annotations.includes(TransactionAnnotation.UserUndo) ||
         info.annotations.includes(TransactionAnnotation.UserRedo) ||
         info.annotations.includes(TransactionAnnotation.UserMove) ||
-        info.annotations.includes(TransactionAnnotation.CodeManager) ||
         info.annotations.includes(TransactionAnnotation.Copoilot)
     ),
     userSelect: infos.some((info) =>
@@ -223,7 +222,6 @@ export class CompletionRequester implements PluginValue {
       return
     }
 
-    this.viewCompletion()
     this.requestCompletions()
   }, changesDelay)
 
@@ -253,8 +251,16 @@ export class CompletionRequester implements PluginValue {
       return
     }
 
-    this.lastPos = this.viewUpdate.state.selection.main.head
+    if (viewUpdate.focusChanged) {
+      this.rejectSuggestionCommand()
+      return
+    }
 
+    if (!viewUpdate.docChanged) {
+      return
+    }
+
+    this.lastPos = this.viewUpdate.state.selection.main.head
     this._deffererCodeUpdate(true)
   }
 
@@ -418,20 +424,6 @@ export class CompletionRequester implements PluginValue {
     this.lastPos = pos
 
     return
-  }
-
-  viewCompletion() {
-    if (!this.viewUpdate) {
-      return
-    }
-
-    if (!this.containsGhostText()) {
-      return
-    }
-
-    if (this.viewUpdate.focusChanged) {
-      this.rejectSuggestionCommand()
-    }
   }
 
   acceptSuggestionCommand(): boolean {
