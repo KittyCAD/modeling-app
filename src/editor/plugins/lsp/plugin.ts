@@ -89,6 +89,7 @@ export const semanticTokenField = StateField.define<DecorationSet>({
   },
   update(highlights, tr) {
     // Nothing can come before this line, this is very important!
+      // It makes sure the highlights are updated correctly for the changes.
     highlights = highlights.map(tr.changes)
 
     const isSemanticTokensEvent = tr.annotation(lspSemanticTokensEvent.type)
@@ -112,14 +113,16 @@ export const semanticTokenField = StateField.define<DecorationSet>({
           : undefined
 
         if (e.value.from < e.value.to && tag) {
-          highlights = highlights.update({
-            add: [
-              Decoration.mark({ class: className || undefined }).range(
-                e.value.from,
-                e.value.to
-              ),
-            ],
-          })
+          if (className) {
+            highlights = highlights.update({
+              add: [
+                Decoration.mark({ class: className }).range(
+                  e.value.from,
+                  e.value.to
+                ),
+              ],
+            })
+          }
         }
       }
     return highlights

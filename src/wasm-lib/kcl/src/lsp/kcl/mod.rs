@@ -529,9 +529,9 @@ impl Backend {
         diagnostics: &[DiagT],
         clear_all_before_add: bool,
     ) {
-        self.client
-            .log_message(MessageType::INFO, format!("adding {:?} to diag", diagnostics))
-            .await;
+        if diagnostics.is_empty() {
+            return;
+        }
 
         if clear_all_before_add {
             self.clear_diagnostics_map(&params.uri, None).await;
