@@ -21,6 +21,7 @@ export type { LanguageServerOptions } from './plugin/lsp'
 export type { TransactionInfo, RelevantUpdate } from './plugin/annotations'
 export { updateInfo, TransactionAnnotation } from './plugin/annotations'
 export {
+  LanguageServerPluginValue,
   LanguageServerPlugin,
   docPathFacet,
   languageId,

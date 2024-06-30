@@ -2,7 +2,7 @@ import type * as LSP from 'vscode-languageserver-protocol'
 
 import { FromServer, IntoServer } from './codec'
 import Client from './jsonrpc'
-import { LanguageServerPlugin } from '../plugin/lsp'
+import { LanguageServerPluginValue } from '../plugin/lsp'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -50,7 +50,7 @@ export class LanguageServerClient {
 
   public ready: boolean
 
-  readonly plugins: LanguageServerPlugin[]
+  readonly plugins: LanguageServerPluginValue[]
 
   public initializePromise: Promise<void>
 
@@ -162,11 +162,11 @@ export class LanguageServerClient {
     return response
   }
 
-  attachPlugin(plugin: LanguageServerPlugin) {
+  attachPlugin(plugin: LanguageServerPluginValue) {
     this.plugins.push(plugin)
   }
 
-  detachPlugin(plugin: LanguageServerPlugin) {
+  detachPlugin(plugin: LanguageServerPluginValue) {
     const i = this.plugins.indexOf(plugin)
     if (i === -1) return
     this.plugins.splice(i, 1)
