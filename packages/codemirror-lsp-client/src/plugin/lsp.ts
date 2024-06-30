@@ -32,6 +32,7 @@ import {
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
 import { deferExecution, posToOffset, formatMarkdownContents } from './util'
+import { lspAutocompleteKeymapExt } from './autocomplete'
 import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
@@ -551,6 +552,7 @@ export class LanguageServerPluginSpec
 {
   provide(plugin: ViewPlugin<LanguageServerPlugin>): Extension {
     return [
+      lspAutocompleteKeymapExt,
       lspFormatExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),
