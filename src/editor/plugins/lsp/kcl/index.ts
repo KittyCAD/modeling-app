@@ -111,13 +111,8 @@ export class KclPlugin implements PluginValue {
 }
 
 export function kclPlugin(options: LanguageServerOptions): Extension {
-  let plugin: KclPlugin | null = null
-  const viewPlugin = ViewPlugin.define(
-    (view) => (plugin = new KclPlugin(options.client))
-  )
-
   return [
-    viewPlugin,
     ViewPlugin.define((view) => new LanguageServerPlugin(options, view)),
+    ViewPlugin.define(() => new KclPlugin(options.client)),
   ]
 }
