@@ -540,10 +540,12 @@ export class LanguageServerPlugin implements PluginValue {
         return 0
       })
 
-    this.view.dispatch({
+    /* This creates infighting with the others.
+     * TODO: turn it back on when we have a better way to handle it.
+     * this.view.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [lspDiagnosticsEvent, Transaction.addToHistory.of(false)],
-    })
+    })*/
   }
 }
 
