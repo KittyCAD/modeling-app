@@ -589,7 +589,7 @@ test('fold gutters work', async ({ page }) => {
 
   await u.waitForAuthSkipAppStart()
 
-  // TODO: Jess needs to fix this but you jave to mod the code to get them to show
+  // TODO: Jess needs to fix this but you have to mod the code to get them to show
   // up, its an annoying codemirror thing.
   await page.locator('.cm-content').click()
   await page.keyboard.press('End')
