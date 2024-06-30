@@ -48,7 +48,7 @@
     "react-router-dom": "^6.23.1",
     "sketch-helpers": "^0.0.4",
     "three": "^0.164.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "ua-parser-js": "^1.0.37",
     "uuid": "^9.0.1",
     "vscode-jsonrpc": "^8.2.1",
