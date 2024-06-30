@@ -8,6 +8,13 @@ import {
   workspaceFolders,
   LanguageServerOptions,
 } from './plugin/lsp'
+import lspAutocompletionExt from './plugin/autocomplete'
+import lspFoldingExt from './plugin/folding'
+import lspFormatExt from './plugin/format'
+import lspHoverExt from './plugin/hover'
+import lspIndentExt from './plugin/indent'
+import lspLintExt from './plugin/lint'
+import lspSemanticTokensExt from './plugin/semantic-tokens'
 
 export type { LanguageServerClientOptions } from './client'
 export { LanguageServerClient } from './client'
@@ -21,7 +28,6 @@ export type { LanguageServerOptions } from './plugin/lsp'
 export type { TransactionInfo, RelevantUpdate } from './plugin/annotations'
 export { updateInfo, TransactionAnnotation } from './plugin/annotations'
 export {
-  LanguageServerPluginValue,
   LanguageServerPlugin,
   docPathFacet,
   languageId,
@@ -35,10 +41,19 @@ export function lspPlugin(options: LanguageServerOptions): Extension {
     (view) => (plugin = new LanguageServerPlugin(options, view))
   )
 
-  return [
+  let ext = [
     docPathFacet.of(options.documentUri),
     languageId.of('kcl'),
     workspaceFolders.of(options.workspaceFolders),
     viewPlugin,
+    lspAutocompletionExt(plugin),
+    lspFoldingExt(plugin),
+    lspFormatExt(plugin),
+    lspHoverExt(plugin),
+    lspIndentExt(),
+    lspLintExt(),
+    lspSemanticTokensExt(),
   ]
+
+  return ext
 }

@@ -2,12 +2,12 @@ import { Extension } from '@codemirror/state'
 import { ViewPlugin, PluginValue, ViewUpdate } from '@codemirror/view'
 import {
   LanguageServerOptions,
-  LanguageServerPlugin,
   updateInfo,
   TransactionInfo,
   RelevantUpdate,
   TransactionAnnotation,
   LanguageServerClient,
+  lspPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
 import { codeManager, editorManager, kclManager } from 'lib/singletons'
@@ -112,7 +112,7 @@ export class KclPlugin implements PluginValue {
 
 export function kclPlugin(options: LanguageServerOptions): Extension {
   return [
-    ViewPlugin.define((view) => new LanguageServerPlugin(options, view)),
+    lspPlugin(options),
     ViewPlugin.define(() => new KclPlugin(options.client)),
   ]
 }

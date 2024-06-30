@@ -58,11 +58,15 @@ const lspAutocompleteKeymapExt = Prec.highest(
   keymap.computeN([], () => [lspAutocompleteKeymap])
 )
 
-const lspAutocomplete = (plugin: LanguageServerPlugin): Extension => {
+const lspAutocomplete = (plugin: LanguageServerPlugin | null): Extension => {
   return autocompletion({
     defaultKeymap: false,
     override: [
       async (context) => {
+        if (plugin === null) {
+          return null
+        }
+
         const { state, pos, explicit } = context
 
         let nodeBefore = syntaxTree(state).resolveInner(pos, -1)
@@ -107,7 +111,7 @@ const lspAutocomplete = (plugin: LanguageServerPlugin): Extension => {
 }
 
 export default function lspAutocompletionExt(
-  plugin: LanguageServerPlugin
+  plugin: LanguageServerPlugin | null
 ): Extension {
   return [lspAutocompleteKeymapExt, lspAutocomplete(plugin)]
 }

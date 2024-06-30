@@ -18,7 +18,6 @@ import {
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
 import {
-  LanguageServerPlugin,
   TransactionAnnotation,
   offsetToPos,
   posToOffset,
@@ -29,6 +28,7 @@ import {
   TransactionInfo,
   updateInfo,
   RelevantUpdate,
+  lspPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
 import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
@@ -612,7 +612,7 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   })
 
   return [
-    ViewPlugin.define((view) => new LanguageServerPlugin(options, view)),
+    lspPlugin(options),
     completionPlugin,
     domHandlers,
     completionDecoration,

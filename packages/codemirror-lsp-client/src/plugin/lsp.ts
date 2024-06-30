@@ -5,7 +5,7 @@ import type {
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
 import { Facet, StateEffect, Extension, Transaction } from '@codemirror/state'
-import type { ViewUpdate, PluginValue, PluginSpec } from '@codemirror/view'
+import type { ViewUpdate, PluginValue } from '@codemirror/view'
 import { EditorView, Tooltip } from '@codemirror/view'
 import { setDiagnosticsEffect } from '@codemirror/lint'
 
@@ -27,13 +27,6 @@ import {
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
 import { deferExecution, posToOffset, formatMarkdownContents } from './util'
-import lspAutocompletionExt from './autocomplete'
-import lspFoldingExt from './folding'
-import lspFormatExt from './format'
-import lspHoverExt from './hover'
-import lspIndentExt from './indent'
-import lspLintExt from './lint'
-import lspSemanticTokensExt from './semantic-tokens'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -55,7 +48,7 @@ export interface LanguageServerOptions {
   changesDelay?: number
 }
 
-export class LanguageServerPluginValue implements PluginValue {
+export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
   private documentVersion: number
   private foldingRanges: LSP.FoldingRange[] | null = null
@@ -524,26 +517,5 @@ export class LanguageServerPluginValue implements PluginValue {
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [lspDiagnosticsEvent, Transaction.addToHistory.of(false)],
     })
-  }
-}
-
-export class LanguageServerPlugin
-  extends LanguageServerPluginValue
-  implements PluginSpec<LanguageServerPluginValue>
-{
-  constructor(options: LanguageServerOptions, view: EditorView) {
-    super(options, view)
-  }
-
-  provide(): Extension {
-    return [
-      lspAutocompletionExt(this),
-      lspFoldingExt(this),
-      lspFormatExt(this),
-      lspHoverExt(this),
-      lspIndentExt(),
-      lspLintExt(this),
-      lspSemanticTokensExt(),
-    ]
   }
 }
