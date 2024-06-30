@@ -1,6 +1,6 @@
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
-import { posToOffset } from 'editor/plugins/lsp/util'
+import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
 

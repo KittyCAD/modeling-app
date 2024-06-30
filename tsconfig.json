@@ -2,6 +2,9 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
+      "@kittycad/codemirror-lsp-client": [
+        "../packages/codemirror-lsp-client/src/index.ts"
+      ],
       "/*": ["src/*"]
     },
     "types": [
@@ -23,10 +26,12 @@
     "module": "ES2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "composite": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "./*.ts"],
+  "include": ["src", "e2e", "packages", "./*.ts"],
+  "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

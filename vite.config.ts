@@ -53,6 +53,11 @@ const config = defineConfig({
   build: {
     outDir: 'build',
   },
+  resolve: {
+    alias: {
+      '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
+    },
+  },
   plugins: [react(), viteTsconfigPaths(), eslint(), version()],
   worker: {
     plugins: () => [viteTsconfigPaths()],
