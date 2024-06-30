@@ -15,7 +15,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.67",
+    "@kittycad/lib": "^0.0.69",
     "@react-hook/resize-observer": "^2.0.1",
     "@replit/codemirror-interact": "^6.3.1",
     "@tauri-apps/api": "2.0.0-beta.12",
