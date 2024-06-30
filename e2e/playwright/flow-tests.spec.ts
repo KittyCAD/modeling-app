@@ -1148,27 +1148,147 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-content')).toHaveText(``)
 
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
-    await expect(page.locator('.cm-content')).toHaveText(``)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
 
     // We should be able to hit Tab to accept the completion.
     await page.keyboard.press('Tab')
-    await expect(page.locator('.cm-content')).toHaveText(`thgins`)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
 
     // Hit enter a few times.
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
 
-    await expect(page.locator('.cm-content')).toHaveText(`thgins`)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
+    )
 
-    // We should be see the ghost text again.
-    await expect(page.locator('.cm-ghostText')).toBeVisible()
-    await expect(page.locator('.cm-content')).toHaveText(`thgins`)
-
-    // Clicking elsewhere in the code should hide the ghost text.
-    await page.locator('.cm-content').click()
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+  })
+
+  test('going elsewhere in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.press('ArrowUp')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('delete in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.press('Delete')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('backspace in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('focus outside code pane rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await u.openDebugPanel()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
   })
 })
 

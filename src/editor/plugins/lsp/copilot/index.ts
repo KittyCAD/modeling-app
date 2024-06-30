@@ -596,6 +596,8 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
         event.key !== 'Shift' &&
         event.key !== 'Control' &&
         event.key !== 'Alt' &&
+        event.key !== 'Backspace' &&
+        event.key !== 'Delete' &&
         event.key !== 'Meta'
       ) {
         if (view.plugin === null) return false
@@ -622,6 +624,30 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
         if (p === null) return false
 
         return p.sameKeyCommand('Tab')
+      },
+    },
+    {
+      key: 'Backspace',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.rejectSuggestionCommand()
+      },
+    },
+    {
+      key: 'Delete',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.rejectSuggestionCommand()
       },
     },
   ]
