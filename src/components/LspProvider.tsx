@@ -30,8 +30,6 @@ import {
 } from 'editor/plugins/lsp/types'
 import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { err } from 'lib/trap'
 import { isTauri } from 'lib/isTauri'
 import { codeManager } from 'lib/singletons'
@@ -79,13 +77,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     isCopilotLspServerReady,
     setIsKclLspServerReady,
     setIsCopilotLspServerReady,
-    isStreamReady,
   } = useStore((s) => ({
     isKclLspServerReady: s.isKclLspServerReady,
     isCopilotLspServerReady: s.isCopilotLspServerReady,
     setIsKclLspServerReady: s.setIsKclLspServerReady,
     setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
-    isStreamReady: s.isStreamReady,
   }))
   const [isLspReady, setIsLspReady] = useState(false)
   const [isCopilotReady, setIsCopilotReady] = useState(false)
@@ -100,8 +96,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   } = useSettingsAuthContext()
   const token = auth?.context.token
   const navigate = useNavigate()
-  const { overallState } = useNetworkContext()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
@@ -179,27 +173,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     }
     return plugin
   }, [kclLspClient, isKclLspServerReady])
-
-  // Re-execute the scene when the units change.
-  useEffect(() => {
-    if (kclLspClient) {
-      let plugins = kclLspClient.plugins
-      for (let plugin of plugins) {
-        if (plugin.updateUnits && isStreamReady && isNetworkOkay) {
-          plugin.updateUnits(defaultUnit.current)
-        }
-      }
-    }
-  }, [
-    kclLspClient,
-    defaultUnit.current,
-
-    // We want to re-execute the scene if the network comes back online.
-    // The lsp server will only re-execute if there were previous errors or
-    // changes, so it's fine to send it thru here.
-    isStreamReady,
-    isNetworkOkay,
-  ])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '' || TEST) {

@@ -35,6 +35,7 @@ export interface TransactionInfo {
   docChanged: boolean
   addToHistory: boolean
   inSnippet: boolean
+  transaction: Transaction
 }
 
 export const updateInfo = (update: ViewUpdate): TransactionInfo[] => {
@@ -89,6 +90,7 @@ export const updateInfo = (update: ViewUpdate): TransactionInfo[] => {
       docChanged: tr.docChanged,
       addToHistory: tr.annotation(Transaction.addToHistory) || false,
       inSnippet: hasNextSnippetField(update.state),
+      transaction: tr,
     })
   }
 

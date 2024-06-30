@@ -179,10 +179,18 @@ export class LanguageServerClient {
     return this.client.request(method, params) as Promise<LSPRequestMap[K][1]>
   }
 
+  requestCustom<P, R>(method: string, params: P): Promise<R> {
+    return this.client.request(method, params) as Promise<R>
+  }
+
   private notify<K extends keyof LSPNotifyMap>(
     method: K,
     params: LSPNotifyMap[K]
   ): void {
+    return this.client.notify(method, params)
+  }
+
+  notifyCustom<P>(method: string, params: P): void {
     return this.client.notify(method, params)
   }
 
