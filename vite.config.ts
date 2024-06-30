@@ -9,7 +9,13 @@ const config = defineConfig({
     open: true,
     port: 3000,
     watch: {
-      ignored: ['**/target/**'],
+      ignored: [
+        '**/target/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/test-results/**',
+        '**/playwright-report/**',
+      ],
     },
   },
   test: {

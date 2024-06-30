@@ -8,10 +8,19 @@ import {
 import { LanguageServerClient } from 'editor/plugins/lsp'
 import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
-import { parser as jsParser } from '@lezer/javascript'
-import { EditorState } from '@uiw/react-codemirror'
+import KclParser from './parser'
+import { semanticTokenField } from '../plugin'
 
-const data = defineLanguageFacet({})
+const data = defineLanguageFacet({
+  // https://codemirror.net/docs/ref/#commands.CommentTokens
+  commentTokens: {
+    line: '//',
+    block: {
+      open: '/*',
+      close: '*/',
+    },
+  },
+})
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -28,34 +37,24 @@ class KclLanguage extends Language {
       client: options.client,
     })
 
+    const parser = new KclParser()
+
     super(
       data,
       // For now let's use the javascript parser.
       // It works really well and has good syntax highlighting.
       // We can use our lsp for the rest.
-      jsParser,
-      [
-        plugin,
-        EditorState.languageData.of(() => [
-          {
-            // https://codemirror.net/docs/ref/#commands.CommentTokens
-            commentTokens: {
-              line: '//',
-              block: {
-                open: '/*',
-                close: '*/',
-              },
-            },
-          },
-        ]),
-      ],
+      parser,
+      [plugin],
       'kcl'
     )
   }
 }
 
-export default function kclLanguage(options: LanguageOptions): LanguageSupport {
-  const lang = new KclLanguage(options)
+export default class KclLanguageSupport extends LanguageSupport {
+  constructor(options: LanguageOptions) {
+    const lang = new KclLanguage(options)
 
-  return new LanguageSupport(lang)
+    super(lang, [semanticTokenField])
+  }
 }

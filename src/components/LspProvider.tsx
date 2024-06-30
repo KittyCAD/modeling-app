@@ -10,7 +10,7 @@ import React, {
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Client from '../editor/plugins/lsp/client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import kclLanguage from 'editor/plugins/lsp/kcl/language'
+import KclLanguageSupport from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useStore } from 'useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -31,6 +31,8 @@ import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { err } from 'lib/trap'
+import { isTauri } from 'lib/isTauri'
+import { codeManager } from 'lib/singletons'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -128,16 +130,30 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const fromServer: FromServer | Error = FromServer.create()
     if (err(fromServer)) return { lspClient: null }
 
-    const client = new Client(fromServer, intoServer)
-
-    setIsLspReady(true)
+    const client = new Client(fromServer, intoServer, () => {
+      setIsLspReady(true)
+    })
 
     const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
+
     return { lspClient }
   }, [
     // We need a token for authenticating the server.
     token,
   ])
+
+  useMemo(() => {
+    if (!isTauri() && isKclLspServerReady && kclLspClient && codeManager.code) {
+      kclLspClient.textDocumentDidOpen({
+        textDocument: {
+          uri: `file:///${PROJECT_ENTRYPOINT}`,
+          languageId: 'kcl',
+          version: 1,
+          text: codeManager.code,
+        },
+      })
+    }
+  }, [kclLspClient, isKclLspServerReady])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -148,7 +164,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isKclLspServerReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
-      const lsp = kclLanguage({
+      const lsp = new KclLanguageSupport({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
@@ -205,9 +221,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const fromServer: FromServer | Error = FromServer.create()
     if (err(fromServer)) return { lspClient: null }
 
-    const client = new Client(fromServer, intoServer)
-
-    setIsCopilotReady(true)
+    const client = new Client(fromServer, intoServer, () => {
+      setIsCopilotReady(true)
+    })
 
     const lspClient = new LanguageServerClient({
       client,
