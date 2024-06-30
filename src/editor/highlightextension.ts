@@ -1,9 +1,12 @@
-import { StateField, StateEffect } from '@codemirror/state'
+import { StateField, StateEffect, Annotation } from '@codemirror/state'
 import { EditorView, Decoration } from '@codemirror/view'
 
 export { EditorView }
 
 export const addLineHighlight = StateEffect.define<[number, number]>()
+
+const addLineHighlightAnnotation = Annotation.define<null>()
+export const addLineHighlightEvent = addLineHighlightAnnotation.of(null)
 
 export const lineHighlightField = StateField.define({
   create() {
@@ -11,6 +14,12 @@ export const lineHighlightField = StateField.define({
   },
   update(lines, tr) {
     lines = lines.map(tr.changes)
+
+    const isLineHighlightEvent = tr.annotation(addLineHighlightEvent.type)
+    if (!isLineHighlightEvent) {
+      return lines
+    }
+
     const deco = []
     for (let e of tr.effects) {
       if (e.is(addLineHighlight)) {

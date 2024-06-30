@@ -1106,16 +1106,70 @@ shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
   // Okay execution finished, let's start editing text below the error.
   await u.codeLocator.click()
   // Go to the end of the editor
+  // This bug happens when there is a diagnostic in the editor and you try to
+  // edit text below it.
+  // Or delete a huge chunk of text and then try to edit below it.
   await page.keyboard.press('End')
+  await page.keyboard.down('Shift')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.up('Shift')
+  await page.keyboard.press('Backspace')
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  // Get to the area where we want to type.
-  for (let i = 0; i < 20; i++) {
-    await page.keyboard.press('ArrowLeft')
-  }
-
+  await page.keyboard.press('Enter')
   await page.keyboard.press('Enter')
   await page.keyboard.type('thing: "blah"', { delay: 100 })
   await page.keyboard.press('Enter')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const exampleSketch = startSketchOn("XZ")
+  |> startProfileAt([0, 0], %)
+  |> angledLine({ angle: 50, length: 45 }, %)
+  |> yLineTo(0, %)
+  |> close(%)
+
+  thing: "blah"`)
+
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+})
+
+test.describe('Copilot ghost text', () => {
+  test('completes code in empty file', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toHaveText(`thgins`)
+
+    // Hit enter a few times.
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(`thgins`)
+
+    // We should be see the ghost text again.
+    await expect(page.locator('.cm-ghostText')).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(`thgins`)
+
+    // Clicking elsewhere in the code should hide the ghost text.
+    await page.locator('.cm-content').click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+  })
 })
 
 test.describe('Autocomplete works', () => {
@@ -2222,6 +2276,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
       },
     })
     await page.waitForTimeout(100)
+    await u.closeDebugPanel()
 
     const extrusionTop: Coords2d = [800, 240]
     const flatExtrusionFace: Coords2d = [960, 160]
@@ -2236,25 +2291,25 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await page.waitForTimeout(200)
 
     await page.mouse.move(extrusionTop[0], extrusionTop[1])
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(arc[0], arc[1])
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(close[0], close[1])
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+    await expect(page.getByTestId('hover-highlight').first()).toHaveCount(5) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,

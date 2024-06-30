@@ -4,14 +4,17 @@ import {
   Decoration,
   DecorationSet,
   EditorView,
+  KeyBinding,
   PluginValue,
   ViewPlugin,
   ViewUpdate,
+  keymap,
 } from '@codemirror/view'
 import {
   Annotation,
   EditorState,
   Extension,
+  Prec,
   StateEffect,
   StateField,
   Transaction,
@@ -261,10 +264,6 @@ export class CompletionRequester implements PluginValue {
 
     if (viewUpdate.focusChanged) {
       this.rejectSuggestionCommand()
-      return
-    }
-
-    if (!viewUpdate.docChanged) {
       return
     }
 
@@ -520,6 +519,7 @@ export class CompletionRequester implements PluginValue {
       return false
     }
 
+    console.log({ key, ghostText })
     const tabKey = 'Tab'
 
     // When we type a key that is the same as the first letter of the suggestion, we delete the first letter of the suggestion and carry through with the original keypress
@@ -611,9 +611,29 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     },
   })
 
+  const copilotAutocompleteKeymap: readonly KeyBinding[] = [
+    {
+      key: 'Tab',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.sameKeyCommand('Tab')
+      },
+    },
+  ]
+
+  const copilotAutocompleteKeymapExt = Prec.highest(
+    keymap.computeN([], () => [copilotAutocompleteKeymap])
+  )
+
   return [
     lspPlugin(options),
     completionPlugin,
+    copilotAutocompleteKeymapExt,
     domHandlers,
     completionDecoration,
   ]
