@@ -178,7 +178,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
                 // Update the folding ranges, since the AST has changed.
                 // This is a hack since codemirror does not support async foldService.
                 // When they do we can delete this.
-                console.log('update folding ranges')
                 plugin.updateFoldingRanges()
                 plugin.requestSemanticTokens()
                 break

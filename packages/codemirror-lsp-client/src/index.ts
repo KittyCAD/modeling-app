@@ -45,19 +45,18 @@ export function lspPlugin(options: LanguageServerOptions): Extension {
     workspaceFolders.of(options.workspaceFolders),
     viewPlugin,
     //lspAutocompletionExt(plugin),
-  ]
-
-  if (options.client.getServerCapabilities().foldingRangeProvider) {
-    ext.push(
       foldService.of(
         (state: EditorState, lineStart: number, lineEnd: number) => {
           if (plugin == null) return null
-          console.log('plugin', plugin)
           // Get the folding ranges from the language server.
           // Since this is async we directly need to update the folding ranges after.
           return plugin?.foldingRange(lineStart, lineEnd)
         }
       )
+  ]
+
+  if (options.client.getServerCapabilities().foldingRangeProvider) {
+    ext.push(
     )
   }
 
