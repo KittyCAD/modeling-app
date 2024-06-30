@@ -17,18 +17,20 @@ import {
   Transaction,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
-import { offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
-import { LanguageServerOptions, LanguageServerClient } from 'editor/plugins/lsp'
-import { deferExecution } from 'lib/utils'
 import {
   LanguageServerPlugin,
   TransactionAnnotation,
+  offsetToPos,
+  posToOffset,
+  LanguageServerOptions,
+  LanguageServerClient,
   docPathFacet,
   languageId,
+  TransactionInfo,
   updateInfo,
-  workspaceFolders,
   RelevantUpdate,
-} from 'editor/plugins/lsp/plugin'
+} from '@kittycad/codemirror-lsp-client'
+import { deferExecution } from 'lib/utils'
 
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
@@ -184,7 +186,7 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
   const infos = updateInfo(update)
 
   // Make sure we are not in a snippet
-  if (infos.some((info) => info.inSnippet)) {
+  if (infos.some((info: TransactionInfo) => info.inSnippet)) {
     return {
       overall: false,
       userSelect: false,
@@ -194,7 +196,7 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
 
   return {
     overall: infos.some(
-      (info) =>
+      (info: TransactionInfo) =>
         update.focusChanged ||
         info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
@@ -204,7 +206,7 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
         info.annotations.includes(TransactionAnnotation.UserMove) ||
         info.annotations.includes(TransactionAnnotation.Copoilot)
     ),
-    userSelect: infos.some((info) =>
+    userSelect: infos.some((info: TransactionInfo) =>
       info.annotations.includes(TransactionAnnotation.UserSelect)
     ),
     time: infos.length ? infos[0].time : null,
@@ -571,13 +573,7 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   })
 
   return [
-    docPathFacet.of(options.documentUri),
-    languageId.of('kcl'),
-    workspaceFolders.of(options.workspaceFolders),
-    ViewPlugin.define(
-      (view) =>
-        new LanguageServerPlugin(options.client, view, options.allowHTMLContent)
-    ),
+    ViewPlugin.define((view) => new LanguageServerPlugin(options, view)),
     completionPlugin,
     domHandlers,
     completionDecoration,

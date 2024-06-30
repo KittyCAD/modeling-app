@@ -6,7 +6,6 @@ import {
   unregisterServerCapability,
 } from './server-capability-registration'
 import { Codec, FromServer, IntoServer } from './codec'
-import { err } from 'lib/trap'
 
 const client_capabilities: LSP.ClientCapabilities = {
   textDocument: {
@@ -130,7 +129,9 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
             this.serverCapabilities,
             capabilityRegistration
           )
-          if (err(caps)) return (this.serverCapabilities = {})
+          if (caps instanceof Error) {
+            return (this.serverCapabilities = {})
+          }
           this.serverCapabilities = caps
         }
       )
@@ -145,7 +146,9 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
             this.serverCapabilities,
             capabilityUnregistration
           )
-          if (err(caps)) return (this.serverCapabilities = {})
+          if (caps instanceof Error) {
+            return (this.serverCapabilities = {})
+          }
           this.serverCapabilities = caps
         }
       )

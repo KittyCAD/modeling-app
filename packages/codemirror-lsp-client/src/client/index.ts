@@ -1,15 +1,8 @@
 import type * as LSP from 'vscode-languageserver-protocol'
-import Client from './client'
-import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
-import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
-import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
-import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
-import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
-import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
-import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
-import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
-import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
-import { LspWorker } from './types'
+
+import { FromServer, IntoServer } from './codec'
+import Client from './jsonrpc'
+import { LanguageServerPlugin } from '../plugin/lsp'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -30,12 +23,6 @@ interface LSPRequestMap {
     LSP.TextEdit[] | null
   ]
   'textDocument/foldingRange': [LSP.FoldingRangeParams, LSP.FoldingRange[]]
-  'copilot/getCompletions': [
-    CopilotLspCompletionParams,
-    CopilotCompletionResponse
-  ]
-  'kcl/updateUnits': [UpdateUnitsParams, UpdateUnitsResponse | null]
-  'kcl/updateCanExecute': [UpdateCanExecuteParams, UpdateCanExecuteResponse]
 }
 
 // Client to server
@@ -48,26 +35,18 @@ interface LSPNotifyMap {
   'workspace/didCreateFiles': LSP.CreateFilesParams
   'workspace/didRenameFiles': LSP.RenameFilesParams
   'workspace/didDeleteFiles': LSP.DeleteFilesParams
-  'copilot/notifyAccepted': CopilotAcceptCompletionParams
-  'copilot/notifyRejected': CopilotRejectCompletionParams
 }
 
 export interface LanguageServerClientOptions {
-  client: Client
-  name: LspWorker
-}
-
-export interface LanguageServerOptions {
-  // We assume this is the main project directory, we are currently working in.
-  workspaceFolders: LSP.WorkspaceFolder[]
-  documentUri: string
-  allowHTMLContent: boolean
-  client: LanguageServerClient
+  name: string
+  fromServer: FromServer
+  intoServer: IntoServer
+  initializedCallback: () => void
 }
 
 export class LanguageServerClient {
   private client: Client
-  readonly name: LspWorker
+  readonly name: string
 
   public ready: boolean
 
@@ -75,16 +54,18 @@ export class LanguageServerClient {
 
   public initializePromise: Promise<void>
 
-  private queuedUids: string[] = []
-
   constructor(options: LanguageServerClientOptions) {
-    this.plugins = []
-    this.client = options.client
     this.name = options.name
+    this.plugins = []
+
+    this.client = new Client(
+      options.fromServer,
+      options.intoServer,
+      options.initializedCallback
+    )
 
     this.ready = false
 
-    this.queuedUids = []
     this.initializePromise = this.initialize()
   }
 
@@ -203,46 +184,6 @@ export class LanguageServerClient {
     params: LSPNotifyMap[K]
   ): void {
     return this.client.notify(method, params)
-  }
-
-  async getCompletion(params: CopilotLspCompletionParams) {
-    const response = await this.request('copilot/getCompletions', params)
-    //
-    this.queuedUids = [...response.completions.map((c) => c.uuid)]
-    return response
-  }
-
-  async accept(uuid: string) {
-    const badUids = this.queuedUids.filter((u) => u !== uuid)
-    this.queuedUids = []
-    this.acceptCompletion({ uuid })
-    this.rejectCompletions({ uuids: badUids })
-  }
-
-  async reject() {
-    const badUids = this.queuedUids
-    this.queuedUids = []
-    this.rejectCompletions({ uuids: badUids })
-  }
-
-  acceptCompletion(params: CopilotAcceptCompletionParams) {
-    this.notify('copilot/notifyAccepted', params)
-  }
-
-  rejectCompletions(params: CopilotRejectCompletionParams) {
-    this.notify('copilot/notifyRejected', params)
-  }
-
-  async updateUnits(
-    params: UpdateUnitsParams
-  ): Promise<UpdateUnitsResponse | null> {
-    return await this.request('kcl/updateUnits', params)
-  }
-
-  async updateCanExecute(
-    params: UpdateCanExecuteParams
-  ): Promise<UpdateCanExecuteResponse> {
-    return await this.request('kcl/updateCanExecute', params)
   }
 
   private processNotifications(notification: LSP.NotificationMessage) {

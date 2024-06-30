@@ -1,12 +1,16 @@
 import * as jsrpc from 'json-rpc-2.0'
 import * as vsrpc from 'vscode-jsonrpc'
 
-import Bytes from './codec/bytes'
-import StreamDemuxer from './codec/demuxer'
-import Headers from './codec/headers'
-import Queue from './codec/queue'
+import Bytes from './bytes'
+import StreamDemuxer from './demuxer'
+import Headers from './headers'
+import Queue from './queue'
 import Tracer from './tracer'
-import { LspWorkerEventType, LspWorker } from './types'
+
+export enum LspWorkerEventType {
+  Init = 'init',
+  Call = 'call',
+}
 
 export const encoder = new TextEncoder()
 export const decoder = new TextDecoder()
@@ -33,16 +37,24 @@ export class IntoServer
   implements AsyncGenerator<Uint8Array, never, void>
 {
   private worker: Worker | null = null
-  private type_: LspWorker | null = null
-  constructor(type_?: LspWorker, worker?: Worker) {
+  private type_: String | null = null
+
+  private trace: boolean = false
+
+  constructor(type_?: String, worker?: Worker, trace?: boolean) {
     super()
     if (worker && type_) {
       this.worker = worker
       this.type_ = type_
     }
+
+    this.trace = trace || false
   }
   enqueue(item: Uint8Array): void {
-    Tracer.client(Headers.remove(decoder.decode(item)))
+    if (this.trace) {
+      Tracer.client(Headers.remove(decoder.decode(item)))
+    }
+
     if (this.worker) {
       this.worker.postMessage({
         worker: this.type_,

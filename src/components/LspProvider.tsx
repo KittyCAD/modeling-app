@@ -1,4 +1,3 @@
-import { LanguageServerClient } from 'editor/plugins/lsp'
 import type * as LSP from 'vscode-languageserver-protocol'
 import React, {
   createContext,
@@ -7,8 +6,12 @@ import React, {
   useContext,
   useState,
 } from 'react'
-import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
-import Client from '../editor/plugins/lsp/client'
+import {
+  LanguageServerClient,
+  FromServer,
+  IntoServer,
+  LspWorkerEventType,
+} from '@kittycad/codemirror-lsp-client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import KclLanguageSupport from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
@@ -21,7 +24,6 @@ import { paths } from 'lib/paths'
 import { FileEntry } from 'lib/types'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
-  LspWorkerEventType,
   KclWorkerOptions,
   CopilotWorkerOptions,
   LspWorker,
@@ -130,11 +132,14 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const fromServer: FromServer | Error = FromServer.create()
     if (err(fromServer)) return { lspClient: null }
 
-    const client = new Client(fromServer, intoServer, () => {
-      setIsLspReady(true)
+    const lspClient = new LanguageServerClient({
+      name: LspWorker.Kcl,
+      fromServer,
+      intoServer,
+      initializedCallback: () => {
+        setIsLspReady(true)
+      },
     })
-
-    const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
 
     return { lspClient }
   }, [
@@ -221,13 +226,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const fromServer: FromServer | Error = FromServer.create()
     if (err(fromServer)) return { lspClient: null }
 
-    const client = new Client(fromServer, intoServer, () => {
-      setIsCopilotReady(true)
-    })
-
     const lspClient = new LanguageServerClient({
-      client,
       name: LspWorker.Copilot,
+      fromServer,
+      intoServer,
+      initializedCallback: () => {
+        setIsCopilotReady(true)
+      },
     })
     return { lspClient }
   }, [token])

@@ -1,4 +1,10 @@
+import { highlightingFor } from '@codemirror/language'
+import { StateEffect, StateField } from '@codemirror/state'
+import { EditorView, Decoration, DecorationSet } from '@codemirror/view'
+
 import { Tag, tags } from '@lezer/highlight'
+
+import { lspSemanticTokensEvent } from './annotations'
 
 export interface SemanticToken {
   from: number
@@ -6,6 +12,61 @@ export interface SemanticToken {
   type: string
   modifiers: string[]
 }
+
+export const addToken = StateEffect.define<SemanticToken>({
+  map: (token: SemanticToken, change) => ({
+    ...token,
+    from: change.mapPos(token.from),
+    to: change.mapPos(token.to),
+  }),
+})
+
+export const lspSemanticTokenExt = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none
+  },
+  update(highlights, tr) {
+    // Nothing can come before this line, this is very important!
+    // It makes sure the highlights are updated correctly for the changes.
+    highlights = highlights.map(tr.changes)
+
+    const isSemanticTokensEvent = tr.annotation(lspSemanticTokensEvent.type)
+    if (!isSemanticTokensEvent) {
+      return highlights
+    }
+
+    // Check if any of the changes are addToken
+    const hasAddToken = tr.effects.some((e) => e.is(addToken))
+    if (hasAddToken) {
+      highlights = highlights.update({
+        filter: (from, to) => false,
+      })
+    }
+
+    for (const e of tr.effects)
+      if (e.is(addToken)) {
+        const tag = getTag(e.value)
+        const className = tag
+          ? highlightingFor(tr.startState, [tag])
+          : undefined
+
+        if (e.value.from < e.value.to && tag) {
+          if (className) {
+            highlights = highlights.update({
+              add: [
+                Decoration.mark({ class: className }).range(
+                  e.value.from,
+                  e.value.to
+                ),
+              ],
+            })
+          }
+        }
+      }
+    return highlights
+  },
+  provide: (f) => EditorView.decorations.from(f),
+})
 
 export function getTag(semanticToken: SemanticToken): Tag | null {
   let tokenType = convertSemanticTokenTypeToCodeMirrorTag(semanticToken.type)

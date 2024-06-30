@@ -5,11 +5,10 @@ import {
   defineLanguageFacet,
   LanguageSupport,
 } from '@codemirror/language'
-import { LanguageServerClient } from 'editor/plugins/lsp'
+import { LanguageServerClient } from '@kittycad/codemirror-lsp-client'
 import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
 import KclParser from './parser'
-import { semanticTokenField } from '../plugin'
 
 const data = defineLanguageFacet({
   // https://codemirror.net/docs/ref/#commands.CommentTokens
@@ -55,6 +54,6 @@ export default class KclLanguageSupport extends LanguageSupport {
   constructor(options: LanguageOptions) {
     const lang = new KclLanguage(options)
 
-    super(lang, [semanticTokenField])
+    super(lang)
   }
 }

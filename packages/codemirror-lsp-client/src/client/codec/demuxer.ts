@@ -1,10 +1,10 @@
 import * as vsrpc from 'vscode-jsonrpc'
 
+import { Codec } from '.'
 import Bytes from './bytes'
-import PromiseMap from './map'
 import Queue from './queue'
-import Tracer from '../tracer'
-import { Codec } from '../codec'
+import Tracer from './tracer'
+import PromiseMap from './map'
 
 export default class StreamDemuxer extends Queue<Uint8Array> {
   readonly responses: PromiseMap<number | string, vsrpc.ResponseMessage> =
@@ -15,10 +15,13 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
     new Queue<vsrpc.RequestMessage>()
 
   readonly #start: Promise<void>
+  private trace: boolean = false
 
-  constructor() {
+  constructor(trace?: boolean) {
     super()
     this.#start = this.start()
+
+    this.trace = trace || false
   }
 
   private async start(): Promise<void> {
@@ -64,7 +67,10 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
         contentLength = null
 
         const message = JSON.parse(delimited) as vsrpc.Message
-        Tracer.server(message)
+
+        if (this.trace) {
+          Tracer.server(message)
+        }
 
         // demux the message stream
         if (vsrpc.Message.isResponse(message) && null != message.id) {

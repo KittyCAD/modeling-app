@@ -1,56 +1,32 @@
-import {
-  completeFromList,
-  hasNextSnippetField,
-  pickedCompletion,
-  snippetCompletion,
-} from '@codemirror/autocomplete'
-import {
-  Facet,
-  StateEffect,
-  StateField,
-  Extension,
-  Annotation,
-  Transaction,
-} from '@codemirror/state'
-import {
-  EditorView,
-  Tooltip,
-  Decoration,
-  DecorationSet,
-} from '@codemirror/view'
-import { URI } from 'vscode-uri'
-import {
-  DiagnosticSeverity,
-  CompletionItemKind,
-  CompletionTriggerKind,
-} from 'vscode-languageserver-protocol'
-
-import { deferExecution } from 'lib/utils'
 import type {
   Completion,
   CompletionContext,
   CompletionResult,
 } from '@codemirror/autocomplete'
-import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
+import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
+import { Facet, StateEffect, Extension, Transaction } from '@codemirror/state'
 import type { ViewUpdate, PluginValue } from '@codemirror/view'
+import { EditorView, Tooltip } from '@codemirror/view'
+import { setDiagnosticsEffect } from '@codemirror/lint'
+
+import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
-import { LanguageServerClient } from 'editor/plugins/lsp'
-import { Marked } from '@ts-stack/markdown'
-import { posToOffset } from 'editor/plugins/lsp/util'
-import { Program, ProgramMemory } from 'lang/wasm'
-import { codeManager, editorManager } from 'lib/singletons'
-import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
-import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
-import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
-import { copilotPluginEvent } from './copilot'
-import { codeManagerUpdateEvent } from 'lang/codeManager'
 import {
-  modelingMachineEvent,
-  updateOutsideEditorEvent,
-  setDiagnosticsEvent,
-} from 'editor/manager'
-import { SemanticToken, getTag } from 'editor/plugins/lsp/semantic_token'
-import { highlightingFor } from '@codemirror/language'
+  DiagnosticSeverity,
+  CompletionTriggerKind,
+} from 'vscode-languageserver-protocol'
+import { URI } from 'vscode-uri'
+
+import { LanguageServerClient } from '../client'
+import {
+  lspSemanticTokensEvent,
+  lspFormatCodeEvent,
+  lspDiagnosticsEvent,
+  relevantUpdate,
+} from './annotations'
+import { CompletionItemKindMap } from './autocomplete'
+import { addToken, SemanticToken } from './semantic-tokens'
+import { deferExecution, posToOffset, formatMarkdownContents } from './util'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -62,202 +38,14 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
 
-enum LspAnnotation {
-  SemanticTokens = 'semantic-tokens',
-}
+export interface LanguageServerOptions {
+  // We assume this is the main project directory, we are currently working in.
+  workspaceFolders: LSP.WorkspaceFolder[]
+  documentUri: string
+  allowHTMLContent: boolean
+  client: LanguageServerClient
 
-const lspEvent = Annotation.define<LspAnnotation>()
-export const lspSemanticTokensEvent = lspEvent.of(LspAnnotation.SemanticTokens)
-
-const CompletionItemKindMap = Object.fromEntries(
-  Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
-) as Record<CompletionItemKind, string>
-
-const changesDelay = 600
-
-const addToken = StateEffect.define<SemanticToken>({
-  map: (token: SemanticToken, change) => ({
-    ...token,
-    from: change.mapPos(token.from),
-    to: change.mapPos(token.to),
-  }),
-})
-
-export const semanticTokenField = StateField.define<DecorationSet>({
-  create() {
-    return Decoration.none
-  },
-  update(highlights, tr) {
-    // Nothing can come before this line, this is very important!
-    // It makes sure the highlights are updated correctly for the changes.
-    highlights = highlights.map(tr.changes)
-
-    const isSemanticTokensEvent = tr.annotation(lspSemanticTokensEvent.type)
-    if (!isSemanticTokensEvent) {
-      return highlights
-    }
-
-    // Check if any of the changes are addToken
-    const hasAddToken = tr.effects.some((e) => e.is(addToken))
-    if (hasAddToken) {
-      highlights = highlights.update({
-        filter: (from, to) => false,
-      })
-    }
-
-    for (const e of tr.effects)
-      if (e.is(addToken)) {
-        const tag = getTag(e.value)
-        const className = tag
-          ? highlightingFor(tr.startState, [tag])
-          : undefined
-
-        if (e.value.from < e.value.to && tag) {
-          if (className) {
-            highlights = highlights.update({
-              add: [
-                Decoration.mark({ class: className }).range(
-                  e.value.from,
-                  e.value.to
-                ),
-              ],
-            })
-          }
-        }
-      }
-    return highlights
-  },
-  provide: (f) => EditorView.decorations.from(f),
-})
-
-export enum TransactionAnnotation {
-  Diagnostics = 'diagnostics',
-  Remote = 'remote',
-  UserSelect = 'user.select',
-  UserInput = 'user.input',
-  UserMove = 'user.move',
-  UserDelete = 'user.delete',
-  UserUndo = 'user.undo',
-  UserRedo = 'user.redo',
-
-  Copoilot = 'copilot',
-  OutsideEditor = 'outsideEditor',
-  CodeManager = 'codeManager',
-  ModelingMachine = 'modelingMachineEvent',
-  LspSemanticTokens = 'lspSemanticTokensEvent',
-
-  PickedCompletion = 'pickedCompletion',
-}
-
-export interface TransactionInfo {
-  annotations: TransactionAnnotation[]
-  time: number | null
-  docChanged: boolean
-  addToHistory: boolean
-  inSnippet: boolean
-}
-
-export const updateInfo = (update: ViewUpdate): TransactionInfo[] => {
-  let transactionInfos: TransactionInfo[] = []
-
-  for (const tr of update.transactions) {
-    let annotations: TransactionAnnotation[] = []
-
-    if (tr.isUserEvent('select')) {
-      annotations.push(TransactionAnnotation.UserSelect)
-    }
-
-    if (tr.isUserEvent('input')) {
-      annotations.push(TransactionAnnotation.UserInput)
-    }
-    if (tr.isUserEvent('delete')) {
-      annotations.push(TransactionAnnotation.UserDelete)
-    }
-    if (tr.isUserEvent('undo')) {
-      annotations.push(TransactionAnnotation.UserUndo)
-    }
-    if (tr.isUserEvent('redo')) {
-      annotations.push(TransactionAnnotation.UserRedo)
-    }
-    if (tr.isUserEvent('move')) {
-      annotations.push(TransactionAnnotation.UserMove)
-    }
-
-    if (tr.annotation(pickedCompletion) !== undefined) {
-      annotations.push(TransactionAnnotation.PickedCompletion)
-    }
-
-    if (tr.annotation(copilotPluginEvent.type) !== undefined) {
-      annotations.push(TransactionAnnotation.Copoilot)
-    }
-
-    if (tr.annotation(updateOutsideEditorEvent.type) !== undefined) {
-      annotations.push(TransactionAnnotation.OutsideEditor)
-    }
-
-    if (tr.annotation(codeManagerUpdateEvent.type) !== undefined) {
-      annotations.push(TransactionAnnotation.CodeManager)
-    }
-
-    if (tr.annotation(modelingMachineEvent.type) !== undefined) {
-      annotations.push(TransactionAnnotation.ModelingMachine)
-    }
-
-    if (tr.annotation(lspSemanticTokensEvent.type) !== undefined) {
-      annotations.push(TransactionAnnotation.LspSemanticTokens)
-    }
-
-    if (tr.annotation(setDiagnosticsEvent.type) !== undefined) {
-      annotations.push(TransactionAnnotation.Diagnostics)
-    }
-
-    if (tr.annotation(Transaction.remote) !== undefined) {
-      annotations.push(TransactionAnnotation.Remote)
-    }
-
-    transactionInfos.push({
-      annotations,
-      time: tr.annotation(Transaction.time) || null,
-      docChanged: tr.docChanged,
-      addToHistory: tr.annotation(Transaction.addToHistory) || false,
-      inSnippet: hasNextSnippetField(update.state),
-    })
-  }
-
-  return transactionInfos
-}
-
-export interface RelevantUpdate {
-  overall: boolean
-  userSelect: boolean
-  time: number | null
-}
-
-export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
-  const infos = updateInfo(update)
-  // Make sure we are not in a snippet
-  if (infos.some((info) => info.inSnippet)) {
-    return {
-      overall: false,
-      userSelect: false,
-      time: null,
-    }
-  }
-  return {
-    overall: infos.some(
-      (info) =>
-        info.docChanged ||
-        info.annotations.includes(TransactionAnnotation.UserInput) ||
-        info.annotations.includes(TransactionAnnotation.UserDelete) ||
-        info.annotations.includes(TransactionAnnotation.UserUndo) ||
-        info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove)
-    ),
-    userSelect: infos.some((info) =>
-      info.annotations.includes(TransactionAnnotation.UserSelect)
-    ),
-    time: infos.length ? infos[0].time : null,
-  }
+  changesDelay?: number
 }
 
 export class LanguageServerPlugin implements PluginValue {
@@ -266,6 +54,9 @@ export class LanguageServerPlugin implements PluginValue {
   private foldingRanges: LSP.FoldingRange[] | null = null
 
   private previousSemanticTokens: SemanticToken[] = []
+
+  private allowHTMLContent: boolean = true
+  private changesDelay: number = 600
 
   private _defferer = deferExecution((code: string) => {
     try {
@@ -282,15 +73,19 @@ export class LanguageServerPlugin implements PluginValue {
     } catch (e) {
       console.error(e)
     }
-  }, changesDelay)
+  }, this.changesDelay)
 
-  constructor(
-    client: LanguageServerClient,
-    private view: EditorView,
-    private allowHTMLContent: boolean
-  ) {
-    this.client = client
+  constructor(options: LanguageServerOptions, private view: EditorView) {
+    this.client = options.client
     this.documentVersion = 0
+
+    if (options.changesDelay) {
+      this.changesDelay = options.changesDelay
+    }
+
+    if (options.allowHTMLContent !== undefined) {
+      this.allowHTMLContent = options.allowHTMLContent
+    }
 
     this.client.attachPlugin(this)
 
@@ -302,6 +97,7 @@ export class LanguageServerPlugin implements PluginValue {
   private getDocPath(view = this.view) {
     return view.state.facet(docPathFacet)
   }
+
   private getDocText(view = this.view) {
     return view.state.doc.toString()
   }
@@ -357,7 +153,7 @@ export class LanguageServerPlugin implements PluginValue {
     this._defferer(documentText)
   }
 
-  requestDiagnostics(view: EditorView) {
+  requestDiagnostics() {
     this.sendChange({ documentText: this.getDocText() })
   }
 
@@ -389,8 +185,8 @@ export class LanguageServerPlugin implements PluginValue {
     dom.classList.add('documentation')
     dom.classList.add('hover-tooltip')
     dom.style.zIndex = '99999999'
-    if (this.allowHTMLContent) dom.innerHTML = formatContents(contents)
-    else dom.textContent = formatContents(contents)
+    if (this.allowHTMLContent) dom.innerHTML = formatMarkdownContents(contents)
+    else dom.textContent = formatMarkdownContents(contents)
     return { pos, end, create: (view) => ({ dom }), above: true }
   }
 
@@ -442,41 +238,6 @@ export class LanguageServerPlugin implements PluginValue {
     return null
   }
 
-  async updateUnits(units: UnitLength): Promise<UpdateUnitsResponse | null> {
-    if (this.client.name !== 'kcl') return null
-    if (!this.client.ready) return null
-
-    return await this.client.updateUnits({
-      textDocument: {
-        uri: this.getDocUri(),
-      },
-      text: this.getDocText(),
-      units,
-    })
-  }
-  async updateCanExecute(
-    canExecute: boolean
-  ): Promise<UpdateCanExecuteResponse | null> {
-    if (this.client.name !== 'kcl') return null
-    if (!this.client.ready) return null
-
-    let response = await this.client.updateCanExecute({
-      canExecute,
-    })
-
-    if (!canExecute && response.isExecuting) {
-      // We want to wait until the server is not busy before we reply to the
-      // caller.
-      while (response.isExecuting) {
-        await new Promise((resolve) => setTimeout(resolve, 100))
-        response = await this.client.updateCanExecute({
-          canExecute,
-        })
-      }
-    }
-    return response
-  }
-
   async requestFormatting() {
     if (
       !this.client.ready ||
@@ -504,8 +265,15 @@ export class LanguageServerPlugin implements PluginValue {
     if (!result) return null
 
     for (let i = 0; i < result.length; i++) {
-      const { newText } = result[i]
-      codeManager.updateCodeStateEditor(newText)
+      const { range, newText } = result[i]
+      this.view.dispatch({
+        changes: {
+          from: posToOffset(this.view.state.doc, range.start)!,
+          to: posToOffset(this.view.state.doc, range.end)!,
+          insert: newText,
+        },
+        annotations: [lspFormatCodeEvent, Transaction.addToHistory.of(true)],
+      })
     }
   }
 
@@ -571,7 +339,7 @@ export class LanguageServerPlugin implements PluginValue {
         }
         if (documentation) {
           completion.info = () => {
-            const htmlString = formatContents(documentation)
+            const htmlString = formatMarkdownContents(documentation)
             const htmlNode = document.createElement('div')
             htmlNode.style.display = 'contents'
             htmlNode.innerHTML = htmlString
@@ -708,21 +476,6 @@ export class LanguageServerPlugin implements PluginValue {
             notification.params
           )
           break
-        case 'kcl/astUpdated':
-          // The server has updated the AST, we should update elsewhere.
-          let updatedAst = notification.params as Program
-          console.log('[lsp]: Updated AST', updatedAst)
-
-          // Update the folding ranges, since the AST has changed.
-          // This is a hack since codemirror does not support async foldService.
-          // When they do we can delete this.
-          this.updateFoldingRanges()
-          break
-        case 'kcl/memoryUpdated':
-          // The server has updated the memory, we should update elsewhere.
-          let updatedMemory = notification.params as ProgramMemory
-          console.log('[lsp]: Updated Memory', updatedMemory)
-          break
       }
     } catch (error) {
       console.error(error)
@@ -760,18 +513,9 @@ export class LanguageServerPlugin implements PluginValue {
         return 0
       })
 
-    editorManager.addDiagnostics(diagnostics)
-  }
-}
-
-function formatContents(
-  contents: LSP.MarkupContent | LSP.MarkedString | LSP.MarkedString[]
-): string {
-  if (Array.isArray(contents)) {
-    return contents.map((c) => formatContents(c) + '\n\n').join('')
-  } else if (typeof contents === 'string') {
-    return Marked.parse(contents)
-  } else {
-    return Marked.parse(contents.value)
+    this.view.dispatch({
+      effects: [setDiagnosticsEffect.of(diagnostics)],
+      annotations: [lspDiagnosticsEvent, Transaction.addToHistory.of(false)],
+    })
   }
 }
