@@ -45,8 +45,8 @@ async function clearCommandLogs(page: Page) {
   await page.getByTestId('clear-commands').click()
 }
 
-async function expectCmdLog(page: Page, locatorStr: string) {
-  await expect(page.locator(locatorStr).last()).toBeVisible()
+async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
+  await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
 async function waitForDefaultPlanesToBeVisible(page: Page) {
@@ -207,6 +207,23 @@ export const getMovementUtils = (opts: any) => {
   return { toSU, click00r }
 }
 
+async function waitForAuthAndLsp(page: Page) {
+  const waitForLspPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+
+  await page.goto('/')
+  await waitForPageLoad(page)
+
+  return waitForLspPromise
+}
+
 export async function getUtils(page: Page) {
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
@@ -214,7 +231,7 @@ export async function getUtils(page: Page) {
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
   return {
-    waitForAuthSkipAppStart: () => waitForPageLoad(page),
+    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -228,7 +245,8 @@ export async function getUtils(page: Page) {
       await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
-    expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    expectCmdLog: (locatorStr: string, timeout = 5000) =>
+      expectCmdLog(page, locatorStr, timeout),
     openKclCodePanel: () => openKclCodePanel(page),
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),

@@ -82,7 +82,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -236,7 +236,7 @@ test.describe('Testing Camera Movement', () => {
     test.skip(process.platform === 'darwin', 'Can moving camera')
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
@@ -404,7 +404,7 @@ test.describe('Testing Camera Movement', () => {
     test.skip(process.platform !== 'darwin', 'Zoom should be consistent')
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
@@ -540,7 +540,6 @@ test('if you click the format button it formats your code', async ({
 }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
 
   await u.waitForAuthSkipAppStart()
 
@@ -580,18 +579,8 @@ test('hover over functions shows function description', async ({ page }) => {
     )
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  const lspStartPromise = page.waitForEvent('console', async (message) => {
-    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-    // but that doesn't seem to make it to the console for macos/safari :(
-    if (message.text().includes('start kcl lsp')) {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      return true
-    }
-    return false
-  })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
-  await lspStartPromise
 
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -633,18 +622,8 @@ test('if you use the format keyboard binding it formats your code', async ({
     localStorage.setItem('disableAxis', 'true')
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  const lspStartPromise = page.waitForEvent('console', async (message) => {
-    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-    // but that doesn't seem to make it to the console for macos/safari :(
-    if (message.text().includes('start kcl lsp')) {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      return true
-    }
-    return false
-  })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
-  await lspStartPromise
 
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -669,8 +648,9 @@ test('if you use the format keyboard binding it formats your code', async ({
 })
 
 test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
 
   const zooLogo = page.locator('[data-testid="app-logo"]')
   // Make sure it's not a link
@@ -680,7 +660,6 @@ test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
 test('if you write kcl with lint errors you get lints', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
 
   await u.waitForAuthSkipAppStart()
 
@@ -733,7 +712,6 @@ test('if you fixup kcl errors you clear lints', async ({ page }) => {
   })
 
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
 
   await u.waitForAuthSkipAppStart()
 
@@ -744,19 +722,18 @@ test('if you fixup kcl errors you clear lints', async ({ page }) => {
 
   await page.getByText(' |> line([2.48, 2.44], %)').click()
 
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error').first()).not.toBeVisible()
   await page.keyboard.press('End')
   await page.keyboard.press('Backspace')
 
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
   await page.keyboard.type(')')
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error').first()).not.toBeVisible()
 })
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
 
   await u.waitForAuthSkipAppStart()
 
@@ -845,19 +822,8 @@ fn squareHole = (l, w) => {
     )
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
-  const lspStartPromise = page.waitForEvent('console', async (message) => {
-    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-    // but that doesn't seem to make it to the console for macos/safari :(
-    if (message.text().includes('start kcl lsp')) {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      return true
-    }
-    return false
-  })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
-  await lspStartPromise
 
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -926,7 +892,6 @@ angle: 90
   })
 
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
 
   await u.waitForAuthSkipAppStart()
 
@@ -959,7 +924,7 @@ test('executes on load', async ({ page }) => {
     )
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // expand variables section
@@ -988,7 +953,7 @@ test('re-executes', async ({ page }) => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   const variablesTabButton = page.getByRole('tab', {
@@ -1020,7 +985,7 @@ const sketchOnPlaneAndBackSideTest = async (
   const u = await getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -1128,18 +1093,8 @@ const example = extrude(5, exampleSketch)
 shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
     )
   })
-  const lspStartPromise = page.waitForEvent('console', async (message) => {
-    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-    // but that doesn't seem to make it to the console for macos/safari :(
-    if (message.text().includes('start kcl lsp')) {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      return true
-    }
-    return false
-  })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
-  await lspStartPromise
 
   // error in guter
   await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -1163,72 +1118,146 @@ shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
   await page.keyboard.press('Enter')
 })
 
-test('Auto complete works', async ({ page }) => {
-  const u = await getUtils(page)
-  // const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.setViewportSize({ width: 1200, height: 500 })
-  const lspStartPromise = page.waitForEvent('console', async (message) => {
-    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-    // but that doesn't seem to make it to the console for macos/safari :(
-    if (message.text().includes('start kcl lsp')) {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      return true
-    }
-    return false
-  })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-  await lspStartPromise
+test.describe('Autocomplete works', () => {
+  test('with enter/click to accept the completion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
 
-  // this test might be brittle as we add and remove functions
-  // but should also be easy to update.
-  // tests clicking on an option, selection the first option
-  // and arrowing down to an option
+    await u.waitForAuthSkipAppStart()
 
-  await u.codeLocator.click()
-  await page.keyboard.type('const sketch001 = start')
+    // this test might be brittle as we add and remove functions
+    // but should also be easy to update.
+    // tests clicking on an option, selection the first option
+    // and arrowing down to an option
 
-  // expect there to be six auto complete options
-  await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
-  await page.getByText('startSketchOn').click()
-  await page.keyboard.type("'XZ'")
-  await page.keyboard.press('Tab')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('  |> startProfi')
-  // expect there be a single auto complete option that we can just hit enter on
-  await expect(page.locator('.cm-completionLabel')).toBeVisible()
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Enter') // accepting the auto complete, not a new line
+    await u.codeLocator.click()
+    await page.keyboard.type('const sketch001 = start')
 
-  await page.keyboard.press('Tab')
-  await page.keyboard.type('12')
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Tab')
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Tab')
-  await page.keyboard.press('Tab')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('  |> lin')
+    // expect there to be six auto complete options
+    await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
+    // this makes sure we can accept a completion with click
+    await page.getByText('startSketchOn').click()
+    await page.keyboard.type("'XZ'")
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('  |> startProfi')
+    // expect there be a single auto complete option that we can just hit enter on
+    await expect(page.locator('.cm-completionLabel')).toBeVisible()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-  await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
-  await page.waitForTimeout(100)
-  // press arrow down twice then enter to accept xLine
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('Enter')
-  // finish line with comment
-  await page.keyboard.type('5')
-  await page.keyboard.press('Tab')
-  await page.keyboard.press('Tab')
-  await page.keyboard.type(' // lin')
-  await page.waitForTimeout(100)
-  // there shouldn't be any auto complete options for 'lin' in the comment
-  await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.type('12')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.type('  |> lin')
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+    await page.waitForTimeout(100)
+    // press arrow down twice then enter to accept xLine
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Enter')
+    // finish line with comment
+    await page.keyboard.type('5')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+
+    await page.keyboard.type(' // ')
+    // Since we need to parse the ast to know we are in a comment we gotta hang tight.
+    await page.waitForTimeout(700)
+    await page.keyboard.type('lin ')
+    await page.waitForTimeout(200)
+    // there shouldn't be any auto complete options for 'lin' in the comment
+    await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.14, 12], %)
   |> xLine(5, %) // lin`)
+  })
+
+  test('with tab to accept the completion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // this test might be brittle as we add and remove functions
+    // but should also be easy to update.
+    // tests clicking on an option, selection the first option
+    // and arrowing down to an option
+
+    await u.codeLocator.click()
+    await page.keyboard.type('const sketch001 = startSketchO')
+    await page.waitForTimeout(100)
+
+    // Make sure just hitting tab will take the only one left
+    await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
+    await page.waitForTimeout(500)
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(500)
+    await page.keyboard.type("'XZ'")
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('  |> startProfi')
+    // expect there be a single auto complete option that we can just hit enter on
+    await expect(page.locator('.cm-completionLabel')).toBeVisible()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab') // accepting the auto complete, not a new line
+
+    await page.keyboard.press('Tab')
+    await page.keyboard.type('12')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.type('  |> lin')
+
+    await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+    await page.waitForTimeout(100)
+    // press arrow down twice then tab to accept xLine
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Tab')
+    // finish line with comment
+    await page.keyboard.type('5')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Tab')
+
+    await page.keyboard.type(' // ')
+    // Since we need to parse the ast to know we are in a comment we gotta hang tight.
+    await page.waitForTimeout(700)
+    await page.keyboard.type('lin ')
+    await page.waitForTimeout(200)
+    // there shouldn't be any auto complete options for 'lin' in the comment
+    await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.14, 12], %)
+  |> xLine(5, %) // lin`)
+  })
 })
 
 test('Stored settings are validated and fall back to defaults', async ({
@@ -1249,7 +1278,7 @@ test('Stored settings are validated and fall back to defaults', async ({
   )
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // Check the settings were reset
@@ -1272,8 +1301,9 @@ test('Stored settings are validated and fall back to defaults', async ({
 test('Project settings can be set and override user settings', async ({
   page,
 }) => {
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await u.waitForAuthSkipAppStart()
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })
@@ -1320,8 +1350,9 @@ test('Project settings can be set and override user settings', async ({
 test('Project settings can be opened with keybinding from the editor', async ({
   page,
 }) => {
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await u.waitForAuthSkipAppStart()
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })
@@ -1369,8 +1400,9 @@ test('Project settings can be opened with keybinding from the editor', async ({
 })
 
 test('Project and user settings can be reset', async ({ page }) => {
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await u.waitForAuthSkipAppStart()
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })
@@ -1444,8 +1476,10 @@ test('Project and user settings can be reset', async ({ page }) => {
 test('Keyboard shortcuts can be viewed through the help menu', async ({
   page,
 }) => {
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
   await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
   await page
     .getByRole('button', { name: 'Start Sketch' })
@@ -1479,7 +1513,7 @@ test.describe('Onboarding tests', () => {
     )
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     // Test that the onboarding pane loaded
@@ -1506,7 +1540,7 @@ test.describe('Onboarding tests', () => {
     )
 
     await page.setViewportSize({ width: 1200, height: 1080 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     // Test that the onboarding pane loaded
@@ -1545,7 +1579,7 @@ test.describe('Onboarding tests', () => {
     )
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     // Test that the redirect happened
@@ -1597,7 +1631,8 @@ test.describe('Onboarding tests', () => {
     )
 
     await page.setViewportSize({ width: 1200, height: 1080 })
-    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
     await page.waitForURL('**' + onboardingPaths.PARAMETRIC_MODELING, {
       waitUntil: 'domcontentloaded',
     })
@@ -1641,8 +1676,10 @@ test.describe('Onboarding tests', () => {
       }
     )
 
-    await page.setViewportSize({ width: 1200, height: 1080 })
-    await page.goto('/')
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
     await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
     // Test that the text in this step is correct
@@ -1689,6 +1726,7 @@ test.describe('Onboarding tests', () => {
 })
 
 test.describe('Testing selections', () => {
+  test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', async ({ page }) => {
     // tests mapping works on fresh sketch and edited sketch
     // tests using hovers which is the same as selections, because if
@@ -1696,7 +1734,7 @@ test.describe('Testing selections', () => {
     const u = await getUtils(page)
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
@@ -1894,6 +1932,239 @@ test.describe('Testing selections', () => {
     await selectionSequence()
   })
 
+  test('Solids should be select and deletable', async ({ page }) => {
+    test.setTimeout(90_000)
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+        |> startProfileAt([-79.26, 95.04], %)
+        |> line([112.54, 127.64], %, $seg02)
+        |> line([170.36, -121.61], %, $seg01)
+        |> lineTo([profileStartX(%), profileStartY(%)], %)
+        |> close(%)
+const extrude001 = extrude(50, sketch001)
+const sketch005 = startSketchOn(extrude001, 'END')
+  |> startProfileAt([23.24, 136.52], %)
+  |> line([-8.44, 36.61], %)
+  |> line([49.4, 2.05], %)
+  |> line([29.69, -46.95], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch003 = startSketchOn(extrude001, seg01)
+  |> startProfileAt([21.23, 17.81], %)
+  |> line([51.97, 21.32], %)
+  |> line([4.07, -22.75], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch002 = startSketchOn(extrude001, seg02)
+  |> startProfileAt([-100.54, 16.99], %)
+  |> line([0, 20.03], %)
+  |> line([62.61, 0], %, $seg03)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude002 = extrude(50, sketch002)
+const sketch004 = startSketchOn(extrude002, seg03)
+  |> startProfileAt([57.07, 134.77], %)
+  |> line([-4.72, 22.84], %)
+  |> line([28.8, 6.71], %)
+  |> line([9.19, -25.33], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude003 = extrude(20, sketch004)
+const pipeLength = 40
+const pipeSmallDia = 10
+const pipeLargeDia = 20
+const thickness = 0.5
+const part009 = startSketchOn('XY')
+  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
+  |> line([thickness, 0], %)
+  |> line([0, -1], %)
+  |> angledLineToX({
+       angle: 60,
+       to: pipeSmallDia + thickness
+     }, %)
+  |> line([0, -pipeLength], %)
+  |> angledLineToX({
+       angle: -60,
+       to: pipeLargeDia + thickness
+     }, %)
+  |> line([0, -1], %)
+  |> line([-thickness, 0], %)
+  |> line([0, 1], %)
+  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+  |> line([0, pipeLength], %)
+  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+  |> close(%)
+const rev = revolve({ axis: 'y' }, part009)
+`
+      )
+    }, KCL_DEFAULT_LENGTH)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 1139.49, y: -7053, z: 8597.31 },
+        center: { x: -2206.68, y: -1298.36, z: 60 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const revolve = { x: 646, y: 248 }
+    const parentExtrude = { x: 915, y: 133 }
+    const solid2d = { x: 770, y: 167 }
+
+    // DELETE REVOLVE
+    await page.mouse.click(revolve.x, revolve.y)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> line([0, -pipeLength], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+
+    await expect(u.codeLocator).not.toContainText(
+      `const rev = revolve({ axis: 'y' }, part009)`
+    )
+
+    // DELETE PARENT EXTRUDE
+    await page.mouse.click(parentExtrude.x, parentExtrude.y)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> line([170.36, -121.61], %, $seg01)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(
+      `const extrude001 = extrude(50, sketch001)`
+    )
+    await expect(u.codeLocator).toContainText(`const sketch005 = startSketchOn({
+       plane: {
+         origin: { x: 0, y: -50, z: 0 },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 0, z: 1 },
+         z_axis: { x: 0, y: -1, z: 0 }
+       }
+     })`)
+    await expect(u.codeLocator).toContainText(`const sketch003 = startSketchOn({
+       plane: {
+         origin: { x: 116.53, y: 0, z: 163.25 },
+         x_axis: { x: -0.81, y: 0, z: 0.58 },
+         y_axis: { x: 0, y: -1, z: 0 },
+         z_axis: { x: 0.58, y: 0, z: 0.81 }
+       }
+     })`)
+    await expect(u.codeLocator).toContainText(`const sketch002 = startSketchOn({
+       plane: {
+         origin: { x: -91.74, y: 0, z: 80.89 },
+         x_axis: { x: -0.66, y: 0, z: -0.75 },
+         y_axis: { x: 0, y: -1, z: 0 },
+         z_axis: { x: -0.75, y: 0, z: 0.66 }
+       }
+     })`)
+
+    // DELETE SOLID 2D
+    await page.mouse.click(solid2d.x, solid2d.y)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> startProfileAt([23.24, 136.52], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(
+      `const sketch005 = startSketchOn({`
+    )
+  })
+  test("Deleting solid that the AST mod can't handle results in a toast message", async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-79.26, 95.04], %)
+  |> line([112.54, 127.64], %, $seg02)
+  |> line([170.36, -121.61], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(50, sketch001)
+const launderExtrudeThroughVar = extrude001
+const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
+  |> startProfileAt([-100.54, 16.99], %)
+  |> line([0, 20.03], %)
+  |> line([62.61, 0], %, $seg03)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)      
+`
+      )
+    }, KCL_DEFAULT_LENGTH)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await u.closeDebugPanel()
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 1139.49, y: -7053, z: 8597.31 },
+        center: { x: -2206.68, y: -1298.36, z: 60 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    // attempt delete
+    await page.mouse.click(930, 139)
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '|> line([170.36, -121.61], %, $seg01)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+
+    await expect(page.getByText('Unable to delete part')).toBeVisible()
+  })
   test('Hovering over 3d features highlights code', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
@@ -1923,7 +2194,7 @@ test.describe('Testing selections', () => {
       )
     }, KCL_DEFAULT_LENGTH)
     await page.setViewportSize({ width: 1000, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     // wait for execution done
@@ -2010,7 +2281,7 @@ const extrude001 = extrude(10, sketch001)
       )
     })
     await page.setViewportSize({ width: 1000, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     // wait for execution done
@@ -2089,7 +2360,7 @@ const part001 = startSketchOn('XZ')
     )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openAndClearDebugPanel()
 
@@ -2139,7 +2410,7 @@ const extrude001 = extrude(50, sketch001)
     })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openAndClearDebugPanel()
 
@@ -2223,9 +2494,9 @@ const extrude001 = extrude(50, sketch001)
 
 test.describe('Command bar tests', () => {
   test('Command bar works and can change a setting', async ({ page }) => {
-    // Brief boilerplate
+    const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/', { waitUntil: 'domcontentloaded' })
+    await u.waitForAuthSkipAppStart()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -2284,9 +2555,9 @@ test.describe('Command bar tests', () => {
   test('Command bar keybinding works from code editor and can change a setting', async ({
     page,
   }) => {
-    // Brief boilerplate
+    const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/', { waitUntil: 'domcontentloaded' })
+    await u.waitForAuthSkipAppStart()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -2351,7 +2622,7 @@ test.describe('Command bar tests', () => {
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     // Make sure the stream is up
@@ -2432,7 +2703,7 @@ test('Can add multiple sketches', async ({ page }) => {
   const u = await getUtils(page)
   const viewportSize = { width: 1200, height: 500 }
   await page.setViewportSize(viewportSize)
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -2538,7 +2809,7 @@ test('ProgramMemory can be serialised', async ({ page }) => {
     )
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('/')
+
   const messages: string[] = []
 
   // Listen for all console events and push the message text to an array
@@ -2615,7 +2886,7 @@ fn yohey = (pos) => {
     selectionsSnippets
   )
   await page.setViewportSize({ width: 1200, height: 1000 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // wait for execution done
@@ -2654,6 +2925,7 @@ fn yohey = (pos) => {
   // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(200)
   await page.getByTestId('KCL Code').click()
   await page.waitForTimeout(200)
   await page.mouse.click(734, 134)
@@ -2671,7 +2943,7 @@ test('Deselecting line tool should mean nothing happens on click', async ({
 }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -2792,7 +3064,7 @@ const part002 = startSketchOn('-XZ')
     selectionsSnippets
   )
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // wait for execution done
@@ -2828,7 +3100,7 @@ async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
 
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -2994,7 +3266,7 @@ test('Can edit a sketch that has been extruded in the same pipe', async ({
   })
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -3095,7 +3367,7 @@ test('Can edit a sketch that has been revolved in the same pipe', async ({
   })
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -3186,7 +3458,7 @@ const doSnapAtDifferentScales = async (
 ) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -3278,6 +3550,7 @@ test.describe('Snap to close works (at any scale)', () => {
 })
 
 test('Sketch on face', async ({ page }) => {
+  test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
@@ -3300,7 +3573,7 @@ test('Sketch on face', async ({ page }) => {
   })
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // wait for execution done
@@ -3435,7 +3708,7 @@ test('Can code mod a line length', async ({ page }) => {
   const u = await getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -3495,7 +3768,7 @@ test('Extrude from command bar selects extrude line after', async ({
 
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -3539,7 +3812,7 @@ const part002 = startSketchOn('XZ')
     })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     await page.getByText('line([74.36, 130.4], %, $seg01)').click()
@@ -3599,7 +3872,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %, $seg01)').click()
@@ -3698,7 +3971,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -3806,7 +4079,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -3913,7 +4186,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -4023,7 +4296,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -4099,7 +4372,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -4195,7 +4468,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -4272,7 +4545,7 @@ const part002 = startSketchOn('XZ')
         })
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
 
         await page.getByText('line([74.36, 130.4], %)').click()
@@ -4319,7 +4592,7 @@ const part002 = startSketchOn('XZ')
     })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
 
     await page.getByText('line([3.79, 2.68], %, $seg01)').click()
@@ -4575,7 +4848,7 @@ test.describe('Testing segment overlays', () => {
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
 
       // wait for execution done
@@ -4734,7 +5007,7 @@ const part001 = startSketchOn('XZ')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
 
       // wait for execution done
@@ -4814,7 +5087,7 @@ const part001 = startSketchOn('XZ')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
 
       // wait for execution done
@@ -4942,7 +5215,7 @@ const part001 = startSketchOn('XZ')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
 
       // wait for execution done
@@ -5098,7 +5371,7 @@ const part001 = startSketchOn('XZ')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
 
       // wait for execution done
@@ -5211,7 +5484,7 @@ const part001 = startSketchOn('XZ')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
 
       // wait for execution done
@@ -5437,7 +5710,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
           const u = await getUtils(page)
           await page.setViewportSize({ width: 1200, height: 500 })
-          await page.goto('/')
+
           await u.waitForAuthSkipAppStart()
           await page.waitForTimeout(300)
 
@@ -5471,6 +5744,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
 
           await page.getByTestId('overlay-menu').click()
+          await page.waitForTimeout(100)
           await page.getByText('Delete Segment').click()
 
           await page.getByText('Cancel').click()
@@ -5483,6 +5757,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
           )
 
           await page.getByTestId('overlay-menu').click()
+          await page.waitForTimeout(100)
           await page.getByText('Delete Segment').click()
 
           await page.getByText('Continue and unconstrain').last().click()
@@ -5593,7 +5868,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
         )
         const u = await getUtils(page)
         await page.setViewportSize({ width: 1200, height: 500 })
-        await page.goto('/')
+
         await u.waitForAuthSkipAppStart()
         await page.waitForTimeout(300)
 
@@ -5631,6 +5906,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
         await expect(page.locator('.cm-content')).toContainText(before)
 
         await page.getByTestId('overlay-menu').click()
+        await page.waitForTimeout(100)
         await page.getByText('Remove constraints').click()
 
         await expect(page.locator('.cm-content')).toContainText(after)
@@ -5647,7 +5923,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   // Wait for the app to be ready for use
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -5728,7 +6004,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // Wait for the app to be ready for use
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -5817,7 +6093,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
 test('simulate network down and network little widget', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // This is how we wait until the stream is online
@@ -5888,7 +6164,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -6065,7 +6341,7 @@ test.describe('Testing Gizmo', () => {
         localStorage.setItem('persistCode', TEST_CODE_GIZMO)
       }, TEST_CODE_GIZMO)
       await page.setViewportSize({ width: 1000, height: 500 })
-      await page.goto('/')
+
       await u.waitForAuthSkipAppStart()
       await page.waitForTimeout(100)
       // wait for execution done
@@ -6155,7 +6431,7 @@ test.describe('Testing Gizmo', () => {
       localStorage.setItem('persistCode', TEST_CODE_GIZMO)
     }, TEST_CODE_GIZMO)
     await page.setViewportSize({ width: 1000, height: 500 })
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await page.waitForTimeout(100)
     // wait for execution done
@@ -6289,7 +6565,7 @@ const part001 = startSketchOn('-XZ')
     )
   })
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -6321,8 +6597,9 @@ test('Paste should not work unless an input is focused', async ({
     browserName !== 'firefox',
     "This bug is really Firefox-only, which we don't run in CI."
   )
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await u.waitForAuthSkipAppStart()
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })

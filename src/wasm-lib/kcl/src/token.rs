@@ -93,6 +93,8 @@ impl TryFrom<TokenType> for SemanticTokenType {
 
 impl TokenType {
     // This is for the lsp server.
+    // Don't call this function directly in the code use a lazy_static instead
+    // like we do in the lsp server.
     pub fn all_semantic_token_types() -> Result<Vec<SemanticTokenType>> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;

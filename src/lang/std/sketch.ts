@@ -24,11 +24,7 @@ import {
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
 import { toolTips, ToolTip } from '../../useStore'
-import {
-  createIdentifier,
-  createPipeExpression,
-  splitPathAtPipeExpression,
-} from '../modifyAst'
+import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 
 import {
   SketchLineHelper,
