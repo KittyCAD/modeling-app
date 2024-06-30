@@ -160,7 +160,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       {
         processId: null,
         clientInfo: {
-          name: 'kcl-language-client',
+          name: 'codemirror-lsp-client',
         },
         capabilities: client_capabilities,
         rootUri: null,

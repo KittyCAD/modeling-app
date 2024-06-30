@@ -1,17 +1,18 @@
 import { Extension, Prec } from '@codemirror/state'
-import { EditorView, keymap, KeyBinding } from '@codemirror/view'
+import { EditorView, keymap, KeyBinding, ViewPlugin } from '@codemirror/view'
 
 import { LanguageServerPlugin } from './lsp'
 
 export default function lspFormatExt(
-  plugin: LanguageServerPlugin | null
+  plugin: ViewPlugin<LanguageServerPlugin>
 ): Extension {
   const formatKeymap: readonly KeyBinding[] = [
     {
       key: 'Alt-Shift-f',
       run: (view: EditorView) => {
-        if (!plugin) return false
-        plugin.requestFormatting()
+        let value = view.plugin(plugin)
+        if (!value) return false
+        value.requestFormatting()
         return true
       },
     },

@@ -83,7 +83,7 @@ export namespace FromServer {
     // Calls private method .start() which can throw.
     // This is an odd one of the bunch but try/catch seems most suitable here.
     try {
-      return new StreamDemuxer()
+      return new StreamDemuxer(false)
     } catch (e: any) {
       return e
     }

@@ -19,9 +19,9 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
 
   constructor(trace?: boolean) {
     super()
-    this.#start = this.start()
-
     this.trace = trace || false
+
+    this.#start = this.start()
   }
 
   private async start(): Promise<void> {
@@ -91,7 +91,9 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
 
   add(bytes: Uint8Array): void {
     const message = Codec.decode(bytes) as vsrpc.Message
-    Tracer.server(message)
+    if (this.trace) {
+      Tracer.server(message)
+    }
 
     // demux the message stream
     if (vsrpc.Message.isResponse(message) && null != message.id) {

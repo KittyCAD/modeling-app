@@ -5,7 +5,12 @@ import type {
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
 import { Facet, StateEffect, Extension, Transaction } from '@codemirror/state'
-import type { ViewUpdate, PluginValue } from '@codemirror/view'
+import type {
+  ViewUpdate,
+  PluginValue,
+  PluginSpec,
+  ViewPlugin,
+} from '@codemirror/view'
 import { EditorView, Tooltip } from '@codemirror/view'
 import { setDiagnosticsEffect } from '@codemirror/lint'
 
@@ -27,6 +32,11 @@ import {
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
 import { deferExecution, posToOffset, formatMarkdownContents } from './util'
+import lspHoverExt from './hover'
+import lspFormatExt from './format'
+import lspIndentExt from './indent'
+import lspLintExt from './lint'
+import lspSemanticTokensExt from './semantic-tokens'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -44,6 +54,10 @@ export interface LanguageServerOptions {
   documentUri: string
   allowHTMLContent: boolean
   client: LanguageServerClient
+  processLspNotification?: (
+    plugin: LanguageServerPlugin,
+    notification: LSP.NotificationMessage
+  ) => void
 
   changesDelay?: number
 }
@@ -57,6 +71,10 @@ export class LanguageServerPlugin implements PluginValue {
 
   private allowHTMLContent: boolean = true
   private changesDelay: number = 600
+  private processLspNotification?: (
+    plugin: LanguageServerPlugin,
+    notification: LSP.NotificationMessage
+  ) => void
 
   private _defferer = deferExecution((code: string) => {
     try {
@@ -69,7 +87,8 @@ export class LanguageServerPlugin implements PluginValue {
         contentChanges: [{ text: code }],
       })
 
-      this.requestSemanticTokens(this.view)
+      this.requestSemanticTokens()
+      this.updateFoldingRanges()
     } catch (e) {
       console.error(e)
     }
@@ -88,6 +107,8 @@ export class LanguageServerPlugin implements PluginValue {
     }
 
     this.client.attachPlugin(this)
+
+    this.processLspNotification = options.processLspNotification
 
     this.initialize({
       documentText: this.getDocText(),
@@ -144,7 +165,8 @@ export class LanguageServerPlugin implements PluginValue {
       },
     })
 
-    this.requestSemanticTokens(this.view)
+    this.requestSemanticTokens()
+    this.updateFoldingRanges()
   }
 
   async sendChange({ documentText }: { documentText: string }) {
@@ -196,6 +218,7 @@ export class LanguageServerPlugin implements PluginValue {
       !this.client.getServerCapabilities().foldingRangeProvider
     )
       return null
+
     const result = await this.client.textDocumentFoldingRange({
       textDocument: { uri: this.getDocUri() },
     })
@@ -417,7 +440,7 @@ export class LanguageServerPlugin implements PluginValue {
     return tokenRanges
   }
 
-  async requestSemanticTokens(view: EditorView) {
+  async requestSemanticTokens() {
     if (
       !this.client.ready ||
       !this.client.getServerCapabilities().semanticTokensProvider
@@ -431,14 +454,14 @@ export class LanguageServerPlugin implements PluginValue {
     if (!result) return null
 
     const { data } = result
-    this.previousSemanticTokens = this.parseSemanticTokens(view, data)
+    this.previousSemanticTokens = this.parseSemanticTokens(this.view, data)
 
     const effects: StateEffect<SemanticToken | Extension>[] =
       this.previousSemanticTokens.map((tokenRange: any) =>
         addToken.of(tokenRange)
       )
 
-    view.dispatch({
+    this.view.dispatch({
       effects,
 
       annotations: [lspSemanticTokensEvent, Transaction.addToHistory.of(false)],
@@ -480,6 +503,9 @@ export class LanguageServerPlugin implements PluginValue {
     } catch (error) {
       console.error(error)
     }
+
+    // Send it to the plugin
+    this.processLspNotification?.(this, notification)
   }
 
   processDiagnostics(params: PublishDiagnosticsParams) {
@@ -517,5 +543,19 @@ export class LanguageServerPlugin implements PluginValue {
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [lspDiagnosticsEvent, Transaction.addToHistory.of(false)],
     })
+  }
+}
+
+export class LanguageServerPluginSpec
+  implements PluginSpec<LanguageServerPlugin>
+{
+  provide(plugin: ViewPlugin<LanguageServerPlugin>): Extension {
+    return [
+      lspFormatExt(plugin),
+      lspHoverExt(plugin),
+      lspIndentExt(),
+      lspLintExt(),
+      lspSemanticTokensExt(),
+    ]
   }
 }

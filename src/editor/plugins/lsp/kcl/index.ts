@@ -36,7 +36,8 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
         info.annotations.includes(TransactionAnnotation.UserDelete) ||
         info.annotations.includes(TransactionAnnotation.UserUndo) ||
         info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove)
+        info.annotations.includes(TransactionAnnotation.UserMove) ||
+        info.annotations.includes(TransactionAnnotation.FormatCode)
     ),
     userSelect: infos.some((info: TransactionInfo) =>
       info.annotations.includes(TransactionAnnotation.UserSelect)

@@ -5,7 +5,10 @@ import {
   defineLanguageFacet,
   LanguageSupport,
 } from '@codemirror/language'
-import { LanguageServerClient } from '@kittycad/codemirror-lsp-client'
+import {
+  LanguageServerClient,
+  LanguageServerPlugin,
+} from '@kittycad/codemirror-lsp-client'
 import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
 import KclParser from './parser'
@@ -25,6 +28,10 @@ export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
   documentUri: string
   client: LanguageServerClient
+  processLspNotification?: (
+    plugin: LanguageServerPlugin,
+    notification: LSP.NotificationMessage
+  ) => void
 }
 
 class KclLanguage extends Language {
@@ -34,6 +41,7 @@ class KclLanguage extends Language {
       workspaceFolders: options.workspaceFolders,
       allowHTMLContent: true,
       client: options.client,
+      processLspNotification: options.processLspNotification,
     })
 
     const parser = new KclParser()

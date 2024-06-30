@@ -11,6 +11,7 @@ import {
   FromServer,
   IntoServer,
   LspWorkerEventType,
+  LanguageServerPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import KclLanguageSupport from 'editor/plugins/lsp/kcl/language'
@@ -167,6 +168,27 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
+        processLspNotification: (
+          plugin: LanguageServerPlugin,
+          notification: LSP.NotificationMessage
+        ) => {
+          try {
+            switch (notification.method) {
+              case 'kcl/astUpdated':
+                // Update the folding ranges, since the AST has changed.
+                // This is a hack since codemirror does not support async foldService.
+                // When they do we can delete this.
+                console.log('update folding ranges')
+                plugin.updateFoldingRanges()
+                plugin.requestSemanticTokens()
+                break
+              case 'kcl/memoryUpdated':
+                break
+            }
+          } catch (error) {
+            console.error(error)
+          }
+        },
       })
 
       plugin = lsp
