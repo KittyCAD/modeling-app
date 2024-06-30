@@ -98,123 +98,119 @@ export type CommandConfig<
 export type CommandArgumentConfig<
   OutputType,
   C = ContextFrom<AnyStateMachine>
-> =
+> = {
+  description?: string
+  required:
+    | boolean
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+        machineContext?: C
+      ) => boolean)
+  skip?: boolean
+} & (
   | {
-      description?: string
-      required:
-        | boolean
+      inputType: 'options'
+      options:
+        | CommandArgumentOption<OutputType>[]
         | ((
-            commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+            commandBarContext: {
+              argumentsToSubmit: Record<string, unknown>
+            }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
-          ) => boolean)
-      skip?: boolean
-    } & (
-      | {
-          inputType: 'options'
-          options:
-            | CommandArgumentOption<OutputType>[]
-            | ((
-                commandBarContext: {
-                  argumentsToSubmit: Record<string, unknown>
-                }, // Should be the commandbarMachine's context, but it creates a circular dependency
-                machineContext?: C
-              ) => CommandArgumentOption<OutputType>[])
-          optionsFromContext?: (
-            context: C
-          ) => CommandArgumentOption<OutputType>[]
-          defaultValue?:
-            | OutputType
-            | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>,
-                machineContext?: C
-              ) => OutputType)
-          defaultValueFromContext?: (context: C) => OutputType
-        }
-      | {
-          inputType: 'selection'
-          selectionTypes: Selection['type'][]
-          multiple: boolean
-        }
-      | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
-      | {
-          inputType: 'string'
-          defaultValue?:
-            | OutputType
-            | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>,
-                machineContext?: C
-              ) => OutputType)
-          defaultValueFromContext?: (context: C) => OutputType
-        }
-      | {
-          inputType: 'boolean'
-          defaultValue?:
-            | OutputType
-            | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>,
-                machineContext?: C
-              ) => OutputType)
-          defaultValueFromContext?: (context: C) => OutputType
-        }
-    )
+          ) => CommandArgumentOption<OutputType>[])
+      optionsFromContext?: (context: C) => CommandArgumentOption<OutputType>[]
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+    }
+  | {
+      inputType: 'selection'
+      selectionTypes: Selection['type'][]
+      multiple: boolean
+    }
+  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
+  | {
+      inputType: 'string'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+    }
+  | {
+      inputType: 'boolean'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+    }
+)
 
 export type CommandArgument<
   OutputType,
   T extends AnyStateMachine = AnyStateMachine
-> =
+> = {
+  description?: string
+  required:
+    | boolean
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+        machineContext?: ContextFrom<T>
+      ) => boolean)
+  skip?: boolean
+  machineActor: InterpreterFrom<T>
+} & (
   | {
-      description?: string
-      required:
-        | boolean
+      inputType: Extract<CommandInputType, 'options'>
+      options:
+        | CommandArgumentOption<OutputType>[]
         | ((
-            commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+            commandBarContext: {
+              argumentsToSubmit: Record<string, unknown>
+            }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: ContextFrom<T>
-          ) => boolean)
-      skip?: boolean
-      machineActor: InterpreterFrom<T>
-    } & (
-      | {
-          inputType: Extract<CommandInputType, 'options'>
-          options:
-            | CommandArgumentOption<OutputType>[]
-            | ((
-                commandBarContext: {
-                  argumentsToSubmit: Record<string, unknown>
-                }, // Should be the commandbarMachine's context, but it creates a circular dependency
-                machineContext?: ContextFrom<T>
-              ) => CommandArgumentOption<OutputType>[])
-          defaultValue?:
-            | OutputType
-            | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>,
-                machineContext?: ContextFrom<T>
-              ) => OutputType)
-        }
-      | {
-          inputType: 'selection'
-          selectionTypes: Selection['type'][]
-          multiple: boolean
-        }
-      | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
-      | {
-          inputType: 'string'
-          defaultValue?:
-            | OutputType
-            | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>,
-                machineContext?: ContextFrom<T>
-              ) => OutputType)
-        }
-      | {
-          inputType: 'boolean'
-          defaultValue?:
-            | OutputType
-            | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>,
-                machineContext?: ContextFrom<T>
-              ) => OutputType)
-        }
-    )
+          ) => CommandArgumentOption<OutputType>[])
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+  | {
+      inputType: 'selection'
+      selectionTypes: Selection['type'][]
+      multiple: boolean
+    }
+  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
+  | {
+      inputType: 'string'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+  | {
+      inputType: 'boolean'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+)
 
 export type CommandArgumentWithName<
   OutputType,

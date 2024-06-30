@@ -17,18 +17,24 @@ import {
   Transaction,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
-import { offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
-import { LanguageServerOptions, LanguageServerClient } from 'editor/plugins/lsp'
-import { deferExecution } from 'lib/utils'
 import {
-  LanguageServerPlugin,
   TransactionAnnotation,
+  offsetToPos,
+  posToOffset,
+  LanguageServerOptions,
+  LanguageServerClient,
   docPathFacet,
   languageId,
+  TransactionInfo,
   updateInfo,
-  workspaceFolders,
   RelevantUpdate,
-} from 'editor/plugins/lsp/plugin'
+  lspPlugin,
+} from '@kittycad/codemirror-lsp-client'
+import { deferExecution } from 'lib/utils'
+import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
+import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
+import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
+import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
 
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
@@ -184,7 +190,7 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
   const infos = updateInfo(update)
 
   // Make sure we are not in a snippet
-  if (infos.some((info) => info.inSnippet)) {
+  if (infos.some((info: TransactionInfo) => info.inSnippet)) {
     return {
       overall: false,
       userSelect: false,
@@ -194,17 +200,17 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
 
   return {
     overall: infos.some(
-      (info) =>
+      (info: TransactionInfo) =>
         update.focusChanged ||
+        info.transaction.annotation(copilotPluginEvent.type) !== undefined ||
         info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
         info.annotations.includes(TransactionAnnotation.UserDelete) ||
         info.annotations.includes(TransactionAnnotation.UserUndo) ||
         info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove) ||
-        info.annotations.includes(TransactionAnnotation.Copoilot)
+        info.annotations.includes(TransactionAnnotation.UserMove)
     ),
-    userSelect: infos.some((info) =>
+    userSelect: infos.some((info: TransactionInfo) =>
       info.annotations.includes(TransactionAnnotation.UserSelect)
     ),
     time: infos.length ? infos[0].time : null,
@@ -216,6 +222,8 @@ export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
   private lastPos: number = 0
   private viewUpdate: ViewUpdate | null = null
+
+  private queuedUids: string[] = []
 
   private _deffererCodeUpdate = deferExecution(() => {
     if (this.viewUpdate === null) {
@@ -317,7 +325,7 @@ export class CompletionRequester implements PluginValue {
     const dUri = state.facet(docPathFacet)
 
     // Request completion from the server
-    const completionResult = await this.client.getCompletion({
+    const completionResult = await this.getCompletion({
       doc: {
         source: state.doc.toString(),
         tabSize: state.facet(EditorState.tabSize),
@@ -470,7 +478,7 @@ export class CompletionRequester implements PluginValue {
       annotations: [copilotPluginEvent, Transaction.addToHistory.of(true)],
     })
 
-    this.client.accept(ghostText.uuid)
+    this.accept(ghostText.uuid)
     return true
   }
 
@@ -498,7 +506,7 @@ export class CompletionRequester implements PluginValue {
       annotations: [copilotPluginEvent, Transaction.addToHistory.of(false)],
     })
 
-    this.client.reject()
+    this.reject()
     return false
   }
 
@@ -542,6 +550,39 @@ export class CompletionRequester implements PluginValue {
       return true
     }
   }
+
+  async getCompletion(
+    params: CopilotLspCompletionParams
+  ): Promise<CopilotCompletionResponse> {
+    const response: CopilotCompletionResponse = await this.client.requestCustom(
+      'copilot/getCompletions',
+      params
+    )
+    //
+    this.queuedUids = [...response.completions.map((c) => c.uuid)]
+    return response
+  }
+
+  async accept(uuid: string) {
+    const badUids = this.queuedUids.filter((u) => u !== uuid)
+    this.queuedUids = []
+    this.acceptCompletion({ uuid })
+    this.rejectCompletions({ uuids: badUids })
+  }
+
+  async reject() {
+    const badUids = this.queuedUids
+    this.queuedUids = []
+    this.rejectCompletions({ uuids: badUids })
+  }
+
+  acceptCompletion(params: CopilotAcceptCompletionParams) {
+    this.client.notifyCustom('copilot/notifyAccepted', params)
+  }
+
+  rejectCompletions(params: CopilotRejectCompletionParams) {
+    this.client.notifyCustom('copilot/notifyRejected', params)
+  }
 }
 
 export const copilotPlugin = (options: LanguageServerOptions): Extension => {
@@ -571,13 +612,7 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   })
 
   return [
-    docPathFacet.of(options.documentUri),
-    languageId.of('kcl'),
-    workspaceFolders.of(options.workspaceFolders),
-    ViewPlugin.define(
-      (view) =>
-        new LanguageServerPlugin(options.client, view, options.allowHTMLContent)
-    ),
+    lspPlugin(options),
     completionPlugin,
     domHandlers,
     completionDecoration,
