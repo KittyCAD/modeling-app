@@ -1284,8 +1284,12 @@ test.describe('Copilot ghost text', () => {
       `fn cube = (pos, scale) => {`
     )
 
-    // Going elsewhere in the code should hide the ghost text.
-    await u.openDebugPanel()
+    // Going outside the editor should hide the ghost text.
+    await page.mouse.move(0, 0)
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -1972,10 +1976,10 @@ test.describe('Testing selections', () => {
       await page.waitForTimeout(100)
       await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
-      await expect(page.getByTestId('hover-highlight')).toBeVisible()
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
       // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-200')).toBeVisible()
+      await expect(page.locator('.bg-yellow-200').first()).toBeVisible()
 
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
@@ -2426,7 +2430,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight').first()).toHaveCount(5) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(19) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
@@ -2558,7 +2562,7 @@ const part001 = startSketchOn('XZ')
       await page.mouse.move(pos[0], pos[1], { steps: 5 })
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        expectedCode
+        removeAfterFirstParenthesis(expectedCode)
       )
       // hover over segment, click it and check the cursor has move to the right place
       await page.mouse.click(pos[0], pos[1])
@@ -2624,8 +2628,10 @@ const extrude001 = extrude(50, sketch001)
     await page.mouse.move(nothing.x, nothing.y)
     await page.waitForTimeout(100)
     await page.mouse.move(extrudeWall.x, extrudeWall.y)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
-    await expect(page.getByTestId('hover-highlight')).toContainText(extrudeText)
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toContainText(
+      removeAfterFirstParenthesis(extrudeText)
+    )
     await page.waitForTimeout(200)
     await expect(
       await u.getGreatestPixDiff(extrudeWall, hoverColor)
@@ -2653,8 +2659,10 @@ const extrude001 = extrude(50, sketch001)
 
     await expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(5)
     await page.mouse.move(cap.x, cap.y)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
-    await expect(page.getByTestId('hover-highlight')).toContainText(capText)
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toContainText(
+      removeAfterFirstParenthesis(capText)
+    )
     await page.waitForTimeout(200)
     await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(5)
     await page.mouse.click(cap.x, cap.y)
@@ -6811,3 +6819,11 @@ test('Paste should not work unless an input is focused', async ({
     )
   ).toContain(pasteContent)
 })
+
+function removeAfterFirstParenthesis(inputString: string) {
+  const index = inputString.indexOf('(')
+  if (index !== -1) {
+    return inputString.substring(0, index)
+  }
+  return inputString // return the original string if '(' is not found
+}

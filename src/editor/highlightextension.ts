@@ -16,7 +16,7 @@ export const lineHighlightField = StateField.define({
     lines = lines.map(tr.changes)
 
     const isLineHighlightEvent = tr.annotation(addLineHighlightEvent.type)
-    if (!isLineHighlightEvent) {
+    if (isLineHighlightEvent === undefined) {
       return lines
     }
 

@@ -42,6 +42,9 @@ import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotReje
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
 
+const rejectSuggestionAnnotation = Annotation.define<null>()
+export const rejectSuggestionCommand = rejectSuggestionAnnotation.of(null)
+
 // Effects to tell StateEffect what to do with GhostText
 const addSuggestion = StateEffect.define<Suggestion>()
 const acceptSuggestion = StateEffect.define<null>()
@@ -85,7 +88,10 @@ export const completionDecoration = StateField.define<CompletionState>({
   },
   update(state: CompletionState, transaction: Transaction) {
     // We only care about events from this plugin.
-    if (transaction.annotation(copilotPluginEvent.type) === undefined) {
+    if (
+      transaction.annotation(copilotPluginEvent.type) === undefined &&
+      transaction.annotation(rejectSuggestionCommand.type) === undefined
+    ) {
       return state
     }
 
@@ -502,7 +508,10 @@ export class CompletionRequester implements PluginValue {
         insert: '',
       },
       effects: clearSuggestion.of(null),
-      annotations: [copilotPluginEvent, Transaction.addToHistory.of(false)],
+      annotations: [
+        rejectSuggestionCommand,
+        Transaction.addToHistory.of(false),
+      ],
     })
 
     this.reject()
@@ -519,7 +528,6 @@ export class CompletionRequester implements PluginValue {
       return false
     }
 
-    console.log({ key, ghostText })
     const tabKey = 'Tab'
 
     // When we type a key that is the same as the first letter of the suggestion, we delete the first letter of the suggestion and carry through with the original keypress
