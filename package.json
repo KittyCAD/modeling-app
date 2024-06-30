@@ -54,7 +54,7 @@
     "vscode-jsonrpc": "^8.2.1",
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.0.8",
-    "web-vitals": "^3.5.2",
+    "web-vitals": "^4.2.0",
     "xstate": "^4.38.2",
     "zustand": "^4.5.2"
   },
