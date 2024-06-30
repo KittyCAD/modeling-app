@@ -71,7 +71,7 @@ import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection } from '@uiw/react-codemirror'
+import { EditorSelection, Transaction } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
@@ -80,6 +80,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { modelingMachineEvent } from 'editor/manager'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -281,11 +282,15 @@ export const ModelingMachineProvider = ({
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
             if (!editorManager.editorView) return
-            editorManager.lastSelectionEvent = Date.now()
             setTimeout(() => {
-              if (editorManager.editorView) {
-                editorManager.editorView.dispatch({ selection })
-              }
+              if (!editorManager.editorView) return
+              editorManager.editorView.dispatch({
+                selection,
+                annotations: [
+                  modelingMachineEvent,
+                  Transaction.addToHistory.of(false),
+                ],
+              })
             })
           }
           let selections: Selections = {
@@ -327,11 +332,6 @@ export const ModelingMachineProvider = ({
                 engineCommandManager.sendSceneCommand(event)
               )
             updateSceneObjectColors()
-
-            // side effect to stop code mirror from updating the same selections again
-            editorManager.lastSelection = selections.codeBasedSelections
-              .map(({ range }) => `${range[1]}->${range[1]}`)
-              .join('&')
 
             return {
               selectionRanges: selections,

@@ -568,6 +568,7 @@ export class SceneEntities {
 
     if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
+
     const { truncatedAst, programMemoryOverride, sketchGroup } =
       await this.setupSketch({
         sketchPathToNode,

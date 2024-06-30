@@ -1,13 +1,25 @@
-import { hasNextSnippetField } from '@codemirror/autocomplete'
 import { EditorView, ViewUpdate } from '@codemirror/view'
-import { EditorSelection, SelectionRange } from '@codemirror/state'
-import { engineCommandManager, sceneInfra } from 'lib/singletons'
+import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
+import { engineCommandManager } from 'lib/singletons'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight } from './highlightextension'
-import { forEachDiagnostic, setDiagnostics, Diagnostic } from '@codemirror/lint'
+import {
+  forEachDiagnostic,
+  Diagnostic,
+  setDiagnosticsEffect,
+} from '@codemirror/lint'
+
+const updateOutsideEditorAnnotation = Annotation.define<null>()
+export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(null)
+
+const modelingMachineAnnotation = Annotation.define<null>()
+export const modelingMachineEvent = modelingMachineAnnotation.of(null)
+
+const setDiagnosticsAnnotation = Annotation.define<null>()
+export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(null)
 
 function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
   return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
@@ -22,8 +34,6 @@ export default class EditorManager {
     codeBasedSelections: [],
   }
 
-  private _lastSelectionEvent: number | null = null
-  lastSelection: string = ''
   private _lastEvent: { event: string; time: number } | null = null
 
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
@@ -57,10 +67,6 @@ export default class EditorManager {
     this._selectionRanges = selectionRanges
   }
 
-  set lastSelectionEvent(time: number) {
-    this._lastSelectionEvent = time
-  }
-
   set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
     this._modelingSend = send
   }
@@ -83,32 +89,38 @@ export default class EditorManager {
 
   setHighlightRange(selection: Selection['range']): void {
     this._highlightRange = selection
-    const editorView = this.editorView
     const safeEnd = Math.min(
       selection[1],
-      editorView?.state.doc.length || selection[1]
+      this._editorView?.state.doc.length || selection[1]
     )
-    if (editorView) {
-      editorView.dispatch({
+    if (this._editorView) {
+      this._editorView.dispatch({
         effects: addLineHighlight.of([selection[0], safeEnd]),
+        annotations: [
+          updateOutsideEditorEvent,
+          Transaction.addToHistory.of(false),
+        ],
       })
     }
   }
 
   clearDiagnostics(): void {
-    if (!this.editorView) return
-    this.editorView.dispatch(setDiagnostics(this.editorView.state, []))
+    this.setDiagnostics([])
   }
 
   setDiagnostics(diagnostics: Diagnostic[]): void {
-    if (!this.editorView) return
-    this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
+    if (!this._editorView) return
+
+    this._editorView.dispatch({
+      effects: [setDiagnosticsEffect.of(diagnostics)],
+      annotations: [setDiagnosticsEvent, Transaction.addToHistory.of(false)],
+    })
   }
 
   addDiagnostics(diagnostics: Diagnostic[]): void {
-    if (!this.editorView) return
+    if (!this._editorView) return
 
-    forEachDiagnostic(this.editorView.state, function (diag) {
+    forEachDiagnostic(this._editorView.state, function (diag) {
       diagnostics.push(diag)
     })
 
@@ -122,9 +134,7 @@ export default class EditorManager {
       uniqueDiagnostics.add(diagnostic)
     })
 
-    this.editorView.dispatch(
-      setDiagnostics(this.editorView.state, [...uniqueDiagnostics])
-    )
+    this.setDiagnostics([...uniqueDiagnostics])
   }
 
   undo() {
@@ -174,49 +184,32 @@ export default class EditorManager {
         ].range[1]
       )
     )
-    if (!this.editorView) {
+
+    if (!this._editorView) {
       return
     }
-    this.editorView.dispatch({
+
+    this._editorView.dispatch({
       selection: EditorSelection.create(codeBasedSelections, 1),
+      annotations: [
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
     })
   }
 
+  // We will ONLY get here if the user called a select event.
+  // This is handled by the code mirror kcl plugin.
+  // If you call this function from somewhere else, you best know wtf you are
+  // doing. (jess)
   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
-    // If we are just fucking around in a snippet, return early and don't
-    // trigger stuff below that might cause the component to re-render.
-    // Otherwise we will not be able to tab thru the snippet portions.
-    // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so that's fine.
-    if (hasNextSnippetField(viewUpdate.view.state)) {
-      return
-    }
-
-    if (this.editorView === null) {
+    if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
-    const selString = stringifyRanges(
-      viewUpdate?.state?.selection?.ranges || []
-    )
 
-    if (selString === this.lastSelection) {
-      // onUpdate is noisy and is fired a lot by extensions
-      // since we're only interested in selections changes we can ignore most of these.
+    const ranges = viewUpdate?.state?.selection?.ranges || []
+    if (ranges.length === 0) {
       return
-    }
-    // note this is also set from the "Set selection" action to stop code mirror from updating selections right after
-    // selections are made from the scene
-    this.lastSelection = selString
-
-    if (
-      this._lastSelectionEvent &&
-      Date.now() - this._lastSelectionEvent < 150
-    ) {
-      return // update triggered by scene selection
-    }
-
-    if (sceneInfra.selected) {
-      return // mid drag
     }
 
     const ignoreEvents: ModelingMachineEvent['type'][] = [
@@ -265,8 +258,4 @@ export default class EditorManager {
       engineCommandManager.sendSceneCommand(event)
     )
   }
-}
-
-function stringifyRanges(ranges: readonly SelectionRange[]): string {
-  return ranges.map(({ to, from }) => `${to}->${from}`).join('&')
 }
