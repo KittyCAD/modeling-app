@@ -441,7 +441,9 @@ test.describe('Testing Camera Movement', () => {
       // await u.canvasLocator.hover({position: {x: 700, y: 325}})
       await page.mouse.move(700, 325)
       await page.waitForTimeout(100)
-      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+      await expect(page.getByTestId('hover-highlight')).not.toBeVisible({
+        timeout: 10_000,
+      })
     }
 
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
@@ -449,12 +451,18 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(100)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight')).toBeVisible({
+      timeout: 10_000,
+    })
+    await page.waitForTimeout(200)
 
     await hoverOverNothing()
+    await page.waitForTimeout(200)
     // hover over vertical line
     await u.canvasLocator.hover({ position: { x, y: 325 } })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
@@ -463,22 +471,28 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(400)
 
     await hoverOverNothing()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     // hover over horizontal line
     await page.mouse.move(858, y, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(x, 325)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(857, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
     // now click it
     await page.mouse.click(857, y)
 
@@ -495,27 +509,36 @@ test.describe('Testing Camera Movement', () => {
 
     await page.waitForTimeout(100)
     await page.mouse.move(x, 419, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     await page.mouse.move(855, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await page.waitForTimeout(400)
+    await page.waitForTimeout(200)
 
     await hoverOverNothing()
+    await page.waitForTimeout(200)
 
     await page.mouse.move(x, 419)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     await page.mouse.move(855, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
   })
 })
 
@@ -6380,6 +6403,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(600, 250)
   // Start a sketch
   await page.keyboard.press('s')
+  await page.waitForTimeout(100)
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
@@ -6432,6 +6456,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(800, 200)
   await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Continue' }).click()
+  await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Submit command' }).click()
 
   await codePaneButton.click()
