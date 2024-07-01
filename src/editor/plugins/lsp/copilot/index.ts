@@ -1,37 +1,51 @@
 /// Thanks to the Cursor folks for their heavy lifting here.
+/// This has been heavily modified from their original implementation but we are
+/// still grateful.
 import { indentUnit } from '@codemirror/language'
 import {
   Decoration,
   DecorationSet,
   EditorView,
+  KeyBinding,
   PluginValue,
   ViewPlugin,
   ViewUpdate,
+  keymap,
 } from '@codemirror/view'
 import {
   Annotation,
   EditorState,
   Extension,
+  Prec,
   StateEffect,
   StateField,
   Transaction,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
-import { offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
-import { LanguageServerOptions, LanguageServerClient } from 'editor/plugins/lsp'
-import { deferExecution } from 'lib/utils'
 import {
-  LanguageServerPlugin,
   TransactionAnnotation,
+  offsetToPos,
+  posToOffset,
+  LanguageServerOptions,
+  LanguageServerClient,
   docPathFacet,
   languageId,
+  TransactionInfo,
   updateInfo,
-  workspaceFolders,
   RelevantUpdate,
-} from 'editor/plugins/lsp/plugin'
+  lspPlugin,
+} from '@kittycad/codemirror-lsp-client'
+import { deferExecution } from 'lib/utils'
+import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
+import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
+import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
+import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
 
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
+
+const rejectSuggestionAnnotation = Annotation.define<null>()
+export const rejectSuggestionCommand = rejectSuggestionAnnotation.of(null)
 
 // Effects to tell StateEffect what to do with GhostText
 const addSuggestion = StateEffect.define<Suggestion>()
@@ -70,13 +84,16 @@ interface GhostText {
   uuid: string
 }
 
-export const completionDecoration = StateField.define<CompletionState>({
+const completionDecoration = StateField.define<CompletionState>({
   create(_state: EditorState) {
     return { ghostText: null }
   },
   update(state: CompletionState, transaction: Transaction) {
     // We only care about events from this plugin.
-    if (transaction.annotation(copilotPluginEvent.type) === undefined) {
+    if (
+      transaction.annotation(copilotPluginEvent.type) === undefined &&
+      transaction.annotation(rejectSuggestionCommand.type) === undefined
+    ) {
       return state
     }
 
@@ -184,7 +201,7 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
   const infos = updateInfo(update)
 
   // Make sure we are not in a snippet
-  if (infos.some((info) => info.inSnippet)) {
+  if (infos.some((info: TransactionInfo) => info.inSnippet)) {
     return {
       overall: false,
       userSelect: false,
@@ -194,17 +211,16 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
 
   return {
     overall: infos.some(
-      (info) =>
-        update.focusChanged ||
+      (info: TransactionInfo) =>
+        info.transaction.annotation(copilotPluginEvent.type) !== undefined ||
         info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
         info.annotations.includes(TransactionAnnotation.UserDelete) ||
         info.annotations.includes(TransactionAnnotation.UserUndo) ||
         info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove) ||
-        info.annotations.includes(TransactionAnnotation.Copoilot)
+        info.annotations.includes(TransactionAnnotation.UserMove)
     ),
-    userSelect: infos.some((info) =>
+    userSelect: infos.some((info: TransactionInfo) =>
       info.annotations.includes(TransactionAnnotation.UserSelect)
     ),
     time: infos.length ? infos[0].time : null,
@@ -216,6 +232,8 @@ export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
   private lastPos: number = 0
   private viewUpdate: ViewUpdate | null = null
+
+  private queuedUids: string[] = []
 
   private _deffererCodeUpdate = deferExecution(() => {
     if (this.viewUpdate === null) {
@@ -248,15 +266,6 @@ export class CompletionRequester implements PluginValue {
     // If we have a user select event, we want to clear the ghost text.
     if (isRelevant.userSelect) {
       this._deffererUserSelect(true)
-      return
-    }
-
-    if (viewUpdate.focusChanged) {
-      this.rejectSuggestionCommand()
-      return
-    }
-
-    if (!viewUpdate.docChanged) {
       return
     }
 
@@ -317,7 +326,7 @@ export class CompletionRequester implements PluginValue {
     const dUri = state.facet(docPathFacet)
 
     // Request completion from the server
-    const completionResult = await this.client.getCompletion({
+    const completionResult = await this.getCompletion({
       doc: {
         source: state.doc.toString(),
         tabSize: state.facet(EditorState.tabSize),
@@ -470,7 +479,7 @@ export class CompletionRequester implements PluginValue {
       annotations: [copilotPluginEvent, Transaction.addToHistory.of(true)],
     })
 
-    this.client.accept(ghostText.uuid)
+    this.accept(ghostText.uuid)
     return true
   }
 
@@ -495,10 +504,13 @@ export class CompletionRequester implements PluginValue {
         insert: '',
       },
       effects: clearSuggestion.of(null),
-      annotations: [copilotPluginEvent, Transaction.addToHistory.of(false)],
+      annotations: [
+        rejectSuggestionCommand,
+        Transaction.addToHistory.of(false),
+      ],
     })
 
-    this.client.reject()
+    this.reject()
     return false
   }
 
@@ -542,12 +554,46 @@ export class CompletionRequester implements PluginValue {
       return true
     }
   }
+
+  async getCompletion(
+    params: CopilotLspCompletionParams
+  ): Promise<CopilotCompletionResponse> {
+    const response: CopilotCompletionResponse = await this.client.requestCustom(
+      'copilot/getCompletions',
+      params
+    )
+    //
+    this.queuedUids = [...response.completions.map((c) => c.uuid)]
+    return response
+  }
+
+  async accept(uuid: string) {
+    const badUids = this.queuedUids.filter((u) => u !== uuid)
+    this.queuedUids = []
+    this.acceptCompletion({ uuid })
+    this.rejectCompletions({ uuids: badUids })
+  }
+
+  async reject() {
+    const badUids = this.queuedUids
+    this.queuedUids = []
+    this.rejectCompletions({ uuids: badUids })
+  }
+
+  acceptCompletion(params: CopilotAcceptCompletionParams) {
+    this.client.notifyCustom('copilot/notifyAccepted', params)
+  }
+
+  rejectCompletions(params: CopilotRejectCompletionParams) {
+    this.client.notifyCustom('copilot/notifyRejected', params)
+  }
 }
 
 export const copilotPlugin = (options: LanguageServerOptions): Extension => {
-  const completionPlugin = ViewPlugin.define((view) => {
-    return new CompletionRequester(options.client)
-  })
+  let plugin: CompletionRequester | null = null
+  const completionPlugin = ViewPlugin.define(
+    (view) => (plugin = new CompletionRequester(options.client))
+  )
 
   const domHandlers = EditorView.domEventHandlers({
     keydown(event, view) {
@@ -555,6 +601,8 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
         event.key !== 'Shift' &&
         event.key !== 'Control' &&
         event.key !== 'Alt' &&
+        event.key !== 'Backspace' &&
+        event.key !== 'Delete' &&
         event.key !== 'Meta'
       ) {
         if (view.plugin === null) return false
@@ -570,16 +618,61 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     },
   })
 
+  const copilotAutocompleteKeymap: readonly KeyBinding[] = [
+    {
+      key: 'Tab',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.sameKeyCommand('Tab')
+      },
+    },
+    {
+      key: 'Backspace',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.rejectSuggestionCommand()
+      },
+    },
+    {
+      key: 'Delete',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.rejectSuggestionCommand()
+      },
+    },
+  ]
+
+  const copilotAutocompleteKeymapExt = Prec.highest(
+    keymap.computeN([], () => [copilotAutocompleteKeymap])
+  )
+
   return [
-    docPathFacet.of(options.documentUri),
-    languageId.of('kcl'),
-    workspaceFolders.of(options.workspaceFolders),
-    ViewPlugin.define(
-      (view) =>
-        new LanguageServerPlugin(options.client, view, options.allowHTMLContent)
-    ),
+    lspPlugin(options),
     completionPlugin,
+    copilotAutocompleteKeymapExt,
     domHandlers,
     completionDecoration,
+    EditorView.focusChangeEffect.of((_, focusing) => {
+      if (plugin === null) return null
+
+      plugin.rejectSuggestionCommand()
+
+      return null
+    }),
   ]
 }

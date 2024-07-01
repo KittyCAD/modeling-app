@@ -1,4 +1,9 @@
-import { Codec, FromServer, IntoServer } from 'editor/plugins/lsp/codec'
+import {
+  Codec,
+  FromServer,
+  IntoServer,
+  LspWorkerEventType,
+} from '@kittycad/codemirror-lsp-client'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import init, {
   ServerConfig,
@@ -7,7 +12,6 @@ import init, {
 } from 'wasm-lib/pkg/wasm_lib'
 import * as jsrpc from 'json-rpc-2.0'
 import {
-  LspWorkerEventType,
   LspWorkerEvent,
   LspWorker,
   KclWorkerOptions,

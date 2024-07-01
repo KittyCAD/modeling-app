@@ -1143,6 +1143,7 @@ export class EngineCommandManager extends EventTarget {
     this.getAst = cb
   }
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
+  private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
   start({
     setMediaStream,
@@ -1152,6 +1153,7 @@ export class EngineCommandManager extends EventTarget {
     executeCode,
     token,
     makeDefaultPlanes,
+    modifyGrid,
     settings = {
       theme: Themes.Dark,
       highlightEdges: true,
@@ -1165,6 +1167,7 @@ export class EngineCommandManager extends EventTarget {
     executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
+    modifyGrid: (hidden: boolean) => Promise<void>
     settings?: {
       theme: Themes
       highlightEdges: boolean
@@ -1172,6 +1175,7 @@ export class EngineCommandManager extends EventTarget {
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
+    this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
     }
@@ -1247,31 +1251,11 @@ export class EngineCommandManager extends EventTarget {
             type: 'default_camera_get_settings',
           },
         })
-
-        this.initPlanes().then(async () => {
-          // Hide the grid and grid scale text.
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'object_visible' as any,
-              // Found in engine/constants.h
-              object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
-              hidden: true,
-            },
-          })
-
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'object_visible' as any,
-              // Found in engine/constants.h
-              object_id: '10782f33-f588-4668-8bcd-040502d26590',
-              hidden: true,
-            },
-          })
-
+        // We want modify the grid first because we don't want it to flash.
+        // Ideally these would already be default hidden in engine (TODO do
+        // that) https://github.com/KittyCAD/engine/issues/2282
+        this.modifyGrid(true)?.then(async () => {
+          await this.initPlanes()
           this.resolveReady()
           setIsStreamReady(true)
           await executeCode()
