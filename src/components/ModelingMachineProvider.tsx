@@ -102,7 +102,7 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges },
+        modeling: { defaultUnit, highlightEdges, showScaleGrid },
       },
     },
   } = useSettingsAuthContext()
@@ -117,6 +117,7 @@ export const ModelingMachineProvider = ({
     theme: theme.current,
     highlightEdges: highlightEdges.current,
     enableSSAO: enableSSAO.current,
+    showScaleGrid: showScaleGrid.current,
   })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,

@@ -26,6 +26,7 @@ export const AppHeader = ({
 
   return (
     <header
+      id="app-header"
       className={
         'w-full grid ' +
         styles.header +

@@ -1158,6 +1158,7 @@ export class EngineCommandManager extends EventTarget {
       theme: Themes.Dark,
       highlightEdges: true,
       enableSSAO: true,
+      showScaleGrid: false,
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
@@ -1172,6 +1173,7 @@ export class EngineCommandManager extends EventTarget {
       theme: Themes
       highlightEdges: boolean
       enableSSAO: boolean
+      showScaleGrid: boolean
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
@@ -1254,7 +1256,7 @@ export class EngineCommandManager extends EventTarget {
         // We want modify the grid first because we don't want it to flash.
         // Ideally these would already be default hidden in engine (TODO do
         // that) https://github.com/KittyCAD/engine/issues/2282
-        this.modifyGrid(true)?.then(async () => {
+        this.modifyGrid(!settings.showScaleGrid)?.then(async () => {
           await this.initPlanes()
           this.resolveReady()
           setIsStreamReady(true)
@@ -2073,5 +2075,13 @@ export class EngineCommandManager extends EventTarget {
         hidden: hidden,
       },
     })
+  }
+
+  /**
+   * Set the visibility of the scale grid in the engine scene.
+   * @param visible - whether to show or hide the scale grid
+   */
+  setScaleGridVisibility(visible: boolean) {
+    this.modifyGrid(!visible)
   }
 }
