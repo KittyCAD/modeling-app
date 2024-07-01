@@ -1,17 +1,22 @@
 /// Thanks to the Cursor folks for their heavy lifting here.
+/// This has been heavily modified from their original implementation but we are
+/// still grateful.
 import { indentUnit } from '@codemirror/language'
 import {
   Decoration,
   DecorationSet,
   EditorView,
+  KeyBinding,
   PluginValue,
   ViewPlugin,
   ViewUpdate,
+  keymap,
 } from '@codemirror/view'
 import {
   Annotation,
   EditorState,
   Extension,
+  Prec,
   StateEffect,
   StateField,
   Transaction,
@@ -38,6 +43,9 @@ import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotReje
 
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
+
+const rejectSuggestionAnnotation = Annotation.define<null>()
+export const rejectSuggestionCommand = rejectSuggestionAnnotation.of(null)
 
 // Effects to tell StateEffect what to do with GhostText
 const addSuggestion = StateEffect.define<Suggestion>()
@@ -76,13 +84,16 @@ interface GhostText {
   uuid: string
 }
 
-export const completionDecoration = StateField.define<CompletionState>({
+const completionDecoration = StateField.define<CompletionState>({
   create(_state: EditorState) {
     return { ghostText: null }
   },
   update(state: CompletionState, transaction: Transaction) {
     // We only care about events from this plugin.
-    if (transaction.annotation(copilotPluginEvent.type) === undefined) {
+    if (
+      transaction.annotation(copilotPluginEvent.type) === undefined &&
+      transaction.annotation(rejectSuggestionCommand.type) === undefined
+    ) {
       return state
     }
 
@@ -201,7 +212,6 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
   return {
     overall: infos.some(
       (info: TransactionInfo) =>
-        update.focusChanged ||
         info.transaction.annotation(copilotPluginEvent.type) !== undefined ||
         info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
@@ -256,15 +266,6 @@ export class CompletionRequester implements PluginValue {
     // If we have a user select event, we want to clear the ghost text.
     if (isRelevant.userSelect) {
       this._deffererUserSelect(true)
-      return
-    }
-
-    if (viewUpdate.focusChanged) {
-      this.rejectSuggestionCommand()
-      return
-    }
-
-    if (!viewUpdate.docChanged) {
       return
     }
 
@@ -503,7 +504,10 @@ export class CompletionRequester implements PluginValue {
         insert: '',
       },
       effects: clearSuggestion.of(null),
-      annotations: [copilotPluginEvent, Transaction.addToHistory.of(false)],
+      annotations: [
+        rejectSuggestionCommand,
+        Transaction.addToHistory.of(false),
+      ],
     })
 
     this.reject()
@@ -586,9 +590,10 @@ export class CompletionRequester implements PluginValue {
 }
 
 export const copilotPlugin = (options: LanguageServerOptions): Extension => {
-  const completionPlugin = ViewPlugin.define((view) => {
-    return new CompletionRequester(options.client)
-  })
+  let plugin: CompletionRequester | null = null
+  const completionPlugin = ViewPlugin.define(
+    (view) => (plugin = new CompletionRequester(options.client))
+  )
 
   const domHandlers = EditorView.domEventHandlers({
     keydown(event, view) {
@@ -596,6 +601,8 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
         event.key !== 'Shift' &&
         event.key !== 'Control' &&
         event.key !== 'Alt' &&
+        event.key !== 'Backspace' &&
+        event.key !== 'Delete' &&
         event.key !== 'Meta'
       ) {
         if (view.plugin === null) return false
@@ -611,10 +618,61 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     },
   })
 
+  const copilotAutocompleteKeymap: readonly KeyBinding[] = [
+    {
+      key: 'Tab',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.sameKeyCommand('Tab')
+      },
+    },
+    {
+      key: 'Backspace',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.rejectSuggestionCommand()
+      },
+    },
+    {
+      key: 'Delete',
+      run: (view: EditorView): boolean => {
+        if (view.plugin === null) return false
+
+        // Get the current plugin from the map.
+        const p = view.plugin(completionPlugin)
+        if (p === null) return false
+
+        return p.rejectSuggestionCommand()
+      },
+    },
+  ]
+
+  const copilotAutocompleteKeymapExt = Prec.highest(
+    keymap.computeN([], () => [copilotAutocompleteKeymap])
+  )
+
   return [
     lspPlugin(options),
     completionPlugin,
+    copilotAutocompleteKeymapExt,
     domHandlers,
     completionDecoration,
+    EditorView.focusChangeEffect.of((_, focusing) => {
+      if (plugin === null) return null
+
+      plugin.rejectSuggestionCommand()
+
+      return null
+    }),
   ]
 }

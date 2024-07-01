@@ -482,19 +482,19 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(100)
     // hover over horizontal line
     await page.mouse.move(858, y, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(x, 325)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(857, y)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     // now click it
     await page.mouse.click(857, y)
 
@@ -511,7 +511,7 @@ test.describe('Testing Camera Movement', () => {
 
     await page.waitForTimeout(100)
     await page.mouse.move(x, 419, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
@@ -526,7 +526,7 @@ test.describe('Testing Camera Movement', () => {
     await hoverOverNothing()
 
     await page.mouse.move(x, 419)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
@@ -834,7 +834,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText('Unexpected token')).toBeVisible()
+  await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
   // select the line that's causing the error and delete it
   await page.getByText('$ error').click()
@@ -1177,16 +1177,194 @@ shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
   // Okay execution finished, let's start editing text below the error.
   await u.codeLocator.click()
   // Go to the end of the editor
+  // This bug happens when there is a diagnostic in the editor and you try to
+  // edit text below it.
+  // Or delete a huge chunk of text and then try to edit below it.
   await page.keyboard.press('End')
+  await page.keyboard.down('Shift')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.up('Shift')
+  await page.keyboard.press('Backspace')
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  // Get to the area where we want to type.
-  for (let i = 0; i < 20; i++) {
-    await page.keyboard.press('ArrowLeft')
-  }
-
+  await page.keyboard.press('Enter')
   await page.keyboard.press('Enter')
   await page.keyboard.type('thing: "blah"', { delay: 100 })
   await page.keyboard.press('Enter')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const exampleSketch = startSketchOn("XZ")
+  |> startProfileAt([0, 0], %)
+  |> angledLine({ angle: 50, length: 45 }, %)
+  |> yLineTo(0, %)
+  |> close(%)
+
+  thing: "blah"`)
+
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+})
+
+test.describe('Copilot ghost text', () => {
+  test('completes code in empty file', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+
+    // Hit enter a few times.
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
+    )
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+  })
+
+  test('going elsewhere in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.press('ArrowUp')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('delete in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.press('Delete')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('backspace in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('focus outside code pane rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going outside the editor should hide the ghost text.
+    await page.mouse.move(0, 0)
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
 })
 
 test.describe('Autocomplete works', () => {
@@ -1869,10 +2047,10 @@ test.describe('Testing selections', () => {
       await page.waitForTimeout(100)
       await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
-      await expect(page.getByTestId('hover-highlight')).toBeVisible()
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
       // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-200')).toBeVisible()
+      await expect(page.locator('.bg-yellow-200').first()).toBeVisible()
 
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
@@ -2293,6 +2471,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
       },
     })
     await page.waitForTimeout(100)
+    await u.closeDebugPanel()
 
     const extrusionTop: Coords2d = [800, 240]
     const flatExtrusionFace: Coords2d = [960, 160]
@@ -2307,25 +2486,25 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await page.waitForTimeout(200)
 
     await page.mouse.move(extrusionTop[0], extrusionTop[1])
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(arc[0], arc[1])
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(close[0], close[1])
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(19) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
@@ -2454,7 +2633,7 @@ const part001 = startSketchOn('XZ')
       await page.mouse.move(pos[0], pos[1], { steps: 5 })
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        expectedCode
+        removeAfterFirstParenthesis(expectedCode)
       )
       // hover over segment, click it and check the cursor has move to the right place
       await page.mouse.click(pos[0], pos[1])
@@ -2520,8 +2699,10 @@ const extrude001 = extrude(50, sketch001)
     await page.mouse.move(nothing.x, nothing.y)
     await page.waitForTimeout(100)
     await page.mouse.move(extrudeWall.x, extrudeWall.y)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
-    await expect(page.getByTestId('hover-highlight')).toContainText(extrudeText)
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toContainText(
+      removeAfterFirstParenthesis(extrudeText)
+    )
     await page.waitForTimeout(200)
     await expect(
       await u.getGreatestPixDiff(extrudeWall, hoverColor)
@@ -2549,8 +2730,10 @@ const extrude001 = extrude(50, sketch001)
 
     await expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(5)
     await page.mouse.move(cap.x, cap.y)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
-    await expect(page.getByTestId('hover-highlight')).toContainText(capText)
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toContainText(
+      removeAfterFirstParenthesis(capText)
+    )
     await page.waitForTimeout(200)
     await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(5)
     await page.mouse.click(cap.x, cap.y)
@@ -6707,3 +6890,11 @@ test('Paste should not work unless an input is focused', async ({
     )
   ).toContain(pasteContent)
 })
+
+function removeAfterFirstParenthesis(inputString: string) {
+  const index = inputString.indexOf('(')
+  if (index !== -1) {
+    return inputString.substring(0, index)
+  }
+  return inputString // return the original string if '(' is not found
+}
