@@ -125,7 +125,6 @@ jobs:
       - uses: actions/download-artifact@v3
 
       - name: Copy updated .json files
-        if: github.event_name == 'schedule'
         run: |
           ls -l artifact
           cp artifact/package.json package.json
