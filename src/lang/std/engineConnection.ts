@@ -1251,9 +1251,11 @@ export class EngineCommandManager extends EventTarget {
             type: 'default_camera_get_settings',
           },
         })
-
-        this.initPlanes().then(async () => {
-          await this.modifyGrid(true)
+        // We want modify the grid first becuase we don't want it to flash.
+        // Ideally these would already be default hidden in engine (TODO do
+        // that)
+        this.modifyGrid(true).then(async () => {
+          await this.initPlanes()
           this.resolveReady()
           setIsStreamReady(true)
           await executeCode()

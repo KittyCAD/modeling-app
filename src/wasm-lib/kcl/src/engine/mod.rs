@@ -465,10 +465,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn modify_grid(&self, hidden: bool) -> Result<(), KclError> {
         // Hide/show the grid.
-        self.send_modeling_cmd(
+        self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
-            ModelingCmd::ObjectVisible {
+            &ModelingCmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
             },
@@ -476,15 +476,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         .await?;
 
         // Hide/show the grid scale text.
-        self.send_modeling_cmd(
+        self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
-            ModelingCmd::ObjectVisible {
+            &ModelingCmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_SCALE_TEXT_OBJECT_ID,
             },
         )
         .await?;
+
+        self.flush_batch(false, Default::default()).await?;
 
         Ok(())
     }
