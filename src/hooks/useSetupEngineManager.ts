@@ -1,9 +1,9 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { useStore } from '../useStore'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes } from 'lang/wasm'
+import { useModelingContext } from './useModelingContext'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -13,24 +13,17 @@ export function useSetupEngineManager(
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
+    modelingSend: (() => {}) as any,
+    modelingContext: {} as any,
   } as {
     pool: string | null
     theme: Themes
     highlightEdges: boolean
     enableSSAO: boolean
+    modelingSend: ReturnType<typeof useModelingContext>['send']
+    modelingContext: ReturnType<typeof useModelingContext>['context']
   }
 ) {
-  const {
-    setMediaStream,
-    setIsStreamReady,
-    setStreamDimensions,
-    streamDimensions,
-  } = useStore((s) => ({
-    setMediaStream: s.setMediaStream,
-    setIsStreamReady: s.setIsStreamReady,
-    setStreamDimensions: s.setStreamDimensions,
-    streamDimensions: s.streamDimensions,
-  }))
 
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
@@ -50,10 +43,23 @@ export function useSetupEngineManager(
       streamWidth,
       streamHeight
     )
-    if (!hasSetNonZeroDimensions.current && quadHeight && quadWidth) {
+    if (
+      !hasSetNonZeroDimensions.current &&
+      quadHeight &&
+      quadWidth &&
+      settings.modelingSend
+    ) {
       engineCommandManager.start({
-        setMediaStream,
-        setIsStreamReady,
+        setMediaStream: (mediaStream) =>
+          settings.modelingSend({
+            type: 'Set context',
+            data: { mediaStream },
+          }),
+        setIsStreamReady: (isStreamReady) =>
+          settings.modelingSend({
+            type: 'Set context',
+            data: { isStreamReady },
+          }),
         width: quadWidth,
         height: quadHeight,
         executeCode: () => {
@@ -67,9 +73,14 @@ export function useSetupEngineManager(
           return makeDefaultPlanes(kclManager.engineCommandManager)
         },
       })
-      setStreamDimensions({
-        streamWidth: quadWidth,
-        streamHeight: quadHeight,
+      settings.modelingSend({
+        type: 'Set context',
+        data: {
+          streamDimensions: {
+            streamWidth: quadWidth,
+            streamHeight: quadHeight,
+          },
+        },
       })
       hasSetNonZeroDimensions.current = true
     }
@@ -78,6 +89,7 @@ export function useSetupEngineManager(
   useLayoutEffect(startEngineInstance, [
     streamRef?.current?.offsetWidth,
     streamRef?.current?.offsetHeight,
+    settings.modelingSend,
   ])
 
   useEffect(() => {
@@ -87,16 +99,21 @@ export function useSetupEngineManager(
         streamRef?.current?.offsetHeight
       )
       if (
-        streamDimensions.streamWidth !== width ||
-        streamDimensions.streamHeight !== height
+        settings.modelingContext.store.streamDimensions.streamWidth !== width ||
+        settings.modelingContext.store.streamDimensions.streamHeight !== height
       ) {
         engineCommandManager.handleResize({
           streamWidth: width,
           streamHeight: height,
         })
-        setStreamDimensions({
-          streamWidth: width,
-          streamHeight: height,
+        settings.modelingSend({
+          type: 'Set context',
+          data: {
+            streamDimensions: {
+              streamWidth: width,
+              streamHeight: height,
+            },
+          },
         })
       }
     }, 500)

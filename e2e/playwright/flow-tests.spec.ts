@@ -30,6 +30,8 @@ import { EngineCommand } from 'lang/std/engineConnection'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
+const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
 just from the nature of the stream, running the test with debugger and pasting the below
@@ -198,35 +200,17 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
 test.describe('Basic sketch', () => {
   test('code pane open at start', async ({ page }) => {
-    // Load the app with the code panes
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: ['code'],
-          },
-          version: 0,
-        })
-      )
-    })
-
     await doBasicSketch(page, ['code'])
   })
 
   test('code pane closed at start', async ({ page }) => {
     // Load the app with the code panes
-    await page.addInitScript(async () => {
+    await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: [],
-          },
-          version: 0,
-        })
+        persistModelingContext,
+        JSON.stringify({ openPanes: [] })
       )
-    })
+    }, PERSIST_MODELING_CONTEXT)
     await doBasicSketch(page, [])
   })
 })
@@ -3234,17 +3218,12 @@ test.describe('Can edit segments by dragging their handles', () => {
 
   test('code pane closed at start-handles', async ({ page }) => {
     // Load the app with the code panes
-    await page.addInitScript(async () => {
+    await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: [],
-          },
-          version: 0,
-        })
+        persistModelingContext,
+        JSON.stringify({ openPanes: [] })
       )
-    })
+    }, PERSIST_MODELING_CONTEXT)
     await doEditSegmentsByDraggingHandle(page, [])
   })
 })
@@ -4641,6 +4620,7 @@ const part002 = startSketchOn('XZ')
         name: 'Constraints',
       })
       .click()
+    await page.waitForTimeout(100)
     await page.getByRole('button', { name: 'length', exact: true }).click()
 
     await page.getByLabel('length Value').fill('10')

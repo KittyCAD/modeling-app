@@ -8,7 +8,6 @@ import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
 import { useKclContext } from 'lang/KclProvider'
-import { useStore } from 'useStore'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 
@@ -47,9 +46,7 @@ export default function useStateMachineCommands<
   const { commandBarSend } = useCommandsContext()
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const isStreamReady = state?.context?.store?.isStreamReady
 
   useEffect(() => {
     const disableAllButtons =

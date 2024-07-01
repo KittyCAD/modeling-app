@@ -1444,11 +1444,10 @@ export class SceneEntities {
         selected.material.color = defaultPlaneColor(type)
       },
       onClick: async (args) => {
-        const { streamDimensions } = useStore.getState()
         const { entity_id } = await sendSelectEventToEngine(
           args?.mouseEvent,
           document.getElementById('video-stream') as HTMLVideoElement,
-          streamDimensions
+          sceneInfra._streamDimensions
         )
 
         let _entity_id = entity_id

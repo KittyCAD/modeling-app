@@ -2,7 +2,6 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
 import { useCallback, useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useStore } from 'useStore'
 import { Tab } from '@headlessui/react'
 import {
   SidebarPane,
@@ -15,6 +14,7 @@ import { ActionIcon } from 'components/ActionIcon'
 import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
 import { isTauri } from 'lib/isTauri'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -23,14 +23,11 @@ interface ModelingSidebarProps {
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
-  const { openPanes, buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-    openPanes: s.openPanes,
-  }))
+  const { context } = useModelingContext()
   const pointerEventsCssClass =
-    buttonDownInStream ||
+    context.store?.buttonDownInStream ||
     onboardingStatus.current === 'camera' ||
-    openPanes.length === 0
+    context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
 
@@ -45,7 +42,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       maxWidth={800}
       handleClasses={{
         right:
-          (openPanes.length === 0 ? 'hidden ' : 'block ') +
+          (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
           'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
         left: 'hidden',
         top: 'hidden',
@@ -76,11 +73,10 @@ function ModelingSidebarSection({
   const { settings } = useSettingsAuthContext()
   const showDebugPanel = settings.context.modeling.showDebugPanel
   const paneIds = panes.map((pane) => pane.id)
-  const { openPanes, setOpenPanes } = useStore((s) => ({
-    openPanes: s.openPanes,
-    setOpenPanes: s.setOpenPanes,
-  }))
-  const foundOpenPane = openPanes.find((pane) => paneIds.includes(pane))
+  const { send, context } = useModelingContext()
+  const foundOpenPane = context.store?.openPanes.find((pane) =>
+    paneIds.includes(pane)
+  )
   const [currentPane, setCurrentPane] = useState(
     foundOpenPane || ('none' as SidebarType | 'none')
   )
@@ -88,17 +84,37 @@ function ModelingSidebarSection({
   const togglePane = useCallback(
     (newPane: SidebarType | 'none') => {
       if (newPane === 'none') {
-        setOpenPanes(openPanes.filter((p) => p !== currentPane))
+        send({
+          type: 'Set context',
+          data: {
+            openPanes: context.store?.openPanes.filter(
+              (p) => p !== currentPane
+            ),
+          },
+        })
         setCurrentPane('none')
       } else if (newPane === currentPane) {
         setCurrentPane('none')
-        setOpenPanes(openPanes.filter((p) => p !== newPane))
+        send({
+          type: 'Set context',
+          data: {
+            openPanes: context.store?.openPanes.filter((p) => p !== newPane),
+          },
+        })
       } else {
-        setOpenPanes([...openPanes.filter((p) => p !== currentPane), newPane])
+        send({
+          type: 'Set context',
+          data: {
+            openPanes: [
+              ...context.store?.openPanes.filter((p) => p !== currentPane),
+              newPane,
+            ],
+          },
+        })
         setCurrentPane(newPane)
       }
     },
-    [openPanes, setOpenPanes, currentPane, setCurrentPane]
+    [context.store?.openPanes, send, currentPane, setCurrentPane]
   )
 
   // Filter out the debug panel if it's not supposed to be shown
@@ -116,11 +132,11 @@ function ModelingSidebarSection({
     if (
       !showDebugPanel.current &&
       currentPane === 'debug' &&
-      openPanes.includes('debug')
+      context.store?.openPanes.includes('debug')
     ) {
       togglePane('debug')
     }
-  }, [showDebugPanel.current, togglePane, openPanes])
+  }, [showDebugPanel.current, togglePane, context.store?.openPanes])
 
   return (
     <div className="group contents">
@@ -145,7 +161,9 @@ function ModelingSidebarSection({
               : ' border-r-0') +
             ' p-2 col-start-1 col-span-1 h-fit w-fit flex flex-col items-start gap-2 ' +
             'bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 ' +
-            (openPanes.length === 1 && currentPane === 'none' ? 'pr-0.5' : '')
+            (context.store?.openPanes.length === 1 && currentPane === 'none'
+              ? 'pr-0.5'
+              : '')
           }
         >
           <Tab key="none" className="sr-only">
@@ -164,7 +182,7 @@ function ModelingSidebarSection({
           as="article"
           className={
             'col-start-2 col-span-1 ' +
-            (openPanes.length === 1
+            (context.store?.openPanes.length === 1
               ? currentPane !== 'none'
                 ? `row-start-1 row-end-3`
                 : `hidden`

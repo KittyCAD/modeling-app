@@ -60,8 +60,6 @@ export interface StoreState {
   setButtonDownInStream: (buttonDownInStream: number | undefined) => void
   didDragInStream: boolean
   setDidDragInStream: (didDragInStream: boolean) => void
-  fileId: string
-  setFileId: (fileId: string) => void
   streamDimensions: { streamWidth: number; streamHeight: number }
   setStreamDimensions: (dimensions: {
     streamWidth: number
@@ -70,15 +68,8 @@ export interface StoreState {
   setHtmlRef: (ref: React.RefObject<HTMLDivElement>) => void
   htmlRef: React.RefObject<HTMLDivElement> | null
 
-  showHomeMenu: boolean
-  setHomeShowMenu: (showMenu: boolean) => void
   openPanes: SidebarType[]
   setOpenPanes: (panes: SidebarType[]) => void
-  homeMenuItems: {
-    name: string
-    path: string
-  }[]
-  setHomeMenuItems: (items: { name: string; path: string }[]) => void
 }
 
 export const useStore = create<StoreState>()(
@@ -86,33 +77,31 @@ export const useStore = create<StoreState>()(
     (set, get) => {
       return {
         setMediaStream: (mediaStream) => set({ mediaStream }),
-        isStreamReady: false,
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
-        isKclLspServerReady: false,
-        isCopilotLspServerReady: false,
         setIsKclLspServerReady: (isKclLspServerReady) =>
           set({ isKclLspServerReady }),
         setIsCopilotLspServerReady: (isCopilotLspServerReady) =>
           set({ isCopilotLspServerReady }),
-        buttonDownInStream: undefined,
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
         },
         setHtmlRef: (htmlRef) => {
           set({ htmlRef })
         },
-        htmlRef: null,
-        didDragInStream: false,
         setDidDragInStream: (didDragInStream) => {
           set({ didDragInStream })
         },
         // For stream event handling
-        fileId: '',
-        setFileId: (fileId) => set({ fileId }),
-        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
         setStreamDimensions: (streamDimensions) => {
           set({ streamDimensions })
         },
+        isStreamReady: false,
+        isKclLspServerReady: false,
+        isCopilotLspServerReady: false,
+        buttonDownInStream: undefined,
+        htmlRef: null,
+        didDragInStream: false,
+        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
 
         // tauri specific app settings
         defaultDir: {
@@ -120,10 +109,6 @@ export const useStore = create<StoreState>()(
         },
         openPanes: ['code'],
         setOpenPanes: (openPanes) => set({ openPanes }),
-        showHomeMenu: true,
-        setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
-        homeMenuItems: [],
-        setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
       }
     },
     {
