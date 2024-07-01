@@ -12,7 +12,6 @@ import type {
   ViewPlugin,
 } from '@codemirror/view'
 import { EditorView, Tooltip } from '@codemirror/view'
-import { setDiagnosticsEffect } from '@codemirror/lint'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -26,7 +25,6 @@ import { LanguageServerClient } from '../client'
 import {
   lspSemanticTokensEvent,
   lspFormatCodeEvent,
-  lspDiagnosticsEvent,
   relevantUpdate,
 } from './annotations'
 import { CompletionItemKindMap } from './autocomplete'
