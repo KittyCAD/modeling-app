@@ -568,6 +568,7 @@ export class SceneEntities {
 
     if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
+
     const { truncatedAst, programMemoryOverride, sketchGroup } =
       await this.setupSketch({
         sketchPathToNode,
@@ -1967,9 +1968,9 @@ export async function getSketchOrientationDetails(
  * @param  entityId - The ID of the entity for which orientation details are being fetched.
  * @returns A promise that resolves with the orientation details of the face.
  */
-async function getFaceDetails(
+export async function getFaceDetails(
   entityId: string
-): Promise<Models['FaceIsPlanar_type']> {
+): Promise<Models['GetSketchModePlane_type']> {
   // TODO mode engine connection to allow batching returns and batch the following
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -1982,8 +1983,7 @@ async function getFaceDetails(
       entity_id: entityId,
     },
   })
-  // TODO change typing to get_sketch_mode_plane once lib is updated
-  const faceInfo: Models['FaceIsPlanar_type'] = (
+  const faceInfo: Models['GetSketchModePlane_type'] = (
     await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

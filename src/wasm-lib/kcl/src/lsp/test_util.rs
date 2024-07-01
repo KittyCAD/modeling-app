@@ -99,6 +99,7 @@ pub async fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
         telemetry: Default::default(),
         is_initialized: Default::default(),
         diagnostics_map: Default::default(),
+        dev_mode: Default::default(),
     });
     let server = service.inner();
 

@@ -17,6 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
+  SketchGroup,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -25,6 +26,7 @@ import {
   getNodeFromPath,
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
+  traverse,
 } from './queryAst'
 import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
@@ -38,6 +40,7 @@ import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { ConstrainInfo } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { Models } from '@kittycad/lib'
 
 export function startSketchOnDefault(
   node: Program,
@@ -872,4 +875,176 @@ export function removeSingleConstraintInfo(
   })
   if (err(retval)) return false
   return retval
+}
+
+export async function deleteFromSelection(
+  ast: Program,
+  selection: Selection,
+  programMemory: ProgramMemory,
+  getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
+    ({} as any)
+): Promise<Program | Error> {
+  const astClone = JSON.parse(JSON.stringify(ast))
+  const range = selection.range
+  const path = getNodePathFromSourceRange(ast, range)
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    path,
+    'VariableDeclarator'
+  )
+  if (err(varDec)) return varDec
+  if (
+    (selection.type === 'extrude-wall' ||
+      selection.type === 'end-cap' ||
+      selection.type === 'start-cap') &&
+    varDec.node.init.type === 'PipeExpression'
+  ) {
+    const varDecName = varDec.node.id.name
+    let pathToNode: PathToNode | null = null
+    let extrudeNameToDelete = ''
+    traverse(astClone, {
+      enter: (node, path) => {
+        if (node.type === 'VariableDeclaration') {
+          const dec = node.declarations[0]
+          if (
+            dec.init.type === 'CallExpression' &&
+            (dec.init.callee.name === 'extrude' ||
+              dec.init.callee.name === 'revolve') &&
+            dec.init.arguments?.[1].type === 'Identifier' &&
+            dec.init.arguments?.[1].name === varDecName
+          ) {
+            pathToNode = path
+            extrudeNameToDelete = dec.id.name
+          }
+        }
+      },
+    })
+    if (!pathToNode) return new Error('Could not find extrude variable')
+
+    const expressionIndex = pathToNode[1][0] as number
+    astClone.body.splice(expressionIndex, 1)
+    if (extrudeNameToDelete) {
+      await new Promise(async (resolve) => {
+        let currentVariableName = ''
+        const pathsDependingOnExtrude: Array<{
+          path: PathToNode
+          sketchName: string
+        }> = []
+        traverse(astClone, {
+          leave: (node) => {
+            if (node.type === 'VariableDeclaration') {
+              currentVariableName = ''
+            }
+          },
+          enter: async (node, path) => {
+            if (node.type === 'VariableDeclaration') {
+              currentVariableName = node.declarations[0].id.name
+            }
+            if (
+              // match startSketchOn(${extrudeNameToDelete})
+              node.type === 'CallExpression' &&
+              node.callee.name === 'startSketchOn' &&
+              node.arguments[0].type === 'Identifier' &&
+              node.arguments[0].name === extrudeNameToDelete
+            ) {
+              pathsDependingOnExtrude.push({
+                path,
+                sketchName: currentVariableName,
+              })
+            }
+          },
+        })
+        const roundLiteral = (x: number) => createLiteral(roundOff(x))
+        const modificationDetails: {
+          parent: PipeExpression['body']
+          faceDetails: Models['FaceIsPlanar_type']
+          lastKey: number
+        }[] = []
+        for (const { path, sketchName } of pathsDependingOnExtrude) {
+          const parent = getNodeFromPath<PipeExpression['body']>(
+            astClone,
+            path.slice(0, -1)
+          )
+          if (err(parent)) {
+            return
+          }
+          const sketchToPreserve = programMemory.root[sketchName] as SketchGroup
+          console.log('sketchName', sketchName)
+          // Can't kick off multiple requests at once as getFaceDetails
+          // is three engine calls in one and they conflict
+          const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
+          if (
+            !(
+              faceDetails.origin &&
+              faceDetails.x_axis &&
+              faceDetails.y_axis &&
+              faceDetails.z_axis
+            )
+          ) {
+            return
+          }
+          const lastKey = Number(path.slice(-1)[0][0])
+          modificationDetails.push({
+            parent: parent.node,
+            faceDetails,
+            lastKey,
+          })
+        }
+        for (const { parent, faceDetails, lastKey } of modificationDetails) {
+          if (
+            !(
+              faceDetails.origin &&
+              faceDetails.x_axis &&
+              faceDetails.y_axis &&
+              faceDetails.z_axis
+            )
+          ) {
+            continue
+          }
+          parent[lastKey] = createCallExpressionStdLib('startSketchOn', [
+            createObjectExpression({
+              plane: createObjectExpression({
+                origin: createObjectExpression({
+                  x: roundLiteral(faceDetails.origin.x),
+                  y: roundLiteral(faceDetails.origin.y),
+                  z: roundLiteral(faceDetails.origin.z),
+                }),
+                x_axis: createObjectExpression({
+                  x: roundLiteral(faceDetails.x_axis.x),
+                  y: roundLiteral(faceDetails.x_axis.y),
+                  z: roundLiteral(faceDetails.x_axis.z),
+                }),
+                y_axis: createObjectExpression({
+                  x: roundLiteral(faceDetails.y_axis.x),
+                  y: roundLiteral(faceDetails.y_axis.y),
+                  z: roundLiteral(faceDetails.y_axis.z),
+                }),
+                z_axis: createObjectExpression({
+                  x: roundLiteral(faceDetails.z_axis.x),
+                  y: roundLiteral(faceDetails.z_axis.y),
+                  z: roundLiteral(faceDetails.z_axis.z),
+                }),
+              }),
+            }),
+          ])
+        }
+        resolve(true)
+      })
+    }
+    // await prom
+    return astClone
+  } else if (varDec.node.init.type === 'PipeExpression') {
+    const pipeBody = varDec.node.init.body
+    if (
+      pipeBody[0].type === 'CallExpression' &&
+      pipeBody[0].callee.name === 'startSketchOn'
+    ) {
+      // remove varDec
+      const varDecIndex = varDec.shallowPath[1][0] as number
+      astClone.body.splice(varDecIndex, 1)
+      return astClone
+    }
+  }
+
+  return new Error('Selection not recognised, could not delete')
 }
