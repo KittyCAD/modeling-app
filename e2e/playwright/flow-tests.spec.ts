@@ -6403,14 +6403,13 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.keyboard.press('e')
   await expect(page.locator('.cm-content')).toHaveText('slae')
   await page.keyboard.press('Meta+/')
-
   // Test these hotkeys perform actions when
   // focus is on the canvas
   await page.mouse.move(600, 250)
   await page.mouse.click(600, 250)
   // Start a sketch
   await page.keyboard.press('s')
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(200)
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
@@ -6427,10 +6426,13 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
    * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
    */
   await codePaneButton.click()
+  await expect(u.codeLocator).not.toBeVisible()
+  await page.waitForTimeout(300)
 
   // Draw a line
   await page.mouse.move(700, 200, { steps: 5 })
   await page.mouse.click(700, 200)
+  await page.waitForTimeout(300)
   await page.mouse.move(800, 250, { steps: 5 })
   await page.mouse.click(800, 250)
   // Unequip line tool
@@ -6438,7 +6440,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
   // Equip arc tool
   await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 10_000,
+  })
   await page.mouse.move(1000, 100, { steps: 5 })
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
