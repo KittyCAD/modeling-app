@@ -796,3 +796,83 @@ test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
     maxDiffPixels: 100,
   })
 })
+
+test.describe('Grid visibility', () => {
+  test('Grid turned off', async ({ page }) => {
+    const u = await getUtils(page)
+    const stream = page.getByTestId('stream')
+    const mask = [
+      page.locator('#app-header'),
+      page.locator('#sidebar-top-ribbon'),
+      page.locator('#sidebar-bottom-ribbon'),
+    ]
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(2)
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+    // TODO: Find a way to truly know that the objects have finished
+    // rendering, because an execution-done message is not sufficient.
+    await page.waitForTimeout(1000)
+
+    await expect(stream).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask,
+    })
+  })
+
+  test('Grid turned on', async ({ page }) => {
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: {
+            ...TEST_SETTINGS,
+            modeling: {
+              ...TEST_SETTINGS.modeling,
+              showScaleGrid: true,
+            },
+          },
+        }),
+      }
+    )
+
+    const u = await getUtils(page)
+    const stream = page.getByTestId('stream')
+    const mask = [
+      page.locator('#app-header'),
+      page.locator('#sidebar-top-ribbon'),
+      page.locator('#sidebar-bottom-ribbon'),
+    ]
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(2)
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+    // TODO: Find a way to truly know that the objects have finished
+    // rendering, because an execution-done message is not sufficient.
+    await page.waitForTimeout(1000)
+
+    await expect(stream).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask,
+    })
+  })
+})
