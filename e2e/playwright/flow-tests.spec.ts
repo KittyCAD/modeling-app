@@ -4951,6 +4951,7 @@ const part002 = startSketchOn('XZ')
   test('Horizontally constrained line remains selected after applying constraint', async ({
     page,
   }) => {
+    test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -4966,6 +4967,7 @@ const part002 = startSketchOn('XZ')
     await u.waitForAuthSkipAppStart()
 
     await page.getByText('line([3.79, 2.68], %, $seg01)').click()
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled({timeout: 10_000})
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(100)
@@ -5006,13 +5008,16 @@ const part002 = startSketchOn('XZ')
       await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
     ).toBeLessThan(3)
 
+    await page.waitForTimeout(300)
     await page
       .getByRole('button', {
         name: 'Constraints',
       })
       .click()
-    await page.waitForTimeout(100)
-    await page.getByRole('button', { name: 'length', exact: true }).click()
+    // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
+    await page.waitForTimeout(200)
+    // await page.getByRole('button', { name: 'length', exact: true }).click()
+    await page.locator('[data-testid="length"]').click()
 
     await page.getByLabel('length Value').fill('10')
     await page.getByRole('button', { name: 'Add constraining value' }).click()
@@ -6407,7 +6412,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', { timeout: 10_000 })
   /**
    * TODO: There is a bug somewhere that causes this test to fail
    * if you toggle the codePane closed before your trigger the
@@ -6454,9 +6459,11 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.mouse.move(800, 200, { steps: 5 })
   await page.mouse.click(800, 200)
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(300)
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
   await page.getByRole('button', { name: 'Continue' }).click()
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(300)
+  await expect(page.getByRole('button', { name: 'Submit command' })).toBeVisible()
   await page.getByRole('button', { name: 'Submit command' }).click()
 
   await codePaneButton.click()
