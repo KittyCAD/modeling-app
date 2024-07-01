@@ -1251,7 +1251,7 @@ export class EngineCommandManager extends EventTarget {
             type: 'default_camera_get_settings',
           },
         })
-        // We want modify the grid first becuase we don't want it to flash.
+        // We want modify the grid first because we don't want it to flash.
         // Ideally these would already be default hidden in engine (TODO do
         // that) https://github.com/KittyCAD/engine/issues/2282
         this.modifyGrid(true)?.then(async () => {
