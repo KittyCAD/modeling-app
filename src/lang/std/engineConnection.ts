@@ -1253,8 +1253,8 @@ export class EngineCommandManager extends EventTarget {
         })
         // We want modify the grid first becuase we don't want it to flash.
         // Ideally these would already be default hidden in engine (TODO do
-        // that)
-        this.modifyGrid(true).then(async () => {
+        // that) https://github.com/KittyCAD/engine/issues/2282
+        this.modifyGrid(true)?.then(async () => {
           await this.initPlanes()
           this.resolveReady()
           setIsStreamReady(true)
