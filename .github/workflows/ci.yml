@@ -1,19 +1,12 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches:
-      - main
-  release:
-    types: [published]
-  schedule:
-    - cron: '0 4 * * *'
-  # Daily at 04:00 AM UTC
-  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+      - pierremtb/bf3886a
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  BUILD_RELEASE: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -99,19 +92,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - name: Set nightly version
-        if: github.event_name == 'schedule'
+      - name: Set version
         run: |
-          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
-          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json' \
-            '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
-          echo "$(jq --arg id 'dev.zoo.modeling-app-nightly' \
-            '.identifier=$id' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
-          echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
-            '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+          VERSION=0.99.99 yarn bump-jsons
 
       - uses: actions/upload-artifact@v3
-        if: github.event_name == 'schedule'
         with:
           path: |
             package.json
@@ -378,16 +363,16 @@ jobs:
 
   publish-apps-release:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    if: true
     needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
-      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
-      PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
-      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
-      WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
-      URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+      VERSION: ${{ needs.prepare-json-files.outputs.version }}
+      PUB_DATE: ${{ github.event.repository.updated_at }}
+      NOTES: ${{ format('Nightly build, commit {0}', github.sha) }}
+      BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app/test' }}
+      WEBSITE_DIR: ${{ 'dl.zoo.dev/releases/modeling-app/test' }}
+      URL_CODED_NAME: ${{ 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/download-artifact@v3
 
