@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import {
   Program,
   _executor,
@@ -48,78 +47,32 @@ export const toolTips = [
 ] as any as ToolTip[]
 
 export interface StoreState {
-  mediaStream?: MediaStream
-  setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
   setIsStreamReady: (isStreamReady: boolean) => void
   isKclLspServerReady: boolean
   isCopilotLspServerReady: boolean
   setIsKclLspServerReady: (isKclLspServerReady: boolean) => void
   setIsCopilotLspServerReady: (isCopilotLspServerReady: boolean) => void
-  buttonDownInStream: number | undefined
-  setButtonDownInStream: (buttonDownInStream: number | undefined) => void
-  didDragInStream: boolean
-  setDidDragInStream: (didDragInStream: boolean) => void
-  streamDimensions: { streamWidth: number; streamHeight: number }
-  setStreamDimensions: (dimensions: {
-    streamWidth: number
-    streamHeight: number
-  }) => void
   setHtmlRef: (ref: React.RefObject<HTMLDivElement>) => void
   htmlRef: React.RefObject<HTMLDivElement> | null
-
-  openPanes: SidebarType[]
-  setOpenPanes: (panes: SidebarType[]) => void
 }
 
-export const useStore = create<StoreState>()(
-  persist(
-    (set, get) => {
-      return {
-        setMediaStream: (mediaStream) => set({ mediaStream }),
-        setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
-        setIsKclLspServerReady: (isKclLspServerReady) =>
-          set({ isKclLspServerReady }),
-        setIsCopilotLspServerReady: (isCopilotLspServerReady) =>
-          set({ isCopilotLspServerReady }),
-        setButtonDownInStream: (buttonDownInStream) => {
-          set({ buttonDownInStream })
-        },
-        setHtmlRef: (htmlRef) => {
-          set({ htmlRef })
-        },
-        setDidDragInStream: (didDragInStream) => {
-          set({ didDragInStream })
-        },
-        // For stream event handling
-        setStreamDimensions: (streamDimensions) => {
-          set({ streamDimensions })
-        },
-        isStreamReady: false,
-        isKclLspServerReady: false,
-        isCopilotLspServerReady: false,
-        buttonDownInStream: undefined,
-        htmlRef: null,
-        didDragInStream: false,
-        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
-
-        // tauri specific app settings
-        defaultDir: {
-          dir: '',
-        },
-        openPanes: ['code'],
-        setOpenPanes: (openPanes) => set({ openPanes }),
-      }
+export const useStore = create<StoreState>()((set, get) => {
+  return {
+    setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
+    setIsKclLspServerReady: (isKclLspServerReady) =>
+      set({ isKclLspServerReady }),
+    setIsCopilotLspServerReady: (isCopilotLspServerReady) =>
+      set({ isCopilotLspServerReady }),
+    setHtmlRef: (htmlRef) => {
+      set({ htmlRef })
     },
-    {
-      name: 'store',
-      partialize: (state) =>
-        Object.fromEntries(
-          Object.entries(state).filter(([key]) => ['openPanes'].includes(key))
-        ),
-    }
-  )
-)
+    htmlRef: null,
+    isStreamReady: false,
+    isKclLspServerReady: false,
+    isCopilotLspServerReady: false,
+  }
+})
 
 export async function executeAst({
   ast,

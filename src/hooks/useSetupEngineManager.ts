@@ -4,6 +4,7 @@ import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
+import { useStore } from 'useStore'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -24,6 +25,9 @@ export function useSetupEngineManager(
     modelingContext: ReturnType<typeof useModelingContext>['context']
   }
 ) {
+  const { setIsStreamReady } = useStore((s) => ({
+    setIsStreamReady: s.setIsStreamReady,
+  }))
 
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
@@ -55,11 +59,7 @@ export function useSetupEngineManager(
             type: 'Set context',
             data: { mediaStream },
           }),
-        setIsStreamReady: (isStreamReady) =>
-          settings.modelingSend({
-            type: 'Set context',
-            data: { isStreamReady },
-          }),
+        setIsStreamReady,
         width: quadWidth,
         height: quadHeight,
         executeCode: () => {

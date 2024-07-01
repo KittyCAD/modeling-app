@@ -133,9 +133,6 @@ export type SegmentOverlayPayload =
 
 interface Store {
   mediaStream?: MediaStream
-  isStreamReady: boolean
-  isKclLspServerReady: boolean
-  isCopilotLspServerReady: boolean
   buttonDownInStream: number | undefined
   didDragInStream: boolean
   streamDimensions: { streamWidth: number; streamHeight: number }
@@ -280,19 +277,11 @@ export const modelingMachine = createMachine(
       segmentOverlays: {} as SegmentOverlays,
       segmentHoverMap: {} as { [pathToNodeString: string]: number },
       store: {
-        isStreamReady: false,
-        isKclLspServerReady: false,
-        isCopilotLspServerReady: false,
         buttonDownInStream: undefined,
         htmlRef: null,
         didDragInStream: false,
         streamDimensions: { streamWidth: 1280, streamHeight: 720 },
         openPanes: persistedContext.openPanes || ['code'],
-
-        // tauri specific app settings
-        defaultDir: {
-          dir: '',
-        },
       } as Store,
     },
 

@@ -11,6 +11,7 @@ import { useKclContext } from 'lang/KclProvider'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
+import { useStore } from 'useStore'
 
 export function Toolbar({
   className = '',
@@ -37,11 +38,14 @@ export function Toolbar({
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
+  const { isStreamReady } = useStore((s) => ({
+    isStreamReady: s.isStreamReady,
+  }))
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
-    !context.store?.isStreamReady
+    !isStreamReady
 
   useHotkeys(
     'l',
