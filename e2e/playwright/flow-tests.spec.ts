@@ -451,7 +451,7 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(100)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible({
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
       timeout: 10_000,
     })
     await page.waitForTimeout(200)
