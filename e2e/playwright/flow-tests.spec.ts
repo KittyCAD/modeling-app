@@ -470,7 +470,7 @@ test.describe('Testing Camera Movement', () => {
     await hoverOverNothing()
     // hover over vertical line
     await u.canvasLocator.hover({ position: { x, y: 325 } })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
