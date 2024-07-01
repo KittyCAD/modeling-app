@@ -5,7 +5,7 @@ import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { addLineHighlight } from './highlightextension'
+import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
 import {
   forEachDiagnostic,
   Diagnostic,
@@ -98,6 +98,7 @@ export default class EditorManager {
         effects: addLineHighlight.of([selection[0], safeEnd]),
         annotations: [
           updateOutsideEditorEvent,
+          addLineHighlightEvent,
           Transaction.addToHistory.of(false),
         ],
       })
