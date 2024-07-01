@@ -6403,6 +6403,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.keyboard.press('e')
   await expect(page.locator('.cm-content')).toHaveText('slae')
   await page.keyboard.press('Meta+/')
+  await page.waitForTimeout(200)
   // Test these hotkeys perform actions when
   // focus is on the canvas
   await page.mouse.move(600, 250)
