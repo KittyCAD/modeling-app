@@ -1,6 +1,6 @@
 /// Thanks to the Cursor folks for their heavy lifting here.
 /// This has been heavily modified from their original implementation but we are
-/// still greatful.
+/// still grateful.
 import { indentUnit } from '@codemirror/language'
 import {
   Decoration,
