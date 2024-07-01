@@ -1,8 +1,6 @@
 import { Extension } from '@codemirror/state'
 import { linter, forEachDiagnostic, Diagnostic } from '@codemirror/lint'
 
-import { LanguageServerPlugin } from './lsp'
-
 export default function lspLintExt(): Extension {
   return linter((view) => {
     let diagnostics: Diagnostic[] = []
