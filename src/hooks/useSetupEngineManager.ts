@@ -13,11 +13,13 @@ export function useSetupEngineManager(
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
+    showScaleGrid: false,
   } as {
     pool: string | null
     theme: Themes
     highlightEdges: boolean
     enableSSAO: boolean
+    showScaleGrid: boolean
   }
 ) {
   const {

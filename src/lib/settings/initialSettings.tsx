@@ -326,6 +326,18 @@ export function createSettings() {
         hideOnLevel: 'project',
       }),
       /**
+       * Whether to show a scale grid in the 3D modeling view
+       */
+      showScaleGrid: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show a scale grid in the 3D modeling view',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        hideOnLevel: 'project',
+      }),
+      /**
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
        */
