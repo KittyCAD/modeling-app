@@ -12,9 +12,6 @@ on:
   # Daily at 04:00 AM UTC
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
-permissions:
-  contents: write
-
 env:
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
@@ -380,6 +377,8 @@ jobs:
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
   publish-apps-release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
