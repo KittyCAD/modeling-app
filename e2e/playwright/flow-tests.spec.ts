@@ -834,7 +834,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText('Unexpected token')).toBeVisible()
+  await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
   // select the line that's causing the error and delete it
   await page.getByText('$ error').click()
