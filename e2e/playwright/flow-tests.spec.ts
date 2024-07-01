@@ -482,19 +482,19 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(100)
     // hover over horizontal line
     await page.mouse.move(858, y, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(x, 325)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(857, y)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     // now click it
     await page.mouse.click(857, y)
 
@@ -511,7 +511,7 @@ test.describe('Testing Camera Movement', () => {
 
     await page.waitForTimeout(100)
     await page.mouse.move(x, 419, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
@@ -526,7 +526,7 @@ test.describe('Testing Camera Movement', () => {
     await hoverOverNothing()
 
     await page.mouse.move(x, 419)
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
     await hoverOverNothing()
 
