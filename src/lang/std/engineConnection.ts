@@ -1737,6 +1737,7 @@ export class EngineCommandManager extends EventTarget {
     if (
       (cmd.type === 'camera_drag_move' ||
         cmd.type === 'handle_mouse_drag_move' ||
+        cmd.type === 'default_camera_zoom' ||
         cmd.type === ('default_camera_perspective_settings' as any)) &&
       this.engineConnection?.unreliableDataChannel &&
       !forceWebsocket

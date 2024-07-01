@@ -74,6 +74,9 @@ export class CameraControls {
   enableRotate = true
   enablePan = true
   enableZoom = true
+  zoomDataFromLastFrame?: number = undefined
+  // holds coordinates, and interaction
+  moveDataFromLastFrame?: [number, number, string] = undefined
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -101,16 +104,12 @@ export class CameraControls {
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
-  private debounceTimer = 0
 
   handleStart = () => {
-    if (this.debounceTimer) clearTimeout(this.debounceTimer)
     this._isCamMovingCallback(true, false)
   }
   handleEnd = () => {
-    this.debounceTimer = setTimeout(() => {
-      this._isCamMovingCallback(false, false)
-    }, 400) as any as number
+    this._isCamMovingCallback(false, false)
   }
 
   setCam = (camProps: ReactCameraProperties) => {
@@ -230,6 +229,7 @@ export class CameraControls {
         camSettings.orientation.z,
         camSettings.orientation.w
       ).invert()
+
       this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
@@ -258,6 +258,48 @@ export class CameraControls {
       }
       this.onCameraChange()
     }
+
+    // Our stream is never more than 60fps.
+    // We can get away with capping our "virtual fps" to 60 then.
+    const FPS_VIRTUAL = 60
+
+    const doZoom = () => {
+      if (this.zoomDataFromLastFrame !== undefined) {
+        this.handleStart()
+        this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'default_camera_zoom',
+            magnitude:
+              (-1 * this.zoomDataFromLastFrame) / window.devicePixelRatio,
+          },
+          cmd_id: uuidv4(),
+        })
+        this.handleEnd()
+      }
+      this.zoomDataFromLastFrame = undefined
+    }
+    setInterval(doZoom, 1000 / FPS_VIRTUAL)
+
+    const doMove = () => {
+      if (this.moveDataFromLastFrame !== undefined) {
+        this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'camera_drag_move',
+            interaction: this.moveDataFromLastFrame[2] as any,
+            window: {
+              x: this.moveDataFromLastFrame[0],
+              y: this.moveDataFromLastFrame[1],
+            },
+          },
+          cmd_id: uuidv4(),
+        })
+      }
+      this.moveDataFromLastFrame = undefined
+    }
+    setInterval(doMove, 1000 / FPS_VIRTUAL)
+
     setTimeout(() => {
       this.engineCommandManager.subscribeTo({
         event: 'camera_drag_end',
@@ -342,15 +384,7 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        this.throttledEngCmd({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'camera_drag_move',
-            interaction,
-            window: { x: event.clientX, y: event.clientY },
-          },
-          cmd_id: uuidv4(),
-        })
+        this.moveDataFromLastFrame = [event.clientX, event.clientY, interaction]
         return
       }
 
@@ -398,34 +432,19 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
-    // Assume trackpad if the deltas are small and integers
-    this.handleStart()
-
     if (this.syncDirection === 'engineToClient') {
-      const interactions = this.interactionGuards.zoom.scrollCallback(
-        event as any
-      )
-      if (!interactions) {
-        this.handleEnd()
-        return
-      }
-      this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'default_camera_zoom',
-          magnitude: -event.deltaY * 0.4,
-        },
-        cmd_id: uuidv4(),
-      })
-      this.handleEnd()
+      this.zoomDataFromLastFrame = event.deltaY
       return
     }
 
-    // Else "clientToEngine" (Sketch Mode) or forceUpdate
+    // else "clientToEngine" (Sketch Mode) or forceUpdate
 
+    // We need to simulate similar behavior as when we send
+    // zoom commands to engine. This means dropping some zoom
+    // commands too.
     // From onMouseMove zoom handling which seems to be really smooth
-    this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-    this.pendingZoom *= 1 + event.deltaY * 0.01
+    this.handleStart()
+    this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
     this.handleEnd()
   }
 
