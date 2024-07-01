@@ -94,6 +94,23 @@ pub async fn make_default_planes(
     JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
 }
 
+// wasm_bindgen wrapper for modifying the grid
+#[wasm_bindgen]
+pub async fn modify_grid(
+    engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    hidden: bool,
+) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+    // deserialize the ast from a stringified json
+
+    let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+    engine.modify_grid(hidden).await.map_err(String::from)?;
+
+    Ok(())
+}
+
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
 pub async fn modify_ast_for_sketch_wasm(

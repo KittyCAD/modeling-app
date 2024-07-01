@@ -3,7 +3,7 @@ import { useStore } from '../useStore'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
-import { makeDefaultPlanes } from 'lang/wasm'
+import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -65,6 +65,9 @@ export function useSetupEngineManager(
         settings,
         makeDefaultPlanes: () => {
           return makeDefaultPlanes(kclManager.engineCommandManager)
+        },
+        modifyGrid: (hidden: boolean) => {
+          return modifyGrid(kclManager.engineCommandManager, hidden)
         },
       })
       setStreamDimensions({
