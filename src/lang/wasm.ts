@@ -2,12 +2,14 @@ import init, {
   parse_wasm,
   recast_wasm,
   execute_wasm,
+  kcl_lint,
   lexer_wasm,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
   make_default_planes,
+  modify_grid,
   coredump,
   toml_stringify,
   default_app_settings,
@@ -20,6 +22,7 @@ import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
 import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
+import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
@@ -205,6 +208,17 @@ export const _executor = async (
   }
 }
 
+export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
+  try {
+    const discovered_findings: Array<Discovered> = await kcl_lint(
+      JSON.stringify(ast)
+    )
+    return discovered_findings
+  } catch (e: any) {
+    return Promise.reject(e)
+  }
+}
+
 export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
 }
@@ -220,6 +234,20 @@ export const makeDefaultPlanes = async (
   } catch (e) {
     // TODO: do something real with the error.
     console.log('make default planes error', e)
+    return Promise.reject(e)
+  }
+}
+
+export const modifyGrid = async (
+  engineCommandManager: EngineCommandManager,
+  hidden: boolean
+): Promise<void> => {
+  try {
+    await modify_grid(engineCommandManager, hidden)
+    return
+  } catch (e) {
+    // TODO: do something real with the error.
+    console.log('modify grid error', e)
     return Promise.reject(e)
   }
 }
@@ -321,6 +349,7 @@ export async function coreDump(
   openGithubIssue: boolean = false
 ): Promise<CoreDumpInfo> {
   try {
+    console.warn('CoreDump: Initializing core dump')
     const dump: CoreDumpInfo = await coredump(coreDumpManager)
     /* NOTE: this console output of the coredump should include the field
        `github_issue_url` which is not in the uploaded coredump file.

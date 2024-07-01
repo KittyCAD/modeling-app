@@ -37,4 +37,7 @@ pub fn get_line_before(pos: Position, rope: &Rope) -> Option<String> {
 pub trait IntoDiagnostic {
     /// Convert the traited object to a [lsp_types::Diagnostic].
     fn to_lsp_diagnostic(&self, text: &str) -> Diagnostic;
+
+    /// Get the severity of the diagnostic.
+    fn severity(&self) -> tower_lsp::lsp_types::DiagnosticSeverity;
 }

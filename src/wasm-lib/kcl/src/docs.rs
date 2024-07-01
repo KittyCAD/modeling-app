@@ -828,7 +828,7 @@ mod tests {
         assert_eq!(
             some_function,
             crate::ast::types::Function::StdLib {
-                func: Box::new(crate::std::sketch::Line),
+                func: Box::new(crate::std::sketch::Line)
             }
         );
     }

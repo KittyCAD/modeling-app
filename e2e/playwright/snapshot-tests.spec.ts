@@ -91,8 +91,9 @@ const part001 = startSketchOn('-XZ')
     )
   })
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
+
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.waitForCmdReceive('extrude')
@@ -330,7 +331,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
 
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // wait for execution done
@@ -386,8 +387,8 @@ test('Draft segments should look right', async ({ page, context }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
   await u.openDebugPanel()
 
   await expect(
@@ -443,7 +444,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -490,7 +491,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
@@ -589,7 +590,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
@@ -689,7 +690,7 @@ const part002 = startSketchOn(part001, 'seg01')
   }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -739,7 +740,7 @@ test('Zoom to fit on load - solid 2d', async ({ page, context }) => {
   }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -776,7 +777,7 @@ test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
   }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
