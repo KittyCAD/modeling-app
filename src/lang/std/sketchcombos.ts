@@ -1,5 +1,5 @@
 import { TransformCallback, VarValues } from './stdTypes'
-import { toolTips, ToolTip } from '../../useStore'
+import { ToolTip, toolTips } from 'lang/langHelpers'
 import { Selections, Selection } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {

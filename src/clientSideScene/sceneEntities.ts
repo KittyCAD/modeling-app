@@ -58,7 +58,7 @@ import {
   editorManager,
 } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst, useStore } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import {
   createArcGeometry,
   dashedStraight,

@@ -10,7 +10,7 @@ import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import { trap } from 'lib/trap'
 
 export const AvailableVars = ({

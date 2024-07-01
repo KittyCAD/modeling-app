@@ -55,7 +55,7 @@ import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'

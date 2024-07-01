@@ -1,4 +1,4 @@
-import { ToolTip } from 'useStore'
+import { ToolTip } from 'lang/langHelpers'
 import {
   ProgramMemory,
   Path,

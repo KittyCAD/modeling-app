@@ -8,7 +8,7 @@ import {
   ConstraintLevel,
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
-import { ToolTip } from '../../useStore'
+import { ToolTip } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'

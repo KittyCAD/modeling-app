@@ -15,8 +15,7 @@ export const RefreshButton = ({ children }: React.PropsWithChildren) => {
     htmlRef: s.htmlRef,
   }))
   const coreDumpManager = useMemo(
-    () =>
-      new CoreDumpManager(engineCommandManager, htmlRef, token),
+    () => new CoreDumpManager(engineCommandManager, htmlRef, token),
     []
   )
 
