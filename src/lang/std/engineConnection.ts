@@ -1249,29 +1249,6 @@ export class EngineCommandManager extends EventTarget {
         })
 
         this.initPlanes().then(async () => {
-          // Hide the grid and grid scale text.
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'object_visible' as any,
-              // Found in engine/constants.h
-              object_id: 'cfa78409-653d-4c26-96f1-7c45fb784840',
-              hidden: true,
-            },
-          })
-
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'object_visible' as any,
-              // Found in engine/constants.h
-              object_id: '10782f33-f588-4668-8bcd-040502d26590',
-              hidden: true,
-            },
-          })
-
           this.resolveReady()
           setIsStreamReady(true)
           await executeCode()
