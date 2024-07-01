@@ -105,6 +105,9 @@ export async function executor(
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
     },
+    modifyGrid: (hidden: boolean) => {
+      return new Promise((resolve) => resolve())
+    },
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
