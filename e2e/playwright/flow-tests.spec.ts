@@ -565,6 +565,77 @@ test('if you click the format button it formats your code', async ({
   |> close(%)`)
 })
 
+test('fold gutters work', async ({ page }) => {
+  const u = await getUtils(page)
+
+  const fullCode = `const sketch001 = startSketchOn('XY')
+   |> startProfileAt([-10, -10], %)
+   |> line([20, 0], %)
+   |> line([0, 20], %)
+   |> line([-20, 0], %)
+   |> close(%)`
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XY')
+   |> startProfileAt([-10, -10], %)
+   |> line([20, 0], %)
+   |> line([0, 20], %)
+   |> line([-20, 0], %)
+   |> close(%)`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+
+  await u.waitForAuthSkipAppStart()
+
+  // TODO: Jess needs to fix this but you have to mod the code to get them to show
+  // up, its an annoying codemirror thing.
+  await page.locator('.cm-content').click()
+  await page.keyboard.press('End')
+  await page.keyboard.press('Enter')
+
+  const foldGutterFoldLine = page.locator('[title="Fold line"]')
+  const foldGutterUnfoldLine = page.locator('[title="Unfold line"]')
+
+  await expect(page.locator('.cm-content')).toHaveText(fullCode)
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  // Make sure we have a fold gutter
+  await expect(foldGutterFoldLine).toBeVisible()
+  await expect(foldGutterUnfoldLine).not.toBeVisible()
+
+  // Collapse the code
+  await foldGutterFoldLine.click()
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const sketch001 = startSketchOn('XY')…   `
+  )
+  await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
+  await expect(foldGutterFoldLine).not.toBeVisible()
+  await expect(foldGutterUnfoldLine.nth(1)).toBeVisible()
+
+  // Expand the code
+  await foldGutterUnfoldLine.nth(1).click()
+  await expect(page.locator('.cm-content')).toHaveText(fullCode)
+
+  // Delete all the code.
+  await page.locator('.cm-content').click()
+  // Select all
+  await page.keyboard.press('Control+A')
+  await page.keyboard.press('Backspace')
+  await page.keyboard.press('Meta+A')
+  await page.keyboard.press('Backspace')
+
+  await expect(page.locator('.cm-content')).toHaveText(``)
+  await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
+
+  await expect(foldGutterUnfoldLine).not.toBeVisible()
+  await expect(foldGutterFoldLine).not.toBeVisible()
+})
+
 test('hover over functions shows function description', async ({ page }) => {
   const u = await getUtils(page)
   await page.addInitScript(async () => {
