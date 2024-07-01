@@ -1143,6 +1143,7 @@ export class EngineCommandManager extends EventTarget {
     this.getAst = cb
   }
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
+  private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
   start({
     setMediaStream,
@@ -1152,6 +1153,7 @@ export class EngineCommandManager extends EventTarget {
     executeCode,
     token,
     makeDefaultPlanes,
+    modifyGrid,
     settings = {
       theme: Themes.Dark,
       highlightEdges: true,
@@ -1165,6 +1167,7 @@ export class EngineCommandManager extends EventTarget {
     executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
+    modifyGrid: (hidden: boolean) => Promise<void>
     settings?: {
       theme: Themes
       highlightEdges: boolean
@@ -1172,6 +1175,7 @@ export class EngineCommandManager extends EventTarget {
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
+    this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
     }
@@ -1249,6 +1253,7 @@ export class EngineCommandManager extends EventTarget {
         })
 
         this.initPlanes().then(async () => {
+          await this.modifyGrid(true)
           this.resolveReady()
           setIsStreamReady(true)
           await executeCode()
