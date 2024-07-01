@@ -82,7 +82,7 @@ interface GhostText {
   uuid: string
 }
 
-export const completionDecoration = StateField.define<CompletionState>({
+const completionDecoration = StateField.define<CompletionState>({
   create(_state: EditorState) {
     return { ghostText: null }
   },
@@ -210,7 +210,6 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
   return {
     overall: infos.some(
       (info: TransactionInfo) =>
-        update.focusChanged ||
         info.transaction.annotation(copilotPluginEvent.type) !== undefined ||
         info.annotations.includes(TransactionAnnotation.UserSelect) ||
         info.annotations.includes(TransactionAnnotation.UserInput) ||
@@ -265,11 +264,6 @@ export class CompletionRequester implements PluginValue {
     // If we have a user select event, we want to clear the ghost text.
     if (isRelevant.userSelect) {
       this._deffererUserSelect(true)
-      return
-    }
-
-    if (viewUpdate.focusChanged) {
-      this.rejectSuggestionCommand()
       return
     }
 
@@ -594,9 +588,10 @@ export class CompletionRequester implements PluginValue {
 }
 
 export const copilotPlugin = (options: LanguageServerOptions): Extension => {
-  const completionPlugin = ViewPlugin.define((view) => {
-    return new CompletionRequester(options.client)
-  })
+  let plugin: CompletionRequester | null = null
+  const completionPlugin = ViewPlugin.define(
+    (view) => (plugin = new CompletionRequester(options.client))
+  )
 
   const domHandlers = EditorView.domEventHandlers({
     keydown(event, view) {
@@ -670,5 +665,12 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     copilotAutocompleteKeymapExt,
     domHandlers,
     completionDecoration,
+    EditorView.focusChangeEffect.of((_, focusing) => {
+      if (plugin === null) return null
+
+      plugin.rejectSuggestionCommand()
+
+      return null
+    }),
   ]
 }
