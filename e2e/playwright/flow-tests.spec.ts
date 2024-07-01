@@ -4967,7 +4967,9 @@ const part002 = startSketchOn('XZ')
     await u.waitForAuthSkipAppStart()
 
     await page.getByText('line([3.79, 2.68], %, $seg01)').click()
-    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled({timeout: 10_000})
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
+      { timeout: 10_000 }
+    )
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(100)
@@ -6412,7 +6414,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', { timeout: 10_000 })
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 10_000,
+  })
   /**
    * TODO: There is a bug somewhere that causes this test to fail
    * if you toggle the codePane closed before your trigger the
@@ -6463,7 +6467,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.waitForTimeout(300)
-  await expect(page.getByRole('button', { name: 'Submit command' })).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Submit command' })
+  ).toBeVisible()
   await page.getByRole('button', { name: 'Submit command' }).click()
 
   await codePaneButton.click()
