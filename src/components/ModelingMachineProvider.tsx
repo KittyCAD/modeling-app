@@ -93,7 +93,7 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges },
+        modeling: { defaultUnit, highlightEdges, showScaleGrid },
       },
     },
   } = useSettingsAuthContext()
@@ -864,6 +864,7 @@ export const ModelingMachineProvider = ({
     enableSSAO: enableSSAO.current,
     modelingSend,
     modelingContext: modelingState.context,
+    showScaleGrid: showScaleGrid.current,
   })
 
   useEffect(() => {

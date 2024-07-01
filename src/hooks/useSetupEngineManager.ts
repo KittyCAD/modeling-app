@@ -16,6 +16,7 @@ export function useSetupEngineManager(
     enableSSAO: true,
     modelingSend: (() => {}) as any,
     modelingContext: {} as any,
+    showScaleGrid: false,
   } as {
     pool: string | null
     theme: Themes
@@ -23,6 +24,7 @@ export function useSetupEngineManager(
     enableSSAO: boolean
     modelingSend: ReturnType<typeof useModelingContext>['send']
     modelingContext: ReturnType<typeof useModelingContext>['context']
+    showScaleGrid: boolean
   }
 ) {
   const { setIsStreamReady } = useStore((s) => ({

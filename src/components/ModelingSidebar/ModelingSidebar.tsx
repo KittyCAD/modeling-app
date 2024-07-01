@@ -1,6 +1,6 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { useCallback, useEffect, useState } from 'react'
+import { HTMLAttributes, useCallback, useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Tab } from '@headlessui/react'
 import {
@@ -53,15 +53,19 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         bottomRight: 'hidden',
       }}
     >
-      <div className={styles.grid + ' flex-1'}>
-        <ModelingSidebarSection panes={topPanes} />
-        <ModelingSidebarSection panes={bottomPanes} alignButtons="end" />
+      <div id="app-sidebar" className={styles.grid + ' flex-1'}>
+        <ModelingSidebarSection id="sidebar-top" panes={topPanes} />
+        <ModelingSidebarSection
+          id="sidebar-bottom"
+          panes={bottomPanes}
+          alignButtons="end"
+        />
       </div>
     </Resizable>
   )
 }
 
-interface ModelingSidebarSectionProps {
+interface ModelingSidebarSectionProps extends HTMLAttributes<HTMLDivElement> {
   panes: SidebarPane[]
   alignButtons?: 'start' | 'end'
 }
@@ -69,6 +73,8 @@ interface ModelingSidebarSectionProps {
 function ModelingSidebarSection({
   panes,
   alignButtons = 'start',
+  className,
+  ...props
 }: ModelingSidebarSectionProps) {
   const { settings } = useSettingsAuthContext()
   const showDebugPanel = settings.context.modeling.showDebugPanel
@@ -139,7 +145,7 @@ function ModelingSidebarSection({
   }, [showDebugPanel.current, togglePane, context.store?.openPanes])
 
   return (
-    <div className="group contents">
+    <div className={'group contents ' + className} {...props}>
       <Tab.Group
         vertical
         selectedIndex={
@@ -151,6 +157,7 @@ function ModelingSidebarSection({
         }}
       >
         <Tab.List
+          id={`${props.id}-ribbon`}
           className={
             'pointer-events-auto ' +
             (alignButtons === 'start'
@@ -179,6 +186,7 @@ function ModelingSidebarSection({
           ))}
         </Tab.List>
         <Tab.Panels
+          id={`${props.id}-pane`}
           as="article"
           className={
             'col-start-2 col-span-1 ' +
