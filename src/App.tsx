@@ -25,6 +25,7 @@ import ModalContainer from 'react-modal-promise'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
+import { useStore } from 'useStore'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -43,15 +44,13 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const { send, context } = useModelingContext()
+  const { context } = useModelingContext()
+  const { setHtmlRef } = useStore((s) => ({
+    setHtmlRef: s.setHtmlRef,
+  }))
 
   useEffect(() => {
-    send({
-      type: 'Set context',
-      data: {
-        htmlRef: ref,
-      },
-    })
+    setHtmlRef(ref)
   }, [ref])
 
   const { auth, settings } = useSettingsAuthContext()

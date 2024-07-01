@@ -136,7 +136,6 @@ interface Store {
   buttonDownInStream: number | undefined
   didDragInStream: boolean
   streamDimensions: { streamWidth: number; streamHeight: number }
-  htmlRef: React.RefObject<HTMLDivElement> | null
   openPanes: SidebarType[]
 }
 
@@ -278,7 +277,6 @@ export const modelingMachine = createMachine(
       segmentHoverMap: {} as { [pathToNodeString: string]: number },
       store: {
         buttonDownInStream: undefined,
-        htmlRef: null,
         didDragInStream: false,
         streamDimensions: { streamWidth: 1280, streamHeight: 720 },
         openPanes: persistedContext.openPanes || ['code'],

@@ -33,7 +33,6 @@ import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import { getState, setState } from 'lib/tauri'
-import { useModelingContext } from 'hooks/useModelingContext'
 import { CoreDumpManager } from 'lib/coredump'
 import { engineCommandManager } from 'lib/singletons'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -41,6 +40,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
+import { useStore } from 'useStore'
 
 const router = createBrowserRouter([
   {
@@ -176,12 +176,13 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const { context } = useModelingContext()
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
+  const { htmlRef } = useStore((s) => ({
+    htmlRef: s.htmlRef,
+  }))
   const coreDumpManager = useMemo(
-    () =>
-      new CoreDumpManager(engineCommandManager, context.store.htmlRef, token),
+    () => new CoreDumpManager(engineCommandManager, htmlRef, token),
     []
   )
   useHotkeyWrapper(['meta + shift + .'], () => {
