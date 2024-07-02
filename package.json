@@ -19,7 +19,7 @@
     "@kittycad/lib": "^0.0.69",
     "@react-hook/resize-observer": "^2.0.1",
     "@replit/codemirror-interact": "^6.3.1",
-    "@tauri-apps/api": "2.0.0-beta.12",
+    "@tauri-apps/api": "2.0.0-beta.14",
     "@tauri-apps/plugin-dialog": "^2.0.0-beta.2",
     "@tauri-apps/plugin-fs": "^2.0.0-beta.5",
     "@tauri-apps/plugin-http": "^2.0.0-beta.2",
