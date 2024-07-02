@@ -7148,7 +7148,8 @@ test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
   prevContent = await page.locator('.cm-content').innerText()
 
   // drag line handle
-  await page.waitForTimeout(100)
+  // we wait so it saves the code
+  await page.waitForTimeout(800)
 
   const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
   await page.waitForTimeout(100)
@@ -7158,6 +7159,9 @@ test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
   })
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
+
+  // we wait so it saves the code
+  await page.waitForTimeout(800)
 
   // drag tangentialArcTo handle
   const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
@@ -7186,11 +7190,37 @@ test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
   await page.keyboard.press('KeyZ')
   await page.keyboard.up('Control')
 
-  await page.waitForTimeout(100)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -16.82], %)
   |> line([15.4, -2.74], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
+
+  // Hit undo again.
+  await page.keyboard.down('Control')
+  await page.keyboard.press('KeyZ')
+  await page.keyboard.up('Control')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -16.82], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
+
+  // Hit undo again.
+  await page.keyboard.down('Control')
+  await page.keyboard.press('KeyZ')
+  await page.keyboard.up('Control')
+
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -5.38], %)
   |> close(%)
   |> extrude(5, %)`)
