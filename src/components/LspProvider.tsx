@@ -1,11 +1,5 @@
 import type * as LSP from 'vscode-languageserver-protocol'
-import React, {
-  createContext,
-  useMemo,
-  useEffect,
-  useContext,
-  useState,
-} from 'react'
+import React, { createContext, useMemo, useContext, useState } from 'react'
 import {
   LanguageServerClient,
   FromServer,
@@ -16,7 +10,6 @@ import {
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import KclLanguageSupport from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { useStore } from 'useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
@@ -73,19 +66,8 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
-  const {
-    isKclLspServerReady,
-    isCopilotLspServerReady,
-    setIsKclLspServerReady,
-    setIsCopilotLspServerReady,
-  } = useStore((s) => ({
-    isKclLspServerReady: s.isKclLspServerReady,
-    isCopilotLspServerReady: s.isCopilotLspServerReady,
-    setIsKclLspServerReady: s.setIsKclLspServerReady,
-    setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
-  }))
-  const [isLspReady, setIsLspReady] = useState(false)
-  const [isCopilotReady, setIsCopilotReady] = useState(false)
+  const [isKclLspReady, setIsKclLspReady] = useState(false)
+  const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
   const {
     auth,
@@ -132,7 +114,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       fromServer,
       intoServer,
       initializedCallback: () => {
-        setIsLspReady(true)
+        setIsKclLspReady(true)
       },
     })
 
@@ -143,7 +125,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isTauri() && isKclLspServerReady && kclLspClient && codeManager.code) {
+    if (!isTauri() && isKclLspReady && kclLspClient && codeManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -153,7 +135,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
     }
-  }, [kclLspClient, isKclLspServerReady])
+  }, [kclLspClient, isKclLspReady])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -162,7 +144,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspServerReady && !TEST && kclLspClient) {
+    if (isKclLspReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = new KclLanguageSupport({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -193,7 +175,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspServerReady])
+  }, [kclLspClient, isKclLspReady])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '' || TEST) {
@@ -225,7 +207,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       fromServer,
       intoServer,
       initializedCallback: () => {
-        setIsCopilotReady(true)
+        setIsCopilotLspReady(true)
       },
     })
     return { lspClient }
@@ -238,7 +220,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspServerReady && !TEST && copilotLspClient) {
+    if (isCopilotLspReady && !TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -250,7 +232,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspServerReady])
+  }, [copilotLspClient, isCopilotLspReady])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {
@@ -259,13 +241,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   if (copilotLspClient) {
     lspClients.push(copilotLspClient)
   }
-
-  useEffect(() => {
-    setIsKclLspServerReady(isLspReady)
-  }, [isLspReady])
-  useEffect(() => {
-    setIsCopilotLspServerReady(isCopilotReady)
-  }, [isCopilotReady])
 
   const onProjectClose = (
     file: FileEntry | null,

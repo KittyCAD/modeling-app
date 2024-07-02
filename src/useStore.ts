@@ -52,10 +52,6 @@ export interface StoreState {
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
   setIsStreamReady: (isStreamReady: boolean) => void
-  isKclLspServerReady: boolean
-  isCopilotLspServerReady: boolean
-  setIsKclLspServerReady: (isKclLspServerReady: boolean) => void
-  setIsCopilotLspServerReady: (isCopilotLspServerReady: boolean) => void
   buttonDownInStream: number | undefined
   setButtonDownInStream: (buttonDownInStream: number | undefined) => void
   didDragInStream: boolean
@@ -88,12 +84,6 @@ export const useStore = create<StoreState>()(
         setMediaStream: (mediaStream) => set({ mediaStream }),
         isStreamReady: false,
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
-        isKclLspServerReady: false,
-        isCopilotLspServerReady: false,
-        setIsKclLspServerReady: (isKclLspServerReady) =>
-          set({ isKclLspServerReady }),
-        setIsCopilotLspServerReady: (isCopilotLspServerReady) =>
-          set({ isCopilotLspServerReady }),
         buttonDownInStream: undefined,
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
