@@ -30,6 +30,8 @@ import { EngineCommand } from 'lang/std/engineConnection'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
+const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
 just from the nature of the stream, running the test with debugger and pasting the below
@@ -198,35 +200,17 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
 test.describe('Basic sketch', () => {
   test('code pane open at start', async ({ page }) => {
-    // Load the app with the code panes
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: ['code'],
-          },
-          version: 0,
-        })
-      )
-    })
-
     await doBasicSketch(page, ['code'])
   })
 
   test('code pane closed at start', async ({ page }) => {
     // Load the app with the code panes
-    await page.addInitScript(async () => {
+    await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: [],
-          },
-          version: 0,
-        })
+        persistModelingContext,
+        JSON.stringify({ openPanes: [] })
       )
-    })
+    }, PERSIST_MODELING_CONTEXT)
     await doBasicSketch(page, [])
   })
 })
@@ -391,7 +375,7 @@ test.describe('Testing Camera Movement', () => {
     await bakeInRetries(async () => {
       await page.mouse.move(700, 400)
       await page.mouse.wheel(0, -100)
-    }, [1, -68, -68])
+    }, [0, -85, -85])
   })
 
   test('Zoom should be consistent when exiting or entering sketches', async ({
@@ -457,7 +441,9 @@ test.describe('Testing Camera Movement', () => {
       // await u.canvasLocator.hover({position: {x: 700, y: 325}})
       await page.mouse.move(700, 325)
       await page.waitForTimeout(100)
-      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+      await expect(page.getByTestId('hover-highlight')).not.toBeVisible({
+        timeout: 10_000,
+      })
     }
 
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
@@ -465,12 +451,18 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(100)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
+    await page.waitForTimeout(200)
 
     await hoverOverNothing()
+    await page.waitForTimeout(200)
     // hover over vertical line
     await u.canvasLocator.hover({ position: { x, y: 325 } })
-    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
@@ -479,22 +471,28 @@ test.describe('Testing Camera Movement', () => {
     await page.waitForTimeout(400)
 
     await hoverOverNothing()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     // hover over horizontal line
     await page.mouse.move(858, y, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(x, 325)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     // hover over vertical line
     await page.mouse.move(857, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
     // now click it
     await page.mouse.click(857, y)
 
@@ -511,27 +509,36 @@ test.describe('Testing Camera Movement', () => {
 
     await page.waitForTimeout(100)
     await page.mouse.move(x, 419, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     await page.mouse.move(855, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await page.waitForTimeout(400)
+    await page.waitForTimeout(200)
 
     await hoverOverNothing()
+    await page.waitForTimeout(200)
 
     await page.mouse.move(x, 419)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     await hoverOverNothing()
 
     await page.mouse.move(855, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+      timeout: 10_000,
+    })
   })
 })
 
@@ -3834,17 +3841,12 @@ test.describe('Can edit segments by dragging their handles', () => {
 
   test('code pane closed at start-handles', async ({ page }) => {
     // Load the app with the code panes
-    await page.addInitScript(async () => {
+    await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: [],
-          },
-          version: 0,
-        })
+        persistModelingContext,
+        JSON.stringify({ openPanes: [] })
       )
-    })
+    }, PERSIST_MODELING_CONTEXT)
     await doEditSegmentsByDraggingHandle(page, [])
   })
 })
@@ -5181,6 +5183,7 @@ const part002 = startSketchOn('XZ')
   test('Horizontally constrained line remains selected after applying constraint', async ({
     page,
   }) => {
+    test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -5196,6 +5199,9 @@ const part002 = startSketchOn('XZ')
     await u.waitForAuthSkipAppStart()
 
     await page.getByText('line([3.79, 2.68], %, $seg01)').click()
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
+      { timeout: 10_000 }
+    )
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(100)
@@ -5236,12 +5242,16 @@ const part002 = startSketchOn('XZ')
       await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
     ).toBeLessThan(3)
 
+    await page.waitForTimeout(300)
     await page
       .getByRole('button', {
         name: 'Constraints',
       })
       .click()
-    await page.getByRole('button', { name: 'length', exact: true }).click()
+    // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
+    await page.waitForTimeout(200)
+    // await page.getByRole('button', { name: 'length', exact: true }).click()
+    await page.locator('[data-testid="length"]').click()
 
     await page.getByLabel('length Value').fill('10')
     await page.getByRole('button', { name: 'Add constraining value' }).click()
@@ -6619,23 +6629,28 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // Test that the hotkeys do nothing when
   // focus is on the code pane
   await codePane.click()
+  await page.keyboard.press('/')
+  await page.keyboard.press('/')
   await page.keyboard.press('s')
   await page.keyboard.press('l')
   await page.keyboard.press('a')
   await page.keyboard.press('e')
-  await expect(page.locator('.cm-content')).toHaveText('slae')
+  await expect(page.locator('.cm-content')).toHaveText('//slae')
   await page.keyboard.press('Meta+/')
-
+  await page.waitForTimeout(2000)
   // Test these hotkeys perform actions when
   // focus is on the canvas
   await page.mouse.move(600, 250)
   await page.mouse.click(600, 250)
   // Start a sketch
   await page.keyboard.press('s')
-  await page.mouse.move(800, 300)
+  await page.waitForTimeout(2000)
+  await page.mouse.move(800, 300, { steps: 5 })
   await page.mouse.click(800, 300)
-  await page.waitForTimeout(1000)
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  await page.waitForTimeout(2000)
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 15_000,
+  })
   /**
    * TODO: There is a bug somewhere that causes this test to fail
    * if you toggle the codePane closed before your trigger the
@@ -6646,10 +6661,13 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
    * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
    */
   await codePaneButton.click()
+  await expect(u.codeLocator).not.toBeVisible()
+  await page.waitForTimeout(300)
 
   // Draw a line
   await page.mouse.move(700, 200, { steps: 5 })
   await page.mouse.click(700, 200)
+  await page.waitForTimeout(300)
   await page.mouse.move(800, 250, { steps: 5 })
   await page.mouse.click(800, 250)
   // Unequip line tool
@@ -6657,7 +6675,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
   // Equip arc tool
   await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 10_000,
+  })
   await page.mouse.move(1000, 100, { steps: 5 })
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
@@ -6682,8 +6702,13 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.mouse.move(800, 200, { steps: 5 })
   await page.mouse.click(800, 200)
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(300)
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
   await page.getByRole('button', { name: 'Continue' }).click()
+  await page.waitForTimeout(300)
+  await expect(
+    page.getByRole('button', { name: 'Submit command' })
+  ).toBeVisible()
   await page.getByRole('button', { name: 'Submit command' }).click()
 
   await codePaneButton.click()

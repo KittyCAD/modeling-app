@@ -8,9 +8,9 @@ import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
 import { useKclContext } from 'lang/KclProvider'
-import { useStore } from 'useStore'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { useStore } from 'useStore'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =

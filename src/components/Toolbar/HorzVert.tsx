@@ -1,4 +1,4 @@
-import { toolTips } from '../../useStore'
+import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { Program, ProgramMemory, Value } from '../../lang/wasm'
 import {

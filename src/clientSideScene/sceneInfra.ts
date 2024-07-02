@@ -103,6 +103,10 @@ export class SceneInfra {
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
+  _streamDimensions: { streamWidth: number; streamHeight: number } = {
+    streamWidth: 1280,
+    streamHeight: 720,
+  }
   extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}

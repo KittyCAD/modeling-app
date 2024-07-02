@@ -37,7 +37,7 @@ import { Dialog, Popover, Transition } from '@headlessui/react'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   makeRemoveSingleConstraintInput,
