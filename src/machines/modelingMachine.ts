@@ -709,6 +709,7 @@ export const modelingMachine = createMachine(
           'remove sketch grid',
           'engineToClient cam sync direction',
           'Reset Segment Overlays',
+          'enable copilot',
         ],
 
         entry: [
@@ -719,13 +720,20 @@ export const modelingMachine = createMachine(
       },
 
       'Sketch no face': {
-        entry: ['show default planes', 'set selection filter to faces only'],
+        entry: [
+          'disable copilot',
+          'show default planes',
+          'set selection filter to faces only',
+        ],
 
         exit: ['hide default planes', 'set selection filter to defaults'],
         on: {
           'Select default plane': {
             target: 'animating to plane',
             actions: ['reset sketch metadata'],
+          },
+          Cancel: {
+            actions: ['enable copilot'],
           },
         },
       },
@@ -748,7 +756,7 @@ export const modelingMachine = createMachine(
             id: 'animate-to-sketch',
             onDone: {
               target: 'Sketch',
-              actions: 'set new sketch metadata',
+              actions: ['disable copilot', 'set new sketch metadata'],
             },
           },
         ],

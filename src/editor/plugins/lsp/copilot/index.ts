@@ -40,6 +40,7 @@ import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspComp
 import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
 import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
 import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
+import { editorManager } from 'lib/singletons'
 
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
@@ -266,6 +267,11 @@ export class CompletionRequester implements PluginValue {
     // If we have a user select event, we want to clear the ghost text.
     if (isRelevant.userSelect) {
       this._deffererUserSelect(true)
+      return
+    }
+
+    // Make sure we are in a state where we can request completions.
+    if (!editorManager.copilotEnabled) {
       return
     }
 
