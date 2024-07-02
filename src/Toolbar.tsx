@@ -11,7 +11,7 @@ import { useKclContext } from 'lang/KclProvider'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
-import { useStore } from 'useStore'
+import { useAppState } from 'AppState'
 
 export function Toolbar({
   className = '',
@@ -38,9 +38,8 @@ export function Toolbar({
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const { isStreamReady } = useAppState()
+
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
@@ -206,7 +205,10 @@ export function Toolbar({
             <ActionButton
               className={buttonClassName}
               Element="button"
-              onClick={() => send({ type: 'Cancel' })}
+              onClick={() => {
+                console.log('sending cancel')
+                send({ type: 'Cancel' })
+              }}
               iconStart={{
                 icon: 'arrowLeft',
                 iconClassName,

@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useRef } from 'react'
+import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
@@ -25,7 +25,7 @@ import ModalContainer from 'react-modal-promise'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
-import { useStore } from 'useStore'
+import { useAppState } from 'AppState'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -45,18 +45,19 @@ export function App() {
 
   useHotKeyListener()
   const { context } = useModelingContext()
-  const { setHtmlRef } = useStore((s) => ({
-    setHtmlRef: s.setHtmlRef,
-  }))
+  const { setAppState } = useAppState()
 
   useEffect(() => {
-    setHtmlRef(ref)
+    setAppState({ htmlRef: ref })
   }, [ref])
 
   const { auth, settings } = useSettingsAuthContext()
   const token = auth?.context?.token
 
-  const coreDumpManager = new CoreDumpManager(engineCommandManager, ref, token)
+  const coreDumpManager = useMemo(
+    () => new CoreDumpManager(engineCommandManager, ref, token),
+    []
+  )
 
   const {
     app: { onboardingStatus },

@@ -6,14 +6,12 @@ import React, { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useStore } from 'useStore'
+import { useAppState } from 'AppState'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
-  const { htmlRef } = useStore((s) => ({
-    htmlRef: s.htmlRef,
-  }))
+  const { htmlRef } = useAppState()
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, htmlRef, token),
     []
