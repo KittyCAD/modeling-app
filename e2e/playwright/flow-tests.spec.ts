@@ -1520,6 +1520,106 @@ test.describe('Copilot ghost text', () => {
     )
   })
 
+  test('Ctrl+shift+z in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('Shift')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('Ctrl+z in code rejects the suggestion and undos the last code', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await page.waitForTimeout(800)
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await page.keyboard.type('{thing: "blah"}', { delay: 0 })
+
+    await expect(page.locator('.cm-content')).toHaveText(`{thing: "blah"}`)
+
+    // We wanna make sure the code saves.
+    await page.waitForTimeout(800)
+
+    // Ctrl+z
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Ctrl+shift+z
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('Shift')
+
+    await expect(page.locator('.cm-content')).toHaveText(`{thing: "blah"}`)
+
+    // We wanna make sure the code saves.
+    await page.waitForTimeout(800)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `{thing: "blah"}fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Once for the enter.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+
+    // Once for the text.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
   test('delete in code rejects the suggestion', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
