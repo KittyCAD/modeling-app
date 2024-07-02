@@ -102,6 +102,7 @@ import {
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
+import { addCircleToSketchAst } from 'lib/circleTool'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -687,11 +688,8 @@ export class SceneEntities {
     })
   }
   setupDraftRectangle = async (
-    sketchPathToNode: PathToNode,
-    forward: [number, number, number],
-    up: [number, number, number],
-    sketchOrigin: [number, number, number],
-    rectangleOrigin: [x: number, y: number]
+    rectangleOrigin: [number, number],
+    { sketchPathToNode, origin, zAxis, yAxis }: SketchDetails
   ) => {
     let _ast = JSON.parse(JSON.stringify(kclManager.ast))
 
@@ -728,9 +726,9 @@ export class SceneEntities {
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
-      forward,
-      up,
-      position: sketchOrigin,
+      forward: yAxis,
+      up: zAxis,
+      position: origin,
       maybeModdedAst: _ast,
       draftExpressionsIndices: { start: 0, end: 3 },
     })
@@ -836,6 +834,52 @@ export class SceneEntities {
           )
         }
       },
+    })
+  }
+  setupCircleOriginListener = () => {
+    sceneInfra.setCallbacks({
+      onClick: (args) => {
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD) {
+          console.warn(`This click didn't have a 2D intersection`, args)
+          return
+        }
+        sceneInfra.modelingSend({
+          type: 'Add circle origin',
+          data: [twoD.x, twoD.y],
+        })
+      },
+    })
+  }
+  setupDraftCircle = async (
+    circleOrigin: [number, number],
+    { sketchPathToNode, origin, zAxis, yAxis }: SketchDetails
+  ) => {
+    const astWithCircle = await addCircleToSketchAst({
+      sourceAst: kclManager.ast,
+      sketchPathToNode,
+      circleOrigin,
+    })
+
+    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+      sketchPathToNode,
+      forward: yAxis,
+      up: zAxis,
+      position: origin,
+      maybeModdedAst: astWithCircle,
+      draftExpressionsIndices: { start: 0, end: 3 },
+    })
+
+    // TODO: Move this into the onclick handler to get the real shit
+    // Update the primary AST and unequip the rectangle tool
+    await kclManager.executeAstMock(astWithCircle)
+    sceneInfra.modelingSend({ type: 'CancelSketch' })
+
+    const { programMemory } = await executeAst({
+      ast: astWithCircle,
+      useFakeExecutor: true,
+      engineCommandManager: this.engineCommandManager,
+      programMemoryOverride,
     })
   }
   setupSketchIdleCallbacks = ({
@@ -1141,6 +1185,9 @@ export class SceneEntities {
         ? orthoFactor
         : perspScale(sceneInfra.camControls.camera, group)) /
       sceneInfra._baseUnitMultiplier
+
+    console.log('segment type', type)
+
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
       return this.updateTangentialArcToSegment({
         prevSegment: sgPaths[index - 1],

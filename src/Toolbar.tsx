@@ -72,6 +72,14 @@ export function Toolbar({
     { enabled: !disableAllButtons, scopes: ['sketch'] }
   )
   useHotkeys(
+    'c',
+    () =>
+      state.matches('Sketch.Circle tool')
+        ? send('CancelSketch')
+        : send('Equip Circle tool'),
+    { enabled: !disableAllButtons, scopes: ['sketch'] }
+  )
+  useHotkeys(
     's',
     () =>
       state.nextEvents.includes('Enter sketch') && pathId
@@ -318,6 +326,38 @@ export function Toolbar({
                   className="!px-2 !text-xs"
                 >
                   Shortcut: R
+                </Tooltip>
+              </ActionButton>
+            </li>
+            <li className="contents" key="circle-button">
+              <ActionButton
+                className={buttonClassName}
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Circle tool')
+                    ? send('CancelSketch')
+                    : send('Equip Circle tool')
+                }
+                aria-pressed={state.matches('Sketch.Circle tool')}
+                iconStart={{
+                  icon: 'circle',
+                  iconClassName,
+                  bgClassName,
+                }}
+                disabled={
+                  (!state.can('Equip Circle tool') &&
+                    !state.matches('Sketch.Circle tool')) ||
+                  disableAllButtons
+                }
+                title="Circle"
+              >
+                Circle
+                <Tooltip
+                  delay={1250}
+                  position="bottom"
+                  className="!px-2 !text-xs"
+                >
+                  Shortcut: C
                 </Tooltip>
               </ActionButton>
             </li>
