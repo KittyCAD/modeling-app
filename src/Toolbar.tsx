@@ -205,10 +205,7 @@ export function Toolbar({
             <ActionButton
               className={buttonClassName}
               Element="button"
-              onClick={() => {
-                console.log('sending cancel')
-                send({ type: 'Cancel' })
-              }}
+              onClick={() => send({ type: 'Cancel' })}
               iconStart={{
                 icon: 'arrowLeft',
                 iconClassName,
