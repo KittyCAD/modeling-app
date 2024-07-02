@@ -6413,7 +6413,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // Start a sketch
   await page.keyboard.press('s')
   await page.waitForTimeout(2000)
-  await page.mouse.move(800, 300,{steps:5})
+  await page.mouse.move(800, 300, { steps: 5 })
   await page.mouse.click(800, 300)
   await page.waitForTimeout(2000)
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
