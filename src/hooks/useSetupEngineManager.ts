@@ -4,7 +4,7 @@ import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
-import { useStore } from 'useStore'
+import { useAppState } from 'AppState'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -27,9 +27,7 @@ export function useSetupEngineManager(
     showScaleGrid: boolean
   }
 ) {
-  const { setIsStreamReady } = useStore((s) => ({
-    setIsStreamReady: s.setIsStreamReady,
-  }))
+  const { setAppState } = useAppState()
 
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
@@ -61,7 +59,7 @@ export function useSetupEngineManager(
             type: 'Set context',
             data: { mediaStream },
           }),
-        setIsStreamReady,
+        setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
         width: quadWidth,
         height: quadHeight,
         executeCode: () => {

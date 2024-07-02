@@ -10,7 +10,7 @@ import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
 import { useKclContext } from 'lang/KclProvider'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { useStore } from 'useStore'
+import { useAppState } from 'AppState'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -47,9 +47,7 @@ export default function useStateMachineCommands<
   const { commandBarSend } = useCommandsContext()
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const { isStreamReady } = useAppState()
 
   useEffect(() => {
     const disableAllButtons =

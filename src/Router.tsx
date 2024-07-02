@@ -40,7 +40,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
-import { useStore } from 'useStore'
+import { AppStateProvider, useAppState } from 'AppState'
 
 const router = createBrowserRouter([
   {
@@ -53,7 +53,9 @@ const router = createBrowserRouter([
         <SettingsAuthProvider>
           <LspProvider>
             <KclContextProvider>
-              <Outlet />
+              <AppStateProvider>
+                <Outlet />
+              </AppStateProvider>
             </KclContextProvider>
           </LspProvider>
         </SettingsAuthProvider>
@@ -178,9 +180,7 @@ export const Router = () => {
 function CoreDump() {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
-  const { htmlRef } = useStore((s) => ({
-    htmlRef: s.htmlRef,
-  }))
+  const { htmlRef } = useAppState()
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, htmlRef, token),
     []
