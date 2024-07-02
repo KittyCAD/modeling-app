@@ -35,7 +35,7 @@ jobs:
 
   playwright-ubuntu:
     timeout-minutes: 60
-    runs-on: ubuntu-latest-8-cores
+    runs-on: ubuntu-latest-16-cores
     needs: check-rust-changes
     steps:
     - uses: actions/checkout@v4
