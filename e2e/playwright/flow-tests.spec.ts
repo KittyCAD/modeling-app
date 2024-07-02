@@ -7190,7 +7190,7 @@ test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -16.82], %)
-  |> line([12.73, -0.09], %)
+  |> line([15.4, -2.74], %)
   |> tangentialArcTo([24.95, -5.38], %)
   |> close(%)
   |> extrude(5, %)`)
