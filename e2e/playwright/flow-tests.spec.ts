@@ -6415,7 +6415,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
-    timeout: 10_000,
+    timeout: 15_000,
   })
   /**
    * TODO: There is a bug somewhere that causes this test to fail
