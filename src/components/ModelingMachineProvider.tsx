@@ -122,6 +122,12 @@ export const ModelingMachineProvider = ({
     modelingMachine,
     {
       actions: {
+        'disable copilot': () => {
+          editorManager.setCopilotEnabled(false)
+        },
+        'enable copilot': () => {
+          editorManager.setCopilotEnabled(true)
+        },
         'sketch exit execute': () => {
           ;(async () => {
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()

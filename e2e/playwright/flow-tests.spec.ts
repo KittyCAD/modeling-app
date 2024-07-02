@@ -1253,6 +1253,138 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
+  test('copilot disabled in sketch mode no select plane', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Click sketch mode.
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Exit sketch mode.
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    await page.waitForTimeout(500)
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toContainText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+  })
+
+  test('copilot disabled in sketch mode after selecting plane', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Click sketch mode.
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    // select a plane
+    await page.mouse.click(700, 200)
+    await page.waitForTimeout(700) // wait for animation
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+
+    // Escape to exit the tool.
+    await u.openDebugPanel()
+    await u.closeDebugPanel()
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(500)
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+
+    // Escape again to exit sketch mode.
+    await u.openDebugPanel()
+    await u.closeDebugPanel()
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(500)
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+
+    // Hit enter a few times.
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
+    )
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+  })
+
   test('ArrowUp in code rejects the suggestion', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -7028,6 +7160,227 @@ test('Paste should not work unless an input is focused', async ({
       () => document.querySelector('.cm-content')?.textContent
     )
   ).toContain(pasteContent)
+})
+
+test('Can undo a click and point extrude with ctrl+z', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+
+  const startPX = [665, 458]
+
+  const dragPX = 40
+
+  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
+  await page.getByRole('button', { name: 'Extrude' }).click()
+
+  await expect(page.getByTestId('command-bar')).toBeVisible()
+  await page.waitForTimeout(100)
+
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
+  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)const extrude001 = extrude(5, sketch001)`
+  )
+
+  // Now hit undo
+  await page.keyboard.down('Control')
+  await page.keyboard.press('KeyZ')
+  await page.keyboard.up('Control')
+
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`)
+})
+
+test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+
+  const startPX = [665, 458]
+
+  const dragPX = 40
+
+  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  let prevContent = await page.locator('.cm-content').innerText()
+
+  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+  // drag startProfieAt handle
+  await page.dragAndDrop('#stream', '#stream', {
+    sourcePosition: { x: startPX[0], y: startPX[1] },
+    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+  })
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag line handle
+  // we wait so it saves the code
+  await page.waitForTimeout(800)
+
+  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+  await page.waitForTimeout(100)
+  await page.dragAndDrop('#stream', '#stream', {
+    sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+  })
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // we wait so it saves the code
+  await page.waitForTimeout(800)
+
+  // drag tangentialArcTo handle
+  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+  await page.dragAndDrop('#stream', '#stream', {
+    sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
+    targetPosition: {
+      x: tangentEnd.x + dragPX,
+      y: tangentEnd.y + dragPX,
+    },
+  })
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -16.82], %)
+  |> line([15.4, -2.74], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> line([2.65, -2.69], %)
+  |> close(%)
+  |> extrude(5, %)`)
+
+  // Hit undo
+  await page.keyboard.down('Control')
+  await page.keyboard.press('KeyZ')
+  await page.keyboard.up('Control')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -16.82], %)
+  |> line([15.4, -2.74], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
+
+  // Hit undo again.
+  await page.keyboard.down('Control')
+  await page.keyboard.press('KeyZ')
+  await page.keyboard.up('Control')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -16.82], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
+
+  // Hit undo again.
+  await page.keyboard.down('Control')
+  await page.keyboard.press('KeyZ')
+  await page.keyboard.up('Control')
+
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
 })
 
 function removeAfterFirstParenthesis(inputString: string) {
