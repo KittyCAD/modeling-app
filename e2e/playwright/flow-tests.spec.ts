@@ -1246,6 +1246,138 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
+  test('copilot disabled in sketch mode no select plane', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Click sketch mode.
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Exit sketch mode.
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    await page.waitForTimeout(500)
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toContainText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+  })
+
+  test('copilot disabled in sketch mode after selecting plane', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Click sketch mode.
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    // select a plane
+    await page.mouse.click(700, 200)
+    await page.waitForTimeout(700) // wait for animation
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+
+    // Escape to exit the tool.
+    await u.openDebugPanel()
+    await u.closeDebugPanel()
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(500)
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+
+    // Escape again to exit sketch mode.
+    await u.openDebugPanel()
+    await u.closeDebugPanel()
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(500)
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+
+    // Hit enter a few times.
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
+    )
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+  })
+
   test('ArrowUp in code rejects the suggestion', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
