@@ -8,10 +8,10 @@ import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ActionButton } from 'components/ActionButton'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useKclContext } from 'lang/KclProvider'
-import { useStore } from 'useStore'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
+import { useStore } from 'useStore'
 
 export function Toolbar({
   className = '',

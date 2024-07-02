@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, KeyBinding, Transaction } from '@uiw/react-codemirror'
 
-const PERSIST_CODE_TOKEN = 'persistCode'
+const PERSIST_CODE_KEY = 'persistCode'
 
 const codeManagerUpdateAnnotation = Annotation.define<null>()
 export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(null)
@@ -25,7 +25,7 @@ export default class CodeManager {
       return
     }
 
-    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN)
+    const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
@@ -125,7 +125,7 @@ export default class CodeManager {
           })
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_TOKEN, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
   }
 }

@@ -1,4 +1,4 @@
-import { ToolTip } from '../useStore'
+import { ToolTip } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import {
   ArrayExpression,

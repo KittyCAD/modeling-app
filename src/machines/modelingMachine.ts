@@ -1,6 +1,7 @@
 import { PathToNode, VariableDeclarator, parse, recast } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
   isNodeSafeToReplacePath,
   getNodePathFromSourceRange,
@@ -54,7 +55,7 @@ import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
@@ -130,6 +131,14 @@ export type SegmentOverlayPayload =
       overlays: SegmentOverlays
     }
 
+interface Store {
+  mediaStream?: MediaStream
+  buttonDownInStream: number | undefined
+  didDragInStream: boolean
+  streamDimensions: { streamWidth: number; streamHeight: number }
+  openPanes: SidebarType[]
+}
+
 export type ModelingMachineEvent =
   | {
       type: 'Enter sketch'
@@ -202,6 +211,7 @@ export type ModelingMachineEvent =
       data: SketchDetails
     }
   | { type: 'Set mouse state'; data: MouseState }
+  | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -223,6 +233,20 @@ export type ModelingMachineEvent =
 
 export type MoveDesc = { line: number; snippet: string }
 
+export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+interface PersistedModelingContext {
+  openPanes: Store['openPanes']
+}
+
+type PersistedKeys = keyof PersistedModelingContext
+export const PersistedValues: PersistedKeys[] = ['openPanes']
+
+const persistedContext: Partial<PersistedModelingContext> = (typeof window !==
+  'undefined' &&
+  JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+  openPanes: ['code'],
+}
+
 export const modelingMachine = createMachine(
   {
     /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoAWAHQB2GgE4ATLNEAOAKwBGAMyzNAGhABPRFNWaJmscOXyp61aplWAvk-1oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFlK2l1Gil5UxpreTEpfSMEeTyJYU0reW1hVRTxYRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQROTlGgl5ZUWxDK0ZVVlCxE1VOfXxGlUq2R1NKUaQdxavdv9fKA6wXACAeQA3MAAnTBIDWBGosZxXiJGibBA0c6XTxQCTYCCYMAEACiT0+gQA1n5yAALf7MVjjbjAoTyYRSCTqUk6NSadSyMTyMGabQSZQ6dn2CwaM6uC7NaGw+GIlFDD4YrG49SRfGxCbEpJ5OZidSiOw5TQ5DJg5byCQKKQ1SlWLTKFWQ-mtQUI5F8dgfboYPHRAlAhJCezkxQHYSyVRiWrqMHqNXzFJs33ienK80eS1w61IvgsD7sJ2AuVuhWLUOKkrqMT02pgqS2MomCw1WY2f0xq4w7yY9g44hkSiYBsStMujNTRDBlIUjJiMSzWbaTSMwx99Smikz01aGgz2q1gUdpvYggAEWCQ0CYHuj1T9FG3aJmYNygkI4qWWZwjyw+16wkDkyPsU6yq+dXlvXzfIZp-EgDh-AgboPlacUNy7WVz17BAtH9ClhxqTRclUYQnynBB6WEaRMiqB9hCsGlf3wCR-2xSjGxxABJIUCGQEhMX3Q8nn8d4U2wcgSEwWDCUmfg+0UdQKWsZR8isHUChw-MtHMGglKyUwbGUCxyPrWjqKohjrWY1ignYgJsVQSCAC9uAGfiTwBM8hMSSkpEkFRRA0JyyUnIotGDV9-RkFVaQOQ5NJoiUwo3PTESIbhYDtEg8H8UyLKsviwOwOLW2GWyZUE+VKT9CRxCqOR1ILecwSOfDgp2cR1mDTRQqoiL6MYmLcDij4EtwTjPk4XjMHSzKKGy6VnTghyRNSX0Fg0LD0kkrzEBKKQzEOZVJJLd8-Sa7SWuxKLiFi+LEoAQQAIW8fwAA0BNdBDKTUa9Tg0AtaUUKpKt9SRfTJWYaCyWRVsa3koT-PbdLa46urOy7-AATTunthMQ2b5gZFUsjsGoHyZHIr0yew5pyZyxF28LIetdrOu6-wyCgBEkfglGkLMdD0NmqRTSkDYcKyDJ5lqN8TDJY4eSaWMKOaynouh2mEXwdhcRy8a8szLRTnMHG5C0b9VEq4QZ2kH1lR54d1LJcmN32w7qZOnqmE+R3cAgHjum+MVXeGygmcm1GFmvY53uWGdRGESrTUkWxZDZEtH3yVQrZxG2oY6+2krM7BLKePjMAMOmcCgXBffy0ldTUSSaX9ZZyiDOb5l9TbMhF5kk507TbblxKuP63P8747Ai5L9WbFkZ6Fh5ubtA0IMH1UV9Y5jyoY9WtuU6pruetgXASCYfx2FQG7h4e2kzFJdCciB6xtEq4r5iyEiSIOZRCLXmWjrTmGt53veD4R4+WanyKgaWkJZTjpDEJVfM5I-Qv0BuoZyWEQYSzrPtdestP60zAAAR26GlBWUAlYAMcooNa0CeZrDvLJbyq0lQag1EpTCmFZBvw7qnGmiUmAkC6pgBENkxrpmZo5Cc5IAYkRnCUfU8hAxyXpOSQ2Sk7CLFHCw0GFopYQzYRvTBiUPhgC6O8fwgEdFPD+CrQRftKQjjKFYzCCxlS1D0HJdSYklwfnEMyHID5WESkOgAJTAIIMAfAQjdCGMQvshwryYXQqYTCD5pHUL7DQbYz05DbAsJYYM4s+SSy0hTLRwpcHYD3gAGTwGAfeqBUD8NPBNfKbJ8KmAqAWX0FhFhgnUvPHYmQGRZEsO5HxkVGJImKb-emR5sBpW4eQKpETigFWvHIA4bSKxOO8pfQWpgw5LwOMg3JqDpaFORGM-wejQj0wRFUmp8ybATj1LMBkw4kJ2CSajWo14XnzWDLIGgDQ1F5LQe-QCGBgKuwCOBSC+BoI4nmUhee+Z-KYQZNYMEMcrzMmVLSOwtIY5kwBYczRvjU49yqZxbhUyABGjNzH2XytsXUZIZwjiyXISBOEJwC2VBkcMig2SJwJWuPap0ADuCUTKZ2ztZIaAwRr+DwAAM1QAQCA3AwCwlwK8VAmIJAwHYIIZKWdUqYEEIq1AtyNSSFQssIG2ggarUqsqMeagFjfg-JhHJYMNHhVFeKjOKUc6DS9rKyg8rcBKoIJ8D4ZkJBMG+OwJVHwOi6r8AayVxrTXhvNbS+pmYSoIsRQ1f0CwgaVQ5kVGuSkGUGnUGvX1oEe48TSsGrKYaI2qtwOqvAWqdV6sEI2gamalUWspBSU4poUlMv1JVBYZgX6HEOBrBB8g61iobX1JtQaMohsqWayNHxo0fFjfGxNya+0Dr4kO7NAi6V5veqyA4JhZAINqOyooJQGQUm1lURYCx1Krr9RdK61023Ko7V2zV2r1V9pIJS2Agg+BXpHfhA08hlJ3iLHzJQup8ziBVGICcD5V6CvBj6tdAQgM3VA-uw9x7BinpTfq2D8HENmpHeSAj6Eum-NgV9FU5hahoQgc5VRKChVkcA3DeG1HwMap7dB1NzHBAGCQzmtWCE3UCYcPYBQOhnL6w5X8jjMcIyOIOPisTpHrb1oo1J6jUaY1xvo2ZM9im4PKdUze3NGnQFFRsOUd85RlThw5fhoqPoSIlA0KcFdJHvXWfI3TfAVy92ye7VBxjghLmBLY2p+6KNvzkg1A1BdxwZ583sPhHQBwlx2EEyWADoFsv2YPY5k9LnMvZc83U9TBXaQEzwwsSkl8EGVW5HObYMh+aHEtnF-JCW-UEKVjJtVcmMt9qW9ibrdlvN9bsOPbQpsGQAzeaSJ6fzmQIIqAgykjWAibZa7RpzCaOsbceIQrbuWvO9cSJp9IKSAzSUyAbT9kWRxyLfJhO7-hHYfGdq7cg7tuEytbal1b6Xe2pth-Dt2HtBAtpGtt3K+Xftlz1I4vICTKgGffdYee4DLA1DK3eaH2PHgI6R57bdqOs00ba85pNmW2cu1x9w-H3PCdfZ6yT5aZPG4TksCUanlUtrmFsIz9YM1TBr3KZ265mATndBKfvCZTwpmDRmXMvLyNfs8yq5HGQBG9M6DRVzJZtIRw1HfDOHXFT9eG+N+c2VDNKkHxudboRy1Vq6hjsVZ5FgVRBjQ2PMkPpaQmysPsr183k669D9UzAEg6K4A4AQW5RFWSxJnGywGYJjTzHQuyFJJYFBZ-UTn6ief9dF5L+wMvUppc29l5kV8ANTTzTQz6YsPNrzlFMAoZhjDfd67D4XgAcofAACqgPA7BYAEFOhACA-RuEBBYLv25JEfrenWCiv5b7EAkTHk7ihPL1LKGX-nmpEgN-+G37v-fUgEaWpHbH7PsSSMeFJH9ZPEcWoZQYsJcQOQ2E4R6coNeYvUvOFNxa8NQGQCoA4GApPZkWfVDMOMRaMObNBDAvvKgAfUAmXRCA4MSNkZZSwTlJcB-VGZ9aQKuQ2UkN6f5SzeLZOAAFVN04GmQ+FmQPgDzKT91X0v2HDSS5nWB2FxhwjwgIhKEmyUiwlmyEI7wkG6BdkPkyhTComeFwBVXR0gx1VOm8BEMEGMNVUEDMPYAsOLgj0sWZGiTuWfURW2ByDBFqDmCUDpByHyHZlODXgCQuWSy-0LxsygkzigDwAPyPzORCGDyuRSLwHmWxXwhSHKF+UUG+hkW8ksGdWOCXB5igMrDXnIARDIECHjURDhWVBchqhdXzGaSDAaiKj+XSCvjtVu0oOahsyMW4FJT-leApVg2tDS1sIU31WMR7kEAPn7TmOpRyyzXLxMDnEjHHXSENhpy2GkTHjpCfnpDZFsWh1WL6jJVmMgnmMRAcyPWewYz7XuJTHWNQE2OeO2KJ1VgYMkSVBLB9ExiXAqDeWZBfGsFsBnFhJLHyDuM3kyIMUqWMQ4VMWsM7TWx1RcKxPtkED0QxMECJK-mPG+xBOrHMB0AIxnAQUV04IkSjhqFQl-WKliwMLQQmIpNpkNSlT7lxIg3kwkEJM3jTQDWsjzgtUQPWB9FvxSSxSDGK2kH2AthMGYUEIOXEwW1An5O7g3QGjzhFPxPVQlJMX7WNL7jlLHg+jyHpH7GcngLkjtWvBKEWAUDyBNDb0BXGMS0NJ6kFONTzgLkHisMWLFMtOxKlKNUDTziy0Lk8OpKH2KA+lfDqwfknVsDrhyD1FQhehHFNAWFRJMV6m4hNP7mTLNIxwtL+KDOtMrL7iTIjL2KtT9HwyUnv3KL7FEEkAqHvHWhdOfTLOxMCB-jJWulrKWPFIbMlO3l3l+IQzlLmDn1sG2Ccn9FvlSUpEfBiWqxCjGOFUDLRMXN-kPnhhnOjPnKtPPOXIMDlPwnyBnBkDHCySgVJHMBKA+hHEuJ1Oz15NPPLJwTwUGk22vIyxjOJNAsvU23L24IUATnzCvjUBCxoX4zVAfDUHzAnj9MJQkwNLRK4R4T4UgoJNvNjJItzmoC8PlBKivF+T+hUjfFdO8mpAb1WhfgcQ0DUDbn8FwEPgVRIEoB8GCFCDAjAGEvdjP2+E7XmUEGkTEhnDwgqFT2kVOIQDQmkE10xQjAB1CjIGwA6EGCgj-ic07XIvVSMpMqGGXOEp9joszHsGUqBiiQI1EBULr3sHmFECrWcm9BKEMpL1srMsPmCW3SglgG0isokBssGECQ2Ois7CcoQjnj8yIxjjsAI2B1CyvBIi4qUC9PyA-3OEEowHgCiGz0H0jySAi1fFFi4v9E2iDE-SyUaRuIgVE11LjCFBqr9hEGsQ9VtUklfTeUWDEmyFNFMEpGK26sAqon6vlCKpwIcEnQILZRnTHjCK9NUNOCXCGVagRCWvVmWDPiBnyAUFGp5jYunHpBQlmou32tbmPMIolWlObQl1DTNROoejDGvBtS5lsBsCmzLQUHMH9AYSfxsFrVev1ICAvS3W9l3SzV+pZl-S-UUQyQfGfRnR2D8w2nzBIhcuh0oxAx+voLTJUrMHVEpB0AfH+15nfR0DEn9D+lVDcmsFJrswpuJyprZF1Hcv62KjxhqHviJifV-XmvbyAr9Wa15uBP5t9DKAYU4xjkOBdwq3zOvjUEwgyAfG2GhwewVosQaV+XdyYVNHppIgNgqGkGfRXlFjZvwr1OTgmOFw5w9hRzlRNtvT+swntpqAiMjHKHWSj1nGjjUGfQ9CUE-31zRt+3SBpuBjUALEWCsGCNnHZBb3fF0M9Rluai71Xx7w4ATuWjsFcRTr9HRQzpwg-C-SCzYN+UqLjuLsEqTT4jLuKALA4zAS9DHBKAQNZrCJQIWHKG5J6uEM73kILx-y3x31MS7ryFMFDA9wnQnEHOLAfFDGDB8hfiwlNHQN7y7vSBfCwj9EVHZmfRZMZLnAmsXGXFKp5OajEPwEmUkOkNQCXtqFEQ5ieWIiJqDD+XniwjcpXgyGOAnoWr2mcNMIGHMO0ksJPqsDHjiVgLn3UkUGCMsFnzpGXo9TQpiKyOa1XyXvBIeRVFqKJgV1VNSTtTcTkB0xdqs2TliOyISIkCSOhSCGMWP0Ag+E7Q+CXusB+nHyoc5DyFniUMhqsCXFTos0nsMLYZIdnq4agH8FyKElNrzTQukALDQ1HjKNap9FZGqIQV+UIxXDhuTkaLAGaNgFaJPvHD8lKN6QnAUCAfKD1Dcn5lsB9DLOmMPieKpWOsptquXEKKUmasuxcqZBKDmAyRmkLGQKfsUdlqIvLNJNQEMSDL3xPskjnSUA3snhIjDsQhLL1AUA8XvykmYans4eAvHJDITKKD5vCYKdMfHtOF+nHqTzZD1A1G0ywjkCqDqcML5LRMRrznyYI06eKZ6YnFVKBlZB6OknyABmiOseogmfLOaZlOrIjJmcKbnydOKJSFauWZuyNAfh6Xzv9JPL9SDIrN7l4QOaLiObmdv0CnRTrnBtqBjhKkp20LHPTnPKnPyYDv+hsBLVsGRVviqAhrZAsAsDuYIvhsmPLLBb-nhghciZOxhexk4OkQDmZESXM3xj4q2YacebRNgvAveyVg+caW2FOe0HObkh9A43oQkf3vsBBa-hh24RoswAhYRWHAyW0B5l7MQgUGfOGaqC5nEEIa2YEqEpErAC7sUuIMrAMYZCwgMe1FWkFhxqIxAR0GCuMtMuhXMrko1bCcsS8YBZHBAQcDZfQsf0OAeSDuRbfCgZlvis4GtfCr4Eiu4e0hPuWYNC5m0K5jJHEBhP43HGuPUhrRMBcBcCAA */
@@ -233,7 +257,6 @@ export const modelingMachine = createMachine(
     preserveActionOrder: true,
 
     context: {
-      guiMode: 'default',
       tool: null as Models['SceneToolType_type'] | null,
       selection: [] as string[],
       selectionRanges: {
@@ -252,6 +275,12 @@ export const modelingMachine = createMachine(
       mouseState: { type: 'idle' } as MouseState,
       segmentOverlays: {} as SegmentOverlays,
       segmentHoverMap: {} as { [pathToNodeString: string]: number },
+      store: {
+        buttonDownInStream: undefined,
+        didDragInStream: false,
+        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
+        openPanes: persistedContext.openPanes || ['code'],
+      } as Store,
     },
 
     schema: {
@@ -782,6 +811,10 @@ export const modelingMachine = createMachine(
         internal: true,
         actions: 'Set mouse state',
       },
+      'Set context': {
+        internal: true,
+        actions: 'Set context',
+      },
       'Set Segment Overlays': {
         internal: true,
         actions: 'Set Segment Overlays',
@@ -1183,6 +1216,29 @@ export const modelingMachine = createMachine(
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
+      'Set context': assign({
+        store: ({ store }, { data }) => {
+          if (data.streamDimensions) {
+            sceneInfra._streamDimensions = data.streamDimensions
+          }
+
+          const result = {
+            ...store,
+            ...data,
+          }
+          const persistedContext: Partial<PersistedModelingContext> = {}
+          for (const key of PersistedValues) {
+            persistedContext[key] = result[key]
+          }
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify(persistedContext)
+            )
+          }
+          return result
+        },
+      }),
     },
     // end actions
     services: {

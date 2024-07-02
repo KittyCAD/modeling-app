@@ -5,7 +5,7 @@ import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Value, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import { trap } from 'lib/trap'
 
 const isValidVariableName = (name: string) =>
