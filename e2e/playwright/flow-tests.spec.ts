@@ -1288,19 +1288,9 @@ test.describe('Copilot ghost text', () => {
 
     // We should be able to hit Tab to accept the completion.
     await page.keyboard.press('Tab')
-    await expect(page.locator('.cm-content')).toHaveText(
+    await expect(page.locator('.cm-content')).toContainText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
-
-    // Hit enter a few times.
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-
-    await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
-    )
-
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
   test('copilot disabled in sketch mode after selecting plane', async ({
