@@ -6397,23 +6397,25 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // Test that the hotkeys do nothing when
   // focus is on the code pane
   await codePane.click()
+  await page.keyboard.press('/')
+  await page.keyboard.press('/')
   await page.keyboard.press('s')
   await page.keyboard.press('l')
   await page.keyboard.press('a')
   await page.keyboard.press('e')
-  await expect(page.locator('.cm-content')).toHaveText('slae')
+  await expect(page.locator('.cm-content')).toHaveText('//slae')
   await page.keyboard.press('Meta+/')
-  await page.waitForTimeout(200)
+  await page.waitForTimeout(2000)
   // Test these hotkeys perform actions when
   // focus is on the canvas
   await page.mouse.move(600, 250)
   await page.mouse.click(600, 250)
   // Start a sketch
   await page.keyboard.press('s')
-  await page.waitForTimeout(1000)
-  await page.mouse.move(800, 300)
+  await page.waitForTimeout(2000)
+  await page.mouse.move(800, 300,{steps:5})
   await page.mouse.click(800, 300)
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(2000)
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
     timeout: 15_000,
   })
