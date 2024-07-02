@@ -375,7 +375,7 @@ test.describe('Testing Camera Movement', () => {
     await bakeInRetries(async () => {
       await page.mouse.move(700, 400)
       await page.mouse.wheel(0, -100)
-    }, [1, -68, -68])
+    }, [0, -85, -85])
   })
 
   test('Zoom should be consistent when exiting or entering sketches', async ({
