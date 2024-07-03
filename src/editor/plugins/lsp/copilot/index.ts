@@ -264,9 +264,7 @@ export class CompletionRequester implements PluginValue {
   }
 
   ghostText(): GhostText | null {
-    return (
-      this.view.state.field(completionDecoration)?.ghostText || null
-    )
+    return this.view.state.field(completionDecoration)?.ghostText || null
   }
 
   containsGhostText(): boolean {

@@ -46,12 +46,7 @@ class KclLanguage extends Language {
 
     const parser = new KclParser()
 
-    super(
-      data,
-      parser,
-      [plugin],
-      'kcl'
-    )
+    super(data, parser, [plugin], 'kcl')
   }
 }
 

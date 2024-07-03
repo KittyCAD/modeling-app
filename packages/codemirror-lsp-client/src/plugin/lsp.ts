@@ -292,7 +292,7 @@ export class LanguageServerPlugin implements PluginValue {
         to: posToOffset(this.view.state.doc, range.end)!,
         insert: newText,
       })),
-      annotations: lspFormatCodeEvent
+      annotations: lspFormatCodeEvent,
     })
   }
 
