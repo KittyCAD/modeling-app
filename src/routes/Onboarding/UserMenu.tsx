@@ -1,12 +1,10 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from '../../useStore'
 import { useEffect, useState } from 'react'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function UserMenu() {
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)
   const [avatarErrored, setAvatarErrored] = useState(false)
@@ -33,7 +31,7 @@ export default function UserMenu() {
       <div
         className={
           'max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1">

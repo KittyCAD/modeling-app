@@ -1,4 +1,4 @@
-import { toolTips } from '../../useStore'
+import { toolTips } from 'lang/langHelpers'
 import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,

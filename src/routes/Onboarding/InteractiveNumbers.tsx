@@ -6,14 +6,12 @@ import {
   useNextClick,
 } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from '../../useStore'
 import { bracketWidthConstantLine } from 'lib/exampleKcl'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function OnboardingInteractiveNumbers() {
   useDemoCode()
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.COMMAND_K)
 
@@ -22,7 +20,7 @@ export default function OnboardingInteractiveNumbers() {
       <div
         className={
           'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">

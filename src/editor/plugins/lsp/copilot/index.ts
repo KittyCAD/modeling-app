@@ -40,6 +40,7 @@ import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspComp
 import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
 import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
 import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
+import { editorManager } from 'lib/singletons'
 
 const copilotPluginAnnotation = Annotation.define<null>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(null)
@@ -266,6 +267,11 @@ export class CompletionRequester implements PluginValue {
     // If we have a user select event, we want to clear the ghost text.
     if (isRelevant.userSelect) {
       this._deffererUserSelect(true)
+      return
+    }
+
+    // Make sure we are in a state where we can request completions.
+    if (!editorManager.copilotEnabled) {
       return
     }
 
@@ -618,6 +624,16 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     },
   })
 
+  const rejectSuggestionCommand = (view: EditorView): boolean => {
+    if (view.plugin === null) return false
+
+    // Get the current plugin from the map.
+    const p = view.plugin(completionPlugin)
+    if (p === null) return false
+
+    return p.rejectSuggestionCommand()
+  }
+
   const copilotAutocompleteKeymap: readonly KeyBinding[] = [
     {
       key: 'Tab',
@@ -633,27 +649,30 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     },
     {
       key: 'Backspace',
-      run: (view: EditorView): boolean => {
-        if (view.plugin === null) return false
-
-        // Get the current plugin from the map.
-        const p = view.plugin(completionPlugin)
-        if (p === null) return false
-
-        return p.rejectSuggestionCommand()
-      },
+      run: rejectSuggestionCommand,
     },
     {
       key: 'Delete',
-      run: (view: EditorView): boolean => {
-        if (view.plugin === null) return false
-
-        // Get the current plugin from the map.
-        const p = view.plugin(completionPlugin)
-        if (p === null) return false
-
-        return p.rejectSuggestionCommand()
-      },
+      run: rejectSuggestionCommand,
+    },
+    { key: 'Mod-z', run: rejectSuggestionCommand, preventDefault: true },
+    {
+      key: 'Mod-y',
+      mac: 'Mod-Shift-z',
+      run: rejectSuggestionCommand,
+      preventDefault: true,
+    },
+    {
+      linux: 'Ctrl-Shift-z',
+      run: rejectSuggestionCommand,
+      preventDefault: true,
+    },
+    { key: 'Mod-u', run: rejectSuggestionCommand, preventDefault: true },
+    {
+      key: 'Alt-u',
+      mac: 'Mod-Shift-u',
+      run: rejectSuggestionCommand,
+      preventDefault: true,
     },
   ]
 

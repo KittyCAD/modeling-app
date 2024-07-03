@@ -1,11 +1,11 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from 'useStore'
 import { useEffect } from 'react'
 import { codeManager, kclManager } from 'lib/singletons'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Sketching() {
-  const buttonDownInStream = useStore((s) => s.buttonDownInStream)
+  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.FUTURE_WORK)
 
@@ -23,7 +23,7 @@ export default function Sketching() {
       <div
         className={
           'max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <h1 className="text-2xl font-bold">Sketching</h1>

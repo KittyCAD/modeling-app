@@ -30,7 +30,6 @@ import {
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
-import { useStore } from 'useStore'
 import {
   Selections,
   canExtrudeSelection,
@@ -54,13 +53,7 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import {
-  Program,
-  VariableDeclaration,
-  coreDump,
-  parse,
-  recast,
-} from 'lang/wasm'
+import { Program, VariableDeclaration, parse, recast } from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
@@ -72,11 +65,9 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@uiw/react-codemirror'
-import { CoreDumpManager } from 'lib/coredump'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -112,38 +103,6 @@ export const ModelingMachineProvider = ({
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  useSetupEngineManager(streamRef, token, {
-    pool: pool,
-    theme: theme.current,
-    highlightEdges: highlightEdges.current,
-    enableSSAO: enableSSAO.current,
-    showScaleGrid: showScaleGrid.current,
-  })
-  const { htmlRef } = useStore((s) => ({
-    htmlRef: s.htmlRef,
-  }))
-  const coreDumpManager = new CoreDumpManager(
-    engineCommandManager,
-    htmlRef,
-    token
-  )
-  useHotkeyWrapper(['meta + shift + .'], () => {
-    toast.promise(
-      coreDump(coreDumpManager, true),
-      {
-        loading: 'Starting core dump...',
-        success: 'Core dump completed successfully',
-        error: 'Error while exporting core dump',
-      },
-      {
-        success: {
-          // Note: this extended duration is especially important for Playwright e2e testing
-          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-          duration: 6000,
-        },
-      }
-    )
-  })
   const { commandBarState } = useCommandsContext()
 
   // Settings machine setup
@@ -163,6 +122,12 @@ export const ModelingMachineProvider = ({
     modelingMachine,
     {
       actions: {
+        'disable copilot': () => {
+          editorManager.setCopilotEnabled(false)
+        },
+        'enable copilot': () => {
+          editorManager.setCopilotEnabled(true)
+        },
         'sketch exit execute': () => {
           ;(async () => {
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
@@ -514,11 +479,15 @@ export const ModelingMachineProvider = ({
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {
           if (!sketchDetails) return
-          const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
-          const varDecIndex = sketchDetails.sketchPathToNode[1][0]
-          // remove body item at varDecIndex
-          newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
-          await kclManager.executeAstMock(newAst)
+          if (kclManager.ast.body.length) {
+            // this assumes no changes have been made to the sketch besides what we did when entering the sketch
+            // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
+            const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+            const varDecIndex = sketchDetails.sketchPathToNode[1][0]
+            // remove body item at varDecIndex
+            newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
+            await kclManager.executeAstMock(newAst)
+          }
           sceneInfra.setCallbacks({
             onClick: () => {},
             onDrag: () => {},
@@ -897,6 +866,16 @@ export const ModelingMachineProvider = ({
       devTools: true,
     }
   )
+
+  useSetupEngineManager(streamRef, token, {
+    pool: pool,
+    theme: theme.current,
+    highlightEdges: highlightEdges.current,
+    enableSSAO: enableSSAO.current,
+    modelingSend,
+    modelingContext: modelingState.context,
+    showScaleGrid: showScaleGrid.current,
+  })
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {

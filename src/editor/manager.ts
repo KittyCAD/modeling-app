@@ -27,6 +27,7 @@ function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
 
 export default class EditorManager {
   private _editorView: EditorView | null = null
+  private _copilotEnabled: boolean = true
 
   private _isShiftDown: boolean = false
   private _selectionRanges: Selections = {
@@ -46,6 +47,14 @@ export default class EditorManager {
   private _convertToVariableCallback: () => void = () => {}
 
   private _highlightRange: [number, number] = [0, 0]
+
+  setCopilotEnabled(enabled: boolean) {
+    this._copilotEnabled = enabled
+  }
+
+  get copilotEnabled(): boolean {
+    return this._copilotEnabled
+  }
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView

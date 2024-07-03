@@ -2,22 +2,19 @@ import { coreDump } from 'lang/wasm'
 import { CoreDumpManager } from 'lib/coredump'
 import { CustomIcon } from './CustomIcon'
 import { engineCommandManager } from 'lib/singletons'
-import React from 'react'
+import React, { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
-import { useStore } from 'useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useAppState } from 'AppState'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
-  const { htmlRef } = useStore((s) => ({
-    htmlRef: s.htmlRef,
-  }))
-  const coreDumpManager = new CoreDumpManager(
-    engineCommandManager,
-    htmlRef,
-    token
+  const { htmlRef } = useAppState()
+  const coreDumpManager = useMemo(
+    () => new CoreDumpManager(engineCommandManager, htmlRef, token),
+    []
   )
 
   async function refresh() {

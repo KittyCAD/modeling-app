@@ -1,4 +1,4 @@
-import { executeAst, lintAst } from 'useStore'
+import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
