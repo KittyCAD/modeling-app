@@ -4423,9 +4423,7 @@ test.describe('Sketch tests', () => {
       await doSnapAtDifferentScales(page, [0, 10000, 10000])
     })
   })
-  test('Existing sketch with bad code delete user\'s code', async ({
-    page,
-  }) => {
+  test("Existing sketch with bad code delete user's code", async ({ page }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -4482,8 +4480,6 @@ const sketch002 = startSketchOn(extrude001, 'END')
   |>
 `.replace(/\s/g, '')
     )
-
-    await page.waitForTimeout(100)
   })
 })
 
