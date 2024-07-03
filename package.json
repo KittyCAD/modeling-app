@@ -26,7 +26,7 @@
     "@tauri-apps/plugin-os": "^2.0.0-beta.3",
     "@tauri-apps/plugin-process": "^2.0.0-beta.2",
     "@tauri-apps/plugin-shell": "^2.0.0-beta.2",
-    "@tauri-apps/plugin-updater": "^2.0.0-beta.3",
+    "@tauri-apps/plugin-updater": "^2.0.0-beta.6",
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
     "@uiw/react-codemirror": "^4.21.25",
