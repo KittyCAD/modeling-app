@@ -98,11 +98,6 @@ const completionDecoration = StateField.define<CompletionState>({
       return state
     }
 
-    // We only care about transactions with effects.
-    if (!transaction.effects) {
-      return state
-    }
-
     for (const effect of transaction.effects) {
       if (effect.is(addSuggestion)) {
         // When adding a suggestion, we set th ghostText
@@ -625,8 +620,6 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   })
 
   const rejectSuggestionCommand = (view: EditorView): boolean => {
-    if (view.plugin === null) return false
-
     // Get the current plugin from the map.
     const p = view.plugin(completionPlugin)
     if (p === null) return false

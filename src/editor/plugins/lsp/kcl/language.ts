@@ -48,9 +48,6 @@ class KclLanguage extends Language {
 
     super(
       data,
-      // For now let's use the javascript parser.
-      // It works really well and has good syntax highlighting.
-      // We can use our lsp for the rest.
       parser,
       [plugin],
       'kcl'
