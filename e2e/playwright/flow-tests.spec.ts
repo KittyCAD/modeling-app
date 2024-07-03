@@ -3418,11 +3418,7 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    if (process.platform !== 'linux') {
-      await page.keyboard.press('Meta+K')
-    } else {
-      await page.locator('html').press('Control+C')
-    }
+    await page.keyboard.press('Meta+K')
     cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
@@ -3470,11 +3466,7 @@ test.describe('Command bar tests', () => {
     await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    if (process.platform !== 'linux') {
-      await page.keyboard.press('Meta+K')
-    } else {
-      await page.locator('.cm-content').press('Control+C')
-    }
+    await page.keyboard.press('Meta+K')
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
@@ -3539,11 +3531,7 @@ test.describe('Command bar tests', () => {
     await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
-    if (process.platform !== 'linux') {
-      await page.keyboard.press('Meta+K')
-    } else {
-      await page.locator('html').press('Control+C')
-    }
+    await page.keyboard.press('Meta+K')
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
