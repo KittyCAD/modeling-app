@@ -8,9 +8,11 @@ import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isFirstRender, setIsFirstRender] = useState(kclManager.isFirstRender)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
@@ -52,6 +54,11 @@ export const Stream = () => {
         capture: true,
       })
   }, [])
+
+  useEffect(() => {
+    setIsFirstRender(kclManager.isFirstRender)
+    console.log("src/components/Stream.tsx:74:17")
+  }, [kclManager.isFirstRender])
 
   useEffect(() => {
     if (
@@ -166,10 +173,14 @@ export const Stream = () => {
           </Loading>
         </div>
       )}
-      {isLoading && (
-        <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {(isLoading || isFirstRender) && (
+        <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Loading stream...</span>
+            {(!isLoading && isFirstRender) ? (
+              <span data-testid="loading-stream">Building scene...</span>
+            ) : (
+              <span data-testid="loading-stream">Loading stream...</span>
+            )}
           </Loading>
         </div>
       )}

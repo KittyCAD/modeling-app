@@ -65,6 +65,8 @@ export class KclManager {
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
+  isFirstRender = true
+
   get ast() {
     return this._ast
   }
