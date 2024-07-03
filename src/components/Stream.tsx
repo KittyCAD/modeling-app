@@ -62,6 +62,13 @@ export const Stream = () => {
     if (!videoRef.current) return
     if (!context.store?.mediaStream) return
     videoRef.current.srcObject = context.store.mediaStream
+
+    send({
+      type: 'Set context',
+      data: {
+        videoElement: videoRef.current,
+      },
+    })
   }, [context.store?.mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {

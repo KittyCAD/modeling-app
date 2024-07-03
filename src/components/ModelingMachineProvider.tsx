@@ -128,7 +128,7 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        'sketch exit execute': () => {
+        'sketch exit execute': ({ store }) => {
           ;(async () => {
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
@@ -162,7 +162,10 @@ export const ModelingMachineProvider = ({
               })
             }
 
-            kclManager.executeCode(true)
+            store.videoElement.pause()
+            kclManager.executeCode(true).then(() => {
+              store.videoElement.play()
+            })
           })()
         },
         'Set mouse state': assign({
