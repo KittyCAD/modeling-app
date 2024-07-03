@@ -19,6 +19,17 @@ const useFirstRender = () => {
   return firstRender.current
 }
 
+const defaultLightThemeOption = EditorView.theme(
+  {
+    '&': {
+      backgroundColor: '#fff',
+    },
+  },
+  {
+    dark: false,
+  }
+)
+
 interface ICodeEditor {
   onView: (view: EditorView | null) => void
   initialDocValue?: EditorStateConfig['doc']
@@ -42,12 +53,16 @@ const CodeEditor: React.FC<ICodeEditor> = ({
     let exts = Array.isArray(extensions) ? extensions : []
     if (theme === 'dark') {
       exts = [...exts, oneDark]
+    } else if (theme === 'light') {
+      exts = [...exts, defaultLightThemeOption]
     }
+
     return exts
   }, [extensions, theme])
 
   useEffect(() => {
     if (isFirstRender || !editorView) return
+    console.log('reconfigure', targetExtensions)
 
     editorView.dispatch({
       effects: StateEffect.reconfigure.of(targetExtensions),
