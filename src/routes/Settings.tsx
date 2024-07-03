@@ -14,7 +14,9 @@ import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
 import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
 import { isTauri } from 'lib/isTauri'
 
-export const APP_VERSION = isTauri() ? import.meta.env.PACKAGE_VERSION || 'unknown' : 'main'
+export const APP_VERSION = isTauri()
+  ? import.meta.env.PACKAGE_VERSION || 'unknown'
+  : 'main'
 
 export const Settings = () => {
   const navigate = useNavigate()
