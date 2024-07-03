@@ -66,8 +66,7 @@ export function useSetupEngineManager(
           // We only want to execute the code here that we already have set.
           // Nothing else.
           kclManager.isFirstRender = true
-          return kclManager.executeCode(true, true)
-          .then(() => {
+          return kclManager.executeCode(true, true).then(() => {
             kclManager.isFirstRender = false
           })
         },

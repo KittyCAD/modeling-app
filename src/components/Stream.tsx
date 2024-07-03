@@ -57,7 +57,7 @@ export const Stream = () => {
 
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
-    console.log("src/components/Stream.tsx:74:17")
+    console.log('src/components/Stream.tsx:74:17')
   }, [kclManager.isFirstRender])
 
   useEffect(() => {
@@ -176,7 +176,7 @@ export const Stream = () => {
       {(isLoading || isFirstRender) && (
         <div className="text-center absolute inset-0">
           <Loading>
-            {(!isLoading && isFirstRender) ? (
+            {!isLoading && isFirstRender ? (
               <span data-testid="loading-stream">Building scene...</span>
             ) : (
               <span data-testid="loading-stream">Loading stream...</span>
