@@ -5,7 +5,8 @@ import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Value, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
+import { trap } from 'lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -85,6 +86,8 @@ export function useCalculateKclExpression({
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
       const ast = parse(_code)
+      if (trap(ast, { suppress: true })) return
+
       const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }

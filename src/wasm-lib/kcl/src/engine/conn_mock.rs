@@ -14,14 +14,14 @@ use crate::{errors::KclError, executor::DefaultPlanes};
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 impl EngineConnection {
     pub async fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(Vec::new())),
+            batch_end: Arc::new(Mutex::new(HashMap::new())),
         })
     }
 }
@@ -32,7 +32,7 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch_end.clone()
     }
 

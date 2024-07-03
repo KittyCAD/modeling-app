@@ -89,25 +89,6 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
-## Running tests
-
-First, start the dev server following "Running a development build" above.
-
-Then in another terminal tab, run:
-
-```
-yarn test
-```
-
-Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
-
-For running the rust (not tauri rust though) only, you can
-
-```bash
-cd src/wasm-lib
-cargo test
-```
-
 ## Tauri
 
 To spin up up tauri dev, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
@@ -195,7 +176,9 @@ $ cargo +nightly fuzz run parser
 For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
 
-### Playwright
+## Tests
+
+### Playwright tests
 
 For a portable way to run Playwright you'll need Docker.
 
@@ -283,6 +266,37 @@ Where `./store` should look like this
 </details>
 
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
+
+### Unit and component tests
+
+If you already haven't, run the following:
+
+```
+yarn
+yarn build:wasm
+yarn start
+```
+
+and finally:
+
+```
+yarn test:nowatch
+```
+
+For individual testing:
+
+```
+yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
+```
+
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
+
+### Rust tests
+
+```bash
+cd src/wasm-lib
+cargo test
+```
 
 #### Some notes on CI
 

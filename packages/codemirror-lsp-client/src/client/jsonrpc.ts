@@ -66,8 +66,13 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
   #fromServer: FromServer
   private serverCapabilities: LSP.ServerCapabilities<any> = {}
   private notifyFn: ((message: LSP.NotificationMessage) => void) | null = null
+  private initializedCallback: () => void
 
-  constructor(fromServer: FromServer, intoServer: IntoServer) {
+  constructor(
+    fromServer: FromServer,
+    intoServer: IntoServer,
+    initializedCallback: () => void
+  ) {
     super(
       new jsrpc.JSONRPCServer(),
       new jsrpc.JSONRPCClient(async (json: jsrpc.JSONRPCRequest) => {
@@ -81,6 +86,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       })
     )
     this.#fromServer = fromServer
+    this.initializedCallback = initializedCallback
   }
 
   async start(): Promise<void> {
@@ -119,10 +125,14 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       // Register a server capability.
       params.registrations.forEach(
         (capabilityRegistration: LSP.Registration) => {
-          this.serverCapabilities = registerServerCapability(
+          const caps = registerServerCapability(
             this.serverCapabilities,
             capabilityRegistration
           )
+          if (caps instanceof Error) {
+            return (this.serverCapabilities = {})
+          }
+          this.serverCapabilities = caps
         }
       )
     })
@@ -132,10 +142,14 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       // Unregister a server capability.
       params.unregisterations.forEach(
         (capabilityUnregistration: LSP.Unregistration) => {
-          this.serverCapabilities = unregisterServerCapability(
+          const caps = unregisterServerCapability(
             this.serverCapabilities,
             capabilityUnregistration
           )
+          if (caps instanceof Error) {
+            return (this.serverCapabilities = {})
+          }
+          this.serverCapabilities = caps
         }
       )
     })
@@ -146,7 +160,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       {
         processId: null,
         clientInfo: {
-          name: 'kcl-language-client',
+          name: 'codemirror-lsp-client',
         },
         capabilities: client_capabilities,
         rootUri: null,
@@ -157,6 +171,8 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
 
     // notify "initialized": client --> server
     this.notify(LSP.InitializedNotification.type.method, {})
+
+    this.initializedCallback()
 
     await Promise.all(
       this.afterInitializedHooks.map((f: () => Promise<void>) => f())

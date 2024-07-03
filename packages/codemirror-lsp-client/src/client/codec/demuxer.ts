@@ -1,10 +1,10 @@
 import * as vsrpc from 'vscode-jsonrpc'
 
+import { Codec } from '.'
 import Bytes from './bytes'
-import PromiseMap from './map'
 import Queue from './queue'
-import Tracer from '../tracer'
-import { Codec } from '../codec'
+import Tracer from './tracer'
+import PromiseMap from './map'
 
 export default class StreamDemuxer extends Queue<Uint8Array> {
   readonly responses: PromiseMap<number | string, vsrpc.ResponseMessage> =
@@ -15,9 +15,12 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
     new Queue<vsrpc.RequestMessage>()
 
   readonly #start: Promise<void>
+  private trace: boolean = false
 
-  constructor() {
+  constructor(trace?: boolean) {
     super()
+    this.trace = trace || false
+
     this.#start = this.start()
   }
 
@@ -38,7 +41,9 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
 
           // try to parse the content-length from the headers
           const length = parseInt(match[1])
-          if (isNaN(length)) throw new Error('invalid content length')
+
+          if (isNaN(length))
+            return Promise.reject(new Error('invalid content length'))
 
           // slice the headers since we now have the content length
           buffer = buffer.slice(match[0].length)
@@ -62,7 +67,10 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
         contentLength = null
 
         const message = JSON.parse(delimited) as vsrpc.Message
-        Tracer.server(message)
+
+        if (this.trace) {
+          Tracer.server(message)
+        }
 
         // demux the message stream
         if (vsrpc.Message.isResponse(message) && null != message.id) {
@@ -83,7 +91,9 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
 
   add(bytes: Uint8Array): void {
     const message = Codec.decode(bytes) as vsrpc.Message
-    Tracer.server(message)
+    if (this.trace) {
+      Tracer.server(message)
+    }
 
     // demux the message stream
     if (vsrpc.Message.isResponse(message) && null != message.id) {

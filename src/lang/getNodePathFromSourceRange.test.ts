@@ -1,5 +1,6 @@
 import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
 import { Identifier, parse, initPromise, Parameter } from './wasm'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -22,8 +23,11 @@ const sk3 = startSketchAt([0, 0])
     ]
 
     const ast = parse(code)
+    if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const { node } = getNodeFromPath<any>(ast, nodePath)
+    const _node = getNodeFromPath<any>(ast, nodePath)
+    if (err(_node)) throw _node
+    const { node } = _node
 
     expect([node.start, node.end]).toEqual(sourceRange)
     expect(node.type).toBe('CallExpression')
@@ -47,8 +51,11 @@ const b1 = cube([0,0], 10)`
     ]
 
     const ast = parse(code)
+    if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const node = getNodeFromPath<Parameter>(ast, nodePath).node
+    const _node = getNodeFromPath<Parameter>(ast, nodePath)
+    if (err(_node)) throw _node
+    const node = _node.node
 
     expect(nodePath).toEqual([
       ['body', ''],
@@ -81,8 +88,11 @@ const b1 = cube([0,0], 10)`
     ]
 
     const ast = parse(code)
+    if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const node = getNodeFromPath<Identifier>(ast, nodePath).node
+    const _node = getNodeFromPath<Identifier>(ast, nodePath)
+    if (err(_node)) throw _node
+    const node = _node.node
     expect(nodePath).toEqual([
       ['body', ''],
       [0, 'index'],

@@ -13,7 +13,7 @@ mod tokeniser;
 
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
@@ -36,6 +36,8 @@ pub enum TokenType {
     Hash,
     /// A bang.
     Bang,
+    /// A dollar sign.
+    Dollar,
     /// Whitespace.
     Whitespace,
     /// A comma.
@@ -80,6 +82,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Period
             | TokenType::DoublePeriod
             | TokenType::Hash
+            | TokenType::Dollar
             | TokenType::Bang
             | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
@@ -90,6 +93,8 @@ impl TryFrom<TokenType> for SemanticTokenType {
 
 impl TokenType {
     // This is for the lsp server.
+    // Don't call this function directly in the code use a lazy_static instead
+    // like we do in the lsp server.
     pub fn all_semantic_token_types() -> Result<Vec<SemanticTokenType>> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;

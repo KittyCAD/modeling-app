@@ -1,16 +1,8 @@
 import type * as LSP from 'vscode-languageserver-protocol'
-import Client from './client'
-import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
-import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
-import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
-import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
-import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
-import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
-import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
-import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
-import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
-import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
-import { LspWorker } from './types'
+
+import { FromServer, IntoServer } from './codec'
+import Client from './jsonrpc'
+import { LanguageServerPlugin } from '../plugin/lsp'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -31,12 +23,6 @@ interface LSPRequestMap {
     LSP.TextEdit[] | null
   ]
   'textDocument/foldingRange': [LSP.FoldingRangeParams, LSP.FoldingRange[]]
-  'copilot/getCompletions': [
-    CopilotLspCompletionParams,
-    CopilotCompletionResponse
-  ]
-  'kcl/updateUnits': [UpdateUnitsParams, UpdateUnitsResponse | null]
-  'kcl/updateCanExecute': [UpdateCanExecuteParams, UpdateCanExecuteResponse]
 }
 
 // Client to server
@@ -49,21 +35,13 @@ interface LSPNotifyMap {
   'workspace/didCreateFiles': LSP.CreateFilesParams
   'workspace/didRenameFiles': LSP.RenameFilesParams
   'workspace/didDeleteFiles': LSP.DeleteFilesParams
-  'copilot/notifyAccepted': CopilotAcceptCompletionParams
-  'copilot/notifyRejected': CopilotRejectCompletionParams
 }
 
 export interface LanguageServerClientOptions {
-  client: Client
-  name: LspWorker
-}
-
-export interface LanguageServerOptions {
-  // We assume this is the main project directory, we are currently working in.
-  workspaceFolders: LSP.WorkspaceFolder[]
-  documentUri: string
-  allowHTMLContent: boolean
-  client: LanguageServerClient
+  name: string
+  fromServer: FromServer
+  intoServer: IntoServer
+  initializedCallback: () => void
 }
 
 export class LanguageServerClient {
@@ -76,18 +54,18 @@ export class LanguageServerClient {
 
   public initializePromise: Promise<void>
 
-  private isUpdatingSemanticTokens: boolean = false
-  private semanticTokens: SemanticToken[] = []
-  private queuedUids: string[] = []
-
   constructor(options: LanguageServerClientOptions) {
-    this.plugins = []
-    this.client = options.client
     this.name = options.name
+    this.plugins = []
+
+    this.client = new Client(
+      options.fromServer,
+      options.intoServer,
+      options.initializedCallback
+    )
 
     this.ready = false
 
-    this.queuedUids = []
     this.initializePromise = this.initialize()
   }
 
@@ -111,19 +89,10 @@ export class LanguageServerClient {
 
   textDocumentDidOpen(params: LSP.DidOpenTextDocumentParams) {
     this.notify('textDocument/didOpen', params)
-
-    // Update the facet of the plugins to the correct value.
-    for (const plugin of this.plugins) {
-      plugin.documentUri = params.textDocument.uri
-      plugin.languageId = params.textDocument.languageId
-    }
-
-    this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidChange(params: LSP.DidChangeTextDocumentParams) {
     this.notify('textDocument/didChange', params)
-    this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidClose(params: LSP.DidCloseTextDocumentParams) {
@@ -134,18 +103,9 @@ export class LanguageServerClient {
     added: LSP.WorkspaceFolder[],
     removed: LSP.WorkspaceFolder[]
   ) {
-    // Add all the current workspace folders in the plugin to removed.
-    for (const plugin of this.plugins) {
-      removed.push(...plugin.workspaceFolders)
-    }
     this.notify('workspace/didChangeWorkspaceFolders', {
       event: { added, removed },
     })
-
-    // Add all the new workspace folders to the plugins.
-    for (const plugin of this.plugins) {
-      plugin.workspaceFolders = added
-    }
   }
 
   workspaceDidCreateFiles(params: LSP.CreateFilesParams) {
@@ -160,33 +120,13 @@ export class LanguageServerClient {
     this.notify('workspace/didDeleteFiles', params)
   }
 
-  async updateSemanticTokens(uri: string) {
+  async textDocumentSemanticTokensFull(params: LSP.SemanticTokensParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.semanticTokensProvider) {
       return
     }
 
-    // Make sure we can only run, if we aren't already running.
-    if (!this.isUpdatingSemanticTokens) {
-      this.isUpdatingSemanticTokens = true
-
-      const result = await this.request('textDocument/semanticTokens/full', {
-        textDocument: {
-          uri,
-        },
-      })
-
-      this.semanticTokens = deserializeTokens(
-        result.data,
-        this.getServerCapabilities().semanticTokensProvider
-      )
-
-      this.isUpdatingSemanticTokens = false
-    }
-  }
-
-  getSemanticTokens(): SemanticToken[] {
-    return this.semanticTokens
+    return this.request('textDocument/semanticTokens/full', params)
   }
 
   async textDocumentHover(params: LSP.HoverParams) {
@@ -239,6 +179,10 @@ export class LanguageServerClient {
     return this.client.request(method, params) as Promise<LSPRequestMap[K][1]>
   }
 
+  requestCustom<P, R>(method: string, params: P): Promise<R> {
+    return this.client.request(method, params) as Promise<R>
+  }
+
   private notify<K extends keyof LSPNotifyMap>(
     method: K,
     params: LSPNotifyMap[K]
@@ -246,44 +190,8 @@ export class LanguageServerClient {
     return this.client.notify(method, params)
   }
 
-  async getCompletion(params: CopilotLspCompletionParams) {
-    const response = await this.request('copilot/getCompletions', params)
-    //
-    this.queuedUids = [...response.completions.map((c) => c.uuid)]
-    return response
-  }
-
-  async accept(uuid: string) {
-    const badUids = this.queuedUids.filter((u) => u !== uuid)
-    this.queuedUids = []
-    this.acceptCompletion({ uuid })
-    this.rejectCompletions({ uuids: badUids })
-  }
-
-  async reject() {
-    const badUids = this.queuedUids
-    this.queuedUids = []
-    this.rejectCompletions({ uuids: badUids })
-  }
-
-  acceptCompletion(params: CopilotAcceptCompletionParams) {
-    this.notify('copilot/notifyAccepted', params)
-  }
-
-  rejectCompletions(params: CopilotRejectCompletionParams) {
-    this.notify('copilot/notifyRejected', params)
-  }
-
-  async updateUnits(
-    params: UpdateUnitsParams
-  ): Promise<UpdateUnitsResponse | null> {
-    return await this.request('kcl/updateUnits', params)
-  }
-
-  async updateCanExecute(
-    params: UpdateCanExecuteParams
-  ): Promise<UpdateCanExecuteResponse> {
-    return await this.request('kcl/updateCanExecute', params)
+  notifyCustom<P>(method: string, params: P): void {
+    return this.client.notify(method, params)
   }
 
   private processNotifications(notification: LSP.NotificationMessage) {

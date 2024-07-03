@@ -1,6 +1,5 @@
-import { MouseEventHandler, useEffect, useRef } from 'react'
+import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
-import { useStore } from './useStore'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import { EngineCommand } from './lang/std/engineConnection'
@@ -25,6 +24,8 @@ import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
+import { CoreDumpManager } from 'lib/coredump'
+import { useAppState } from 'AppState'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -43,19 +44,21 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const { buttonDownInStream, didDragInStream, streamDimensions, setHtmlRef } =
-    useStore((s) => ({
-      buttonDownInStream: s.buttonDownInStream,
-      didDragInStream: s.didDragInStream,
-      streamDimensions: s.streamDimensions,
-      setHtmlRef: s.setHtmlRef,
-    }))
+  const { context } = useModelingContext()
+  const { setAppState } = useAppState()
 
   useEffect(() => {
-    setHtmlRef(ref)
+    setAppState({ htmlRef: ref })
   }, [ref])
 
-  const { settings } = useSettingsAuthContext()
+  const { auth, settings } = useSettingsAuthContext()
+  const token = auth?.context?.token
+
+  const coreDumpManager = useMemo(
+    () => new CoreDumpManager(engineCommandManager, ref, token),
+    []
+  )
+
   const {
     app: { onboardingStatus },
   } = settings.context
@@ -76,7 +79,7 @@ export function App() {
     (p) => p === onboardingStatus.current
   )
     ? 'opacity-20'
-    : didDragInStream
+    : context.store?.didDragInStream
     ? 'opacity-40'
     : ''
 
@@ -94,11 +97,11 @@ export function App() {
       clientX: e.clientX,
       clientY: e.clientY,
       el: e.currentTarget,
-      ...streamDimensions,
+      ...context.store?.streamDimensions,
     })
 
     const newCmdId = uuidv4()
-    if (buttonDownInStream === undefined) {
+    if (context.store?.buttonDownInStream === undefined) {
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
@@ -120,7 +123,7 @@ export function App() {
         className={
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
-          (buttonDownInStream ? ' pointer-events-none' : '')
+          (context.store?.buttonDownInStream ? ' pointer-events-none' : '')
         }
         project={{ project, file }}
         enableMenu={true}
@@ -129,7 +132,7 @@ export function App() {
       <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream />
       {/* <CamToggle /> */}
-      <LowerRightControls>
+      <LowerRightControls coreDumpManager={coreDumpManager}>
         <Gizmo />
       </LowerRightControls>
     </div>

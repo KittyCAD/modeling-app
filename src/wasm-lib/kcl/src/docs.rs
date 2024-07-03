@@ -71,6 +71,11 @@ impl StdLibFnArg {
             || self.type_ == "SketchSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
+        } else if self.type_ == "TagDeclarator" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
+        } else if self.type_ == "TagIdentifier" && self.required {
+            // TODO: actually use the ast to populate this.
+            return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
     }
@@ -452,6 +457,10 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 return Ok((Primitive::String.to_string(), false));
             }
 
+            if let Some(reference) = &o.reference {
+                return Ok((reference.replace("#/components/schemas/", ""), false));
+            }
+
             anyhow::bail!("unknown type: {:#?}", o)
         }
         schemars::schema::Schema::Bool(_) => Ok((Primitive::Bool.to_string(), false)),
@@ -819,7 +828,7 @@ mod tests {
         assert_eq!(
             some_function,
             crate::ast::types::Function::StdLib {
-                func: Box::new(crate::std::sketch::Line),
+                func: Box::new(crate::std::sketch::Line)
             }
         );
     }

@@ -1,12 +1,15 @@
-import { LanguageServerClient } from 'editor/plugins/lsp'
 import type * as LSP from 'vscode-languageserver-protocol'
-import React, { createContext, useMemo, useEffect, useContext } from 'react'
-import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
-import Client from '../editor/plugins/lsp/client'
+import React, { createContext, useMemo, useContext, useState } from 'react'
+import {
+  LanguageServerClient,
+  FromServer,
+  IntoServer,
+  LspWorkerEventType,
+  LanguageServerPlugin,
+} from '@kittycad/codemirror-lsp-client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import kclLanguage from 'editor/plugins/lsp/kcl/language'
+import KclLanguageSupport from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { useStore } from 'useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
@@ -15,15 +18,15 @@ import { paths } from 'lib/paths'
 import { FileEntry } from 'lib/types'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
-  LspWorkerEventType,
   KclWorkerOptions,
   CopilotWorkerOptions,
   LspWorker,
 } from 'editor/plugins/lsp/types'
 import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { err } from 'lib/trap'
+import { isTauri } from 'lib/isTauri'
+import { codeManager } from 'lib/singletons'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -63,19 +66,8 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
-  const {
-    isKclLspServerReady,
-    isCopilotLspServerReady,
-    setIsKclLspServerReady,
-    setIsCopilotLspServerReady,
-    isStreamReady,
-  } = useStore((s) => ({
-    isKclLspServerReady: s.isKclLspServerReady,
-    isCopilotLspServerReady: s.isCopilotLspServerReady,
-    setIsKclLspServerReady: s.setIsKclLspServerReady,
-    setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
-    isStreamReady: s.isStreamReady,
-  }))
+  const [isKclLspReady, setIsKclLspReady] = useState(false)
+  const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
   const {
     auth,
@@ -87,8 +79,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   } = useSettingsAuthContext()
   const token = auth?.context.token
   const navigate = useNavigate()
-  const { overallState } = useNetworkContext()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
@@ -111,21 +101,41 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventData: initEvent,
     })
     lspWorker.onmessage = function (e) {
+      if (err(fromServer)) return
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
+    const fromServer: FromServer | Error = FromServer.create()
+    if (err(fromServer)) return { lspClient: null }
 
-    setIsKclLspServerReady(true)
+    const lspClient = new LanguageServerClient({
+      name: LspWorker.Kcl,
+      fromServer,
+      intoServer,
+      initializedCallback: () => {
+        setIsKclLspReady(true)
+      },
+    })
 
-    const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
     return { lspClient }
   }, [
     // We need a token for authenticating the server.
     token,
   ])
+
+  useMemo(() => {
+    if (!isTauri() && isKclLspReady && kclLspClient && codeManager.code) {
+      kclLspClient.textDocumentDidOpen({
+        textDocument: {
+          uri: `file:///${PROJECT_ENTRYPOINT}`,
+          languageId: 'kcl',
+          version: 1,
+          text: codeManager.code,
+        },
+      })
+    }
+  }, [kclLspClient, isKclLspReady])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -134,39 +144,38 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspServerReady && !TEST && kclLspClient) {
+    if (isKclLspReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
-      const lsp = kclLanguage({
+      const lsp = new KclLanguageSupport({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
+        processLspNotification: (
+          plugin: LanguageServerPlugin,
+          notification: LSP.NotificationMessage
+        ) => {
+          try {
+            switch (notification.method) {
+              case 'kcl/astUpdated':
+                // Update the folding ranges, since the AST has changed.
+                // This is a hack since codemirror does not support async foldService.
+                // When they do we can delete this.
+                plugin.updateFoldingRanges()
+                plugin.requestSemanticTokens()
+                break
+              case 'kcl/memoryUpdated':
+                break
+            }
+          } catch (error) {
+            console.error(error)
+          }
+        },
       })
 
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspServerReady])
-
-  // Re-execute the scene when the units change.
-  useEffect(() => {
-    if (kclLspClient) {
-      let plugins = kclLspClient.plugins
-      for (let plugin of plugins) {
-        if (plugin.updateUnits && isStreamReady && isNetworkOkay) {
-          plugin.updateUnits(defaultUnit.current)
-        }
-      }
-    }
-  }, [
-    kclLspClient,
-    defaultUnit.current,
-
-    // We want to re-execute the scene if the network comes back online.
-    // The lsp server will only re-execute if there were previous errors or
-    // changes, so it's fine to send it thru here.
-    isStreamReady,
-    isNetworkOkay,
-  ])
+  }, [kclLspClient, isKclLspReady])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '' || TEST) {
@@ -185,18 +194,21 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventData: initEvent,
     })
     lspWorker.onmessage = function (e) {
+      if (err(fromServer)) return
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-
-    setIsCopilotLspServerReady(true)
+    const fromServer: FromServer | Error = FromServer.create()
+    if (err(fromServer)) return { lspClient: null }
 
     const lspClient = new LanguageServerClient({
-      client,
       name: LspWorker.Copilot,
+      fromServer,
+      intoServer,
+      initializedCallback: () => {
+        setIsCopilotLspReady(true)
+      },
     })
     return { lspClient }
   }, [token])
@@ -208,7 +220,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspServerReady && !TEST && copilotLspClient) {
+    if (isCopilotLspReady && !TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -220,7 +232,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspServerReady])
+  }, [copilotLspClient, isCopilotLspReady])
 
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {

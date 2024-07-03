@@ -1,6 +1,7 @@
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
+import { err } from 'lib/trap'
 import {
   defaultAppSettings,
   defaultProjectSettings,
@@ -47,6 +48,7 @@ function configurationToSettingsPayload(
       ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
@@ -101,7 +103,7 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile(): Configuration {
+export function readLocalStorageAppSettingsFile(): Configuration | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -116,12 +118,16 @@ export function readLocalStorageAppSettingsFile(): Configuration {
     return parseAppSettings(stored)
   } catch (e) {
     const settings = defaultAppSettings()
-    localStorage.setItem(localStorageAppSettingsPath(), tomlStringify(settings))
+    if (err(settings)) return settings
+    const tomlStr = tomlStringify(settings)
+    if (err(tomlStr)) return tomlStr
+
+    localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
     return settings
   }
 }
 
-function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
+function readLocalStorageProjectSettingsFile(): ProjectConfiguration | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
@@ -129,15 +135,16 @@ function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
     return defaultProjectSettings()
   }
 
-  try {
-    return parseProjectSettings(stored)
-  } catch (e) {
+  const projectSettings = parseProjectSettings(stored)
+  if (err(projectSettings)) {
     const settings = defaultProjectSettings()
-    localStorage.setItem(
-      localStorageProjectSettingsPath(),
-      tomlStringify(settings)
-    )
+    const tomlStr = tomlStringify(settings)
+    if (err(tomlStr)) return tomlStr
+
+    localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
     return settings
+  } else {
+    return projectSettings
   }
 }
 
@@ -161,6 +168,9 @@ export async function loadAndValidateSettings(
   const appSettings = inTauri
     ? await readAppSettingsFile()
     : readLocalStorageAppSettingsFile()
+
+  if (err(appSettings)) return Promise.reject(appSettings)
+
   // Convert the app settings to the JS settings format.
   const appSettingsPayload = configurationToSettingsPayload(appSettings)
   setSettingsAtLevel(settings, 'user', appSettingsPayload)
@@ -170,6 +180,9 @@ export async function loadAndValidateSettings(
     const projectSettings = inTauri
       ? await readProjectSettingsFile(projectPath)
       : readLocalStorageProjectSettingsFile()
+
+    if (err(projectSettings))
+      return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload =
       projectConfigurationToSettingsPayload(projectSettings)
@@ -191,17 +204,20 @@ export async function saveSettings(
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
   const tomlString = tomlStringify({ settings: jsAppSettings })
+  if (err(tomlString)) return
+
   // Parse this as a Configuration.
   const appSettings = parseAppSettings(tomlString)
+  if (err(appSettings)) return
+
+  const tomlString2 = tomlStringify(appSettings)
+  if (err(tomlString2)) return
 
   // Write the app settings.
   if (inTauri) {
     await writeAppSettingsFile(appSettings)
   } else {
-    localStorage.setItem(
-      localStorageAppSettingsPath(),
-      tomlStringify(appSettings)
-    )
+    localStorage.setItem(localStorageAppSettingsPath(), tomlString2)
   }
 
   if (!projectPath) {
@@ -212,17 +228,21 @@ export async function saveSettings(
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const projectTomlString = tomlStringify({ settings: jsProjectSettings })
+  if (err(projectTomlString)) return
+
   // Parse this as a Configuration.
   const projectSettings = parseProjectSettings(projectTomlString)
+  if (err(projectSettings)) return
+
+  const tomlStr = tomlStringify(projectSettings)
+
+  if (err(tomlStr)) return
 
   // Write the project settings.
   if (inTauri) {
     await writeProjectSettingsFile(projectPath, projectSettings)
   } else {
-    localStorage.setItem(
-      localStorageProjectSettingsPath(),
-      tomlStringify(projectSettings)
-    )
+    localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
   }
 }
 

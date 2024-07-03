@@ -51,7 +51,7 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
 
-    let snapshot = ctx.execute_and_prepare_snapshot(program).await?;
+    let snapshot = ctx.execute_and_prepare_snapshot(&program).await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
@@ -66,13 +66,13 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
 async fn serial_test_sketch_on_face() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
-  |> line([28.67, -13.25], %, "here")
+  |> line([28.67, -13.25], %, $here)
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
   |> close(%)
   |> extrude(5, %)
 
-const part002 = startSketchOn(part001, "here")
+const part002 = startSketchOn(part001, here)
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -810,11 +810,11 @@ fn roundedRectangle = (pos, w, l, cornerRadius) => {
   const rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
-    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
+    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
     |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
     |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
     |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
-    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
+    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, $arc2)
     |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
     |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
     |> close(%)
@@ -1218,7 +1218,7 @@ const part002 = startSketchOn(part001, "here")
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Cannot sketch on a non-planar surface: `here`" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Tag `here` is a non-planar surface" }"#
     );
 }
 
@@ -1731,58 +1731,58 @@ const part002 = startSketchOn(part001, 'end')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_plumbus_fillets() {
-    let code = r#"fn make_circle = (face, tag, pos, radius) => {
-  const sg = startSketchOn(face, tag)
+    let code = r#"fn make_circle = (ext, face, tag ,pos, radius) => {
+  const sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
        angle_end: 360,
        angle_start: 0,
        radius: radius
-     }, %, 'arc-' + tag)
+     }, %, tag)
   |> close(%)
 
   return sg
 }
 
-fn pentagon = (len) => {
+fn pentagon = (len, taga, tagb, tagc) => {
   const sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, 'a')
+  |> angledLine({ angle: 0, length: len }, %,taga)
   |> angledLine({
-       angle: segAng('a', %) + 180 - 108,
+       angle: segAng(a, %) + 180 - 108,
        length: len
-     }, %, 'b')
+     }, %, tagb)
   |> angledLine({
-       angle: segAng('b', %) + 180 - 108,
+       angle: segAng(b, %) + 180 - 108,
        length: len
-     }, %, 'c')
+     }, %,tagc)
   |> angledLine({
-       angle: segAng('c', %) + 180 - 108,
+       angle: segAng(c, %) + 180 - 108,
        length: len
-     }, %, 'd')
+     }, %, $d)
   |> angledLine({
-       angle: segAng('d', %) + 180 - 108,
+       angle: segAng(d, %) + 180 - 108,
        length: len
      }, %)
 
   return sg
 }
 
-const p = pentagon(32)
+const p = pentagon(32, $a, $b, $c)
   |> extrude(10, %)
 
-const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
+const plumbus0 = make_circle(p,a,  $arc_a, [0, 0], 2.5)
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
-       tags: ['arc-a', getOppositeEdge('arc-a', %)]
+       tags: [arc_a, getOppositeEdge(arc_a, %)]
      }, %)
 
-const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
+const plumbus1 = make_circle(p, b,$arc_b, [0, 0], 2.5)
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
-        tags: ['arc-b', getOppositeEdge('arc-b', %)]
+        tags: [arc_b, getOppositeEdge(arc_b, %)]
       }, %)
 "#;
 
@@ -1897,7 +1897,7 @@ const secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Expected a non-empty tag for the face to sketch on" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Expected a non-empty tag for the face" }"#
     );
 }
 
@@ -2268,4 +2268,206 @@ async fn serial_test_engine_error_source_range_on_last_command() {
         result.err().unwrap().to_string(),
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([262, 320])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_linear_pattern3d_filleted_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> fillet({
+    radius: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn1 = patternLinear3d({
+       axis: [1, 0, 0],
+       repetitions: 3,
+       distance: 40
+     }, part001)
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/linear_pattern3d_filleted_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_filleted_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> fillet({
+    radius: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/circular_pattern3d_filleted_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_circular_pattern3d_chamfered_sketch() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %)
+
+const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/circular_pattern3d_chamfered_sketch.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_tag_chamfer_with_more_than_one_edge_should_fail() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: ['line1', getOppositeEdge('line1',%)]
+  }, %, 'chamfer1')
+
+
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 365])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+#[ignore] // Ignore until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
+async fn serial_test_sketch_on_face_of_chamfer() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%, 'line1')
+    |> extrude(20, %)
+  |> chamfer({
+    length: 10,
+    tags: [getOppositeEdge('line1',%)]
+  }, %, 'chamfer1')
+
+const sketch001 = startSketchOn(part001, 'chamfer1')
+    |> startProfileAt([4.28, 3.83], %)
+    |> line([2.17, -0.03], %)
+    |> line([-0.07, -1.8], %)
+    |> line([-2.07, 0.05], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+    |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_chamfer.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_duplicate_tags_should_error() {
+    let code = r#"fn triangle = (len) => {
+  return startSketchOn('XY')
+  |> startProfileAt([-len / 2, -len / 2], %)
+  |> angledLine({ angle: 0, length: len }, %, $a)
+  |> angledLine({
+       angle: segAng(a, %) + 120,
+       length: len
+     }, %, $b)
+  |> angledLine({
+       angle: segAng(b, %) + 120,
+       length: len
+     }, %, $a)
+}
+
+let p = triangle(200)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_global_tags() {
+    let code = include_str!("inputs/global-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_pattern_vase() {
+    let code = include_str!("inputs/pattern_vase.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pattern_vase.png", &result, 0.999);
 }

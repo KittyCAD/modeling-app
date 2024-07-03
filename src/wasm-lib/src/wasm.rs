@@ -7,7 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings};
+use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings, lint::checks};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -53,10 +53,24 @@ pub async fn execute_wasm(
         is_mock,
     };
 
-    let memory = ctx.run(program, Some(memory)).await.map_err(String::from)?;
+    let memory = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
+}
+
+// wasm_bindgen wrapper for execute
+#[wasm_bindgen]
+pub async fn kcl_lint(program_str: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let mut findings = vec![];
+    for discovered_finding in program.lint(checks::lint_variables).into_iter().flatten() {
+        findings.push(discovered_finding);
+    }
+
+    Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
 }
 
 // wasm_bindgen wrapper for creating default planes
@@ -78,6 +92,23 @@ pub async fn make_default_planes(
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
+}
+
+// wasm_bindgen wrapper for modifying the grid
+#[wasm_bindgen]
+pub async fn modify_grid(
+    engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    hidden: bool,
+) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+    // deserialize the ast from a stringified json
+
+    let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+    engine.modify_grid(hidden).await.map_err(String::from)?;
+
+    Ok(())
 }
 
 // wasm_bindgen wrapper for execute
@@ -221,9 +252,6 @@ pub async fn kcl_lsp_run(
     let stdlib = kcl_lib::std::StdLib::new();
     let stdlib_completions = kcl_lib::lsp::kcl::get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
     let stdlib_signatures = kcl_lib::lsp::kcl::get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
-    // We can unwrap here because we know the tokeniser is valid, since
-    // we have a test for it.
-    let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
@@ -273,7 +301,6 @@ pub async fn kcl_lsp_run(
         workspace_folders: Default::default(),
         stdlib_completions,
         stdlib_signatures,
-        token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
         memory_map: Default::default(),
@@ -287,7 +314,6 @@ pub async fn kcl_lsp_run(
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
 
         is_initialized: Default::default(),
-        current_handle: Default::default(),
     })
     .custom_method("kcl/updateUnits", kcl_lib::lsp::kcl::Backend::update_units)
     .custom_method("kcl/updateCanExecute", kcl_lib::lsp::kcl::Backend::update_can_execute)
@@ -346,7 +372,12 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, baseurl: Strin
         zoo_client,
 
         is_initialized: Default::default(),
-        current_handle: Default::default(),
+        diagnostics_map: Default::default(),
+        dev_mode: if baseurl == "https://api.dev.zoo.dev" {
+            true
+        } else {
+            false
+        },
     })
     .custom_method("copilot/setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
     .custom_method(

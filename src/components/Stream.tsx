@@ -1,5 +1,4 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -10,25 +9,12 @@ import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 
-export const Stream = ({ className = '' }: { className?: string }) => {
+export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const {
-    mediaStream,
-    setButtonDownInStream,
-    didDragInStream,
-    setDidDragInStream,
-    streamDimensions,
-  } = useStore((s) => ({
-    mediaStream: s.mediaStream,
-    setButtonDownInStream: s.setButtonDownInStream,
-    didDragInStream: s.didDragInStream,
-    setDidDragInStream: s.setDidDragInStream,
-    streamDimensions: s.streamDimensions,
-  }))
   const { settings } = useSettingsAuthContext()
-  const { state } = useModelingContext()
+  const { state, send, context } = useModelingContext()
   const { overallState } = useNetworkContext()
 
   const isNetworkOkay =
@@ -74,38 +60,58 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     )
       return
     if (!videoRef.current) return
-    if (!mediaStream) return
-    videoRef.current.srcObject = mediaStream
-  }, [mediaStream])
+    if (!context.store?.mediaStream) return
+    videoRef.current.srcObject = context.store.mediaStream
+  }, [context.store?.mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
+
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
       clientY: e.clientY,
       el: videoRef.current,
-      ...streamDimensions,
+      ...context.store?.streamDimensions,
     })
 
-    setButtonDownInStream(e.button)
+    send({
+      type: 'Set context',
+      data: {
+        buttonDownInStream: e.button,
+      },
+    })
     setClickCoords({ x, y })
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
-    setButtonDownInStream(undefined)
+    send({
+      type: 'Set context',
+      data: {
+        buttonDownInStream: undefined,
+      },
+    })
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
 
-    if (!didDragInStream && butName(e).left) {
-      sendSelectEventToEngine(e, videoRef.current, streamDimensions)
+    if (!context.store?.didDragInStream && butName(e).left) {
+      sendSelectEventToEngine(
+        e,
+        videoRef.current,
+        context.store?.streamDimensions
+      )
     }
 
-    setDidDragInStream(false)
+    send({
+      type: 'Set context',
+      data: {
+        didDragInStream: false,
+      },
+    })
     setClickCoords(undefined)
   }
 
@@ -119,14 +125,20 @@ export const Stream = ({ className = '' }: { className?: string }) => {
       ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
       0.5
 
-    if (delta > 5 && !didDragInStream) {
-      setDidDragInStream(true)
+    if (delta > 5 && !context.store?.didDragInStream) {
+      send({
+        type: 'Set context',
+        data: {
+          didDragInStream: true,
+        },
+      })
     }
   }
 
   return (
     <div
       className="absolute inset-0 z-0"
+      id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
       onMouseDown={handleMouseDown}

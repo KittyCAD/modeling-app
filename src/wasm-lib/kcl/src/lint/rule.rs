@@ -1,7 +1,9 @@
 use anyhow::Result;
+use schemars::JsonSchema;
+use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{executor::SourceRange, lint::Node, lsp::IntoDiagnostic};
+use crate::{executor::SourceRange, lsp::IntoDiagnostic, walk::Node};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -22,8 +24,10 @@ where
 }
 
 /// Specific discovered lint rule Violation of a particular Finding.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, ts_rs::TS, Serialize, JsonSchema)]
+#[ts(export)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
     pub finding: Finding,
@@ -64,12 +68,22 @@ impl Discovered {
 
 impl IntoDiagnostic for Discovered {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+        (&self).to_lsp_diagnostic(code)
+    }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        (&self).severity()
+    }
+}
+
+impl IntoDiagnostic for &Discovered {
+    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
 
         Diagnostic {
             range: source_range.to_lsp_range(code),
-            severity: Some(DiagnosticSeverity::INFORMATION),
+            severity: Some(self.severity()),
             code: None,
             // TODO: this is neat we can pass a URL to a help page here for this specific error.
             code_description: None,
@@ -80,11 +94,17 @@ impl IntoDiagnostic for Discovered {
             data: None,
         }
     }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        DiagnosticSeverity::INFORMATION
+    }
 }
 
 /// Abstract lint problem type.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize, JsonSchema)]
+#[ts(export)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[serde(rename_all = "camelCase")]
 pub struct Finding {
     /// Unique identifier for this particular issue.
     pub code: &'static str,

@@ -6,6 +6,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { err } from 'lib/trap'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 
@@ -56,13 +57,13 @@ class MockEngineCommandManager {
     commandStr: string
   ): Promise<any> {
     if (id === undefined) {
-      throw new Error('id is undefined')
+      return Promise.reject(new Error('id is undefined'))
     }
     if (rangeStr === undefined) {
-      throw new Error('rangeStr is undefined')
+      return Promise.reject(new Error('rangeStr is undefined'))
     }
     if (commandStr === undefined) {
-      throw new Error('commandStr is undefined')
+      return Promise.reject(new Error('commandStr is undefined'))
     }
     const command: EngineCommand = JSON.parse(commandStr)
     const range: SourceRange = JSON.parse(rangeStr)
@@ -73,9 +74,12 @@ class MockEngineCommandManager {
 }
 
 export async function enginelessExecutor(
-  ast: Program,
-  pm: ProgramMemory = { root: {}, return: null }
+  ast: Program | Error,
+  pm: ProgramMemory | Error = { root: {}, return: null }
 ): Promise<ProgramMemory> {
+  if (err(ast)) return Promise.reject(ast)
+  if (err(pm)) return Promise.reject(pm)
+
   const mockEngineCommandManager = new MockEngineCommandManager({
     setIsStreamReady: () => {},
     setMediaStream: () => {},
@@ -100,6 +104,9 @@ export async function executor(
     executeCode: () => {},
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
+    },
+    modifyGrid: (hidden: boolean) => {
+      return new Promise((resolve) => resolve())
     },
   })
   await engineCommandManager.waitForReady

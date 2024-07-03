@@ -3,7 +3,8 @@
 pub mod backend;
 pub mod copilot;
 pub mod kcl;
-mod safemap;
+#[cfg(any(test, feature = "lsp-test-util"))]
+pub mod test_util;
 #[cfg(test)]
 mod tests;
 pub mod util;

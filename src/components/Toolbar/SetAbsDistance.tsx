@@ -1,4 +1,4 @@
-import { toolTips } from '../../useStore'
+import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { BinaryPart, Program, Value } from '../../lang/wasm'
 import {
@@ -9,6 +9,7 @@ import {
   getTransformInfos,
   transformAstSketchLines,
   PathToNodeMap,
+  TransformInfo,
 } from '../../lang/std/sketchcombos'
 import {
   SetAngleLengthModal,
@@ -20,6 +21,7 @@ import {
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -31,7 +33,12 @@ export function absDistanceInfo({
 }: {
   selectionRanges: Selections
   constraint: Constraint
-}) {
+}):
+  | {
+      transforms: TransformInfo[]
+      enabled: boolean
+    }
+  | Error {
   const disType =
     constraint === 'xAbs' || constraint === 'yAbs'
       ? constraint
@@ -41,10 +48,19 @@ export function absDistanceInfo({
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(kclManager.ast, range)
   )
-  const nodes = paths.map(
-    (pathToNode) =>
-      getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression').node
-  )
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<Value>(
+      kclManager.ast,
+      pathToNode,
+      'CallExpression'
+    )
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err1 = _nodes.find(err)
+  if (err(_err1)) return _err1
+  const nodes = _nodes as Value[]
+
   const isAllTooltips = nodes.every(
     (node) =>
       node?.type === 'CallExpression' &&
@@ -52,6 +68,7 @@ export function absDistanceInfo({
   )
 
   const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)
+  if (err(transforms)) return transforms
 
   const enableY =
     disType === 'yAbs' &&
@@ -81,17 +98,23 @@ export async function applyConstraintAbsDistance({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 }> {
-  const transformInfos = absDistanceInfo({
+  const info = absDistanceInfo({
     selectionRanges,
     constraint,
-  }).transforms
-  const { valueUsedInTransform } = transformAstSketchLines({
+  })
+  if (err(info)) return Promise.reject(info)
+  const transformInfos = info.transforms
+
+  const transform1 = transformAstSketchLines({
     ast: JSON.parse(JSON.stringify(kclManager.ast)),
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
   })
+  if (err(transform1)) return Promise.reject(transform1)
+  const { valueUsedInTransform } = transform1
+
   let forceVal = valueUsedInTransform || 0
   const { valueNode, variableName, newVariableInsertIndex, sign } =
     await getModalInfo({
@@ -104,7 +127,7 @@ export async function applyConstraintAbsDistance({
     variableName
   )
 
-  const { modifiedAst: _modifiedAst, pathToNodeMap } = transformAstSketchLines({
+  const transform2 = transformAstSketchLines({
     ast: JSON.parse(JSON.stringify(kclManager.ast)),
     selectionRanges: selectionRanges,
     transformInfos,
@@ -112,6 +135,9 @@ export async function applyConstraintAbsDistance({
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })
+  if (err(transform2)) return Promise.reject(transform2)
+  const { modifiedAst: _modifiedAst, pathToNodeMap } = transform2
+
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -134,14 +160,18 @@ export function applyConstraintAxisAlign({
 }: {
   selectionRanges: Selections
   constraint: 'snapToYAxis' | 'snapToXAxis'
-}): {
-  modifiedAst: Program
-  pathToNodeMap: PathToNodeMap
-} {
-  const transformInfos = absDistanceInfo({
+}):
+  | {
+      modifiedAst: Program
+      pathToNodeMap: PathToNodeMap
+    }
+  | Error {
+  const info = absDistanceInfo({
     selectionRanges,
     constraint,
-  }).transforms
+  })
+  if (err(info)) return info
+  const transformInfos = info.transforms
 
   let finalValue = createIdentifier('ZERO')
 

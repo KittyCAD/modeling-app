@@ -45,8 +45,8 @@ async function clearCommandLogs(page: Page) {
   await page.getByTestId('clear-commands').click()
 }
 
-async function expectCmdLog(page: Page, locatorStr: string) {
-  await expect(page.locator(locatorStr).last()).toBeVisible()
+async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
+  await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
 async function waitForDefaultPlanesToBeVisible(page: Page) {
@@ -114,19 +114,45 @@ export const wiggleMove = async (
   dist: number,
   ang: number,
   amplitude: number,
-  freq: number
+  freq: number,
+  locator?: string
 ) => {
   const tau = Math.PI * 2
   const deg = tau / 360
   const step = dist / steps
   for (let i = 0, j = 0; i < dist; i += step, j += 1) {
+    if (locator) {
+      const isElVis = await page.locator(locator).isVisible()
+      if (isElVis) return
+    }
     const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
     const [x2, y2] = [
       Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
       Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
     ]
     const [xr, yr] = [x2, y2]
-    await page.mouse.move(x + xr, y + yr, { steps: 2 })
+    await page.mouse.move(x + xr, y + yr, { steps: 5 })
+  }
+}
+
+export const circleMove = async (
+  page: any,
+  x: number,
+  y: number,
+  steps: number,
+  diameter: number,
+  locator?: string
+) => {
+  const tau = Math.PI * 2
+  const step = tau / steps
+  for (let i = 0; i < tau; i += step) {
+    if (locator) {
+      const isElVis = await page.locator(locator).isVisible()
+      if (isElVis) return
+    }
+    const [x1, y1] = [Math.cos(i) * diameter, Math.sin(i) * diameter]
+    const [xr, yr] = [x1, y1]
+    await page.mouse.move(x + xr, y + yr, { steps: 5 })
   }
 }
 
@@ -151,11 +177,11 @@ export const getMovementUtils = (opts: any) => {
 
   // Make it easier to click around from center ("click [from] zero zero")
   const click00 = (x: number, y: number) =>
-    opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
+    opts.page.mouse.click(opts.center.x + x, opts.center.y + y, { delay: 100 })
 
   // Relative clicker, must keep state
   let last = { x: 0, y: 0 }
-  const click00r = (x?: number, y?: number) => {
+  const click00r = async (x?: number, y?: number) => {
     // reset relative coordinates when anything is undefined
     if (x === undefined || y === undefined) {
       last.x = 0
@@ -163,15 +189,39 @@ export const getMovementUtils = (opts: any) => {
       return
     }
 
-    const ret = click00(last.x + x, last.y + y)
+    await circleMove(
+      opts.page,
+      opts.center.x + last.x + x,
+      opts.center.y + last.y + y,
+      10,
+      10
+    )
+    await click00(last.x + x, last.y + y)
     last.x += x
     last.y += y
 
     // Returns the new absolute coordinate if you need it.
-    return ret.then(() => [last.x, last.y])
+    return [last.x, last.y]
   }
 
   return { toSU, click00r }
+}
+
+async function waitForAuthAndLsp(page: Page) {
+  const waitForLspPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+
+  await page.goto('/')
+  await waitForPageLoad(page)
+
+  return waitForLspPromise
 }
 
 export async function getUtils(page: Page) {
@@ -181,7 +231,7 @@ export async function getUtils(page: Page) {
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
   return {
-    waitForAuthSkipAppStart: () => waitForPageLoad(page),
+    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -195,7 +245,8 @@ export async function getUtils(page: Page) {
       await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
-    expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    expectCmdLog: (locatorStr: string, timeout = 5000) =>
+      expectCmdLog(page, locatorStr, timeout),
     openKclCodePanel: () => openKclCodePanel(page),
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
@@ -267,11 +318,19 @@ export async function getUtils(page: Page) {
         (screenshot.width * coords.y * pixMultiplier +
           coords.x * pixMultiplier) *
         4 // rbga is 4 channels
-      return Math.max(
+      const maxDiff = Math.max(
         Math.abs(screenshot.data[index] - expected[0]),
         Math.abs(screenshot.data[index + 1] - expected[1]),
         Math.abs(screenshot.data[index + 2] - expected[2])
       )
+      if (maxDiff > 4) {
+        console.log(
+          `Expected: ${expected} Actual: [${screenshot.data[index]}, ${
+            screenshot.data[index + 1]
+          }, ${screenshot.data[index + 2]}]`
+        )
+      }
+      return maxDiff
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {

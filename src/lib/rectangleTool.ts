@@ -2,8 +2,10 @@ import {
   createArrayExpression,
   createBinaryExpression,
   createCallExpressionStdLib,
+  createIdentifier,
   createLiteral,
   createPipeSubstitution,
+  createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
 import { roundOff } from './utils'
@@ -35,13 +37,13 @@ export const getRectangleCallExpressions = (
       createLiteral(0), // This will be the width of the rectangle
     ]),
     createPipeSubstitution(),
-    createLiteral(tags[0]),
+    createTagDeclarator(tags[0]),
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
         createCallExpressionStdLib('segAng', [
-          createLiteral(tags[0]),
+          createIdentifier(tags[0]),
           createPipeSubstitution(),
         ]),
         '+',
@@ -50,24 +52,24 @@ export const getRectangleCallExpressions = (
       createLiteral(0), // This will be the height of the rectangle
     ]),
     createPipeSubstitution(),
-    createLiteral(tags[1]),
+    createTagDeclarator(tags[1]),
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createCallExpressionStdLib('segAng', [
-        createLiteral(tags[0]),
+        createIdentifier(tags[0]),
         createPipeSubstitution(),
       ]), // same angle as the first line
       createUnaryExpression(
         createCallExpressionStdLib('segLen', [
-          createLiteral(tags[0]),
+          createIdentifier(tags[0]),
           createPipeSubstitution(),
         ]),
         '-'
       ), // negative height
     ]),
     createPipeSubstitution(),
-    createLiteral(tags[2]),
+    createTagDeclarator(tags[2]),
   ]),
   createCallExpressionStdLib('lineTo', [
     createArrayExpression([
@@ -101,7 +103,7 @@ export function updateRectangleSketch(
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
       createCallExpressionStdLib('segAng', [
-        createLiteral(tag),
+        createIdentifier(tag),
         createPipeSubstitution(),
       ]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',

@@ -3,10 +3,8 @@ use anyhow::Result;
 use crate::{
     ast::types::VariableDeclarator,
     executor::SourceRange,
-    lint::{
-        rule::{def_finding, Discovered, Finding},
-        Node,
-    },
+    lint::rule::{def_finding, Discovered, Finding},
+    walk::Node,
 };
 
 def_finding!(
@@ -67,7 +65,11 @@ mod tests {
         assert_finding!(lint_variables, Z0001, "const thicc_nes = 0.5");
     }
 
-    test_finding!(z0001_full_bad, lint_variables, Z0001, "\
+    test_finding!(
+        z0001_full_bad,
+        lint_variables,
+        Z0001,
+        "\
 // Define constants
 const pipeLength = 40
 const pipeSmallDia = 10
@@ -96,9 +98,14 @@ const Part001 = startSketchOn('XY')
   |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)
-");
+"
+    );
 
-    test_no_finding!(z0001_full_good, lint_variables, Z0001, "\
+    test_no_finding!(
+        z0001_full_good,
+        lint_variables,
+        Z0001,
+        "\
 // Define constants
 const pipeLength = 40
 const pipeSmallDia = 10
@@ -127,5 +134,6 @@ const part001 = startSketchOn('XY')
   |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)
-");
+"
+    );
 }

@@ -22,13 +22,21 @@ use crate::{
     executor::{DefaultPlanes, Point3d},
 };
 
+lazy_static::lazy_static! {
+    pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
+
+    pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
+}
+
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
     fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
+    fn batch_end(
+        &self,
+    ) -> Arc<Mutex<HashMap<uuid::Uuid, (kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the default planes.
     async fn default_planes(
@@ -103,11 +111,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         };
 
         // Add cmd to the batch end.
-        self.batch_end().lock().unwrap().push((req, source_range));
+        self.batch_end().lock().unwrap().insert(id, (req, source_range));
         Ok(())
     }
 
     /// Send the modeling cmd and wait for the response.
+    // TODO: This should only borrow `cmd`.
+    // See https://github.com/KittyCAD/modeling-app/issues/2821
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
@@ -130,7 +140,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
             let mut requests = self.batch().lock().unwrap().clone();
-            requests.extend(self.batch_end().lock().unwrap().clone());
+            requests.extend(self.batch_end().lock().unwrap().values().cloned());
             requests
         } else {
             self.batch().lock().unwrap().clone()
@@ -451,6 +461,34 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             message: format!("Failed to find response for command ID: {:?}", id),
             source_ranges: vec![],
         }))
+    }
+
+    async fn modify_grid(&self, hidden: bool) -> Result<(), KclError> {
+        // Hide/show the grid.
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::ObjectVisible {
+                hidden,
+                object_id: *GRID_OBJECT_ID,
+            },
+        )
+        .await?;
+
+        // Hide/show the grid scale text.
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::ObjectVisible {
+                hidden,
+                object_id: *GRID_SCALE_TEXT_OBJECT_ID,
+            },
+        )
+        .await?;
+
+        self.flush_batch(false, Default::default()).await?;
+
+        Ok(())
     }
 }
 

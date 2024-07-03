@@ -55,6 +55,7 @@ layout: manual
 * [`patternCircular3d`](kcl/patternCircular3d)
 * [`patternLinear2d`](kcl/patternLinear2d)
 * [`patternLinear3d`](kcl/patternLinear3d)
+* [`patternTransform`](kcl/patternTransform)
 * [`pi`](kcl/pi)
 * [`pow`](kcl/pow)
 * [`profileStart`](kcl/profileStart)

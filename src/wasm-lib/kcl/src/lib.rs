@@ -5,6 +5,7 @@
 #![recursion_limit = "1024"]
 #![allow(clippy::boxed_local)]
 
+#[allow(unused_macros)]
 macro_rules! println {
     ($($rest:tt)*) => {
         #[cfg(not(feature = "disable-println"))]
@@ -19,6 +20,7 @@ pub mod engine;
 pub mod errors;
 pub mod executor;
 pub mod fs;
+mod function_param;
 pub mod lint;
 pub mod lsp;
 pub mod parser;
@@ -27,5 +29,6 @@ pub mod std;
 pub mod test_server;
 pub mod thread;
 pub mod token;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;

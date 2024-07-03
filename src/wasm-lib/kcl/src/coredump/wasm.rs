@@ -1,10 +1,10 @@
 //! Functions for getting core dump information via wasm.
 
 use anyhow::Result;
+use serde_json::Value as JValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{coredump::CoreDump, wasm::JsFuture};
-use serde_json::Value as JValue;
 
 #[wasm_bindgen(module = "/../../lib/coredump.ts")]
 extern "C" {
