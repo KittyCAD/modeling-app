@@ -6,6 +6,7 @@ import {
   StateEffect,
 } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
+import { oneDark } from '@codemirror/theme-one-dark'
 
 //reference: https://github.com/sachinraja/rodemirror/blob/main/src/use-first-render.ts
 const useFirstRender = () => {
@@ -22,12 +23,14 @@ interface ICodeEditor {
   onView: (view: EditorView | null) => void
   initialDocValue?: EditorStateConfig['doc']
   extensions?: Extension
+  theme: 'light' | 'dark'
 }
 
 const CodeEditor: React.FC<ICodeEditor> = ({
   onView,
   extensions = [],
   initialDocValue,
+  theme,
 }) => {
   const [editorView, setEditorView] = useState<EditorView | null>(null)
 
@@ -36,8 +39,12 @@ const CodeEditor: React.FC<ICodeEditor> = ({
   const editorRef = useRef<HTMLElement>(null)
 
   const targetExtensions = useMemo(() => {
-    return Array.isArray(extensions) ? extensions : []
-  }, [extensions])
+    let exts = Array.isArray(extensions) ? extensions : []
+    if (theme === 'dark') {
+      exts = [...exts, oneDark]
+    }
+    return exts
+  }, [extensions, theme])
 
   useEffect(() => {
     if (isFirstRender || !editorView) return
