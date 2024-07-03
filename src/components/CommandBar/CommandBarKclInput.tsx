@@ -1,5 +1,5 @@
 import { Completion } from '@codemirror/autocomplete'
-import { EditorView } from '@codemirror/view'
+import { EditorView, ViewUpdate } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './CommandBarKclInput.module.css'
 import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
+import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 
 function CommandBarKclInput({
   arg,
@@ -64,9 +65,7 @@ function CommandBarKclInput({
 
   const { setContainer } = useCodeMirror({
     container: editorRef.current,
-    value,
-    indentWithTab: false,
-    basicSetup: false,
+    initialDocValue: value,
     autoFocus: true,
     selection: {
       anchor: 0,
@@ -75,7 +74,6 @@ function CommandBarKclInput({
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
-    accessKey: 'command-bar',
     theme:
       settings.context.app.theme.current === 'system'
         ? getSystemTheme()
@@ -97,8 +95,12 @@ function CommandBarKclInput({
         }
         return tr
       }),
+      EditorView.updateListener.of((vu: ViewUpdate) => {
+        if (vu.docChanged) {
+          setValue(vu.state.doc.toString())
+        }
+      }),
     ],
-    onChange: (newValue) => setValue(newValue),
   })
 
   useEffect(() => {

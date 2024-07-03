@@ -31,10 +31,16 @@ const defaultLightThemeOption = EditorView.theme(
 )
 
 interface ICodeEditor {
-  onView: (view: EditorView | null) => void
+  onView?: (view: EditorView | null) => void
   initialDocValue?: EditorStateConfig['doc']
   extensions?: Extension
   theme: 'light' | 'dark'
+  autoFocus?: boolean
+  selection?: EditorStateConfig['selection']
+}
+
+interface UseCodeMirror extends ICodeEditor {
+  container?: HTMLDivElement | null
 }
 
 const CodeEditor: React.FC<ICodeEditor> = ({
@@ -42,12 +48,38 @@ const CodeEditor: React.FC<ICodeEditor> = ({
   extensions = [],
   initialDocValue,
   theme,
+  autoFocus = false,
+  selection,
 }) => {
+  const editorRef = useRef<HTMLDivElement>(null)
+
+  useCodeMirror({
+    container: editorRef.current,
+    onView,
+    extensions,
+    initialDocValue,
+    theme,
+    autoFocus,
+    selection,
+  })
+
+  return <section ref={editorRef}></section>
+}
+
+export function useCodeMirror(props: UseCodeMirror) {
+  const {
+    onView,
+    extensions = [],
+    initialDocValue,
+    theme,
+    autoFocus = false,
+    selection,
+  } = props
+
+  const [container, setContainer] = useState<HTMLDivElement | null>()
   const [editorView, setEditorView] = useState<EditorView | null>(null)
 
   const isFirstRender = useFirstRender()
-
-  const editorRef = useRef<HTMLElement>(null)
 
   const targetExtensions = useMemo(() => {
     let exts = Array.isArray(extensions) ? extensions : []
@@ -69,27 +101,40 @@ const CodeEditor: React.FC<ICodeEditor> = ({
     })
   }, [targetExtensions])
 
+  useEffect(() => setContainer(props.container), [props.container])
+
   useEffect(() => {
-    if (editorRef.current === null) return
+    if (container === null) return
 
     const view = new EditorView({
       state: EditorState.create({
         doc: initialDocValue,
         extensions: [...Array.of(extensions)],
+        selection,
       }),
-      parent: editorRef.current,
+      parent: container,
     })
 
     setEditorView(view)
-    onView(view)
+    if (onView) {
+      onView(view)
+    }
 
     return () => {
       view.destroy()
-      onView(null)
+      if (onView) {
+        onView(null)
+      }
     }
-  }, [])
+  }, [container])
 
-  return <section ref={editorRef}></section>
+  useEffect(() => {
+    if (autoFocus && editorView) {
+      editorView.focus()
+    }
+  }, [autoFocus, editorView])
+
+  return { editorView, setEditorView, container, setContainer }
 }
 
 export default CodeEditor
