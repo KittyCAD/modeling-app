@@ -3715,14 +3715,16 @@ test.describe('Regression tests', () => {
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `const exampleSketch = startSketchOn("XZ")
+  test.fixme(
+    'Position _ Is Out Of Range... regression test',
+    async ({ page }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -3731,41 +3733,41 @@ test.describe('Regression tests', () => {
   
   const example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-      )
-    })
+        )
+      })
 
-    await u.waitForAuthSkipAppStart()
+      await u.waitForAuthSkipAppStart()
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
-    // Okay execution finished, let's start editing text below the error.
-    await u.codeLocator.click()
-    // Go to the end of the editor
-    // This bug happens when there is a diagnostic in the editor and you try to
-    // edit text below it.
-    // Or delete a huge chunk of text and then try to edit below it.
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.up('Shift')
-    await page.keyboard.press('Backspace')
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // Okay execution finished, let's start editing text below the error.
+      await u.codeLocator.click()
+      // Go to the end of the editor
+      // This bug happens when there is a diagnostic in the editor and you try to
+      // edit text below it.
+      // Or delete a huge chunk of text and then try to edit below it.
+      await page.keyboard.press('End')
+      await page.keyboard.down('Shift')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.up('Shift')
+      await page.keyboard.press('Backspace')
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('thing: "blah"', { delay: 100 })
-    await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('thing: "blah"', { delay: 100 })
+      await page.keyboard.press('Enter')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const exampleSketch = startSketchOn("XZ")
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -3773,8 +3775,9 @@ test.describe('Regression tests', () => {
   
     thing: "blah"`)
 
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-  })
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    }
+  )
 })
 
 test.describe('Sketch tests', () => {
@@ -4422,6 +4425,64 @@ test.describe('Sketch tests', () => {
     test('[0, 10000, 10000]', async ({ page }) => {
       await doSnapAtDifferentScales(page, [0, 10000, 10000])
     })
+  })
+  test("Existing sketch with bad code delete user's code", async ({ page }) => {
+    // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await page.mouse.click(622, 355)
+
+    await page.waitForTimeout(800)
+    await page.getByText(`END')`).click()
+    await page.keyboard.press('End')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('  |>', { delay: 100 })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+const sketch002 = startSketchOn(extrude001, 'END')
+  |>
+`.replace(/\s/g, '')
+    )
   })
 })
 

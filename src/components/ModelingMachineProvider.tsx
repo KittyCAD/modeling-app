@@ -479,11 +479,15 @@ export const ModelingMachineProvider = ({
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {
           if (!sketchDetails) return
-          const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
-          const varDecIndex = sketchDetails.sketchPathToNode[1][0]
-          // remove body item at varDecIndex
-          newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
-          await kclManager.executeAstMock(newAst)
+          if (kclManager.ast.body.length) {
+            // this assumes no changes have been made to the sketch besides what we did when entering the sketch
+            // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
+            const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+            const varDecIndex = sketchDetails.sketchPathToNode[1][0]
+            // remove body item at varDecIndex
+            newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
+            await kclManager.executeAstMock(newAst)
+          }
           sceneInfra.setCallbacks({
             onClick: () => {},
             onDrag: () => {},
