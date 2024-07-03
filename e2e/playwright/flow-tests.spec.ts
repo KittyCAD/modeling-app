@@ -4423,6 +4423,68 @@ test.describe('Sketch tests', () => {
       await doSnapAtDifferentScales(page, [0, 10000, 10000])
     })
   })
+  test('Existing sketch with bad code delete user\'s code', async ({
+    page,
+  }) => {
+    // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await page.mouse.click(622, 355)
+
+    await page.waitForTimeout(800)
+    await page.getByText(`END')`).click()
+    await page.keyboard.press('End')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('  |>', { delay: 100 })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+const sketch002 = startSketchOn(extrude001, 'END')
+  |>
+`.replace(/\s/g, '')
+    )
+
+    await page.waitForTimeout(100)
+  })
 })
 
 test.describe('Testing constraints', () => {
