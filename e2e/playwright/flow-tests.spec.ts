@@ -1862,217 +1862,221 @@ test.describe('Autocomplete works', () => {
   })
 })
 
-test('Stored settings are validated and fall back to defaults', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
+test.describe('Testing settings', () => {
+  test('Stored settings are validated and fall back to defaults', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
 
-  // Override beforeEach test setup
-  // with corrupted settings
-  await page.addInitScript(
-    async ({ settingsKey, settings }) => {
-      localStorage.setItem(settingsKey, settings)
-    },
-    {
-      settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_CORRUPTED }),
-    }
-  )
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // Check the settings were reset
-  const storedSettings = TOML.parse(
-    await page.evaluate(
-      ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
-      { settingsKey: TEST_SETTINGS_KEY }
+    // Override beforeEach test setup
+    // with corrupted settings
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({ settings: TEST_SETTINGS_CORRUPTED }),
+      }
     )
-  ) as { settings: SaveSettingsPayload }
 
-  expect(storedSettings.settings?.app?.theme).toBe(undefined)
+    await page.setViewportSize({ width: 1200, height: 500 })
 
-  // Check that the invalid settings were removed
-  expect(storedSettings.settings?.modeling?.defaultUnit).toBe(undefined)
-  expect(storedSettings.settings?.modeling?.mouseControls).toBe(undefined)
-  expect(storedSettings.settings?.app?.projectDirectory).toBe(undefined)
-  expect(storedSettings.settings?.projects?.defaultProjectName).toBe(undefined)
-})
+    await u.waitForAuthSkipAppStart()
 
-test('Project settings can be set and override user settings', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
+    // Check the settings were reset
+    const storedSettings = TOML.parse(
+      await page.evaluate(
+        ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
+        { settingsKey: TEST_SETTINGS_KEY }
+      )
+    ) as { settings: SaveSettingsPayload }
 
-  // Open the settings modal with the browser keyboard shortcut
-  await page.keyboard.press('Meta+Shift+,')
+    expect(storedSettings.settings?.app?.theme).toBe(undefined)
 
-  await expect(
-    page.getByRole('heading', { name: 'Settings', exact: true })
-  ).toBeVisible()
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
-
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" for this project`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-
-  // Check that the user setting was not changed
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
-
-  // Roll back to default "system" theme
-  await page
-    .getByText(
-      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+    // Check that the invalid settings were removed
+    expect(storedSettings.settings?.modeling?.defaultUnit).toBe(undefined)
+    expect(storedSettings.settings?.modeling?.mouseControls).toBe(undefined)
+    expect(storedSettings.settings?.app?.projectDirectory).toBe(undefined)
+    expect(storedSettings.settings?.projects?.defaultProjectName).toBe(
+      undefined
     )
-    .hover()
-  await page
-    .getByRole('button', {
-      name: 'Roll back theme ; Has tooltip: Roll back to match default',
-    })
-    .click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+  })
 
-  // Check that the project setting did not change
-  await page.getByRole('radio', { name: 'Project' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-})
+  test('Project settings can be set and override user settings', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
 
-test('Project settings can be opened with keybinding from the editor', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-  // Put the cursor in the editor
-  await page.locator('.cm-content').click()
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-  // Open the settings modal with the browser keyboard shortcut
-  await page.keyboard.press('Meta+Shift+,')
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
 
-  await expect(
-    page.getByRole('heading', { name: 'Settings', exact: true })
-  ).toBeVisible()
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
 
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" for this project`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  // Check that the user setting was not changed
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  })
 
-  // Roll back to default "system" theme
-  await page
-    .getByText(
-      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
-    )
-    .hover()
-  await page
-    .getByRole('button', {
-      name: 'Roll back theme ; Has tooltip: Roll back to match default',
-    })
-    .click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+  test('Project settings can be opened with keybinding from the editor', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
 
-  // Check that the project setting did not change
-  await page.getByRole('radio', { name: 'Project' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-})
+    // Put the cursor in the editor
+    await page.locator('.cm-content').click()
 
-test('Project and user settings can be reset', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-  // Put the cursor in the editor
-  await page.locator('.cm-content').click()
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-  // Open the settings modal with the browser keyboard shortcut
-  await page.keyboard.press('Meta+Shift+,')
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
 
-  await expect(
-    page.getByRole('heading', { name: 'Settings', exact: true })
-  ).toBeVisible()
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
 
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  })
 
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" for this project`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  test('Project and user settings can be reset', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
 
-  // Check that the user setting was not changed
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    // Put the cursor in the editor
+    await page.locator('.cm-content').click()
 
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-  // Verify it is now set to the default value
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
 
-  // Set the user theme to light.
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
 
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" as a user default`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-  await page.getByRole('radio', { name: 'Project' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
-  // Verify it is now set to the default value
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
 
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  // Verify it is now set to the default value
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    // Set the user theme to light.
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
+
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" as a user default`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
+
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+  })
 })
 
 test('Keyboard shortcuts can be viewed through the help menu', async ({
