@@ -1011,11 +1011,11 @@ export const modelingMachine = createMachine(
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-        store.videoElement.pause()
+        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
-        store.videoElement.play()
+        store.videoElement?.play()
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }

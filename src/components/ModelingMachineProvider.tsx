@@ -162,9 +162,9 @@ export const ModelingMachineProvider = ({
               })
             }
 
-            store.videoElement.pause()
+            store.videoElement?.pause()
             kclManager.executeCode(true).then(() => {
-              store.videoElement.play()
+              store.videoElement?.play()
             })
           })()
         },
