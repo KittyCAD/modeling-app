@@ -57,7 +57,6 @@ export const Stream = () => {
 
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
-    console.log('src/components/Stream.tsx:74:17')
   }, [kclManager.isFirstRender])
 
   useEffect(() => {
