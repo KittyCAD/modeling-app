@@ -29,6 +29,9 @@ import {
   INTERSECTION_PLANE_LAYER,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
+  SEGMENT_LENGTH_LABEL,
+  SEGMENT_LENGTH_LABEL_OFFSET_PX,
+  SEGMENT_LENGTH_LABEL_TEXT,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
@@ -102,6 +105,7 @@ import {
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1302,6 +1306,7 @@ export class SceneEntities {
     shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
     shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
 
     const length = Math.sqrt(
       Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
@@ -1345,6 +1350,29 @@ export class SceneEntities {
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
       extraSegmentGroup.visible = isHandlesVisible
+    }
+
+    if (labelGroup) {
+      const labelWrapper = labelGroup.getObjectByName(
+        SEGMENT_LENGTH_LABEL_TEXT
+      ) as CSS2DObject
+      const labelWrapperElem = labelWrapper.element as HTMLDivElement
+      const label = labelWrapperElem.children[0] as HTMLParagraphElement
+      label.innerText = `${roundOff(length)}`
+      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+      const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
+        .normalize()
+        .rotateAround(new Vector2(0, 0), Math.PI / 2)
+        .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
+      label.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
+      label.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
+      labelWrapper.position.set(
+        (from[0] + to[0]) / 2 + offsetFromMidpoint.x,
+        (from[1] + to[1]) / 2 + offsetFromMidpoint.y,
+        0
+      )
+
+      labelGroup.visible = isHandlesVisible
     }
 
     const straightSegmentBody = group.children.find(

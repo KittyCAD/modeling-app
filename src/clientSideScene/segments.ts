@@ -21,6 +21,7 @@ import {
   Vector3,
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -36,8 +37,14 @@ import {
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
-import { ARROWHEAD } from './sceneInfra'
+import {
+  ARROWHEAD,
+  SEGMENT_LENGTH_LABEL,
+  SEGMENT_LENGTH_LABEL_OFFSET_PX,
+  SEGMENT_LENGTH_LABEL_TEXT,
+} from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
+import { roundOff } from 'lib/utils'
 
 export function profileStart({
   from,
@@ -162,9 +169,13 @@ export function straightSegment({
   if (callExpName !== 'close') group.add(arrowGroup)
 
   const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
-    .normalize()
-    .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
+  const directionVector = new Vector2(
+    to[0] - from[0],
+    to[1] - from[1]
+  ).normalize()
+  const offsetFromBase = directionVector.multiplyScalar(
+    EXTRA_SEGMENT_OFFSET_PX * scale
+  )
   extraSegmentGroup.position.set(
     from[0] + offsetFromBase.x,
     from[1] + offsetFromBase.y,
@@ -172,6 +183,37 @@ export function straightSegment({
   )
   extraSegmentGroup.visible = !shouldHide
   group.add(extraSegmentGroup)
+
+  const lengthIndicatorGroup = new Group()
+  lengthIndicatorGroup.addEventListener('removed', (event) => {
+    const object = event.target
+    for (const children of object.children) {
+      object.remove(children)
+    }
+  })
+  lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
+  const lengthIndicatorText = document.createElement('p')
+  lengthIndicatorText.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+  lengthIndicatorText.innerText = roundOff(length).toString()
+  const lengthIndicatorWrapper = document.createElement('div')
+  lengthIndicatorWrapper.style.position = 'absolute'
+  lengthIndicatorWrapper.appendChild(lengthIndicatorText)
+  const cssObject = new CSS2DObject(lengthIndicatorWrapper)
+  cssObject.name = SEGMENT_LENGTH_LABEL_TEXT
+  const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .rotateAround(new Vector2(0, 0), Math.PI / 2)
+    .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
+  lengthIndicatorText.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
+  lengthIndicatorText.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
+
+  cssObject.position.set(
+    (from[0] + to[0]) / 2 + offsetFromMidpoint.x,
+    (from[1] + to[1]) / 2 + offsetFromMidpoint.y,
+    0
+  )
+  lengthIndicatorGroup.add(cssObject)
+  group.add(lengthIndicatorGroup)
 
   return group
 }
