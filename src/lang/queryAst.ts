@@ -1,4 +1,4 @@
-import { ToolTip } from '../useStore'
+import { ToolTip } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import {
   ArrayExpression,
@@ -282,8 +282,10 @@ function moreNodePathFromSourceRange(
     }
     return path
   }
+
   if (_node.type === 'PipeSubstitution' && isInRange) return path
   console.error('not implemented: ' + node.type)
+
   return path
 }
 

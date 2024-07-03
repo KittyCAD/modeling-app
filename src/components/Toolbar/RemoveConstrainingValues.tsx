@@ -1,4 +1,4 @@
-import { toolTips } from '../../useStore'
+import { toolTips } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Value } from '../../lang/wasm'
 import {

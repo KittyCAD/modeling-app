@@ -6,9 +6,12 @@ import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
-import { KeyBinding } from '@uiw/react-codemirror'
+import { Annotation, KeyBinding, Transaction } from '@uiw/react-codemirror'
 
-const PERSIST_CODE_TOKEN = 'persistCode'
+const PERSIST_CODE_KEY = 'persistCode'
+
+const codeManagerUpdateAnnotation = Annotation.define<null>()
+export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(null)
 
 export default class CodeManager {
   private _code: string = bracket
@@ -22,7 +25,7 @@ export default class CodeManager {
       return
     }
 
-    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN)
+    const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
@@ -90,6 +93,10 @@ export default class CodeManager {
           to: editorManager.editorView.state.doc.length,
           insert: code,
         },
+        annotations: [
+          codeManagerUpdateEvent,
+          Transaction.addToHistory.of(true),
+        ],
       })
     }
   }
@@ -118,7 +125,7 @@ export default class CodeManager {
           })
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_TOKEN, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
   }
 }

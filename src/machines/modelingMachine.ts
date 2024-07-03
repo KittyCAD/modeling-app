@@ -1,6 +1,7 @@
 import { PathToNode, VariableDeclarator, parse, recast } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
   isNodeSafeToReplacePath,
   getNodePathFromSourceRange,
@@ -26,7 +27,11 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
+import {
+  addStartProfileAt,
+  deleteFromSelection,
+  extrudeSketch,
+} from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -44,12 +49,14 @@ import {
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, trap } from 'lib/trap'
-import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { executeAst } from 'lang/langHelpers'
+import toast from 'react-hot-toast'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -124,6 +131,14 @@ export type SegmentOverlayPayload =
       overlays: SegmentOverlays
     }
 
+interface Store {
+  mediaStream?: MediaStream
+  buttonDownInStream: number | undefined
+  didDragInStream: boolean
+  streamDimensions: { streamWidth: number; streamHeight: number }
+  openPanes: SidebarType[]
+}
+
 export type ModelingMachineEvent =
   | {
       type: 'Enter sketch'
@@ -156,6 +171,9 @@ export type ModelingMachineEvent =
   | {
       type: 'Set selection'
       data: SetSelections
+    }
+  | {
+      type: 'Delete selection'
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
@@ -193,6 +211,7 @@ export type ModelingMachineEvent =
       data: SketchDetails
     }
   | { type: 'Set mouse state'; data: MouseState }
+  | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -214,9 +233,23 @@ export type ModelingMachineEvent =
 
 export type MoveDesc = { line: number; snippet: string }
 
+export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+interface PersistedModelingContext {
+  openPanes: Store['openPanes']
+}
+
+type PersistedKeys = keyof PersistedModelingContext
+export const PersistedValues: PersistedKeys[] = ['openPanes']
+
+const persistedContext: Partial<PersistedModelingContext> = (typeof window !==
+  'undefined' &&
+  JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+  openPanes: ['code'],
+}
+
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoAWAHQB2GgE4ATLNEAOAKwBGAMyzNAGhABPRFNWaJmscOXyp61aplWAvk-1oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFlK2l1Gil5UxpreTEpfSMEeTyJYU0reW1hVRTxYRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQROTlGgl5ZUWxDK0ZVVlCxE1VOfXxGlUq2R1NKUaQdxavdv9fKA6wXACAeQA3MAAnTBIDWBGosZxXiJGibBA0c6XTxQCTYCCYMAEACiT0+gQA1n5yAALf7MVjjbjAoTyYRSCTqUk6NSadSyMTyMGabQSZQ6dn2CwaM6uC7NaGw+GIlFDD4YrG49SRfGxCbEpJ5OZidSiOw5TQ5DJg5byCQKKQ1SlWLTKFWQ-mtQUI5F8dgfboYPHRAlAhJCezkxQHYSyVRiWrqMHqNXzFJs33ienK80eS1w61IvgsD7sJ2AuVuhWLUOKkrqMT02pgqS2MomCw1WY2f0xq4w7yY9g44hkSiYBsStMujNTRDBlIUjJiMSzWbaTSMwx99Smikz01aGgz2q1gUdpvYggAEWCQ0CYHuj1T9FG3aJmYNygkI4qWWZwjyw+16wkDkyPsU6yq+dXlvXzfIZp-EgDh-AgboPlacUNy7WVz17BAtH9ClhxqTRclUYQnynBB6WEaRMiqB9hCsGlf3wCR-2xSjGxxABJIUCGQEhMX3Q8nn8d4U2wcgSEwWDCUmfg+0UdQKWsZR8isHUChw-MtHMGglKyUwbGUCxyPrWjqKohjrWY1ignYgJsVQSCAC9uAGfiTwBM8hMSSkpEkFRRA0JyyUnIotGDV9-RkFVaQOQ5NJoiUwo3PTESIbhYDtEg8H8UyLKsviwOwOLW2GWyZUE+VKT9CRxCqOR1ILecwSOfDgp2cR1mDTRQqoiL6MYmLcDij4EtwTjPk4XjMHSzKKGy6VnTghyRNSX0Fg0LD0kkrzEBKKQzEOZVJJLd8-Sa7SWuxKLiFi+LEoAQQAIW8fwAA0BNdBDKTUa9Tg0AtaUUKpKt9SRfTJWYaCyWRVsa3koT-PbdLa46urOy7-AATTunthMQ2b5gZFUsjsGoHyZHIr0yew5pyZyxF28LIetdrOu6-wyCgBEkfglGkLMdD0NmqRTSkDYcKyDJ5lqN8TDJY4eSaWMKOaynouh2mEXwdhcRy8a8szLRTnMHG5C0b9VEq4QZ2kH1lR54d1LJcmN32w7qZOnqmE+R3cAgHjum+MVXeGygmcm1GFmvY53uWGdRGESrTUkWxZDZEtH3yVQrZxG2oY6+2krM7BLKePjMAMOmcCgXBffy0ldTUSSaX9ZZyiDOb5l9TbMhF5kk507TbblxKuP63P8747Ai5L9WbFkZ6Fh5ubtA0IMH1UV9Y5jyoY9WtuU6pruetgXASCYfx2FQG7h4e2kzFJdCciB6xtEq4r5iyEiSIOZRCLXmWjrTmGt53veD4R4+WanyKgaWkJZTjpDEJVfM5I-Qv0BuoZyWEQYSzrPtdestP60zAAAR26GlBWUAlYAMcooNa0CeZrDvLJbyq0lQag1EpTCmFZBvw7qnGmiUmAkC6pgBENkxrpmZo5Cc5IAYkRnCUfU8hAxyXpOSQ2Sk7CLFHCw0GFopYQzYRvTBiUPhgC6O8fwgEdFPD+CrQRftKQjjKFYzCCxlS1D0HJdSYklwfnEMyHID5WESkOgAJTAIIMAfAQjdCGMQvshwryYXQqYTCD5pHUL7DQbYz05DbAsJYYM4s+SSy0hTLRwpcHYD3gAGTwGAfeqBUD8NPBNfKbJ8KmAqAWX0FhFhgnUvPHYmQGRZEsO5HxkVGJImKb-emR5sBpW4eQKpETigFWvHIA4bSKxOO8pfQWpgw5LwOMg3JqDpaFORGM-wejQj0wRFUmp8ybATj1LMBkw4kJ2CSajWo14XnzWDLIGgDQ1F5LQe-QCGBgKuwCOBSC+BoI4nmUhee+Z-KYQZNYMEMcrzMmVLSOwtIY5kwBYczRvjU49yqZxbhUyABGjNzH2XytsXUZIZwjiyXISBOEJwC2VBkcMig2SJwJWuPap0ADuCUTKZ2ztZIaAwRr+DwAAM1QAQCA3AwCwlwK8VAmIJAwHYIIZKWdUqYEEIq1AtyNSSFQssIG2ggarUqsqMeagFjfg-JhHJYMNHhVFeKjOKUc6DS9rKyg8rcBKoIJ8D4ZkJBMG+OwJVHwOi6r8AayVxrTXhvNbS+pmYSoIsRQ1f0CwgaVQ5kVGuSkGUGnUGvX1oEe48TSsGrKYaI2qtwOqvAWqdV6sEI2gamalUWspBSU4poUlMv1JVBYZgX6HEOBrBB8g61iobX1JtQaMohsqWayNHxo0fFjfGxNya+0Dr4kO7NAi6V5veqyA4JhZAINqOyooJQGQUm1lURYCx1Krr9RdK61023Ko7V2zV2r1V9pIJS2Agg+BXpHfhA08hlJ3iLHzJQup8ziBVGICcD5V6CvBj6tdAQgM3VA-uw9x7BinpTfq2D8HENmpHeSAj6Eum-NgV9FU5hahoQgc5VRKChVkcA3DeG1HwMap7dB1NzHBAGCQzmtWCE3UCYcPYBQOhnL6w5X8jjMcIyOIOPisTpHrb1oo1J6jUaY1xvo2ZM9im4PKdUze3NGnQFFRsOUd85RlThw5fhoqPoSIlA0KcFdJHvXWfI3TfAVy92ye7VBxjghLmBLY2p+6KNvzkg1A1BdxwZ583sPhHQBwlx2EEyWADoFsv2YPY5k9LnMvZc83U9TBXaQEzwwsSkl8EGVW5HObYMh+aHEtnF-JCW-UEKVjJtVcmMt9qW9ibrdlvN9bsOPbQpsGQAzeaSJ6fzmQIIqAgykjWAibZa7RpzCaOsbceIQrbuWvO9cSJp9IKSAzSUyAbT9kWRxyLfJhO7-hHYfGdq7cg7tuEytbal1b6Xe2pth-Dt2HtBAtpGtt3K+Xftlz1I4vICTKgGffdYee4DLA1DK3eaH2PHgI6R57bdqOs00ba85pNmW2cu1x9w-H3PCdfZ6yT5aZPG4TksCUanlUtrmFsIz9YM1TBr3KZ265mATndBKfvCZTwpmDRmXMvLyNfs8yq5HGQBG9M6DRVzJZtIRw1HfDOHXFT9eG+N+c2VDNKkHxudboRy1Vq6hjsVZ5FgVRBjQ2PMkPpaQmysPsr183k669D9UzAEg6K4A4AQW5RFWSxJnGywGYJjTzHQuyFJJYFBZ-UTn6ief9dF5L+wMvUppc29l5kV8ANTTzTQz6YsPNrzlFMAoZhjDfd67D4XgAcofAACqgPA7BYAEFOhACA-RuEBBYLv25JEfrenWCiv5b7EAkTHk7ihPL1LKGX-nmpEgN-+G37v-fUgEaWpHbH7PsSSMeFJH9ZPEcWoZQYsJcQOQ2E4R6coNeYvUvOFNxa8NQGQCoA4GApPZkWfVDMOMRaMObNBDAvvKgAfUAmXRCA4MSNkZZSwTlJcB-VGZ9aQKuQ2UkN6f5SzeLZOAAFVN04GmQ+FmQPgDzKT91X0v2HDSS5nWB2FxhwjwgIhKEmyUiwlmyEI7wkG6BdkPkyhTComeFwBVXR0gx1VOm8BEMEGMNVUEDMPYAsOLgj0sWZGiTuWfURW2ByDBFqDmCUDpByHyHZlODXgCQuWSy-0LxsygkzigDwAPyPzORCGDyuRSLwHmWxXwhSHKF+UUG+hkW8ksGdWOCXB5igMrDXnIARDIECHjURDhWVBchqhdXzGaSDAaiKj+XSCvjtVu0oOahsyMW4FJT-leApVg2tDS1sIU31WMR7kEAPn7TmOpRyyzXLxMDnEjHHXSENhpy2GkTHjpCfnpDZFsWh1WL6jJVmMgnmMRAcyPWewYz7XuJTHWNQE2OeO2KJ1VgYMkSVBLB9ExiXAqDeWZBfGsFsBnFhJLHyDuM3kyIMUqWMQ4VMWsM7TWx1RcKxPtkED0QxMECJK-mPG+xBOrHMB0AIxnAQUV04IkSjhqFQl-WKliwMLQQmIpNpkNSlT7lxIg3kwkEJM3jTQDWsjzgtUQPWB9FvxSSxSDGK2kH2AthMGYUEIOXEwW1An5O7g3QGjzhFPxPVQlJMX7WNL7jlLHg+jyHpH7GcngLkjtWvBKEWAUDyBNDb0BXGMS0NJ6kFONTzgLkHisMWLFMtOxKlKNUDTziy0Lk8OpKH2KA+lfDqwfknVsDrhyD1FQhehHFNAWFRJMV6m4hNP7mTLNIxwtL+KDOtMrL7iTIjL2KtT9HwyUnv3KL7FEEkAqHvHWhdOfTLOxMCB-jJWulrKWPFIbMlO3l3l+IQzlLmDn1sG2Ccn9FvlSUpEfBiWqxCjGOFUDLRMXN-kPnhhnOjPnKtPPOXIMDlPwnyBnBkDHCySgVJHMBKA+hHEuJ1Oz15NPPLJwTwUGk22vIyxjOJNAsvU23L24IUATnzCvjUBCxoX4zVAfDUHzAnj9MJQkwNLRK4R4T4UgoJNvNjJItzmoC8PlBKivF+T+hUjfFdO8mpAb1WhfgcQ0DUDbn8FwEPgVRIEoB8GCFCDAjAGEvdjP2+E7XmUEGkTEhnDwgqFT2kVOIQDQmkE10xQjAB1CjIGwA6EGCgj-ic07XIvVSMpMqGGXOEp9joszHsGUqBiiQI1EBULr3sHmFECrWcm9BKEMpL1srMsPmCW3SglgG0isokBssGECQ2Ois7CcoQjnj8yIxjjsAI2B1CyvBIi4qUC9PyA-3OEEowHgCiGz0H0jySAi1fFFi4v9E2iDE-SyUaRuIgVE11LjCFBqr9hEGsQ9VtUklfTeUWDEmyFNFMEpGK26sAqon6vlCKpwIcEnQILZRnTHjCK9NUNOCXCGVagRCWvVmWDPiBnyAUFGp5jYunHpBQlmou32tbmPMIolWlObQl1DTNROoejDGvBtS5lsBsCmzLQUHMH9AYSfxsFrVev1ICAvS3W9l3SzV+pZl-S-UUQyQfGfRnR2D8w2nzBIhcuh0oxAx+voLTJUrMHVEpB0AfH+15nfR0DEn9D+lVDcmsFJrswpuJyprZF1Hcv62KjxhqHviJifV-XmvbyAr9Wa15uBP5t9DKAYU4xjkOBdwq3zOvjUEwgyAfG2GhwewVosQaV+XdyYVNHppIgNgqGkGfRXlFjZvwr1OTgmOFw5w9hRzlRNtvT+swntpqAiMjHKHWSj1nGjjUGfQ9CUE-31zRt+3SBpuBjUALEWCsGCNnHZBb3fF0M9Rluai71Xx7w4ATuWjsFcRTr9HRQzpwg-C-SCzYN+UqLjuLsEqTT4jLuKALA4zAS9DHBKAQNZrCJQIWHKG5J6uEM73kILx-y3x31MS7ryFMFDA9wnQnEHOLAfFDGDB8hfiwlNHQN7y7vSBfCwj9EVHZmfRZMZLnAmsXGXFKp5OajEPwEmUkOkNQCXtqFEQ5ieWIiJqDD+XniwjcpXgyGOAnoWr2mcNMIGHMO0ksJPqsDHjiVgLn3UkUGCMsFnzpGXo9TQpiKyOa1XyXvBIeRVFqKJgV1VNSTtTcTkB0xdqs2TliOyISIkCSOhSCGMWP0Ag+E7Q+CXusB+nHyoc5DyFniUMhqsCXFTos0nsMLYZIdnq4agH8FyKElNrzTQukALDQ1HjKNap9FZGqIQV+UIxXDhuTkaLAGaNgFaJPvHD8lKN6QnAUCAfKD1Dcn5lsB9DLOmMPieKpWOsptquXEKKUmasuxcqZBKDmAyRmkLGQKfsUdlqIvLNJNQEMSDL3xPskjnSUA3snhIjDsQhLL1AUA8XvykmYans4eAvHJDITKKD5vCYKdMfHtOF+nHqTzZD1A1G0ywjkCqDqcML5LRMRrznyYI06eKZ6YnFVKBlZB6OknyABmiOseogmfLOaZlOrIjJmcKbnydOKJSFauWZuyNAfh6Xzv9JPL9SDIrN7l4QOaLiObmdv0CnRTrnBtqBjhKkp20LHPTnPKnPyYDv+hsBLVsGRVviqAhrZAsAsDuYIvhsmPLLBb-nhghciZOxhexk4OkQDmZESXM3xj4q2YacebRNgvAveyVg+caW2FOe0HObkh9A43oQkf3vsBBa-hh24RoswAhYRWHAyW0B5l7MQgUGfOGaqC5nEEIa2YEqEpErAC7sUuIMrAMYZCwgMe1FWkFhxqIxAR0GCuMtMuhXMrko1bCcsS8YBZHBAQcDZfQsf0OAeSDuRbfCgZlvis4GtfCr4Eiu4e0hPuWYNC5m0K5jJHEBhP43HGuPUhrRMBcBcCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoAWAHQB2GgE4ATLNEAOAKwBGAMyzNAGhABPRFNWaJmscOXyp61aplWAvk-1oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFlK2l1Gil5UxpreTEpfSMEeTyJYU0reW1hVRTxYRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQROTlGgl5ZUWxDK0ZVVlCxE1VOfXxGlUq2R1NKUaQdxavdv9ybiG+dhGosbjeRJpNhBpzy882vz+XxQDpgXABADyADcwAAnTAkAywZ7MVjjbjvRCfQxY37Nf4SbAQTBgAgAUXBcMCAGs-OQABYo6Jot4JITyYRSCTqDk6NSadSyMTyL6abQSZQ6KX2CwaM6uC741qE4mkilDWE0umM9SRVGxCaYpJ5OZidSiOw5TQ5DJfZbyCQKKQ1HlWLTKc14jzKokk8mPWHdDBM16GtlJexcxQHYSyVRiWrqL7qS3zFKSuPiIVmr1XKAqv1kvgsWFPeijFlhqbsxZpk0ldRiIW1L5SWxlEwWGqzGwJ3ME32kgAiwSGgWCoQmIcrGPDgiOEq0nMy9lkUjEiy+cdkEnEWXXsnUks0eX7yu8tPYDOIZEomAv2unBtn1YQKZS3IyYg3Nu0J+TR7qNyR4eloNBHrUZ74BID5XvSBAjiSY5BCCYJlnqzLPpM-DGCYjqKIcyhNjIix6DiCAJlyxzLDKOzCMsDQKn856XtedwYP4kAcP4EDdLCrRanBT7othiRaAm3LfjUmi5Ko9FiFuljSJkVTCByVj8lB+awQyMGsfSACSqoEMgJC0uOqHgv4MKltg5AkJgwmsq+PKHty1hEc6RE0DYyZmmY1o0D5Mo2MoFhaXp2qRXBRl+qZ5koaCVn0qg-EAF73A5TlVjhb69mUOSiBoPLOpkyYCkB8YOOB5TpPY8gRTp9LRQysWkkQ3CwOwsIkHg-gpelmWYDx2Bdbewzli8M6iYgPLxruwrWrIYVNiBXxHMIu72Ds4jrCmmiNfpLWGcZHW4F1PV9TZnD2cNECjQMFATRhoYvrlrrKI6hEaPR6RESK5ElFIZiHGanlthy8aHVFTVtcQnXdb1uD+AAggAQt4-gABrZW9YkLKoEhiKcGhNgKihVOtcaSHGnKzMFa5itDcHHXDZ0XUjqMY-4ACauMzXlajzMK5pZHYNRqaKOSfSu9jmjk65iMzumw6dCOXcjZBQCS-NGuJAVhR5DgelIGyAzsUa1A4bZyaba7K81qt+uziN9SS+DsIyk36iJetilyFRyXIWhVHY63CEe0ixmapvfmFnIO6zavna7yNMHC6e4Pd5DdAimr3WNT26+GPILETxzk8sR6iMI60epItjLWumTfvkqiJ077Xq5zA3YBl4IOZgBj+A52BQLgxcuRyDpqER-IJgxZFFHY5rzHG4M2HJTNMUq0FNUnzvd1dcI3YPw+j+Pk-vTYO7Ewsps-doGjJmphO1Guy2VMtwMd-pbNH8jWAuASBMH8OwVA2Mr5iQFGYDkMkchrmsNodae55hZGEBgoqygVK-21P-FOGtAjANAeA3mUDZowN3M6AUbZTjpAUoDRsXJ4zYKyIedc9EDo729HvI6nd4YEM5mAAAjt0By-h3ZQE9uQvKOgJCkzbGuA4WRTjJmBqaa0gUYxyVkLgmKycOZ9SYCQHqmASSOW9phX2JcTxch8hgo8JQnTyCTORQU+QyjpHArURYCC9GtQManfwsIwBdBhLcAB7BkSWNegLHkG5PF5DkgsM0tQl6zTCkBGqChxBikKg1bheZjoH1JAAJTAIIMAfAQjdCGDIuwZct78jkmpFxBQ3E0G2ETJa2wLCWBTPKJoPDtJ8L-sZMkojsCgIADJ4DAGA1AqALEvWmnrSUm1TAVCbHGCwm5yJhTfhkPIJR4wunUP4k6hZJkkK1mhbA4iTHkAWTIlxWQiZyAODsrs6S3wIPmDKGun8DhcKGUU-e-CJndCmcEkIj1tbzPAUsl5wMHTLT3N+cSdh2nLyyJ9fyZpfoplkDQRioKCTgrGX6di8yuIBF4vxfAgkGT1NlJJSiclhTWC3LWMU-kUymEFERC5+DroLOsiY+5AAjHWMTVk2MOB2I8G5+lyAYUUE8GQibpCkBmRQkp26FPJUdFGAB3XqARe79wGHdB641-B4AAGaoAIBAbgYBCS4ChKgWkEgYDsEEJaoaghHWoBedaSQUlliM2OLQ9aZodxqAWKHWM6DBmKmGcU015r+qpT7kNEahdKD2twE6ggcJYSpQkEwBE7AnWwg6L6vwAbc1WocsGktobZVYSNFUA4wEMXiUImudaMkHT7FEJ0w4zpzmGpYlFLN3Frp2XEQXR6RaQ0urdR6r1Pq-WCCXbddtTqw08m5KcD0nTOSCl8oDBYZhsGHEOFoGhBSyVzpZgugIB6V22qesW0t5bK3VsGHWhte7v2YCPZ2lZ3bwyhxngcEw7DahqsQCUYU3IJY+Rkh5MKidP1c0xljf9zrXW4HdXgHd7q90kElbAQQfAoMns2s6eQQUTnbGUFTNSklxDmjvmpH+s7eHzrNdxdGRGSNlthBW2EVaa2gcbf62j9HGMhpPVyYmOHtjEpYVTVenHpL0IPPhsTAQJO8yk2RijnrvXUabSpwQBgmNdusa+ZN5hIyrkUKcBMUtOTl31QcMKBwlbCZGaJ7NFmeZScA3J4DtbUpgYc3RpzLmYNudyqHOxNhyiZAwRYc0op+O7ljBgk5qxX3prBcaszI98Akis1uyjdmlOCC1iSdLFZYPuZoeYcCWhH3HGfubOSjprQ7H5bUZcpns0dfmRuuL8mQNJba-NrrU0etZYFDLPjCweQIPUNitDcpgLbBkFkZRCdwuZrq5Iz2TXyPbta3u+79INs+2cttuw3Sjgx2FD5Y7xQrCExJWKI7FQjs8lm9xN7sWZNAYU6t17YIpHvfU65r7iQPNeM4+aTyAMigcgw+VjcQoTA21JdVo1kXuLp1hJnbOucTEFrXQtjtm6nstd3U2+njO7LM9hIIVd40PtWKx2h6eX0wp5FaZUVQdc3l0MsDUYbKiYcBD52CJnedWd2sWwj+LSP61ta11nAXedhe-soGL2JPapfrxPJYEo8v1ptgDrYFX6w4zq5u-vWZ5GFlLPJNcsBtzwT3OGo855mOcrY9NptZaTDck6FNj8xB7yBQbhqPlo8icA8IsWZgEPULQEhNCPNoPyzuuZfjyeR0sxhQYsK7XNxbGdycljAKaOVgQXU-fbpAvVeJAGVwBwAgLzVIShkhoWYQo2FfDdPMGSUpOmKKqPnuZw-R-j6oLqGvEvig2AdDsfbv02OxlbKbIm5RTAKB0UFA1b6RMsyH4izAEgAByECAAKqA8BRIEAowQAQD9AmKa7-7ggvIYI0zaLz6zD0SL6xjdIfwyA6qGyb6B7v5f6-6QGAGkBPTV6ba14ZJNi7gnijqqqzxcbkQyBARNgRwnA8gpB97MQv66Q77sAT6x54yzQ1RExqAyAVDKKqrJhVBmCWCsY1z2I5h+5HScET777EGH51RASSgfKWAargSoayJAQ6qmD9LE46BU5sERYswAAq4enADysITy4CJe0Kb+Re0B343SGQagmYks5EQoLGKk52QU9E12z+Zhuk3QWcECY0pYTUEIuAnONmVGEgKM3g5hggYRrqggkR7A0RE8PBcSYon0U62gKY342wOQXwtQcwSggoOQ+QMk-sic5SFeDWheSyiRZmAkuaUAeAQBIBMKTR8K-gnReAMiFUm0KQ5QxKig1Mriy8lgCaxw4EpsnSkMygic5AJIZAgQNapI9SZokgRU9giajYmyAEWgu4JK6QiC2gh4VWpht22adwnqJ8YqUIEqtGfo1mz2PO-qjx10gg4C+6bx0qFSGOGWh+QMhMKYWY566QEcCu5EJ4go3ISgogQoko8ST+-e7BzUBGvxzxpCrx-E7xpIS2CWime6eJpY-xqAgJRJwJtucq7m0YRMbYsYos4EFQQOYo6wEoNg743JbY+QGuESgifUISYS8yjxhi4IsAcRXx7q6RUpqcgg4pqAMIggSpGs6EB+ceku645gOgxMgEHCeQyY1gDcNQUkiwbGwotxu8IROJdWmpPcLaQ0Q8cp3OCpNJzpeAzag0A8ZiBgYa4E8iSg24ywhWPyYEeh+w8cJgOiJh9p9x3EPpyMEG7pnxnpEgipAC+6J8y6gZwZO4FMeQQo7464NBy81xRMJQiwCgeQ7orBSZ+8uJACOa-p1qQ8I8OA48HptmPqOZopuAfpeaAZQ87WPZORYJupR+Cg8idgj6ognJMxs0Own02YeWLCHoCwwpqZ1k+Zt0XZF8sRmZ-ZXpGpuZ6Zzmx5k++pC8-GQUJKZoL84g5g5QgceQFZh4u5bZQCICYqWMfZCRg50pGRxC1JDGwZcwt+tg2wJUfmgMk63I6GCYExE2dpGaLZTpv5xCYqPMQFrWIFypf5TAEFQZuRPa1om0+QR4JEnS-S60ro5gJQFMG4goGCP5Q5nEoi4ib2BFA53puZIiYikGb2k+bkCgbcjYiCagrey8tgm0loakagjY98TZmFtWDxbZxipi5i-F55qZggOlg81AFFcG1o65JKOqWQkYOqyYfIy+wM2CqSs+mJdxTU-guAECDqJAlAPgE4dKYAPlucmuCI5GMi84PkNZOg7FagiYSgi+wMUcsYmQQU1pigEUZA2AHQgwAkpCwG5G+lEgWVOVQwEFPllAMicsyJJgKSwh+hi+9g8wE6a+NErSmVY+pVeVECVSD0AksA+kRVJVgwFSAJA1j4Zlr4r8u408psHo8YpwhOWwkcGCTlSgdZ+Qqx5wXlGA8AUQphOpvBSQZW8inIjMREKGQOKY1FjBnSpRDZQoEUg4h1AsIgCSts51CYnkXwiwlUFldg5M1ogoDsL1Ro61Ah1UwhhwohiFZgVRumqVFQkoaa7loyeCqooNJcEZa864psKSDgy0AEQokkPIVF-sd1wpgaAZeuf6IamNLk6YRMUaOqtgNgF2I6c5sogUGCToM6wRyZX6B5P6ha7OTq9N701pmGQUg2FQigK5R+OwM1YMjYGCcswpFmxGdNyhM5R4ciVorkstXiZsROMVRMtsdQ8stQGFNWtO5m3MMWWtn2OtkoJ+dVR4e4-mhMJyXmy01guichtt9WAxjt4uztcYZQgUWmy0hwOg60a5vJM+QcrG2wwpcOIdduJc6hmeck8VFQGC4cFQ0gh438Z1qF6lNtH6dWZuOuLOIutNHa4tYkslRdNQNRWY75buHoaQ0dh4kYSgmBLRmAjdaG6QZgGQ+R8YvtVg5RXdUo1gd+Qo0sA92+Y+7Aw9xQK8VCE9TYiw095EKamG5QUk2g9Q-t-N-uW+2BXl9aDk69pZmmtC0YswJ4S1CAdB5cjB4OCw5Q1tNOr+l9ReOB-gf+ABe1TtR1SSsCmSbFyxFQPyrGaYKYWgtF9EHoicnB69dUHeC8JodRh4Oh74QE74oEQNs8iclh+AdyNhdhqAd9tQdio6TeakEclgyYJKhM9Ea46w2CGQxwv9A+zUaRERAwUR+kMRmDVgO4pgLCW8aSig5RSk-Skl9gdMckDRsKle7+d9rJDe5oSx20Tu5UXS1xQUCY8YdB6j-RjW2Bn6-VIQ3AoBdwsI5GsId95pujZ1BwIUBD8kZtSN4Eag34ljcK1jgDtjjKQx2EGd7mzdB4bGN80xfkyBGYixxKJ43YaxGxgC2xmDf48iwoMaeQJ4CgbD5QjoRUl2ClZ9WJDpbRWlTxpYLxQJJImDzd9MX14OcsooJQcwvSPuzYjBW159mlKZbZqp4SqZUSrTxMEoSgFBD8BWZpp6fDuST5+Q5QnF0p7Zo5nZRQ4DcSRE96czVQCzP9Yhko42iGHKcg4hmzQSV50zRzP9pwtMZzbi2gXI9cckRE+Q2GKNzZIzAQe5VNuz3ZY8UTjJEtMz6yOmBK2gKQfka43Itgro6CFs-zGlgde5V5YL48jzszt+ZZExeyy86wJ+koSCPkzuG+Adld9TWzJFAFrTY29Mx+yN4sOh8TAUZOFgFgGLFdukrZXFjLpCPMzLYx7GmQ7LHKjFZcYobSoW0sagdzhCwlvFqOns+LML6wcLn8L8SLxMk6pg98NQblALWL2lJiJlQ92tR1EEkJJRmyH88t16N19o564gslDsnl3lvlYA6984Mk8iOiCwiw64bG8tlgb8xdZWYoWyQTN2w1nAjK+VYV-rtrcSZTy0eQ2CMF8LcliANQqKKQOwvL1s-D0ESb3VnEfAfVjK41cEmDSLpUuQ56nI4gXJBmUoG4YU06JgLgLgQAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -224,7 +257,6 @@ export const modelingMachine = createMachine(
     preserveActionOrder: true,
 
     context: {
-      guiMode: 'default',
       tool: null as Models['SceneToolType_type'] | null,
       selection: [] as string[],
       selectionRanges: {
@@ -243,6 +275,12 @@ export const modelingMachine = createMachine(
       mouseState: { type: 'idle' } as MouseState,
       segmentOverlays: {} as SegmentOverlays,
       segmentHoverMap: {} as { [pathToNodeString: string]: number },
+      store: {
+        buttonDownInStream: undefined,
+        didDragInStream: false,
+        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
+        openPanes: persistedContext.openPanes || ['code'],
+      } as Store,
     },
 
     schema: {
@@ -272,6 +310,13 @@ export const modelingMachine = createMachine(
             internal: true,
             cond: 'Has exportable geometry',
             actions: 'Engine export',
+          },
+
+          'Delete selection': {
+            target: 'idle',
+            cond: 'has valid selection for deletion',
+            actions: ['AST delete selection'],
+            internal: true,
           },
         },
 
@@ -693,6 +738,7 @@ export const modelingMachine = createMachine(
           'remove sketch grid',
           'engineToClient cam sync direction',
           'Reset Segment Overlays',
+          'enable copilot',
         ],
 
         entry: [
@@ -703,7 +749,11 @@ export const modelingMachine = createMachine(
       },
 
       'Sketch no face': {
-        entry: ['show default planes', 'set selection filter to faces only'],
+        entry: [
+          'disable copilot',
+          'show default planes',
+          'set selection filter to faces only',
+        ],
 
         exit: ['hide default planes', 'set selection filter to defaults'],
         on: {
@@ -732,7 +782,7 @@ export const modelingMachine = createMachine(
             id: 'animate-to-sketch',
             onDone: {
               target: 'Sketch',
-              actions: 'set new sketch metadata',
+              actions: ['disable copilot', 'set new sketch metadata'],
             },
           },
         ],
@@ -746,7 +796,7 @@ export const modelingMachine = createMachine(
         target: 'idle',
         // TODO what if we're existing extrude equipped, should these actions still be fired?
         // maybe cancel needs to have a guard for if else logic?
-        actions: ['reset sketch metadata'],
+        actions: ['reset sketch metadata', 'enable copilot'],
       },
 
       'Set selection': {
@@ -757,6 +807,10 @@ export const modelingMachine = createMachine(
       'Set mouse state': {
         internal: true,
         actions: 'Set mouse state',
+      },
+      'Set context': {
+        internal: true,
+        actions: 'Set context',
       },
       'Set Segment Overlays': {
         internal: true,
@@ -963,6 +1017,42 @@ export const modelingMachine = createMachine(
           editorManager.selectRange(updatedAst?.selections)
         }
       },
+      'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
+        let ast = kclManager.ast
+
+        const getScaledFaceDetails = async (entityId: string) => {
+          const faceDetails = await getFaceDetails(entityId)
+          if (err(faceDetails)) return {}
+          return {
+            ...faceDetails,
+            origin: {
+              x: faceDetails.origin.x / sceneInfra._baseUnitMultiplier,
+              y: faceDetails.origin.y / sceneInfra._baseUnitMultiplier,
+              z: faceDetails.origin.z / sceneInfra._baseUnitMultiplier,
+            },
+          }
+        }
+
+        const modifiedAst = await deleteFromSelection(
+          ast,
+          selectionRanges.codeBasedSelections[0],
+          kclManager.programMemory,
+          getScaledFaceDetails
+        )
+        if (err(modifiedAst)) return
+
+        const testExecute = await executeAst({
+          ast: modifiedAst,
+          useFakeExecutor: true,
+          engineCommandManager,
+        })
+        if (testExecute.errors.length) {
+          toast.error('Unable to delete part')
+          return
+        }
+
+        await kclManager.updateAst(modifiedAst, true)
+      },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
           sceneInfra.modelingSend('Equip Line tool')
@@ -1123,6 +1213,29 @@ export const modelingMachine = createMachine(
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
+      'Set context': assign({
+        store: ({ store }, { data }) => {
+          if (data.streamDimensions) {
+            sceneInfra._streamDimensions = data.streamDimensions
+          }
+
+          const result = {
+            ...store,
+            ...data,
+          }
+          const persistedContext: Partial<PersistedModelingContext> = {}
+          for (const key of PersistedValues) {
+            persistedContext[key] = result[key]
+          }
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify(persistedContext)
+            )
+          }
+          return result
+        },
+      }),
     },
     // end actions
     services: {

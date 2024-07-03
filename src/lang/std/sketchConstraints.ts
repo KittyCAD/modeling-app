@@ -1,5 +1,5 @@
 import { getNodeFromPath } from 'lang/queryAst'
-import { ToolTip, toolTips } from '../../useStore'
+import { ToolTip, toolTips } from 'lang/langHelpers'
 import {
   Program,
   VariableDeclarator,

@@ -23,12 +23,8 @@ import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
-import { toolTips, ToolTip } from '../../useStore'
-import {
-  createIdentifier,
-  createPipeExpression,
-  splitPathAtPipeExpression,
-} from '../modifyAst'
+import { toolTips, ToolTip } from 'lang/langHelpers'
+import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 
 import {
   SketchLineHelper,

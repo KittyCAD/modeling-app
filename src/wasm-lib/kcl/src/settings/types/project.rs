@@ -115,7 +115,7 @@ includeSettings = false
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0.into(),
+                            color: 138.0.into()
                         },
                         onboarding_status: Default::default(),
                         project_directory: None,
@@ -130,13 +130,14 @@ includeSettings = false
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: true.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
-                        blinking_cursor: false.into(),
+                        blinking_cursor: false.into()
                     },
                     command_bar: CommandBarSettings {
-                        include_settings: false.into(),
+                        include_settings: false.into()
                     },
                 }
             }

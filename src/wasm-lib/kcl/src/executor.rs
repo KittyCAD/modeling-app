@@ -16,7 +16,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     settings::types::UnitLength,
-    std::{FunctionKind, StdLib},
+    std::{FnAsArg, FunctionKind, StdLib},
 };
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -638,6 +638,52 @@ impl MemoryItem {
                 })
             })
             .map(Some)
+    }
+
+    fn as_user_val(&self) -> Option<&UserVal> {
+        if let MemoryItem::UserVal(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    /// If this value is of type u32, return it.
+    pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
+        let err = KclError::Semantic(KclErrorDetails {
+            message: "Expected an integer >= 0".to_owned(),
+            source_ranges,
+        });
+        self.as_user_val()
+            .and_then(|uv| uv.value.as_number())
+            .and_then(|n| n.as_u64())
+            .and_then(|n| u32::try_from(n).ok())
+            .ok_or(err)
+    }
+
+    /// If this value is of type function, return it.
+    pub fn get_function(&self, source_ranges: Vec<SourceRange>) -> Result<FnAsArg<'_>, KclError> {
+        let MemoryItem::Function {
+            func,
+            expression,
+            meta: _,
+        } = &self
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "not an in-memory function".to_string(),
+                source_ranges,
+            }));
+        };
+        let func = func.as_ref().ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                message: format!("Not an in-memory function: {:?}", expression),
+                source_ranges,
+            })
+        })?;
+        Ok(FnAsArg {
+            func,
+            expr: expression.to_owned(),
+        })
     }
 
     /// Backwards compatibility for getting a tag from a memory item.
@@ -1455,7 +1501,7 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run(
         &self,
-        program: crate::ast::types::Program,
+        program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
     ) -> Result<ProgramMemory, KclError> {
         // Before we even start executing the program, set the units.
@@ -1481,7 +1527,7 @@ impl ExecutorContext {
     #[async_recursion]
     pub(crate) async fn inner_execute(
         &self,
-        program: crate::ast::types::Program,
+        program: &crate::ast::types::Program,
         memory: &mut ProgramMemory,
         body_type: BodyType,
     ) -> Result<ProgramMemory, KclError> {
@@ -1513,9 +1559,7 @@ impl ExecutorContext {
                             }
                             FunctionKind::Std(func) => {
                                 let mut newmem = memory.clone();
-                                let result = self
-                                    .inner_execute(func.program().to_owned(), &mut newmem, BodyType::Block)
-                                    .await?;
+                                let result = self.inner_execute(func.program(), &mut newmem, BodyType::Block).await?;
                                 memory.return_ = result.return_;
                             }
                             FunctionKind::UserDefined => {
@@ -1651,7 +1695,7 @@ impl ExecutorContext {
                             let mut fn_memory = assign_args_to_params(&function_expression, args, memory.clone())?;
 
                             let result = ctx
-                                .inner_execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block)
+                                .inner_execute(&function_expression.body, &mut fn_memory, BodyType::Block)
                                 .await?;
 
                             Ok((result.return_, fn_memory.get_tags()))
@@ -1701,7 +1745,7 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: Program) -> Result<kittycad::types::TakeSnapshot> {
+    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<kittycad::types::TakeSnapshot> {
         let _ = self.run(program, None).await?;
 
         // Zoom to fit.
@@ -1818,7 +1862,7 @@ mod tests {
             settings: Default::default(),
             is_mock: true,
         };
-        let memory = ctx.run(program, None).await?;
+        let memory = ctx.run(&program, None).await?;
 
         Ok(memory)
     }
