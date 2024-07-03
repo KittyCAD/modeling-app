@@ -29,7 +29,6 @@
     "@tauri-apps/plugin-updater": "^2.0.0-beta.3",
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
-    "@uiw/react-codemirror": "^4.21.25",
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
     "codemirror": "^6.0.1",

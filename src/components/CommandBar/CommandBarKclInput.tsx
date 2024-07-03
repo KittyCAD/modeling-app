@@ -1,5 +1,6 @@
 import { Completion } from '@codemirror/autocomplete'
-import { EditorState, EditorView, useCodeMirror } from '@uiw/react-codemirror'
+import { EditorView } from '@codemirror/view'
+import { EditorState } from '@codemirror/state'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
