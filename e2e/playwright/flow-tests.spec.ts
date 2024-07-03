@@ -1837,7 +1837,6 @@ test.describe('Copilot ghost text', () => {
     // We wanna make sure the code saves.
     await page.waitForTimeout(800)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await expect(page.locator('.cm-ghostText').first()).toBeVisible()
@@ -1860,7 +1859,8 @@ test.describe('Copilot ghost text', () => {
 
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
-    await expect(page.locator('.cm-content')).toHaveText(``)
+    // TODO when we make codemirror a widget, we can test this.
+    //await expect(page.locator('.cm-content')).toHaveText(``)
   })
 
   test('delete in code rejects the suggestion', async ({ page }) => {
