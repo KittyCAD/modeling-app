@@ -157,7 +157,7 @@
     "vitest": "^1.6.0",
     "vitest-webgl-canvas-mock": "^1.1.0",
     "wait-on": "^7.2.0",
-    "wasm-pack": "^0.12.1",
+    "wasm-pack": "^0.13.0",
     "ws": "^8.17.0",
     "yarn": "^1.22.22"
   }
