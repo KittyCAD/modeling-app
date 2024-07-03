@@ -47,5 +47,5 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
 ]
 
 export const lspAutocompleteKeymapExt = Prec.highest(
-  keymap.computeN([], () => [lspAutocompleteKeymap])
+  keymap.of(lspAutocompleteKeymap)
 )
