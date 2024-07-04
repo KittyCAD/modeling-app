@@ -98,11 +98,6 @@ const completionDecoration = StateField.define<CompletionState>({
       return state
     }
 
-    // We only care about transactions with effects.
-    if (!transaction.effects) {
-      return state
-    }
-
     for (const effect of transaction.effects) {
       if (effect.is(addSuggestion)) {
         // When adding a suggestion, we set th ghostText
@@ -232,33 +227,22 @@ export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
 export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
   private lastPos: number = 0
-  private viewUpdate: ViewUpdate | null = null
 
   private queuedUids: string[] = []
 
   private _deffererCodeUpdate = deferExecution(() => {
-    if (this.viewUpdate === null) {
-      return
-    }
-
     this.requestCompletions()
   }, changesDelay)
 
   private _deffererUserSelect = deferExecution(() => {
-    if (this.viewUpdate === null) {
-      return
-    }
-
     this.rejectSuggestionCommand()
   }, changesDelay)
 
-  constructor(client: LanguageServerClient) {
+  constructor(readonly view: EditorView, client: LanguageServerClient) {
     this.client = client
   }
 
   update(viewUpdate: ViewUpdate) {
-    this.viewUpdate = viewUpdate
-
     const isRelevant = relevantUpdate(viewUpdate)
     if (!isRelevant.overall) {
       return
@@ -275,18 +259,12 @@ export class CompletionRequester implements PluginValue {
       return
     }
 
-    this.lastPos = this.viewUpdate.state.selection.main.head
-    this._deffererCodeUpdate(true)
+    this.lastPos = this.view.state.selection.main.head
+    if (viewUpdate.docChanged) this._deffererCodeUpdate(true)
   }
 
   ghostText(): GhostText | null {
-    if (!this.viewUpdate) {
-      return null
-    }
-
-    return (
-      this.viewUpdate.view.state.field(completionDecoration)?.ghostText || null
-    )
+    return this.view.state.field(completionDecoration)?.ghostText || null
   }
 
   containsGhostText(): boolean {
@@ -294,33 +272,23 @@ export class CompletionRequester implements PluginValue {
   }
 
   autocompleting(): boolean {
-    if (!this.viewUpdate) {
-      return false
-    }
-
-    return completionStatus(this.viewUpdate.state) === 'active'
+    return completionStatus(this.view.state) === 'active'
   }
 
   notFocused(): boolean {
-    if (!this.viewUpdate) {
-      return true
-    }
-
-    return !this.viewUpdate.view.hasFocus
+    return !this.view.hasFocus
   }
 
   async requestCompletions(): Promise<void> {
     if (
-      this.viewUpdate === null ||
       this.containsGhostText() ||
       this.autocompleting() ||
-      this.notFocused() ||
-      !this.viewUpdate.docChanged
+      this.notFocused()
     ) {
       return
     }
 
-    const pos = this.viewUpdate.state.selection.main.head
+    const pos = this.view.state.selection.main.head
 
     // Check if the position has changed
     if (pos !== this.lastPos) {
@@ -328,7 +296,7 @@ export class CompletionRequester implements PluginValue {
     }
 
     // Get the current position and source
-    const state = this.viewUpdate.state
+    const state = this.view.state
     const dUri = state.facet(docPathFacet)
 
     // Request completion from the server
@@ -396,14 +364,14 @@ export class CompletionRequester implements PluginValue {
 
     // Dispatch an effect to add the suggestion
     // If the completion starts before the end of the line, check the end of the line with the end of the completion.
-    const line = this.viewUpdate.view.state.doc.lineAt(pos)
+    const line = this.view.state.doc.lineAt(pos)
     if (line.to !== pos) {
-      const ending = this.viewUpdate.view.state.doc.sliceString(pos, line.to)
+      const ending = this.view.state.doc.sliceString(pos, line.to)
       if (displayText.endsWith(ending)) {
         displayText = displayText.slice(0, displayText.length - ending.length)
       } else if (displayText.includes(ending)) {
         // Remove the ending
-        this.viewUpdate.view.dispatch({
+        this.view.dispatch({
           changes: {
             from: pos,
             to: line.to,
@@ -416,7 +384,7 @@ export class CompletionRequester implements PluginValue {
       }
     }
 
-    this.viewUpdate.view.dispatch({
+    this.view.dispatch({
       changes: {
         from: pos,
         to: pos,
@@ -442,10 +410,6 @@ export class CompletionRequester implements PluginValue {
   }
 
   acceptSuggestionCommand(): boolean {
-    if (!this.viewUpdate) {
-      return false
-    }
-
     const ghostText = this.ghostText()
     if (!ghostText) {
       return false
@@ -463,7 +427,7 @@ export class CompletionRequester implements PluginValue {
 
     const suggestion = ghostText.text
 
-    this.viewUpdate.view.dispatch({
+    this.view.dispatch({
       changes: {
         from: ghostTextStart,
         to: ghostTextEnd,
@@ -475,7 +439,7 @@ export class CompletionRequester implements PluginValue {
 
     const tmpTextEnd = replacementEnd - (ghostTextEnd - ghostTextStart)
 
-    this.viewUpdate.view.dispatch({
+    this.view.dispatch({
       changes: {
         from: actualTextStart,
         to: tmpTextEnd,
@@ -490,10 +454,6 @@ export class CompletionRequester implements PluginValue {
   }
 
   rejectSuggestionCommand(): boolean {
-    if (!this.viewUpdate) {
-      return false
-    }
-
     const ghostText = this.ghostText()
     if (!ghostText) {
       return false
@@ -503,7 +463,7 @@ export class CompletionRequester implements PluginValue {
     const ghostTextStart = ghostText.displayPos
     const ghostTextEnd = ghostText.endGhostText
 
-    this.viewUpdate.view.dispatch({
+    this.view.dispatch({
       changes: {
         from: ghostTextStart,
         to: ghostTextEnd,
@@ -521,10 +481,6 @@ export class CompletionRequester implements PluginValue {
   }
 
   sameKeyCommand(key: string) {
-    if (!this.viewUpdate) {
-      return false
-    }
-
     const ghostText = this.ghostText()
     if (!ghostText) {
       return false
@@ -534,10 +490,10 @@ export class CompletionRequester implements PluginValue {
 
     // When we type a key that is the same as the first letter of the suggestion, we delete the first letter of the suggestion and carry through with the original keypress
     const ghostTextStart = ghostText.displayPos
-    const indent = this.viewUpdate.view.state.facet(indentUnit)
+    const indent = this.view.state.facet(indentUnit)
 
     if (key === tabKey && ghostText.displayText.startsWith(indent)) {
-      this.viewUpdate.view.dispatch({
+      this.view.dispatch({
         selection: { anchor: ghostTextStart + indent.length },
         effects: typeFirst.of(indent.length),
         annotations: [copilotPluginEvent, Transaction.addToHistory.of(false)],
@@ -551,7 +507,7 @@ export class CompletionRequester implements PluginValue {
       return this.acceptSuggestionCommand()
     } else {
       // Use this to delete the first letter of the suggestion
-      this.viewUpdate.view.dispatch({
+      this.view.dispatch({
         selection: { anchor: ghostTextStart + 1 },
         effects: typeFirst.of(1),
         annotations: [copilotPluginEvent, Transaction.addToHistory.of(false)],
@@ -598,7 +554,7 @@ export class CompletionRequester implements PluginValue {
 export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   let plugin: CompletionRequester | null = null
   const completionPlugin = ViewPlugin.define(
-    (view) => (plugin = new CompletionRequester(options.client))
+    (view) => (plugin = new CompletionRequester(view, options.client))
   )
 
   const domHandlers = EditorView.domEventHandlers({
@@ -625,8 +581,6 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   })
 
   const rejectSuggestionCommand = (view: EditorView): boolean => {
-    if (view.plugin === null) return false
-
     // Get the current plugin from the map.
     const p = view.plugin(completionPlugin)
     if (p === null) return false
