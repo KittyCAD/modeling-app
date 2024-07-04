@@ -1200,6 +1200,15 @@ export class EngineCommandManager extends EventTarget {
       token,
     })
 
+    // Teardown everything if we go hidden or reconnect
+    document.onvisibilitychange = () => {
+      if (document.visibilityState === 'hidden') {
+        this.engineConnection?.tearDown()
+      } else {
+        this.engineConnection?.connect(true)
+      }
+    }
+
     this.dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
         detail: this.engineConnection,
@@ -1619,7 +1628,15 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   tearDown() {
-    this.engineConnection?.tearDown()
+    if (this.engineConnection) {
+      this.engineConnection?.tearDown()
+      // Our window.tearDown assignment causes this case to happen which is
+      // only really for tests.
+      // @ts-ignore
+    } else if (this.engineCommandManager?.engineConnection) {
+      // @ts-ignore
+      this.engineCommandManager?.engineConnection?.tearDown()
+    }
   }
   async startNewSession() {
     this.lastArtifactMap = this.artifactMap
