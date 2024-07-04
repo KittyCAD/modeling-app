@@ -224,6 +224,11 @@ export function Toolbar({
             </ActionButton>
           </li>
         )}
+        {state.matches('Sketch no face') && (
+          <li className="contents">
+            <div className="mx-2 text-sm">click plane to sketch on</div>
+          </li>
+        )}
         {state.matches('Sketch') && !state.matches('idle') && (
           <>
             <li className="contents" key="line-button">
