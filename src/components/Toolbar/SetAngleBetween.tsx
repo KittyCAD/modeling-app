@@ -1,4 +1,4 @@
-import { toolTips } from '../../useStore'
+import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
@@ -10,11 +10,13 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
+  TransformInfo,
 } from '../../lang/std/sketchcombos'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -22,22 +24,38 @@ export function angleBetweenInfo({
   selectionRanges,
 }: {
   selectionRanges: Selections
-}) {
+}):
+  | {
+      transforms: TransformInfo[]
+      enabled: boolean
+    }
+  | Error {
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(kclManager.ast, range)
   )
 
-  const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
-  )
-  const varDecs = paths.map(
-    (pathToNode) =>
-      getNodeFromPath<VariableDeclarator>(
-        kclManager.ast,
-        pathToNode,
-        'VariableDeclarator'
-      )?.node
-  )
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err1 = _nodes.find(err)
+  if (err(_err1)) return _err1
+  const nodes = _nodes as Value[]
+
+  const _varDecs = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<VariableDeclarator>(
+      kclManager.ast,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(tmp)) return tmp
+    return tmp.node
+  })
+  const _err2 = _varDecs.find(err)
+  if (err(_err2)) return _err2
+  const varDecs = _varDecs as VariableDeclarator[]
+
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
   const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
@@ -77,14 +95,20 @@ export async function applyConstraintAngleBetween({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 }> {
-  const transformInfos = angleBetweenInfo({ selectionRanges }).transforms
+  const info = angleBetweenInfo({ selectionRanges })
+  if (err(info)) return Promise.reject(info)
+  const transformInfos = info.transforms
+
+  const transformed1 = transformSecondarySketchLinesTagFirst({
+    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    selectionRanges,
+    transformInfos,
+    programMemory: kclManager.programMemory,
+  })
+  if (err(transformed1)) return Promise.reject(transformed1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
-    transformSecondarySketchLinesTagFirst({
-      ast: JSON.parse(JSON.stringify(kclManager.ast)),
-      selectionRanges,
-      transformInfos,
-      programMemory: kclManager.programMemory,
-    })
+    transformed1
+
   const {
     segName,
     value,
@@ -115,15 +139,18 @@ export async function applyConstraintAngleBetween({
     variableName
   )
   // transform again but forcing certain values
+  const transformed2 = transformSecondarySketchLinesTagFirst({
+    ast: kclManager.ast,
+    selectionRanges,
+    transformInfos,
+    programMemory: kclManager.programMemory,
+    forceSegName: segName,
+    forceValueUsedInTransform: finalValue,
+  })
+  if (err(transformed2)) return Promise.reject(transformed2)
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
-    transformSecondarySketchLinesTagFirst({
-      ast: kclManager.ast,
-      selectionRanges,
-      transformInfos,
-      programMemory: kclManager.programMemory,
-      forceSegName: segName,
-      forceValueUsedInTransform: finalValue,
-    })
+    transformed2
+
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(

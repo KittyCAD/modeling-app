@@ -26,6 +26,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         ':' => colon,
         '.' => alt((number, double_period, period)),
         '#' => hash,
+        '$' => dollar,
         '!' => bang,
         ' ' | '\t' | '\n' => whitespace,
         _ => alt((operator, keyword,type_, word))
@@ -119,6 +120,11 @@ fn hash(i: &mut Located<&str>) -> PResult<Token> {
 fn bang(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = '!'.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Bang, value.to_string()))
+}
+
+fn dollar(i: &mut Located<&str>) -> PResult<Token> {
+    let (value, range) = '$'.with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::Dollar, value.to_string()))
 }
 
 fn question_mark(i: &mut Located<&str>) -> PResult<Token> {

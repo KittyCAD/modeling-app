@@ -13,8 +13,8 @@ use crate::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
         ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
-        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -335,6 +335,15 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                         message: "cannot use a KCL None value as an operand".to_owned(),
                     }));
                 }
+                Value::TagDeclarator(_) => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        // TODO: Better error message here.
+                        // Once we have ways to use None values (e.g. by replacing with a default value)
+                        // we should suggest one of them here.
+                        message: "cannot use a KCL tag declaration as an operand".to_owned(),
+                    }));
+                }
                 Value::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
                 Value::Literal(x) => BinaryPart::Literal(x),
                 Value::Identifier(x) => BinaryPart::Identifier(x),
@@ -465,11 +474,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
 }
 
 fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
-    let key = identifier
-        .context(expected(
-            "the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key",
-        ))
-        .parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     colon
         .context(expected(
             "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
@@ -579,12 +584,9 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
 fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
-    let id = identifier
-        .context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier"))
-        .parse_next(i)?;
+    let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
     // Now a sequence of members.
-    let member = alt((member_expression_dot, member_expression_subscript))
-        .context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
+    let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
         .parse_next(i)?;
@@ -903,6 +905,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
     alt((
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Literal),
+        tag.map(Box::new).map(Value::TagDeclarator),
         literal.map(Box::new).map(Value::Literal),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
@@ -1037,6 +1040,47 @@ fn identifier(i: TokenSlice) -> PResult<Identifier> {
         .parse_next(i)
 }
 
+impl TryFrom<Token> for TagDeclarator {
+    type Error = KclError;
+
+    fn try_from(token: Token) -> Result<Self, Self::Error> {
+        if token.token_type == TokenType::Word {
+            Ok(TagDeclarator {
+                // We subtract 1 from the start because the tag starts with a `$`.
+                start: token.start - 1,
+                end: token.end,
+                name: token.value,
+            })
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
+            }))
+        }
+    }
+}
+
+impl TagDeclarator {
+    fn into_valid_binding_name(self) -> Result<Self, KclError> {
+        // Make sure they are not assigning a variable to a stdlib function.
+        if crate::std::name_in_stdlib(&self.name) {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange([self.start, self.end])],
+                message: format!("Cannot assign a tag to a reserved keyword: {}", self.name),
+            }));
+        }
+        Ok(self)
+    }
+}
+
+/// Parse a Kcl tag that starts with a `$`.
+fn tag(i: TokenSlice) -> PResult<TagDeclarator> {
+    dollar.parse_next(i)?;
+    any.try_map(TagDeclarator::try_from)
+        .context(expected("a tag, e.g. '$seg01' or '$line01'"))
+        .parse_next(i)
+}
+
 /// Helper function. Matches any number of whitespace tokens and ignores them.
 fn ignore_whitespace(i: TokenSlice) {
     let _: PResult<()> = repeat(0.., whitespace).parse_next(i);
@@ -1060,19 +1104,9 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
             // TODO: negation. Original parser doesn't support `not` yet.
             TokenType::Operator => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
-                message: format!(
-                    "{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)",
-                    token.value.as_str(),
-                ),
+                message: format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             })),
-            other => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!(
-                    "{EXPECTED} but found {} which is {}",
-                    token.value.as_str(),
-                    other,
-                ),
-            })),
+            other => Err(KclError::Syntax(KclErrorDetails { source_ranges: token.as_source_ranges(), message: format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) })),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
@@ -1255,6 +1289,11 @@ fn bang(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn dollar(i: TokenSlice) -> PResult<()> {
+    TokenType::Dollar.parse_from(i)?;
+    Ok(())
+}
+
 fn period(i: TokenSlice) -> PResult<()> {
     TokenType::Period.parse_from(i)?;
     Ok(())
@@ -1425,7 +1464,99 @@ fn binding_name(i: TokenSlice) -> PResult<Identifier> {
 fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let fn_name = identifier(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
-    let args = arguments(i)?;
+    let mut args = arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        // Type check the arguments.
+        for (i, spec_arg) in std_fn.args().iter().enumerate() {
+            let Some(arg) = &args.get(i) else {
+                // The executor checks the number of arguments, so we don't need to check it here.
+                continue;
+            };
+            match spec_arg.type_.as_ref() {
+                "TagDeclarator" => {
+                    match &arg {
+                        Value::Identifier(_) => {
+                            // These are fine since we want someone to be able to map a variable to a tag declarator.
+                        }
+                        Value::TagDeclarator(tag) => {
+                            tag.clone()
+                                .into_valid_binding_name()
+                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+                        }
+                        Value::Literal(literal) => {
+                            let LiteralValue::String(name) = &literal.value else {
+                                return Err(ErrMode::Cut(
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
+                                    })
+                                    .into(),
+                                ));
+                            };
+
+                            // Convert this to a TagDeclarator.
+                            let tag = TagDeclarator {
+                                start: literal.start,
+                                end: literal.end,
+                                name: name.to_string(),
+                            };
+                            let tag = tag
+                                .into_valid_binding_name()
+                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+
+                            // Replace the literal with the tag.
+                            args[i] = Value::TagDeclarator(Box::new(tag));
+                        }
+                        e => {
+                            return Err(ErrMode::Cut(
+                                KclError::Syntax(KclErrorDetails {
+                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                    message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                                })
+                                .into(),
+                            ));
+                        }
+                    }
+                }
+                "TagIdentifier" => {
+                    match &arg {
+                        Value::Identifier(_) => {}
+                        Value::Literal(literal) => {
+                            let LiteralValue::String(name) = &literal.value else {
+                                return Err(ErrMode::Cut(
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
+                                    })
+                                    .into(),
+                                ));
+                            };
+
+                            // Convert this to a TagDeclarator.
+                            let tag = Identifier {
+                                start: literal.start,
+                                end: literal.end,
+                                name: name.to_string(),
+                            };
+
+                            // Replace the literal with the tag.
+                            args[i] = Value::Identifier(Box::new(tag));
+                        }
+                        e => {
+                            return Err(ErrMode::Cut(
+                                KclError::Syntax(KclErrorDetails {
+                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                    message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                                })
+                                .into(),
+                            ));
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
     Ok(CallExpression {
         start: fn_name.start,
@@ -1543,7 +1674,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             start0.value,
             NonCodeValue::BlockComment {
                 value: "comment at start".to_owned(),
-                style: CommentStyle::Block,
+                style: CommentStyle::Block
             }
         );
         assert_eq!(start1.value, NonCodeValue::NewLine);
@@ -1608,8 +1739,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                             start: 32,
                             end: 33,
                             value: 2u32.into(),
-                            raw: "2".to_owned(),
-                        })),
+                            raw: "2".to_owned()
+                        }))
                     })],
                     non_code_meta: NonCodeMeta {
                         non_code_nodes: Default::default(),
@@ -1617,7 +1748,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                             start: 7,
                             end: 25,
                             value: NonCodeValue::NewLine
-                        }],
+                        }]
                     },
                 },
                 return_type: None,
@@ -1642,7 +1773,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             non_code_meta.non_code_nodes.get(&2).unwrap()[0].value,
             NonCodeValue::InlineComment {
                 value: "inline-comment".to_owned(),
-                style: CommentStyle::Line,
+                style: CommentStyle::Line
             }
         );
         assert_eq!(body.len(), 4);
@@ -1667,8 +1798,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 20,
                 value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_owned(),
-                    style: CommentStyle::Line,
-                },
+                    style: CommentStyle::Line
+                }
             }],
             non_code_meta.start,
         );
@@ -1679,13 +1810,13 @@ const mySk1 = startSketchAt([0, 0])"#;
                     end: 82,
                     value: NonCodeValue::InlineComment {
                         value: "block\n  comment".to_owned(),
-                        style: CommentStyle::Block,
-                    },
+                        style: CommentStyle::Block
+                    }
                 },
                 NonCodeNode {
                     start: 82,
                     end: 86,
-                    value: NonCodeValue::NewLine,
+                    value: NonCodeValue::NewLine
                 },
             ]),
             non_code_meta.non_code_nodes.get(&0),
@@ -1696,8 +1827,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 129,
                 value: NonCodeValue::BlockComment {
                     value: "this is also a comment".to_owned(),
-                    style: CommentStyle::Line,
-                },
+                    style: CommentStyle::Line
+                }
             }]),
             non_code_meta.non_code_nodes.get(&1),
         );
@@ -1716,7 +1847,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             actual.non_code_meta.non_code_nodes.get(&0).unwrap()[0].value,
             NonCodeValue::InlineComment {
                 value: "block\n  comment".to_owned(),
-                style: CommentStyle::Block,
+                style: CommentStyle::Block
             }
         );
     }
@@ -1764,7 +1895,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 start: 9,
                 end: 10,
                 value: 3u32.into(),
-                raw: "3".to_owned(),
+                raw: "3".to_owned()
             }))
         );
     }
@@ -2907,7 +3038,10 @@ let myBox = box([0,0], -3, -16, -10)
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let err = parser.ast().unwrap_err();
-        println!("{err}")
+        assert_eq!(
+            err.to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
+        );
     }
 }
 

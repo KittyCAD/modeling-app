@@ -1,11 +1,10 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from '../../useStore'
 
-export default function CodeEditor() {
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+export default function OnboardingCodeEditor() {
+  useDemoCode()
+  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PARAMETRIC_MODELING)
 
@@ -14,7 +13,7 @@ export default function CodeEditor() {
       <div
         className={
           'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1 overflow-y-auto">

@@ -44,5 +44,13 @@ export const RELEVANT_FILE_TYPES = [
 ] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+/**
+ * The default starting constant name for various modeling operations.
+ * These are used to generate unique names for new objects.
+ * */
+export const KCL_DEFAULT_CONSTANT_PREFIXES = {
+  SKETCH: 'sketch',
+  EXTRUDE: 'extrude',
+} as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`

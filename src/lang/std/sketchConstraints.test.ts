@@ -7,6 +7,7 @@ import {
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -31,6 +32,8 @@ async function testingSwapSketchFnCall({
     range: [startIndex, startIndex + callToSwap.length],
   }
   const ast = parse(inputCode)
+  if (err(ast)) return Promise.reject(ast)
+
   const programMemory = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
@@ -38,16 +41,22 @@ async function testingSwapSketchFnCall({
   }
   const transformInfos = getTransformInfos(selections, ast, constraintType)
 
-  if (!transformInfos) throw new Error('nope')
-  const { modifiedAst } = transformAstSketchLines({
+  if (!transformInfos)
+    return Promise.reject(new Error('transformInfos undefined'))
+  const ast2 = transformAstSketchLines({
     ast,
     programMemory,
     selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
   })
+  if (err(ast2)) return Promise.reject(ast2)
+
+  const newCode = recast(ast2.modifiedAst)
+  if (err(newCode)) return Promise.reject(newCode)
+
   return {
-    newCode: recast(modifiedAst),
+    newCode,
     originalRange: range.range,
   }
 }
@@ -56,17 +65,17 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   const bigExampleArr = [
     `const part001 = startSketchOn('XY')`,
     `  |> startProfileAt([0, 0], %)`,
-    `  |> lineTo([1, 1], %, 'abc1')`,
-    `  |> line([-2.04, -0.7], %, 'abc2')`,
-    `  |> angledLine({ angle: 157, length: 1.69 }, %, 'abc3')`,
-    `  |> angledLineOfXLength({ angle: 217, length: 0.86 }, %, 'abc4')`,
-    `  |> angledLineOfYLength({ angle: 104, length: 1.58 }, %, 'abc5')`,
-    `  |> angledLineToX({ angle: 55, to: -2.89 }, %, 'abc6')`,
-    `  |> angledLineToY({ angle: 330, to: 2.53 }, %, 'abc7')`,
-    `  |> xLine(1.47, %, 'abc8')`,
-    `  |> yLine(1.57, %, 'abc9')`,
-    `  |> xLineTo(1.49, %, 'abc10')`,
-    `  |> yLineTo(2.64, %, 'abc11')`,
+    `  |> lineTo([1, 1], %, $abc1)`,
+    `  |> line([-2.04, -0.7], %, $abc2)`,
+    `  |> angledLine({ angle: 157, length: 1.69 }, %, $abc3)`,
+    `  |> angledLineOfXLength({ angle: 217, length: 0.86 }, %, $abc4)`,
+    `  |> angledLineOfYLength({ angle: 104, length: 1.58 }, %, $abc5)`,
+    `  |> angledLineToX({ angle: 55, to: -2.89 }, %, $abc6)`,
+    `  |> angledLineToY({ angle: 330, to: 2.53 }, %, $abc7)`,
+    `  |> xLine(1.47, %, $abc8)`,
+    `  |> yLine(1.57, %, $abc9)`,
+    `  |> xLineTo(1.49, %, $abc10)`,
+    `  |> yLineTo(2.64, %, $abc11)`,
     `  |> lineTo([2.55, 3.58], %) // lineTo`,
     `  |> line([0.73, -0.75], %)`,
     `  |> angledLine([63, 1.38], %) // angledLine`,
@@ -81,8 +90,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   ]
   const bigExample = bigExampleArr.join('\n')
   it('line with tag converts to xLine', async () => {
-    const callToSwap = "line([-2.04, -0.7], %, 'abc2')"
-    const expectedLine = "xLine(-2.04, %, 'abc2')"
+    const callToSwap = 'line([-2.04, -0.7], %, $abc2)'
+    const expectedLine = 'xLine(-2.04, %, $abc2)'
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap,
@@ -107,10 +116,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('lineTo with tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: "lineTo([1, 1], %, 'abc1')",
+      callToSwap: 'lineTo([1, 1], %, $abc1)',
       constraintType: 'horizontal',
     })
-    const expectedLine = "xLineTo(1, %, 'abc1')"
+    const expectedLine = 'xLineTo(1, %, $abc1)'
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -129,10 +138,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLine with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: "angledLine({ angle: 157, length: 1.69 }, %, 'abc3')",
+      callToSwap: 'angledLine({ angle: 157, length: 1.69 }, %, $abc3)',
       constraintType: 'horizontal',
     })
-    const expectedLine = "xLine(-1.56, %, 'abc3')"
+    const expectedLine = 'xLine(-1.56, %, $abc3)'
     console.log(newCode)
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
@@ -152,11 +161,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfXLength with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap:
-        "angledLineOfXLength({ angle: 217, length: 0.86 }, %, 'abc4')",
+      callToSwap: 'angledLineOfXLength({ angle: 217, length: 0.86 }, %, $abc4)',
       constraintType: 'horizontal',
     })
-    const expectedLine = "xLine(-0.86, %, 'abc4')"
+    const expectedLine = 'xLine(-0.86, %, $abc4)'
     // hmm "-0.86" is correct since the angle is 104, but need to make sure this is compatible `-myVar`
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
@@ -176,11 +184,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfYLength with tag converts to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap:
-        "angledLineOfYLength({ angle: 104, length: 1.58 }, %, 'abc5')",
+      callToSwap: 'angledLineOfYLength({ angle: 104, length: 1.58 }, %, $abc5)',
       constraintType: 'vertical',
     })
-    const expectedLine = "yLine(1.58, %, 'abc5')"
+    const expectedLine = 'yLine(1.58, %, $abc5)'
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -199,10 +206,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToX with tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: "angledLineToX({ angle: 55, to: -2.89 }, %, 'abc6')",
+      callToSwap: 'angledLineToX({ angle: 55, to: -2.89 }, %, $abc6)',
       constraintType: 'horizontal',
     })
-    const expectedLine = "xLineTo(-2.89, %, 'abc6')"
+    const expectedLine = 'xLineTo(-2.89, %, $abc6)'
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -221,10 +228,10 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToY with tag converts to yLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: "angledLineToY({ angle: 330, to: 2.53 }, %, 'abc7')",
+      callToSwap: 'angledLineToY({ angle: 330, to: 2.53 }, %, $abc7)',
       constraintType: 'vertical',
     })
-    const expectedLine = "yLineTo(2.53, %, 'abc7')"
+    const expectedLine = 'yLineTo(2.53, %, $abc7)'
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -355,28 +362,32 @@ const part001 = startSketchOn('XY')
   it('normal case works', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+    const _segment = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    ).segment
+    )
+    if (err(_segment)) throw _segment
+    const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
-      name: '',
+      tag: null,
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+    const _segment = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    ).segment
+    )
+    if (err(_segment)) throw _segment
+    const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],
-      name: '',
+      tag: null,
       type: 'Base',
     })
   })

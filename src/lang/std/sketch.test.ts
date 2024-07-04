@@ -16,6 +16,7 @@ import {
 } from '../wasm'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { enginelessExecutor } from '../../lib/testHelpers'
+import { err } from 'lib/trap'
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -114,16 +115,19 @@ describe('testing changeSketchArguments', () => {
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
     const ast = parse(code)
+    if (err(ast)) return ast
+
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
-    const { modifiedAst } = changeSketchArguments(
+    const changeSketchArgsRetVal = changeSketchArguments(
       ast,
       programMemory,
       [sourceStart, sourceStart + lineToChange.length],
       [2, 3],
       [0, 0]
     )
-    expect(recast(modifiedAst)).toBe(expectedCode)
+    if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
+    expect(recast(changeSketchArgsRetVal.modifiedAst)).toBe(expectedCode)
   })
 })
 
@@ -138,10 +142,12 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)`
     const ast = parse(code)
+    if (err(ast)) return ast
+
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     expect(sourceStart).toBe(95)
-    let { modifiedAst } = addNewSketchLn({
+    const newSketchLnRetVal = addNewSketchLn({
       node: ast,
       programMemory,
       to: [2, 3],
@@ -155,6 +161,8 @@ const mySketch001 = startSketchOn('XY')
         ['init', 'VariableDeclarator'],
       ],
     })
+    if (err(newSketchLnRetVal)) return newSketchLnRetVal
+
     // Enable rotations #152
     let expectedCode = `const mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -163,9 +171,11 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([0.46, -5.82], %)
   |> lineTo([2, 3], %)
 `
+
+    const { modifiedAst } = newSketchLnRetVal
     expect(recast(modifiedAst)).toBe(expectedCode)
 
-    modifiedAst = addCloseToPipe({
+    const modifiedAst2 = addCloseToPipe({
       node: ast,
       programMemory,
       pathToNode: [
@@ -176,6 +186,7 @@ const mySketch001 = startSketchOn('XY')
         ['init', 'VariableDeclarator'],
       ],
     })
+    if (err(modifiedAst2)) return modifiedAst2
 
     expectedCode = `const mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -184,7 +195,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([0.46, -5.82], %)
   |> close(%)
 `
-    expect(recast(modifiedAst)).toBe(expectedCode)
+    expect(recast(modifiedAst2)).toBe(expectedCode)
   })
 })
 
@@ -206,8 +217,9 @@ describe('testing addTagForSketchOnFace', () => {
       sourceStart,
       sourceStart + originalLine.length,
     ]
+    if (err(ast)) return ast
     const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-    const { modifiedAst } = addTagForSketchOnFace(
+    const sketchOnFaceRetVal = addTagForSketchOnFace(
       {
         previousProgramMemory: programMemory,
         pathToNode,
@@ -215,7 +227,10 @@ describe('testing addTagForSketchOnFace', () => {
       },
       'lineTo'
     )
-    const expectedCode = genCode("lineTo([-1.59, -1.54], %, 'seg01')")
+    if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
+
+    const { modifiedAst } = sketchOnFaceRetVal
+    const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })
@@ -583,13 +598,15 @@ describe('testing getConstraintInfo', () => {
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length,
       ]
+      if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
-      ).node
-      const result = getConstraintInfo(callExp, code, pathToNode)
+      )
+      if (err(callExp)) return callExp
+      const result = getConstraintInfo(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -735,13 +752,15 @@ describe('testing getConstraintInfo', () => {
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length,
       ]
+      if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
-      ).node
-      const result = getConstraintInfo(callExp, code, pathToNode)
+      )
+      if (err(callExp)) return callExp
+      const result = getConstraintInfo(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -1089,13 +1108,16 @@ describe('testing getConstraintInfo', () => {
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length,
       ]
+      if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
-      ).node
-      const result = getConstraintInfo(callExp, code, pathToNode)
+      )
+      if (err(callExp)) return callExp
+
+      const result = getConstraintInfo(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })

@@ -1,5 +1,6 @@
 import { KCLError } from './errors'
 import { initPromise, parse } from './wasm'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -8,6 +9,7 @@ beforeAll(async () => {
 describe('testing AST', () => {
   test('5 + 6', () => {
     const result = parse('5 +6')
+    if (err(result)) throw result
     delete (result as any).nonCodeMeta
     expect(result.body).toEqual([
       {
@@ -38,7 +40,9 @@ describe('testing AST', () => {
     ])
   })
   test('const myVar = 5', () => {
-    const { body } = parse('const myVar = 5')
+    const ast = parse('const myVar = 5')
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -72,7 +76,9 @@ describe('testing AST', () => {
     const code = `const myVar = 5
 const newVar = myVar + 1
 `
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -144,9 +150,11 @@ const newVar = myVar + 1
 
 describe('testing function declaration', () => {
   test('fn funcN = (a, b) => {return a + b}', () => {
-    const { body } = parse(
+    const ast = parse(
       ['fn funcN = (a, b) => {', '  return a + b', '}'].join('\n')
     )
+    if (err(ast)) throw ast
+    const { body } = ast
     delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
@@ -229,7 +237,9 @@ describe('testing function declaration', () => {
   test('call expression assignment', () => {
     const code = `fn funcN = (a, b) => { return a + b }
 const myVar = funcN(1, 2)`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
@@ -366,7 +376,9 @@ describe('testing pipe operator special', () => {
   |> lineTo([1, 1], %)
   |> rx(45, %)
 `
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     delete (body[0] as any).declarations[0].init.nonCodeMeta
     expect(body).toEqual([
       {
@@ -490,11 +502,10 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 82, end: 83 },
                     {
-                      type: 'Literal',
+                      type: 'TagDeclarator',
                       start: 85,
                       end: 93,
                       value: 'myPath',
-                      raw: '"myPath"',
                     },
                   ],
                   optional: false,
@@ -566,7 +577,9 @@ describe('testing pipe operator special', () => {
   })
   test('pipe operator with binary expression', () => {
     let code = `const myVar = 5 + 6 |> myFunc(45, %)`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     delete (body as any)[0].declarations[0].init.nonCodeMeta
     expect(body).toEqual([
       {
@@ -645,7 +658,9 @@ describe('testing pipe operator special', () => {
   })
   test('array expression', () => {
     let code = `const yo = [1, '2', three, 4 + 5]`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -720,7 +735,9 @@ describe('testing pipe operator special', () => {
       'const three = 3',
       "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
     ].join('\n')
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -864,7 +881,9 @@ describe('testing pipe operator special', () => {
     const code = `const yo = {key: {
   key2: 'value'
 }}`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -932,7 +951,9 @@ describe('testing pipe operator special', () => {
   })
   test('object expression with array ast', () => {
     const code = `const yo = {key: [1, '2']}`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -996,7 +1017,9 @@ describe('testing pipe operator special', () => {
   })
   test('object memberExpression simple', () => {
     const code = `const prop = yo.one.two`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1051,7 +1074,9 @@ describe('testing pipe operator special', () => {
   })
   test('object memberExpression with square braces', () => {
     const code = `const prop = yo.one["two"]`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1107,7 +1132,9 @@ describe('testing pipe operator special', () => {
   })
   test('object memberExpression with two square braces literal and identifier', () => {
     const code = `const prop = yo["one"][two]`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1166,7 +1193,9 @@ describe('testing pipe operator special', () => {
 describe('nests binary expressions correctly', () => {
   it('works with the simple case', () => {
     const code = `const yo = 1 + 2`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body[0]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
@@ -1210,7 +1239,9 @@ describe('nests binary expressions correctly', () => {
   it('should nest according to precedence with multiply first', () => {
     // should be binExp { binExp { lit-1 * lit-2 } + lit}
     const code = `const yo = 1 * 2 + 3`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body[0]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
@@ -1267,7 +1298,9 @@ describe('nests binary expressions correctly', () => {
   it('should nest according to precedence with sum first', () => {
     // should be binExp { lit-1 + binExp { lit-2 * lit-3 } }
     const code = `const yo = 1 + 2 * 3`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect(body[0]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
@@ -1323,7 +1356,9 @@ describe('nests binary expressions correctly', () => {
   })
   it('should nest properly with two operators of equal precedence', () => {
     const code = `const yo = 1 + 2 - 3`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect((body[0] as any).declarations[0].init).toEqual({
       type: 'BinaryExpression',
       start: 11,
@@ -1360,7 +1395,9 @@ describe('nests binary expressions correctly', () => {
   })
   it('should nest properly with two operators of equal (but higher) precedence', () => {
     const code = `const yo = 1 * 2 / 3`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     expect((body[0] as any).declarations[0].init).toEqual({
       type: 'BinaryExpression',
       start: 11,
@@ -1397,7 +1434,9 @@ describe('nests binary expressions correctly', () => {
   })
   it('should nest properly with longer example', () => {
     const code = `const yo = 1 + 2 * (3 - 4) / 5 + 6`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     const init = (body[0] as any).declarations[0].init
     expect(init).toEqual({
       type: 'BinaryExpression',
@@ -1460,12 +1499,16 @@ const key = 'c'`
         value: 'this is a comment',
       },
     }
-    const { nonCodeMeta } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { nonCodeMeta } = ast
     expect(nonCodeMeta.nonCodeNodes[0][0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
-    const { nonCodeMeta: nonCodeMeta2 } = parse(codeWithExtraStartWhitespace)
+    const ast2 = parse(codeWithExtraStartWhitespace)
+    if (err(ast2)) throw ast2
+    const { nonCodeMeta: nonCodeMeta2 } = ast2
     expect(nonCodeMeta2.nonCodeNodes[0][0].value).toStrictEqual(
       nonCodeMetaInstance.value
     )
@@ -1483,7 +1526,9 @@ const key = 'c'`
   |> close(%)
 `
 
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
       .nonCodeNodes
@@ -1508,7 +1553,9 @@ const key = 'c'`
       '  |> rx(90, %)',
     ].join('\n')
 
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
       .nonCodeNodes[3][0]
     expect(sketchNonCodeMeta).toEqual({
@@ -1527,7 +1574,9 @@ const key = 'c'`
 describe('test UnaryExpression', () => {
   it('should parse a unary expression in simple var dec situation', () => {
     const code = `const myVar = -min(4, 100)`
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     const myVarInit = (body?.[0] as any).declarations[0]?.init
     expect(myVarInit).toEqual({
       type: 'UnaryExpression',
@@ -1552,7 +1601,9 @@ describe('test UnaryExpression', () => {
 describe('testing nested call expressions', () => {
   it('callExp in a binExp in a callExp', () => {
     const code = 'const myVar = min(100, 1 + legLen(5, 3))'
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     const myVarInit = (body?.[0] as any).declarations[0]?.init
     expect(myVarInit).toEqual({
       type: 'CallExpression',
@@ -1588,7 +1639,9 @@ describe('testing nested call expressions', () => {
 describe('should recognise callExpresions in binaryExpressions', () => {
   const code = "xLineTo(segEndX('seg02', %) + 1, %)"
   it('should recognise the callExp', () => {
-    const { body } = parse(code)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+    const { body } = ast
     const callExpArgs = (body?.[0] as any).expression?.arguments
     expect(callExpArgs).toEqual([
       {
@@ -1603,11 +1656,10 @@ describe('should recognise callExpresions in binaryExpressions', () => {
           callee: { type: 'Identifier', start: 8, end: 15, name: 'segEndX' },
           arguments: [
             {
-              type: 'Literal',
+              type: 'Identifier',
               start: 16,
               end: 23,
-              value: 'seg02',
-              raw: "'seg02'",
+              name: 'seg02',
             },
             { type: 'PipeSubstitution', start: 25, end: 26 },
           ],
@@ -1623,16 +1675,12 @@ describe('should recognise callExpresions in binaryExpressions', () => {
 describe('parsing errors', () => {
   it('should return an error when there is a unexpected closed curly brace', async () => {
     const code = `const myVar = startSketchAt([}], %)`
+    const result = parse(code)
 
-    let _theError
-    try {
-      let _ = expect(parse(code))
-    } catch (e) {
-      _theError = e
-    }
-    const theError = _theError as any
-    expect(theError).toEqual(
-      new KCLError('syntax', 'Unexpected token', [[27, 28]])
-    )
+    expect(result).toBeInstanceOf(KCLError)
+    const error = result as KCLError
+    expect(error.kind).toBe('syntax')
+    expect(error.msg).toBe('Unexpected token')
+    expect(error.sourceRanges).toEqual([[27, 28]])
   })
 })

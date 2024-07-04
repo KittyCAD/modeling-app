@@ -8,10 +8,10 @@ import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ActionButton } from 'components/ActionButton'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useKclContext } from 'lang/KclProvider'
-import { useStore } from 'useStore'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
+import { useAppState } from 'AppState'
 
 export function Toolbar({
   className = '',
@@ -38,9 +38,8 @@ export function Toolbar({
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const { isStreamReady } = useAppState()
+
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
@@ -225,6 +224,11 @@ export function Toolbar({
             </ActionButton>
           </li>
         )}
+        {state.matches('Sketch no face') && (
+          <li className="contents">
+            <div className="mx-2 text-sm">click plane to sketch on</div>
+          </li>
+        )}
         {state.matches('Sketch') && !state.matches('idle') && (
           <>
             <li className="contents" key="line-button">
@@ -339,7 +343,7 @@ export function Toolbar({
                 bgClassName,
               }}
             >
-              Constrain
+              Constraints
             </ActionButtonDropdown>
           )}
         {state.matches('idle') && (

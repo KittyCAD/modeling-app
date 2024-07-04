@@ -1,14 +1,13 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from '../../useStore'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
+import { useModelingContext } from 'hooks/useModelingContext'
 
-export default function ParametricModeling() {
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+export default function OnboardingParametricModeling() {
+  useDemoCode()
+  const { context } = useModelingContext()
   const {
     settings: {
       context: {
@@ -31,7 +30,7 @@ export default function ParametricModeling() {
       <div
         className={
           'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
@@ -44,8 +43,10 @@ export default function ParametricModeling() {
 
           <p className="my-4">
             We've received this sketch from a designer highlighting an{' '}
-            <em className="text-primary">aluminum bracket</em> they need for
-            this shelf:
+            <em>
+              <strong>aluminum bracket</strong>
+            </em>{' '}
+            they need for this shelf:
           </p>
           <figure className="my-4 w-2/3 mx-auto">
             <img
@@ -59,8 +60,8 @@ export default function ParametricModeling() {
           <p className="my-4">
             We are able to easily calculate the thickness of the material based
             on the width of the bracket to meet a set safety factor on{' '}
-            <em className="text-primary">
-              line {bracketThicknessCalculationLine}
+            <em>
+              <strong>line {bracketThicknessCalculationLine}</strong>
             </em>
             .
           </p>

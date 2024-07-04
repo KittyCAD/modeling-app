@@ -1,6 +1,7 @@
 import { PathToNode, VariableDeclarator, parse, recast } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
   isNodeSafeToReplacePath,
   getNodePathFromSourceRange,
@@ -26,7 +27,11 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
+import {
+  addStartProfileAt,
+  deleteFromSelection,
+  extrudeSketch,
+} from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -43,12 +48,15 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { err, trap } from 'lib/trap'
+import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
+import { executeAst } from 'lang/langHelpers'
+import toast from 'react-hot-toast'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -123,6 +131,15 @@ export type SegmentOverlayPayload =
       overlays: SegmentOverlays
     }
 
+interface Store {
+  mediaStream?: MediaStream
+  videoElement?: HTMLVideoElement
+  buttonDownInStream: number | undefined
+  didDragInStream: boolean
+  streamDimensions: { streamWidth: number; streamHeight: number }
+  openPanes: SidebarType[]
+}
+
 export type ModelingMachineEvent =
   | {
       type: 'Enter sketch'
@@ -145,7 +162,8 @@ export type ModelingMachineEvent =
         | {
             type: 'extrudeFace'
             position: [number, number, number]
-            extrudeSegmentPathToNode: PathToNode
+            sketchPathToNode: PathToNode
+            extrudePathToNode: PathToNode
             cap: 'start' | 'end' | 'none'
             faceId: string
           }
@@ -154,6 +172,9 @@ export type ModelingMachineEvent =
   | {
       type: 'Set selection'
       data: SetSelections
+    }
+  | {
+      type: 'Delete selection'
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
@@ -190,11 +211,8 @@ export type ModelingMachineEvent =
       type: 'done.invoke.animate-to-face' | 'done.invoke.animate-to-sketch'
       data: SketchDetails
     }
-  | {
-      type: 'done.invoke.get-convert-to-variable-info'
-      data: PathToNode
-    }
   | { type: 'Set mouse state'; data: MouseState }
+  | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -216,9 +234,23 @@ export type ModelingMachineEvent =
 
 export type MoveDesc = { line: number; snippet: string }
 
+export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+interface PersistedModelingContext {
+  openPanes: Store['openPanes']
+}
+
+type PersistedKeys = keyof PersistedModelingContext
+export const PersistedValues: PersistedKeys[] = ['openPanes']
+
+const persistedContext: Partial<PersistedModelingContext> = (typeof window !==
+  'undefined' &&
+  JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+  openPanes: ['code'],
+}
+
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFTU2VJYWFxDUNDbPFxCQ1dAwQZO0lDW3EcuQzlBRoNFzd0LDxCXwCAW1QAVyDA9hJ2MAjeGI4ueNBE5JTJVUNNBUNlLQ05YsQsjQWNLVE5Yw0aZXFmkHc2r07-XygusFwAgHkANzAAJ0wSPVgxqITOK8RI0LYIGgXK6eKCSbAQTBgAgAUWeX0CAGs-OQABYA5isSbcEFCGTKYQVMmpLRWHLkor6RAyUy7DRZWR5GimBTKUxQ1owuEIpGokafTHYvGGSIE2JTElJaw0STZRaiNTiNQ0YTgk4ySS2YTKURWeqGcQrZT8jztIWIlF8difXoYfHRQnAhJCUTySTMmiiXmiDSiFbgnLqv08hQpdU2faGa3XWHw+3IvgsT7sN1A+VexXqKNKsq5Fmh8EZQwLMRZY0NGTCENJwXeLHsXHEMiUTCtyU5j15mZGJZpYyNrRasyycNLKs5dQ5TVLUPN2299s4ggAEWCI0CYAeT2z9HGA+J+bBjIhq-wknXHfIrX8kA4-ggvU+7QlG-7cvPQ4Qc0QwqfZjQtMpA32cEWTSDIyhUMl6gUCQb1he8cTvNtcQASWFAhkBILF90PZ5-A+LNsHIEhMF-Ilpn4IxmTnBQZE0I1NBoBtwzyaQaD4uQJAbJQmlcS4BTXLCMPQ3D7QIoighIgIcVQT8AC9uCGGiT0BM96MSKxGwWNRVBNAzyRkcNqirYN5EsM5jB9GRUMwyUXI3GSkSIbhYCdEg8H8ZS1I06i32wHyu1GbTZTohUrGDCwNk1bkslMJYFHBGQzDSAMfT4kNUvNZz0LcnC8K83AfM+PzcDIr5OCozBQvCihIpld0-z0xj6gNQ5kNWbI1A2DKGykQ5sjYuDjRElobVvYrpLK7zfP8gBBAAhbx-AADVoz0AKsZCVXEMRS2qZlMoy0x4qu8kGk40RTEyc5ROhCTXIW+1ysq6r-HWzaAE1dsHBjANY0Q-Q2VYjkDQMLKvTVC2EASTVURx9iKySSpxDziCWqr-LIKBESB-8QaAqQLXA5DFEMYRTAy9UKTkamMkDOnHox97JJxr7lpqxF8HYPEovamL83NY7pGNVRUtkapRAy5QlnSXlsjp-YlHJTmNyxnm8Z+pgvkN3AIEo3ofnFU3msoEnOtB1iVRSM6ThHU4MpWXZhEqGM4P2DQxG13FdcWiq+YClTsHU55qMwPR-Go7AoFwW3YrJfVkOWQpg1OcRwxRv0romhtA3yQOpO5kPvv88j6pjuOE6TlPxYbcw2VYumUbME1w2UORJFDR7uXqZlHGembkyx4PPv1-zYFwEgmH8dhUG2pv9uqKQyQtNRHpYswMsafUIOUE+TMcMoy6nzyZ5queF6XlfAZF3NSf0jeLCNaoMmO44MtyClgznwerTDQawx5iVmmhTGH1r6h3xjVMAABHXoIUBZQCFmvMmzJRr-zpsIAMchjrhkyMqNkJg+IBmlnyF64k5rQIrtPOBBsSBVUwIiLSbUX523NA2CwiElhlENHYcMLIKRKz4oYUM6gd6XxgbjJh-lPhgB6B8fwj4FHPH+M-XSqctALCsCGXumhJE6CvEsaoFhVi2EaPkYyTkaGQMnnIgASmAQQYA+AhF6CMTB+ler9zOMhAoJ8Sw6jMSYcGZDTAFB2ErWmsiGEimQdgReAAZPAYAH6oA4aeDqsUYxpAkCoGwV0sjqHBEocGjNrAQVAaZBJkocbImSYvIY+AjzYBCiw8gD9fFMjiiqLkAZSm1lzuEmMfofQqFOEPAM4DXp0K5o0vCzTegpP8Eo0IhNERZJyTpPJ+YRr6m5IfBMWRJFhJKHFBQKogL9RyJUU4DT3J4UfBgZ8psAjvk-Pgb8uI+mASyODXIIYxBrFYnDEo3Ibn5DyBGao3JpoQInvNRJ8ia4PzIiwzpAAjYm2iDnr0ONWJY6xxEsnBLIbUtztQxlsNyK6l8VoAHc-JKQjlHTSTU2mUH8HgAAZqgAgEBuBgDhLgN4qAsSSBgOwQQgVI7BUwIIAVqAAWZUaCqUBJxHpmEepkDK2RzDIQhdUXkcgtYOJRZjFlbLw5BWjo1K2PLMmqoIF8T4KlJBMB+OwQVnwugyr8PKjlSqVW4EFeqzUwKQWLhDKxR6GVwIJVOHxAoDYlZMtZa+GulEQrOoinyiNQqRW4DFXgSV0rZWCFzQ1cNkaCViwAplKwFRjorBMOSSoXErxlCUJIRwhxDgS1pvY8eLYbXZoCLW-NYUXVFsFe6z4nrPjet9f6wN1aZ3KtVVG1tDR5DALEJoYaGwKjS04haFi6h5m0Kga5W1r4-rbQXSW0V4rK1iurSQHFsBBB8HrWqxte0QYttgr3fihDyy9tSPqXIjR+qyF7pkLNdrn1bVfUulda7hgbqDXKn9f6AO7uA8DRILaKRsivQUUwAYtCXVWNIUMYFjiNmoeOt6OtH0BGff9TDpby0SqlV+4NhHBB6EA3utIBRD0PWwY2BW8NTiUYZeqUM0akULPvVxqdv0Nr+D426j1XqfW4ZUpu0Tv7xOSdI6-JkX8+GfyRifc5yhKX9QsLyEJRxjpjuRROh9untmuuLcK99FbhP4cEMFmznCdGHIc0uc0Q7YyGAZoGA00bLCSOYxkVDr5guYeM6u0zfrzNRZiyRuLhLQPVBufg7IrErA71pgzWmFRkv4LkAQy1HHFk6btWgoW-HwtCarcGobOJYu5KbbVyRR1MoshATITilymT1HBjnL+KhaZWHywESbRXl0mfXeV6tk3pv7Nm+Rs1FQ02hlWGxSF62z0hK0KI+QYL9v+ENp8Y2ptyDmxYdywtbqBMfsi9W37-2zYW0EAWlql3oogfI2nHqShrC9zJCxRTJQIXgx-qA40sZCHfeh08AHQPLZztB6F4rOGysBqi+Tk2sOWHw5p4jqrM2UdMjR4XDkWPh646ZBkCkhOT4PSuqTq1AWdbpLLbslELSl6Ew6V0z4PTl7qrpmkbk-8bHRLpmMqFihBnVC0MaZzSxL4K8ycvbJyu1mL02W0om9vUDZJ17IA0DQNhnNVOGFb5hyS8jNTBJQtuMm7MkNhXAHACDqsymkJQfUGgsjkPTK8Zo-QWmibR46dNMpR8Vw7zAsf4-sET9KHnZG+dI37pxS0jWZkVjpiqM4EhbCBlowGEvHvsmSAAHIrwAAqoDwOwWABAVoQAgIMFhAQWCT-VSfXYtGYYZ4aGscEJ9W5mDwbS1P-eY8j-8OPyf0-SAtT2cjuvgFNDmBMJlFiXIDjlKvPgqsNglbRLOjyW9RxYqOPBPAFYwRjA4fBaZQ4N-IPfIDvI0MkVNMkbIS+EAqvKgGvK7XnQCAMKsGMIZUBKlSwBkK5JidIIJUBU0GwFQS+AAFTV2eE6Uam6Qfid3WTt12VX32COlpQenVF7mglAXSCRkylslOFAWEEvl6BNhXnCizHQheFwDCzLQh2lRWm8DoMEBkJFUEHkPYEUOTls24XyBuUOEyAKn2AKDUHBFDGVFSEeTYkpmOkvlcS2XwB2TL0kG4y-AjigDwBnznw2RCDdx2T8LwABSshTxc1o2ZCumyG4l5AHRSEsDpmfzrEvnIERDIECF9SRDAOyF2BMh9BNVyCKRnHNAsFOGMF3j1T21l04yDm4zUW4AxWXixU-B-XtHBwi3GzlXURrkEGXhrWxS6LcW52wPvzKDEA60aCNw7SVhFwQFkEqAqFSBlnewMVEG+wGLqkxTeFGLxSRHp1Kzw2rV2KzCGNQBGM6KOKR1FhwL7QpEsBNXyF2x9CWNsQpisRSFYlRjUB2JvmCJUUyXUSrk0RUME0-UkF0LBL5kECURBMEDhPgWPGq2u3r12CnDZFnEbF7lIKMBYk9imlAXUBWw2D8y00nmaJRJ+gVU5TrkhLULFVhJvhDQdU0ljijUsH7lSCuhZBMDyEsh5Iaw1HJB9C80BI0VqgogaljiZN6JZOuNpLwBrTqjzTYT0G5PMHOmsCWyWEbHSjMT1RVD7RjDKDyEjwaP6yaN0xVJqnpKVVjnjhwCTgVLGyVORLZMdMdVjmi1dKMPRMePOn7hywtU7S9jzjUANFAmOkARWFYilPBJlNrk1JdMTmUJ6I9JhOVLZO3T9IbkDNrzs1KAbFZGDH6goTWDSzMVUCxLOBUDGkNNSiTLDjvlaRXi2ndOhNZI0T0PniYCuP-W5OVE7y9gKAMhDAPgKEpGsEMSnAIVbPgUCAHMxX+m7Mi17PBP7IXiHK1OMIVA1TSH9gNMnCoL-jJGkDKHOhpHWKXJ+iQRQUakmw3OlS3PhMfOokEEmyT1SgNGsBOhsEUGQjczMS9lHAELBlyHbkAOtUCztXtJ+xYRjiwFfM9PtMECYGQrYWoAPIS2jNo1umRgyCNKuWiRuUykyDRhy2XDLn8FwBXn5RIEoB8GCFCDfDACYvNiXx+DLQBUEDsGYhZEL0tzYyWN7hTysHZHZiNBsGcjIGwC6GGC-HaNMzLTQskAUqUpGCHKYptjwoAh9GYlpUaEg21F3wdjOlsQTUNIUHkvj20pUpXg8TnS-FgEkg0q0uGDcWGPcr7AMpBl7k2zTjphWGDF83cxuRPiotSHUFETsouAYowHgCiC02LLtkEAaCrFkHkE1jUGWBNyEEcEdhSFjDZEQO5GclTDAHSoVEEDWDMPJF1U0FDH9gqRWH7gRkkSsssHY380aJxFqvzFipVGpk7QIVgN7RMANF-3nC7QGm2OtO0yDhgSGv2hOE3ken9lsBatCpnBZBAikq2ygNgrl1tLtR9K5QR15VVTWrJmjC1S5EUC9gbC6yTVsGkBDE1FOHNS9m+23RBxalfTuv0jJPPQkRiV7lSmGkjE4nGlyElxNG+3Q2BsmJLKWGiQsCUCsGiV7mMC5EugsUMUUEWDPkpLvWpN0141Rrv3RvNP7lYhxL92e2WNOHBggh9DEGhWZG+0K1urRu4RjHBjODynyG5EOGiQZmjL3mQkDG1F7gKG+0O35tpsFto3NxhhWFxpPkVhUHSFSm5CNHVhLjJyNgpzZ2p2thC0FRBsJIy113VA4h-3yAyhpnSG9mAU5tSBPzL1ttKHsA-lMODGhXqFsI6vz1TxSD1FsB9s93L3QL9rsBNEDotGDvUFDuzw+tWDOFjNo1AT6qpOKk4K8IYoDWokTqApVG-n9AaFkBZq-0dl-zeL+NkFjsHzPwv00QrokCjAtw7TljOArF7ijAeTq1kpWDQMrz9ochDxDH9xMCUFSgJMAlnA6wXHNBeJXCWsngYPaSYI1y11QETtDGePAn9wkoRvDDZr2EegekcG1F+OkNkIXwUMkiUOnvqHMAkEARLnU2ZFsOEKoNsBDDZhAtcJCMK19oFsPLqF91WDSI+I5EshnL1R60ZvU3AfcPdxjx8N+SCHUXn0fE+DLU+ETqJLgaapykEmXv6nLJUCyuQnRm3uKjcNCIH3L1wagH8HCPoi4UPJAvSBsBWxbniJrKuXzuSNo1pgLzJC3r62WowiyLAByNgDyOnqnH7g2BSCRjblsCvrOBmoIUZisSlLaJXgONuMRGnoEbuhDCUHlm7nhjKGVBiWlzLF-wSvkcpoQqBMRNQFUXtKn2sbZGSLOEopukHrMQTINGsTITWH9jOHvP8kurrmCakAKTlg7hcxZoOnMGiQDDBR1UylOoGu8LtKBPzJKFVvyRCYyfCcDDCcskegHTKPqH2C6xcOYcnR8elJSbTMLLSdCZo1VAcFAvEead21NAtUZikK6fgtfEQsqfTKTkGYyYehGehTzg+oHj3jhqxxKZtIwhpKBPbMxS2msYyzugbBsskR3ymsyk+pjHZH9iSdvlXPaP+guZT34iRh9lueXrsEspWPwWznUGQleefGQVQSeHQUGugfFk0HSdSGGdWFGZ7mabIRk1kEcGNEWq8eKmOelKwtYXYQueBSsKKUHjEaMFsGPLWEvUUEaDAbmY3HosYuYpqvhYAgEvgLrGEY2HBU4l1EyEmShuQ0-miXssUuUt+VUt4s5eqfFgMcel5DmPkGazGcQAkosCvSNEAQRlma8a8s4Flecr4FcrwckmnuabBSt04lyARRZtYlHNRliJOB5ETJcCcCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoAWAHQB2GgE4ATLNEAOAKwBGAMyzNAGhABPRFNWaJmscOXyp61aplWAvk-1oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFlK2l1Gil5UxpreTEpfSMEeTyJYU0reW1hVRTxYRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQROTlGgl5ZUWxDK0ZVVlCxE1VOfXxGlUq2R1NKUaQdxavdv9ybiG+dhGosbjeRJpNhBpzy882vz+XxQDpgXABADyADcwAAnTAkAywZ7MVjjbjvRCfQxY37Nf4SbAQTBgAgAUXBcMCAGs-OQABYo6Jot4JITyYRSCTqDk6NSadSyMTyL6abQSZQ6KX2CwaM6uC741qE4mkilDWE0umM9SRVGxCaYpJ5OZidSiOw5TQ5DJfZbyCQKKQ1HlWLTKc14jzKokk8mPWHdDBM16GtlJexcxQHYSyVRiWrqL7qS3zFKSuPiIVmr1XKAqv1kvgsWFPeijFlhqbsxZpk0ldRiIW1L5SWxlEwWGqzGwJ3ME32kgAiwSGgWCoQmIcrGPDgiOEq0nMy9lkUjEiy+cdkEnEWXXsnUks0eX7yu8tPYDOIZEomAv2unBtn1YQKZS3IyYg3Nu0J+TR7qNyR4eloNBHrUZ74BID5XvSBAjiSY5BCCYJlnqzLPpM-DGCYjqKIcyhNjIix6DiCAJlyxzLDKOzCMsDQKn856XtedwYP4kAcP4EDdLCrRanBT7othiRaAm3LfjUmi5Ko9FiFuljSJkVTCByVj8lB+awQyMGsfSACSqoEMgJC0uOqHgv4MKltg5AkJgwmsq+PKHty1hEc6RE0DYyZmmY1o0D5Mo2MoFhaXp2qRXBRl+qZ5koaCVn0qg-EAF73A5TlVjhb69mUOSiBoPLOpkyYCkB8YOOB5TpPY8gRTp9LRQysWkkQ3CwOwsIkHg-gpelmWYDx2Bdbewzli8M6iYgPLxruwrWrIYVNiBXxHMIu72Ds4jrCmmiNfpLWGcZHW4F1PV9TZnD2cNECjQMFATRhoYvrlrrKI6hEaPR6RESK5ElFIZiHGanlthy8aHVFTVtcQnXdb1uD+AAggAQt4-gABrZW9YkLKoEhiKcGhNgKihVOtcaSHGnKzMFa5itDcHHXDZ0XUjqMY-4ACauMzXlajzMK5pZHYNRqaKOSfSu9jmjk65iMzumw6dCOXcjZBQCS-NGuJAVhR5DgelIGyAzsUa1A4bZyaba7K81qt+uziN9SS+DsIyk36iJetilyFRyXIWhVHY63CEe0ixmapvfmFnIO6zavna7yNMHC6e4Pd5DdAimr3WNT26+GPILETxzk8sR6iMI60epItjLWumTfvkqiJ077Xq5zA3YBl4IOZgBj+A52BQLgxcuRyDpqER-IJgxZFFHY5rzHG4M2HJTNMUq0FNUnzvd1dcI3YPw+j+Pk-vTYO7Ewsps-doGjJmphO1Guy2VMtwMd-pbNH8jWAuASBMH8OwVA2Mr5iQFGYDkMkchrmsNodae55hZGEBgoqygVK-21P-FOGtAjANAeA3mUDZowN3M6AUbZTjpAUoDRsXJ4zYKyIedc9EDo729HvI6nd4YEM5mAAAjt0By-h3ZQE9uQvKOgJCkzbGuA4WRTjJmBqaa0gUYxyVkLgmKycOZ9SYCQHqmASSOW9phX2JcTxch8hgo8JQnTyCTORQU+QyjpHArURYCC9GtQManfwsIwBdBhLcAB7BkSWNegLHkG5PF5DkgsM0tQl6zTCkBGqChxBikKg1bheZjoH1JAAJTAIIMAfAQjdCGDIuwZct78jkmpFxBQ3E0G2ETJa2wLCWBTPKJoPDtJ8L-sZMkojsCgIADJ4DAGA1AqALEvWmnrSUm1TAVCbHGCwm5yJhTfhkPIJR4wunUP4k6hZJkkK1mhbA4iTHkAWTIlxWQiZyAODsrs6S3wIPmDKGun8DhcKGUU-e-CJndCmcEkIj1tbzPAUsl5wMHTLT3N+cSdh2nLyyJ9fyZpfoplkDQRioKCTgrGX6di8yuIBF4vxfAgkGT1NlJJSiclhTWC3LWMU-kUymEFERC5+DroLOsiY+5AAjHWMTVk2MOB2I8G5+lyAYUUE8GQibpCkBmRQkp26FPJUdFGAB3XqARe79wGHdB641-B4AAGaoAIBAbgYBCS4ChKgWkEgYDsEEJaoaghHWoBedaSQUlliM2OLQ9aZodxqAWKHWM6DBmKmGcU015r+qpT7kNEahdKD2twE6ggcJYSpQkEwBE7AnWwg6L6vwAbc1WocsGktobZVYSNFUA4wEMXiUImudaMkHT7FEJ0w4zpzmGpYlFLN3Frp2XEQXR6RaQ0urdR6r1Pq-WCCXbddtTqw08m5KcD0nTOSCl8oDBYZhsGHEOFoGhBSyVzpZgugIB6V22qesW0t5bK3VsGHWhte7v2YCPZ2lZ3bwyhxngcEw7DahqsQCUYU3IJY+Rkh5MKidP1c0xljf9zrXW4HdXgHd7q90kElbAQQfAoMns2s6eQQUTnbGUFTNSklxDmjvmpH+s7eHzrNdxdGRGSNlthBW2EVaa2gcbf62j9HGMhpPVyYmOHtjEpYVTVenHpL0IPPhsTAQJO8yk2RijnrvXUabSpwQBgmNdusa+ZN5hIyrkUKcBMUtOTl31QcMKBwlbCZGaJ7NFmeZScA3J4DtbUpgYc3RpzLmYNudyqHOxNhyiZAwRYc0op+O7ljBgk5qxX3prBcaszI98Akis1uyjdmlOCC1iSdLFZYPuZoeYcCWhH3HGfubOSjprQ7H5bUZcpns0dfmRuuL8mQNJba-NrrU0etZYFDLPjCweQIPUNitDcpgLbBkFkZRCdwuZrq5Iz2TXyPbta3u+79INs+2cttuw3Sjgx2FD5Y7xQrCExJWKI7FQjs8lm9xN7sWZNAYU6t17YIpHvfU65r7iQPNeM4+aTyAMigcgw+VjcQoTA21JdVo1kXuLp1hJnbOucTEFrXQtjtm6nstd3U2+njO7LM9hIIVd40PtWKx2h6eX0wp5FaZUVQdc3l0MsDUYbKiYcBD52CJnedWd2sWwj+LSP61ta11nAXedhe-soGL2JPapfrxPJYEo8v1ptgDrYFX6w4zq5u-vWZ5GFlLPJNcsBtzwT3OGo855mOcrY9NptZaTDck6FNj8xB7yBQbhqPlo8icA8IsWZgEPULQEhNCPNoPyzuuZfjyeR0sxhQYsK7XNxbGdycljAKaOVgQXU-fbpAvVeJAGVwBwAgLzVIShkhoWYQo2FfDdPMGSUpOmKKqPnuZw-R-j6oLqGvEvig2AdDsfbv02OxlbKbIm5RTAKB0UFA1b6RMsyH4izAEgAByECAAKqA8BRIEAowQAQD9AmKa7-7ggvIYI0zaLz6zD0SL6xjdIfwyA6qGyb6B7v5f6-6QGAGkBPTV6ba14ZJNi7gnijqqqzxcbkQyBARNgRwnA8gpB97MQv66Q77sAT6x54yzQ1RExqAyAVDKKqrJhVBmCWCsY1z2I5h+5HScET777EGH51RASSgfKWAargSoayJAQ6qmD9LE46BU5sERYswAAq4enADysITy4CJe0Kb+Re0B343SGQagmYks5EQoLGKk52QU9E12z+Zhuk3QWcECY0pYTUEIuAnONmVGEgKM3g5hggYRrqggkR7A0RE8PBcSYon0U62gKY342wOQXwtQcwSggoOQ+QMk-sic5SFeDWheSyiRZmAkuaUAeAQBIBMKTR8K-gnReAMiFUm0KQ5QxKig1Mriy8lgCaxw4EpsnSkMygic5AJIZAgQNapI9SZokgRU9giajYmyAEWgu4JK6QiC2gh4VWpht22adwnqJ8YqUIEqtGfo1mz2PO-qjx10gg4C+6bx0qFSGOGWh+QMhMKYWY566QEcCu5EJ4go3ISgogQoko8ST+-e7BzUBGvxzxpCrx-E7xpIS2CWime6eJpY-xqAgJRJwJtucq7m0YRMbYsYos4EFQQOYo6wEoNg743JbY+QGuESgifUISYS8yjxhi4IsAcRXx7q6RUpqcgg4pqAMIggSpGs6EB+ceku645gOgxMgEHCeQyY1gDcNQUkiwbGwotxu8IROJdWmpPcLaQ0Q8cp3OCpNJzpeAzag0A8ZiBgYa4E8iSg24ywhWPyYEeh+w8cJgOiJh9p9x3EPpyMEG7pnxnpEgipAC+6J8y6gZwZO4FMeQQo7464NBy81xRMJQiwCgeQ7orBSZ+8uJACOa-p1qQ8I8OA48HptmPqOZopuAfpeaAZQ87WPZORYJupR+Cg8idgj6ognJMxs0Own02YeWLCHoCwwpqZ1k+Zt0XZF8sRmZ-ZXpGpuZ6Zzmx5k++pC8-GQUJKZoL84g5g5QgceQFZh4u5bZQCICYqWMfZCRg50pGRxC1JDGwZcwt+tg2wJUfmgMk63I6GCYExE2dpGaLZTpv5xCYqPMQFrWIFypf5TAEFQZuRPa1om0+QR4JEnS-S60ro5gJQFMG4goGCP5Q5nEoi4ib2BFA53puZIiYikGb2k+bkCgbcjYiCagrey8tgm0loakagjY98TZmFtWDxbZxipi5i-F55qZggOlg81AFFcG1o65JKOqWQkYOqyYfIy+wM2CqSs+mJdxTU-guAECDqJAlAPgE4dKYAPlucmuCI5GMi84PkNZOg7FagiYSgi+wMUcsYmQQU1pigEUZA2AHQgwAkpCwG5G+lEgWVOVQwEFPllAMicsyJJgKSwh+hi+9g8wE6a+NErSmVY+pVeVECVSD0AksA+kRVJVgwFSAJA1j4Zlr4r8u408psHo8YpwhOWwkcGCTlSgdZ+Qqx5wXlGA8AUQphOpvBSQZW8inIjMREKGQOKY1FjBnSpRDZQoEUg4h1AsIgCSts51CYnkXwiwlUFldg5M1ogoDsL1Ro61Ah1UwhhwohiFZgVRumqVFQkoaa7loyeCqooNJcEZa864psKSDgy0AEQokkPIVF-sd1wpgaAZeuf6IamNLk6YRMUaOqtgNgF2I6c5sogUGCToM6wRyZX6B5P6ha7OTq9N701pmGQUg2FQigK5R+OwM1YMjYGCcswpFmxGdNyhM5R4ciVorkstXiZsROMVRMtsdQ8stQGFNWtO5m3MMWWtn2OtkoJ+dVR4e4-mhMJyXmy01guichtt9WAxjt4uztcYZQgUWmy0hwOg60a5vJM+QcrG2wwpcOIdduJc6hmeck8VFQGC4cFQ0gh438Z1qF6lNtH6dWZuOuLOIutNHa4tYkslRdNQNRWY75buHoaQ0dh4kYSgmBLRmAjdaG6QZgGQ+R8YvtVg5RXdUo1gd+Qo0sA92+Y+7Aw9xQK8VCE9TYiw095EKamG5QUk2g9Q-t-N-uW+2BXl9aDk69pZmmtC0YswJ4S1CAdB5cjB4OCw5Q1tNOr+l9ReOB-gf+ABe1TtR1SSsCmSbFyxFQPyrGaYKYWgtF9EHoicnB69dUHeC8JodRh4Oh74QE74oEQNs8iclh+AdyNhdhqAd9tQdio6TeakEclgyYJKhM9Ea46w2CGQxwv9A+zUaRERAwUR+kMRmDVgO4pgLCW8aSig5RSk-Skl9gdMckDRsKle7+d9rJDe5oSx20Tu5UXS1xQUCY8YdB6j-RjW2Bn6-VIQ3AoBdwsI5GsId95pujZ1BwIUBD8kZtSN4Eag34ljcK1jgDtjjKQx2EGd7mzdB4bGN80xfkyBGYixxKJ43YaxGxgC2xmDf48iwoMaeQJ4CgbD5QjoRUl2ClZ9WJDpbRWlTxpYLxQJJImDzd9MX14OcsooJQcwvSPuzYjBW159mlKZbZqp4SqZUSrTxMEoSgFBD8BWZpp6fDuST5+Q5QnF0p7Zo5nZRQ4DcSRE96czVQCzP9Yhko42iGHKcg4hmzQSV50zRzP9pwtMZzbi2gXI9cckRE+Q2GKNzZIzAQe5VNuz3ZY8UTjJEtMz6yOmBK2gKQfka43Itgro6CFs-zGlgde5V5YL48jzszt+ZZExeyy86wJ+koSCPkzuG+Adld9TWzJFAFrTY29Mx+yN4sOh8TAUZOFgFgGLFdukrZXFjLpCPMzLYx7GmQ7LHKjFZcYobSoW0sagdzhCwlvFqOns+LML6wcLn8L8SLxMk6pg98NQblALWL2lJiJlQ92tR1EEkJJRmyH88t16N19o564gslDsnl3lvlYA6984Mk8iOiCwiw64bG8tlgb8xdZWYoWyQTN2w1nAjK+VYV-rtrcSZTy0eQ2CMF8LcliANQqKKQOwvL1s-D0ESb3VnEfAfVjK41cEmDSLpUuQ56nI4gXJBmUoG4YU06JgLgLgQAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -226,7 +258,6 @@ export const modelingMachine = createMachine(
     preserveActionOrder: true,
 
     context: {
-      guiMode: 'default',
       tool: null as Models['SceneToolType_type'] | null,
       selection: [] as string[],
       selectionRanges: {
@@ -245,6 +276,12 @@ export const modelingMachine = createMachine(
       mouseState: { type: 'idle' } as MouseState,
       segmentOverlays: {} as SegmentOverlays,
       segmentHoverMap: {} as { [pathToNodeString: string]: number },
+      store: {
+        buttonDownInStream: undefined,
+        didDragInStream: false,
+        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
+        openPanes: persistedContext.openPanes || ['code'],
+      } as Store,
     },
 
     schema: {
@@ -274,6 +311,13 @@ export const modelingMachine = createMachine(
             internal: true,
             cond: 'Has exportable geometry',
             actions: 'Engine export',
+          },
+
+          'Delete selection': {
+            target: 'idle',
+            cond: 'has valid selection for deletion',
+            actions: ['AST delete selection'],
+            internal: true,
           },
         },
 
@@ -579,7 +623,7 @@ export const modelingMachine = createMachine(
               onError: 'SketchIdle',
               onDone: {
                 target: 'SketchIdle',
-                actions: 'Set sketchDetails',
+                actions: ['Set selection'],
               },
             },
           },
@@ -684,18 +728,18 @@ export const modelingMachine = createMachine(
 
           'Delete segment': {
             internal: true,
-            actions: 'Delete segment',
+            actions: ['Delete segment', 'Set sketchDetails'],
           },
           'code edit during sketch': '.clean slate',
         },
 
         exit: [
           'sketch exit execute',
-          'animate after sketch',
           'tear down client sketch',
           'remove sketch grid',
           'engineToClient cam sync direction',
           'Reset Segment Overlays',
+          'enable copilot',
         ],
 
         entry: [
@@ -706,7 +750,11 @@ export const modelingMachine = createMachine(
       },
 
       'Sketch no face': {
-        entry: ['show default planes', 'set selection filter to faces only'],
+        entry: [
+          'disable copilot',
+          'show default planes',
+          'set selection filter to faces only',
+        ],
 
         exit: ['hide default planes', 'set selection filter to defaults'],
         on: {
@@ -735,7 +783,7 @@ export const modelingMachine = createMachine(
             id: 'animate-to-sketch',
             onDone: {
               target: 'Sketch',
-              actions: 'set new sketch metadata',
+              actions: ['disable copilot', 'set new sketch metadata'],
             },
           },
         ],
@@ -749,7 +797,7 @@ export const modelingMachine = createMachine(
         target: 'idle',
         // TODO what if we're existing extrude equipped, should these actions still be fired?
         // maybe cancel needs to have a guard for if else logic?
-        actions: ['reset sketch metadata'],
+        actions: ['reset sketch metadata', 'enable copilot'],
       },
 
       'Set selection': {
@@ -760,6 +808,10 @@ export const modelingMachine = createMachine(
       'Set mouse state': {
         internal: true,
         actions: 'Set mouse state',
+      },
+      'Set context': {
+        internal: true,
+        actions: 'Set context',
       },
       'Set Segment Overlays': {
         internal: true,
@@ -777,9 +829,10 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           sketchDetails.sketchPathToNode,
           'VariableDeclarator'
-        ).node
-        if (variableDeclaration.type !== 'VariableDeclarator') return false
-        const pipeExpression = variableDeclaration.init
+        )
+        if (err(variableDeclaration)) return false
+        if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+        const pipeExpression = variableDeclaration.node.init
         if (pipeExpression.type !== 'PipeExpression') return false
         const hasStartProfileAt = pipeExpression.body.some(
           (item) =>
@@ -788,52 +841,119 @@ export const modelingMachine = createMachine(
         )
         return hasStartProfileAt && pipeExpression.body.length > 2
       },
-      'Can make selection horizontal': ({ selectionRanges }) =>
-        horzVertInfo(selectionRanges, 'horizontal').enabled,
-      'Can make selection vertical': ({ selectionRanges }) =>
-        horzVertInfo(selectionRanges, 'vertical').enabled,
-      'Can constrain horizontal distance': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
-          .enabled,
-      'Can constrain vertical distance': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setVertDistance' })
-          .enabled,
-      'Can constrain ABS X': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'xAbs' }).enabled,
-      'Can constrain ABS Y': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'yAbs' }).enabled,
-      'Can constrain angle': ({ selectionRanges }) =>
-        angleBetweenInfo({ selectionRanges }).enabled ||
-        angleLengthInfo({ selectionRanges, angleOrLength: 'setAngle' }).enabled,
-      'Can constrain length': ({ selectionRanges }) =>
-        angleLengthInfo({ selectionRanges }).enabled,
-      'Can constrain perpendicular distance': ({ selectionRanges }) =>
-        intersectInfo({ selectionRanges }).enabled,
-      'Can constrain horizontally align': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
-          .enabled,
-      'Can constrain vertically align': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
-          .enabled,
-      'Can constrain snap to X': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'snapToXAxis' }).enabled,
-      'Can constrain snap to Y': ({ selectionRanges }) =>
-        absDistanceInfo({ selectionRanges, constraint: 'snapToYAxis' }).enabled,
-      'Can constrain equal length': ({ selectionRanges }) =>
-        setEqualLengthInfo({ selectionRanges }).enabled,
-      'Can canstrain parallel': ({ selectionRanges }) =>
-        equalAngleInfo({ selectionRanges }).enabled,
-      'Can constrain remove constraints': ({ selectionRanges }, { data }) =>
-        removeConstrainingValuesInfo({
+      'Can make selection horizontal': ({ selectionRanges }) => {
+        const info = horzVertInfo(selectionRanges, 'horizontal')
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can make selection vertical': ({ selectionRanges }) => {
+        const info = horzVertInfo(selectionRanges, 'vertical')
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain horizontal distance': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain vertical distance': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setVertDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain ABS X': ({ selectionRanges }) => {
+        const info = absDistanceInfo({ selectionRanges, constraint: 'xAbs' })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain ABS Y': ({ selectionRanges }) => {
+        const info = absDistanceInfo({ selectionRanges, constraint: 'yAbs' })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain angle': ({ selectionRanges }) => {
+        const angleBetween = angleBetweenInfo({ selectionRanges })
+        if (trap(angleBetween)) return false
+        const angleLength = angleLengthInfo({
+          selectionRanges,
+          angleOrLength: 'setAngle',
+        })
+        if (trap(angleLength)) return false
+        return angleBetween.enabled || angleLength.enabled
+      },
+      'Can constrain length': ({ selectionRanges }) => {
+        const angleLength = angleLengthInfo({ selectionRanges })
+        if (trap(angleLength)) return false
+        return angleLength.enabled
+      },
+      'Can constrain perpendicular distance': ({ selectionRanges }) => {
+        const info = intersectInfo({ selectionRanges })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain horizontally align': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain vertically align': ({ selectionRanges }) => {
+        const info = horzVertDistanceInfo({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain snap to X': ({ selectionRanges }) => {
+        const info = absDistanceInfo({
+          selectionRanges,
+          constraint: 'snapToXAxis',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain snap to Y': ({ selectionRanges }) => {
+        const info = absDistanceInfo({
+          selectionRanges,
+          constraint: 'snapToYAxis',
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can constrain equal length': ({ selectionRanges }) => {
+        const info = setEqualLengthInfo({ selectionRanges })
+        if (trap(info)) return false
+        return info.enabled
+      },
+      'Can canstrain parallel': ({ selectionRanges }) => {
+        const info = equalAngleInfo({ selectionRanges })
+        if (err(info)) return false
+        return info.enabled
+      },
+      'Can constrain remove constraints': ({ selectionRanges }, { data }) => {
+        const info = removeConstrainingValuesInfo({
           selectionRanges,
           pathToNodes: data && [data],
-        }).enabled,
+        })
+        if (trap(info)) return false
+        return info.enabled
+      },
       'Can convert to variable': (_, { data }) => {
         if (!data) return false
-        return isNodeSafeToReplacePath(
-          parse(recast(kclManager.ast)),
-          data.pathToNode
-        ).isSafe
+        const ast = parse(recast(kclManager.ast))
+        if (err(ast)) return false
+        const isSafeRetVal = isNodeSafeToReplacePath(ast, data.pathToNode)
+        if (err(isSafeRetVal)) return false
+        return isSafeRetVal.isSafe
       },
     },
     // end guards
@@ -859,7 +979,7 @@ export const modelingMachine = createMachine(
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),
-      'AST extrude': async (_, event) => {
+      'AST extrude': async ({ store }, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
         let ast = kclManager.ast
@@ -880,27 +1000,63 @@ export const modelingMachine = createMachine(
           ast,
           selection.codeBasedSelections[0].range
         )
-        const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
+        const extrudeSketchRes = extrudeSketch(
           ast,
           pathToNode,
-          true,
+          false,
           'variableName' in distance
             ? distance.variableIdentifierAst
             : distance.valueAst
         )
-        const selections = await kclManager.updateAst(modifiedAst, true, {
+        if (trap(extrudeSketchRes)) return
+        const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+
+        store.videoElement?.pause()
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'start_path',
+          },
         })
-        if (selections) {
-          editorManager.selectRange(selections)
+        store.videoElement?.play()
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
         }
+      },
+      'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
+        let ast = kclManager.ast
+
+        const modifiedAst = await deleteFromSelection(
+          ast,
+          selectionRanges.codeBasedSelections[0],
+          kclManager.programMemory,
+          getFaceDetails
+        )
+        if (err(modifiedAst)) return
+
+        const testExecute = await executeAst({
+          ast: modifiedAst,
+          useFakeExecutor: true,
+          engineCommandManager,
+        })
+        if (testExecute.errors.length) {
+          toast.error('Unable to delete part')
+          return
+        }
+
+        await kclManager.updateAst(modifiedAst, true)
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
           sceneInfra.modelingSend('Equip Line tool')
         }
       },
-      'setup client side sketch segments': ({ sketchDetails }) => {
+      'setup client side sketch segments': ({
+        sketchDetails,
+        selectionRanges,
+      }) => {
         if (!sketchDetails) return
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
@@ -913,6 +1069,7 @@ export const modelingMachine = createMachine(
             up: sketchDetails.yAxis,
             position: sketchDetails.origin,
             maybeModdedAst: kclManager.ast,
+            selectionRanges,
           })
           sceneInfra.resetMouseListeners()
           sceneEntitiesManager.setupSketchIdleCallbacks({
@@ -922,62 +1079,6 @@ export const modelingMachine = createMachine(
             position: sketchDetails.origin,
           })
         })()
-      },
-      'animate after sketch': () => {
-        engineCommandManager
-          .sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'sketch_mode_disable',
-            },
-          })
-          .then(async () => {
-            // there doesn't appear to be an animation, but if there was one we could add a wait here
-
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_set_perspective',
-              },
-            })
-            sceneInfra.camControls.syncDirection = 'engineToClient'
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_set_perspective',
-              },
-            })
-            const center = { x: 0, y: 0, z: 0 }
-            const camPos = sceneInfra.camControls.camera.position
-            if (camPos.x === 0 && camPos.y === 0) {
-              // looking straight up or down is going to cause issues with the engine
-              // tweaking the center to be a little off center
-              // TODO come up with a proper fix
-              center.y = 0.05
-            }
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_look_at',
-                center,
-                vantage: sceneInfra.camControls.camera.position,
-                up: { x: 0, y: 0, z: 1 },
-              },
-            })
-            await engineCommandManager.sendSceneCommand({
-              // CameraControls subscribes to default_camera_get_settings response events
-              // firing this at connection ensure the camera's are synced initially
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_get_settings',
-              },
-            })
-          })
       },
       'tear down client sketch': () => {
         if (sceneEntitiesManager.activeSegments) {
@@ -1057,11 +1158,15 @@ export const modelingMachine = createMachine(
             const { intersectionPoint } = args
             if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
               return
-            const { modifiedAst } = addStartProfileAt(
+            const addStartProfileAtRes = addStartProfileAt(
               kclManager.ast,
               sketchDetails.sketchPathToNode,
               [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
             )
+
+            if (trap(addStartProfileAtRes)) return
+            const { modifiedAst } = addStartProfileAtRes
+
             await kclManager.updateAst(modifiedAst, false)
             sceneEntitiesManager.removeIntersectionPlane()
             sceneInfra.modelingSend('Add start point')
@@ -1070,6 +1175,7 @@ export const modelingMachine = createMachine(
       },
       'add axis n grid': ({ sketchDetails }) => {
         if (!sketchDetails) return
+        if (localStorage.getItem('disableAxis')) return
         sceneEntitiesManager.createSketchAxis(
           sketchDetails.sketchPathToNode || [],
           sketchDetails.zAxis,
@@ -1094,7 +1200,7 @@ export const modelingMachine = createMachine(
           cmd_id: uuidv4(),
           cmd: {
             type: 'set_selection_filter',
-            filter: ['face', 'plane'],
+            filter: ['face', 'object'],
           },
         }),
       'set selection filter to defaults': () =>
@@ -1102,6 +1208,29 @@ export const modelingMachine = createMachine(
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
+      'Set context': assign({
+        store: ({ store }, { data }) => {
+          if (data.streamDimensions) {
+            sceneInfra._streamDimensions = data.streamDimensions
+          }
+
+          const result = {
+            ...store,
+            ...data,
+          }
+          const persistedContext: Partial<PersistedModelingContext> = {}
+          for (const key of PersistedValues) {
+            persistedContext[key] = result[key]
+          }
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify(persistedContext)
+            )
+          }
+          return result
+        },
+      }),
     },
     // end actions
     services: {
@@ -1109,32 +1238,28 @@ export const modelingMachine = createMachine(
         { selectionRanges, sketchDetails },
         { data }
       ) => {
-        const { modifiedAst, pathToNodeMap } = applyRemoveConstrainingValues({
+        const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
         })
+        if (trap(constraint)) return
+        const { pathToNodeMap } = constraint
         if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
-          modifiedAst,
+        let updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
+          pathToNodeMap[0],
+          constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
-        if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            parse(recast(modifiedAst))
+            updatedAst.newAst
           ),
         }
       },
@@ -1142,50 +1267,58 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+        const constraint = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
         )
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchPathToNode,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            parse(recast(modifiedAst))
+            updatedAst.newAst
           ),
         }
       },
       'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+        const constraint = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
           kclManager.programMemory
         )
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            parse(recast(modifiedAst))
+            updatedAst.newAst
           ),
         }
       },
@@ -1193,22 +1326,26 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+        const constraint = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
+        if (trap(constraint)) return
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1219,22 +1356,26 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+        const constraint = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
+        if (trap(constraint)) return
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1242,22 +1383,26 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-snap-to-x': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintAxisAlign({
+        const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
         })
+        if (err(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1265,22 +1410,26 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-snap-to-y': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintAxisAlign({
+        const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
         })
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1288,21 +1437,30 @@ export const modelingMachine = createMachine(
         }
       },
       'do-constrain-parallel': async ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintEqualAngle({
+        const constraint = applyConstraintEqualAngle({
           selectionRanges,
         })
-        if (!sketchDetails) throw new Error('No sketch details')
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
+
+        if (!sketchDetails) {
+          trap(new Error('No sketch details'))
+          return
+        }
+
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           parse(recast(modifiedAst)),
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',
@@ -1313,21 +1471,25 @@ export const modelingMachine = createMachine(
         selectionRanges,
         sketchDetails,
       }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintEqualLength({
+        const constraint = applyConstraintEqualLength({
           selectionRanges,
         })
+        if (trap(constraint)) return false
+        const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
-        await sceneEntitiesManager.updateAstAndRejigSketch(
+        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
+        if (trap(updatedAst, { suppress: true })) return
+        if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          parse(recast(modifiedAst))
+          updatedAst.newAst
         )
         return {
           selectionType: 'completeSelection',

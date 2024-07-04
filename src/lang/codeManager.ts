@@ -6,9 +6,13 @@ import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
-import { KeyBinding } from '@uiw/react-codemirror'
+import { Annotation, Transaction } from '@codemirror/state'
+import { KeyBinding } from '@codemirror/view'
 
-const PERSIST_CODE_TOKEN = 'persistCode'
+const PERSIST_CODE_KEY = 'persistCode'
+
+const codeManagerUpdateAnnotation = Annotation.define<null>()
+export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(null)
 
 export default class CodeManager {
   private _code: string = bracket
@@ -22,7 +26,7 @@ export default class CodeManager {
       return
     }
 
-    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN) || ''
+    const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
@@ -68,7 +72,9 @@ export default class CodeManager {
     this._currentFilePath = path
   }
 
-  // This updates the code state and calls the updateState function.
+  /**
+   * This updates the code state and calls the updateState function.
+   */
   updateCodeState(code: string): void {
     if (this._code !== code) {
       this.code = code
@@ -76,7 +82,9 @@ export default class CodeManager {
     }
   }
 
-  // Update the code in the editor.
+  /**
+   * Update the code in the editor.
+   */
   updateCodeEditor(code: string): void {
     this.code = code
     if (editorManager.editorView) {
@@ -86,11 +94,17 @@ export default class CodeManager {
           to: editorManager.editorView.state.doc.length,
           insert: code,
         },
+        annotations: [
+          codeManagerUpdateEvent,
+          Transaction.addToHistory.of(true),
+        ],
       })
     }
   }
 
-  // Update the code, state, and the code the code mirror editor sees.
+  /**
+   * Update the code, state, and the code the code mirror editor sees.
+   */
   updateCodeStateEditor(code: string): void {
     if (this._code !== code) {
       this.code = code
@@ -112,7 +126,7 @@ export default class CodeManager {
           })
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_TOKEN, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
   }
 }

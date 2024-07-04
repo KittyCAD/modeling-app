@@ -17,6 +17,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.direnv
 
 npm-debug.log*
 yarn-debug.log*
@@ -55,3 +56,5 @@ src-tauri/gen
 
 src/wasm-lib/grackle/stdlib_cube_partial.json
 Mac_App_Distribution.provisionprofile
+
+*.tsbuildinfo

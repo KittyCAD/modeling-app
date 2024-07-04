@@ -1,6 +1,6 @@
-import { useStore } from 'useStore'
 import styles from './ModelingPane.module.css'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export interface ModelingPaneProps
   extends React.PropsWithChildren,
@@ -33,11 +33,9 @@ export const ModelingPane = ({
 }: ModelingPaneProps) => {
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+  const { context } = useModelingContext()
   const pointerEventsCssClass =
-    buttonDownInStream || onboardingStatus.current === 'camera'
+    context.store?.buttonDownInStream || onboardingStatus.current === 'camera'
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   return (
@@ -46,7 +44,11 @@ export const ModelingPane = ({
       data-testid={detailsTestId}
       id={id}
       className={
-        pointerEventsCssClass + styles.panel + ' group ' + (className || '')
+        'group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 ' +
+        pointerEventsCssClass +
+        styles.panel +
+        ' group ' +
+        (className || '')
       }
     >
       <ModelingPaneHeader title={title} Menu={Menu} />

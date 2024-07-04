@@ -9,7 +9,13 @@ const config = defineConfig({
     open: true,
     port: 3000,
     watch: {
-      ignored: ['**/target/**'],
+      ignored: [
+        '**/target/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/test-results/**',
+        '**/playwright-report/**',
+      ],
     },
   },
   test: {
@@ -26,7 +32,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/playwright/**/*'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*'],
     deps: {
       optimizer: {
         web: {
@@ -46,6 +52,11 @@ const config = defineConfig({
   },
   build: {
     outDir: 'build',
+  },
+  resolve: {
+    alias: {
+      '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
+    },
   },
   plugins: [react(), viteTsconfigPaths(), eslint(), version()],
   worker: {

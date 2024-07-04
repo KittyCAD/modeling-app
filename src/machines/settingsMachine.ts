@@ -11,96 +11,106 @@ import {
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAbAFZN+AOwAWAIwAOYwE4AzGYBM+-ZosAaEAE9Eh62LP51ls+v0LMWt1awMAX3DnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BA9vQ0N1CwCxdVbdY1DnNwQzPp8zTTFje1D1QwtjSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmotNY3w7YysHRuNDTXV1bvdG7w-IKTcbaazWCzTEAxOZ4QiLJIrFL4dJZMAXUpXSrVDTGazPMQPR4GXRBAx-XoGfDWIadMx4n6EqEwuLwxLLVbrTbbNKYKBpLb8tAAUWgcAxMjk11uoHumn0+DEw2sJkMulCgWsFL6YnwfX0ELsYg61jMumZs1ZCXIACU4OgAATLWGiSSXKXYu4aLz4UwWBr6DqBYYUzSePXqUlBLxmyZmC2xeZs8gxB3UYjEJ2W+YSsoem5VL0IKy6z6EsJifQ2Czq0MTHzq8Yjfz6MQmBMu5NkABUuaxBZxCDD+DD5lJgUjxssFP0xl0I+0pm06uMmg8kSiIGwXPgpRZ83dFQHRYAtA0LCO2tZjGIHJNdB5fq5EK3dc1OsNGkrA+oO1bFoe0qFrKiAnlol7BDed5zo+FK+Doc7qhCNaVv4UwbkAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IALAFYAnPgBMARgDsBsQDY969QGYjmzQBoQAT0SnrADnwePY61r0PAwNtMyMAX3CnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BD1PfFtfE3UzTUNNaydXBCD1b209PTEPTTMtdQNNSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmusxPXx7bRt1DzMxI3UjD3UutwhAz4MyeHxiV5+AYRKIgGJzPCERZJFYpfDpLJgC6lK6VaqIExPMwWGwdGxBPRmAE9PSafCPMQ-EzWbQ6ELTOGzOJIxLLVbrTbbNKYKBpLaitAAUWgcGxMjk11uoBqVmBH0ZLKCrVs-xciCCwLCvhCjyMFhGHPh3IS5AASnB0AACZYI0SSS4KvF3AlafADRl1YZ2IxiRx6hBtIzPb7abQ+DxGaxmYKWrnzHnkGKO6jEYjOtN4OVlT03KrehAtOnm7Qaup6Ixm6mR6OaR4dAwjM1mVOxdM2lH8jZbXD4WBpRgAd2QAGMc2AAOIcIhF3Gl-EIRPA6yGcyh4whSnU0xGJ5GAat0OfFowma9xH9gBUK5LStUiECdMmfx+mg8hmNTY-PgMYQpoZoxh41g9q6+C0GAHDyLACL5nesBkBAzBgIQ2AAG6MAA1lhcEIZgSFWvMz4VGu5YALTbtYwEnj8HhxnooT1mG3QhmY-TmJ82gGCyjzaJEsLYAK8ClOReAelRr41HRJiMZYvysexdjUuohh+poBiGDuXzGKy0HWossmKmWyqIDR3zAZWLSahM2jWJ04YjDxHbDMmmhaYE3wmemxGIchLpxOZXpWQgNEjMB1h6WEYHqK8ZgJk2EL6N8wR1Cy-gJqJ4RAA */
     id: 'Settings',
     predictableActionArguments: true,
     context: {} as ReturnType<typeof createSettings>,
     initial: 'idle',
     states: {
       idle: {
-        entry: ['setThemeClass', 'setClientSideSceneUnits', 'persistSettings'],
+        entry: ['setThemeClass', 'setClientSideSceneUnits'],
 
         on: {
           '*': {
-            target: 'idle',
-            internal: true,
-            actions: ['setSettingAtLevel', 'toastSuccess', 'persistSettings'],
+            target: 'persisting settings',
+            actions: ['setSettingAtLevel', 'toastSuccess'],
           },
 
           'set.app.onboardingStatus': {
-            target: 'idle',
-            internal: true,
-            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+            target: 'persisting settings',
+
+            // No toast
+            actions: ['setSettingAtLevel'],
           },
+
           'set.app.themeColor': {
-            target: 'idle',
-            internal: true,
-            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+            target: 'persisting settings',
+
+            // No toast
+            actions: ['setSettingAtLevel'],
           },
 
           'set.modeling.defaultUnit': {
-            target: 'idle',
-            internal: true,
+            target: 'persisting settings',
+
             actions: [
               'setSettingAtLevel',
               'toastSuccess',
               'setClientSideSceneUnits',
               'Execute AST',
-              'persistSettings',
             ],
           },
 
           'set.app.theme': {
-            target: 'idle',
-            internal: true,
+            target: 'persisting settings',
+
             actions: [
               'setSettingAtLevel',
               'toastSuccess',
               'setThemeClass',
               'setEngineTheme',
-              'persistSettings',
               'setClientTheme',
             ],
           },
 
           'set.modeling.highlightEdges': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'setSettingAtLevel',
-              'toastSuccess',
-              'setEngineEdges',
-              'persistSettings',
-            ],
+            target: 'persisting settings',
+
+            actions: ['setSettingAtLevel', 'toastSuccess', 'setEngineEdges'],
           },
 
           'Reset settings': {
-            target: 'idle',
-            internal: true,
+            target: 'persisting settings',
+
             actions: [
               'resetSettings',
               'setThemeClass',
               'setEngineTheme',
               'setClientSideSceneUnits',
               'Execute AST',
-              'persistSettings',
               'setClientTheme',
             ],
           },
 
           'Set all settings': {
-            target: 'idle',
-            internal: true,
+            target: 'persisting settings',
+
             actions: [
               'setAllSettings',
               'setThemeClass',
               'setEngineTheme',
               'setClientSideSceneUnits',
               'Execute AST',
-              'persistSettings',
               'setClientTheme',
             ],
           },
+
+          'set.modeling.showScaleGrid': {
+            target: 'persisting settings',
+            actions: [
+              'setSettingAtLevel',
+              'toastSuccess',
+              'setEngineScaleGridVisibility',
+            ],
+          },
+        },
+      },
+
+      'persisting settings': {
+        invoke: {
+          src: 'Persist settings',
+          id: 'persistSettings',
+          onDone: 'idle',
         },
       },
     },

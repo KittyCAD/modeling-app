@@ -37,6 +37,21 @@ export const modelingMachineConfig: CommandSetConfig<
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
+  'Equip Line tool': {
+    description: 'Start drawing straight lines.',
+    icon: 'line',
+    displayName: 'Line',
+  },
+  'Equip tangential arc to': {
+    description: 'Start drawing an arc tangent to the current segment.',
+    icon: 'arc',
+    displayName: 'Tangential Arc',
+  },
+  'Equip rectangle tool': {
+    description: 'Start drawing a rectangle.',
+    icon: 'rectangle',
+    displayName: 'Rectangle',
+  },
   Export: {
     description: 'Export the current model.',
     icon: 'exportFile',

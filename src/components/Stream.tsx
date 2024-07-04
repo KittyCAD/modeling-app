@@ -1,5 +1,4 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -9,31 +8,56 @@ import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
 
-export const Stream = ({ className = '' }: { className?: string }) => {
+export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isFirstRender, setIsFirstRender] = useState(kclManager.isFirstRender)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const {
-    mediaStream,
-    setButtonDownInStream,
-    didDragInStream,
-    setDidDragInStream,
-    streamDimensions,
-  } = useStore((s) => ({
-    mediaStream: s.mediaStream,
-    setButtonDownInStream: s.setButtonDownInStream,
-    didDragInStream: s.didDragInStream,
-    setDidDragInStream: s.setDidDragInStream,
-    streamDimensions: s.streamDimensions,
-  }))
   const { settings } = useSettingsAuthContext()
-  const { state } = useModelingContext()
+  const { state, send, context } = useModelingContext()
   const { overallState } = useNetworkContext()
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  // Linux has a default behavior to paste text on middle mouse up
+  // This adds a listener to block that pasting if the click target
+  // is not a text input, so users can move in the 3D scene with
+  // middle mouse drag with a text input focused without pasting.
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const isHtmlElement = e.target && e.target instanceof HTMLElement
+      const isEditable =
+        (isHtmlElement && !('explicitOriginalTarget' in e)) ||
+        ('explicitOriginalTarget' in e &&
+          ((e.explicitOriginalTarget as HTMLElement).contentEditable ===
+            'true' ||
+            ['INPUT', 'TEXTAREA'].some(
+              (tagName) =>
+                tagName === (e.explicitOriginalTarget as HTMLElement).tagName
+            )))
+      if (!isEditable) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+      }
+    }
+
+    globalThis?.window?.document?.addEventListener('paste', handlePaste, {
+      capture: true,
+    })
+    return () =>
+      globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
+        capture: true,
+      })
+  }, [])
+
+  useEffect(() => {
+    setIsFirstRender(kclManager.isFirstRender)
+  }, [kclManager.isFirstRender])
 
   useEffect(() => {
     if (
@@ -42,38 +66,65 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     )
       return
     if (!videoRef.current) return
-    if (!mediaStream) return
-    videoRef.current.srcObject = mediaStream
-  }, [mediaStream])
+    if (!context.store?.mediaStream) return
+    videoRef.current.srcObject = context.store.mediaStream
+
+    send({
+      type: 'Set context',
+      data: {
+        videoElement: videoRef.current,
+      },
+    })
+  }, [context.store?.mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
+
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
       clientY: e.clientY,
       el: videoRef.current,
-      ...streamDimensions,
+      ...context.store?.streamDimensions,
     })
 
-    setButtonDownInStream(e.button)
+    send({
+      type: 'Set context',
+      data: {
+        buttonDownInStream: e.button,
+      },
+    })
     setClickCoords({ x, y })
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
-    setButtonDownInStream(undefined)
+    send({
+      type: 'Set context',
+      data: {
+        buttonDownInStream: undefined,
+      },
+    })
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
 
-    if (!didDragInStream && butName(e).left) {
-      sendSelectEventToEngine(e, videoRef.current, streamDimensions)
+    if (!context.store?.didDragInStream && butName(e).left) {
+      sendSelectEventToEngine(
+        e,
+        videoRef.current,
+        context.store?.streamDimensions
+      )
     }
 
-    setDidDragInStream(false)
+    send({
+      type: 'Set context',
+      data: {
+        didDragInStream: false,
+      },
+    })
     setClickCoords(undefined)
   }
 
@@ -87,15 +138,21 @@ export const Stream = ({ className = '' }: { className?: string }) => {
       ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
       0.5
 
-    if (delta > 5 && !didDragInStream) {
-      setDidDragInStream(true)
+    if (delta > 5 && !context.store?.didDragInStream) {
+      send({
+        type: 'Set context',
+        data: {
+          didDragInStream: true,
+        },
+      })
     }
   }
 
   return (
     <div
+      className="absolute inset-0 z-0"
       id="stream"
-      className={className}
+      data-testid="stream"
       onMouseUp={handleMouseUp}
       onMouseDown={handleMouseDown}
       onContextMenu={(e) => e.preventDefault()}
@@ -110,7 +167,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         onMouseMoveCapture={handleMouseMove}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
-        style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
         id="video-stream"
       />
       <ClientSideScene
@@ -123,10 +179,14 @@ export const Stream = ({ className = '' }: { className?: string }) => {
           </Loading>
         </div>
       )}
-      {isLoading && (
-        <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {(isLoading || isFirstRender) && (
+        <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Loading stream...</span>
+            {!isLoading && isFirstRender ? (
+              <span data-testid="loading-stream">Building scene...</span>
+            ) : (
+              <span data-testid="loading-stream">Loading stream...</span>
+            )}
           </Loading>
         </div>
       )}

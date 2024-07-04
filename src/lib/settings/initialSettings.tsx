@@ -157,7 +157,7 @@ export function createSettings() {
         ),
       }),
       enableSSAO: new Setting<boolean>({
-        defaultValue: true,
+        defaultValue: false,
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
         validate: (v) => typeof v === 'boolean',
@@ -319,6 +319,18 @@ export function createSettings() {
       highlightEdges: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to highlight edges of 3D objects',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        hideOnLevel: 'project',
+      }),
+      /**
+       * Whether to show a scale grid in the 3D modeling view
+       */
+      showScaleGrid: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show a scale grid in the 3D modeling view',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

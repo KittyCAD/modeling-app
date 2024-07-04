@@ -1,4 +1,3 @@
-import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -43,6 +42,7 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
+import CodeEditor from './CodeEditor'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -84,6 +84,10 @@ export const KclEditorPane = () => {
 
   const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor
+  // DO NOT ADD THE CODEMIRROR HOTKEYS HERE TO THE DEPENDENCY ARRAY
+  // It reloads the editor every time we do _anything_ in the editor
+  // I have no idea why.
+  // Instead, hot load hotkeys via code mirror native.
   const codeMirrorHotkeys = codeManager.getCodemirrorHotkeys()
 
   const editorExtensions = useMemo(() => {
@@ -134,7 +138,6 @@ export const KclEditorPane = () => {
         highlightSelectionMatches(),
         syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
         rectangularSelection(),
-        drawSelection(),
         dropCursor(),
         interact({
           rules: [
@@ -173,13 +176,7 @@ export const KclEditorPane = () => {
     }
 
     return extensions
-  }, [
-    kclLSP,
-    copilotLSP,
-    textWrapping.current,
-    cursorBlinking.current,
-    codeMirrorHotkeys,
-  ])
+  }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
   const initialCode = useRef(codeManager.code)
 
@@ -188,15 +185,15 @@ export const KclEditorPane = () => {
       id="code-mirror-override"
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
-      <ReactCodeMirror
-        value={initialCode.current}
+      <CodeEditor
+        initialDocValue={initialCode.current}
         extensions={editorExtensions}
         theme={theme}
-        onCreateEditor={(_editorView) =>
+        onCreateEditor={(_editorView) => {
+          if (_editorView === null) return
+
           editorManager.setEditorView(_editorView)
-        }
-        indentWithTab={false}
-        basicSetup={false}
+        }}
       />
     </div>
   )

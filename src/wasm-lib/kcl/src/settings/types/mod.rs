@@ -379,6 +379,9 @@ pub struct ModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// Whether or not to show a scale grid in the 3D modeling view
+    #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
+    pub show_scale_grid: bool,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -405,7 +408,10 @@ impl From<bool> for DefaultTrue {
 }
 
 /// The valid types of length units.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[derive(
+    Debug, Default, Eq, PartialEq, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr,
+)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 #[display(style = "lowercase")]
@@ -637,7 +643,7 @@ textWrapping = true
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: Default::default(),
+                            color: Default::default()
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -652,14 +658,15 @@ textWrapping = true
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: false.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
-                        blinking_cursor: true.into(),
+                        blinking_cursor: true.into()
                     },
                     project: Default::default(),
                     command_bar: CommandBarSettings {
-                        include_settings: true.into(),
+                        include_settings: true.into()
                     },
                 }
             }
@@ -695,7 +702,7 @@ includeSettings = false
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0.into(),
+                            color: 138.0.into()
                         },
                         onboarding_status: Default::default(),
                         project_directory: None,
@@ -710,14 +717,15 @@ includeSettings = false
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: true.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
-                        blinking_cursor: false.into(),
+                        blinking_cursor: false.into()
                     },
                     project: Default::default(),
                     command_bar: CommandBarSettings {
-                        include_settings: false.into(),
+                        include_settings: false.into()
                     },
                 }
             }
@@ -758,7 +766,7 @@ defaultProjectName = "projects-$nnn"
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0.into(),
+                            color: 138.0.into()
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -773,17 +781,18 @@ defaultProjectName = "projects-$nnn"
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
                         enable_ssao: true.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
-                        blinking_cursor: false.into(),
+                        blinking_cursor: false.into()
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "projects-$nnn".to_string().into(),
+                        default_project_name: "projects-$nnn".to_string().into()
                     },
                     command_bar: CommandBarSettings {
-                        include_settings: false.into(),
+                        include_settings: false.into()
                     },
                 }
             }
@@ -833,7 +842,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::System,
-                            color: Default::default(),
+                            color: Default::default()
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -848,14 +857,15 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         highlight_edges: true.into(),
                         show_debug_panel: false,
                         enable_ssao: true.into(),
+                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
-                        blinking_cursor: true.into(),
+                        blinking_cursor: true.into()
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "project-$nnn".to_string().into(),
+                        default_project_name: "project-$nnn".to_string().into()
                     },
                     command_bar: CommandBarSettings {
                         include_settings: true.into()

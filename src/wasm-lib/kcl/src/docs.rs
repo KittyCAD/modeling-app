@@ -1,14 +1,16 @@
 //! Functions for generating docs for our stdlib functions.
 
-use crate::std::Primitive;
+use std::path::Path;
+
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
+
+use crate::std::Primitive;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]
@@ -63,11 +65,18 @@ impl StdLibFnArg {
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
         if self.type_ == "SketchGroup"
-            || self.type_ == "ExtrudeGroup"
-            || self.type_ == "SketchSurface"
             || self.type_ == "SketchGroupSet"
+            || self.type_ == "ExtrudeGroup"
+            || self.type_ == "ExtrudeGroupSet"
+            || self.type_ == "SketchSurface"
+            || self.type_ == "SketchSurfaceOrGroup"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
+        } else if self.type_ == "TagDeclarator" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
+        } else if self.type_ == "TagIdentifier" && self.required {
+            // TODO: actually use the ast to populate this.
+            return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
     }
@@ -449,6 +458,10 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 return Ok((Primitive::String.to_string(), false));
             }
 
+            if let Some(reference) = &o.reference {
+                return Ok((reference.replace("#/components/schemas/", ""), false));
+            }
+
             anyhow::bail!("unknown type: {:#?}", o)
         }
         schemars::schema::Schema::Bool(_) => Ok((Primitive::Bool.to_string(), false)),
@@ -816,7 +829,7 @@ mod tests {
         assert_eq!(
             some_function,
             crate::ast::types::Function::StdLib {
-                func: Box::new(crate::std::sketch::Line),
+                func: Box::new(crate::std::sketch::Line)
             }
         );
     }
@@ -881,5 +894,12 @@ mod tests {
 	axis: ${1:"X"},
 }, ${2:%})${}"#
         );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_circle() {
+        let circle_fn: Box<dyn StdLibFn> = Box::new(crate::std::shapes::Circle);
+        let snippet = circle_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"circle([${0:3.14}, ${1:3.14}], ${2:3.14}, ${3:%})${}"#);
     }
 }

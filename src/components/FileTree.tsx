@@ -18,6 +18,8 @@ import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
+import { ContextMenu, ContextMenuItem } from './ContextMenu'
+import usePlatform from 'hooks/usePlatform'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -125,6 +127,7 @@ const FileTreeItem = ({
   const navigate = useNavigate()
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
+  const itemRef = useRef(null)
 
   const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
   const removeCurrentItemFromRenaming = useCallback(
@@ -172,7 +175,11 @@ const FileTreeItem = ({
           codeManager.code
       )
       codeManager.writeToFile()
-      kclManager.executeCode(true, true)
+
+      kclManager.isFirstRender = true
+      kclManager.executeCode(true, true).then(() => {
+        kclManager.isFirstRender = false
+      })
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
@@ -185,7 +192,7 @@ const FileTreeItem = ({
   }
 
   return (
-    <>
+    <div className="contents" ref={itemRef}>
       {fileOrDir.children === undefined ? (
         <li
           className={
@@ -321,7 +328,41 @@ const FileTreeItem = ({
           setIsOpen={setIsConfirmingDelete}
         />
       )}
-    </>
+      <FileTreeContextMenu
+        itemRef={itemRef}
+        onRename={addCurrentItemToRenaming}
+        onDelete={() => setIsConfirmingDelete(true)}
+      />
+    </div>
+  )
+}
+
+interface FileTreeContextMenuProps {
+  itemRef: React.RefObject<HTMLElement>
+  onRename: () => void
+  onDelete: () => void
+}
+
+function FileTreeContextMenu({
+  itemRef,
+  onRename,
+  onDelete,
+}: FileTreeContextMenuProps) {
+  const platform = usePlatform()
+  const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
+
+  return (
+    <ContextMenu
+      menuTargetElement={itemRef}
+      items={[
+        <ContextMenuItem onClick={onRename} hotkey="Enter">
+          Rename
+        </ContextMenuItem>,
+        <ContextMenuItem onClick={onDelete} hotkey={metaKey + ' + Del'}>
+          Delete
+        </ContextMenuItem>,
+      ]}
+    />
   )
 }
 

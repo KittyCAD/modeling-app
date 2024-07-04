@@ -1,4 +1,9 @@
-import { Codec, FromServer, IntoServer } from 'editor/plugins/lsp/codec'
+import {
+  Codec,
+  FromServer,
+  IntoServer,
+  LspWorkerEventType,
+} from '@kittycad/codemirror-lsp-client'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import init, {
   ServerConfig,
@@ -7,16 +12,16 @@ import init, {
 } from 'wasm-lib/pkg/wasm_lib'
 import * as jsrpc from 'json-rpc-2.0'
 import {
-  LspWorkerEventType,
   LspWorkerEvent,
   LspWorker,
   KclWorkerOptions,
   CopilotWorkerOptions,
 } from 'editor/plugins/lsp/types'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { err } from 'lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
-const fromServer: FromServer = FromServer.create()
+const fromServer: FromServer | Error = FromServer.create()
 
 // Initialise the wasm module.
 const initialise = async (wasmUrl: string) => {
@@ -56,6 +61,7 @@ export async function kclLspRun(
 }
 
 onmessage = function (event) {
+  if (err(fromServer)) return
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
 
   switch (eventType) {
@@ -111,6 +117,7 @@ onmessage = function (event) {
 }
 
 new Promise<void>(async (resolve) => {
+  if (err(fromServer)) return
   for await (const requests of fromServer.requests) {
     const encoded = Codec.encode(requests as jsrpc.JSONRPCRequest)
     postMessage(encoded)
@@ -118,6 +125,7 @@ new Promise<void>(async (resolve) => {
 })
 
 new Promise<void>(async (resolve) => {
+  if (err(fromServer)) return
   for await (const notification of fromServer.notifications) {
     const encoded = Codec.encode(notification as jsrpc.JSONRPCRequest)
     postMessage(encoded)

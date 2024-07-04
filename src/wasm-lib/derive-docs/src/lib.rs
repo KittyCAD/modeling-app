@@ -96,10 +96,16 @@ fn do_stdlib_inner(
     }
 
     if !ast.sig.generics.params.is_empty() {
-        errors.push(Error::new_spanned(
-            &ast.sig.generics,
-            "generics are not permitted for stdlib functions",
-        ));
+        if ast.sig.generics.params.iter().any(|generic_type| match generic_type {
+            syn::GenericParam::Lifetime(_) => false,
+            syn::GenericParam::Type(_) => true,
+            syn::GenericParam::Const(_) => true,
+        }) {
+            errors.push(Error::new_spanned(
+                &ast.sig.generics,
+                "Stdlib functions may not be generic over types or constants, only lifetimes.",
+            ));
+        }
     }
 
     if ast.sig.variadic.is_some() {
@@ -650,7 +656,12 @@ impl Parse for ItemFnForSignature {
 }
 
 fn clean_ty_string(t: &str) -> (String, proc_macro2::TokenStream) {
-    let mut ty_string = t.replace('&', "").replace("mut", "").replace(' ', "");
+    let mut ty_string = t
+        .replace("& 'a", "")
+        .replace('&', "")
+        .replace("mut", "")
+        .replace("< 'a >", "")
+        .replace(' ', "");
     if ty_string.starts_with("Args") {
         ty_string = "Args".to_string();
     }
@@ -750,7 +761,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 is_mock: true,
             };
 
-            ctx.run(program, None).await.unwrap();
+            ctx.run(&program, None).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -784,7 +795,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let program = parser.ast().unwrap();
             let ctx = crate::executor::ExecutorContext::new(&client, Default::default()).await.unwrap();
 
-            ctx.run(program, None).await.unwrap();
+            ctx.run(&program, None).await.unwrap();
 
             // Zoom to fit.
             ctx.engine

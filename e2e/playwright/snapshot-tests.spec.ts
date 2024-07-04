@@ -91,8 +91,9 @@ const part001 = startSketchOn('-XZ')
     )
   })
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
+
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.waitForCmdReceive('extrude')
@@ -330,7 +331,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
 
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   // wait for execution done
@@ -386,8 +387,8 @@ test('Draft segments should look right', async ({ page, context }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
   await u.openDebugPanel()
 
   await expect(
@@ -405,17 +406,16 @@ test('Draft segments should look right', async ({ page, context }) => {
   // select a plane
   await page.mouse.click(700, 200)
 
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
-  )
+  let code = `const sketch001 = startSketchOn('XZ')`
+  await expect(page.locator('.cm-content')).toHaveText(code)
 
-  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
-  |> startProfileAt([9.06, -12.22], %)`)
+  code += `
+  |> startProfileAt([7.19, -9.7], %)`
+  await expect(page.locator('.cm-content')).toHaveText(code)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -427,10 +427,9 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
-  |> startProfileAt([9.06, -12.22], %)
-  |> line([9.14, 0], %)`)
+  code += `
+  |> line([7.25, 0], %)`
+  await expect(page.locator('.cm-content')).toHaveText(code)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
 
@@ -445,7 +444,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
@@ -465,7 +464,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -492,7 +491,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
@@ -513,17 +512,16 @@ test.describe('Client side scene scale should match engine scale', () => {
     // select a plane
     await page.mouse.click(700, 200)
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('XZ')`
-    )
+    let code = `const sketch001 = startSketchOn('XZ')`
+    await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+    await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
 
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
-    |> startProfileAt([9.06, -12.22], %)`)
+    code += `
+  |> startProfileAt([7.19, -9.7], %)`
+    await expect(u.codeLocator).toHaveText(code)
     await page.waitForTimeout(100)
 
     await u.closeDebugPanel()
@@ -531,21 +529,18 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
     await page.waitForTimeout(100)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
-    |> startProfileAt([9.06, -12.22], %)
-    |> line([9.14, 0], %)`)
+    code += `
+  |> line([7.25, 0], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
-    |> startProfileAt([9.06, -12.22], %)
-    |> line([9.14, 0], %)
-    |> tangentialArcTo([27.34, -3.08], %)`)
+    code += `
+  |> tangentialArcTo([21.7, -2.44], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     // click tangential arc tool again to unequip it
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
@@ -595,7 +590,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.goto('/')
+
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
@@ -616,17 +611,16 @@ test.describe('Client side scene scale should match engine scale', () => {
     // select a plane
     await page.mouse.click(700, 200)
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('XZ')`
-    )
+    let code = `const sketch001 = startSketchOn('XZ')`
+    await expect(u.codeLocator).toHaveText(code)
 
-    await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+    await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
 
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
-      |> startProfileAt([230.03, -310.32], %)`)
+    code += `
+  |> startProfileAt([182.59, -246.32], %)`
+    await expect(u.codeLocator).toHaveText(code)
     await page.waitForTimeout(100)
 
     await u.closeDebugPanel()
@@ -634,21 +628,18 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
     await page.waitForTimeout(100)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
-      |> startProfileAt([230.03, -310.32], %)
-      |> line([232.2, 0], %)`)
+    code += `
+  |> line([184.3, 0], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
-      |> startProfileAt([230.03, -310.32], %)
-      |> line([232.2, 0], %)
-      |> tangentialArcTo([694.43, -78.12], %)`)
+    code += `
+  |> tangentialArcTo([551.2, -62.01], %)`
+    await expect(u.codeLocator).toHaveText(code)
 
     await page.getByRole('button', { name: 'Tangential Arc' }).click()
     await page.waitForTimeout(100)
@@ -699,7 +690,7 @@ const part002 = startSketchOn(part001, 'seg01')
   }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -749,7 +740,7 @@ test('Zoom to fit on load - solid 2d', async ({ page, context }) => {
   }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -786,7 +777,7 @@ test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
   }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+
   await u.waitForAuthSkipAppStart()
 
   await u.openDebugPanel()
@@ -803,5 +794,85 @@ test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
+  })
+})
+
+test.describe('Grid visibility', () => {
+  test('Grid turned off', async ({ page }) => {
+    const u = await getUtils(page)
+    const stream = page.getByTestId('stream')
+    const mask = [
+      page.locator('#app-header'),
+      page.locator('#sidebar-top-ribbon'),
+      page.locator('#sidebar-bottom-ribbon'),
+    ]
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(2)
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+    // TODO: Find a way to truly know that the objects have finished
+    // rendering, because an execution-done message is not sufficient.
+    await page.waitForTimeout(1000)
+
+    await expect(stream).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask,
+    })
+  })
+
+  test('Grid turned on', async ({ page }) => {
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: {
+            ...TEST_SETTINGS,
+            modeling: {
+              ...TEST_SETTINGS.modeling,
+              showScaleGrid: true,
+            },
+          },
+        }),
+      }
+    )
+
+    const u = await getUtils(page)
+    const stream = page.getByTestId('stream')
+    const mask = [
+      page.locator('#app-header'),
+      page.locator('#sidebar-top-ribbon'),
+      page.locator('#sidebar-bottom-ribbon'),
+    ]
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(2)
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+    // TODO: Find a way to truly know that the objects have finished
+    // rendering, because an execution-done message is not sufficient.
+    await page.waitForTimeout(1000)
+
+    await expect(stream).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask,
+    })
   })
 })

@@ -12,22 +12,43 @@ let lastMessage = ''
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
 
-interface CommandInfo {
-  commandType: CommandTypes
-  range: SourceRange
-  pathToNode: PathToNode
-  parentId?: string
-  additionalData?:
-    | {
-        type: 'cap'
-        info: 'start' | 'end'
-      }
-    | {
-        type: 'batch-ids'
-        ids: string[]
-        info?: null
-      }
-}
+type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
+
+type CommandInfo =
+  | {
+      commandType: 'extrude'
+      // commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      /// uuid of the entity to extrude
+      target: string
+      parentId?: string
+    }
+  | {
+      commandType: 'start_path'
+      // commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      /// uuid of the entity that have been extruded
+      extrusions: string[]
+      parentId?: string
+    }
+  | {
+      commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      parentId?: string
+      additionalData?:
+        | {
+            type: 'cap'
+            info: 'start' | 'end'
+          }
+        | {
+            type: 'batch-ids'
+            ids: string[]
+            info?: null
+          }
+    }
 
 function isHighlightSetEntity_type(
   data: any
@@ -37,14 +58,17 @@ function isHighlightSetEntity_type(
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
+type BatchResponseMap = {
+  [key: string]: Models['BatchResponse_type']
+}
 
-interface ResultCommand extends CommandInfo {
+type ResultCommand = CommandInfo & {
   type: 'result'
   data: any
   raw: WebSocketResponse
   headVertexId?: string
 }
-interface FailedCommand extends CommandInfo {
+type FailedCommand = CommandInfo & {
   type: 'failed'
   errors: Models['FailureWebSocketResponse_type']['errors']
 }
@@ -57,11 +81,13 @@ interface ResolveCommand {
   data?: Models['OkModelingCmdResponse_type']
   errors?: Models['FailureWebSocketResponse_type']['errors']
 }
-interface PendingCommand extends CommandInfo {
+type PendingCommand = CommandInfo & {
   type: 'pending'
   promise: Promise<any>
   resolve: (val: ResolveCommand) => void
 }
+
+export type ArtifactMapCommand = ResultCommand | PendingCommand | FailedCommand
 
 /**
  * The ArtifactMap is a client-side representation of the artifacts that
@@ -72,7 +98,7 @@ interface PendingCommand extends CommandInfo {
  * lines of KCL code that generated them.
  */
 export interface ArtifactMap {
-  [commandId: string]: ResultCommand | PendingCommand | FailedCommand
+  [commandId: string]: ArtifactMapCommand
 }
 
 interface NewTrackArgs {
@@ -124,7 +150,6 @@ export enum ConnectionError {
   Unset = 0,
   LongLoadingTime,
 
-  LostVideoStream,
   ICENegotiate,
   DataChannelError,
   WebSocketError,
@@ -145,8 +170,6 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
-  [ConnectionError.LostVideoStream]:
-    'Lost connection to video stream... Reconnecting...',
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
   [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
   [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
@@ -292,8 +315,6 @@ class EngineConnection extends EventTarget {
     if (next.type === EngineConnectionStateType.Disconnecting) {
       const sub = next.value
       if (sub.type === DisconnectingType.Error) {
-        console.log(sub)
-
         // Record the last step we failed at.
         // (Check the current state that we're about to override that
         // it was a Connecting state.)
@@ -736,8 +757,6 @@ class EngineConnection extends EventTarget {
         // when assuming we're the only consumer or that all messages will
         // be carefully formatted here.
 
-        console.log(event)
-
         if (typeof event.data !== 'string') {
           return
         }
@@ -758,7 +777,6 @@ class EngineConnection extends EventTarget {
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.commandType}`
             )
-            console.log(artifactThatFailed)
           } else {
             console.error(`Error from server:\n${errorsString}`)
           }
@@ -849,7 +867,6 @@ class EngineConnection extends EventTarget {
             this.pc
               ?.createOffer()
               .then((offer: RTCSessionDescriptionInit) => {
-                console.log(offer)
                 this.state = {
                   type: EngineConnectionStateType.Connecting,
                   value: {
@@ -921,7 +938,6 @@ class EngineConnection extends EventTarget {
 
           case 'trickle_ice':
             let candidate = resp.data?.candidate
-            console.log('trickle_ice: using this candidate: ', candidate)
             void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
             break
 
@@ -987,8 +1003,6 @@ class EngineConnection extends EventTarget {
 
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
-
-type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
@@ -1129,6 +1143,7 @@ export class EngineCommandManager extends EventTarget {
     this.getAst = cb
   }
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
+  private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
   start({
     setMediaStream,
@@ -1138,10 +1153,12 @@ export class EngineCommandManager extends EventTarget {
     executeCode,
     token,
     makeDefaultPlanes,
+    modifyGrid,
     settings = {
       theme: Themes.Dark,
       highlightEdges: true,
       enableSSAO: true,
+      showScaleGrid: false,
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
@@ -1151,13 +1168,16 @@ export class EngineCommandManager extends EventTarget {
     executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
+    modifyGrid: (hidden: boolean) => Promise<void>
     settings?: {
       theme: Themes
       highlightEdges: boolean
       enableSSAO: boolean
+      showScaleGrid: boolean
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
+    this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
     }
@@ -1233,8 +1253,11 @@ export class EngineCommandManager extends EventTarget {
             type: 'default_camera_get_settings',
           },
         })
-
-        this.initPlanes().then(async () => {
+        // We want modify the grid first because we don't want it to flash.
+        // Ideally these would already be default hidden in engine (TODO do
+        // that) https://github.com/KittyCAD/engine/issues/2282
+        this.modifyGrid(!settings.showScaleGrid)?.then(async () => {
+          await this.initPlanes()
           this.resolveReady()
           setIsStreamReady(true)
           await executeCode()
@@ -1305,7 +1328,8 @@ export class EngineCommandManager extends EventTarget {
             )
             if (
               message.success &&
-              message.resp.type === 'modeling' &&
+              (message.resp.type === 'modeling' ||
+                message.resp.type === 'modeling_batch') &&
               message.request_id
             ) {
               this.handleModelingCommand(
@@ -1326,20 +1350,10 @@ export class EngineCommandManager extends EventTarget {
         this.engineConnection?.addEventListener(
           EngineConnectionEvents.NewTrack,
           (({ detail: { mediaStream } }: CustomEvent<NewTrackArgs>) => {
-            console.log('received track', mediaStream)
-
             mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-              if (this.engineConnection) {
-                this.engineConnection.state = {
-                  type: EngineConnectionStateType.Disconnecting,
-                  value: {
-                    type: DisconnectingType.Error,
-                    value: {
-                      error: ConnectionError.LostVideoStream,
-                    },
-                  },
-                }
-              }
+              console.error(
+                'video track mute: check webrtc internals -> inbound rtp'
+              )
             })
 
             setMediaStream(mediaStream)
@@ -1379,19 +1393,60 @@ export class EngineCommandManager extends EventTarget {
     id: string,
     raw: WebSocketResponse
   ) {
-    if (message.type !== 'modeling') {
+    if (!(message.type === 'modeling' || message.type === 'modeling_batch')) {
       return
     }
-    const modelingResponse = message.data.modeling_response
+
     const command = this.artifactMap[id]
+    let modelingResponse: Models['OkModelingCmdResponse_type'] = {
+      type: 'empty',
+    }
+    if ('modeling_response' in message.data) {
+      modelingResponse = message.data.modeling_response
+    }
     if (
       command?.type === 'pending' &&
       command.commandType === 'batch' &&
       command?.additionalData?.type === 'batch-ids'
     ) {
-      command.additionalData.ids.forEach((id) => {
-        this.handleModelingCommand(message, id, raw)
-      })
+      if ('responses' in message.data) {
+        const batchResponse = message.data.responses as BatchResponseMap
+        // Iterate over the map of responses.
+        Object.entries(batchResponse).forEach(([key, response]) => {
+          // If the response is a success, we resolve the promise.
+          if ('response' in response && response.response) {
+            this.handleModelingCommand(
+              {
+                type: 'modeling',
+                data: {
+                  modeling_response: response.response,
+                },
+              },
+              key,
+              {
+                request_id: key,
+                resp: {
+                  type: 'modeling',
+                  data: {
+                    modeling_response: response.response,
+                  },
+                },
+                success: true,
+              }
+            )
+          } else if ('errors' in response) {
+            this.handleFailedModelingCommand(key, {
+              request_id: key,
+              success: false,
+              errors: response.errors,
+            })
+          }
+        })
+      } else {
+        command.additionalData.ids.forEach((id) => {
+          this.handleModelingCommand(message, id, raw)
+        })
+      }
       // batch artifact is just a container, we don't need to keep it
       // once we process all the commands inside it
       const resolve = command.resolve
@@ -1400,7 +1455,6 @@ export class EngineCommandManager extends EventTarget {
         id,
         commandType: command.commandType,
         range: command.range,
-        data: modelingResponse,
         raw,
       })
       return
@@ -1421,6 +1475,9 @@ export class EngineCommandManager extends EventTarget {
 
     if (command && command.type === 'pending') {
       const resolve = command.resolve
+      const oldArtifact = this.artifactMap[id] as ArtifactMapCommand & {
+        extrusions?: string[]
+      }
       const artifact = {
         type: 'result',
         range: command.range,
@@ -1429,7 +1486,10 @@ export class EngineCommandManager extends EventTarget {
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
         raw,
-      } as const
+      } as ArtifactMapCommand & { extrusions?: string[] }
+      if (oldArtifact?.extrusions) {
+        artifact.extrusions = oldArtifact.extrusions
+      }
       this.artifactMap[id] = artifact
       if (
         (command.commandType === 'entity_linear_pattern' &&
@@ -1652,7 +1712,6 @@ export class EngineCommandManager extends EventTarget {
         (command.cmd.type === 'highlight_set_entity' ||
           command.cmd.type === 'mouse_move' ||
           command.cmd.type === 'camera_drag_move' ||
-          command.cmd.type === 'default_camera_look_at' ||
           command.cmd.type === ('default_camera_perspective_settings' as any))
       )
     ) {
@@ -1667,7 +1726,6 @@ export class EngineCommandManager extends EventTarget {
       command.type === 'modeling_cmd_req' &&
       command.cmd.type !== lastMessage
     ) {
-      console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
     }
     if (command.type === 'modeling_cmd_batch_req') {
@@ -1681,7 +1739,7 @@ export class EngineCommandManager extends EventTarget {
     if (
       (cmd.type === 'camera_drag_move' ||
         cmd.type === 'handle_mouse_drag_move' ||
-        cmd.type === 'default_camera_look_at' ||
+        cmd.type === 'default_camera_zoom' ||
         cmd.type === ('default_camera_perspective_settings' as any)) &&
       this.engineConnection?.unreliableDataChannel &&
       !forceWebsocket
@@ -1735,7 +1793,7 @@ export class EngineCommandManager extends EventTarget {
     command: EngineCommand
     ast: Program
     idToRangeMap?: { [key: string]: SourceRange }
-  }): Promise<any> {
+  }): Promise<ResolveCommand | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1774,7 +1832,7 @@ export class EngineCommandManager extends EventTarget {
         )
       }
     }
-    throw Error('shouldnt reach here')
+    return Promise.reject(new Error('Expected unreachable reached'))
   }
   handlePendingSceneCommand(
     id: string,
@@ -1804,19 +1862,24 @@ export class EngineCommandManager extends EventTarget {
     command: Models['ModelingCmd_type'],
     ast?: Program,
     range?: SourceRange
-  ) {
+  ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
+    const promise: Promise<ResolveCommand | void> = new Promise(
+      (_resolve, reject) => {
+        resolve = _resolve
+      }
+    )
     const getParentId = (): string | undefined => {
       if (command.type === 'extend_path') return command.path
       if (command.type === 'solid3d_get_extrusion_face_info') {
         const edgeArtifact = this.artifactMap[command.edge_id]
         // edges's parent id is to the original "start_path" artifact
-        if (edgeArtifact?.parentId) return edgeArtifact.parentId
+        if (edgeArtifact && edgeArtifact.parentId) {
+          return edgeArtifact.parentId
+        }
       }
       if (command.type === 'close_path') return command.path_id
+      if (command.type === 'extrude') return command.target
       // handle other commands that have a parent here
     }
     const pathToNode = ast
@@ -1831,6 +1894,35 @@ export class EngineCommandManager extends EventTarget {
       promise,
       resolve,
     }
+    if (command.type === 'extrude') {
+      this.artifactMap[id] = {
+        range: range || [0, 0],
+        pathToNode,
+        type: 'pending',
+        commandType: 'extrude',
+        parentId: getParentId(),
+        promise,
+        target: command.target,
+        resolve,
+      }
+      const target = this.artifactMap[command.target]
+      if (target.commandType === 'start_path') {
+        // tsc cannot infer that target can have extrusions
+        // from the commandType (why?) so we need to cast it
+        const typedTarget = target as (
+          | PendingCommand
+          | ResultCommand
+          | FailedCommand
+        ) & { extrusions?: string[] }
+        if (typedTarget?.extrusions?.length) {
+          typedTarget.extrusions.push(id)
+        } else {
+          typedTarget.extrusions = [id]
+        }
+        // Update in the map.
+        this.artifactMap[command.target] = typedTarget
+      }
+    }
     return promise
   }
   async handlePendingBatchCommand(
@@ -1839,14 +1931,18 @@ export class EngineCommandManager extends EventTarget {
     idToRangeMap?: { [key: string]: SourceRange },
     ast?: Program,
     range?: SourceRange
-  ) {
+  ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
+    const promise: Promise<ResolveCommand | void> = new Promise(
+      (_resolve, reject) => {
+        resolve = _resolve
+      }
+    )
 
     if (!idToRangeMap) {
-      throw new Error('idToRangeMap is required for batch commands')
+      return Promise.reject(
+        new Error('idToRangeMap is required for batch commands')
+      )
     }
 
     // Add the overall batch command to the artifact map just so we can track all of the
@@ -1863,19 +1959,19 @@ export class EngineCommandManager extends EventTarget {
       resolve,
     }
 
-    await Promise.all(
+    Promise.all(
       commands.map((c) =>
         this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
       )
     )
     return promise
   }
-  sendModelingCommandFromWasm(
+  async sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<any> {
+  ): Promise<string | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1883,13 +1979,13 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve()
     }
     if (id === undefined) {
-      throw new Error('id is undefined')
+      return Promise.reject(new Error('id is undefined'))
     }
     if (rangeStr === undefined) {
-      throw new Error('rangeStr is undefined')
+      return Promise.reject(new Error('rangeStr is undefined'))
     }
     if (commandStr === undefined) {
-      throw new Error('commandStr is undefined')
+      return Promise.reject(new Error('commandStr is undefined'))
     }
     const range: SourceRange = JSON.parse(rangeStr)
     const idToRangeMap: { [key: string]: SourceRange } =
@@ -1904,19 +2000,21 @@ export class EngineCommandManager extends EventTarget {
       command,
       ast: this.getAst(),
       idToRangeMap,
-    }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
-      if (raw === undefined || raw === null) {
-        throw new Error(
-          'returning modeling cmd response to the rust side is undefined or null'
+    }).then((resp) => {
+      if (!resp) {
+        return Promise.reject(
+          new Error(
+            'returning modeling cmd response to the rust side is undefined or null'
+          )
         )
       }
-      return JSON.stringify(raw)
+      return JSON.stringify(resp.raw)
     })
   }
-  commandResult(id: string): Promise<any> {
+  async commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
     if (!command) {
-      throw new Error('No command found')
+      return Promise.reject(new Error('No command found'))
     }
     if (command.type === 'result') {
       return command.data
@@ -1977,5 +2075,34 @@ export class EngineCommandManager extends EventTarget {
         hidden: hidden,
       },
     })
+  }
+
+  /**
+   * Set the visibility of the scale grid in the engine scene.
+   * @param visible - whether to show or hide the scale grid
+   */
+  setScaleGridVisibility(visible: boolean) {
+    this.modifyGrid(!visible)
+  }
+
+  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
+  // So when passing a range, we need to also specify the command type
+  mapRangeToObjectId(
+    range: SourceRange,
+    commandTypeToTarget: string
+  ): string | undefined {
+    const values = Object.entries(this.artifactMap)
+    for (const [id, data] of values) {
+      if (data.type !== 'result') continue
+
+      // Our range selection seems to just select the cursor position, so either
+      // of these can be right...
+      if (
+        (data.range[0] === range[0] || data.range[1] === range[1]) &&
+        data.commandType === commandTypeToTarget
+      )
+        return id
+    }
+    return undefined
   }
 }

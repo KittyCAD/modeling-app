@@ -89,25 +89,6 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
-## Running tests
-
-First, start the dev server following "Running a development build" above.
-
-Then in another terminal tab, run:
-
-```
-yarn test
-```
-
-Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
-
-For running the rust (not tauri rust though) only, you can
-
-```bash
-cd src/wasm-lib
-cargo test
-```
-
 ## Tauri
 
 To spin up up tauri dev, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
@@ -143,36 +124,20 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-1. Bump the versions in the .json files by creating a `Cut release v{x}.{y}.{z}` PR, committing the changes from
+1. Bump the versions by running `./make-realease.sh` while on a fresh pull of main
 
-```bash
-VERSION=x.y.z yarn run bump-jsons
-```
-
-Alternatively you can try the experimental `make-release.sh` bash script that will create the branch with the updated json files for you.
+That will create the branch with the updated json files for you.
 run `./make-release.sh` for a patch update
 run `./make-release.sh "minor"` for minor
 run `./make-release.sh "major"` for major
 
-The PR may serve as a place to discuss the human-readable changelog and extra QA. A quick way of getting PR's merged since the last bump is to [use this PR filter](https://github.com/KittyCAD/modeling-app/pulls?q=is%3Apr+sort%3Aupdated-desc+is%3Amerged+), open up the browser console and paste in the following
+After it runs you should just need to push the push the branch and open a PR (it will suggest a changelog for you too, delete any that are not user facing)
 
-```typescript
-console.log(
-  '- ' +
-    Array.from(
-      document.querySelectorAll('[data-hovercard-type="pull_request"]')
-    ).map((a) => `[${a.innerText}](${a.href})`).join(`
-- `)
-)
-```
-
-grab the md list and delete any that are older than the last bump
+The PR may serve as a place to discuss the human-readable changelog and extra QA. 
 
 2. Merge the PR
 
-3. Create a new release and tag pointing to the bump version commit using semantic versioning `v{x}.{y}.{z}`
-
-4. A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, uploading artifacts to the release
+3. Profit (A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions if the PR was correctly named)
 
 ## Fuzzing the parser
 
@@ -195,7 +160,9 @@ $ cargo +nightly fuzz run parser
 For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
 
-### Playwright
+## Tests
+
+### Playwright tests
 
 For a portable way to run Playwright you'll need Docker.
 
@@ -284,6 +251,37 @@ Where `./store` should look like this
 
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
 
+### Unit and component tests
+
+If you already haven't, run the following:
+
+```
+yarn
+yarn build:wasm
+yarn start
+```
+
+and finally:
+
+```
+yarn test:nowatch
+```
+
+For individual testing:
+
+```
+yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
+```
+
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
+
+### Rust tests
+
+```bash
+cd src/wasm-lib
+cargo test
+```
+
 #### Some notes on CI
 
 The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion `git reset --hard HEAD~ && git push -f` is your friend.
@@ -319,7 +317,7 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 
 ```
 yarn install
-yarn build:wasm
+yarn build:wasm-dev
 cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 yarn vite build --mode development
 yarn tauri build --debug -b

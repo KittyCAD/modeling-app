@@ -1,7 +1,20 @@
+import { coreDump } from 'lang/wasm'
+import { CoreDumpManager } from 'lib/coredump'
 import { CustomIcon } from './CustomIcon'
+import { engineCommandManager } from 'lib/singletons'
+import React, { useMemo } from 'react'
+import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
-export function RefreshButton() {
+export const RefreshButton = ({ children }: React.PropsWithChildren) => {
+  const { auth } = useSettingsAuthContext()
+  const token = auth?.context?.token
+  const coreDumpManager = useMemo(
+    () => new CoreDumpManager(engineCommandManager, token),
+    []
+  )
+
   async function refresh() {
     if (window && 'plausible' in window) {
       const p = window.plausible as (
@@ -17,16 +30,34 @@ export function RefreshButton() {
       })
     }
 
-    // Window may not be available in some environments
-    window?.location.reload()
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
+        },
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
+          },
+        }
+      )
+      .then(() => {
+        // Window may not be available in some environments
+        window?.location.reload()
+      })
   }
 
   return (
     <button
       onClick={refresh}
-      className="p-1 m-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 rounded-full border border-solid border-chalkboard-10 dark:border-chalkboard-100"
+      className="p-1 m-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 rounded-full border border-solid border-chalkboard-20 dark:border-chalkboard-90"
     >
-      <CustomIcon name="arrowRotateRight" className="w-5 h-5" />
+      <CustomIcon name="exclamationMark" className="w-5 h-5" />
       <Tooltip position="bottom-right">
         <span>Refresh and report</span>
         <br />
