@@ -29,7 +29,6 @@ import {
   LanguageServerClient,
   docPathFacet,
   languageId,
-  lspPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
 import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
@@ -621,7 +620,6 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   )
 
   return [
-    /*lspPlugin(options),
     completionPlugin,
     copilotAutocompleteKeymapExt,
     domHandlers,
@@ -632,6 +630,6 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
       plugin.rejectSuggestionCommand()
 
       return null
-    }),*/
+    }),
   ]
 }
