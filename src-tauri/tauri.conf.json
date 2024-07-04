@@ -63,11 +63,14 @@
       "subcommands": {}
     },
     "deep-link": {
-      "domains": [
+      "mobile": [
         {
           "host": "app.zoo.dev"
         }
-      ]
+      ],
+      "desktop": {
+        "schemes": ["zoo", "zoo-modeling-app"]
+      }
     },
     "shell": {
       "open": true
