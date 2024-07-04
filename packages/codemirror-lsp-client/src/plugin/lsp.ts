@@ -284,19 +284,16 @@ export class LanguageServerPlugin implements PluginValue {
       },
     })
 
-    if (!result) return null
+    if (!result || !result.length) return null
 
-    for (let i = 0; i < result.length; i++) {
-      const { range, newText } = result[i]
-      this.view.dispatch({
-        changes: {
-          from: posToOffset(this.view.state.doc, range.start)!,
-          to: posToOffset(this.view.state.doc, range.end)!,
-          insert: newText,
-        },
-        annotations: [lspFormatCodeEvent, Transaction.addToHistory.of(true)],
-      })
-    }
+    this.view.dispatch({
+      changes: result.map(({ range, newText }) => ({
+        from: posToOffset(this.view.state.doc, range.start)!,
+        to: posToOffset(this.view.state.doc, range.end)!,
+        insert: newText,
+      })),
+      annotations: lspFormatCodeEvent,
+    })
   }
 
   async requestCompletion(
