@@ -15,6 +15,7 @@ import {
   ProgramMemory,
   recast,
   SketchGroup,
+  SourceRange,
   ExtrudeGroup,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
@@ -194,7 +195,11 @@ export class KclManager {
   async executeAst(
     ast: Program = this._ast,
     zoomToFit?: boolean,
-    executionId?: number
+    executionId?: number,
+    zoomOnRangeAndType?: {
+      range: SourceRange
+      type: string
+    }
   ): Promise<void> {
     await this?.engineCommandManager?.waitForReady
     const currentExecutionId = executionId || Date.now()
@@ -218,12 +223,20 @@ export class KclManager {
     defaultSelectionFilter(programMemory, this.engineCommandManager)
 
     if (zoomToFit) {
+      let zoomObjectId: string | undefined = ''
+      if (zoomOnRangeAndType) {
+        zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
+          zoomOnRangeAndType.range,
+          zoomOnRangeAndType.type
+        )
+      }
+
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
           type: 'zoom_to_fit',
-          object_ids: [], // leave empty to zoom to all objects
+          object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
           padding: 0.1, // padding around the objects
         },
       })
@@ -357,6 +370,11 @@ export class KclManager {
     execute: boolean,
     optionalParams?: {
       focusPath?: PathToNode
+      zoomToFit?: boolean
+      zoomOnRangeAndType?: {
+        range: SourceRange
+        type: string
+      }
     }
   ): Promise<{
     newAst: Program
@@ -400,7 +418,12 @@ export class KclManager {
       codeManager.updateCodeEditor(newCode)
       // Write the file to disk.
       await codeManager.writeToFile()
-      await this.executeAst(astWithUpdatedSource)
+      await this.executeAst(
+        astWithUpdatedSource,
+        optionalParams?.zoomToFit,
+        undefined,
+        optionalParams?.zoomOnRangeAndType
+      )
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
