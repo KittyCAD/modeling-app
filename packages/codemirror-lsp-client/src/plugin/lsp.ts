@@ -4,7 +4,13 @@ import type {
   CompletionResult,
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
-import { Facet, StateEffect, Extension, Transaction } from '@codemirror/state'
+import {
+  Facet,
+  StateEffect,
+  Extension,
+  Transaction,
+  Annotation,
+} from '@codemirror/state'
 import type {
   ViewUpdate,
   PluginValue,
@@ -22,11 +28,6 @@ import {
 import { URI } from 'vscode-uri'
 
 import { LanguageServerClient } from '../client'
-import {
-  lspSemanticTokensEvent,
-  lspFormatCodeEvent,
-  relevantUpdate,
-} from './annotations'
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
 import { deferExecution, posToOffset, formatMarkdownContents } from './util'
@@ -46,6 +47,17 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
+
+export enum LspAnnotation {
+  SemanticTokens = 'semantic-tokens',
+  FormatCode = 'format-code',
+  Diagnostics = 'diagnostics',
+}
+
+const lspEvent = Annotation.define<LspAnnotation>()
+export const lspSemanticTokensEvent = lspEvent.of(LspAnnotation.SemanticTokens)
+export const lspFormatCodeEvent = lspEvent.of(LspAnnotation.FormatCode)
+export const lspDiagnosticsEvent = lspEvent.of(LspAnnotation.Diagnostics)
 
 export interface LanguageServerOptions {
   // We assume this is the main project directory, we are currently working in.
@@ -131,11 +143,6 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   update(viewUpdate: ViewUpdate) {
-    const isRelevant = relevantUpdate(viewUpdate)
-    if (!isRelevant.overall) {
-      return
-    }
-
     // If the doc didn't change we can return early.
     if (!viewUpdate.docChanged) {
       return
