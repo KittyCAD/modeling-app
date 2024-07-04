@@ -232,6 +232,7 @@ export async function getUtils(page: Page) {
 
   return {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
