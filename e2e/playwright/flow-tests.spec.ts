@@ -856,7 +856,6 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('Enter')
     await page.keyboard.type('const topAng = 42')
     await page.keyboard.press('ArrowLeft')
-    await page.keyboard.press('ArrowRight')
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     await expect(
@@ -971,22 +970,16 @@ test.describe('Editor tests', () => {
 
     await page.setViewportSize({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await page.goto('/')
+    await u.waitForPageLoad()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // error in guter
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(
-      page.getByText(
-        'sketch profile must lie entirely on one side of the revolution axis'
-      )
-    ).toBeVisible()
+    const searchText =
+      'sketch profile must lie entirely on one side of the revolution axis'
+    await expect(page.getByText(searchText).first()).toBeVisible()
   })
   test.describe('Autocomplete works', () => {
     test('with enter/click to accept the completion', async ({ page }) => {
