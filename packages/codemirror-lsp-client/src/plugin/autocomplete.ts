@@ -1,5 +1,6 @@
 import {
   acceptCompletion,
+  autocompletion,
   clearSnippet,
   closeCompletion,
   hasNextSnippetField,
@@ -8,10 +9,17 @@ import {
   prevSnippetField,
   startCompletion,
 } from '@codemirror/autocomplete'
-import { Prec } from '@codemirror/state'
-import { EditorView, keymap, KeyBinding } from '@codemirror/view'
+import { Prec, Extension } from '@codemirror/state'
+import { EditorView, keymap, KeyBinding, ViewPlugin } from '@codemirror/view'
 
-import { CompletionItemKind } from 'vscode-languageserver-protocol'
+import {
+  CompletionItemKind,
+  CompletionTriggerKind,
+} from 'vscode-languageserver-protocol'
+
+import { LanguageServerPlugin } from './lsp'
+import { offsetToPos } from './util'
+import { syntaxTree } from '@codemirror/language'
 
 export const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
@@ -46,6 +54,59 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
   },
 ]
 
-export const lspAutocompleteKeymapExt = Prec.highest(
-  keymap.computeN([], () => [lspAutocompleteKeymap])
-)
+const lspAutocompleteKeymapExt = Prec.highest(keymap.of(lspAutocompleteKeymap))
+
+export default function lspAutocompleteExt(
+  plugin: ViewPlugin<LanguageServerPlugin>
+): Extension {
+  return [
+    lspAutocompleteKeymapExt,
+    autocompletion({
+      defaultKeymap: false,
+      override: [
+        async (context) => {
+          const { state, pos, explicit, view } = context
+          let value = view?.plugin(plugin)
+          if (!value) return null
+
+          let nodeBefore = syntaxTree(state).resolveInner(pos, -1)
+          if (
+            nodeBefore.name === 'BlockComment' ||
+            nodeBefore.name === 'LineComment'
+          )
+            return null
+
+          const line = state.doc.lineAt(pos)
+          let trigKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
+          let trigChar: string | undefined
+          if (
+            !explicit &&
+            value.client
+              .getServerCapabilities()
+              .completionProvider?.triggerCharacters?.includes(
+                line.text[pos - line.from - 1]
+              )
+          ) {
+            trigKind = CompletionTriggerKind.TriggerCharacter
+            trigChar = line.text[pos - line.from - 1]
+          }
+          if (
+            trigKind === CompletionTriggerKind.Invoked &&
+            !context.matchBefore(/\w+$/)
+          ) {
+            return null
+          }
+
+          return await value.requestCompletion(
+            context,
+            offsetToPos(state.doc, pos),
+            {
+              triggerKind: trigKind,
+              triggerCharacter: trigChar,
+            }
+          )
+        },
+      ],
+    }),
+  ]
+}

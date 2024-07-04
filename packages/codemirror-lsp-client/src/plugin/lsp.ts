@@ -4,7 +4,13 @@ import type {
   CompletionResult,
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
-import { Facet, StateEffect, Extension, Transaction } from '@codemirror/state'
+import {
+  Facet,
+  StateEffect,
+  Extension,
+  Transaction,
+  Annotation,
+} from '@codemirror/state'
 import type {
   ViewUpdate,
   PluginValue,
@@ -22,15 +28,10 @@ import {
 import { URI } from 'vscode-uri'
 
 import { LanguageServerClient } from '../client'
-import {
-  lspSemanticTokensEvent,
-  lspFormatCodeEvent,
-  relevantUpdate,
-} from './annotations'
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
 import { deferExecution, posToOffset, formatMarkdownContents } from './util'
-import { lspAutocompleteKeymapExt } from './autocomplete'
+import lspAutocompleteExt from './autocomplete'
 import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
@@ -46,6 +47,17 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
+
+export enum LspAnnotation {
+  SemanticTokens = 'semantic-tokens',
+  FormatCode = 'format-code',
+  Diagnostics = 'diagnostics',
+}
+
+const lspEvent = Annotation.define<LspAnnotation>()
+export const lspSemanticTokensEvent = lspEvent.of(LspAnnotation.SemanticTokens)
+export const lspFormatCodeEvent = lspEvent.of(LspAnnotation.FormatCode)
+export const lspDiagnosticsEvent = lspEvent.of(LspAnnotation.Diagnostics)
 
 export interface LanguageServerOptions {
   // We assume this is the main project directory, we are currently working in.
@@ -131,11 +143,6 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   update(viewUpdate: ViewUpdate) {
-    const isRelevant = relevantUpdate(viewUpdate)
-    if (!isRelevant.overall) {
-      return
-    }
-
     // If the doc didn't change we can return early.
     if (!viewUpdate.docChanged) {
       return
@@ -284,19 +291,16 @@ export class LanguageServerPlugin implements PluginValue {
       },
     })
 
-    if (!result) return null
+    if (!result || !result.length) return null
 
-    for (let i = 0; i < result.length; i++) {
-      const { range, newText } = result[i]
-      this.view.dispatch({
-        changes: {
-          from: posToOffset(this.view.state.doc, range.start)!,
-          to: posToOffset(this.view.state.doc, range.end)!,
-          insert: newText,
-        },
-        annotations: [lspFormatCodeEvent, Transaction.addToHistory.of(true)],
-      })
-    }
+    this.view.dispatch({
+      changes: result.map(({ range, newText }) => ({
+        from: posToOffset(this.view.state.doc, range.start)!,
+        to: posToOffset(this.view.state.doc, range.end)!,
+        insert: newText,
+      })),
+      annotations: lspFormatCodeEvent,
+    })
   }
 
   async requestCompletion(
@@ -552,7 +556,7 @@ export class LanguageServerPluginSpec
 {
   provide(plugin: ViewPlugin<LanguageServerPlugin>): Extension {
     return [
-      lspAutocompleteKeymapExt,
+      lspAutocompleteExt(plugin),
       lspFormatExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),

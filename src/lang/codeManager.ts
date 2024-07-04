@@ -6,7 +6,8 @@ import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
-import { Annotation, KeyBinding, Transaction } from '@uiw/react-codemirror'
+import { Annotation, Transaction } from '@codemirror/state'
+import { KeyBinding } from '@codemirror/view'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
