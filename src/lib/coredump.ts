@@ -10,7 +10,6 @@ import {
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
-import React from 'react'
 import { VITE_KC_API_BASE_URL } from 'env'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
@@ -33,17 +32,14 @@ import { VITE_KC_API_BASE_URL } from 'env'
 // TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
-  htmlRef: React.RefObject<HTMLDivElement> | null
   token: string | undefined
   baseUrl: string = VITE_KC_API_BASE_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,
-    htmlRef: React.RefObject<HTMLDivElement> | null,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
-    this.htmlRef = htmlRef
     this.token = token
   }
 
@@ -449,12 +445,11 @@ export class CoreDumpManager {
 
   // Return a data URL (png format) of the screenshot of the current page.
   screenshot(): Promise<string> {
-    return screenshot(this.htmlRef)
-      .then((screenshot: string) => {
-        return screenshot
-      })
-      .catch((error: any) => {
-        throw new Error(`Error getting screenshot: ${error}`)
-      })
+    return (
+      screenshot()
+        .then((screenshotStr: string) => screenshotStr)
+        // maybe rust should handle an error, but an empty string at least doesn't cause the core dump to fail entirely
+        .catch((error: any) => ``)
+    )
   }
 }
