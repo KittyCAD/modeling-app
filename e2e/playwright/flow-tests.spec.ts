@@ -3725,10 +3725,16 @@ test.describe('Regression tests', () => {
       )
     })
 
-    await u.waitForAuthSkipAppStart()
+    await page.goto('/')
+    await u.waitForPageLoad()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    await page.waitForTimeout(200)
+    // expect it still to be there (sometimes it just clears for a bit?)
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+      timeout: 10_000,
+    })
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
@@ -3747,6 +3753,7 @@ test.describe('Regression tests', () => {
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('End')
     await page.keyboard.up('Shift')
     await page.keyboard.press('Backspace')
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -3755,13 +3762,14 @@ test.describe('Regression tests', () => {
     await page.keyboard.press('Enter')
     await page.keyboard.type('thing: "blah"', { delay: 100 })
     await page.keyboard.press('Enter')
+    await page.keyboard.press('ArrowLeft')
 
     await expect(page.locator('.cm-content'))
       .toContainText(`const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
-    |> close(%
+    |> close(%)
 
     thing: "blah"`)
 
