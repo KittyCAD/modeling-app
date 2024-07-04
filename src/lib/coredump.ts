@@ -445,12 +445,11 @@ export class CoreDumpManager {
 
   // Return a data URL (png format) of the screenshot of the current page.
   screenshot(): Promise<string> {
-    return screenshot()
-      .then((screenshot: string) => {
-        return screenshot
-      })
-      .catch((error: any) => {
-        throw new Error(`Error getting screenshot: ${error}`)
-      })
+    return (
+      screenshot()
+        .then((screenshotStr: string) => screenshotStr)
+        // maybe rust should handle an error, but an empty string at least doesn't cause the core dump to fail entirely
+        .catch((error: any) => ``)
+    )
   }
 }
