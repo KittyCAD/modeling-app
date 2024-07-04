@@ -746,12 +746,12 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowRight')
 
     // error in guter
-    await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase')
+      page.getByText('Identifiers must be lowerCamelCase').first()
     ).toBeVisible()
 
     // select the line that's causing the error and delete it
