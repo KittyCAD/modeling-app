@@ -69,6 +69,7 @@ impl StdLibFnArg {
             || self.type_ == "ExtrudeGroup"
             || self.type_ == "ExtrudeGroupSet"
             || self.type_ == "SketchSurface"
+            || self.type_ == "SketchSurfaceOrGroup"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         } else if self.type_ == "TagDeclarator" && self.required {
@@ -893,5 +894,12 @@ mod tests {
 	axis: ${1:"X"},
 }, ${2:%})${}"#
         );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_circle() {
+        let circle_fn: Box<dyn StdLibFn> = Box::new(crate::std::shapes::Circle);
+        let snippet = circle_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"circle([${0:3.14}, ${1:3.14}], ${2:3.14}, ${3:%})${}"#);
     }
 }
