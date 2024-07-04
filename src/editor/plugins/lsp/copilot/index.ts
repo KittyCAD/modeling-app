@@ -621,7 +621,7 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   )
 
   return [
-    lspPlugin(options),
+    /*lspPlugin(options),
     completionPlugin,
     copilotAutocompleteKeymapExt,
     domHandlers,
@@ -632,6 +632,6 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
       plugin.rejectSuggestionCommand()
 
       return null
-    }),
+    }),*/
   ]
 }

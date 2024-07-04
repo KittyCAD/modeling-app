@@ -52,7 +52,8 @@ export function lspPlugin(options: LanguageServerOptions): Extension {
       if (plugin == null) return null
       // Get the folding ranges from the language server.
       // Since this is async we directly need to update the folding ranges after.
-      return plugin?.foldingRange(lineStart, lineEnd)
+      const range = plugin?.foldingRange(lineStart, lineEnd)
+      return range
     }),
   ]
 
