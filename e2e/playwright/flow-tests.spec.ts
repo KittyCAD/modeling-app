@@ -2923,7 +2923,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(19) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
@@ -3063,7 +3063,7 @@ const part001 = startSketchOn('XZ')
       await page.mouse.move(pos[0], pos[1], { steps: 5 })
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        removeAfterFirstParenthesis(expectedCode)
+        expectedCode
       )
       // hover over segment, click it and check the cursor has move to the right place
       await page.mouse.click(pos[0], pos[1])
