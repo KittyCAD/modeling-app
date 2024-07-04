@@ -81,7 +81,7 @@ export function Toolbar({
   useHotkeys(
     'esc',
     () =>
-      state.matches('Sketch.SketchIdle')
+      ['Sketch no face', 'Sketch.SketchIdle'].some(state.matches)
         ? send('Cancel')
         : send('CancelSketch'),
     { enabled: !disableAllButtons, scopes: ['sketch'] }
@@ -226,7 +226,7 @@ export function Toolbar({
         )}
         {state.matches('Sketch no face') && (
           <li className="contents">
-            <div className="mx-2 text-sm">click plane to sketch on</div>
+            <div className="mx-2 text-sm">click plane or face to sketch on</div>
           </li>
         )}
         {state.matches('Sketch') && !state.matches('idle') && (

@@ -3865,6 +3865,31 @@ test.describe('Sketch tests', () => {
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
   })
+  test('Can exit selection of face', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', ``)
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+
+    await expect(
+      page.getByText('click plane or face to sketch on')
+    ).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+  })
   test.describe('Can edit segments by dragging their handles', () => {
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
