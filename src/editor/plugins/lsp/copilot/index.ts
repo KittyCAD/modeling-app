@@ -23,16 +23,12 @@ import {
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
 import {
-  TransactionAnnotation,
   offsetToPos,
   posToOffset,
   LanguageServerOptions,
   LanguageServerClient,
   docPathFacet,
   languageId,
-  TransactionInfo,
-  updateInfo,
-  RelevantUpdate,
   lspPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
@@ -193,36 +189,6 @@ const completionDecoration = StateField.define<CompletionState>({
     ),
 })
 
-export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
-  const infos = updateInfo(update)
-
-  // Make sure we are not in a snippet
-  if (infos.some((info: TransactionInfo) => info.inSnippet)) {
-    return {
-      overall: false,
-      userSelect: false,
-      time: null,
-    }
-  }
-
-  return {
-    overall: infos.some(
-      (info: TransactionInfo) =>
-        info.transaction.annotation(copilotPluginEvent.type) !== undefined ||
-        info.annotations.includes(TransactionAnnotation.UserSelect) ||
-        info.annotations.includes(TransactionAnnotation.UserInput) ||
-        info.annotations.includes(TransactionAnnotation.UserDelete) ||
-        info.annotations.includes(TransactionAnnotation.UserUndo) ||
-        info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove)
-    ),
-    userSelect: infos.some((info: TransactionInfo) =>
-      info.annotations.includes(TransactionAnnotation.UserSelect)
-    ),
-    time: infos.length ? infos[0].time : null,
-  }
-}
-
 // A view plugin that requests completions from the server after a delay
 export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
@@ -243,19 +209,39 @@ export class CompletionRequester implements PluginValue {
   }
 
   update(viewUpdate: ViewUpdate) {
-    const isRelevant = relevantUpdate(viewUpdate)
-    if (!isRelevant.overall) {
+    // Make sure we are in a state where we can request completions.
+    if (!editorManager.copilotEnabled) {
       return
     }
 
+    let isUserSelect = false
+    let isRelevant = false
+    for (const tr of viewUpdate.transactions) {
+      if (tr.isUserEvent('select')) {
+        isUserSelect = true
+        break
+      } else if (tr.isUserEvent('input')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('delete')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('undo')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('redo')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('move')) {
+        isRelevant = true
+      } else if (tr.annotation(copilotPluginEvent.type) !== undefined) {
+        isRelevant = true
+      }
+    }
+
     // If we have a user select event, we want to clear the ghost text.
-    if (isRelevant.userSelect) {
+    if (isUserSelect) {
       this._deffererUserSelect(true)
       return
     }
 
-    // Make sure we are in a state where we can request completions.
-    if (!editorManager.copilotEnabled) {
+    if (!isRelevant) {
       return
     }
 

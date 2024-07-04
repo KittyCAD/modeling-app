@@ -24,14 +24,15 @@ export {
   LspWorkerEventType,
 } from './client/codec'
 export type { LanguageServerOptions } from './plugin/lsp'
-export type { TransactionInfo, RelevantUpdate } from './plugin/annotations'
-export { updateInfo, TransactionAnnotation } from './plugin/annotations'
 export {
   LanguageServerPlugin,
   LanguageServerPluginSpec,
   docPathFacet,
   languageId,
   workspaceFolders,
+  lspSemanticTokensEvent,
+  lspDiagnosticsEvent,
+  lspFormatCodeEvent,
 } from './plugin/lsp'
 export { posToOffset, offsetToPos } from './plugin/util'
 
