@@ -600,7 +600,11 @@ test.describe('Editor tests', () => {
     // TODO: Jess needs to fix this but you have to mod the code to get them to show
     // up, its an annoying codemirror thing.
     await page.locator('.cm-content').click()
-    await page.keyboard.press('End')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
 
     const foldGutterFoldLine = page.locator('[title="Fold line"]')

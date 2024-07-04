@@ -189,7 +189,7 @@ export const KclEditorPane = () => {
         initialDocValue={initialCode.current}
         extensions={editorExtensions}
         theme={theme}
-        onView={(_editorView) => {
+        onCreateEditor={(_editorView) => {
           if (_editorView === null) return
 
           editorManager.setEditorView(_editorView)

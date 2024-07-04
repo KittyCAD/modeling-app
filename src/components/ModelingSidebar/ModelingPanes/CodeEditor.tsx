@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 import {
   EditorState,
   EditorStateConfig,
@@ -30,8 +37,14 @@ const defaultLightThemeOption = EditorView.theme(
   }
 )
 
-interface ICodeEditor {
-  onView?: (view: EditorView | null) => void
+interface CodeEditorRef {
+  editor?: HTMLDivElement | null
+  view?: EditorView
+  state?: EditorState
+}
+
+interface CodeEditorProps {
+  onCreateEditor?: (view: EditorView | null) => void
   initialDocValue?: EditorStateConfig['doc']
   extensions?: Extension
   theme: 'light' | 'dark'
@@ -39,23 +52,24 @@ interface ICodeEditor {
   selection?: EditorStateConfig['selection']
 }
 
-interface UseCodeMirror extends ICodeEditor {
+interface UseCodeMirror extends CodeEditorProps {
   container?: HTMLDivElement | null
 }
 
-const CodeEditor: React.FC<ICodeEditor> = ({
-  onView,
-  extensions = [],
-  initialDocValue,
-  theme,
-  autoFocus = false,
-  selection,
-}) => {
-  const editorRef = useRef<HTMLDivElement>(null)
+const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
+  const {
+    onCreateEditor,
+    extensions = [],
+    initialDocValue,
+    theme,
+    autoFocus = false,
+    selection,
+  } = props
+  const editor = useRef<HTMLDivElement>(null)
 
-  useCodeMirror({
-    container: editorRef.current,
-    onView,
+  const { view, state, container } = useCodeMirror({
+    container: editor.current,
+    onCreateEditor,
     extensions,
     initialDocValue,
     theme,
@@ -63,12 +77,18 @@ const CodeEditor: React.FC<ICodeEditor> = ({
     selection,
   })
 
-  return <section ref={editorRef}></section>
-}
+  useImperativeHandle(
+    ref,
+    () => ({ editor: editor.current, view: view, state: state }),
+    [editor, container, view, state]
+  )
+
+  return <div ref={editor}></div>
+})
 
 export function useCodeMirror(props: UseCodeMirror) {
   const {
-    onView,
+    onCreateEditor,
     extensions = [],
     initialDocValue,
     theme,
@@ -77,7 +97,8 @@ export function useCodeMirror(props: UseCodeMirror) {
   } = props
 
   const [container, setContainer] = useState<HTMLDivElement | null>()
-  const [editorView, setEditorView] = useState<EditorView | null>(null)
+  const [view, setView] = useState<EditorView>()
+  const [state, setState] = useState<EditorState>()
 
   const isFirstRender = useFirstRender()
 
@@ -93,48 +114,58 @@ export function useCodeMirror(props: UseCodeMirror) {
   }, [extensions, theme])
 
   useEffect(() => {
-    if (isFirstRender || !editorView) return
-    console.log('reconfigure', targetExtensions)
-
-    editorView.dispatch({
-      effects: StateEffect.reconfigure.of(targetExtensions),
-    })
-  }, [targetExtensions])
+    if (container && !state) {
+      const config = {
+        doc: initialDocValue,
+        selection,
+        extensions: [...Array.of(extensions)],
+      }
+      const stateCurrent = EditorState.create(config)
+      setState(stateCurrent)
+      if (!view) {
+        const viewCurrent = new EditorView({
+          state: stateCurrent,
+          parent: container,
+        })
+        setView(viewCurrent)
+        onCreateEditor && onCreateEditor(viewCurrent)
+      }
+    }
+    return () => {
+      if (view) {
+        setState(undefined)
+        setView(undefined)
+      }
+    }
+  }, [container, state])
 
   useEffect(() => setContainer(props.container), [props.container])
 
-  useEffect(() => {
-    if (container === null) return
-
-    const view = new EditorView({
-      state: EditorState.create({
-        doc: initialDocValue,
-        extensions: [...Array.of(extensions)],
-        selection,
-      }),
-      parent: container,
-    })
-
-    setEditorView(view)
-    if (onView) {
-      onView(view)
-    }
-
-    return () => {
-      view.destroy()
-      if (onView) {
-        onView(null)
+  useEffect(
+    () => () => {
+      if (view) {
+        view.destroy()
+        setView(undefined)
       }
-    }
-  }, [container])
+    },
+    [view]
+  )
 
   useEffect(() => {
-    if (autoFocus && editorView) {
-      editorView.focus()
+    if (autoFocus && view) {
+      view.focus()
     }
-  }, [autoFocus, editorView])
+  }, [autoFocus, view])
 
-  return { editorView, setEditorView, container, setContainer }
+  useEffect(() => {
+    if (view && !isFirstRender) {
+      view.dispatch({
+        effects: StateEffect.reconfigure.of(targetExtensions),
+      })
+    }
+  }, [targetExtensions])
+
+  return { view, setView, container, setContainer, state, setState }
 }
 
 export default CodeEditor
