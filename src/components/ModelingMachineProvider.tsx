@@ -64,7 +64,7 @@ import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection, Transaction } from '@uiw/react-codemirror'
+import { EditorSelection, Transaction } from '@codemirror/state'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
@@ -128,7 +128,7 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        'sketch exit execute': () => {
+        'sketch exit execute': ({ store }) => {
           ;(async () => {
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
@@ -162,7 +162,10 @@ export const ModelingMachineProvider = ({
               })
             }
 
-            kclManager.executeCode(true)
+            store.videoElement?.pause()
+            kclManager.executeCode(true).then(() => {
+              store.videoElement?.play()
+            })
           })()
         },
         'Set mouse state': assign({

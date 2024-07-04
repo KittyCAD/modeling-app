@@ -133,6 +133,7 @@ export type SegmentOverlayPayload =
 
 interface Store {
   mediaStream?: MediaStream
+  videoElement?: HTMLVideoElement
   buttonDownInStream: number | undefined
   didDragInStream: boolean
   streamDimensions: { streamWidth: number; streamHeight: number }
@@ -978,7 +979,7 @@ export const modelingMachine = createMachine(
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),
-      'AST extrude': async (_, event) => {
+      'AST extrude': async ({ store }, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
         let ast = kclManager.ast
@@ -1010,9 +1011,16 @@ export const modelingMachine = createMachine(
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
+        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'start_path',
+          },
         })
+        store.videoElement?.play()
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }

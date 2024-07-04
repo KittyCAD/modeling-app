@@ -175,7 +175,11 @@ const FileTreeItem = ({
           codeManager.code
       )
       codeManager.writeToFile()
-      kclManager.executeCode(true, true)
+
+      kclManager.isFirstRender = true
+      kclManager.executeCode(true, true).then(() => {
+        kclManager.isFirstRender = false
+      })
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)

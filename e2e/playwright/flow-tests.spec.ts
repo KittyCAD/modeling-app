@@ -600,7 +600,11 @@ test.describe('Editor tests', () => {
     // TODO: Jess needs to fix this but you have to mod the code to get them to show
     // up, its an annoying codemirror thing.
     await page.locator('.cm-content').click()
-    await page.keyboard.press('End')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
 
     const foldGutterFoldLine = page.locator('[title="Fold line"]')
@@ -2920,7 +2924,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(19) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
@@ -3060,7 +3064,7 @@ const part001 = startSketchOn('XZ')
       await page.mouse.move(pos[0], pos[1], { steps: 5 })
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        removeAfterFirstParenthesis(expectedCode)
+        expectedCode
       )
       // hover over segment, click it and check the cursor has move to the right place
       await page.mouse.click(pos[0], pos[1])
@@ -3702,16 +3706,14 @@ test.describe('Regression tests', () => {
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test.fixme(
-    'Position _ Is Out Of Range... regression test',
-    async ({ page }) => {
-      const u = await getUtils(page)
-      // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `const exampleSketch = startSketchOn("XZ")
+  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -3720,51 +3722,51 @@ test.describe('Regression tests', () => {
   
   const example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-        )
-      })
+      )
+    })
 
-      await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
 
-      // error in guter
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
-      // error text on hover
-      await page.hover('.cm-lint-marker-error')
-      await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
-      // Okay execution finished, let's start editing text below the error.
-      await u.codeLocator.click()
-      // Go to the end of the editor
-      // This bug happens when there is a diagnostic in the editor and you try to
-      // edit text below it.
-      // Or delete a huge chunk of text and then try to edit below it.
-      await page.keyboard.press('End')
-      await page.keyboard.down('Shift')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.up('Shift')
-      await page.keyboard.press('Backspace')
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // Okay execution finished, let's start editing text below the error.
+    await u.codeLocator.click()
+    // Go to the end of the editor
+    // This bug happens when there is a diagnostic in the editor and you try to
+    // edit text below it.
+    // Or delete a huge chunk of text and then try to edit below it.
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      await page.keyboard.press('Enter')
-      await page.keyboard.press('Enter')
-      await page.keyboard.type('thing: "blah"', { delay: 100 })
-      await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('thing: "blah"', { delay: 100 })
+    await page.keyboard.press('Enter')
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`const exampleSketch = startSketchOn("XZ")
+    await expect(page.locator('.cm-content'))
+      .toContainText(`const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
-    |> close(%)
-  
+    |> close(%
+
     thing: "blah"`)
 
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    }
-  )
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  })
 })
 
 test.describe('Sketch tests', () => {

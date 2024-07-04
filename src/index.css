@@ -260,3 +260,8 @@ code {
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
   }
 }
+
+#code-mirror-override .cm-scroller,
+#code-mirror-override .cm-editor {
+  height: 100% !important;
+}
