@@ -69,31 +69,14 @@ export class CoreDumpManager {
   // Get the os information.
   getOsInfo(): Promise<string> {
     if (this.isTauri()) {
-      return tauriArch()
-        .catch((error: any) => {
-          throw new Error(`Error getting arch: ${error}`)
-        })
-        .then((arch: string) => {
-          return tauriPlatform()
-            .catch((error: any) => {
-              throw new Error(`Error getting platform: ${error}`)
-            })
-            .then((platform: string) => {
-              return tauriKernelVersion()
-                .catch((error: any) => {
-                  throw new Error(`Error getting kernel version: ${error}`)
-                })
-                .then((kernelVersion: string) => {
-                  const osinfo: OsInfo = {
-                    platform,
-                    arch,
-                    browser: 'tauri',
-                    version: kernelVersion,
-                  }
-                  return JSON.stringify(osinfo)
-                })
-            })
-        })
+      const osinfo: OsInfo = {
+        platform: tauriPlatform(),
+        arch: tauriArch(),
+        browser: 'tauri',
+        version: tauriKernelVersion(),
+      }
+      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+      // TODO: get rid of promises now that the tauri api doesn't require them anymore
     }
 
     const userAgent = window.navigator.userAgent || 'unknown browser'
