@@ -134,6 +134,9 @@ const example = extrude(10, exampleSketch)
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -294,6 +297,9 @@ const example = extrude(10, exampleSketch)
 },
 	// The to point.
 	to: [number, number],
+},
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
 },
 	// The paths in the sketch group.
 	value: [{
@@ -484,6 +490,9 @@ const example = extrude(10, exampleSketch)
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -644,6 +653,9 @@ const example = extrude(10, exampleSketch)
 },
 	// The to point.
 	to: [number, number],
+},
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
 },
 	// The paths in the sketch group.
 	value: [{

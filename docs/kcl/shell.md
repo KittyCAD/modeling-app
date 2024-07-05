@@ -214,6 +214,9 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -512,6 +515,9 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 },
 	// The to point.
 	to: [number, number],
+},
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
 },
 	// The paths in the sketch group.
 	value: [{
