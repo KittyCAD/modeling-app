@@ -74,6 +74,10 @@ You can nest expressions in parenthesis as well:
 let myMathExpression = 3 + (1 * 2 / (3 - 7))
 ```
 
+## Tag Declaration and Tag Identifiers
+
+The syntax for tags is now `$myTag` to declare a tag and `myTag` to then use it later. 
+
 Please if you find any issues using any of the above expressions or syntax
 please file an issue with the `ast` label on the [modeling-app
 repo](https://github.com/KittyCAD/modeling-app/issues/new).
