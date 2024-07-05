@@ -37,6 +37,7 @@ async fn new_context(units: UnitLength) -> Result<ExecutorContext> {
             units,
             highlight_edges: true,
             enable_ssao: false,
+            show_grid: false,
         },
     )
     .await?;

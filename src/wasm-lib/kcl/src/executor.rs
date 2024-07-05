@@ -1359,6 +1359,8 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
+    // Show grid?
+    pub show_grid: bool,
 }
 
 impl Default for ExecutorSettings {
@@ -1367,6 +1369,7 @@ impl Default for ExecutorSettings {
             units: Default::default(),
             highlight_edges: true,
             enable_ssao: false,
+            show_grid: false,
         }
     }
 }
@@ -1377,6 +1380,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
+            show_grid: config.settings.modeling.show_scale_grid,
         }
     }
 }
@@ -1387,6 +1391,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
+            show_grid: config.settings.modeling.show_scale_grid,
         }
     }
 }
@@ -1397,6 +1402,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
+            show_grid: modeling.show_scale_grid,
         }
     }
 }
@@ -1415,6 +1421,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
                 None,
@@ -1478,6 +1485,7 @@ impl ExecutorContext {
                 units,
                 highlight_edges: true,
                 enable_ssao: false,
+                show_grid: false,
             },
         )
         .await?;
