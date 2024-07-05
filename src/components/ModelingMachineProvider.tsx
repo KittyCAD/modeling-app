@@ -441,17 +441,6 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
         },
-        'Sketch is empty': ({ sketchDetails }) => {
-          const node = getNodeFromPath<VariableDeclaration>(
-            kclManager.ast,
-            sketchDetails?.sketchPathToNode || [],
-            'VariableDeclaration'
-          )
-          // This should not be returning false, and it should be caught
-          // but we need to simulate old behavior to move on.
-          if (err(node)) return false
-          return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
-        },
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))

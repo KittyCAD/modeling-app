@@ -12,6 +12,10 @@ import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
 import { useAppState } from 'AppState'
+import {
+  canRectangleTool,
+  isEditingExistingSketch,
+} from 'machines/modelingMachine'
 
 export function Toolbar({
   className = '',
@@ -46,29 +50,48 @@ export function Toolbar({
     isExecuting ||
     !isStreamReady
 
+  const disableLineButton =
+    state.matches('Sketch.Rectangle tool.Awaiting second corner') ||
+    disableAllButtons
   useHotkeys(
     'l',
     () =>
       state.matches('Sketch.Line tool')
         ? send('CancelSketch')
-        : send('Equip Line tool'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+        : send({
+            type: 'change tool',
+            data: 'line',
+          }),
+    { enabled: !disableLineButton, scopes: ['sketch'] }
   )
+  const disableTangentialArc =
+    (!isEditingExistingSketch(context) &&
+      !state.matches('Sketch.Tangential arc to')) ||
+    disableAllButtons
   useHotkeys(
     'a',
     () =>
       state.matches('Sketch.Tangential arc to')
         ? send('CancelSketch')
-        : send('Equip tangential arc to'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+        : send({
+            type: 'change tool',
+            data: 'tangentialArc',
+          }),
+    { enabled: !disableTangentialArc, scopes: ['sketch'] }
   )
+  const disableRectangle =
+    (!canRectangleTool(context) && !state.matches('Sketch.Rectangle tool')) ||
+    disableAllButtons
   useHotkeys(
     'r',
     () =>
       state.matches('Sketch.Rectangle tool')
         ? send('CancelSketch')
-        : send('Equip rectangle tool'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+        : send({
+            type: 'change tool',
+            data: 'rectangle',
+          }),
+    { enabled: !disableRectangle, scopes: ['sketch'] }
   )
   useHotkeys(
     's',
@@ -238,7 +261,10 @@ export function Toolbar({
                 onClick={() =>
                   state?.matches('Sketch.Line tool')
                     ? send('CancelSketch')
-                    : send('Equip Line tool')
+                    : send({
+                        type: 'change tool',
+                        data: 'line',
+                      })
                 }
                 aria-pressed={state?.matches('Sketch.Line tool')}
                 iconStart={{
@@ -246,7 +272,7 @@ export function Toolbar({
                   iconClassName,
                   bgClassName,
                 }}
-                disabled={disableAllButtons}
+                disabled={disableLineButton}
               >
                 Line
                 <Tooltip
@@ -265,7 +291,10 @@ export function Toolbar({
                 onClick={() =>
                   state.matches('Sketch.Tangential arc to')
                     ? send('CancelSketch')
-                    : send('Equip tangential arc to')
+                    : send({
+                        type: 'change tool',
+                        data: 'tangentialArc',
+                      })
                 }
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
                 iconStart={{
@@ -273,11 +302,7 @@ export function Toolbar({
                   iconClassName,
                   bgClassName,
                 }}
-                disabled={
-                  (!state.can('Equip tangential arc to') &&
-                    !state.matches('Sketch.Tangential arc to')) ||
-                  disableAllButtons
-                }
+                disabled={disableTangentialArc}
               >
                 Tangential Arc
                 <Tooltip
@@ -296,7 +321,10 @@ export function Toolbar({
                 onClick={() =>
                   state.matches('Sketch.Rectangle tool')
                     ? send('CancelSketch')
-                    : send('Equip rectangle tool')
+                    : send({
+                        type: 'change tool',
+                        data: 'rectangle',
+                      })
                 }
                 aria-pressed={state.matches('Sketch.Rectangle tool')}
                 iconStart={{
@@ -304,13 +332,9 @@ export function Toolbar({
                   iconClassName,
                   bgClassName,
                 }}
-                disabled={
-                  (!state.can('Equip rectangle tool') &&
-                    !state.matches('Sketch.Rectangle tool')) ||
-                  disableAllButtons
-                }
+                disabled={disableRectangle}
                 title={
-                  state.can('Equip rectangle tool')
+                  canRectangleTool(context)
                     ? 'Rectangle'
                     : 'Can only be used when a sketch is empty currently'
                 }
