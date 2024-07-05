@@ -77,6 +77,15 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
     let sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
     let mut extrude_groups = Vec::new();
     for sketch_group in &sketch_groups {
+        // Make sure we exited sketch mode if sketching on a plane.
+        if let SketchSurface::Plane(_) = sketch_group.on {
+            // Disable the sketch mode.
+            // This is necessary for when people don't close the sketch explicitly.
+            // The sketch mode will mess up the extrude direction if still active.
+            args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+                .await?;
+        }
+
         args.send_modeling_cmd(
             id,
             kittycad::types::ModelingCmd::Extrude {
