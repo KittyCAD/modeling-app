@@ -1358,7 +1358,7 @@ export class SceneEntities {
       ) as CSS2DObject
       const labelWrapperElem = labelWrapper.element as HTMLDivElement
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
-      label.innerText = `${roundOff(length)}`
+      label.innerText = `${roundOff(length)}${sceneInfra._baseUnit}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
       const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
         .normalize()
