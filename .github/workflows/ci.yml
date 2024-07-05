@@ -13,7 +13,10 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  CUT_RELEASE_PR: true
+  # CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  BUILD_RELEASE: true
+  # BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -110,8 +113,18 @@ jobs:
           echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
             '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
+      - name: Set updater test version
+        if: env.CUT_RELEASE_PR
+        run: |
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
+            '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+          echo "$(jq --arg id 'dev.zoo.modeling-app-updater-test' \
+            '.identifier=$id' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+          echo "$(jq --arg name 'Zoo Modeling App (Updater Test)' \
+            '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+
       - uses: actions/upload-artifact@v3
-        if: github.event_name == 'schedule'
+        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR }}
         with:
           path: |
             package.json
@@ -376,6 +389,32 @@ jobs:
           VITE_KC_API_BASE_URL: ${{ env.BUILD_RELEASE == 'true' && 'https://api.zoo.dev' || 'https://api.dev.zoo.dev' }}
           E2E_TAURI_ENABLED: true
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
+
+      - uses: actions/download-artifact@v3
+        if: env.CUT_RELEASE_PR
+
+      - name: Copy updated .json files
+        if: env.CUT_RELEASE_PR
+        run: |
+          ls -l artifact
+          cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+
+      - name: Build the app (release, updater test)
+        if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
+        env:
+          TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+          TAURI_BUNDLE_ARGS: "-b ${{ matrix.os == 'windows-latest' && 'msi' || 'dmg' }}"
+        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }}"
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
+        env:
+          PREFIX: ${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
+          MODE: release
+        with:
+          path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
+
 
   publish-apps-release:
     permissions:
