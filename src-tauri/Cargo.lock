@@ -2571,7 +2571,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.69"
+version = "0.1.70"
 dependencies = [
  "anyhow",
  "approx",
@@ -2628,9 +2628,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.6"
+version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af3de9bb4b1441f198689a9f64a8163a518377e30b348a784680e738985b95eb"
+checksum = "e1777b503442fa4666564cc3ab237d456df853a09648a4b2bb09622d25d021a5"
 dependencies = [
  "anyhow",
  "async-trait",
