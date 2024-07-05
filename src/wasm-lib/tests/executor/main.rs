@@ -2472,3 +2472,10 @@ async fn serial_test_pattern_vase() {
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pattern_vase.png", &result, 0.999);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_scoped_tags() {
+    let code = include_str!("inputs/scoped-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/scoped_tags.png", &result, 0.999);
+}
