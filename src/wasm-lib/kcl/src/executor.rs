@@ -683,11 +683,15 @@ impl MemoryItem {
         match self {
             MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
             MemoryItem::UserVal(u) => {
-                let name: String = self.get_json()?;
-                Ok(TagIdentifier {
-                    value: name,
-                    meta: u.meta.clone(),
-                })
+                if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
+                    Ok(identifier)
+                } else {
+                    let name: String = self.get_json()?;
+                    Ok(TagIdentifier {
+                        value: name,
+                        meta: u.meta.clone(),
+                    })
+                }
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag identifier: {:?}", self),
@@ -774,9 +778,9 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// Tags that have been declared in this sketch group.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tags: Vec<TagDeclarator>,
+    /// Tag identifiers that have been declared in this sketch group.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub tags: HashMap<String, TagIdentifier>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,

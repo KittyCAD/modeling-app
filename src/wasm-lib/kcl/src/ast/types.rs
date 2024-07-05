@@ -1778,6 +1778,17 @@ impl From<&TagDeclarator> for MemoryItem {
     }
 }
 
+impl From<&TagDeclarator> for TagIdentifier {
+    fn from(tag: &TagDeclarator) -> Self {
+        TagIdentifier {
+            value: tag.name.clone(),
+            meta: vec![Metadata {
+                source_range: tag.into(),
+            }],
+        }
+    }
+}
+
 impl From<&TagDeclarator> for CompletionItem {
     fn from(tag: &TagDeclarator) -> Self {
         CompletionItem {

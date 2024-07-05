@@ -1542,6 +1542,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
                             // Replace the literal with the tag.
                             args[i] = Value::Identifier(Box::new(tag));
                         }
+                        Value::MemberExpression(_) => {}
                         e => {
                             return Err(ErrMode::Cut(
                                 KclError::Syntax(KclErrorDetails {

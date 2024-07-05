@@ -1,5 +1,7 @@
 //! Functions related to sketching.
 
+use std::collections::HashMap;
+
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
@@ -127,11 +129,16 @@ async fn inner_line_to(
     )
     .await?;
 
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
+    }
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag: tag.clone(),
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -139,10 +146,6 @@ async fn inner_line_to(
         },
     };
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
-    }
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
@@ -294,11 +297,16 @@ async fn inner_line(
     )
     .await?;
 
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
+    }
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag: tag.clone(),
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -306,10 +314,6 @@ async fn inner_line(
         },
     };
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
-    }
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
@@ -461,18 +465,6 @@ async fn inner_angled_line(
 
     let id = uuid::Uuid::new_v4();
 
-    let current_path = Path::ToPoint {
-        base: BasePath {
-            from: from.into(),
-            to,
-            tag: tag.clone(),
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        },
-    };
-
     args.batch_modeling_cmd(
         id,
         ModelingCmd::ExtendPath {
@@ -490,9 +482,22 @@ async fn inner_angled_line(
     .await?;
 
     let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
     }
+
+    let current_path = Path::ToPoint {
+        base: BasePath {
+            from: from.into(),
+            to,
+            tag,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
     new_sketch_group.value.push(current_path);
     Ok(new_sketch_group)
 }
@@ -1228,7 +1233,11 @@ pub(crate) async fn inner_start_profile_at(
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
-        tags: if let Some(tag) = tag { vec![tag] } else { vec![] },
+        tags: if let Some(tag) = &tag {
+            HashMap::from([(tag.name.to_string(), tag.into())])
+        } else {
+            Default::default()
+        },
     };
     Ok(Box::new(sketch_group))
 }
@@ -1364,7 +1373,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(ref tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
     }
     new_sketch_group.value.push(Path::ToPoint {
         base: BasePath {
@@ -1474,11 +1483,16 @@ pub(crate) async fn inner_arc(
     )
     .await?;
 
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
+    }
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to: end.into(),
-            tag: tag.clone(),
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1486,10 +1500,6 @@ pub(crate) async fn inner_arc(
         },
     };
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
-    }
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
@@ -1583,11 +1593,16 @@ async fn inner_tangential_arc(
 
     let to = [from.x + to[0], from.y + to[1]];
 
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
+    }
+
     let current_path = Path::TangentialArc {
         base: BasePath {
             from: from.into(),
             to,
-            tag: tag.clone(),
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1595,10 +1610,6 @@ async fn inner_tangential_arc(
         },
     };
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
-    }
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
@@ -1690,11 +1701,16 @@ async fn inner_tangential_arc_to(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
+    }
+
     let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
             to,
-            tag: tag.clone(),
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1704,10 +1720,6 @@ async fn inner_tangential_arc_to(
         ccw: result.ccw > 0,
     };
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
-    }
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
@@ -1794,11 +1806,16 @@ async fn inner_bezier_curve(
     )
     .await?;
 
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
+    }
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag: tag.clone(),
+            tag,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1806,10 +1823,6 @@ async fn inner_bezier_curve(
         },
     };
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = tag {
-        new_sketch_group.tags.push(tag.clone());
-    }
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
