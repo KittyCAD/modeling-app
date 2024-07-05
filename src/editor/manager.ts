@@ -222,11 +222,7 @@ export default class EditorManager {
       return
     }
 
-    const ignoreEvents: ModelingMachineEvent['type'][] = [
-      'Equip Line tool',
-      'Equip tangential arc to',
-      'Equip rectangle tool',
-    ]
+    const ignoreEvents: ModelingMachineEvent['type'][] = ['change tool']
 
     if (!this._modelingEvent) {
       return

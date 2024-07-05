@@ -808,7 +808,7 @@ export class SceneEntities {
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
-          sceneInfra.modelingSend({ type: 'CancelSketch' })
+          sceneInfra.modelingSend({ type: 'Finish rectangle' })
 
           const { programMemory } = await executeAst({
             ast: _ast,

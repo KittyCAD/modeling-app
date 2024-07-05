@@ -2084,4 +2084,25 @@ export class EngineCommandManager extends EventTarget {
   setScaleGridVisibility(visible: boolean) {
     this.modifyGrid(!visible)
   }
+
+  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
+  // So when passing a range, we need to also specify the command type
+  mapRangeToObjectId(
+    range: SourceRange,
+    commandTypeToTarget: string
+  ): string | undefined {
+    const values = Object.entries(this.artifactMap)
+    for (const [id, data] of values) {
+      if (data.type !== 'result') continue
+
+      // Our range selection seems to just select the cursor position, so either
+      // of these can be right...
+      if (
+        (data.range[0] === range[0] || data.range[1] === range[1]) &&
+        data.commandType === commandTypeToTarget
+      )
+        return id
+    }
+    return undefined
+  }
 }
