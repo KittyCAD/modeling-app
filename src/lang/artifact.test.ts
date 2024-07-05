@@ -185,6 +185,17 @@ const sk2 = startSketchOn('XY')
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'SketchGroup',
+          tags: {
+            o: {
+              __meta: [
+                {
+                  sourceRange: [417, 419],
+                },
+              ],
+              type: 'TagIdentifier',
+              value: 'o',
+            },
+          },
           value: [
             {
               type: 'ToPoint',

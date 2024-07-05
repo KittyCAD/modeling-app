@@ -173,7 +173,8 @@ the `rect` function. This is because the `rect` function is returning the
 sketch group that contains the tags.
 
 
+---
 
-Please if you find any issues using any of the above expressions or syntax
+If you find any issues using any of the above expressions or syntax,
 please file an issue with the `ast` label on the [modeling-app
 repo](https://github.com/KittyCAD/modeling-app/issues/new).
