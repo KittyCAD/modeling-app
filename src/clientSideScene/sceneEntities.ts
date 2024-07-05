@@ -418,7 +418,7 @@ export class SceneEntities {
         }
       )
 
-      let seg
+      let seg: Group
       const _node1 = getNodeFromPath<CallExpression>(
         maybeModdedAst,
         segPathToNode,
@@ -1425,6 +1425,14 @@ export class SceneEntities {
     )
     let shouldResolve = false
     if (sketchSegments) {
+      // We have to manually remove the CSS2DObjects
+      // as they don't get removed when the group is removed
+      sketchSegments.traverse((object) => {
+        if (object instanceof CSS2DObject) {
+          object.element.remove()
+          object.remove()
+        }
+      })
       this.scene.remove(sketchSegments)
       shouldResolve = true
     } else {

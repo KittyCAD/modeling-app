@@ -108,7 +108,7 @@ export function straightSegment({
   theme: Themes
   isSelected?: boolean
 }): Group {
-  const group = new Group()
+  const segmentGroup = new Group()
 
   const shape = new Shape()
   shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
@@ -140,7 +140,7 @@ export function straightSegment({
     : STRAIGHT_SEGMENT_BODY
   mesh.name = STRAIGHT_SEGMENT_BODY
 
-  group.userData = {
+  segmentGroup.userData = {
     type: STRAIGHT_SEGMENT,
     id,
     from,
@@ -150,7 +150,11 @@ export function straightSegment({
     callExpName,
     baseColor,
   }
-  group.name = STRAIGHT_SEGMENT
+  segmentGroup.name = STRAIGHT_SEGMENT
+  segmentGroup.add(mesh)
+
+  // Early return on close call expression
+  if (callExpName === 'close') return segmentGroup
 
   const length = Math.sqrt(
     Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
@@ -164,9 +168,7 @@ export function straightSegment({
   const pxLength = length / scale
   const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
   arrowGroup.visible = !shouldHide
-
-  group.add(mesh)
-  if (callExpName !== 'close') group.add(arrowGroup)
+  segmentGroup.add(arrowGroup)
 
   const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
   const directionVector = new Vector2(
@@ -182,40 +184,17 @@ export function straightSegment({
     0
   )
   extraSegmentGroup.visible = !shouldHide
-  group.add(extraSegmentGroup)
+  segmentGroup.add(extraSegmentGroup)
 
-  const lengthIndicatorGroup = new Group()
-  lengthIndicatorGroup.addEventListener('removed', (event) => {
-    const object = event.target
-    for (const children of object.children) {
-      object.remove(children)
-    }
+  const lengthIndicatorGroup = createLengthIndicator({
+    from,
+    to,
+    scale,
+    length,
   })
-  lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
-  const lengthIndicatorText = document.createElement('p')
-  lengthIndicatorText.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
-  lengthIndicatorText.innerText = roundOff(length).toString()
-  const lengthIndicatorWrapper = document.createElement('div')
-  lengthIndicatorWrapper.style.position = 'absolute'
-  lengthIndicatorWrapper.appendChild(lengthIndicatorText)
-  const cssObject = new CSS2DObject(lengthIndicatorWrapper)
-  cssObject.name = SEGMENT_LENGTH_LABEL_TEXT
-  const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
-    .normalize()
-    .rotateAround(new Vector2(0, 0), Math.PI / 2)
-    .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
-  lengthIndicatorText.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
-  lengthIndicatorText.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
+  segmentGroup.add(lengthIndicatorGroup)
 
-  cssObject.position.set(
-    (from[0] + to[0]) / 2 + offsetFromMidpoint.x,
-    (from[1] + to[1]) / 2 + offsetFromMidpoint.y,
-    0
-  )
-  lengthIndicatorGroup.add(cssObject)
-  group.add(lengthIndicatorGroup)
-
-  return group
+  return segmentGroup
 }
 
 function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
@@ -270,6 +249,46 @@ function createExtraSegmentHandle(
   extraSegmentGroup.add(particle)
   extraSegmentGroup.scale.set(scale, scale, scale)
   return extraSegmentGroup
+}
+
+/**
+ * Creates a group containing a CSS2DObject with the length of the segment
+ */
+function createLengthIndicator({
+  from,
+  to,
+  scale,
+  length,
+}: {
+  from: Coords2d
+  to: Coords2d
+  scale: number
+  length: number
+}) {
+  const lengthIndicatorGroup = new Group()
+  lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
+
+  // Make the elements
+  const lengthIndicatorText = document.createElement('p')
+  lengthIndicatorText.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+  lengthIndicatorText.innerText = roundOff(length).toString()
+  const lengthIndicatorWrapper = document.createElement('div')
+
+  // Style the elements
+  lengthIndicatorWrapper.style.position = 'absolute'
+  lengthIndicatorWrapper.appendChild(lengthIndicatorText)
+  const cssObject = new CSS2DObject(lengthIndicatorWrapper)
+  cssObject.name = SEGMENT_LENGTH_LABEL_TEXT
+
+  // Position the elements based on the line's heading
+  const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .rotateAround(new Vector2(0, 0), -Math.PI / 2)
+    .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
+  lengthIndicatorText.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
+  lengthIndicatorText.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
+  lengthIndicatorGroup.add(cssObject)
+  return lengthIndicatorGroup
 }
 
 export function tangentialArcToSegment({
