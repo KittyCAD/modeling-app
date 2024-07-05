@@ -774,6 +774,9 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
+    /// Tags that have been declared in this sketch group.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<TagDeclarator>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
