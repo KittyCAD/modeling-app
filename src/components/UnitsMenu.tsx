@@ -17,6 +17,7 @@ export function UnitsMenu() {
               <div className="absolute w-[1px] h-[1em] bg-primary left-0 top-1/2 -translate-y-1/2"></div>
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
+            <span className="sr-only">Current units are:&nbsp;</span>
             {settings.context.modeling.defaultUnit.current}
           </Popover.Button>
           <Popover.Panel

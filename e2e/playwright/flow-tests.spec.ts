@@ -7134,6 +7134,40 @@ test.describe('Testing Gizmo', () => {
   })
 })
 
+test('Units menu', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+  await u.waitForAuthSkipAppStart()
+
+  const unitsMenuButton = page.getByRole('button', {
+    name: 'Current Units',
+    exact: false,
+  })
+  await expect(unitsMenuButton).toBeVisible()
+  await expect(unitsMenuButton).toContainText('in')
+
+  await unitsMenuButton.click()
+  const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
+
+  await expect(millimetersButton).toBeVisible()
+  await millimetersButton.click()
+
+  // Look out for the toast message
+  const toastMessage = page.getByText(
+    `Set default unit to "mm" for this project`
+  )
+  await expect(toastMessage).toBeVisible()
+
+  // Verify that the popover has closed
+  await expect(millimetersButton).not.toBeAttached()
+
+  // Verify that the button label has updated
+  await expect(unitsMenuButton).toContainText('mm')
+})
+
 test('Successful export shows a success toast', async ({ page }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
