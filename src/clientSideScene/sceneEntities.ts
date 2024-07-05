@@ -852,6 +852,11 @@ export class SceneEntities {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     sceneInfra.setCallbacks({
       onDragEnd: async () => {
+        // After the user drags, code has been updated, and source ranges are
+        // potentially stale.
+        const astResult = kclManager.updateSourceRanges()
+        if (trap(astResult)) return
+
         if (addingNewSegmentStatus !== 'nothing') {
           await this.tearDownSketch({ removeAxis: false })
           this.setupSketch({

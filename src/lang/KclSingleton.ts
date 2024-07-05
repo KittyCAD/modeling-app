@@ -152,6 +152,16 @@ export class KclManager {
     this._executeCallback = callback
   }
 
+  updateSourceRanges(): Error | null {
+    const newAst = parse(recast(this.ast))
+    if (err(newAst)) {
+      return newAst
+    }
+
+    this.ast = newAst
+    return null
+  }
+
   clearAst() {
     this._ast = {
       body: [],
