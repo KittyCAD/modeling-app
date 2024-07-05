@@ -50,6 +50,9 @@ export function Toolbar({
     isExecuting ||
     !isStreamReady
 
+  const disableLineButton =
+    state.matches('Sketch.Rectangle tool.Awaiting second corner') ||
+    disableAllButtons
   useHotkeys(
     'l',
     () =>
@@ -59,7 +62,7 @@ export function Toolbar({
             type: 'change tool',
             data: 'line',
           }),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+    { enabled: !disableLineButton, scopes: ['sketch'] }
   )
   const disableTangentialArc =
     (!isEditingExistingSketch(context) &&
@@ -269,7 +272,7 @@ export function Toolbar({
                   iconClassName,
                   bgClassName,
                 }}
-                disabled={disableAllButtons}
+                disabled={disableLineButton}
               >
                 Line
                 <Tooltip
