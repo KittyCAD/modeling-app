@@ -2479,3 +2479,25 @@ async fn serial_test_scoped_tags() {
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/scoped_tags.png", &result, 0.999);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_order_sketch_extrude_in_order() {
+    let code = include_str!("inputs/order-sketch-extrude-in-order.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/order-sketch-extrude-in-order.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_order_sketch_extrude_out_of_order() {
+    let code = include_str!("inputs/order-sketch-extrude-out-of-order.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/order-sketch-extrude-out-of-order.png",
+        &result,
+        0.999,
+    );
+}
