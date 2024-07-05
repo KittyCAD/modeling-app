@@ -164,6 +164,8 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
             kclManager.executeCode(true).then(() => {
+              if (engineCommandManager.engineConnection?.freezeFrame) return
+
               store.videoElement?.play()
             })
           })()

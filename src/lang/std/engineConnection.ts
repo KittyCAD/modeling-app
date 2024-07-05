@@ -300,6 +300,7 @@ class EngineConnection extends EventTarget {
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
   mediaStream?: MediaStream
+  freezeFrame: boolean = false
 
   private _state: EngineConnectionState = {
     type: EngineConnectionStateType.Fresh,
@@ -365,7 +366,11 @@ class EngineConnection extends EventTarget {
     this.pingPongSpan = { ping: undefined, pong: undefined }
 
     // Without an interval ping, our connection will timeout.
+    // If this.freezeFrame is true we skip this logic so only reconnect
+    // happens on mouse move
     setInterval(() => {
+      if (this.freezeFrame) return
+
       switch (this.state.type as EngineConnectionStateType) {
         case EngineConnectionStateType.ConnectionEstablished:
           // If there was no reply to the last ping, report a timeout.
@@ -426,7 +431,8 @@ class EngineConnection extends EventTarget {
     return this.state.type === EngineConnectionStateType.ConnectionEstablished
   }
 
-  tearDown() {
+  tearDown(opts?: { freeze: boolean }) {
+    this.freezeFrame = opts?.freeze ?? false
     this.disconnectAll()
     this.state = {
       type: EngineConnectionStateType.Disconnecting,
@@ -996,6 +1002,9 @@ class EngineConnection extends EventTarget {
       this.pc?.connectionState === 'closed' &&
       this.unreliableDataChannel?.readyState === 'closed'
     if (allClosed) {
+      // Do not notify the rest of the program that we have cut off anything.
+      if (this.freezeFrame) return
+
       this.state = { type: EngineConnectionStateType.Disconnected }
     }
   }
@@ -1199,15 +1208,6 @@ export class EngineCommandManager extends EventTarget {
       url,
       token,
     })
-
-    // Teardown everything if we go hidden or reconnect
-    document.onvisibilitychange = () => {
-      if (document.visibilityState === 'hidden') {
-        this.engineConnection?.tearDown()
-      } else {
-        this.engineConnection?.connect(true)
-      }
-    }
 
     this.dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
