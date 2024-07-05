@@ -118,10 +118,6 @@ jobs:
         run: |
           echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
-          echo "$(jq --arg id 'dev.zoo.modeling-app-updater-test' \
-            '.identifier=$id' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
-          echo "$(jq --arg name 'Zoo Modeling App (Updater Test)' \
-            '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
         if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR }}
@@ -393,11 +389,10 @@ jobs:
       - uses: actions/download-artifact@v3
         if: env.CUT_RELEASE_PR
 
-      - name: Copy updated .json files
+      - name: Copy updated .json file for updater test
         if: env.CUT_RELEASE_PR
         run: |
           ls -l artifact
-          cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
 
       - name: Build the app (release, updater test)
@@ -414,6 +409,7 @@ jobs:
           MODE: release
         with:
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
+          name: updater-test
 
 
   publish-apps-release:
