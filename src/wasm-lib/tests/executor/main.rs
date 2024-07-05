@@ -37,6 +37,7 @@ async fn new_context(units: UnitLength) -> Result<ExecutorContext> {
             units,
             highlight_edges: true,
             enable_ssao: false,
+            show_grid: false,
         },
     )
     .await?;
@@ -2470,4 +2471,26 @@ async fn serial_test_pattern_vase() {
     let code = include_str!("inputs/pattern_vase.kcl");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pattern_vase.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_order_sketch_extrude_in_order() {
+    let code = include_str!("inputs/order-sketch-extrude-in-order.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/order-sketch-extrude-in-order.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_order_sketch_extrude_out_of_order() {
+    let code = include_str!("inputs/order-sketch-extrude-out-of-order.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/order-sketch-extrude-out-of-order.png",
+        &result,
+        0.999,
+    );
 }
