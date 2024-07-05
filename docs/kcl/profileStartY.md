@@ -112,6 +112,9 @@ const sketch001 = startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -272,6 +275,9 @@ const sketch001 = startSketchOn('XY')
 },
 	// The to point.
 	to: [number, number],
+},
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
 },
 	// The paths in the sketch group.
 	value: [{

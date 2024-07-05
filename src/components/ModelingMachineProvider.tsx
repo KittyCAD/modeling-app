@@ -53,9 +53,8 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, VariableDeclaration, parse, recast } from 'lang/wasm'
+import { Program, parse, recast } from 'lang/wasm'
 import {
-  getNodeFromPath,
   getNodePathFromSourceRange,
   hasExtrudableGeometry,
   isSingleCursorInPipe,
