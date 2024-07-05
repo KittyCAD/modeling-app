@@ -56,8 +56,9 @@ export const Stream = () => {
       globalThis.window.document.onvisibilitychange = () => {
         if (globalThis.window.document.visibilityState === 'hidden') {
           videoRef.current?.pause()
+          setIsFreezeFrame(true)
           window.requestAnimationFrame(() => {
-            engineCommandManager.engineConnection?.tearDown()
+            engineCommandManager.engineConnection?.tearDown({ freeze: true })
           })
         } else {
           engineCommandManager.engineConnection?.connect(true)
