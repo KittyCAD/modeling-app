@@ -1,25 +1,25 @@
 import {
   AmbientLight,
   Color,
-  GridHelper,
-  LineBasicMaterial,
-  OrthographicCamera,
-  PerspectiveCamera,
-  Scene,
-  Vector3,
-  WebGLRenderer,
-  Raycaster,
-  Vector2,
-  Group,
-  PlaneGeometry,
-  MeshBasicMaterial,
-  Mesh,
   DoubleSide,
+  GridHelper,
+  Group,
   Intersection,
+  LineBasicMaterial,
+  Mesh,
+  MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
-  TextureLoader,
+  OrthographicCamera,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Raycaster,
+  Scene,
   Texture,
+  TextureLoader,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
 } from 'three'
 import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -31,6 +31,12 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
+import {
+  OnClickCallbackArgs,
+  OnDragCallbackArgs,
+  OnMouseEnterLeaveArgs,
+  OnMoveCallbackArgs,
+} from './sceneCallbacks'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -54,39 +60,6 @@ export const Y_AXIS = 'yAxis'
 export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
-
-export interface OnMouseEnterLeaveArgs {
-  selected: Object3D<Object3DEventMap>
-  dragSelected?: Object3D<Object3DEventMap>
-  mouseEvent: MouseEvent
-}
-
-interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
-  intersectionPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-}
-interface OnClickCallbackArgs {
-  mouseEvent: MouseEvent
-  intersectionPoint?: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
-}
-
-interface OnMoveCallbackArgs {
-  mouseEvent: MouseEvent
-  intersectionPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
-}
 
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.

@@ -27,7 +27,6 @@ import {
   defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
-  OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
@@ -82,16 +81,16 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import {
-  Selections,
-  getEventForSegmentSelection,
-  sendSelectEventToEngine,
-} from 'lib/selections'
+import { Selections, sendSelectEventToEngine } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
-import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
+import {
+  SegmentOverlayPayload,
+  SketchDetails,
+  ModelingMachineContext,
+} from 'machines/modelingMachine'
 import {
   ArtifactMapCommand,
   EngineCommandManager,
@@ -102,6 +101,7 @@ import {
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
+import { OnMouseEnterLeaveArgs, idleCallbacks } from './sceneCallbacks'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -499,31 +499,23 @@ export class SceneEntities {
       variableDeclarationName,
     }
   }
-  updateAstAndRejigSketch = async (
-    sketchPathToNode: PathToNode,
+  updateAstAndRejigSketch: (
     modifiedAst: Program | Error,
-    forward: [number, number, number],
-    up: [number, number, number],
-    origin: [number, number, number]
-  ) => {
+    context: ModelingMachineContext
+  ) => Promise<any> = async (modifiedAst, context) => {
     if (err(modifiedAst)) return modifiedAst
 
     const nextAst = await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
-      sketchPathToNode,
-      forward,
-      up,
-      position: origin,
+      sketchPathToNode: context.sketchDetails?.sketchPathToNode || [],
+      forward: context.sketchDetails?.zAxis || [0, 0, 1],
+      up: context.sketchDetails?.yAxis || [0, 1, 0],
+      position: context.sketchDetails?.origin || [0, 0, 0],
       maybeModdedAst: nextAst.newAst,
     })
-    this.setupSketchIdleCallbacks({
-      forward,
-      up,
-      position: origin,
-      pathToNode: sketchPathToNode,
-    })
+    this.setupSketchIdleCallbacks(context)
     return nextAst
   }
   setUpDraftSegment = async (
@@ -838,128 +830,8 @@ export class SceneEntities {
       },
     })
   }
-  setupSketchIdleCallbacks = ({
-    pathToNode,
-    up,
-    forward,
-    position,
-  }: {
-    pathToNode: PathToNode
-    forward: [number, number, number]
-    up: [number, number, number]
-    position?: [number, number, number]
-  }) => {
-    let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
-    sceneInfra.setCallbacks({
-      onDragEnd: async () => {
-        if (addingNewSegmentStatus !== 'nothing') {
-          await this.tearDownSketch({ removeAxis: false })
-          this.setupSketch({
-            sketchPathToNode: pathToNode,
-            maybeModdedAst: kclManager.ast,
-            up,
-            forward,
-            position,
-          })
-          // setting up the callbacks again resets value in closures
-          this.setupSketchIdleCallbacks({
-            pathToNode,
-            up,
-            forward,
-            position,
-          })
-        }
-      },
-      onDrag: async ({
-        selected,
-        intersectionPoint,
-        mouseEvent,
-        intersects,
-      }) => {
-        if (mouseEvent.which !== 1) return
-
-        const group = getParentGroup(selected, [EXTRA_SEGMENT_HANDLE])
-        if (group?.name === EXTRA_SEGMENT_HANDLE) {
-          const segGroup = getParentGroup(selected)
-          const pathToNode: PathToNode = segGroup?.userData?.pathToNode
-          const pathToNodeIndex = pathToNode.findIndex(
-            (x) => x[1] === 'PipeExpression'
-          )
-
-          const sketchGroup = sketchGroupFromPathToNode({
-            pathToNode,
-            ast: kclManager.ast,
-            programMemory: kclManager.programMemory,
-          })
-          if (trap(sketchGroup)) return
-
-          const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
-          if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketchGroup.value[pipeIndex - 2]
-            const mod = addNewSketchLn({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-              from: [prevSegment.from[0], prevSegment.from[1]],
-              // TODO assuming it's always a straight segments being added
-              // as this is easiest, and we'll need to add "tabbing" behavior
-              // to support other segment types
-              fnName: 'line',
-              pathToNode: pathToNode,
-              spliceBetween: true,
-            })
-            addingNewSegmentStatus = 'pending'
-            if (trap(mod)) return
-
-            await kclManager.executeAstMock(mod.modifiedAst)
-            await this.tearDownSketch({ removeAxis: false })
-            this.setupSketch({
-              sketchPathToNode: pathToNode,
-              maybeModdedAst: kclManager.ast,
-              up,
-              forward,
-              position,
-            })
-            addingNewSegmentStatus = 'added'
-          } else if (addingNewSegmentStatus === 'added') {
-            const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
-            pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
-            this.onDragSegment({
-              sketchPathToNode: pathToNodeForNewSegment,
-              object: selected,
-              intersection2d: intersectionPoint.twoD,
-              intersects,
-            })
-          }
-          return
-        }
-
-        this.onDragSegment({
-          object: selected,
-          intersection2d: intersectionPoint.twoD,
-          intersects,
-          sketchPathToNode: pathToNode,
-        })
-      },
-      onMove: () => {},
-      onClick: (args) => {
-        if (args?.mouseEvent.which !== 1) return
-        if (!args || !args.selected) {
-          sceneInfra.modelingSend({
-            type: 'Set selection',
-            data: {
-              selectionType: 'singleCodeCursor',
-            },
-          })
-          return
-        }
-        const { selected } = args
-        const event = getEventForSegmentSelection(selected)
-        if (!event) return
-        sceneInfra.modelingSend(event)
-      },
-      ...this.mouseEnterLeaveCallbacks(),
-    })
+  setupSketchIdleCallbacks = (context: ModelingMachineContext) => {
+    sceneInfra.setCallbacks(idleCallbacks(context))
   }
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
@@ -1863,6 +1735,7 @@ export function sketchGroupFromPathToNode({
   return result as SketchGroup
 }
 
+// TODO delete
 function colorSegment(object: any, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {

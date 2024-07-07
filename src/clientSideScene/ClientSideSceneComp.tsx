@@ -19,7 +19,10 @@ import {
   PROFILE_START,
   getParentGroup,
 } from './sceneEntities'
-import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
+import {
+  SegmentOverlay,
+  ModelingMachineContext as ModelingContextType,
+} from 'machines/modelingMachine'
 import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
 import {
   CallExpression,
@@ -353,11 +356,12 @@ export const confirmModal = create<ConfirmModalProps, boolean, boolean>(
 
 export async function deleteSegment({
   pathToNode,
-  sketchDetails,
+  context,
 }: {
   pathToNode: PathToNode
-  sketchDetails: SketchDetails | null
+  context: ModelingContextType
 }) {
+  const { sketchDetails } = context
   let modifiedAst: Program | Error = kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
@@ -394,13 +398,7 @@ export async function deleteSegment({
   }
 
   if (!sketchDetails) return
-  await sceneEntitiesManager.updateAstAndRejigSketch(
-    pathToNode,
-    modifiedAst,
-    sketchDetails.zAxis,
-    sketchDetails.yAxis,
-    sketchDetails.origin
-  )
+  await sceneEntitiesManager.updateAstAndRejigSketch(modifiedAst, context)
 
   // Now 'Set sketchDetails' is called with the modified pathToNode
 }
