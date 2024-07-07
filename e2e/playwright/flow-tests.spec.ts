@@ -52,7 +52,24 @@ const commonPoints = {
   // num2: 19.19,
 }
 
-// Utilities for writing tests that depend on test values
+test.afterEach(async ({ context, page }, testInfo) => {
+  if (testInfo.status === 'skipped') return
+  if (testInfo.status === 'failed') return
+
+  const u = await getUtils(page)
+  // Kill the network so shutdown happens properly
+  await u.emulateNetworkConditions({
+    offline: true,
+    // values of 0 remove any active throttling. crbug.com/456324#c9
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1,
+  })
+
+  // It seems it's best to give the browser about 3s to close things
+  // It's not super reliable but we have no real other choice for now
+  await page.waitForTimeout(3000)
+})
 
 test.beforeEach(async ({ context, page }) => {
   // wait for Vite preview server to be up
@@ -78,7 +95,7 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(60000)
+test.setTimeout(120000)
 
 async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
