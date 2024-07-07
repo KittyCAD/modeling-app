@@ -1166,7 +1166,8 @@ export const modelingMachine = createMachine(
       'show default planes': () => {
         kclManager.showPlanes()
       },
-      'setup noPoints onClick listener': Sketch_LineTool_NoPoints,
+      'setup noPoints onClick listener': (context) =>
+        sceneInfra.setCallbacks(Sketch_LineTool_NoPoints(context)),
       'add axis n grid': ({ sketchDetails }) => {
         if (!sketchDetails) return
         if (localStorage.getItem('disableAxis')) return
