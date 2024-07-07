@@ -16,6 +16,14 @@ export const baseUnits = {
 export type BaseUnit = Models['UnitLength_type']
 
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
+export const baseUnitLabels = {
+  in: 'Inches',
+  ft: 'Feet',
+  yd: 'Yards',
+  mm: 'Millimeters',
+  cm: 'Centimeters',
+  m: 'Meters',
+} as const
 
 export type Toggle = 'On' | 'Off'
 export const toggleAsArray = ['On', 'Off'] as const
