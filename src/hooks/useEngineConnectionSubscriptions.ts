@@ -4,7 +4,7 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 
 export function useEngineConnectionSubscriptions() {
-  const { send, context } = useModelingContext()
+  const { send, state } = useModelingContext()
 
   useEffect(() => {
     if (!engineCommandManager) return
@@ -29,9 +29,7 @@ export function useEngineConnectionSubscriptions() {
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: async (engineEvent) => {
-        const event = await getEventForSelectWithPoint(engineEvent, {
-          sketchEnginePathId: context.sketchEnginePathId,
-        })
+        const event = await getEventForSelectWithPoint(engineEvent, state)
         event && send(event)
       },
     })
@@ -39,5 +37,5 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [engineCommandManager, state])
 }

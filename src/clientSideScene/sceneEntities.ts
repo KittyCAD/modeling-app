@@ -22,12 +22,8 @@ import {
 import {
   ARROWHEAD,
   AXIS_GROUP,
-  DEFAULT_PLANES,
-  DefaultPlane,
-  defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
-  OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
@@ -82,16 +78,16 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import {
-  Selections,
-  getEventForSegmentSelection,
-  sendSelectEventToEngine,
-} from 'lib/selections'
+import { Selections, sendSelectEventToEngine } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
-import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
+import {
+  SegmentOverlayPayload,
+  SketchDetails,
+  ModelingMachineContext,
+} from 'machines/modelingMachine'
 import {
   ArtifactMapCommand,
   EngineCommandManager,
@@ -102,6 +98,7 @@ import {
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
+import { OnMouseEnterLeaveArgs, idleCallbacks } from './sceneCallbacks'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -499,31 +496,23 @@ export class SceneEntities {
       variableDeclarationName,
     }
   }
-  updateAstAndRejigSketch = async (
-    sketchPathToNode: PathToNode,
+  updateAstAndRejigSketch: (
     modifiedAst: Program | Error,
-    forward: [number, number, number],
-    up: [number, number, number],
-    origin: [number, number, number]
-  ) => {
+    context: ModelingMachineContext
+  ) => Promise<any> = async (modifiedAst, context) => {
     if (err(modifiedAst)) return modifiedAst
 
     const nextAst = await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
-      sketchPathToNode,
-      forward,
-      up,
-      position: origin,
+      sketchPathToNode: context.sketchDetails?.sketchPathToNode || [],
+      forward: context.sketchDetails?.zAxis || [0, 0, 1],
+      up: context.sketchDetails?.yAxis || [0, 1, 0],
+      position: context.sketchDetails?.origin || [0, 0, 0],
       maybeModdedAst: nextAst.newAst,
     })
-    this.setupSketchIdleCallbacks({
-      forward,
-      up,
-      position: origin,
-      pathToNode: sketchPathToNode,
-    })
+    this.setupSketchIdleCallbacks(context)
     return nextAst
   }
   setUpDraftSegment = async (
@@ -838,128 +827,8 @@ export class SceneEntities {
       },
     })
   }
-  setupSketchIdleCallbacks = ({
-    pathToNode,
-    up,
-    forward,
-    position,
-  }: {
-    pathToNode: PathToNode
-    forward: [number, number, number]
-    up: [number, number, number]
-    position?: [number, number, number]
-  }) => {
-    let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
-    sceneInfra.setCallbacks({
-      onDragEnd: async () => {
-        if (addingNewSegmentStatus !== 'nothing') {
-          await this.tearDownSketch({ removeAxis: false })
-          this.setupSketch({
-            sketchPathToNode: pathToNode,
-            maybeModdedAst: kclManager.ast,
-            up,
-            forward,
-            position,
-          })
-          // setting up the callbacks again resets value in closures
-          this.setupSketchIdleCallbacks({
-            pathToNode,
-            up,
-            forward,
-            position,
-          })
-        }
-      },
-      onDrag: async ({
-        selected,
-        intersectionPoint,
-        mouseEvent,
-        intersects,
-      }) => {
-        if (mouseEvent.which !== 1) return
-
-        const group = getParentGroup(selected, [EXTRA_SEGMENT_HANDLE])
-        if (group?.name === EXTRA_SEGMENT_HANDLE) {
-          const segGroup = getParentGroup(selected)
-          const pathToNode: PathToNode = segGroup?.userData?.pathToNode
-          const pathToNodeIndex = pathToNode.findIndex(
-            (x) => x[1] === 'PipeExpression'
-          )
-
-          const sketchGroup = sketchGroupFromPathToNode({
-            pathToNode,
-            ast: kclManager.ast,
-            programMemory: kclManager.programMemory,
-          })
-          if (trap(sketchGroup)) return
-
-          const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
-          if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketchGroup.value[pipeIndex - 2]
-            const mod = addNewSketchLn({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-              from: [prevSegment.from[0], prevSegment.from[1]],
-              // TODO assuming it's always a straight segments being added
-              // as this is easiest, and we'll need to add "tabbing" behavior
-              // to support other segment types
-              fnName: 'line',
-              pathToNode: pathToNode,
-              spliceBetween: true,
-            })
-            addingNewSegmentStatus = 'pending'
-            if (trap(mod)) return
-
-            await kclManager.executeAstMock(mod.modifiedAst)
-            await this.tearDownSketch({ removeAxis: false })
-            this.setupSketch({
-              sketchPathToNode: pathToNode,
-              maybeModdedAst: kclManager.ast,
-              up,
-              forward,
-              position,
-            })
-            addingNewSegmentStatus = 'added'
-          } else if (addingNewSegmentStatus === 'added') {
-            const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
-            pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
-            this.onDragSegment({
-              sketchPathToNode: pathToNodeForNewSegment,
-              object: selected,
-              intersection2d: intersectionPoint.twoD,
-              intersects,
-            })
-          }
-          return
-        }
-
-        this.onDragSegment({
-          object: selected,
-          intersection2d: intersectionPoint.twoD,
-          intersects,
-          sketchPathToNode: pathToNode,
-        })
-      },
-      onMove: () => {},
-      onClick: (args) => {
-        if (args?.mouseEvent.which !== 1) return
-        if (!args || !args.selected) {
-          sceneInfra.modelingSend({
-            type: 'Set selection',
-            data: {
-              selectionType: 'singleCodeCursor',
-            },
-          })
-          return
-        }
-        const { selected } = args
-        const event = getEventForSegmentSelection(selected)
-        if (!event) return
-        sceneInfra.modelingSend(event)
-      },
-      ...this.mouseEnterLeaveCallbacks(),
-    })
+  setupSketchIdleCallbacks = (context: ModelingMachineContext) => {
+    sceneInfra.setCallbacks(idleCallbacks(context))
   }
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
@@ -1429,150 +1298,6 @@ export class SceneEntities {
       this._tearDownSketch(0, resolve, reject, { removeAxis })
     })
   }
-  setupDefaultPlaneHover() {
-    sceneInfra.setCallbacks({
-      onMouseEnter: ({ selected }) => {
-        if (!(selected instanceof Mesh && selected.parent)) return
-        if (selected.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = selected.userData.type
-        selected.material.color = defaultPlaneColor(type, 0.5, 1)
-      },
-      onMouseLeave: ({ selected }) => {
-        if (!(selected instanceof Mesh && selected.parent)) return
-        if (selected.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = selected.userData.type
-        selected.material.color = defaultPlaneColor(type)
-      },
-      onClick: async (args) => {
-        const { entity_id } = await sendSelectEventToEngine(
-          args?.mouseEvent,
-          document.getElementById('video-stream') as HTMLVideoElement,
-          sceneInfra._streamDimensions
-        )
-
-        let _entity_id = entity_id
-        if (!_entity_id) return
-        if (
-          engineCommandManager.defaultPlanes?.xy === _entity_id ||
-          engineCommandManager.defaultPlanes?.xz === _entity_id ||
-          engineCommandManager.defaultPlanes?.yz === _entity_id ||
-          engineCommandManager.defaultPlanes?.negXy === _entity_id ||
-          engineCommandManager.defaultPlanes?.negXz === _entity_id ||
-          engineCommandManager.defaultPlanes?.negYz === _entity_id
-        ) {
-          const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-            [engineCommandManager.defaultPlanes.xy]: 'XY',
-            [engineCommandManager.defaultPlanes.xz]: 'XZ',
-            [engineCommandManager.defaultPlanes.yz]: 'YZ',
-            [engineCommandManager.defaultPlanes.negXy]: '-XY',
-            [engineCommandManager.defaultPlanes.negXz]: '-XZ',
-            [engineCommandManager.defaultPlanes.negYz]: '-YZ',
-          }
-          // TODO can we get this information from rust land when it creates the default planes?
-          // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-          let zAxis: [number, number, number] = [0, 0, 1]
-          let yAxis: [number, number, number] = [0, 1, 0]
-
-          // get unit vector from camera position to target
-          const camVector = sceneInfra.camControls.camera.position
-            .clone()
-            .sub(sceneInfra.camControls.target)
-
-          if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
-            zAxis = [0, 0, 1]
-            yAxis = [0, 1, 0]
-            if (camVector.z < 0) {
-              zAxis = [0, 0, -1]
-              _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
-            }
-          } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
-            zAxis = [1, 0, 0]
-            yAxis = [0, 0, 1]
-            if (camVector.x < 0) {
-              zAxis = [-1, 0, 0]
-              _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
-            }
-          } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
-            zAxis = [0, 1, 0]
-            yAxis = [0, 0, 1]
-            _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
-            if (camVector.y < 0) {
-              zAxis = [0, -1, 0]
-              _entity_id = engineCommandManager.defaultPlanes?.xz || ''
-            }
-          }
-
-          sceneInfra.modelingSend({
-            type: 'Select default plane',
-            data: {
-              type: 'defaultPlane',
-              planeId: _entity_id,
-              plane: defaultPlaneStrMap[_entity_id],
-              zAxis,
-              yAxis,
-            },
-          })
-          return
-        }
-        const artifact = this.engineCommandManager.artifactMap[_entity_id]
-        // If we clicked on an extrude wall, we climb up the parent Id
-        // to get the sketch profile's face ID. If we clicked on an endcap,
-        // we already have it.
-        const targetId =
-          'additionalData' in artifact &&
-          artifact.additionalData?.type === 'cap'
-            ? _entity_id
-            : artifact.parentId
-
-        // tsc cannot infer that target can have extrusions
-        // from the commandType (why?) so we need to cast it
-        const target = this.engineCommandManager.artifactMap?.[
-          targetId || ''
-        ] as ArtifactMapCommand & { extrusions?: string[] }
-
-        // TODO: We get the first extrusion command ID,
-        // which is fine while backend systems only support one extrusion.
-        // but we need to more robustly handle resolving to the correct extrusion
-        // if there are multiple.
-        const extrusions =
-          this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
-
-        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
-
-        const faceInfo = await getFaceDetails(_entity_id)
-        if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
-        const { z_axis, y_axis, origin } = faceInfo
-        const sketchPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
-          artifact.range
-        )
-
-        const extrudePathToNode = extrusions?.range
-          ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
-          : []
-
-        sceneInfra.modelingSend({
-          type: 'Select default plane',
-          data: {
-            type: 'extrudeFace',
-            zAxis: [z_axis.x, z_axis.y, z_axis.z],
-            yAxis: [y_axis.x, y_axis.y, y_axis.z],
-            position: [origin.x, origin.y, origin.z].map(
-              (num) => num / sceneInfra._baseUnitMultiplier
-            ) as [number, number, number],
-            sketchPathToNode,
-            extrudePathToNode,
-            cap:
-              artifact?.additionalData?.type === 'cap'
-                ? artifact.additionalData.info
-                : 'none',
-            faceId: _entity_id,
-          },
-        })
-        return
-      },
-    })
-  }
   mouseEnterLeaveCallbacks() {
     return {
       onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
@@ -1863,6 +1588,7 @@ export function sketchGroupFromPathToNode({
   return result as SketchGroup
 }
 
+// TODO delete
 function colorSegment(object: any, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {

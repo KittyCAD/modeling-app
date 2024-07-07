@@ -168,7 +168,6 @@ export const Stream = () => {
       },
     })
     if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
 
     if (!context.store?.didDragInStream && butName(e).left) {
       sendSelectEventToEngine(

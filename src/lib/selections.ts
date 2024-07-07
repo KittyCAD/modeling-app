@@ -4,6 +4,7 @@ import {
   engineCommandManager,
   kclManager,
   sceneEntitiesManager,
+  sceneInfra,
 } from 'lib/singletons'
 import { CallExpression, SourceRange, Value, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
@@ -15,6 +16,7 @@ import { Program } from 'lang/wasm'
 import {
   doesPipeHaveCallExp,
   getNodeFromPath,
+  getNodePathFromSourceRange,
   hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
@@ -24,11 +26,15 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
   PROFILE_START,
+  getFaceDetails,
+  DefaultPlaneStr,
 } from 'clientSideScene/sceneEntities'
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { ArtifactMapCommand } from 'lang/std/engineConnection'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -62,8 +68,12 @@ export async function getEventForSelectWithPoint(
     Models['OkModelingCmdResponse_type'],
     { type: 'select_with_point' }
   >,
-  { sketchEnginePathId }: { sketchEnginePathId?: string }
+  state: ReturnType<typeof useModelingContext>['state']
 ): Promise<ModelingMachineEvent | null> {
+  if (state.matches('Sketch no face'))
+    return handleSelectionInSketchNoFace(data?.entity_id || '')
+
+  // assumes XState state is `idle` from this point
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -140,6 +150,128 @@ export async function getEventForSelectWithPoint(
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },
     }
+  }
+}
+
+async function handleSelectionInSketchNoFace(
+  entity_id: string
+): Promise<ModelingMachineEvent | null> {
+  let _entity_id = entity_id
+  if (!_entity_id) return Promise.resolve(null)
+  if (
+    engineCommandManager.defaultPlanes?.xy === _entity_id ||
+    engineCommandManager.defaultPlanes?.xz === _entity_id ||
+    engineCommandManager.defaultPlanes?.yz === _entity_id ||
+    engineCommandManager.defaultPlanes?.negXy === _entity_id ||
+    engineCommandManager.defaultPlanes?.negXz === _entity_id ||
+    engineCommandManager.defaultPlanes?.negYz === _entity_id
+  ) {
+    const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+      [engineCommandManager.defaultPlanes.xy]: 'XY',
+      [engineCommandManager.defaultPlanes.xz]: 'XZ',
+      [engineCommandManager.defaultPlanes.yz]: 'YZ',
+      [engineCommandManager.defaultPlanes.negXy]: '-XY',
+      [engineCommandManager.defaultPlanes.negXz]: '-XZ',
+      [engineCommandManager.defaultPlanes.negYz]: '-YZ',
+    }
+    // TODO can we get this information from rust land when it creates the default planes?
+    // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+    let zAxis: [number, number, number] = [0, 0, 1]
+    let yAxis: [number, number, number] = [0, 1, 0]
+
+    // get unit vector from camera position to target
+    const camVector = sceneInfra.camControls.camera.position
+      .clone()
+      .sub(sceneInfra.camControls.target)
+
+    if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
+      zAxis = [0, 0, 1]
+      yAxis = [0, 1, 0]
+      if (camVector.z < 0) {
+        zAxis = [0, 0, -1]
+        _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
+      }
+    } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
+      zAxis = [1, 0, 0]
+      yAxis = [0, 0, 1]
+      if (camVector.x < 0) {
+        zAxis = [-1, 0, 0]
+        _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
+      }
+    } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
+      zAxis = [0, 1, 0]
+      yAxis = [0, 0, 1]
+      _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
+      if (camVector.y < 0) {
+        zAxis = [0, -1, 0]
+        _entity_id = engineCommandManager.defaultPlanes?.xz || ''
+      }
+    }
+
+    return {
+      type: 'Select default plane',
+      data: {
+        type: 'defaultPlane',
+        planeId: _entity_id,
+        plane: defaultPlaneStrMap[_entity_id],
+        zAxis,
+        yAxis,
+      },
+    }
+  }
+  const artifact = engineCommandManager.artifactMap[_entity_id]
+  // If we clicked on an extrude wall, we climb up the parent Id
+  // to get the sketch profile's face ID. If we clicked on an endcap,
+  // we already have it.
+  const targetId =
+    'additionalData' in artifact && artifact.additionalData?.type === 'cap'
+      ? _entity_id
+      : artifact.parentId
+
+  // tsc cannot infer that target can have extrusions
+  // from the commandType (why?) so we need to cast it
+  const target = engineCommandManager.artifactMap?.[
+    targetId || ''
+  ] as ArtifactMapCommand & { extrusions?: string[] }
+
+  // TODO: We get the first extrusion command ID,
+  // which is fine while backend systems only support one extrusion.
+  // but we need to more robustly handle resolving to the correct extrusion
+  // if there are multiple.
+  const extrusions =
+    engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
+
+  if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return null
+
+  const faceInfo = await getFaceDetails(_entity_id)
+  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return null
+  const { z_axis, y_axis, origin } = faceInfo
+  const sketchPathToNode = getNodePathFromSourceRange(
+    kclManager.ast,
+    artifact.range
+  )
+
+  const extrudePathToNode = extrusions?.range
+    ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+    : []
+
+  return {
+    type: 'Select default plane',
+    data: {
+      type: 'extrudeFace',
+      zAxis: [z_axis.x, z_axis.y, z_axis.z],
+      yAxis: [y_axis.x, y_axis.y, y_axis.z],
+      position: [origin.x, origin.y, origin.z].map(
+        (num) => num / sceneInfra._baseUnitMultiplier
+      ) as [number, number, number],
+      sketchPathToNode,
+      extrudePathToNode,
+      cap:
+        artifact?.additionalData?.type === 'cap'
+          ? artifact.additionalData.info
+          : 'none',
+      faceId: _entity_id,
+    },
   }
 }
 

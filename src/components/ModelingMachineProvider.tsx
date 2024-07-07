@@ -551,10 +551,8 @@ export const ModelingMachineProvider = ({
             ) as [number, number, number],
           }
         },
-        'Get horizontal info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get horizontal info': async (context): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
               constraint: 'setHorzDistance',
@@ -568,11 +566,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -587,10 +582,8 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get vertical info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get vertical info': async (context): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
               constraint: 'setVertDistance',
@@ -604,11 +597,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -623,10 +613,8 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get angle info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get angle info': async (context): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const info = angleBetweenInfo({
             selectionRanges,
           })
@@ -649,11 +637,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -668,10 +653,8 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get length info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get length info': async (context): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
           const _modifiedAst = parse(recast(modifiedAst))
@@ -682,11 +665,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -701,10 +681,10 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get perpendicular distance info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get perpendicular distance info': async (
+          context
+        ): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect(
             {
               selectionRanges,
@@ -718,11 +698,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -737,10 +714,8 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get ABS X info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get ABS X info': async (context): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'xAbs',
@@ -754,11 +729,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -773,10 +745,8 @@ export const ModelingMachineProvider = ({
             updatedPathToNode,
           }
         },
-        'Get ABS Y info': async ({
-          selectionRanges,
-          sketchDetails,
-        }): Promise<SetSelections> => {
+        'Get ABS Y info': async (context): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'yAbs',
@@ -790,11 +760,8 @@ export const ModelingMachineProvider = ({
             pathToNodeMap
           )
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            updatedPathToNode,
             _modifiedAst,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
@@ -810,9 +777,10 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get convert to variable info': async (
-          { sketchDetails, selectionRanges },
+          context,
           { data }
         ): Promise<SetSelections> => {
+          const { selectionRanges, sketchDetails } = context
           if (!sketchDetails)
             return Promise.reject(new Error('No sketch details'))
           const { variableName } = await getVarNameModal({
@@ -836,11 +804,8 @@ export const ModelingMachineProvider = ({
             return Promise.reject(new Error('No path to replaced node'))
 
           const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-            pathToReplacedNode || [],
             parsed,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
+            context
           )
           if (err(updatedAst)) return Promise.reject(updatedAst)
           const selection = updateSelections(
