@@ -30,8 +30,9 @@ import { CallExpression, PathToNode, parse, recast } from 'lang/wasm'
 import { ARROWHEAD, X_AXIS, Y_AXIS } from './sceneInfra'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getThemeColorForThreeJs } from 'lib/theme'
-import { orthoScale, perspScale } from './helpers'
+import { orthoScale, perspScale, quaternionFromUpNForward } from './helpers'
 import { ModelingMachineContext } from 'machines/modelingMachine'
+import { addStartProfileAt } from 'lang/modifyAst'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
@@ -77,6 +78,16 @@ interface Callbacks {
 }
 
 type SetCallbacksWithCtx = (context: ModelingMachineContext) => Callbacks
+
+const dummyListenersAll: Callbacks = {
+  onDragStart: () => {},
+  onDragEnd: () => {},
+  onDrag: () => {},
+  onMove: () => {},
+  onClick: () => {},
+  onMouseEnter: () => {},
+  onMouseLeave: () => {},
+}
 
 const onMousEnterLeaveCallbacks = {
   onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
@@ -284,6 +295,44 @@ export const idleCallbacks: SetCallbacksWithCtx = (context) => {
         intersects,
         sketchPathToNode: context.sketchDetails?.sketchPathToNode || [],
       })
+    },
+  }
+}
+
+export const Sketch_LineTool_NoPoints: SetCallbacksWithCtx = ({
+  sketchDetails,
+}) => {
+  if (!sketchDetails) return dummyListenersAll
+  sceneEntitiesManager.createIntersectionPlane()
+  const quaternion = quaternionFromUpNForward(
+    new Vector3(...sketchDetails.yAxis),
+    new Vector3(...sketchDetails.zAxis)
+  )
+  sceneEntitiesManager.intersectionPlane &&
+    sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(quaternion)
+  sceneEntitiesManager.intersectionPlane &&
+    sceneEntitiesManager.intersectionPlane.position.copy(
+      new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+    )
+  return {
+    ...dummyListenersAll,
+    onClick: async (args) => {
+      if (!args) return
+      if (args.mouseEvent.which !== 1) return
+      const { intersectionPoint } = args
+      if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
+      const addStartProfileAtRes = addStartProfileAt(
+        kclManager.ast,
+        sketchDetails.sketchPathToNode,
+        [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
+      )
+
+      if (trap(addStartProfileAtRes)) return
+      const { modifiedAst } = addStartProfileAtRes
+
+      await kclManager.updateAst(modifiedAst, false)
+      sceneEntitiesManager.removeIntersectionPlane()
+      sceneInfra.modelingSend('Add start point')
     },
   }
 }

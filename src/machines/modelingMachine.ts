@@ -6,7 +6,7 @@ import {
   recast,
 } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
-import { ContextFrom, assign, createMachine } from 'xstate'
+import { assign, createMachine } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
   isNodeSafeToReplacePath,
@@ -33,11 +33,7 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import {
-  addStartProfileAt,
-  deleteFromSelection,
-  extrudeSketch,
-} from 'lang/modifyAst'
+import { deleteFromSelection, extrudeSketch } from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -56,13 +52,12 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, trap } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
-import { Vector3 } from 'three'
-import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
+import { Sketch_LineTool_NoPoints } from 'clientSideScene/sceneCallbacks'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1171,43 +1166,7 @@ export const modelingMachine = createMachine(
       'show default planes': () => {
         kclManager.showPlanes()
       },
-      'setup noPoints onClick listener': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        sceneEntitiesManager.createIntersectionPlane()
-        const quaternion = quaternionFromUpNForward(
-          new Vector3(...sketchDetails.yAxis),
-          new Vector3(...sketchDetails.zAxis)
-        )
-        sceneEntitiesManager.intersectionPlane &&
-          sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-            quaternion
-          )
-        sceneEntitiesManager.intersectionPlane &&
-          sceneEntitiesManager.intersectionPlane.position.copy(
-            new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-          )
-        sceneInfra.setCallbacks({
-          onClick: async (args) => {
-            if (!args) return
-            if (args.mouseEvent.which !== 1) return
-            const { intersectionPoint } = args
-            if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
-              return
-            const addStartProfileAtRes = addStartProfileAt(
-              kclManager.ast,
-              sketchDetails.sketchPathToNode,
-              [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
-            )
-
-            if (trap(addStartProfileAtRes)) return
-            const { modifiedAst } = addStartProfileAtRes
-
-            await kclManager.updateAst(modifiedAst, false)
-            sceneEntitiesManager.removeIntersectionPlane()
-            sceneInfra.modelingSend('Add start point')
-          },
-        })
-      },
+      'setup noPoints onClick listener': Sketch_LineTool_NoPoints,
       'add axis n grid': ({ sketchDetails }) => {
         if (!sketchDetails) return
         if (localStorage.getItem('disableAxis')) return
