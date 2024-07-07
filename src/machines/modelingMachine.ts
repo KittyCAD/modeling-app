@@ -262,7 +262,6 @@ export interface ModelingMachineContext {
   selectionRanges: Selections
   sketchDetails: null | SketchDetails
   sketchPlaneId: string
-  sketchEnginePathId: string
   moveDescs: MoveDesc[]
   mouseState: MouseState
   segmentOverlays: SegmentOverlays
@@ -293,7 +292,6 @@ export const modelingMachine = createMachine(
         origin: [0, 0, 0],
       },
       sketchPlaneId: '',
-      sketchEnginePathId: '',
       moveDescs: [],
       mouseState: { type: 'idle' },
       segmentOverlays: {},
@@ -1013,12 +1011,10 @@ export const modelingMachine = createMachine(
         }
       }),
       'hide default planes': () => {
-        sceneInfra.removeDefaultPlanes()
         kclManager.hidePlanes()
       },
       'reset sketch metadata': assign({
         sketchDetails: null,
-        sketchEnginePathId: '',
         sketchPlaneId: '',
       }),
       'set new sketch metadata': assign((_, { data }) => ({
@@ -1173,8 +1169,6 @@ export const modelingMachine = createMachine(
         )
       },
       'show default planes': () => {
-        sceneInfra.showDefaultPlanes()
-        sceneEntitiesManager.setupDefaultPlaneHover()
         kclManager.showPlanes()
       },
       'setup noPoints onClick listener': ({ sketchDetails }) => {
