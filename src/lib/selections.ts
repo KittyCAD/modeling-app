@@ -360,6 +360,14 @@ export function isSelectionLastLine(
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
+export function isRangeInbetweenCharacters(selectionRanges: Selections) {
+  return (
+    selectionRanges.codeBasedSelections.length === 1 &&
+    selectionRanges.codeBasedSelections[0].range[0] ===
+      selectionRanges.codeBasedSelections[0].range[1]
+  )
+}
+
 export type CommonASTNode = {
   selection: Selection
   ast: Program
