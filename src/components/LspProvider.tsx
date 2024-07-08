@@ -8,7 +8,7 @@ import {
   LanguageServerPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import {kcl} from 'editor/plugins/lsp/kcl/language'
+import { kcl } from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
