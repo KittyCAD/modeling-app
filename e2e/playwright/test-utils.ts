@@ -377,6 +377,9 @@ export async function getUtils(page: Page) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
+      if (browserType !== 'chromium') {
+        console.warn('emulateNetworkConditions will not work on this browser')
+      }
       if (cdpSession === null) {
         // Use a fail safe if we can't simulate disconnect (on Safari)
         return page.evaluate('window.tearDown()')
