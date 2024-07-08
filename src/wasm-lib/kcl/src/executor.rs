@@ -963,7 +963,7 @@ pub enum FilletOrChamfer {
         length: f64,
         /// The engine id of the edge to chamfer.
         edge_id: uuid::Uuid,
-        tag: Option<TagDeclarator>,
+        tag: Box<Option<TagDeclarator>>,
     },
 }
 
@@ -985,7 +985,7 @@ impl FilletOrChamfer {
     pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
             FilletOrChamfer::Fillet { .. } => None,
-            FilletOrChamfer::Chamfer { tag, .. } => tag.clone(),
+            FilletOrChamfer::Chamfer { tag, .. } => *tag.clone(),
         }
     }
 }

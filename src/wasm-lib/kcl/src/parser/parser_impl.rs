@@ -704,7 +704,12 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
     Ok(nc)
 }
 
+// the large_enum_variant lint below introduces a LOT of code complexity in a
+// match!() that's super clean that isn't worth it for the marginal space
+// savings. revisit if that's a lie.
+
 #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 enum WithinFunction {
     BodyItem((BodyItem, Option<NonCodeNode>)),
     NonCode(NonCodeNode),
