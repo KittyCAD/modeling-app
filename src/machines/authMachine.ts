@@ -127,10 +127,15 @@ async function getUser(context: UserContext) {
   if (token) headers['Authorization'] = `Bearer ${context.token}`
 
   if (SKIP_AUTH)
-    return {
-      user: LOCAL_USER,
-      token,
+    if (localStorage.getItem('FORCE_NO_IMAGE')) {
+      // Only affects LOCAL_USER for tests.
+      LOCAL_USER.image = ''
     }
+
+  return {
+    user: LOCAL_USER,
+    token,
+  }
 
   const userPromise = !isTauri()
     ? fetch(url, {
