@@ -254,6 +254,10 @@ code {
   color: rgb(120, 120, 120, 0.8) !important;
 }
 
+.segment-length-label-text {
+  transform: translate(var(--x, 0), var(--y, 0));
+}
+
 @layer components {
   kbd.hotkey {
     @apply font-mono text-xs inline-block px-1 py-0.5 rounded-sm;
