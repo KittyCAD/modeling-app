@@ -3,6 +3,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from 'vite-plugin-eslint'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
+// @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 
 const config = defineConfig({

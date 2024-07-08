@@ -15,6 +15,7 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
+// @ts-ignore: No types available
 import { parser } from './kcl.grammar'
 
 export interface LanguageOptions {
