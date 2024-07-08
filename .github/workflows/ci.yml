@@ -404,11 +404,8 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
-        env:
-          PREFIX: ${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
-          MODE: release
         with:
-          path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
+          path: "${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg' || 'src-tauri/target/release/bundle/msi/*.msi' }}"
           name: updater-test
 
 
