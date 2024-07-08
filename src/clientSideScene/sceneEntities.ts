@@ -47,6 +47,7 @@ import {
   programMemoryInit,
   recast,
   SketchGroup,
+  ExtrudeGroup,
   VariableDeclaration,
   VariableDeclarator,
 } from 'lang/wasm'
@@ -1075,9 +1076,16 @@ export class SceneEntities {
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
-      const sketchGroup = programMemory.root[
-        variableDeclarationName
-      ] as SketchGroup
+
+      const maybeSketchGroup = programMemory.root[variableDeclarationName]
+      let sketchGroup = undefined
+      if (maybeSketchGroup.type === 'SketchGroup') {
+        sketchGroup = maybeSketchGroup
+      } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
+        sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
+      }
+      if (!sketchGroup) return
+
       const sgPaths = sketchGroup.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
