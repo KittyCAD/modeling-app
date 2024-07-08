@@ -8,7 +8,7 @@ import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager, engineCommandManager } from 'lib/singletons'
+import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -54,18 +54,22 @@ export const Stream = () => {
     const IDLE_TIME_MS = 1000 * 20
     let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
 
+    const teardown = () => {
+      videoRef.current?.pause()
+      setIsFreezeFrame(true)
+      sceneInfra.modelingSend({ type: 'Cancel' })
+      // Give video time to pause
+      window.requestAnimationFrame(() => {
+        engineCommandManager.engineConnection?.tearDown({ freeze: true })
+      })
+    }
+
     // Teardown everything if we go hidden or reconnect
     if (globalThis?.window?.document) {
       globalThis.window.document.onvisibilitychange = () => {
         if (globalThis.window.document.visibilityState === 'hidden') {
           clearTimeout(timeoutIdIdleA)
-          timeoutIdIdleA = setTimeout(() => {
-            videoRef.current?.pause()
-            setIsFreezeFrame(true)
-            window.requestAnimationFrame(() => {
-              engineCommandManager.engineConnection?.tearDown({ freeze: true })
-            })
-          }, IDLE_TIME_MS)
+          timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
         } else if (!engineCommandManager.engineConnection?.isReady()) {
           clearTimeout(timeoutIdIdleA)
           engineCommandManager.engineConnection?.connect(true)
@@ -75,16 +79,6 @@ export const Stream = () => {
 
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
-    const onIdle = () => {
-      videoRef.current?.pause()
-      setIsFreezeFrame(true)
-      kclManager.isFirstRender = true
-      setIsFirstRender(true)
-      // Give video time to pause
-      window.requestAnimationFrame(() => {
-        engineCommandManager.engineConnection?.tearDown({ freeze: true })
-      })
-    }
     const onAnyInput = () => {
       if (!engineCommandManager.engineConnection?.isReady()) {
         engineCommandManager.engineConnection?.connect(true)
@@ -92,7 +86,7 @@ export const Stream = () => {
       // Clear both timers
       clearTimeout(timeoutIdIdleA)
       clearTimeout(timeoutIdIdleB)
-      timeoutIdIdleB = setTimeout(onIdle, IDLE_TIME_MS)
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
     globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
@@ -101,7 +95,7 @@ export const Stream = () => {
     globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
     globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
 
-    timeoutIdIdleB = setTimeout(onIdle, IDLE_TIME_MS)
+    timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
 
     return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
