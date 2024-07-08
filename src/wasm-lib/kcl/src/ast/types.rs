@@ -5699,4 +5699,35 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_digest() {
+        let prog1_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %)
+"#;
+        let prog1_tokens = crate::token::lexer(prog1_string).unwrap();
+        let prog1_parser = crate::parser::Parser::new(prog1_tokens);
+        let prog1_digest = prog1_parser.ast().unwrap().compute_digest();
+
+        let prog2_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 2], %)
+    |> line([5, 5], %)
+"#;
+        let prog2_tokens = crate::token::lexer(prog2_string).unwrap();
+        let prog2_parser = crate::parser::Parser::new(prog2_tokens);
+        let prog2_digest = prog2_parser.ast().unwrap().compute_digest();
+
+        assert!(prog1_digest != prog2_digest);
+
+        let prog3_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %)
+"#;
+        let prog3_tokens = crate::token::lexer(prog3_string).unwrap();
+        let prog3_parser = crate::parser::Parser::new(prog3_tokens);
+        let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
+
+        assert_eq!(prog1_digest, prog3_digest);
+    }
 }
