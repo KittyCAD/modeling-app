@@ -560,6 +560,50 @@ test.describe('Testing Camera Movement', () => {
 })
 
 test.describe('Editor tests', () => {
+  test('can comment out code with ctrl+/', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await u.codeLocator.click()
+    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('/')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    // |> close(%)`)
+
+    // uncomment the code
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('/')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+  })
+
   test('if you click the format button it formats your code', async ({
     page,
   }) => {

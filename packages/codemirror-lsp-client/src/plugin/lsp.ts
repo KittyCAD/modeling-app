@@ -71,6 +71,9 @@ export interface LanguageServerOptions {
   ) => void
 
   changesDelay?: number
+
+  doSemanticTokens?: boolean
+  doFoldingRanges?: boolean
 }
 
 export class LanguageServerPlugin implements PluginValue {
@@ -86,6 +89,9 @@ export class LanguageServerPlugin implements PluginValue {
     plugin: LanguageServerPlugin,
     notification: LSP.NotificationMessage
   ) => void
+
+  private doSemanticTokens: boolean = false
+  private doFoldingRanges: boolean = false
 
   private _defferer = deferExecution((code: string) => {
     try {
@@ -108,6 +114,9 @@ export class LanguageServerPlugin implements PluginValue {
   constructor(options: LanguageServerOptions, private view: EditorView) {
     this.client = options.client
     this.documentVersion = 0
+
+    this.doSemanticTokens = options.doSemanticTokens ?? false
+    this.doFoldingRanges = options.doFoldingRanges ?? false
 
     if (options.changesDelay) {
       this.changesDelay = options.changesDelay
@@ -220,6 +229,7 @@ export class LanguageServerPlugin implements PluginValue {
 
   async getFoldingRanges(): Promise<LSP.FoldingRange[] | null> {
     if (
+      !this.doFoldingRanges ||
       !this.client.ready ||
       !this.client.getServerCapabilities().foldingRangeProvider
     )
@@ -445,6 +455,7 @@ export class LanguageServerPlugin implements PluginValue {
 
   async requestSemanticTokens() {
     if (
+      !this.doSemanticTokens ||
       !this.client.ready ||
       !this.client.getServerCapabilities().semanticTokensProvider
     ) {
