@@ -394,6 +394,7 @@ jobs:
         run: |
           ls -l artifact
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+          cat src-tauri/tauri.release.conf.json
 
       - name: Build the app (release, updater test)
         if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
