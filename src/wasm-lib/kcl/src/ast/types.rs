@@ -62,6 +62,8 @@ macro_rules! compute_digest {
             #[allow(unused_mut)]
             let mut $slf = self;
 
+            $hasher.update(std::any::type_name::<Self>());
+
             $body
 
             let node_digest: Digest = $hasher.finalize().into();
