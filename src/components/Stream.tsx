@@ -51,23 +51,29 @@ export const Stream = () => {
       capture: true,
     })
 
+    const IDLE_TIME_MS = 1000 * 20
+    let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
+
     // Teardown everything if we go hidden or reconnect
     if (globalThis?.window?.document) {
       globalThis.window.document.onvisibilitychange = () => {
         if (globalThis.window.document.visibilityState === 'hidden') {
-          videoRef.current?.pause()
-          setIsFreezeFrame(true)
-          window.requestAnimationFrame(() => {
-            engineCommandManager.engineConnection?.tearDown({ freeze: true })
-          })
-        } else {
+          clearTimeout(timeoutIdIdleA)
+          timeoutIdIdleA = setTimeout(() => {
+            videoRef.current?.pause()
+            setIsFreezeFrame(true)
+            window.requestAnimationFrame(() => {
+              engineCommandManager.engineConnection?.tearDown({ freeze: true })
+            })
+          }, IDLE_TIME_MS)
+        } else if (!engineCommandManager.engineConnection?.isReady()) {
+          clearTimeout(timeoutIdIdleA)
           engineCommandManager.engineConnection?.connect(true)
         }
       }
     }
 
-    const IDLE_TIME_MS = 1000 * 20
-    let timeoutIdIdle: ReturnType<typeof setTimeout> | undefined = undefined
+    let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
     const onIdle = () => {
       videoRef.current?.pause()
@@ -83,8 +89,10 @@ export const Stream = () => {
       if (!engineCommandManager.engineConnection?.isReady()) {
         engineCommandManager.engineConnection?.connect(true)
       }
-      clearTimeout(timeoutIdIdle)
-      timeoutIdIdle = setTimeout(onIdle, IDLE_TIME_MS)
+      // Clear both timers
+      clearTimeout(timeoutIdIdleA)
+      clearTimeout(timeoutIdIdleB)
+      timeoutIdIdleB = setTimeout(onIdle, IDLE_TIME_MS)
     }
 
     globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
@@ -93,7 +101,7 @@ export const Stream = () => {
     globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
     globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
 
-    timeoutIdIdle = setTimeout(onIdle, IDLE_TIME_MS)
+    timeoutIdIdleB = setTimeout(onIdle, IDLE_TIME_MS)
 
     return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
