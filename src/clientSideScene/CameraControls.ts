@@ -526,7 +526,8 @@ export class CameraControls {
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_set_perspective',
-          parameters: { fov_y:
+          parameters: {
+            fov_y:
               this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
           },
         },
