@@ -1,9 +1,10 @@
 // Code mirror language implementation for kcl.
 
 import {
-  Language,
-  defineLanguageFacet,
+  LRLanguage,
   LanguageSupport,
+  indentNodeProp, continuedIndent, delimitedIndent,
+  foldNodeProp, foldInside,
 } from '@codemirror/language'
 import {
   LanguageServerClient,
@@ -11,18 +12,7 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
-import KclParser from './parser'
-
-const data = defineLanguageFacet({
-  // https://codemirror.net/docs/ref/#commands.CommentTokens
-  commentTokens: {
-    line: '//',
-    block: {
-      open: '/*',
-      close: '*/',
-    },
-  },
-})
+import {parser} from './kcl.grammar'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -34,26 +24,33 @@ export interface LanguageOptions {
   ) => void
 }
 
-class KclLanguage extends Language {
-  constructor(options: LanguageOptions) {
-    const plugin = kclPlugin({
-      documentUri: options.documentUri,
-      workspaceFolders: options.workspaceFolders,
-      allowHTMLContent: true,
-      client: options.client,
-      processLspNotification: options.processLspNotification,
-    })
-
-    const parser = new KclParser()
-
-    super(data, parser, [plugin], 'kcl')
+export const KclLanguage = LRLanguage.define({
+  name: "klc",
+  parser: parser.configure({
+    props: [
+      indentNodeProp.add({
+        Body: delimitedIndent({closing: "}"}),
+        BlockComment: () => null,
+        "Statement Property": continuedIndent({except: /^{/}),
+      }),
+      foldNodeProp.add({
+        "Body ArrayExpression ObjectExpression": foldInside,
+        BlockComment(tree) { return {from: tree.from + 2, to: tree.to - 2} },
+        PipeExpression(tree) { return {from: tree.firstChild!.to, to: tree.to} }
+      })
+    ]
+  }),
+  languageData: {
+    commentTokens: {line: "//", block: {open: "/*", close: "*/"}},
   }
-}
+})
 
-export default class KclLanguageSupport extends LanguageSupport {
-  constructor(options: LanguageOptions) {
-    const lang = new KclLanguage(options)
-
-    super(lang)
-  }
+export function kcl(options: LanguageOptions) {
+  return new LanguageSupport(KclLanguage, kclPlugin({
+    documentUri: options.documentUri,
+    workspaceFolders: options.workspaceFolders,
+    allowHTMLContent: true,
+    client: options.client,
+    processLspNotification: options.processLspNotification,
+  }))
 }

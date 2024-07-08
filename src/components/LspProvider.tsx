@@ -8,7 +8,7 @@ import {
   LanguageServerPlugin,
 } from '@kittycad/codemirror-lsp-client'
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
-import KclLanguageSupport from 'editor/plugins/lsp/kcl/language'
+import {kcl} from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
@@ -146,7 +146,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isKclLspReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
-      const lsp = new KclLanguageSupport({
+      const lsp = kcl({
         documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
