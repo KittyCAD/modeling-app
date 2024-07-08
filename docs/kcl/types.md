@@ -74,10 +74,107 @@ You can nest expressions in parenthesis as well:
 let myMathExpression = 3 + (1 * 2 / (3 - 7))
 ```
 
-## Tag Declaration and Tag Identifiers
+## Tags
 
-The syntax for tags is now `$myTag` to declare a tag and `myTag` to then use it later. 
+Tags are used to give a name (tag) to a specific path.
 
-Please if you find any issues using any of the above expressions or syntax
+### Tag Declaration
+
+The syntax for declaring a tag is `$myTag` you would use it in the following
+way:
+
+```
+startSketchOn('XZ')
+  |> startProfileAt(origin, %)
+  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001, %) - 90,
+       196.99
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001, %),
+       -segLen(rectangleSegmentA001, %)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+```
+
+### Tag Identifier
+
+As per the example above you can use the tag identifier to get a reference to the 
+tagged object. The syntax for this is `myTag`.
+
+In the example above we use the tag identifier to get the angle of the segment
+`segAng(rectangleSegmentA001, %)`.
+
+
+### Tag Scope
+
+Tags are scoped globally if in the root context meaning in this example you can 
+use the tag `rectangleSegmentA001` in any function or expression in the file.
+
+However if the code was written like this:
+
+```
+fn rect = (origin) => {
+  return startSketchOn('XZ')
+  |> startProfileAt(origin, %)
+  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001, %) - 90,
+       196.99
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001, %),
+       -segLen(rectangleSegmentA001, %)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+}
+
+rect([0, 0])
+rect([20, 0])
+``` 
+
+Those tags would only be available in the `rect` function and not globally.
+
+However you likely want to use those tags somewhere outside the `rect` function.
+
+Tags are accessible through the sketch group they are declared in.
+For example the following code works.
+
+```
+fn rect = (origin) => {
+  return startSketchOn('XZ')
+  |> startProfileAt(origin, %)
+  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001, %) - 90,
+       196.99
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001, %),
+       -segLen(rectangleSegmentA001, %)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+}
+
+rect([0, 0])
+const myRect = rect([20, 0])
+
+myRect 
+  |> extrude(10, %)
+  |> fillet({radius: 0.5, tags: [myRect.tags.rectangleSegmentA001]}, %)
+```
+
+See how we use the tag `rectangleSegmentA001` in the `fillet` function outside
+the `rect` function. This is because the `rect` function is returning the
+sketch group that contains the tags.
+
+
+---
+
+If you find any issues using any of the above expressions or syntax,
 please file an issue with the `ast` label on the [modeling-app
 repo](https://github.com/KittyCAD/modeling-app/issues/new).

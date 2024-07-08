@@ -155,6 +155,17 @@ const newVar = myVar + 1`
           sourceRange: [39, 63],
         },
       },
+      tags: {
+        myPath: {
+          __meta: [
+            {
+              sourceRange: [109, 117],
+            },
+          ],
+          type: 'TagIdentifier',
+          value: 'myPath',
+        },
+      },
       value: [
         {
           type: 'ToPoint',

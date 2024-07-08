@@ -537,17 +537,14 @@ impl std::hash::Hash for TagIdentifier {
     }
 }
 
-pub type MemoryFunction = fn(
-    s: Vec<MemoryItem>,
-    memory: ProgramMemory,
-    expression: Box<FunctionExpression>,
-    metadata: Vec<Metadata>,
-    ctx: ExecutorContext,
-) -> std::pin::Pin<
-    Box<
-        dyn std::future::Future<Output = Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError>> + Send,
-    >,
->;
+pub type MemoryFunction =
+    fn(
+        s: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        expression: Box<FunctionExpression>,
+        metadata: Vec<Metadata>,
+        ctx: ExecutorContext,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
 
 fn force_memory_function<
     F: Fn(
@@ -556,12 +553,7 @@ fn force_memory_function<
         Box<FunctionExpression>,
         Vec<Metadata>,
         ExecutorContext,
-    ) -> std::pin::Pin<
-        Box<
-            dyn std::future::Future<Output = Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError>>
-                + Send,
-        >,
-    >,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
 >(
     f: F,
 ) -> F {
@@ -691,11 +683,15 @@ impl MemoryItem {
         match self {
             MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
             MemoryItem::UserVal(u) => {
-                let name: String = self.get_json()?;
-                Ok(TagIdentifier {
-                    value: name,
-                    meta: u.meta.clone(),
-                })
+                if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
+                    Ok(identifier)
+                } else {
+                    let name: String = self.get_json()?;
+                    Ok(TagIdentifier {
+                        value: name,
+                        meta: u.meta.clone(),
+                    })
+                }
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag identifier: {:?}", self),
@@ -752,7 +748,7 @@ impl MemoryItem {
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
         ctx: ExecutorContext,
-    ) -> Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError> {
+    ) -> Result<Option<ProgramReturn>, KclError> {
         let MemoryItem::Function { func, expression, meta } = &self else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: "not a in memory function".to_string(),
@@ -782,6 +778,9 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
+    /// Tag identifiers that have been declared in this sketch group.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub tags: HashMap<String, TagIdentifier>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -1572,16 +1571,7 @@ impl ExecutorContext {
                             }
                             FunctionKind::UserDefined => {
                                 if let Some(func) = memory.clone().root.get(&fn_name) {
-                                    let (result, global_memory_items) =
-                                        func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
-
-                                    // Add the global memory items to the memory.
-                                    for (key, item) in global_memory_items {
-                                        // We don't care about errors here because any collisions
-                                        // would happened in the function call itself and already
-                                        // errored out.
-                                        memory.add(&key, item, call_expr.into()).unwrap_or_default();
-                                    }
+                                    let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
 
                                     memory.return_ = result;
                                 } else {
@@ -1706,7 +1696,7 @@ impl ExecutorContext {
                                 .inner_execute(&function_expression.body, &mut fn_memory, BodyType::Block)
                                 .await?;
 
-                            Ok((result.return_, fn_memory.get_tags()))
+                            Ok(result.return_)
                         })
                     },
                 );

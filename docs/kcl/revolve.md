@@ -248,6 +248,9 @@ uuid |
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -408,6 +411,9 @@ uuid |
 },
 	// The to point.
 	to: [number, number],
+},
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
 },
 	// The paths in the sketch group.
 	value: [{
@@ -673,6 +679,9 @@ uuid |
 },
 	// The to point.
 	to: [number, number],
+},
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
 },
 	// The paths in the sketch group.
 	value: [{
