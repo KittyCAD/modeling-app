@@ -1168,7 +1168,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
 
 impl NonCodeMeta {
     compute_digest!(|slf, hasher| {
-        let mut keys = slf.non_code_nodes.keys().map(|v| *v).collect::<Vec<_>>();
+        let mut keys = slf.non_code_nodes.keys().copied().collect::<Vec<_>>();
         keys.sort();
 
         for key in keys.into_iter() {
