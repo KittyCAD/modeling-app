@@ -153,23 +153,15 @@ export function straightSegment({
   segmentGroup.name = STRAIGHT_SEGMENT
   segmentGroup.add(mesh)
 
-  // Early return on close call expression
-  if (callExpName === 'close') return segmentGroup
-
   const length = Math.sqrt(
     Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
   )
-  const arrowGroup = createArrowhead(scale, theme, color)
-  arrowGroup.position.set(to[0], to[1], 0)
-  const dir = new Vector3()
-    .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
-    .normalize()
-  arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
   const pxLength = length / scale
   const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
-  arrowGroup.visible = !shouldHide
-  segmentGroup.add(arrowGroup)
 
+  // All segment types get an extra segment handle,
+  // Which is a little plus sign that appears at the origin of the segment
+  // and can be dragged to insert a new segment
   const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
   const directionVector = new Vector2(
     to[0] - from[0],
@@ -186,13 +178,30 @@ export function straightSegment({
   extraSegmentGroup.visible = !shouldHide
   segmentGroup.add(extraSegmentGroup)
 
-  const lengthIndicatorGroup = createLengthIndicator({
-    from,
-    to,
-    scale,
-    length,
-  })
-  segmentGroup.add(lengthIndicatorGroup)
+  // Segment decorators that only apply to non-close segments
+  if (callExpName !== 'close') {
+    // an arrowhead that appears at the end of the segment
+    const arrowGroup = createArrowhead(scale, theme, color)
+    arrowGroup.position.set(to[0], to[1], 0)
+    const dir = new Vector3()
+      .subVectors(
+        new Vector3(to[0], to[1], 0),
+        new Vector3(from[0], from[1], 0)
+      )
+      .normalize()
+    arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+    arrowGroup.visible = !shouldHide
+    segmentGroup.add(arrowGroup)
+
+    // A length indicator that appears at the midpoint of the segment
+    const lengthIndicatorGroup = createLengthIndicator({
+      from,
+      to,
+      scale,
+      length,
+    })
+    segmentGroup.add(lengthIndicatorGroup)
+  }
 
   return segmentGroup
 }
