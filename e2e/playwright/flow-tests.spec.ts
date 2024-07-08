@@ -6721,7 +6721,12 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
 })
 
 test.describe('Test network and connection issues', () => {
-  test('simulate network down and network little widget', async ({ page }) => {
+  test('simulate network down and network little widget', async ({ page, browserName }) => {
+    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -6791,7 +6796,12 @@ test.describe('Test network and connection issues', () => {
     await expect(page.getByText('Network Health (Connected)')).toBeVisible()
   })
 
-  test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
+  test('Engine disconnect & reconnect in sketch mode', async ({ page, browserName }) => {
+    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
