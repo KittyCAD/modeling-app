@@ -13,6 +13,7 @@ import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecutePa
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
 import { codeManagerUpdateEvent } from 'lang/codeManager'
+import { copilotPluginEvent } from '../copilot'
 
 const changesDelay = 600
 
@@ -64,6 +65,11 @@ export class KclPlugin implements PluginValue {
       } else if (tr.annotation(lspFormatCodeEvent.type)) {
         isRelevant = true
       } else if (tr.annotation(codeManagerUpdateEvent.type)) {
+        // We want to ignore when we are forcing the editor to update.
+        isRelevant = false
+        break
+      } else if (tr.annotation(copilotPluginEvent.type)) {
+        // We want to ignore when copilot is doing stuff.
         isRelevant = false
         break
       }
