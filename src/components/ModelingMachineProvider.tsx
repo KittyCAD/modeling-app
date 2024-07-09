@@ -129,7 +129,16 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_set_perspective',
+                parameters: {
+                  fov_y: 45,
+                },
+              },
+            })
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 

@@ -538,7 +538,7 @@ export class CameraControls {
     return this.camera
   }
 
-  dollyZoom = async (newFov: number, splitEngineCalls = false) => {
+  dollyZoom = async (newFov: number) => {
     if (!(this.camera instanceof PerspectiveCamera)) {
       console.warn('Dolly zoom is only applicable to perspective cameras.')
       return
@@ -589,48 +589,21 @@ export class CameraControls {
     this.camera.near = z_near
     this.camera.far = z_far
 
-    if (splitEngineCalls) {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          ...convertThreeCamValuesToEngineCam({
-            isPerspective: true,
-            position: newPosition,
-            quaternion: this.camera.quaternion,
-            zoom: this.camera.zoom,
-            target: this.target,
-          }),
-        },
-      })
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_perspective',
-          parameters: {
-            fov_y: newFov,
-          },
-        },
-      })
-    } else {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_perspective_settings',
-          ...convertThreeCamValuesToEngineCam({
-            isPerspective: true,
-            position: newPosition,
-            quaternion: this.camera.quaternion,
-            zoom: this.camera.zoom,
-            target: this.target,
-          }),
-          fov_y: newFov,
-        },
-      })
-    }
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam({
+          isPerspective: true,
+          position: newPosition,
+          quaternion: this.camera.quaternion,
+          zoom: this.camera.zoom,
+          target: this.target,
+        }),
+        fov_y: newFov,
+      },
+    })
   }
 
   update = (forceUpdate = false) => {
@@ -1035,29 +1008,6 @@ export class CameraControls {
         .onComplete(onComplete)
         .start()
     })
-  snapToPerspectiveBeforeHandingBackControlToEngine = async (
-    targetCamUp = new Vector3(0, 0, 1)
-  ) => {
-    if (this.syncDirection === 'engineToClient') {
-      console.warn(
-        'animate To Perspective not design to work with engineToClient syncDirection.'
-      )
-    }
-    this.isFovAnimationInProgress = true
-    const targetFov = this.fovBeforeOrtho // Target FOV for perspective
-    this.lastPerspectiveFov = 4
-    let currentFov = 4
-    const initialCameraUp = this.camera.up.clone()
-    this.usePerspectiveCamera()
-    const tempVec = new Vector3()
-
-    currentFov = this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
-    const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
-    this.camera.up.copy(currentUp)
-    await this.dollyZoom(currentFov, true)
-
-    this.isFovAnimationInProgress = false
-  }
 
   get reactCameraProperties(): ReactCameraProperties {
     return {

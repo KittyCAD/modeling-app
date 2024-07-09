@@ -4312,7 +4312,7 @@ test.describe('Sketch tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([6.44, -12.07], %)
-    |> line([14.72, 2.01], %)
+    |> line([14.72, 1.97], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> line([1.97, 2.06], %)
     |> close(%)
