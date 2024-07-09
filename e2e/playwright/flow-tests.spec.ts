@@ -3928,6 +3928,53 @@ test.describe('Sketch tests', () => {
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
   })
+  test('Can delete most of a sketch and the line tool will still work', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+    await page.waitForTimeout(600) // wait for animation
+
+    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+    await u.openAndClearDebugPanel()
+
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(100)
+
+    await page.getByRole('button', { name: 'Line' }).click()
+    await page.waitForTimeout(100)
+
+    await page.mouse.click(700, 200)
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([0.31, 16.47], %)`
+    )
+  })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
@@ -4317,7 +4364,7 @@ test.describe('Sketch tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([6.44, -12.07], %)
-    |> line([14.72, 2.01], %)
+    |> line([14.72, 1.97], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> line([1.97, 2.06], %)
     |> close(%)
@@ -7513,7 +7560,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(600, 250)
   // Start a sketch
   await page.keyboard.press('s')
-  await page.waitForTimeout(2000)
+  await page.waitForTimeout(200)
   await page.mouse.move(800, 300, { steps: 5 })
   await page.mouse.click(800, 300)
   await page.waitForTimeout(2000)
