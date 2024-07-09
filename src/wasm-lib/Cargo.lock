@@ -1835,14 +1835,14 @@ checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 
 [[package]]
 name = "phonenumber"
-version = "0.3.5+8.13.36"
+version = "0.3.6+8.13.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f174c8db59b620032bd52b655fc97000458850fec0db35fcd4e802b668517ec0"
+checksum = "11756237b57b8cc5e97dc8b1e70ea436324d30e7075de63b14fd15073a8f692a"
 dependencies = [
  "bincode",
  "either",
  "fnv",
- "itertools 0.12.1",
+ "itertools 0.10.5",
  "lazy_static",
  "nom",
  "quick-xml",
