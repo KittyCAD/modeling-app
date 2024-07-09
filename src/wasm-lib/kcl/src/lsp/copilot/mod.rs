@@ -223,24 +223,6 @@ impl Backend {
         #[cfg(not(test))]
         let mut completion_list = vec![];
 
-        if self.dev_mode {
-            completion_list.push(
-                r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)"#
-                    .to_string(),
-            );
-        }
-
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
         // Set the telemetry data for each completion.
         for completion in response.completions.iter() {
