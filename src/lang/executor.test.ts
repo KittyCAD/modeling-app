@@ -67,6 +67,7 @@ const newVar = myVar + 1`
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
+          digest: null,
         },
       },
       {
@@ -92,6 +93,7 @@ const newVar = myVar + 1`
           start: 144,
           type: 'TagDeclarator',
           value: 'rightPath',
+          digest: null,
         },
       },
     ])
@@ -190,6 +192,7 @@ const newVar = myVar + 1`
             start: 109,
             type: 'TagDeclarator',
             value: 'myPath',
+            digest: null,
           },
         },
         {

@@ -710,6 +710,7 @@ impl MemoryItem {
                     name,
                     start: u.meta[0].source_range.start(),
                     end: u.meta[0].source_range.end(),
+                    digest: None,
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -729,6 +730,7 @@ impl MemoryItem {
                         name,
                         start: u.meta[0].source_range.start(),
                         end: u.meta[0].source_range.end(),
+                        digest: None,
                     }))
                 } else {
                     Ok(None)
@@ -961,7 +963,7 @@ pub enum FilletOrChamfer {
         length: f64,
         /// The engine id of the edge to chamfer.
         edge_id: uuid::Uuid,
-        tag: Option<TagDeclarator>,
+        tag: Box<Option<TagDeclarator>>,
     },
 }
 
@@ -983,7 +985,7 @@ impl FilletOrChamfer {
     pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
             FilletOrChamfer::Fillet { .. } => None,
-            FilletOrChamfer::Chamfer { tag, .. } => tag.clone(),
+            FilletOrChamfer::Chamfer { tag, .. } => *tag.clone(),
         }
     }
 }
@@ -2379,6 +2381,7 @@ const bracket = startSketchOn('XY')
                 start: 0,
                 end: 0,
                 name: s.to_owned(),
+                digest: None,
             }
         }
         fn opt_param(s: &'static str) -> Parameter {
@@ -2386,6 +2389,7 @@ const bracket = startSketchOn('XY')
                 identifier: ident(s),
                 type_: None,
                 optional: true,
+                digest: None,
             }
         }
         fn req_param(s: &'static str) -> Parameter {
@@ -2393,6 +2397,7 @@ const bracket = startSketchOn('XY')
                 identifier: ident(s),
                 type_: None,
                 optional: false,
+                digest: None,
             }
         }
         fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
@@ -2476,8 +2481,10 @@ const bracket = startSketchOn('XY')
                     end: 0,
                     body: Vec::new(),
                     non_code_meta: Default::default(),
+                    digest: None,
                 },
                 return_type: None,
+                digest: None,
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

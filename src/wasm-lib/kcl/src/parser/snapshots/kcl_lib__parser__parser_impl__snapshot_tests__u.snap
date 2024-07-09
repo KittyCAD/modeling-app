@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 10,
-            "name": "prop"
+            "name": "prop",
+            "digest": null
           },
           "init": {
             "type": "MemberExpression",
@@ -47,51 +48,64 @@ expression: actual
                     "type": "Identifier",
                     "start": 13,
                     "end": 15,
-                    "name": "yo"
+                    "name": "yo",
+                    "digest": null
                   },
                   "property": {
                     "type": "Identifier",
                     "type": "Identifier",
                     "start": 16,
                     "end": 19,
-                    "name": "one"
+                    "name": "one",
+                    "digest": null
                   },
-                  "computed": false
+                  "computed": false,
+                  "digest": null
                 },
                 "property": {
                   "type": "Identifier",
                   "type": "Identifier",
                   "start": 20,
                   "end": 23,
-                  "name": "two"
+                  "name": "two",
+                  "digest": null
                 },
-                "computed": false
+                "computed": false,
+                "digest": null
               },
               "property": {
                 "type": "Identifier",
                 "type": "Identifier",
                 "start": 24,
                 "end": 29,
-                "name": "three"
+                "name": "three",
+                "digest": null
               },
-              "computed": false
+              "computed": false,
+              "digest": null
             },
             "property": {
               "type": "Identifier",
               "type": "Identifier",
               "start": 30,
               "end": 34,
-              "name": "four"
+              "name": "four",
+              "digest": null
             },
-            "computed": false
-          }
+            "computed": false,
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }

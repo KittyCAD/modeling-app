@@ -34,6 +34,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<BinaryExpression, KclErro
                     operator,
                     left,
                     right,
+                    digest: None,
                 }))
             }
             BinaryExpressionToken::Operand(o) => o,
@@ -129,6 +130,7 @@ mod tests {
                 end: 0,
                 value: n.into(),
                 raw: n.to_string(),
+                digest: None,
             }))
         }
         let tests: Vec<Vec<BinaryExpressionToken>> = vec![
@@ -146,6 +148,7 @@ mod tests {
                     operator: BinaryOperator::Sub,
                     left: lit(1),
                     right: lit(5),
+                    digest: None,
                 }))
                 .into(),
                 BinaryOperator::Pow.into(),

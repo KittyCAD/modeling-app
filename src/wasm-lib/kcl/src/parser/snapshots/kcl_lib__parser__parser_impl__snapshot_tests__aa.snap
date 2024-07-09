@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 8,
-            "name": "sg"
+            "name": "sg",
+            "digest": null
           },
           "init": {
             "type": "UnaryExpression",
@@ -33,16 +34,22 @@ expression: actual
               "type": "Identifier",
               "start": 12,
               "end": 17,
-              "name": "scale"
-            }
-          }
+              "name": "scale",
+              "digest": null
+            },
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }
