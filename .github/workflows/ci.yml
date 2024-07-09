@@ -17,7 +17,6 @@ env:
   # CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: true
   # BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-  BUILD_ARTIFACT_NAME: build
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -123,7 +122,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR }}
         with:
-          name: ${{ env.BUILD_ARTIFACT_NAME }}
           path: |
             package.json
             src-tauri/tauri.conf.json
@@ -150,8 +148,6 @@ jobs:
 
       - uses: actions/download-artifact@v3
         if: github.event_name == 'schedule'
-        with:
-          name: ${{ env.BUILD_ARTIFACT_NAME }}
 
       - name: Copy updated .json files
         if: github.event_name == 'schedule'
@@ -365,7 +361,6 @@ jobs:
           PREFIX: ${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
         with:
-          name: ${{ env.BUILD_ARTIFACT_NAME }}
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
       - name: Run e2e tests (linux only)
@@ -393,14 +388,15 @@ jobs:
 
       - uses: actions/download-artifact@v3
         if: env.CUT_RELEASE_PR
-        with:
-          name: ${{ env.BUILD_ARTIFACT_NAME }}
 
       - name: Copy updated .json file for updater test
         if: env.CUT_RELEASE_PR
-        run: cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+        run: |
+          ls -l artifact
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+          cat src-tauri/tauri.release.conf.json
 
-      - name: Build the app for updater test
+      - name: Build the app (release, updater test)
         if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
         env:
           TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
@@ -430,8 +426,6 @@ jobs:
       URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.BUILD_ARTIFACT_NAME }}
 
       - name: Generate the update static endpoint
         run: |
