@@ -401,7 +401,7 @@ jobs:
         env:
           TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
           TAURI_BUNDLE_ARGS: "-b ${{ matrix.os == 'windows-latest' && 'msi' || 'dmg' }}"
-        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }}"
+        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }} ${{ env.TAURI_ARGS_MACOS }}"
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
