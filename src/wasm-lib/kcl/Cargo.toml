@@ -16,7 +16,7 @@ async-recursion = "1.1.1"
 async-trait = "0.1.81"
 base64 = "0.22.1"
 chrono = "0.4.38"
-clap = { version = "4.5.7", default-features = false, optional = true }
+clap = { version = "4.5.9", default-features = false, optional = true }
 dashmap = "6.0.1"
 databake = { version = "0.1.8", features = ["derive"] }
 derive-docs = { version = "0.1.20", path = "../derive-docs" }
