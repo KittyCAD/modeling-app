@@ -435,6 +435,8 @@ test('Draft segments should look right', async ({ page, context }) => {
 
   await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
 
+  await page.waitForTimeout(300)
+
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })

@@ -12,6 +12,9 @@ import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
 import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { codeManagerUpdateEvent } from 'lang/codeManager'
+import { copilotPluginEvent } from '../copilot'
+import { updateOutsideEditorEvent } from 'editor/manager'
 
 const changesDelay = 600
 
@@ -45,11 +48,10 @@ export class KclPlugin implements PluginValue {
     editorManager.setEditorView(viewUpdate.view)
 
     let isUserSelect = false
-    let isRelevant = false
+    let isRelevant = viewUpdate.docChanged
     for (const tr of viewUpdate.transactions) {
       if (tr.isUserEvent('select')) {
         isUserSelect = true
-        break
       } else if (tr.isUserEvent('input')) {
         isRelevant = true
       } else if (tr.isUserEvent('delete')) {
@@ -62,6 +64,21 @@ export class KclPlugin implements PluginValue {
         isRelevant = true
       } else if (tr.annotation(lspFormatCodeEvent.type)) {
         isRelevant = true
+      }
+
+      // Don't make this an else.
+      if (tr.annotation(codeManagerUpdateEvent.type)) {
+        // We want to ignore when we are forcing the editor to update.
+        isRelevant = false
+        break
+      } else if (tr.annotation(copilotPluginEvent.type)) {
+        // We want to ignore when copilot is doing stuff.
+        isRelevant = false
+        break
+      } else if (tr.annotation(updateOutsideEditorEvent.type)) {
+        // We want to ignore other events outside the editor.
+        isRelevant = false
+        break
       }
     }
 
