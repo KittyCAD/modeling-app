@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 3,
             "end": 4,
-            "name": "f"
+            "name": "f",
+            "digest": null
           },
           "init": {
             "type": "FunctionExpression",
@@ -34,9 +35,11 @@ expression: actual
                   "type": "Identifier",
                   "start": 8,
                   "end": 13,
-                  "name": "angle"
+                  "name": "angle",
+                  "digest": null
                 },
-                "optional": true
+                "optional": true,
+                "digest": null
               }
             ],
             "body": {
@@ -57,7 +60,8 @@ expression: actual
                       "type": "Identifier",
                       "start": 28,
                       "end": 35,
-                      "name": "default"
+                      "name": "default",
+                      "digest": null
                     },
                     "arguments": [
                       {
@@ -65,7 +69,8 @@ expression: actual
                         "type": "Identifier",
                         "start": 36,
                         "end": 41,
-                        "name": "angle"
+                        "name": "angle",
+                        "digest": null
                       },
                       {
                         "type": "Literal",
@@ -73,26 +78,36 @@ expression: actual
                         "start": 43,
                         "end": 46,
                         "value": 360,
-                        "raw": "360"
+                        "raw": "360",
+                        "digest": null
                       }
                     ],
-                    "optional": false
-                  }
+                    "optional": false,
+                    "digest": null
+                  },
+                  "digest": null
                 }
               ],
               "nonCodeMeta": {
                 "nonCodeNodes": {},
-                "start": []
-              }
-            }
-          }
+                "start": [],
+                "digest": null
+              },
+              "digest": null
+            },
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "fn"
+      "kind": "fn",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }
