@@ -65,7 +65,10 @@ export class KclPlugin implements PluginValue {
         isRelevant = true
       } else if (tr.annotation(lspFormatCodeEvent.type)) {
         isRelevant = true
-      } else if (tr.annotation(codeManagerUpdateEvent.type)) {
+      }
+
+      // Don't make this an else.
+      if (tr.annotation(codeManagerUpdateEvent.type)) {
         // We want to ignore when we are forcing the editor to update.
         isRelevant = false
         break
