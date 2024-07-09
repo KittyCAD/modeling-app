@@ -98,6 +98,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	length: number,
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -120,6 +121,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -136,6 +138,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -153,6 +156,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -166,6 +170,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -179,6 +184,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -194,6 +200,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -211,6 +218,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -232,6 +240,7 @@ const example = extrude(10, exampleSketch)
 	sourceRange: [number, number],
 	// The tag.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -247,6 +256,7 @@ const example = extrude(10, exampleSketch)
 	sourceRange: [number, number],
 	// The tag.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -284,6 +294,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -300,6 +311,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -317,6 +329,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -330,6 +343,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -343,6 +357,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -358,6 +373,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -375,6 +391,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -388,6 +405,7 @@ const example = extrude(10, exampleSketch)
 * `tag`: `TagDeclarator` (OPTIONAL)
 ```js
 {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -454,6 +472,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	length: number,
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -476,6 +495,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -492,6 +512,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -509,6 +530,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -522,6 +544,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -535,6 +558,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -550,6 +574,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -567,6 +592,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -588,6 +614,7 @@ const example = extrude(10, exampleSketch)
 	sourceRange: [number, number],
 	// The tag.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -603,6 +630,7 @@ const example = extrude(10, exampleSketch)
 	sourceRange: [number, number],
 	// The tag.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -640,6 +668,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -656,6 +685,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -673,6 +703,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -686,6 +717,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -699,6 +731,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -714,6 +747,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -731,6 +765,7 @@ const example = extrude(10, exampleSketch)
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
