@@ -3,6 +3,8 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from 'vite-plugin-eslint'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
+// @ts-ignore: No types available
+import { lezer } from '@lezer/generator/rollup'
 
 const config = defineConfig({
   server: {
@@ -58,7 +60,7 @@ const config = defineConfig({
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
     },
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version()],
+  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer()],
   worker: {
     plugins: () => [viteTsconfigPaths()],
   },
