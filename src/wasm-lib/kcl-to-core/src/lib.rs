@@ -2,9 +2,7 @@ use anyhow::Result;
 use std::sync::{
     Arc, Mutex
 };
-use kcl_lib::{
-    executor::{ExecutorContext, ExecutorSettings},
-};
+use kcl_lib::executor::ExecutorContext;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod conn_mock_core;
@@ -16,18 +14,17 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let program = parser.ast()?;
 
     let result = Arc::new(Mutex::new("".into()));
-    let refResult = Arc::clone(&result);
+    let ref_result = Arc::clone(&result);
 
     let ctx = ExecutorContext {
-        engine: Arc::new(Box::new(crate::conn_mock_core::EngineConnection::new(refResult).await?)),
+        engine: Arc::new(Box::new(crate::conn_mock_core::EngineConnection::new(ref_result).await?)),
         fs: Arc::new(kcl_lib::fs::FileManager::new()),
         stdlib: Arc::new(kcl_lib::std::StdLib::new()),
         settings: Default::default(),
         is_mock: true,
     };
-    let memory = ctx.run(&program, None).await?;
+    let _memory = ctx.run(&program, None).await?;
 
-    println!("results!\n {}", result.lock().unwrap());
-
-    Ok("".into())
+    let result = result.lock().expect("mutex lock").clone();
+    Ok(result)
 }

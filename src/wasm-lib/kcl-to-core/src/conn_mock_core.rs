@@ -4,14 +4,9 @@ use std::{
 };
 use anyhow::Result;
 use kcl_lib::{
-    executor::{ExecutorContext, ExecutorSettings},
     errors::KclError, executor::DefaultPlanes,
 };
-use kittycad::types::{ModelingCmdReq, ModelingCmd, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse, PathSegment::*};
-// use kittycad_modeling_cmds::{
-//     id::ModelingCmdId,
-//     ModelingCmd,
-// };
+use kittycad::types::{ModelingCmd, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse, PathSegment::*};
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
@@ -28,6 +23,11 @@ impl EngineConnection {
             core_test: result,
         })
     }
+}
+
+fn id_to_cpp(id: &uuid::Uuid) -> String {
+    let str = format!("{}", id);
+    str::replace(&str, "-", "_")
 }
 
 #[async_trait::async_trait]
@@ -64,33 +64,45 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                 let mut responses = HashMap::new();
                 for request in requests {
                     if let Ok(mut test_code) = self.core_test.lock() {
+                        let cpp_id = id_to_cpp(&request.cmd_id);
+
                         let new_code: String = match &request.cmd {
                             ModelingCmd::StartPath { } => {
                                 format!(r#"
-                                    auto sketch = make_shared<Object>("sketch", glm::vec3 {{ 0, 0, 0 }});
-                                    sketch->makePath(true);
-                                    auto path = sketch->get<Model::Brep::Path>();
-                                "#)
+                                    auto sketch_{} = make_shared<Object>("sketch", glm::vec3 {{ 0, 0, 0 }});
+                                    sketch_{}->makePath(true);
+                                    auto path_{} = sketch->get<Model::Brep::Path>();
+                                "#, cpp_id, cpp_id, cpp_id)
                             },
                             ModelingCmd::MovePathPen { path, to } => {
                                 format!(r#"
-                                    path->moveTo({{ {}, {}, 0.0 }});
-                                "#, to.x, to.y).into()
+                                    path_{}->moveTo({{ {}, {}, 0.0 }});
+                                "#, path, to.x, to.y)
                             },
                             ModelingCmd::ExtendPath { path, segment } => {
                                 match segment {
                                     Line { end, relative } => {
                                         format!(r#"
-                                            path->lineTo({{ {}, {}, 0.0 }}, {{ {} }});
-                                        "#, end.x, end.y, relative).into()
+                                            path_{}->lineTo({{ {}, {}, 0.0 }}, {{ {} }});
+                                        "#, path, end.x, end.y, relative).into()
                                     },
-                                    default => {
+                                    _ => {
                                         "".into()
                                     }
                                 }
 
                             },
-                            default => {
+                            ModelingCmd::ClosePath { path_id } => {
+                                format!(r#"
+                                    path_{}->close();
+                                "#, path_id).into()
+                            },
+                            ModelingCmd::Extrude { cap: _, distance, target } => {
+                                format!(r#"
+                                    sketch_{}->extrudeToSolid3D({}, true);
+                                "#, target, distance).into()
+                            },
+                            _ => {
                                 "".into()
                             },
                         };

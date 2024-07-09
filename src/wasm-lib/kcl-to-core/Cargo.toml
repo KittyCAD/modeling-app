@@ -8,6 +8,10 @@ repository = "https://github.com/KittyCAD/modeling-app"
 
 [lib]
 
+[[bin]]
+name = "kcl-to-core"
+path = "src/tool.rs"
+
 [dependencies]
 anyhow = "1"
 kittycad = { workspace = true, features = ["clap"] }
