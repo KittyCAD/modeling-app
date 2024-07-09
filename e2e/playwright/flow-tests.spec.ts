@@ -3946,8 +3946,10 @@ test.describe('Sketch tests', () => {
 
     await u.waitForAuthSkipAppStart()
     await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
-    
-    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled()
+
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeEnabled()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(600) // wait for animation
