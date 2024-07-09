@@ -57,6 +57,9 @@ const Home = () => {
     kclManager.cancelAllExecutions()
   }, [])
 
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
     () => navigate(paths.HOME + paths.SETTINGS),
