@@ -12,6 +12,7 @@ import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
 import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { codeManagerUpdateEvent } from 'lang/codeManager'
 
 const changesDelay = 600
 
@@ -45,7 +46,7 @@ export class KclPlugin implements PluginValue {
     editorManager.setEditorView(viewUpdate.view)
 
     let isUserSelect = false
-    let isRelevant = false
+    let isRelevant = viewUpdate.docChanged
     for (const tr of viewUpdate.transactions) {
       if (tr.isUserEvent('select')) {
         isUserSelect = true
@@ -62,6 +63,9 @@ export class KclPlugin implements PluginValue {
         isRelevant = true
       } else if (tr.annotation(lspFormatCodeEvent.type)) {
         isRelevant = true
+      } else if (tr.annotation(codeManagerUpdateEvent.type)) {
+        isRelevant = false
+        break
       }
     }
 
