@@ -12,7 +12,8 @@
       "@types/wicg-file-system-access",
       "node",
       "@wdio/globals/types",
-      "mocha"
+      "mocha",
+      "@lezer/generator"
     ],
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -32,6 +33,6 @@
     "jsx": "react-jsx"
   },
   "include": ["src", "e2e", "packages", "./*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "./*.grammar"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
