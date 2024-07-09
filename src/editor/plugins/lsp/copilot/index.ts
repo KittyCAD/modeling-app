@@ -457,6 +457,7 @@ export class CompletionRequester implements PluginValue {
       effects: clearSuggestion.of(null),
       annotations: [
         rejectSuggestionCommand,
+          copilotPluginEvent,
         Transaction.addToHistory.of(false),
       ],
     })
