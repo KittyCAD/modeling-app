@@ -14,6 +14,7 @@ import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
 import { codeManagerUpdateEvent } from 'lang/codeManager'
 import { copilotPluginEvent } from '../copilot'
+import { updateOutsideEditorEvent } from 'editor/manager'
 
 const changesDelay = 600
 
@@ -70,6 +71,10 @@ export class KclPlugin implements PluginValue {
         break
       } else if (tr.annotation(copilotPluginEvent.type)) {
         // We want to ignore when copilot is doing stuff.
+        isRelevant = false
+        break
+      } else if (tr.annotation(updateOutsideEditorEvent.type)) {
+        // We want to ignore other events outside the editor.
         isRelevant = false
         break
       }
