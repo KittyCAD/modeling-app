@@ -212,7 +212,7 @@ impl Backend {
         // Let's not call it yet since it's not our model.
         // We will need to wrap in spawn_local like we do in kcl/mod.rs for wasm only.
         #[cfg(test)]
-        let mut completion_list = self
+        let completion_list = self
             .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
             .await
             .map_err(|err| Error {
@@ -221,7 +221,7 @@ impl Backend {
                 message: Cow::from(format!("Failed to get completions: {}", err)),
             })?;
         #[cfg(not(test))]
-        let mut completion_list = vec![];
+        let completion_list = vec![];
 
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
         // Set the telemetry data for each completion.
