@@ -13,6 +13,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as JValue};
+use sha2::{Digest as DigestTrait, Sha256};
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
@@ -32,6 +33,9 @@ use crate::{
 mod literal_value;
 mod none;
 
+/// Position-independent digest of the AST node.
+pub type Digest = [u8; 32];
+
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -41,9 +45,43 @@ pub struct Program {
     pub end: usize,
     pub body: Vec<BodyItem>,
     pub non_code_meta: NonCodeMeta,
+
+    pub digest: Option<Digest>,
+}
+
+macro_rules! compute_digest {
+    (|$slf:ident, $hasher:ident| $body:block) => {
+        /// Compute a digest over the AST node.
+        pub fn compute_digest(&mut self) -> Digest {
+            if let Some(node_digest) = self.digest {
+                return node_digest;
+            }
+
+            let mut $hasher = Sha256::new();
+
+            #[allow(unused_mut)]
+            let mut $slf = self;
+
+            $hasher.update(std::any::type_name::<Self>());
+
+            $body
+
+            let node_digest: Digest = $hasher.finalize().into();
+            $slf.digest = Some(node_digest);
+            node_digest
+        }
+    };
 }
 
 impl Program {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.body.len().to_ne_bytes());
+        for body_item in slf.body.iter_mut() {
+            hasher.update(body_item.compute_digest());
+        }
+        hasher.update(slf.non_code_meta.compute_digest());
+    });
+
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         // Check if we are in the non code meta.
         if let Some(meta) = self.get_non_code_meta_for_position(pos) {
@@ -481,6 +519,14 @@ pub enum BodyItem {
 }
 
 impl BodyItem {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            BodyItem::ExpressionStatement(es) => es.compute_digest(),
+            BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
+            BodyItem::ReturnStatement(rs) => rs.compute_digest(),
+        }
+    }
+
     pub fn start(&self) -> usize {
         match self {
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start(),
@@ -531,6 +577,28 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            Value::Literal(lit) => lit.compute_digest(),
+            Value::Identifier(id) => id.compute_digest(),
+            Value::TagDeclarator(tag) => tag.compute_digest(),
+            Value::BinaryExpression(be) => be.compute_digest(),
+            Value::FunctionExpression(fe) => fe.compute_digest(),
+            Value::CallExpression(ce) => ce.compute_digest(),
+            Value::PipeExpression(pe) => pe.compute_digest(),
+            Value::PipeSubstitution(ps) => ps.compute_digest(),
+            Value::ArrayExpression(ae) => ae.compute_digest(),
+            Value::ObjectExpression(oe) => oe.compute_digest(),
+            Value::MemberExpression(me) => me.compute_digest(),
+            Value::UnaryExpression(ue) => ue.compute_digest(),
+            Value::None(_) => {
+                let mut hasher = Sha256::new();
+                hasher.update(b"Value::None");
+                hasher.finalize().into()
+            }
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         match &self {
             Value::BinaryExpression(bin_exp) => bin_exp.recast(options),
@@ -759,6 +827,17 @@ impl From<&BinaryPart> for SourceRange {
 }
 
 impl BinaryPart {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            BinaryPart::Literal(lit) => lit.compute_digest(),
+            BinaryPart::Identifier(id) => id.compute_digest(),
+            BinaryPart::BinaryExpression(be) => be.compute_digest(),
+            BinaryPart::CallExpression(ce) => ce.compute_digest(),
+            BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
+            BinaryPart::MemberExpression(me) => me.compute_digest(),
+        }
+    }
+
     /// Get the constraint level.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
@@ -888,6 +967,8 @@ pub struct NonCodeNode {
     pub start: usize,
     pub end: usize,
     pub value: NonCodeValue,
+
+    pub digest: Option<Digest>,
 }
 
 impl From<NonCodeNode> for SourceRange {
@@ -903,6 +984,29 @@ impl From<&NonCodeNode> for SourceRange {
 }
 
 impl NonCodeNode {
+    compute_digest!(|slf, hasher| {
+        match &slf.value {
+            NonCodeValue::Shebang { value } => {
+                hasher.update(value);
+            }
+            NonCodeValue::InlineComment { value, style } => {
+                hasher.update(value);
+                hasher.update(style.digestable_id());
+            }
+            NonCodeValue::BlockComment { value, style } => {
+                hasher.update(value);
+                hasher.update(style.digestable_id());
+            }
+            NonCodeValue::NewLineBlockComment { value, style } => {
+                hasher.update(value);
+                hasher.update(style.digestable_id());
+            }
+            NonCodeValue::NewLine => {
+                hasher.update(b"\r\n");
+            }
+        }
+    });
+
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
     }
@@ -967,6 +1071,15 @@ pub enum CommentStyle {
     Block,
 }
 
+impl CommentStyle {
+    fn digestable_id(&self) -> [u8; 2] {
+        match &self {
+            CommentStyle::Line => *b"//",
+            CommentStyle::Block => *b"/*",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1021,6 +1134,8 @@ pub enum NonCodeValue {
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
     pub start: Vec<NonCodeNode>,
+
+    pub digest: Option<Digest>,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1046,11 +1161,26 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         Ok(NonCodeMeta {
             non_code_nodes,
             start: helper.start,
+            digest: None,
         })
     }
 }
 
 impl NonCodeMeta {
+    compute_digest!(|slf, hasher| {
+        let mut keys = slf.non_code_nodes.keys().copied().collect::<Vec<_>>();
+        keys.sort();
+
+        for key in keys.into_iter() {
+            hasher.update(key.to_ne_bytes());
+            let nodes = slf.non_code_nodes.get_mut(&key).unwrap();
+            hasher.update(nodes.len().to_ne_bytes());
+            for node in nodes.iter_mut() {
+                hasher.update(node.compute_digest());
+            }
+        }
+    });
+
     pub fn insert(&mut self, i: usize, new: NonCodeNode) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
@@ -1074,9 +1204,17 @@ pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
     pub expression: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ExpressionStatement);
+
+impl ExpressionStatement {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.expression.compute_digest());
+    });
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -1088,6 +1226,8 @@ pub struct CallExpression {
     pub callee: Identifier,
     pub arguments: Vec<Value>,
     pub optional: bool,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(CallExpression);
@@ -1106,8 +1246,18 @@ impl CallExpression {
             callee: Identifier::new(name),
             arguments,
             optional: false,
+            digest: None,
         })
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.callee.compute_digest());
+        hasher.update(slf.arguments.len().to_ne_bytes());
+        for argument in slf.arguments.iter_mut() {
+            hasher.update(argument.compute_digest());
+        }
+        hasher.update(if slf.optional { [1] } else { [0] });
+    });
 
     /// Is at least one argument the '%' i.e. the substitution operator?
     pub fn has_substitution_arg(&self) -> bool {
@@ -1346,6 +1496,8 @@ pub struct VariableDeclaration {
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
     pub kind: VariableKind, // Change to enum if there are specific values
+
+    pub digest: Option<Digest>,
 }
 
 impl From<&VariableDeclaration> for Vec<CompletionItem> {
@@ -1385,15 +1537,23 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.declarations.len().to_ne_bytes());
+        for declarator in &mut slf.declarations {
+            hasher.update(declarator.compute_digest());
+        }
+        hasher.update(slf.kind.digestable_id());
+    });
+
     pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
         Self {
             start: 0,
             end: 0,
             declarations,
             kind,
+            digest: None,
         }
     }
-
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
@@ -1574,6 +1734,15 @@ pub enum VariableKind {
 }
 
 impl VariableKind {
+    fn digestable_id(&self) -> [u8; 1] {
+        match self {
+            VariableKind::Let => [1],
+            VariableKind::Const => [2],
+            VariableKind::Fn => [3],
+            VariableKind::Var => [4],
+        }
+    }
+
     pub fn to_completion_items() -> Result<Vec<CompletionItem>> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
@@ -1613,6 +1782,8 @@ pub struct VariableDeclarator {
     pub id: Identifier,
     /// The value of the variable.
     pub init: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(VariableDeclarator);
@@ -1624,8 +1795,14 @@ impl VariableDeclarator {
             end: 0,
             id: Identifier::new(name),
             init,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.id.compute_digest());
+        hasher.update(slf.init.compute_digest());
+    });
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         self.init.get_constraint_level()
@@ -1641,6 +1818,8 @@ pub struct Literal {
     pub end: usize,
     pub value: LiteralValue,
     pub raw: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(Literal);
@@ -1652,8 +1831,13 @@ impl Literal {
             end: 0,
             raw: JValue::from(value.clone()).to_string(),
             value,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.value.digestable_id());
+    });
 
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
@@ -1712,6 +1896,8 @@ pub struct Identifier {
     pub start: usize,
     pub end: usize,
     pub name: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(Identifier);
@@ -1722,8 +1908,15 @@ impl Identifier {
             start: 0,
             end: 0,
             name: name.to_string(),
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        let name = slf.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
+    });
 
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
@@ -1750,6 +1943,8 @@ pub struct TagDeclarator {
     pub end: usize,
     #[serde(rename = "value")]
     pub name: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(TagDeclarator);
@@ -1820,8 +2015,15 @@ impl TagDeclarator {
             start: 0,
             end: 0,
             name: name.to_string(),
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        let name = slf.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
+    });
 
     pub fn recast(&self) -> String {
         // TagDeclarators are always prefixed with a dollar sign.
@@ -1882,14 +2084,24 @@ impl TagDeclarator {
 pub struct PipeSubstitution {
     pub start: usize,
     pub end: usize,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(PipeSubstitution);
 
 impl PipeSubstitution {
     pub fn new() -> Self {
-        Self { start: 0, end: 0 }
+        Self {
+            start: 0,
+            end: 0,
+            digest: None,
+        }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(b"PipeSubstitution");
+    });
 }
 
 impl Default for PipeSubstitution {
@@ -1912,6 +2124,8 @@ pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Value>,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ArrayExpression);
@@ -1928,8 +2142,16 @@ impl ArrayExpression {
             start: 0,
             end: 0,
             elements,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.elements.len().to_ne_bytes());
+        for value in slf.elements.iter_mut() {
+            hasher.update(value.compute_digest());
+        }
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for element in &mut self.elements {
@@ -2068,6 +2290,8 @@ pub struct ObjectExpression {
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
+
+    pub digest: Option<Digest>,
 }
 
 impl ObjectExpression {
@@ -2076,8 +2300,16 @@ impl ObjectExpression {
             start: 0,
             end: 0,
             properties,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.properties.len().to_ne_bytes());
+        for prop in slf.properties.iter_mut() {
+            hasher.update(prop.compute_digest());
+        }
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for property in &mut self.properties {
@@ -2229,11 +2461,18 @@ pub struct ObjectProperty {
     pub end: usize,
     pub key: Identifier,
     pub value: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ObjectProperty);
 
 impl ObjectProperty {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.key.compute_digest());
+        hasher.update(slf.value.compute_digest());
+    });
+
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let source_range: SourceRange = self.clone().into();
         let inner_source_range: SourceRange = self.key.clone().into();
@@ -2273,6 +2512,13 @@ pub enum MemberObject {
 }
 
 impl MemberObject {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            MemberObject::MemberExpression(me) => me.compute_digest(),
+            MemberObject::Identifier(id) => id.compute_digest(),
+        }
+    }
+
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
@@ -2320,6 +2566,13 @@ pub enum LiteralIdentifier {
 }
 
 impl LiteralIdentifier {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            LiteralIdentifier::Identifier(id) => id.compute_digest(),
+            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
+        }
+    }
+
     pub fn start(&self) -> usize {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.start,
@@ -2357,11 +2610,19 @@ pub struct MemberExpression {
     pub object: MemberObject,
     pub property: LiteralIdentifier,
     pub computed: bool,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(MemberExpression);
 
 impl MemberExpression {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.object.compute_digest());
+        hasher.update(slf.property.compute_digest());
+        hasher.update(if slf.computed { [1] } else { [0] });
+    });
+
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2522,6 +2783,8 @@ pub struct BinaryExpression {
     pub operator: BinaryOperator,
     pub left: BinaryPart,
     pub right: BinaryPart,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(BinaryExpression);
@@ -2534,8 +2797,15 @@ impl BinaryExpression {
             operator,
             left,
             right,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.operator.digestable_id());
+        hasher.update(slf.left.compute_digest());
+        hasher.update(slf.right.compute_digest());
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         self.left.replace_value(source_range, new_value.clone());
@@ -2730,6 +3000,17 @@ impl Associativity {
 }
 
 impl BinaryOperator {
+    pub fn digestable_id(&self) -> [u8; 3] {
+        match self {
+            BinaryOperator::Add => *b"add",
+            BinaryOperator::Sub => *b"sub",
+            BinaryOperator::Mul => *b"mul",
+            BinaryOperator::Div => *b"div",
+            BinaryOperator::Mod => *b"mod",
+            BinaryOperator::Pow => *b"pow",
+        }
+    }
+
     /// Follow JS definitions of each operator.
     /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn precedence(&self) -> u8 {
@@ -2758,6 +3039,8 @@ pub struct UnaryExpression {
     pub end: usize,
     pub operator: UnaryOperator,
     pub argument: BinaryPart,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(UnaryExpression);
@@ -2769,8 +3052,14 @@ impl UnaryExpression {
             end: argument.end(),
             operator,
             argument,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.operator.digestable_id());
+        hasher.update(slf.argument.compute_digest());
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         self.argument.replace_value(source_range, new_value);
@@ -2848,6 +3137,15 @@ pub enum UnaryOperator {
     Not,
 }
 
+impl UnaryOperator {
+    pub fn digestable_id(&self) -> [u8; 3] {
+        match self {
+            UnaryOperator::Neg => *b"neg",
+            UnaryOperator::Not => *b"not",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -2859,6 +3157,8 @@ pub struct PipeExpression {
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Value>,
     pub non_code_meta: NonCodeMeta,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(PipeExpression);
@@ -2876,8 +3176,17 @@ impl PipeExpression {
             end: 0,
             body,
             non_code_meta: Default::default(),
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.body.len().to_ne_bytes());
+        for value in slf.body.iter_mut() {
+            hasher.update(value.compute_digest());
+        }
+        hasher.update(slf.non_code_meta.compute_digest());
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for value in &mut self.body {
@@ -3044,6 +3353,20 @@ pub enum FnArgPrimitive {
     ExtrudeGroup,
 }
 
+impl FnArgPrimitive {
+    pub fn digestable_id(&self) -> &[u8] {
+        match self {
+            FnArgPrimitive::String => b"string",
+            FnArgPrimitive::Number => b"number",
+            FnArgPrimitive::Boolean => b"boolean",
+            FnArgPrimitive::Tag => b"tag",
+            FnArgPrimitive::SketchGroup => b"sketchgroup",
+            FnArgPrimitive::SketchSurface => b"sketchsurface",
+            FnArgPrimitive::ExtrudeGroup => b"extrudegroup",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[serde(tag = "type")]
@@ -3056,6 +3379,32 @@ pub enum FnArgType {
     Object {
         properties: Vec<Parameter>,
     },
+}
+
+impl FnArgType {
+    pub fn compute_digest(&mut self) -> Digest {
+        let mut hasher = Sha256::new();
+
+        match self {
+            FnArgType::Primitive(prim) => {
+                hasher.update(b"FnArgType::Primitive");
+                hasher.update(prim.digestable_id())
+            }
+            FnArgType::Array(prim) => {
+                hasher.update(b"FnArgType::Array");
+                hasher.update(prim.digestable_id())
+            }
+            FnArgType::Object { properties } => {
+                hasher.update(b"FnArgType::Object");
+                hasher.update(properties.len().to_ne_bytes());
+                for prop in properties.iter_mut() {
+                    hasher.update(prop.compute_digest());
+                }
+            }
+        }
+
+        hasher.finalize().into()
+    }
 }
 
 /// Parameter of a KCL function.
@@ -3072,6 +3421,24 @@ pub struct Parameter {
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
+
+    pub digest: Option<Digest>,
+}
+
+impl Parameter {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.identifier.compute_digest());
+        match &mut slf.type_ {
+            Some(arg) => {
+                hasher.update(b"Parameter::type_::Some");
+                hasher.update(arg.compute_digest())
+            }
+            None => {
+                hasher.update(b"Parameter::type_::None");
+            }
+        }
+        hasher.update(if slf.optional { [1] } else { [0] })
+    });
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -3085,6 +3452,8 @@ pub struct FunctionExpression {
     pub body: Program,
     #[serde(skip)]
     pub return_type: Option<FnArgType>,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -3114,12 +3483,30 @@ impl FunctionExpression {
         }
     }
 
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.params.len().to_ne_bytes());
+        for param in slf.params.iter_mut() {
+            hasher.update(param.compute_digest());
+        }
+        hasher.update(slf.body.compute_digest());
+        match &mut slf.return_type {
+            Some(rt) => {
+                hasher.update(b"FunctionExpression::return_type::Some");
+                hasher.update(rt.compute_digest());
+            }
+            None => {
+                hasher.update(b"FunctionExpression::return_type::None");
+            }
+        }
+    });
+
     pub fn into_parts(self) -> Result<FunctionExpressionParts, RequiredParamAfterOptionalParam> {
         let Self {
             start,
             end,
             params,
             body,
+            digest: _,
             return_type: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
@@ -3200,9 +3587,17 @@ pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
     pub argument: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ReturnStatement);
+
+impl ReturnStatement {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.argument.compute_digest());
+    });
+}
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -4933,28 +5328,34 @@ const firstExtrude = startSketchOn('XY')
                         identifier: Identifier {
                             start: 35,
                             end: 40,
-                            name: "thing".to_owned()
+                            name: "thing".to_owned(),
+                            digest: None,
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 50,
                             end: 56,
-                            name: "things".to_owned()
+                            name: "things".to_owned(),
+                            digest: None,
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 68,
                             end: 72,
-                            name: "more".to_owned()
+                            name: "more".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true
+                        optional: true,
+                        digest: None
                     }
                 ]
             })
@@ -4989,28 +5390,34 @@ const firstExtrude = startSketchOn('XY')
                         identifier: Identifier {
                             start: 18,
                             end: 23,
-                            name: "thing".to_owned()
+                            name: "thing".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 33,
                             end: 39,
-                            name: "things".to_owned()
+                            name: "things".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 51,
                             end: 55,
-                            name: "more".to_owned()
+                            name: "more".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true
+                        optional: true,
+                        digest: None
                     }
                 ]
             })
@@ -5103,8 +5510,10 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -5118,17 +5527,21 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     }],
                     body: Program {
                         start: 0,
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -5142,17 +5555,21 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     }],
                     body: Program {
                         start: 0,
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -5167,18 +5584,22 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 start: 0,
                                 end: 0,
                                 name: "foo".to_owned(),
+                                digest: None,
                             },
                             type_: None,
                             optional: false,
+                            digest: None,
                         },
                         Parameter {
                             identifier: Identifier {
                                 start: 0,
                                 end: 0,
                                 name: "bar".to_owned(),
+                                digest: None,
                             },
                             type_: None,
                             optional: true,
+                            digest: None,
                         },
                     ],
                     body: Program {
@@ -5186,8 +5607,10 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
         ]
@@ -5212,6 +5635,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             expression,
             start: _,
             end: _,
+            digest: None,
         }) = program.body.first().unwrap()
         else {
             panic!("expected a function!");
@@ -5274,5 +5698,36 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             result.unwrap_err().to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_digest() {
+        let prog1_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %)
+"#;
+        let prog1_tokens = crate::token::lexer(prog1_string).unwrap();
+        let prog1_parser = crate::parser::Parser::new(prog1_tokens);
+        let prog1_digest = prog1_parser.ast().unwrap().compute_digest();
+
+        let prog2_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 2], %)
+    |> line([5, 5], %)
+"#;
+        let prog2_tokens = crate::token::lexer(prog2_string).unwrap();
+        let prog2_parser = crate::parser::Parser::new(prog2_tokens);
+        let prog2_digest = prog2_parser.ast().unwrap().compute_digest();
+
+        assert!(prog1_digest != prog2_digest);
+
+        let prog3_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %)
+"#;
+        let prog3_tokens = crate::token::lexer(prog3_string).unwrap();
+        let prog3_parser = crate::parser::Parser::new(prog3_tokens);
+        let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
+
+        assert_eq!(prog1_digest, prog3_digest);
     }
 }
