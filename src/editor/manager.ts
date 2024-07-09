@@ -123,7 +123,11 @@ export default class EditorManager {
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
-      annotations: [setDiagnosticsEvent, Transaction.addToHistory.of(false)],
+      annotations: [
+        setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
     })
   }
 

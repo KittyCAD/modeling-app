@@ -52,7 +52,6 @@ export class KclPlugin implements PluginValue {
     for (const tr of viewUpdate.transactions) {
       if (tr.isUserEvent('select')) {
         isUserSelect = true
-        break
       } else if (tr.isUserEvent('input')) {
         isRelevant = true
       } else if (tr.isUserEvent('delete')) {
