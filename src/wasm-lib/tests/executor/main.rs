@@ -2501,3 +2501,10 @@ async fn serial_test_order_sketch_extrude_out_of_order() {
         0.999,
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_extrude_custom_plane() {
+    let code = include_str!("inputs/extrude-custom-plane.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/extrude-custom-plane.png", &result, 0.999);
+}
