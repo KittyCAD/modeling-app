@@ -231,7 +231,6 @@ impl Backend {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
-
   return sg
 }
 const part001 = cube([0,0], 20)
