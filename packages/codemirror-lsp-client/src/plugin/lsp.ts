@@ -93,23 +93,10 @@ export class LanguageServerPlugin implements PluginValue {
   private doSemanticTokens: boolean = false
   private doFoldingRanges: boolean = false
 
-  private _defferer = deferExecution((code: string) => {
-    try {
-      // Update the state (not the editor) with the new code.
-      this.client.textDocumentDidChange({
-        textDocument: {
-          uri: this.getDocUri(),
-          version: this.documentVersion++,
-        },
-        contentChanges: [{ text: code }],
-      })
-
-      this.requestSemanticTokens()
-      this.updateFoldingRanges()
-    } catch (e) {
-      console.error(e)
-    }
-  }, this.changesDelay)
+  // When a doc update needs to be sent to the server, this holds the
+  // timeout handle for it. When null, the server has the up-to-date
+  // document.
+  private sendScheduled: number | null = null
 
   constructor(options: LanguageServerOptions, private view: EditorView) {
     this.client = options.client
@@ -152,14 +139,9 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   update(viewUpdate: ViewUpdate) {
-    // If the doc didn't change we can return early.
-    if (!viewUpdate.docChanged) {
-      return
+    if (viewUpdate.docChanged) {
+      this.scheduleSendDoc()
     }
-
-    this.sendChange({
-      documentText: viewUpdate.state.doc.toString(),
-    })
   }
 
   destroy() {
@@ -184,16 +166,6 @@ export class LanguageServerPlugin implements PluginValue {
     this.updateFoldingRanges()
   }
 
-  async sendChange({ documentText }: { documentText: string }) {
-    if (!this.client.ready) return
-
-    this._defferer(documentText)
-  }
-
-  requestDiagnostics() {
-    this.sendChange({ documentText: this.getDocText() })
-  }
-
   async requestHoverTooltip(
     view: EditorView,
     { line, character }: { line: number; character: number }
@@ -204,7 +176,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({ documentText: this.getDocText() })
+    this.ensureDocSent()
     const result = await this.client.textDocumentHover({
       textDocument: { uri: this.getDocUri() },
       position: { line, character },
@@ -225,6 +197,39 @@ export class LanguageServerPlugin implements PluginValue {
     if (this.allowHTMLContent) dom.innerHTML = formatMarkdownContents(contents)
     else dom.textContent = formatMarkdownContents(contents)
     return { pos, end, create: (view) => ({ dom }), above: true }
+  }
+
+  scheduleSendDoc() {
+    if (this.sendScheduled != null) window.clearTimeout(this.sendScheduled)
+    this.sendScheduled = window.setTimeout(() => this.sendDoc(), this.changesDelay)
+  }
+
+  sendDoc() {
+    if (this.sendScheduled != null) {
+      window.clearTimeout(this.sendScheduled)
+      this.sendScheduled = null
+    }
+
+    if (!this.client.ready) return
+    try {
+      // Update the state (not the editor) with the new code.
+      this.client.textDocumentDidChange({
+        textDocument: {
+          uri: this.getDocUri(),
+          version: this.documentVersion++,
+        },
+        contentChanges: [{ text: this.view.state.doc.toString() }],
+      })
+
+      this.requestSemanticTokens()
+      this.updateFoldingRanges()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  ensureDocSent() {
+    if (this.sendScheduled != null) this.sendDoc()
   }
 
   async getFoldingRanges(): Promise<LSP.FoldingRange[] | null> {
@@ -284,13 +289,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.client.textDocumentDidChange({
-      textDocument: {
-        uri: this.getDocUri(),
-        version: this.documentVersion++,
-      },
-      contentChanges: [{ text: this.getDocText() }],
-    })
+    this.ensureDocSent()
 
     const result = await this.client.textDocumentFormatting({
       textDocument: { uri: this.getDocUri() },
@@ -330,9 +329,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({
-      documentText: context.state.doc.toString(),
-    })
+    this.ensureDocSent()
 
     const result = await this.client.textDocumentCompletion({
       textDocument: { uri: this.getDocUri() },
