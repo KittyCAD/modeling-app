@@ -312,9 +312,9 @@ export async function getUtils(page: Page) {
         fullPage: true,
       })
       const screenshot = await PNG.sync.read(buffer)
-      // most likely related to pixel density but the screenshots for webkit are 2x the size
-      // there might be a more robust way of doing this.
-      const pixMultiplier = browserType === 'webkit' ? 2 : 1
+      const pixMultiplier: number = await page.evaluate(
+        'window.devicePixelRatio'
+      )
       const index =
         (screenshot.width * coords.y * pixMultiplier +
           coords.x * pixMultiplier) *
@@ -377,11 +377,10 @@ export async function getUtils(page: Page) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      // Skip on non-Chromium browsers, since we need to use the CDP.
-      test.skip(
-        cdpSession === null,
-        'Network emulation is only supported in Chromium'
-      )
+      if (cdpSession === null) {
+        // Use a fail safe if we can't simulate disconnect (on Safari)
+        return page.evaluate('window.tearDown()')
+      }
 
       cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
     },

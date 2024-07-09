@@ -37,11 +37,11 @@ import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcce
 import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
 import { editorManager } from 'lib/singletons'
 
-const copilotPluginAnnotation = Annotation.define<null>()
-export const copilotPluginEvent = copilotPluginAnnotation.of(null)
+const copilotPluginAnnotation = Annotation.define<boolean>()
+export const copilotPluginEvent = copilotPluginAnnotation.of(true)
 
-const rejectSuggestionAnnotation = Annotation.define<null>()
-export const rejectSuggestionCommand = rejectSuggestionAnnotation.of(null)
+const rejectSuggestionAnnotation = Annotation.define<boolean>()
+export const rejectSuggestionCommand = rejectSuggestionAnnotation.of(true)
 
 // Effects to tell StateEffect what to do with GhostText
 const addSuggestion = StateEffect.define<Suggestion>()
@@ -229,7 +229,7 @@ export class CompletionRequester implements PluginValue {
         isRelevant = true
       } else if (tr.isUserEvent('move')) {
         isRelevant = true
-      } else if (tr.annotation(copilotPluginEvent.type) !== undefined) {
+      } else if (tr.annotation(copilotPluginEvent.type)) {
         isRelevant = true
       }
     }
@@ -457,6 +457,7 @@ export class CompletionRequester implements PluginValue {
       effects: clearSuggestion.of(null),
       annotations: [
         rejectSuggestionCommand,
+        copilotPluginEvent,
         Transaction.addToHistory.of(false),
       ],
     })

@@ -96,6 +96,7 @@ export const ClientSideScene = ({
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
+    canvas.appendChild(sceneInfra.labelRenderer.domElement)
     sceneInfra.animate()
     canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)

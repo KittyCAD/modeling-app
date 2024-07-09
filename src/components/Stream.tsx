@@ -8,7 +8,7 @@ import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
+import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -18,6 +18,7 @@ export const Stream = () => {
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
   const { overallState } = useNetworkContext()
+  const [isFreezeFrame, setIsFreezeFrame] = useState(false)
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
@@ -49,14 +50,71 @@ export const Stream = () => {
     globalThis?.window?.document?.addEventListener('paste', handlePaste, {
       capture: true,
     })
-    return () =>
+
+    const IDLE_TIME_MS = 1000 * 20
+    let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
+
+    const teardown = () => {
+      videoRef.current?.pause()
+      setIsFreezeFrame(true)
+      sceneInfra.modelingSend({ type: 'Cancel' })
+      // Give video time to pause
+      window.requestAnimationFrame(() => {
+        engineCommandManager.engineConnection?.tearDown({ freeze: true })
+      })
+    }
+
+    // Teardown everything if we go hidden or reconnect
+    if (globalThis?.window?.document) {
+      globalThis.window.document.onvisibilitychange = () => {
+        if (globalThis.window.document.visibilityState === 'hidden') {
+          clearTimeout(timeoutIdIdleA)
+          timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
+        } else if (!engineCommandManager.engineConnection?.isReady()) {
+          clearTimeout(timeoutIdIdleA)
+          engineCommandManager.engineConnection?.connect(true)
+        }
+      }
+    }
+
+    let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
+
+    const onAnyInput = () => {
+      if (!engineCommandManager.engineConnection?.isReady()) {
+        engineCommandManager.engineConnection?.connect(true)
+      }
+      // Clear both timers
+      clearTimeout(timeoutIdIdleA)
+      clearTimeout(timeoutIdIdleB)
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    }
+
+    globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
+    globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
+    globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
+    globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
+    globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+
+    timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+
+    return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
+      globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
+      globalThis?.window?.document?.removeEventListener('mousemove', onAnyInput)
+      globalThis?.window?.document?.removeEventListener('mousedown', onAnyInput)
+      globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
+      globalThis?.window?.document?.removeEventListener(
+        'touchstart',
+        onAnyInput
+      )
+    }
   }, [])
 
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
+    if (!kclManager.isFirstRender) videoRef.current?.play()
   }, [kclManager.isFirstRender])
 
   useEffect(() => {
@@ -67,7 +125,10 @@ export const Stream = () => {
       return
     if (!videoRef.current) return
     if (!context.store?.mediaStream) return
+
+    // Do not immediately play the stream!
     videoRef.current.srcObject = context.store.mediaStream
+    videoRef.current.pause()
 
     send({
       type: 'Set context',
@@ -172,17 +233,12 @@ export const Stream = () => {
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
-      {!isNetworkOkay && !isLoading && (
+      {(!isNetworkOkay || isLoading || isFirstRender) && !isFreezeFrame && (
         <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Stream disconnected...</span>
-          </Loading>
-        </div>
-      )}
-      {(isLoading || isFirstRender) && (
-        <div className="text-center absolute inset-0">
-          <Loading>
-            {!isLoading && isFirstRender ? (
+            {!isNetworkOkay && !isLoading ? (
+              <span data-testid="loading-stream">Stream disconnected...</span>
+            ) : !isLoading && isFirstRender ? (
               <span data-testid="loading-stream">Building scene...</span>
             ) : (
               <span data-testid="loading-stream">Loading stream...</span>

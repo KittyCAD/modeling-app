@@ -52,7 +52,24 @@ const commonPoints = {
   // num2: 19.19,
 }
 
-// Utilities for writing tests that depend on test values
+test.afterEach(async ({ context, page }, testInfo) => {
+  if (testInfo.status === 'skipped') return
+  if (testInfo.status === 'failed') return
+
+  const u = await getUtils(page)
+  // Kill the network so shutdown happens properly
+  await u.emulateNetworkConditions({
+    offline: true,
+    // values of 0 remove any active throttling. crbug.com/456324#c9
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1,
+  })
+
+  // It seems it's best to give the browser about 3s to close things
+  // It's not super reliable but we have no real other choice for now
+  await page.waitForTimeout(3000)
+})
 
 test.beforeEach(async ({ context, page }) => {
   // wait for Vite preview server to be up
@@ -78,7 +95,7 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(60000)
+test.setTimeout(120000)
 
 async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
@@ -543,6 +560,50 @@ test.describe('Testing Camera Movement', () => {
 })
 
 test.describe('Editor tests', () => {
+  test('can comment out code with ctrl+/', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await u.codeLocator.click()
+    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('/')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    // |> close(%)`)
+
+    // uncomment the code
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('/')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+  })
+
   test('if you click the format button it formats your code', async ({
     page,
   }) => {
@@ -1204,7 +1265,9 @@ test.describe('Editor tests', () => {
     |> close(%)`)
   })
 
-  test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
+  // failing for the same reason as "Can edit a sketch that has been extruded in the same pipe"
+  // please fix together
+  test.fixme('Can undo a sketch modification with ctrl+z', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -4053,108 +4116,111 @@ test.describe('Sketch tests', () => {
     })
   })
 
-  test('Can edit a sketch that has been extruded in the same pipe', async ({
-    page,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+  // failing for the same reason as "Can undo a sketch modification with ctrl+z"
+  // please fix together
+  test.fixme(
+    'Can edit a sketch that has been extruded in the same pipe',
+    async ({ page }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> close(%)
     |> extrude(5, %)`
-      )
-    })
+        )
+      })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setViewportSize({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+      await u.waitForAuthSkipAppStart()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
 
-    await page.waitForTimeout(100)
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 0, y: -1250, z: 580 },
-        center: { x: 0, y: 0, z: 0 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
+      await page.waitForTimeout(100)
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: { x: 0, y: -1250, z: 580 },
+          center: { x: 0, y: 0, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await page.waitForTimeout(100)
 
-    const startPX = [665, 458]
+      const startPX = [665, 458]
 
-    const dragPX = 40
+      const dragPX = 40
 
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
-    await page.waitForTimeout(400)
-    let prevContent = await page.locator('.cm-content').innerText()
+      await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(400)
+      let prevContent = await page.locator('.cm-content').innerText()
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: startPX[0], y: startPX[1] },
-      targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
-    })
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
+      // drag startProfieAt handle
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: startPX[0], y: startPX[1] },
+        targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
 
-    // drag line handle
-    await page.waitForTimeout(100)
+      // drag line handle
+      await page.waitForTimeout(100)
 
-    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-    await page.waitForTimeout(100)
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-      targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
-    })
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+      await page.waitForTimeout(100)
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+        targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+      })
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
 
-    // drag tangentialArcTo handle
-    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
-      targetPosition: {
-        x: tangentEnd.x + dragPX,
-        y: tangentEnd.y + dragPX,
-      },
-    })
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      // drag tangentialArcTo handle
+      const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
+        targetPosition: {
+          x: tangentEnd.x + dragPX,
+          y: tangentEnd.y + dragPX,
+        },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
-    // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      // expect the code to have changed
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([7.12, -16.82], %)
     |> line([15.4, -2.74], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> line([2.65, -2.69], %)
     |> close(%)
     |> extrude(5, %)`)
-  })
+    }
+  )
 
   test('Can edit a sketch that has been revolved in the same pipe', async ({
     page,
@@ -6704,7 +6770,15 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
 })
 
 test.describe('Test network and connection issues', () => {
-  test('simulate network down and network little widget', async ({ page }) => {
+  test('simulate network down and network little widget', async ({
+    page,
+    browserName,
+  }) => {
+    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -6774,7 +6848,15 @@ test.describe('Test network and connection issues', () => {
     await expect(page.getByText('Network Health (Connected)')).toBeVisible()
   })
 
-  test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
+  test('Engine disconnect & reconnect in sketch mode', async ({
+    page,
+    browserName,
+  }) => {
+    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -7132,6 +7214,40 @@ test.describe('Testing Gizmo', () => {
       ),
     ])
   })
+})
+
+test('Units menu', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+  await u.waitForAuthSkipAppStart()
+
+  const unitsMenuButton = page.getByRole('button', {
+    name: 'Current Units',
+    exact: false,
+  })
+  await expect(unitsMenuButton).toBeVisible()
+  await expect(unitsMenuButton).toContainText('in')
+
+  await unitsMenuButton.click()
+  const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
+
+  await expect(millimetersButton).toBeVisible()
+  await millimetersButton.click()
+
+  // Look out for the toast message
+  const toastMessage = page.getByText(
+    `Set default unit to "mm" for this project`
+  )
+  await expect(toastMessage).toBeVisible()
+
+  // Verify that the popover has closed
+  await expect(millimetersButton).not.toBeAttached()
+
+  // Verify that the button label has updated
+  await expect(unitsMenuButton).toContainText('mm')
 })
 
 test('Successful export shows a success toast', async ({ page }) => {

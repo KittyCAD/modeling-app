@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use schemars::JsonSchema;
 
 use crate::{
@@ -18,10 +16,7 @@ pub struct FunctionParam<'a> {
 }
 
 impl<'a> FunctionParam<'a> {
-    pub async fn call(
-        &self,
-        args: Vec<MemoryItem>,
-    ) -> Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError> {
+    pub async fn call(&self, args: Vec<MemoryItem>) -> Result<Option<ProgramReturn>, KclError> {
         (self.inner)(
             args,
             self.memory.clone(),

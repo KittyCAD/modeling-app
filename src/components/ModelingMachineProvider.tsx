@@ -53,9 +53,8 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, VariableDeclaration, parse, recast } from 'lang/wasm'
+import { Program, parse, recast } from 'lang/wasm'
 import {
-  getNodeFromPath,
   getNodePathFromSourceRange,
   hasExtrudableGeometry,
   isSingleCursorInPipe,
@@ -164,6 +163,8 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
             kclManager.executeCode(true).then(() => {
+              if (engineCommandManager.engineConnection?.freezeFrame) return
+
               store.videoElement?.play()
             })
           })()
