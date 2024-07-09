@@ -67,15 +67,15 @@ export class KclPlugin implements PluginValue {
       }
 
       // Don't make this an else.
-      if (tr.annotation(codeManagerUpdateEvent.type)) {
+      if (tr.annotation(codeManagerUpdateEvent.type) !== undefined) {
         // We want to ignore when we are forcing the editor to update.
         isRelevant = false
         break
-      } else if (tr.annotation(copilotPluginEvent.type)) {
+      } else if (tr.annotation(copilotPluginEvent.type) !== undefined) {
         // We want to ignore when copilot is doing stuff.
         isRelevant = false
         break
-      } else if (tr.annotation(updateOutsideEditorEvent.type)) {
+      } else if (tr.annotation(updateOutsideEditorEvent.type) !== undefined) {
         // We want to ignore other events outside the editor.
         isRelevant = false
         break
