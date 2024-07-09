@@ -64,27 +64,61 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                 let mut responses = HashMap::new();
                 for request in requests {
                     if let Ok(mut test_code) = self.core_test.lock() {
+                        let cmd_id = format!("{}", request.cmd_id);
                         let cpp_id = id_to_cpp(&request.cmd_id);
 
                         let new_code: String = match &request.cmd {
-                            ModelingCmd::StartPath { } => {
+                            ModelingCmd::EnableSketchMode { entity_id, animated: _, ortho: _, adjust_camera: _, planar_normal } => {
+                                if let Some(normal) = planar_normal {
+                                    format!(r#"
+                                        if(!scene->enableSketchMode(Utils::UUID("{entity_id}"), glm::dvec3 {{ {}, {}, {}, }}, nullopt))
+                                        {{
+                                            Utils::Plane plane_{cpp_id}(glm::dvec3 {{ 0, 0, 0 }}, glm::dvec3 {{ 1, 0, 0 }}, glm::dvec3 {{ 0, 1, 0 }});
+                                            scene->enableSketchMode(plane_{cpp_id}, nullopt, nullopt, false);
+                                        }}
+                                    "#, normal.x, normal.y, normal.z)
+                                } else {
+                                    "".into()
+                                }
+                            },
+                            ModelingCmd::SketchModeDisable { } => {
+                                "scene->disableSketchMode();".into()
+                            },
+                            ModelingCmd::MakePlane { origin, x_axis, y_axis, size, .. } => {
+                                let plane_id = format!("plane_{}", cpp_id);
                                 format!(r#"
-                                    auto sketch_{} = make_shared<Object>("sketch", glm::vec3 {{ 0, 0, 0 }});
-                                    sketch_{}->makePath(true);
-                                    auto path_{} = sketch->get<Model::Brep::Path>();
-                                "#, cpp_id, cpp_id, cpp_id)
+                                    auto {plane_id} = make_shared<Object>("plane", glm::dvec3 {{ 0, 0, 0 }});
+                                    {plane_id}->setUUID(Utils::UUID("{cmd_id}"));
+                                    {plane_id}->makePlane(glm::dvec3 {{ {}, {}, {} }} * scaleFactor, glm::dvec3 {{ {}, {}, {} }}, glm::dvec3 {{ {}, {}, {} }}, {}, false);
+                                    {plane_id}->setHidden();
+                                    scene->addSceneObject({plane_id});
+                                "#, origin.x, origin.y, origin.z,
+                                    x_axis.x, x_axis.y, x_axis.z,
+                                    y_axis.x, y_axis.y, y_axis.z,
+                                    size)
+                            },
+                            ModelingCmd::StartPath { } => {
+                                let sketch_id = format!("sketch_{}", cpp_id);
+                                let path_id = format!("path_{}", cpp_id);
+                                format!(r#"
+                                    auto {sketch_id} = make_shared<Object>("sketch", glm::dvec3 {{ 0, 0, 0 }});
+                                    {sketch_id}->setUUID(Utils::UUID("{cmd_id}"));
+                                    {sketch_id}->makePath(true);
+                                    auto {path_id} = {sketch_id}->get<Model::Brep::Path>();
+                                    scene->addSceneObject({sketch_id});
+                                "#)
                             },
                             ModelingCmd::MovePathPen { path, to } => {
                                 format!(r#"
                                     path_{}->moveTo({{ {}, {}, 0.0 }});
-                                "#, path, to.x, to.y)
+                                "#, id_to_cpp(&path), to.x, to.y)
                             },
                             ModelingCmd::ExtendPath { path, segment } => {
                                 match segment {
                                     Line { end, relative } => {
                                         format!(r#"
-                                            path_{}->lineTo({{ {}, {}, 0.0 }}, {{ {} }});
-                                        "#, path, end.x, end.y, relative).into()
+                                            path_{}->lineTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor, {{ {} }});
+                                        "#, id_to_cpp(&path), end.x, end.y, relative).into()
                                     },
                                     _ => {
                                         "".into()
@@ -95,19 +129,18 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                             ModelingCmd::ClosePath { path_id } => {
                                 format!(r#"
                                     path_{}->close();
-                                "#, path_id).into()
+                                "#, id_to_cpp(&path_id)).into()
                             },
                             ModelingCmd::Extrude { cap: _, distance, target } => {
                                 format!(r#"
-                                    sketch_{}->extrudeToSolid3D({}, true);
-                                "#, target, distance).into()
+                                    sketch_{}->extrudeToSolid3D({} * scaleFactor, true);
+                                "#, id_to_cpp(&target), distance).into()
                             },
                             _ => {
                                 "".into()
                             },
                         };
 
-                        //let new_code = format!("{:?}", request);
                         if new_code.len() > 0 {
                             let new_code = new_code.trim().split(' ').filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") + "\n";
                             test_code.push_str(&new_code);
