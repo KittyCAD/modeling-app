@@ -11,8 +11,8 @@ import { KeyBinding } from '@codemirror/view'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
-const codeManagerUpdateAnnotation = Annotation.define<null>()
-export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(null)
+const codeManagerUpdateAnnotation = Annotation.define<boolean>()
+export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
 
 export default class CodeManager {
   private _code: string = bracket
