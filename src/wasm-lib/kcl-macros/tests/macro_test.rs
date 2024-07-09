@@ -22,17 +22,22 @@ fn basic() {
                     start: 6,
                     end: 7,
                     name: "y".to_owned(),
+                    digest: None,
                 },
                 init: Value::Literal(Box::new(Literal {
                     start: 10,
                     end: 11,
                     value: LiteralValue::IInteger(4),
                     raw: "4".to_owned(),
+                    digest: None,
                 })),
+                digest: None,
             }],
             kind: VariableKind::Const,
+            digest: None,
         })],
         non_code_meta: NonCodeMeta::default(),
+        digest: None,
     };
     assert_eq!(expected, actual);
 }

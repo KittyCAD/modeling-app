@@ -13,7 +13,8 @@ expression: actual
     "start": 0,
     "end": 1,
     "value": 1,
-    "raw": "1"
+    "raw": "1",
+    "digest": null
   },
   "right": {
     "type": "BinaryExpression",
@@ -33,7 +34,8 @@ expression: actual
         "start": 6,
         "end": 7,
         "value": 2,
-        "raw": "2"
+        "raw": "2",
+        "digest": null
       },
       "right": {
         "type": "Literal",
@@ -41,8 +43,10 @@ expression: actual
         "start": 10,
         "end": 11,
         "value": 3,
-        "raw": "3"
-      }
+        "raw": "3",
+        "digest": null
+      },
+      "digest": null
     },
     "right": {
       "type": "Literal",
@@ -50,7 +54,10 @@ expression: actual
       "start": 16,
       "end": 17,
       "value": 4,
-      "raw": "4"
-    }
-  }
+      "raw": "4",
+      "digest": null
+    },
+    "digest": null
+  },
+  "digest": null
 }
