@@ -1465,6 +1465,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-to-core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "kcl-lib",
+ "kittycad",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "kittycad"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3028,6 +3040,7 @@ dependencies = [
  "signal-hook-registry",
  "socket2",
  "tokio-macros",
+ "tracing",
  "windows-sys 0.48.0",
 ]
 

@@ -66,6 +66,7 @@ members = [
 	"kcl",
 	"kcl-macros",
 	"kcl-test-server",
+	"kcl-to-core",
 ]
 
 [workspace.dependencies]
