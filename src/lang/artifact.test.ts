@@ -167,6 +167,7 @@ const sk2 = startSketchOn('XY')
               start: 114,
               type: 'TagDeclarator',
               value: 'p',
+              digest: null,
             },
             id: expect.any(String),
             sourceRange: [95, 117],
@@ -216,6 +217,7 @@ const sk2 = startSketchOn('XY')
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
+                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),
@@ -258,6 +260,7 @@ const sk2 = startSketchOn('XY')
               start: 417,
               type: 'TagDeclarator',
               value: 'o',
+              digest: null,
             },
             id: expect.any(String),
             sourceRange: [399, 420],
@@ -307,6 +310,7 @@ const sk2 = startSketchOn('XY')
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
+                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),

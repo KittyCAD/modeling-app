@@ -29,7 +29,9 @@ export class KclManager {
     nonCodeMeta: {
       nonCodeNodes: {},
       start: [],
+      digest: null,
     },
+    digest: null,
   }
   private _programMemory: ProgramMemory = {
     root: {},
@@ -160,7 +162,9 @@ export class KclManager {
       nonCodeMeta: {
         nonCodeNodes: {},
         start: [],
+        digest: null,
       },
+      digest: null,
     }
   }
 

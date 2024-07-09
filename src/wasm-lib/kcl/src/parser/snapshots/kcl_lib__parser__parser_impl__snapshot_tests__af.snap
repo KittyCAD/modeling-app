@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 14,
-            "name": "mySketch"
+            "name": "mySketch",
+            "digest": null
           },
           "init": {
             "type": "PipeExpression",
@@ -37,7 +38,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 17,
                   "end": 30,
-                  "name": "startSketchAt"
+                  "name": "startSketchAt",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -52,7 +54,8 @@ expression: actual
                         "start": 32,
                         "end": 33,
                         "value": 0,
-                        "raw": "0"
+                        "raw": "0",
+                        "digest": null
                       },
                       {
                         "type": "Literal",
@@ -60,12 +63,15 @@ expression: actual
                         "start": 34,
                         "end": 35,
                         "value": 0,
-                        "raw": "0"
+                        "raw": "0",
+                        "digest": null
                       }
-                    ]
+                    ],
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               },
               {
                 "type": "CallExpression",
@@ -76,7 +82,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 49,
                   "end": 55,
-                  "name": "lineTo"
+                  "name": "lineTo",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -91,7 +98,8 @@ expression: actual
                         "start": 57,
                         "end": 58,
                         "value": 0,
-                        "raw": "0"
+                        "raw": "0",
+                        "digest": null
                       },
                       {
                         "type": "Literal",
@@ -99,25 +107,30 @@ expression: actual
                         "start": 60,
                         "end": 61,
                         "value": 1,
-                        "raw": "1"
+                        "raw": "1",
+                        "digest": null
                       }
-                    ]
+                    ],
+                    "digest": null
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 64,
-                    "end": 65
+                    "end": 65,
+                    "digest": null
                   },
                   {
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "start": 67,
                     "end": 75,
-                    "value": "myPath"
+                    "value": "myPath",
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               },
               {
                 "type": "CallExpression",
@@ -128,7 +141,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 88,
                   "end": 94,
-                  "name": "lineTo"
+                  "name": "lineTo",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -143,7 +157,8 @@ expression: actual
                         "start": 96,
                         "end": 97,
                         "value": 1,
-                        "raw": "1"
+                        "raw": "1",
+                        "digest": null
                       },
                       {
                         "type": "Literal",
@@ -151,18 +166,22 @@ expression: actual
                         "start": 99,
                         "end": 100,
                         "value": 1,
-                        "raw": "1"
+                        "raw": "1",
+                        "digest": null
                       }
-                    ]
+                    ],
+                    "digest": null
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 103,
-                    "end": 104
+                    "end": 104,
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               },
               {
                 "type": "CallExpression",
@@ -173,7 +192,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 117,
                   "end": 123,
-                  "name": "lineTo"
+                  "name": "lineTo",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -188,7 +208,8 @@ expression: actual
                         "start": 125,
                         "end": 126,
                         "value": 1,
-                        "raw": "1"
+                        "raw": "1",
+                        "digest": null
                       },
                       {
                         "type": "Literal",
@@ -196,25 +217,30 @@ expression: actual
                         "start": 128,
                         "end": 129,
                         "value": 0,
-                        "raw": "0"
+                        "raw": "0",
+                        "digest": null
                       }
-                    ]
+                    ],
+                    "digest": null
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 132,
-                    "end": 133
+                    "end": 133,
+                    "digest": null
                   },
                   {
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "start": 135,
                     "end": 146,
-                    "value": "rightPath"
+                    "value": "rightPath",
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               },
               {
                 "type": "CallExpression",
@@ -225,31 +251,40 @@ expression: actual
                   "type": "Identifier",
                   "start": 159,
                   "end": 164,
-                  "name": "close"
+                  "name": "close",
+                  "digest": null
                 },
                 "arguments": [
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 165,
-                    "end": 166
+                    "end": 166,
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               }
             ],
             "nonCodeMeta": {
               "nonCodeNodes": {},
-              "start": []
-            }
-          }
+              "start": [],
+              "digest": null
+            },
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }
