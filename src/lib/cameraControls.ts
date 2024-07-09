@@ -156,17 +156,20 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
   },
   Creo: {
     pan: {
-      description: 'Middle click + Shift + drag',
-      callback: (e) => butName(e).middle && e.shiftKey,
+      description: 'Left click + Ctrl + drag',
+      callback: (e) => butName(e).left && !butName(e).right && e.ctrlKey,
     },
     zoom: {
-      description: 'Scroll wheel or Middle click + Ctrl + drag',
-      dragCallback: (e) => butName(e).middle && e.ctrlKey,
+      description: 'Scroll wheel or Right click + Ctrl + drag',
+      dragCallback: (e) => butName(e).right && !butName(e).left && e.ctrlKey,
       scrollCallback: () => true,
     },
     rotate: {
-      description: 'Middle click + drag',
-      callback: (e) => butName(e).middle && noModifiersPressed(e),
+      description: 'Middle (or Left + Right) click + Ctrl + drag',
+      callback: (e) => {
+        const b = butName(e)
+        return (b.middle || (b.left && b.right)) && e.ctrlKey
+      },
     },
   },
   AutoCAD: {
