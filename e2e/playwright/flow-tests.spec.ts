@@ -7641,6 +7641,31 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(page.locator('.cm-content')).toContainText('extrude(')
 })
 
+test('Delete key does not navigate back', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+  const settingsButton = page.getByRole('link', {
+    name: 'Settings',
+    exact: false,
+  })
+  const settingsCloseButton = page.getByTestId('settings-close-button')
+
+  await settingsButton.click()
+  await expect(page.url()).toContain('/settings')
+
+  // Make sure that delete doesn't go back from settings
+  await page.keyboard.press('Delete')
+  await expect(page.url()).toContain('/settings')
+
+  // Now close the settings and try delete again,
+  // make sure it doesn't go back to settings
+  await settingsCloseButton.click()
+  await page.keyboard.press('Delete')
+  await expect(page.url()).not.toContain('/settings')
+})
+
 test('Sketch on face', async ({ page }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
