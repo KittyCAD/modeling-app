@@ -83,6 +83,20 @@ jobs:
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
+    - name: Install vector
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
+        chmod +x /tmp/vector.sh
+        /tmp/vector.sh -y -no-modify-path
+        mkdir -p /tmp/vector
+        cp .github/workflows/vector.toml /tmp/vector.toml
+        sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+        sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
+        cat /tmp/vector.toml
+        ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
     - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       run: yarn build:wasm
@@ -160,6 +174,10 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - name: send to axiom
+      shell: bash
+      run: |
+        node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
       if: always()
       with:
