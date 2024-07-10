@@ -157,7 +157,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                                             path_{}->lineTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor, {{ {} }});
                                         "#, id_to_cpp(&path), end.x, end.y, relative).into()
                                     },
-                                    kittycad::types::PathSegment::Arc { center, radius, start, end, relative } => {                                        
+                                    kittycad::types::PathSegment::Arc { center, radius, start, end, relative } => {
                                         let start = start.value;
                                         let end = end.value;
 
@@ -191,15 +191,15 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                                     //face info get {} {}
                                 "#, object_id, edge_id).into()
                             },
-                            ModelingCmd::EntityCircularPattern { entity_id, axis, center, num_repetitions, arc_degrees, rotate_duplicates } => {                                
+                            ModelingCmd::EntityCircularPattern { entity_id, axis, center, num_repetitions, arc_degrees, rotate_duplicates } => {
                                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
                                 this_response = kittycad::types::OkModelingCmdResponse::EntityCircularPattern {
                                     data: kittycad::types::EntityCircularPattern {
                                         entity_ids: entity_ids.clone()
-                                    } 
+                                    }
                                 };
-                            
+
                                 let mut base_code: String = format!(r#"
                                     auto reps = scene->entityCircularPattern(Utils::UUID("{}"), {num_repetitions}, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, {arc_degrees}, {rotate_duplicates});
                                 "#, entity_id, axis.x, axis.y, axis.z, center.x, center.y, center.z).into();
