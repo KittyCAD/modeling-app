@@ -53,7 +53,7 @@ export const Stream = () => {
       capture: true,
     })
 
-    const IDLE_TIME_MS = 1000 * 20
+    const IDLE_TIME_MS = 1000 * 60 * 2
     let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
 
     const teardown = () => {
