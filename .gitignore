@@ -58,3 +58,5 @@ src/wasm-lib/grackle/stdlib_cube_partial.json
 Mac_App_Distribution.provisionprofile
 
 *.tsbuildinfo
+
+venv

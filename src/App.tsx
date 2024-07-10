@@ -25,6 +25,7 @@ import ModalContainer from 'react-modal-promise'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
+import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -127,6 +128,7 @@ export function App() {
       <Stream />
       {/* <CamToggle /> */}
       <LowerRightControls coreDumpManager={coreDumpManager}>
+        <UnitsMenu />
         <Gizmo />
       </LowerRightControls>
     </div>

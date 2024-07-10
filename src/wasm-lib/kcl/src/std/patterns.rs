@@ -207,7 +207,7 @@ async fn make_transform<'a>(
         meta: vec![source_range.into()],
     });
     let transform_fn_args = vec![repetition_num];
-    let transform_fn_return = transform_function.call(transform_fn_args).await?.0;
+    let transform_fn_return = transform_function.call(transform_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];

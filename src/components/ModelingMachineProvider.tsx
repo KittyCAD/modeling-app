@@ -35,6 +35,7 @@ import {
   canExtrudeSelection,
   handleSelectionBatch,
   isSelectionLastLine,
+  isRangeInbetweenCharacters,
   isSketchPipe,
   updateSelections,
 } from 'lib/selections'
@@ -53,9 +54,8 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, VariableDeclaration, parse, recast } from 'lang/wasm'
+import { Program, parse, recast } from 'lang/wasm'
 import {
-  getNodeFromPath,
   getNodePathFromSourceRange,
   hasExtrudableGeometry,
   isSingleCursorInPipe,
@@ -164,6 +164,8 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
             kclManager.executeCode(true).then(() => {
+              if (engineCommandManager.engineConnection?.freezeFrame) return
+
               store.videoElement?.play()
             })
           })()
@@ -424,6 +426,7 @@ export const ModelingMachineProvider = ({
 
           if (
             selectionRanges.codeBasedSelections.length === 0 ||
+            isRangeInbetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
           ) {
             // they have no selection, we should enable the button

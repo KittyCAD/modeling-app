@@ -67,6 +67,7 @@ const newVar = myVar + 1`
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
+          digest: null,
         },
       },
       {
@@ -92,6 +93,7 @@ const newVar = myVar + 1`
           start: 144,
           type: 'TagDeclarator',
           value: 'rightPath',
+          digest: null,
         },
       },
     ])
@@ -155,6 +157,17 @@ const newVar = myVar + 1`
           sourceRange: [39, 63],
         },
       },
+      tags: {
+        myPath: {
+          __meta: [
+            {
+              sourceRange: [109, 117],
+            },
+          ],
+          type: 'TagIdentifier',
+          value: 'myPath',
+        },
+      },
       value: [
         {
           type: 'ToPoint',
@@ -179,6 +192,7 @@ const newVar = myVar + 1`
             start: 109,
             type: 'TagDeclarator',
             value: 'myPath',
+            digest: null,
           },
         },
         {

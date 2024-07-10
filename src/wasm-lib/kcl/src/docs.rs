@@ -344,6 +344,7 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 } else if format == "double"
                     || format == "uint"
                     || format == "int64"
+                    || format == "uint8"
                     || format == "uint32"
                     || format == "uint64"
                 {
