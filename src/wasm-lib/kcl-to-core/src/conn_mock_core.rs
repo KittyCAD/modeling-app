@@ -36,6 +36,13 @@ fn id_to_cpp(id: &uuid::Uuid) -> String {
     str::replace(&str, "-", "_")
 }
 
+fn generate_repl_uuids(count: usize) -> Vec<uuid::Uuid> {
+    let mut repl_ids: Vec<uuid::Uuid> = Vec::new();
+
+    repl_ids.resize_with(count, || uuid::Uuid::new_v4());
+    repl_ids
+}
+
 #[async_trait::async_trait]
 impl kcl_lib::engine::EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
@@ -69,6 +76,8 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
             } => {
                 let mut responses = HashMap::new();
                 for request in requests {
+                    let mut this_response = kittycad::types::OkModelingCmdResponse::Empty {};
+
                     if let Ok(mut test_code) = self.core_test.lock() {
                         let cmd_id = format!("{}", request.cmd_id);
                         let cpp_id = id_to_cpp(&request.cmd_id);
@@ -154,10 +163,25 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                                     //face info get {} {}
                                 "#, object_id, edge_id).into()
                             },
-                            ModelingCmd::EntityCircularPattern { .. } => {
-                                format!(r#"
-                                    //pattern!!
-                                "#).into()
+                            ModelingCmd::EntityCircularPattern { entity_id, axis, center, num_repetitions, arc_degrees, rotate_duplicates } => {                                
+                                let entity_ids = generate_repl_uuids(*num_repetitions as usize);
+
+                                this_response = kittycad::types::OkModelingCmdResponse::EntityCircularPattern {
+                                    data: kittycad::types::EntityCircularPattern {
+                                        entity_ids: entity_ids.clone()
+                                    } 
+                                };
+                            
+                                let mut base_code: String = format!(r#"
+                                    auto reps = scene->entityCircularPattern(Utils::UUID("{}"), {num_repetitions}, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, {arc_degrees}, {rotate_duplicates});
+                                "#, entity_id, axis.x, axis.y, axis.z, center.x, center.y, center.z).into();
+
+                                for i in 0..entity_ids.len() {
+                                    let iter = format!("scene->getSceneObject(reps[{}])->setUUID(Utils::UUID(\"{}\"));\n", i, entity_ids[i]);
+                                    base_code.push_str(&iter);
+                                }
+
+                                base_code
                             },
                             _ => {
                                 //helps us follow along with the currently unhandled engine commands
@@ -174,7 +198,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                     responses.insert(
                         request.cmd_id.to_string(),
                         kittycad::types::BatchResponse {
-                            response: Some(kittycad::types::OkModelingCmdResponse::Empty {}),
+                            response: Some(this_response),
                             errors: None,
                         },
                     );
