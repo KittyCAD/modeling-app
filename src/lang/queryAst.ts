@@ -51,8 +51,16 @@ export function getNodeFromPath<T>(
   let successfulPaths: PathToNode = []
   let pathsExplored: PathToNode = []
   for (const pathItem of path) {
-    if (typeof currentNode[pathItem[0]] !== 'object')
+    if (typeof currentNode[pathItem[0]] !== 'object') {
+      if (stopAtNode) {
+        return {
+          node: stopAtNode,
+          shallowPath: pathsExplored,
+          deepPath: successfulPaths,
+        }
+      }
       return new Error('not an object')
+    }
     currentNode = currentNode?.[pathItem[0]]
     successfulPaths.push(pathItem)
     if (!stopAtNode) {

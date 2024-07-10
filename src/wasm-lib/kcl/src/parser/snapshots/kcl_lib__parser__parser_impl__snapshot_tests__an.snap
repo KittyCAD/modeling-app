@@ -20,7 +20,8 @@ expression: actual
           "type": "Identifier",
           "start": 0,
           "end": 6,
-          "name": "lineTo"
+          "name": "lineTo",
+          "digest": null
         },
         "arguments": [
           {
@@ -37,7 +38,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 9,
                   "end": 11,
-                  "name": "to"
+                  "name": "to",
+                  "digest": null
                 },
                 "value": {
                   "type": "ArrayExpression",
@@ -51,7 +53,8 @@ expression: actual
                       "start": 14,
                       "end": 15,
                       "value": 0,
-                      "raw": "0"
+                      "raw": "0",
+                      "digest": null
                     },
                     {
                       "type": "Literal",
@@ -59,10 +62,13 @@ expression: actual
                       "start": 17,
                       "end": 18,
                       "value": 1,
-                      "raw": "1"
+                      "raw": "1",
+                      "digest": null
                     }
-                  ]
-                }
+                  ],
+                  "digest": null
+                },
+                "digest": null
               },
               {
                 "type": "ObjectProperty",
@@ -72,7 +78,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 21,
                   "end": 25,
-                  "name": "from"
+                  "name": "from",
+                  "digest": null
                 },
                 "value": {
                   "type": "ArrayExpression",
@@ -86,7 +93,8 @@ expression: actual
                       "start": 28,
                       "end": 29,
                       "value": 3,
-                      "raw": "3"
+                      "raw": "3",
+                      "digest": null
                     },
                     {
                       "type": "Literal",
@@ -94,20 +102,28 @@ expression: actual
                       "start": 31,
                       "end": 32,
                       "value": 3,
-                      "raw": "3"
+                      "raw": "3",
+                      "digest": null
                     }
-                  ]
-                }
+                  ],
+                  "digest": null
+                },
+                "digest": null
               }
-            ]
+            ],
+            "digest": null
           }
         ],
-        "optional": false
-      }
+        "optional": false,
+        "digest": null
+      },
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }

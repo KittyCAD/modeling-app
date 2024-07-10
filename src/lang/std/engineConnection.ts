@@ -300,6 +300,7 @@ class EngineConnection extends EventTarget {
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
   mediaStream?: MediaStream
+  freezeFrame: boolean = false
 
   private _state: EngineConnectionState = {
     type: EngineConnectionStateType.Fresh,
@@ -365,7 +366,11 @@ class EngineConnection extends EventTarget {
     this.pingPongSpan = { ping: undefined, pong: undefined }
 
     // Without an interval ping, our connection will timeout.
+    // If this.freezeFrame is true we skip this logic so only reconnect
+    // happens on mouse move
     setInterval(() => {
+      if (this.freezeFrame) return
+
       switch (this.state.type as EngineConnectionStateType) {
         case EngineConnectionStateType.ConnectionEstablished:
           // If there was no reply to the last ping, report a timeout.
@@ -426,7 +431,8 @@ class EngineConnection extends EventTarget {
     return this.state.type === EngineConnectionStateType.ConnectionEstablished
   }
 
-  tearDown() {
+  tearDown(opts?: { freeze: boolean }) {
+    this.freezeFrame = opts?.freeze ?? false
     this.disconnectAll()
     this.state = {
       type: EngineConnectionStateType.Disconnecting,
@@ -996,6 +1002,9 @@ class EngineConnection extends EventTarget {
       this.pc?.connectionState === 'closed' &&
       this.unreliableDataChannel?.readyState === 'closed'
     if (allClosed) {
+      // Do not notify the rest of the program that we have cut off anything.
+      if (this.freezeFrame) return
+
       this.state = { type: EngineConnectionStateType.Disconnected }
     }
   }
@@ -1619,7 +1628,15 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   tearDown() {
-    this.engineConnection?.tearDown()
+    if (this.engineConnection) {
+      this.engineConnection?.tearDown()
+      // Our window.tearDown assignment causes this case to happen which is
+      // only really for tests.
+      // @ts-ignore
+    } else if (this.engineCommandManager?.engineConnection) {
+      // @ts-ignore
+      this.engineCommandManager?.engineConnection?.tearDown()
+    }
   }
   async startNewSession() {
     this.lastArtifactMap = this.artifactMap
@@ -2083,5 +2100,26 @@ export class EngineCommandManager extends EventTarget {
    */
   setScaleGridVisibility(visible: boolean) {
     this.modifyGrid(!visible)
+  }
+
+  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
+  // So when passing a range, we need to also specify the command type
+  mapRangeToObjectId(
+    range: SourceRange,
+    commandTypeToTarget: string
+  ): string | undefined {
+    const values = Object.entries(this.artifactMap)
+    for (const [id, data] of values) {
+      if (data.type !== 'result') continue
+
+      // Our range selection seems to just select the cursor position, so either
+      // of these can be right...
+      if (
+        (data.range[0] === range[0] || data.range[1] === range[1]) &&
+        data.commandType === commandTypeToTarget
+      )
+        return id
+    }
+    return undefined
   }
 }

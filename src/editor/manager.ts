@@ -12,14 +12,14 @@ import {
   setDiagnosticsEffect,
 } from '@codemirror/lint'
 
-const updateOutsideEditorAnnotation = Annotation.define<null>()
-export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(null)
+const updateOutsideEditorAnnotation = Annotation.define<boolean>()
+export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
 
-const modelingMachineAnnotation = Annotation.define<null>()
-export const modelingMachineEvent = modelingMachineAnnotation.of(null)
+const modelingMachineAnnotation = Annotation.define<boolean>()
+export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
-const setDiagnosticsAnnotation = Annotation.define<null>()
-export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(null)
+const setDiagnosticsAnnotation = Annotation.define<boolean>()
+export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
   return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
@@ -123,7 +123,11 @@ export default class EditorManager {
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
-      annotations: [setDiagnosticsEvent, Transaction.addToHistory.of(false)],
+      annotations: [
+        setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
     })
   }
 
@@ -222,11 +226,7 @@ export default class EditorManager {
       return
     }
 
-    const ignoreEvents: ModelingMachineEvent['type'][] = [
-      'Equip Line tool',
-      'Equip tangential arc to',
-      'Equip rectangle tool',
-    ]
+    const ignoreEvents: ModelingMachineEvent['type'][] = ['change tool']
 
     if (!this._modelingEvent) {
       return

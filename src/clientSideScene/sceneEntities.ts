@@ -29,6 +29,9 @@ import {
   INTERSECTION_PLANE_LAYER,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
+  SEGMENT_LENGTH_LABEL,
+  SEGMENT_LENGTH_LABEL_OFFSET_PX,
+  SEGMENT_LENGTH_LABEL_TEXT,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
@@ -47,6 +50,7 @@ import {
   programMemoryInit,
   recast,
   SketchGroup,
+  ExtrudeGroup,
   VariableDeclaration,
   VariableDeclarator,
 } from 'lang/wasm'
@@ -102,6 +106,7 @@ import {
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -414,7 +419,7 @@ export class SceneEntities {
         }
       )
 
-      let seg
+      let seg: Group
       const _node1 = getNodeFromPath<CallExpression>(
         maybeModdedAst,
         segPathToNode,
@@ -804,7 +809,7 @@ export class SceneEntities {
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
-          sceneInfra.modelingSend({ type: 'CancelSketch' })
+          sceneInfra.modelingSend({ type: 'Finish rectangle' })
 
           const { programMemory } = await executeAst({
             ast: _ast,
@@ -1075,9 +1080,16 @@ export class SceneEntities {
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
-      const sketchGroup = programMemory.root[
-        variableDeclarationName
-      ] as SketchGroup
+
+      const maybeSketchGroup = programMemory.root[variableDeclarationName]
+      let sketchGroup = undefined
+      if (maybeSketchGroup.type === 'SketchGroup') {
+        sketchGroup = maybeSketchGroup
+      } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
+        sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
+      }
+      if (!sketchGroup) return
+
       const sgPaths = sketchGroup.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -1302,6 +1314,7 @@ export class SceneEntities {
     shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
     shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
 
     const length = Math.sqrt(
       Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
@@ -1345,6 +1358,29 @@ export class SceneEntities {
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
       extraSegmentGroup.visible = isHandlesVisible
+    }
+
+    if (labelGroup) {
+      const labelWrapper = labelGroup.getObjectByName(
+        SEGMENT_LENGTH_LABEL_TEXT
+      ) as CSS2DObject
+      const labelWrapperElem = labelWrapper.element as HTMLDivElement
+      const label = labelWrapperElem.children[0] as HTMLParagraphElement
+      label.innerText = `${roundOff(length)}${sceneInfra._baseUnit}`
+      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+      const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
+        .normalize()
+        .rotateAround(new Vector2(0, 0), Math.PI / 2)
+        .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
+      label.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
+      label.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
+      labelWrapper.position.set(
+        (from[0] + to[0]) / 2 + offsetFromMidpoint.x,
+        (from[1] + to[1]) / 2 + offsetFromMidpoint.y,
+        0
+      )
+
+      labelGroup.visible = isHandlesVisible
     }
 
     const straightSegmentBody = group.children.find(
@@ -1397,6 +1433,14 @@ export class SceneEntities {
     )
     let shouldResolve = false
     if (sketchSegments) {
+      // We have to manually remove the CSS2DObjects
+      // as they don't get removed when the group is removed
+      sketchSegments.traverse((object) => {
+        if (object instanceof CSS2DObject) {
+          object.element.remove()
+          object.remove()
+        }
+      })
       this.scene.remove(sketchSegments)
       shouldResolve = true
     } else {

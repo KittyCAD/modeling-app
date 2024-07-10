@@ -9,8 +9,14 @@ export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
 
+// Accessible for tests mostly
+// @ts-ignore
+window.tearDown = engineCommandManager.tearDown
+
 // This needs to be after codeManager is created.
 export const kclManager = new KclManager(engineCommandManager)
+kclManager.isFirstRender = true
+
 engineCommandManager.getAstCb = () => kclManager.ast
 
 export const sceneInfra = new SceneInfra(engineCommandManager)

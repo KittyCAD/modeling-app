@@ -65,7 +65,10 @@ export function useSetupEngineManager(
         executeCode: () => {
           // We only want to execute the code here that we already have set.
           // Nothing else.
-          return kclManager.executeCode(true, true)
+          kclManager.isFirstRender = true
+          return kclManager.executeCode(true, true).then(() => {
+            kclManager.isFirstRender = false
+          })
         },
         token,
         settings,

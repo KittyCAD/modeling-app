@@ -40,7 +40,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
-import { AppStateProvider, useAppState } from 'AppState'
+import { AppStateProvider } from 'AppState'
 
 const router = createBrowserRouter([
   {
@@ -180,9 +180,8 @@ export const Router = () => {
 function CoreDump() {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
-  const { htmlRef } = useAppState()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, htmlRef, token),
+    () => new CoreDumpManager(engineCommandManager, token),
     []
   )
   useHotkeyWrapper(['meta + shift + .'], () => {
