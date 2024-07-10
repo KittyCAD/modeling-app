@@ -4563,6 +4563,53 @@ test.describe('Sketch tests', () => {
       await doSnapAtDifferentScales(page, [0, 10000, 10000])
     })
   })
+  test('exiting a close extrude, has the extrude button enabled ready to go', async ({
+    page,
+  }) => {
+    // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // click "line([1.32, 0.38], %)"
+    await page.getByText(`line([1.32, 0.38], %)`).click()
+    await page.waitForTimeout(100)
+    // click edit sketch
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(600) // wait for animation
+
+    // exit sketch
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    // expect extrude button to be enabled
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
+
+    // click extrude
+    await page.getByRole('button', { name: 'Extrude' }).click()
+
+    // sketch selection should already have been made. "Selection 1 face" only show up when the selection has been made already
+    // otherwise the cmdbar would be waiting for a selection.
+    await expect(
+      page.getByRole('button', { name: 'Selection 1 face' })
+    ).toBeVisible()
+  })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
