@@ -363,8 +363,8 @@ export function isSelectionLastLine(
 export function isRangeInbetweenCharacters(selectionRanges: Selections) {
   return (
     selectionRanges.codeBasedSelections.length === 1 &&
-    selectionRanges.codeBasedSelections[0].range[0] ===
-      selectionRanges.codeBasedSelections[0].range[1]
+    selectionRanges.codeBasedSelections[0].range[0] === 0 &&
+    selectionRanges.codeBasedSelections[0].range[1] === 0
   )
 }
 
