@@ -518,9 +518,9 @@ export class CameraControls {
     direction.normalize()
     this.camera.position.copy(this.target).addScaledVector(direction, distance)
   }
-  usePerspectiveCamera = async () => {
+  usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
-    if (this.syncDirection === 'clientToEngine') {
+    if (forceSend || this.syncDirection === 'clientToEngine') {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
