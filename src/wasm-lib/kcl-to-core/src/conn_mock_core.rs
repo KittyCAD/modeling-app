@@ -8,6 +8,8 @@ use kcl_lib::{
 };
 use kittycad::types::{ModelingCmd, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse, PathSegment::*};
 
+const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
+
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
@@ -17,6 +19,10 @@ pub struct EngineConnection {
 
 impl EngineConnection {
     pub async fn new(result: Arc<Mutex<String>>) -> Result<EngineConnection> {
+        if let Ok(mut code) = result.lock() {
+            code.push_str(&CPP_PREFIX);
+        }
+
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(HashMap::new())),
@@ -120,11 +126,18 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                                             path_{}->lineTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor, {{ {} }});
                                         "#, id_to_cpp(&path), end.x, end.y, relative).into()
                                     },
+                                    kittycad::types::PathSegment::Arc { center, radius, start, end, relative } => {                                        
+                                        let start = start.value;
+                                        let end = end.value;
+
+                                        format!(r#"
+                                            path_{}->addArc(glm::dvec2 {{ {}, {} }} * scaleFactor, {radius} * scaleFactor, {start}, {end}, {{ {} }});
+                                        "#, id_to_cpp(&path), center.x, center.y, relative).into()
+                                    },
                                     _ => {
-                                        "".into()
+                                        format!("//{:?}", request.cmd).into()
                                     }
                                 }
-
                             },
                             ModelingCmd::ClosePath { path_id } => {
                                 format!(r#"
@@ -136,8 +149,19 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                                     sketch_{}->extrudeToSolid3D({} * scaleFactor, true);
                                 "#, id_to_cpp(&target), distance).into()
                             },
+                            ModelingCmd::Solid3DGetExtrusionFaceInfo { object_id, edge_id } => {
+                                format!(r#"
+                                    //face info get {} {}
+                                "#, object_id, edge_id).into()
+                            },
+                            ModelingCmd::EntityCircularPattern { .. } => {
+                                format!(r#"
+                                    //pattern!!
+                                "#).into()
+                            },
                             _ => {
-                                "".into()
+                                //helps us follow along with the currently unhandled engine commands
+                                format!("//{:?}", request.cmd).into()
                             },
                         };
 
