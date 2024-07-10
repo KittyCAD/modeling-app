@@ -126,15 +126,16 @@ async function getUser(context: UserContext) {
   if (!token && isTauri()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${context.token}`
 
-  if (SKIP_AUTH)
+  if (SKIP_AUTH) {
     if (localStorage.getItem('FORCE_NO_IMAGE')) {
       // Only affects LOCAL_USER for tests.
       LOCAL_USER.image = ''
     }
 
-  return {
-    user: LOCAL_USER,
-    token,
+    return {
+      user: LOCAL_USER,
+      token,
+    }
   }
 
   const userPromise = !isTauri()
