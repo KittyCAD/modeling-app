@@ -1338,9 +1338,10 @@ impl Default for PipeInfo {
 }
 
 /// The type of ExecutorContext being used
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Default, Clone)]
 pub enum ContextType {
     /// Live engine connection
+    #[default]
     Live,
 
     /// Completely mocked connection
