@@ -3,6 +3,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { type IndexLoaderData } from 'lib/types'
 import { useLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { Command } from 'lib/commandTypes'
 
 const KclContext = createContext({
   code: codeManager?.code || '',
@@ -35,6 +37,7 @@ export function KclContextProvider({
   const [errors, setErrors] = useState<KCLError[]>([])
   const [logs, setLogs] = useState<string[]>([])
   const [wasmInitFailed, setWasmInitFailed] = useState(false)
+  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     codeManager.registerCallBacks({
@@ -47,6 +50,29 @@ export function KclContextProvider({
       setKclErrors: setErrors,
       setIsExecuting,
       setWasmInitFailed,
+    })
+  }, [])
+
+  // Add format code to command palette.
+  useEffect(() => {
+    const commands: Command[] = [
+      {
+        name: 'format-code',
+        displayName: 'Format Code',
+        description: 'Nicely formats the KCL code in the editor.',
+        needsReview: false,
+        // TODO: Seems like this is required, but not actually needed.
+        ownerMachine: '',
+        onSubmit: (data) => {
+          kclManager.format()
+        },
+      },
+    ]
+    commandBarSend({
+      type: 'Add commands',
+      data: {
+        commands,
+      },
     })
   }, [])
 
