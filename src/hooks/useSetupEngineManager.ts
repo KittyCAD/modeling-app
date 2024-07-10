@@ -1,4 +1,4 @@
-import { useLayoutEffect, useEffect, useRef } from 'react'
+import { useLayoutEffect, useEffect, useRef, useState } from 'react'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
@@ -30,9 +30,6 @@ export function useSetupEngineManager(
   const { setAppState } = useAppState()
   const { setMediaStream } = useAppStream()
 
-  const streamWidth = streamRef?.current?.offsetWidth
-  const streamHeight = streamRef?.current?.offsetHeight
-
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
   if (settings.pool) {
@@ -45,51 +42,56 @@ export function useSetupEngineManager(
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
     const { width: quadWidth, height: quadHeight } = getDimensions(
-      streamWidth,
-      streamHeight
+      streamRef?.current?.offsetWidth ?? 0,
+      streamRef?.current?.offsetHeight ?? 0
     )
-    if (
-      !hasSetNonZeroDimensions.current &&
-      quadHeight &&
-      quadWidth &&
-      settings.modelingSend
-    ) {
-      engineCommandManager.start({
-        setMediaStream: setMediaStream,
-        setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
-        width: quadWidth,
-        height: quadHeight,
-        executeCode: () => {
-          // We only want to execute the code here that we already have set.
-          // Nothing else.
-          kclManager.isFirstRender = true
-          return kclManager.executeCode(true, true).then(() => {
-            kclManager.isFirstRender = false
-          })
+    engineCommandManager.start({
+      setMediaStream: (mediaStream) =>
+        settings.modelingSend({
+          type: 'Set context',
+          data: { mediaStream },
+        }),
+      setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
+      width: quadWidth,
+      height: quadHeight,
+      executeCode: () => {
+        // We only want to execute the code here that we already have set.
+        // Nothing else.
+        kclManager.isFirstRender = true
+        return kclManager.executeCode(true, true).then(() => {
+          kclManager.isFirstRender = false
+        })
+      },
+      token,
+      settings,
+      makeDefaultPlanes: () => {
+        return makeDefaultPlanes(kclManager.engineCommandManager)
+      },
+      modifyGrid: (hidden: boolean) => {
+        return modifyGrid(kclManager.engineCommandManager, hidden)
+      },
+    })
+    settings.modelingSend({
+      type: 'Set context',
+      data: {
+        streamDimensions: {
+          streamWidth: quadWidth,
+          streamHeight: quadHeight,
         },
-        token,
-        settings,
-        makeDefaultPlanes: () => {
-          return makeDefaultPlanes(kclManager.engineCommandManager)
-        },
-        modifyGrid: (hidden: boolean) => {
-          return modifyGrid(kclManager.engineCommandManager, hidden)
-        },
-      })
-      settings.modelingSend({
-        type: 'Set context',
-        data: {
-          streamDimensions: {
-            streamWidth: quadWidth,
-            streamHeight: quadHeight,
-          },
-        },
-      })
-      hasSetNonZeroDimensions.current = true
-    }
+      },
+    })
+    hasSetNonZeroDimensions.current = true
   }
 
-  useLayoutEffect(startEngineInstance, [
+  useLayoutEffect(() => {
+    const { width: quadWidth, height: quadHeight } = getDimensions(
+      streamRef?.current?.offsetWidth ?? 0,
+      streamRef?.current?.offsetHeight ?? 0
+    )
+    if (!hasSetNonZeroDimensions.current && quadHeight && quadWidth) {
+      startEngineInstance()
+    }
+  }, [
     streamRef?.current?.offsetWidth,
     streamRef?.current?.offsetHeight,
     settings.modelingSend,
@@ -98,8 +100,8 @@ export function useSetupEngineManager(
   useEffect(() => {
     const handleResize = deferExecution(() => {
       const { width, height } = getDimensions(
-        streamRef?.current?.offsetWidth,
-        streamRef?.current?.offsetHeight
+        streamRef?.current?.offsetWidth ?? 0,
+        streamRef?.current?.offsetHeight ?? 0
       )
       if (
         settings.modelingContext.store.streamDimensions.streamWidth !== width ||
@@ -125,6 +127,32 @@ export function useSetupEngineManager(
       startEngineInstance()
     }
 
+    const onVisibilityChange = () => {
+      if (window.document.visibilityState === 'visible') {
+        if (
+          !engineCommandManager.engineConnection?.isReady() &&
+          !engineCommandManager.engineConnection?.isConnecting()
+        ) {
+          startEngineInstance()
+        }
+      }
+    }
+    window.document.addEventListener('visibilitychange', onVisibilityChange)
+
+    const onAnyInput = () => {
+      if (
+        !engineCommandManager.engineConnection?.isReady() &&
+        !engineCommandManager.engineConnection?.isConnecting()
+      ) {
+        startEngineInstance()
+      }
+    }
+    window.document.addEventListener('keydown', onAnyInput)
+    window.document.addEventListener('mousemove', onAnyInput)
+    window.document.addEventListener('mousedown', onAnyInput)
+    window.document.addEventListener('scroll', onAnyInput)
+    window.document.addEventListener('touchstart', onAnyInput)
+
     const onOffline = () => {
       engineCommandManager.tearDown()
     }
@@ -133,11 +161,22 @@ export function useSetupEngineManager(
     window.addEventListener('offline', onOffline)
     window.addEventListener('resize', handleResize)
     return () => {
+      window.document.removeEventListener(
+        'visibilitychange',
+        onVisibilityChange
+      )
+      window.document.removeEventListener('keydown', onAnyInput)
+      window.document.removeEventListener('mousemove', onAnyInput)
+      window.document.removeEventListener('mousedown', onAnyInput)
+      window.document.removeEventListener('scroll', onAnyInput)
+      window.document.removeEventListener('touchstart', onAnyInput)
       window.removeEventListener('online', onOnline)
       window.removeEventListener('offline', onOffline)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+
+    // Engine relies on many settings so we should rebind events when it changes
+  }, [...Object.values(settings)])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {

@@ -62,11 +62,15 @@ export const Stream = () => {
       sceneInfra.modelingSend({ type: 'Cancel' })
       // Give video time to pause
       window.requestAnimationFrame(() => {
-        engineCommandManager.engineConnection?.tearDown({ freeze: true })
+        engineCommandManager.tearDown()
       })
     }
 
     // Teardown everything if we go hidden or reconnect
+    // The restart logic is in useSetupEngineManager.
+    // This is to keep things tidy. It's much more reliable to completely
+    // kill the engineCommandManager stuff and recreate it all
+    // on reconnect so we have a fresh state.
     if (globalThis?.window?.document) {
       globalThis.window.document.onvisibilitychange = () => {
         if (globalThis.window.document.visibilityState === 'hidden') {
@@ -74,7 +78,6 @@ export const Stream = () => {
           timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
         } else if (!engineCommandManager.engineConnection?.isReady()) {
           clearTimeout(timeoutIdIdleA)
-          engineCommandManager.engineConnection?.connect(true)
         }
       }
     }
@@ -82,9 +85,6 @@ export const Stream = () => {
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
     const onAnyInput = () => {
-      if (!engineCommandManager.engineConnection?.isReady()) {
-        engineCommandManager.engineConnection?.connect(true)
-      }
       // Clear both timers
       clearTimeout(timeoutIdIdleA)
       clearTimeout(timeoutIdIdleB)
