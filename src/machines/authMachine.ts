@@ -127,8 +127,8 @@ async function getUser(context: UserContext) {
   if (token) headers['Authorization'] = `Bearer ${context.token}`
 
   if (SKIP_AUTH) {
+    // For local tests
     if (localStorage.getItem('FORCE_NO_IMAGE')) {
-      // Only affects LOCAL_USER for tests.
       LOCAL_USER.image = ''
     }
 
@@ -149,6 +149,11 @@ async function getUser(context: UserContext) {
     : getUserTauri(context.token, VITE_KC_API_BASE_URL)
 
   const user = await userPromise
+
+  // Necessary here because we use Kurt's API key in CI
+  if (localStorage.getItem('FORCE_NO_IMAGE')) {
+    user.image = ''
+  }
 
   if ('error_code' in user) return Promise.reject(new Error(user.message))
 
