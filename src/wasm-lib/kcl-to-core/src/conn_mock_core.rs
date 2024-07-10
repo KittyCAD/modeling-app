@@ -43,6 +43,25 @@ fn generate_repl_uuids(count: usize) -> Vec<uuid::Uuid> {
     repl_ids
 }
 
+fn codegen_cpp_repl_uuid_setters(entity_ids: &Vec<uuid::Uuid>) -> String {
+    let mut codegen = String::new();
+
+    for i in 0..entity_ids.len() {
+        let id = entity_ids[i];
+        let cpp_id = id_to_cpp(&entity_ids[i]);
+        let iter = format!(r#"
+            //change object id -> {id}
+            auto repl_{cpp_id} = scene->getSceneObject(reps[{i}]);
+            scene->removeSceneObject(repl_{cpp_id}->getUUID(), false);
+            repl_{cpp_id}->setUUID(Utils::UUID("{id}"));
+            scene->addSceneObject(repl_{cpp_id});
+        "#);
+        codegen.push_str(&iter);
+    }
+
+    codegen
+}
+
 #[async_trait::async_trait]
 impl kcl_lib::engine::EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
@@ -83,6 +102,9 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                         let cpp_id = id_to_cpp(&request.cmd_id);
 
                         let new_code: String = match &request.cmd {
+                            ModelingCmd::ObjectVisible { hidden, object_id } => {
+                                format!(r#"scene->getSceneObject(Utils::UUID("{object_id}"))->setHidden({hidden});"#).into()
+                            },
                             ModelingCmd::EnableSketchMode { entity_id, animated: _, ortho: _, adjust_camera: _, planar_normal } => {
                                 if let Some(normal) = planar_normal {
                                     format!(r#"
@@ -151,12 +173,18 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                             ModelingCmd::ClosePath { path_id } => {
                                 format!(r#"
                                     path_{}->close();
-                                "#, id_to_cpp(&path_id)).into()
+                                    sketch_{}->toSolid2D();
+                                "#, id_to_cpp(&path_id), id_to_cpp(&path_id)).into()
                             },
                             ModelingCmd::Extrude { cap: _, distance, target } => {
                                 format!(r#"
                                     sketch_{}->extrudeToSolid3D({} * scaleFactor, true);
                                 "#, id_to_cpp(&target), distance).into()
+                            },
+                            ModelingCmd::Solid2DAddHole { hole_id, object_id } => {
+                                format!(r#"scene->getSceneObject(Utils::UUID("{object_id}"))->get<Model::Brep::Solid2D>()->addHole(
+                                    make_shared<Model::Brep::Path>(*scene->getSceneObject(Utils::UUID("{hole_id}"))->get<Model::Brep::Solid2D>()->getPath())
+                                );"#).into()
                             },
                             ModelingCmd::Solid3DGetExtrusionFaceInfo { object_id, edge_id } => {
                                 format!(r#"
@@ -176,10 +204,8 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                                     auto reps = scene->entityCircularPattern(Utils::UUID("{}"), {num_repetitions}, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, {arc_degrees}, {rotate_duplicates});
                                 "#, entity_id, axis.x, axis.y, axis.z, center.x, center.y, center.z).into();
 
-                                for i in 0..entity_ids.len() {
-                                    let iter = format!("scene->getSceneObject(reps[{}])->setUUID(Utils::UUID(\"{}\"));\n", i, entity_ids[i]);
-                                    base_code.push_str(&iter);
-                                }
+                                let repl_uuid_fix_code = codegen_cpp_repl_uuid_setters(&entity_ids);
+                                base_code.push_str(&repl_uuid_fix_code);
 
                                 base_code
                             },
