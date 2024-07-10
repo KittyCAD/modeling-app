@@ -2458,6 +2458,44 @@ test.describe('Onboarding tests', () => {
     await expect(onboardingOverlayLocator).toBeVisible()
     await expect(onboardingOverlayLocator).toContainText('the menu button')
   })
+
+  test("Avatar text doesn't mention avatar when no avatar", async ({
+    page,
+  }) => {
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+        localStorage.setItem('FORCE_NO_IMAGE', 'FORCE_NO_IMAGE')
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+    // Test that the text in this step is correct
+    const avatarLocator = await page
+      .getByTestId('user-sidebar-toggle')
+      .locator('img')
+    const onboardingOverlayLocator = await page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
+
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+  })
 })
 
 test.describe('Testing selections', () => {
