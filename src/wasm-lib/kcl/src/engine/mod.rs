@@ -31,17 +31,18 @@ lazy_static::lazy_static! {
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
-    fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
+    fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>;
 
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(
         &self,
-    ) -> Arc<Mutex<HashMap<uuid::Uuid, (kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
+    ) -> Arc<Mutex<HashMap<uuid::Uuid, (kittycad::types::WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>;
 
     /// Get the default planes.
     async fn default_planes(
         &self,
         _source_range: crate::executor::SourceRange,
+        _path_to_node: crate::executor::PathToNode,
     ) -> Result<DefaultPlanes, crate::errors::KclError>;
 
     /// Helpers to be called after clearing a scene.
@@ -49,6 +50,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn clear_scene_post_hook(
         &self,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
     ) -> Result<(), crate::errors::KclError>;
 
     /// Send a modeling command and wait for the response message.
@@ -56,24 +58,26 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
         cmd: kittycad::types::WebSocketRequest,
-        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, (crate::executor::SourceRange, crate::executor::PathToNode)>,
     ) -> Result<kittycad::types::WebSocketResponse, crate::errors::KclError>;
 
-    async fn clear_scene(&self, source_range: crate::executor::SourceRange) -> Result<(), crate::errors::KclError> {
+    async fn clear_scene(&self, source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
+            path_to_node.clone(),
             &kittycad::types::ModelingCmd::SceneClearAll {},
         )
         .await?;
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
-        self.flush_batch(false, source_range).await?;
+        self.flush_batch(false, source_range, path_to_node.clone()).await?;
 
         // Do the after clear scene hook.
-        self.clear_scene_post_hook(source_range).await?;
+        self.clear_scene_post_hook(source_range, path_to_node).await?;
 
         Ok(())
     }
@@ -83,6 +87,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
         cmd: &kittycad::types::ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         let req = WebSocketRequest::ModelingCmdReq {
@@ -91,7 +96,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         };
 
         // Add cmd to the batch.
-        self.batch().lock().unwrap().push((req, source_range));
+        self.batch().lock().unwrap().push((req, (source_range, path_to_node)));
 
         Ok(())
     }
@@ -103,6 +108,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
         cmd: &kittycad::types::ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         let req = WebSocketRequest::ModelingCmdReq {
@@ -111,7 +117,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         };
 
         // Add cmd to the batch end.
-        self.batch_end().lock().unwrap().insert(id, (req, source_range));
+        self.batch_end().lock().unwrap().insert(id, (req, (source_range, path_to_node)));
         Ok(())
     }
 
@@ -122,12 +128,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, &cmd).await?;
+        self.batch_modeling_cmd(id, source_range, path_to_node.clone(), &cmd).await?;
 
         // Flush the batch queue.
-        self.flush_batch(false, source_range).await
+        self.flush_batch(false, source_range, path_to_node).await
     }
 
     /// Force flush the batch queue.
@@ -137,6 +144,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // We only do this at the very end of the file.
         batch_end: bool,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
             let mut requests = self.batch().lock().unwrap().clone();
@@ -183,12 +191,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for (req, range) in all_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
-                    id_to_source_range.insert(*cmd_id, *range);
+                    id_to_source_range.insert(*cmd_id, range.clone());
                 }
                 _ => {
                     return Err(KclError::Engine(KclErrorDetails {
                         message: format!("The request is not a modeling command: {:?}", req),
-                        source_ranges: vec![*range],
+                        source_ranges: vec![range.clone().0],
                     }));
                 }
             }
@@ -210,7 +218,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // Get the last command ID.
                 let last_id = requests.last().unwrap().cmd_id;
                 let ws_resp = self
-                    .inner_send_modeling_cmd(batch_id, source_range, final_req, id_to_source_range.clone())
+                    .inner_send_modeling_cmd(batch_id, source_range, path_to_node, final_req, id_to_source_range.clone())
                     .await?;
                 let response = self.parse_websocket_response(ws_resp, source_range)?;
 
@@ -240,9 +248,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     })
                 })?;
                 let ws_resp = self
-                    .inner_send_modeling_cmd(cmd_id, source_range, final_req, id_to_source_range)
+                    .inner_send_modeling_cmd(cmd_id, source_range.0, path_to_node, final_req, id_to_source_range)
                     .await?;
-                self.parse_websocket_response(ws_resp, source_range)
+                self.parse_websocket_response(ws_resp, source_range.0)
             }
             _ => Err(KclError::Engine(KclErrorDetails {
                 message: format!("The final request is not a modeling command: {:?}", final_req),
@@ -266,6 +274,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             plane_id,
             source_range,
+            crate::executor::PathToNode::default(),
             &ModelingCmd::MakePlane {
                 clobber: false,
                 origin: default_origin,
@@ -282,6 +291,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             self.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 source_range,
+                crate::executor::PathToNode::default(),
                 &ModelingCmd::PlaneSetColor { color, plane_id },
             )
             .await?;
@@ -290,7 +300,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(plane_id)
     }
 
-    async fn new_default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn new_default_planes(&self, source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<DefaultPlanes, KclError> {
         let plane_settings: HashMap<PlaneName, (Point3d, Point3d, Option<Color>)> = HashMap::from([
             (
                 PlaneName::Xy,
@@ -378,7 +388,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Flush the batch queue, so these planes are created right away.
-        self.flush_batch(false, source_range).await?;
+        self.flush_batch(false, source_range, path_to_node).await?;
 
         Ok(DefaultPlanes {
             xy: planes[&PlaneName::Xy],
@@ -416,7 +426,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // The last response we are looking for.
         id: uuid::Uuid,
         // The mapping of source ranges to command IDs.
-        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, (crate::executor::SourceRange, crate::executor::PathToNode)>,
         // The response from the engine.
         responses: HashMap<String, kittycad::types::BatchResponse>,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
@@ -425,7 +435,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             let cmd_id = uuid::Uuid::parse_str(cmd_id).map_err(|e| {
                 KclError::Engine(KclErrorDetails {
                     message: format!("Failed to parse command ID: {:?}", e),
-                    source_ranges: vec![id_to_source_range[&id]],
+                    source_ranges: vec![id_to_source_range[&id].0],
                 })
             })?;
 
@@ -439,7 +449,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 })?;
                 return Err(KclError::Engine(KclErrorDetails {
                     message: format!("Modeling command failed: {:?}", errors),
-                    source_ranges: vec![source_range],
+                    source_ranges: vec![source_range.0],
                 }));
             }
             if let Some(response) = resp.response.as_ref() {
@@ -468,6 +478,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
+            Default::default(),
             &ModelingCmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
@@ -479,6 +490,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             Default::default(),
+            Default::default(),
             &ModelingCmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_SCALE_TEXT_OBJECT_ID,
@@ -486,7 +498,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        self.flush_batch(false, Default::default()).await?;
+        self.flush_batch(false, Default::default(), Default::default()).await?;
 
         Ok(())
     }

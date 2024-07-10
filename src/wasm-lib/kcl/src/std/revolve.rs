@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup, TagIdentifier, UserVal},
+    executor::{ExtrudeGroup, MemoryItem, SketchGroup, TagIdentifier, UserVal, Metadata},
     std::{
         extrude::do_post_extrude,
         fillet::{EdgeReference, DEFAULT_TOLERANCE},
@@ -300,7 +300,7 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
                 source_ranges: vec![args.source_range],
             })
         })?,
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone()))),],
     }))
 }
 

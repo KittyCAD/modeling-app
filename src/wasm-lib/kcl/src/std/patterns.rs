@@ -10,7 +10,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryItem, Point3d, ProgramReturn, SketchGroup,
-        SketchGroupSet, SourceRange, UserVal,
+        SketchGroupSet, SourceRange, UserVal, Metadata,
     },
     function_param::FunctionParam,
     std::{types::Uint, Args},
@@ -85,7 +85,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
-            meta: vec![args.source_range.into()],
+            meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone())))],
             ctx: args.ctx.clone(),
             memory: args.current_program_memory.clone(),
         },
@@ -204,7 +204,7 @@ async fn make_transform<'a>(
     // Call the transform fn for this repetition.
     let repetition_num = MemoryItem::UserVal(UserVal {
         value: serde_json::Value::Number(i.into()),
-        meta: vec![source_range.into()],
+        meta: vec![Metadata::from((source_range, None))],
     });
     let transform_fn_args = vec![repetition_num];
     let transform_fn_return = transform_function.call(transform_fn_args).await?;

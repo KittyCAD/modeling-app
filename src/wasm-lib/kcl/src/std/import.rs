@@ -9,7 +9,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ImportedGeometry, MemoryItem},
+    executor::{ImportedGeometry, MemoryItem, Metadata},
     fs::FileSystem,
     std::Args,
 };
@@ -272,7 +272,7 @@ async fn inner_import(
         return Ok(ImportedGeometry {
             id: uuid::Uuid::new_v4(),
             value: import_files.iter().map(|f| f.path.to_string()).collect(),
-            meta: vec![args.source_range.into()],
+            meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone())))],
         });
     }
 
@@ -300,7 +300,7 @@ async fn inner_import(
     Ok(ImportedGeometry {
         id: imported_files.object_id,
         value: import_files.iter().map(|f| f.path.to_string()).collect(),
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone())))],
     })
 }
 

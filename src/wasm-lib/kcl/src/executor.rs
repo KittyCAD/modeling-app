@@ -26,6 +26,9 @@ pub struct ProgramMemory {
     pub root: HashMap<String, MemoryItem>,
     #[serde(rename = "return")]
     pub return_: Option<ProgramReturn>,
+    #[serde(skip)]
+    pub path_to_node: PathToNode,
+    // pub path_to_node: Vec<(String, String)>,
 }
 
 impl ProgramMemory {
@@ -62,6 +65,8 @@ impl ProgramMemory {
                 ),
             ]),
             return_: None,
+            // path_to_node: Vec::new(),
+            path_to_node: PathToNode::new(),
         }
     }
 
@@ -1004,6 +1009,24 @@ pub enum BodyType {
 #[ts(export)]
 pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[ts(export)]
+pub struct PathToNode(#[ts(type = "Array<[string, string]>")] pub Vec<(String, String)>);
+
+impl PathToNode {
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn push(&mut self, path: (String, String)) {
+        self.0.push(path);
+    }
+    pub fn pop(&mut self) -> Option<(String, String)> {
+        self.0.pop()
+    }
+}
+
 impl SourceRange {
     /// Create a new source range.
     pub fn new(start: usize, end: usize) -> Self {
@@ -1132,11 +1155,16 @@ impl From<Point3d> for kittycad::types::Point3D {
 pub struct Metadata {
     /// The source range.
     pub source_range: SourceRange,
+
+    // pathToNode
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_to_node: Option<PathToNode>,
 }
 
-impl From<SourceRange> for Metadata {
-    fn from(source_range: SourceRange) -> Self {
-        Self { source_range }
+// Implement From trait for Metadata from a tuple of SourceRange and PathToNode
+impl From<(SourceRange, Option<PathToNode>)> for Metadata {
+    fn from((source_range, path_to_node): (SourceRange, Option<PathToNode>)) -> Self {
+        Self { source_range, path_to_node }
     }
 }
 
@@ -1349,6 +1377,8 @@ pub struct ExecutorContext {
     /// Mock mode is only for the modeling app when they just want to mock engine calls and not
     /// actually make them.
     pub is_mock: bool,
+    // an array of tuples (string| number, string)[]
+    // pub path_to_node: Vec<(String, String)>,
 }
 
 /// The executor settings.
@@ -1438,6 +1468,7 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
+                PathToNode::default(),
                 &kittycad::types::ModelingCmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
                 },
@@ -1450,6 +1481,7 @@ impl ExecutorContext {
             stdlib: Arc::new(StdLib::new()),
             settings,
             is_mock: false,
+            // path_to_node: Vec::new(),
         })
     }
 
@@ -1499,6 +1531,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
+                PathToNode::default(),
                 kittycad::types::ModelingCmd::SceneClearAll {},
             )
             .await?;
@@ -1518,6 +1551,7 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
+                PathToNode::default(),
                 &kittycad::types::ModelingCmd::SetSceneUnits {
                     unit: self.settings.units.into(),
                 },
@@ -1541,9 +1575,11 @@ impl ExecutorContext {
         body_type: BodyType,
     ) -> Result<ProgramMemory, KclError> {
         let pipe_info = PipeInfo::default();
-
+        memory.path_to_node.push(("body".to_string(), "".to_string()));
+        
         // Iterate over the body of the program.
-        for statement in &program.body {
+        for (index, statement) in program.body.iter().enumerate() {
+            memory.path_to_node.push((index.to_string(), "index".to_string()));
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
@@ -1554,6 +1590,7 @@ impl ExecutorContext {
                         for arg in &call_expr.arguments {
                             let metadata = Metadata {
                                 source_range: SourceRange([arg.start(), arg.end()]),
+                                path_to_node: Some(memory.path_to_node.clone()),
                             };
                             let mem_item = self
                                 .arg_into_mem_item(arg, memory, &pipe_info, &metadata, StatementKind::Expression)
@@ -1587,10 +1624,13 @@ impl ExecutorContext {
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    for declaration in &variable_declaration.declarations {
+                    // let mut _memory = memory.clone();
+                    memory.path_to_node.push(("declarations".to_string(), "VariableDeclaration".to_string()));
+                    for (index, declaration) in variable_declaration.declarations.iter().enumerate() {
+                        memory.path_to_node.push((index.to_string(), "index".to_string()));
                         let var_name = declaration.id.name.to_string();
                         let source_range: SourceRange = declaration.init.clone().into();
-                        let metadata = Metadata { source_range };
+                        let metadata = Metadata { source_range, path_to_node: Some(memory.path_to_node.clone())};
 
                         let memory_item = self
                             .arg_into_mem_item(
@@ -1602,7 +1642,9 @@ impl ExecutorContext {
                             )
                             .await?;
                         memory.add(&var_name, memory_item, source_range)?;
+                        // _memory.path_to_node.pop();
                     }
+                    // _memory.path_to_node.pop();
                 }
                 BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                     Value::BinaryExpression(bin_expr) => {
@@ -1650,6 +1692,7 @@ impl ExecutorContext {
                     }
                 },
             }
+            // memory.path_to_node.pop();
         }
 
         if BodyType::Root == body_type {
@@ -1660,6 +1703,7 @@ impl ExecutorContext {
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
                     SourceRange([program.end, program.end]),
+                    memory.path_to_node.clone(),
                 )
                 .await?;
         }
@@ -1753,6 +1797,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
+                crate::executor::PathToNode::default(),
                 kittycad::types::ModelingCmd::ZoomToFit {
                     object_ids: Default::default(),
                     padding: 0.1,
@@ -1766,6 +1811,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
+                crate::executor::PathToNode::default(),
                 kittycad::types::ModelingCmd::TakeSnapshot {
                     format: kittycad::types::ImageFormat::Png,
                 },
@@ -1861,6 +1907,7 @@ mod tests {
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
             is_mock: true,
+            // path_to_node: Vec::new(),
         };
         let memory = ctx.run(&program, None).await?;
 

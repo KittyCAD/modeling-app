@@ -41,7 +41,7 @@ use tower_lsp::{
 
 use crate::{
     ast::types::{Value, VariableKind},
-    executor::SourceRange,
+    executor::{PathToNode, SourceRange},
     lint::checks,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
@@ -589,7 +589,7 @@ impl Backend {
         }
 
         // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx.engine.clear_scene(SourceRange::default()).await?;
+        executor_ctx.engine.clear_scene(SourceRange::default(), PathToNode::default()).await?;
 
         let memory = match executor_ctx.run(ast, None).await {
             Ok(memory) => memory,

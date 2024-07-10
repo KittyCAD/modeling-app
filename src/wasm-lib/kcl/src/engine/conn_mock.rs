@@ -13,8 +13,8 @@ use crate::{errors::KclError, executor::DefaultPlanes};
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>,
+    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>,
 }
 
 impl EngineConnection {
@@ -28,19 +28,19 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>> {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, _source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn default_planes(&self, _source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<DefaultPlanes, KclError> {
         Ok(DefaultPlanes::default())
     }
 
-    async fn clear_scene_post_hook(&self, _source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(&self, _source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<(), KclError> {
         Ok(())
     }
 
@@ -48,8 +48,9 @@ impl crate::engine::EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
+        _path_to_node: crate::executor::PathToNode,
         cmd: kittycad::types::WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, (crate::executor::SourceRange, crate::executor::PathToNode)>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq {

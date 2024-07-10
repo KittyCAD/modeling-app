@@ -33,8 +33,8 @@ pub struct EngineConnection {
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>,
+    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -248,15 +248,15 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>> {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn default_planes(&self, source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<DefaultPlanes, KclError> {
         {
             let opt = self.default_planes.read().await.as_ref().cloned();
             if let Some(planes) = opt {
@@ -264,15 +264,15 @@ impl EngineManager for EngineConnection {
             }
         } // drop the read lock
 
-        let new_planes = self.new_default_planes(source_range).await?;
+        let new_planes = self.new_default_planes(source_range, path_to_node).await?;
         *self.default_planes.write().await = Some(new_planes.clone());
 
         Ok(new_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
-        let new_planes = self.new_default_planes(source_range).await?;
+        let new_planes = self.new_default_planes(source_range, path_to_node).await?;
         *self.default_planes.write().await = Some(new_planes);
 
         Ok(())
@@ -282,8 +282,9 @@ impl EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
+        path_to_node: crate::executor::PathToNode,
         cmd: kittycad::types::WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, (crate::executor::SourceRange, crate::executor::PathToNode)>,
     ) -> Result<WebSocketResponse, KclError> {
         let (tx, rx) = oneshot::channel();
 

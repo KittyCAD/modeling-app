@@ -11,6 +11,7 @@ export function AstExplorer() {
     kclManager.ast,
     context.selectionRanges.codeBasedSelections?.[0]?.range
   )
+  console.log('demo', pathToNode)
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
   const _node = getNodeFromPath(kclManager.ast, pathToNode)

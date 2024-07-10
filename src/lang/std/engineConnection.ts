@@ -1986,9 +1986,21 @@ export class EngineCommandManager extends EventTarget {
   async sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
+    pathToNodeStr: string,
     commandStr: string,
     idToRangeStr: string
   ): Promise<string | void> {
+    // console.log('yoo', id,
+    // rangeStr,
+    // pathToNodeStr,
+    // commandStr,
+    // idToRangeStr)
+    console.log(
+      'pathToNodeStr',
+      pathToNodeStr,
+      JSON.parse(commandStr),
+      JSON.parse(idToRangeStr)
+    )
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }

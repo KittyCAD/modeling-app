@@ -9,7 +9,7 @@ use crate::{
     },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{Point2d, SourceRange},
+    executor::{PathToNode, Point2d, SourceRange},
 };
 
 #[derive(Debug)]
@@ -77,6 +77,7 @@ pub async fn modify_ast_for_sketch(
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
+            PathToNode::default(),
             ModelingCmd::PathGetInfo { path_id: sketch_id },
         )
         .await?;
@@ -101,6 +102,7 @@ pub async fn modify_ast_for_sketch(
             let h = engine.send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
+                PathToNode::default(),
                 ModelingCmd::CurveGetControlPoints { curve_id: *command_id },
             );
 

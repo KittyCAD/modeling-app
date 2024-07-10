@@ -24,6 +24,7 @@ extern "C" {
         this: &EngineCommandManager,
         id: String,
         rangeStr: String,
+        pathToNodeStr: String,
         cmdStr: String,
         idToRangeStr: String,
     ) -> Result<js_sys::Promise, js_sys::Error>;
@@ -41,8 +42,8 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>,
+    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -61,15 +62,15 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, (crate::executor::SourceRange, crate::executor::PathToNode))>>> {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn default_planes(&self, source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<DefaultPlanes, KclError> {
         // Get the default planes.
         let promise = self.manager.get_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -107,7 +108,7 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(default_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange, path_to_node: crate::executor::PathToNode) -> Result<(), KclError> {
         self.manager.clear_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: e.to_string().into(),
@@ -137,12 +138,20 @@ impl crate::engine::EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
+        // path_to_node: Vec<(String, String)>,
+        path_to_node: crate::executor::PathToNode,
         cmd: kittycad::types::WebSocketRequest,
-        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, (crate::executor::SourceRange, crate::executor::PathToNode)>,
     ) -> Result<kittycad::types::WebSocketResponse, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let path_to_node_str = serde_json::to_string(&path_to_node).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize path to node: {:?}", e),
                 source_ranges: vec![source_range],
             })
         })?;
@@ -161,7 +170,7 @@ impl crate::engine::EngineManager for EngineConnection {
 
         let promise = self
             .manager
-            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
+            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, path_to_node_str, cmd_str, id_to_source_range_str)
             .map_err(|e| {
                 KclError::Engine(KclErrorDetails {
                     message: e.to_string().into(),

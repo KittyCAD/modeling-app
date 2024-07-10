@@ -456,7 +456,7 @@ fn do_stdlib_inner(
     if !errors.is_empty() {
         errors.insert(0, Error::new_spanned(&ast.sig, ""));
     }
-
+    println!("{}", stream);
     Ok((stream, errors))
 }
 
@@ -802,6 +802,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     crate::executor::SourceRange::default(),
+                    crate::executor::PathToNode::default(),
                     kittycad::types::ModelingCmd::ZoomToFit {
                         object_ids: Default::default(),
                         padding: 0.1,
@@ -815,6 +816,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     crate::executor::SourceRange::default(),
+                    crate::executor::PathToNode::default(),
                     kittycad::types::ModelingCmd::TakeSnapshot {
                         format: kittycad::types::ImageFormat::Png,
                     },

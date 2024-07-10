@@ -1307,6 +1307,7 @@ impl CallExpression {
         for arg in &self.arguments {
             let metadata = Metadata {
                 source_range: SourceRange([arg.start(), arg.end()]),
+                path_to_node: Some(memory.path_to_node.clone()),
             };
             let result = ctx
                 .arg_into_mem_item(arg, memory, pipe_info, &metadata, StatementKind::Expression)
@@ -1872,6 +1873,7 @@ impl From<Literal> for MemoryItem {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
+                path_to_node: None,
             }],
         })
     }
@@ -1883,6 +1885,7 @@ impl From<&Box<Literal>> for MemoryItem {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
+                path_to_node: None,
             }],
         })
     }
@@ -1979,6 +1982,7 @@ impl From<&TagDeclarator> for TagIdentifier {
             value: tag.name.clone(),
             meta: vec![Metadata {
                 source_range: tag.into(),
+                path_to_node: None,
             }],
         }
     }
@@ -2050,6 +2054,7 @@ impl TagDeclarator {
             value: self.name.clone(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: None,
             }],
         }));
 
@@ -2270,6 +2275,7 @@ impl ArrayExpression {
             value: results.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: None,
             }],
         }))
     }
@@ -2438,6 +2444,7 @@ impl ObjectExpression {
             value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: None,
             }],
         }))
     }
@@ -2676,6 +2683,7 @@ impl MemberExpression {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
+                        path_to_node: None,
                     }],
                 }))
             } else {
@@ -2733,6 +2741,7 @@ impl MemberExpression {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
+                        path_to_node: None,
                     }],
                 }))
             } else {
@@ -2894,6 +2903,7 @@ impl BinaryExpression {
                     value,
                     meta: vec![Metadata {
                         source_range: self.into(),
+                        path_to_node: None,
                     }],
                 }));
             }
@@ -2915,6 +2925,7 @@ impl BinaryExpression {
             value,
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: None,
             }],
         }))
     }
@@ -3101,6 +3112,7 @@ impl UnaryExpression {
             value: (-(num)).into(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: None,
             }],
         }))
     }
@@ -3298,6 +3310,7 @@ async fn execute_pipe_body(
     // of its own.
     let meta = Metadata {
         source_range: SourceRange([first.start(), first.end()]),
+        path_to_node: Some(memory.path_to_node.clone()),
     };
     let output = ctx
         .arg_into_mem_item(first, memory, pipe_info, &meta, StatementKind::Expression)

@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier, UserVal,
+        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier, UserVal, Metadata
     },
     std::{
         utils::{
@@ -141,7 +141,7 @@ async fn inner_line_to(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     };
@@ -309,7 +309,7 @@ async fn inner_line(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     };
@@ -493,7 +493,7 @@ async fn inner_angled_line(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     };
@@ -1076,7 +1076,7 @@ async fn start_sketch_on_face(
         y_axis: extrude_group.sketch_group.on.y_axis(),
         z_axis: extrude_group.sketch_group.on.z_axis(),
         extrude_group,
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone()))),],
     }))
 }
 
@@ -1084,7 +1084,7 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
     let mut plane: Plane = data.clone().into();
 
     // Get the default planes.
-    let default_planes = args.ctx.engine.default_planes(args.source_range).await?;
+    let default_planes = args.ctx.engine.default_planes(args.source_range, args.path_to_node.clone()).await?;
 
     plane.id = match data {
         PlaneData::XY => default_planes.xy,
@@ -1223,7 +1223,7 @@ pub(crate) async fn inner_start_profile_at(
         tag: tag.clone(),
         geo_meta: GeoMeta {
             id,
-            metadata: args.source_range.into(),
+            metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
         },
     };
 
@@ -1232,7 +1232,7 @@ pub(crate) async fn inner_start_profile_at(
         on: sketch_surface.clone(),
         value: vec![],
         start: current_path,
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone()))),],
         tags: if let Some(tag) = &tag {
             HashMap::from([(tag.name.to_string(), tag.into())])
         } else {
@@ -1382,7 +1382,7 @@ pub(crate) async fn inner_close(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     });
@@ -1495,7 +1495,7 @@ pub(crate) async fn inner_arc(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     };
@@ -1605,7 +1605,7 @@ async fn inner_tangential_arc(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     };
@@ -1713,7 +1713,7 @@ async fn inner_tangential_arc_to(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
         center: result.center,
@@ -1818,7 +1818,7 @@ async fn inner_bezier_curve(
             tag,
             geo_meta: GeoMeta {
                 id,
-                metadata: args.source_range.into(),
+                metadata: Metadata::from((args.source_range, Some(args.path_to_node.clone()))),
             },
         },
     };

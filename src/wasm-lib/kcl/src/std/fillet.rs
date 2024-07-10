@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem, TagIdentifier, UserVal},
+    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem, TagIdentifier, UserVal, Metadata},
     std::Args,
 };
 
@@ -148,7 +148,7 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
                 source_ranges: vec![args.source_range],
             })
         })?,
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone())))],
     }))
 }
 
@@ -238,7 +238,7 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
                 source_ranges: vec![args.source_range],
             })
         })?,
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone())))],
     }))
 }
 
@@ -333,7 +333,7 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
                 source_ranges: vec![args.source_range],
             })
         })?,
-        meta: vec![args.source_range.into()],
+        meta: vec![Metadata::from((args.source_range, Some(args.path_to_node.clone())))],
     }))
 }
 

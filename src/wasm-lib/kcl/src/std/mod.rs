@@ -33,7 +33,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata, ProgramMemory,
-        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
+        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, PathToNode, TagIdentifier,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::FaceTag},
 };
@@ -209,6 +209,7 @@ pub enum FunctionKind {
 pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
+    pub path_to_node: PathToNode,
     pub ctx: ExecutorContext,
     pub current_program_memory: ProgramMemory,
 }
@@ -217,12 +218,15 @@ impl Args {
     pub fn new(
         args: Vec<MemoryItem>,
         source_range: SourceRange,
+        // path_to_node: PathToNode,
         ctx: ExecutorContext,
         current_program_memory: ProgramMemory,
     ) -> Self {
         Self {
             args,
             source_range,
+            path_to_node: current_program_memory.path_to_node.clone(),
+            // path_to_node,
             ctx,
             current_program_memory,
         }
@@ -234,7 +238,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
+        self.ctx.engine.batch_modeling_cmd(id, self.source_range, self.path_to_node.clone(), &cmd).await
     }
 
     // Add a modeling command to the batch that gets executed at the end of the file.
@@ -245,7 +249,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+        self.ctx.engine.batch_end_cmd(id, self.source_range, self.path_to_node.clone(), &cmd).await
     }
 
     /// Send the modeling cmd and wait for the response.
@@ -254,7 +258,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx.engine.send_modeling_cmd(id, self.source_range, self.path_to_node.clone(), cmd).await
     }
 
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
@@ -303,7 +307,7 @@ impl Args {
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.
-        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
+        self.ctx.engine.flush_batch(false, SourceRange::default(), self.path_to_node.clone()).await?;
 
         Ok(())
     }
@@ -313,6 +317,8 @@ impl Args {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
+                // path_to_node: self.path_to_node.clone(),
+                path_to_node: None,
             }],
         }))
     }

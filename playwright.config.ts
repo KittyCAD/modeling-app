@@ -32,17 +32,17 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    {
-      name: 'Google Chrome',
-      use: {
-        ...devices['Desktop Chrome'],
-        channel: 'chrome',
-        contextOptions: {
-          /* Chromium is the only one with these permission types */
-          permissions: ['clipboard-write', 'clipboard-read'],
-        },
-      }, // or 'chrome-beta'
-    },
+    // {
+    //   name: 'Google Chrome',
+    //   use: {
+    //     ...devices['Desktop Chrome'],
+    //     channel: 'chrome',
+    //     contextOptions: {
+    //       /* Chromium is the only one with these permission types */
+    //       permissions: ['clipboard-write', 'clipboard-read'],
+    //     },
+    //   }, // or 'chrome-beta'
+    // },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
