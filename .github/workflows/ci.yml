@@ -409,6 +409,17 @@ jobs:
           path: "${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg' || 'src-tauri/target/release/bundle/msi/*.msi' }}"
           name: updater-test
 
+  next-step-dummy:
+    runs-on: ubuntu-latest
+    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - name: Generate the update static endpoint
+        run: |
+          ls -l artifact
+          ls -l artifact/*/*oo*
+
 
   publish-apps-release:
     permissions:
