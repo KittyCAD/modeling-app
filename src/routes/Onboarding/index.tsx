@@ -80,8 +80,10 @@ export const onboardingRoutes = [
 export function useDemoCode() {
   useEffect(() => {
     if (!editorManager.editorView) return
-    setTimeout(() => codeManager.updateCodeStateEditor(bracket))
-  }, [editorManager.editorView, codeManager.updateCodeStateEditor])
+    setTimeout(() => {
+      codeManager.updateCodeStateEditor(bracket)
+    })
+  }, [editorManager.editorView])
 }
 
 export function useNextClick(newStatus: string) {

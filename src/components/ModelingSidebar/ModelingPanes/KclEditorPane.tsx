@@ -1,4 +1,3 @@
-import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -43,6 +42,7 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
+import CodeEditor from './CodeEditor'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -185,15 +185,15 @@ export const KclEditorPane = () => {
       id="code-mirror-override"
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
-      <ReactCodeMirror
-        value={initialCode.current}
+      <CodeEditor
+        initialDocValue={initialCode.current}
         extensions={editorExtensions}
         theme={theme}
         onCreateEditor={(_editorView) => {
+          if (_editorView === null) return
+
           editorManager.setEditorView(_editorView)
         }}
-        indentWithTab={false}
-        basicSetup={false}
       />
     </div>
   )

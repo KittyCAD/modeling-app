@@ -537,17 +537,14 @@ impl std::hash::Hash for TagIdentifier {
     }
 }
 
-pub type MemoryFunction = fn(
-    s: Vec<MemoryItem>,
-    memory: ProgramMemory,
-    expression: Box<FunctionExpression>,
-    metadata: Vec<Metadata>,
-    ctx: ExecutorContext,
-) -> std::pin::Pin<
-    Box<
-        dyn std::future::Future<Output = Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError>> + Send,
-    >,
->;
+pub type MemoryFunction =
+    fn(
+        s: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        expression: Box<FunctionExpression>,
+        metadata: Vec<Metadata>,
+        ctx: ExecutorContext,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
 
 fn force_memory_function<
     F: Fn(
@@ -556,12 +553,7 @@ fn force_memory_function<
         Box<FunctionExpression>,
         Vec<Metadata>,
         ExecutorContext,
-    ) -> std::pin::Pin<
-        Box<
-            dyn std::future::Future<Output = Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError>>
-                + Send,
-        >,
-    >,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
 >(
     f: F,
 ) -> F {
@@ -691,11 +683,15 @@ impl MemoryItem {
         match self {
             MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
             MemoryItem::UserVal(u) => {
-                let name: String = self.get_json()?;
-                Ok(TagIdentifier {
-                    value: name,
-                    meta: u.meta.clone(),
-                })
+                if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
+                    Ok(identifier)
+                } else {
+                    let name: String = self.get_json()?;
+                    Ok(TagIdentifier {
+                        value: name,
+                        meta: u.meta.clone(),
+                    })
+                }
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag identifier: {:?}", self),
@@ -714,6 +710,7 @@ impl MemoryItem {
                     name,
                     start: u.meta[0].source_range.start(),
                     end: u.meta[0].source_range.end(),
+                    digest: None,
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -733,6 +730,7 @@ impl MemoryItem {
                         name,
                         start: u.meta[0].source_range.start(),
                         end: u.meta[0].source_range.end(),
+                        digest: None,
                     }))
                 } else {
                     Ok(None)
@@ -752,7 +750,7 @@ impl MemoryItem {
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
         ctx: ExecutorContext,
-    ) -> Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError> {
+    ) -> Result<Option<ProgramReturn>, KclError> {
         let MemoryItem::Function { func, expression, meta } = &self else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: "not a in memory function".to_string(),
@@ -782,6 +780,9 @@ pub struct SketchGroup {
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
+    /// Tag identifiers that have been declared in this sketch group.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub tags: HashMap<String, TagIdentifier>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -962,7 +963,7 @@ pub enum FilletOrChamfer {
         length: f64,
         /// The engine id of the edge to chamfer.
         edge_id: uuid::Uuid,
-        tag: Option<TagDeclarator>,
+        tag: Box<Option<TagDeclarator>>,
     },
 }
 
@@ -984,7 +985,7 @@ impl FilletOrChamfer {
     pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
             FilletOrChamfer::Fillet { .. } => None,
-            FilletOrChamfer::Chamfer { tag, .. } => tag.clone(),
+            FilletOrChamfer::Chamfer { tag, .. } => *tag.clone(),
         }
     }
 }
@@ -1359,6 +1360,8 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
+    // Show grid?
+    pub show_grid: bool,
 }
 
 impl Default for ExecutorSettings {
@@ -1367,6 +1370,7 @@ impl Default for ExecutorSettings {
             units: Default::default(),
             highlight_edges: true,
             enable_ssao: false,
+            show_grid: false,
         }
     }
 }
@@ -1377,6 +1381,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
+            show_grid: config.settings.modeling.show_scale_grid,
         }
     }
 }
@@ -1387,6 +1392,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
+            show_grid: config.settings.modeling.show_scale_grid,
         }
     }
 }
@@ -1397,6 +1403,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             units: modeling.base_unit,
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
+            show_grid: modeling.show_scale_grid,
         }
     }
 }
@@ -1415,6 +1422,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
                 None,
@@ -1478,6 +1486,7 @@ impl ExecutorContext {
                 units,
                 highlight_edges: true,
                 enable_ssao: false,
+                show_grid: false,
             },
         )
         .await?;
@@ -1564,16 +1573,7 @@ impl ExecutorContext {
                             }
                             FunctionKind::UserDefined => {
                                 if let Some(func) = memory.clone().root.get(&fn_name) {
-                                    let (result, global_memory_items) =
-                                        func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
-
-                                    // Add the global memory items to the memory.
-                                    for (key, item) in global_memory_items {
-                                        // We don't care about errors here because any collisions
-                                        // would happened in the function call itself and already
-                                        // errored out.
-                                        memory.add(&key, item, call_expr.into()).unwrap_or_default();
-                                    }
+                                    let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
 
                                     memory.return_ = result;
                                 } else {
@@ -1698,7 +1698,7 @@ impl ExecutorContext {
                                 .inner_execute(&function_expression.body, &mut fn_memory, BodyType::Block)
                                 .await?;
 
-                            Ok((result.return_, fn_memory.get_tags()))
+                            Ok(result.return_)
                         })
                     },
                 );
@@ -2381,6 +2381,7 @@ const bracket = startSketchOn('XY')
                 start: 0,
                 end: 0,
                 name: s.to_owned(),
+                digest: None,
             }
         }
         fn opt_param(s: &'static str) -> Parameter {
@@ -2388,6 +2389,7 @@ const bracket = startSketchOn('XY')
                 identifier: ident(s),
                 type_: None,
                 optional: true,
+                digest: None,
             }
         }
         fn req_param(s: &'static str) -> Parameter {
@@ -2395,6 +2397,7 @@ const bracket = startSketchOn('XY')
                 identifier: ident(s),
                 type_: None,
                 optional: false,
+                digest: None,
             }
         }
         fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
@@ -2478,8 +2481,10 @@ const bracket = startSketchOn('XY')
                     end: 0,
                     body: Vec::new(),
                     non_code_meta: Default::default(),
+                    digest: None,
                 },
                 return_type: None,
+                digest: None,
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

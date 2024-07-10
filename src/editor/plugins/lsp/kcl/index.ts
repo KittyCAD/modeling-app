@@ -2,12 +2,9 @@ import { Extension } from '@codemirror/state'
 import { ViewPlugin, PluginValue, ViewUpdate } from '@codemirror/view'
 import {
   LanguageServerOptions,
-  updateInfo,
-  TransactionInfo,
-  RelevantUpdate,
-  TransactionAnnotation,
   LanguageServerClient,
   lspPlugin,
+  lspFormatCodeEvent,
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
 import { codeManager, editorManager, kclManager } from 'lib/singletons'
@@ -15,36 +12,11 @@ import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
 import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { codeManagerUpdateEvent } from 'lang/codeManager'
+import { copilotPluginEvent } from '../copilot'
+import { updateOutsideEditorEvent } from 'editor/manager'
 
 const changesDelay = 600
-
-export const relevantUpdate = (update: ViewUpdate): RelevantUpdate => {
-  const infos = updateInfo(update)
-  // Make sure we are not in a snippet
-  if (infos.some((info: TransactionInfo) => info.inSnippet)) {
-    return {
-      overall: false,
-      userSelect: false,
-      time: null,
-    }
-  }
-  return {
-    overall: infos.some(
-      (info: TransactionInfo) =>
-        info.annotations.includes(TransactionAnnotation.UserSelect) ||
-        info.annotations.includes(TransactionAnnotation.UserInput) ||
-        info.annotations.includes(TransactionAnnotation.UserDelete) ||
-        info.annotations.includes(TransactionAnnotation.UserUndo) ||
-        info.annotations.includes(TransactionAnnotation.UserRedo) ||
-        info.annotations.includes(TransactionAnnotation.UserMove) ||
-        info.annotations.includes(TransactionAnnotation.FormatCode)
-    ),
-    userSelect: infos.some((info: TransactionInfo) =>
-      info.annotations.includes(TransactionAnnotation.UserSelect)
-    ),
-    time: infos.length ? infos[0].time : null,
-  }
-}
 
 // A view plugin that requests completions from the server after a delay
 export class KclPlugin implements PluginValue {
@@ -75,15 +47,49 @@ export class KclPlugin implements PluginValue {
     this.viewUpdate = viewUpdate
     editorManager.setEditorView(viewUpdate.view)
 
-    const isRelevant = relevantUpdate(viewUpdate)
-    if (!isRelevant.overall) {
-      return
+    let isUserSelect = false
+    let isRelevant = viewUpdate.docChanged
+    for (const tr of viewUpdate.transactions) {
+      if (tr.isUserEvent('select')) {
+        isUserSelect = true
+      } else if (tr.isUserEvent('input')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('delete')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('undo')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('redo')) {
+        isRelevant = true
+      } else if (tr.isUserEvent('move')) {
+        isRelevant = true
+      } else if (tr.annotation(lspFormatCodeEvent.type)) {
+        isRelevant = true
+      }
+
+      // Don't make this an else.
+      if (tr.annotation(codeManagerUpdateEvent.type)) {
+        // We want to ignore when we are forcing the editor to update.
+        isRelevant = false
+        break
+      } else if (tr.annotation(copilotPluginEvent.type)) {
+        // We want to ignore when copilot is doing stuff.
+        isRelevant = false
+        break
+      } else if (tr.annotation(updateOutsideEditorEvent.type)) {
+        // We want to ignore other events outside the editor.
+        isRelevant = false
+        break
+      }
     }
 
     // If we have a user select event, we want to update what parts are
     // highlighted.
-    if (isRelevant.userSelect) {
+    if (isUserSelect) {
       this._deffererUserSelect(true)
+      return
+    }
+
+    if (!isRelevant) {
       return
     }
 

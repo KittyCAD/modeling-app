@@ -529,7 +529,6 @@ export class CameraControls {
           parameters: {
             fov_y:
               this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
-            ...calculateNearFarFromFOV(this.lastPerspectiveFov),
           },
         },
       })
@@ -612,8 +611,6 @@ export class CameraControls {
           type: 'default_camera_set_perspective',
           parameters: {
             fov_y: newFov,
-            z_near: 0.01,
-            z_far: 1000,
           },
         },
       })
@@ -631,8 +628,6 @@ export class CameraControls {
             target: this.target,
           }),
           fov_y: newFov,
-          z_near: 0.01,
-          z_far: 1000,
         },
       })
     }

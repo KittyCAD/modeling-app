@@ -53,9 +53,8 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, VariableDeclaration, parse, recast } from 'lang/wasm'
+import { Program, parse, recast } from 'lang/wasm'
 import {
-  getNodeFromPath,
   getNodePathFromSourceRange,
   hasExtrudableGeometry,
   isSingleCursorInPipe,
@@ -64,7 +63,7 @@ import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection, Transaction } from '@uiw/react-codemirror'
+import { EditorSelection, Transaction } from '@codemirror/state'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
@@ -128,7 +127,7 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        'sketch exit execute': () => {
+        'sketch exit execute': ({ store }) => {
           ;(async () => {
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
@@ -162,7 +161,12 @@ export const ModelingMachineProvider = ({
               })
             }
 
-            kclManager.executeCode(true)
+            store.videoElement?.pause()
+            kclManager.executeCode(true).then(() => {
+              if (engineCommandManager.engineConnection?.freezeFrame) return
+
+              store.videoElement?.play()
+            })
           })()
         },
         'Set mouse state': assign({
@@ -437,17 +441,6 @@ export const ModelingMachineProvider = ({
           if (!commandBarState.matches('Closed')) return false
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
-        },
-        'Sketch is empty': ({ sketchDetails }) => {
-          const node = getNodeFromPath<VariableDeclaration>(
-            kclManager.ast,
-            sketchDetails?.sketchPathToNode || [],
-            'VariableDeclaration'
-          )
-          // This should not be returning false, and it should be caught
-          // but we need to simulate old behavior to move on.
-          if (err(node)) return false
-          return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
         },
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false

@@ -39,7 +39,6 @@ import {
   listProjects,
   renameProjectDirectory,
 } from 'lib/tauri'
-import { useAppState } from 'AppState'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -66,11 +65,6 @@ const Home = () => {
     }
   )
   const ref = useRef<HTMLDivElement>(null)
-  const { setAppState } = useAppState()
-
-  useEffect(() => {
-    setAppState({ htmlRef: ref })
-  }, [ref])
 
   const [state, send, actor] = useMachine(homeMachine, {
     context: {

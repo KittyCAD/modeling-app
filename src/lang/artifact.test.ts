@@ -167,6 +167,7 @@ const sk2 = startSketchOn('XY')
               start: 114,
               type: 'TagDeclarator',
               value: 'p',
+              digest: null,
             },
             id: expect.any(String),
             sourceRange: [95, 117],
@@ -185,6 +186,17 @@ const sk2 = startSketchOn('XY')
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'SketchGroup',
+          tags: {
+            p: {
+              __meta: [
+                {
+                  sourceRange: [114, 116],
+                },
+              ],
+              type: 'TagIdentifier',
+              value: 'p',
+            },
+          },
           value: [
             {
               type: 'ToPoint',
@@ -205,6 +217,7 @@ const sk2 = startSketchOn('XY')
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
+                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),
@@ -247,6 +260,7 @@ const sk2 = startSketchOn('XY')
               start: 417,
               type: 'TagDeclarator',
               value: 'o',
+              digest: null,
             },
             id: expect.any(String),
             sourceRange: [399, 420],
@@ -265,6 +279,17 @@ const sk2 = startSketchOn('XY')
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'SketchGroup',
+          tags: {
+            o: {
+              __meta: [
+                {
+                  sourceRange: [417, 419],
+                },
+              ],
+              type: 'TagIdentifier',
+              value: 'o',
+            },
+          },
           value: [
             {
               type: 'ToPoint',
@@ -285,6 +310,7 @@ const sk2 = startSketchOn('XY')
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
+                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),

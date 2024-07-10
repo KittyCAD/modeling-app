@@ -175,7 +175,12 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': () => kclManager.executeCode(true, true),
+        'Execute AST': () => {
+          kclManager.isFirstRender = true
+          kclManager.executeCode(true, true).then(() => {
+            kclManager.isFirstRender = false
+          })
+        },
       },
       services: {
         'Persist settings': (context) =>
