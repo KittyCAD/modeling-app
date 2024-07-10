@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 9,
-            "name": "obj"
+            "name": "obj",
+            "digest": null
           },
           "init": {
             "type": "ObjectExpression",
@@ -36,7 +37,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 14,
                   "end": 15,
-                  "name": "a"
+                  "name": "a",
+                  "digest": null
                 },
                 "value": {
                   "type": "Literal",
@@ -44,8 +46,10 @@ expression: actual
                   "start": 17,
                   "end": 18,
                   "value": 1,
-                  "raw": "1"
-                }
+                  "raw": "1",
+                  "digest": null
+                },
+                "digest": null
               },
               {
                 "type": "ObjectProperty",
@@ -55,7 +59,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 20,
                   "end": 21,
-                  "name": "b"
+                  "name": "b",
+                  "digest": null
                 },
                 "value": {
                   "type": "Literal",
@@ -63,14 +68,19 @@ expression: actual
                   "start": 23,
                   "end": 24,
                   "value": 2,
-                  "raw": "2"
-                }
+                  "raw": "2",
+                  "digest": null
+                },
+                "digest": null
               }
-            ]
-          }
+            ],
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     },
     {
       "type": "VariableDeclaration",
@@ -86,7 +96,8 @@ expression: actual
             "type": "Identifier",
             "start": 37,
             "end": 43,
-            "name": "height"
+            "name": "height",
+            "digest": null
           },
           "init": {
             "type": "ArrayExpression",
@@ -110,7 +121,8 @@ expression: actual
                     "type": "Identifier",
                     "start": 47,
                     "end": 50,
-                    "name": "obj"
+                    "name": "obj",
+                    "digest": null
                   },
                   "property": {
                     "type": "Literal",
@@ -118,9 +130,11 @@ expression: actual
                     "start": 51,
                     "end": 54,
                     "value": "a",
-                    "raw": "\"a\""
+                    "raw": "\"a\"",
+                    "digest": null
                   },
-                  "computed": false
+                  "computed": false,
+                  "digest": null
                 },
                 "right": {
                   "type": "Literal",
@@ -128,8 +142,10 @@ expression: actual
                   "start": 58,
                   "end": 59,
                   "value": 1,
-                  "raw": "1"
-                }
+                  "raw": "1",
+                  "digest": null
+                },
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -137,17 +153,23 @@ expression: actual
                 "start": 61,
                 "end": 62,
                 "value": 0,
-                "raw": "0"
+                "raw": "0",
+                "digest": null
               }
-            ]
-          }
+            ],
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }

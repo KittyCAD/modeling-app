@@ -127,7 +127,7 @@ async fn inner_chamfer(
             id,
             edge_id,
             length: data.length,
-            tag: tag.clone(),
+            tag: Box::new(tag.clone()),
         });
     }
 

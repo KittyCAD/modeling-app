@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 11,
-            "name": "myBox"
+            "name": "myBox",
+            "digest": null
           },
           "init": {
             "type": "PipeExpression",
@@ -37,7 +38,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 14,
                   "end": 27,
-                  "name": "startSketchAt"
+                  "name": "startSketchAt",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -45,10 +47,12 @@ expression: actual
                     "type": "Identifier",
                     "start": 28,
                     "end": 29,
-                    "name": "p"
+                    "name": "p",
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               },
               {
                 "type": "CallExpression",
@@ -59,7 +63,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 34,
                   "end": 38,
-                  "name": "line"
+                  "name": "line",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -74,39 +79,50 @@ expression: actual
                         "start": 40,
                         "end": 41,
                         "value": 0,
-                        "raw": "0"
+                        "raw": "0",
+                        "digest": null
                       },
                       {
                         "type": "Identifier",
                         "type": "Identifier",
                         "start": 43,
                         "end": 44,
-                        "name": "l"
+                        "name": "l",
+                        "digest": null
                       }
-                    ]
+                    ],
+                    "digest": null
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 47,
-                    "end": 48
+                    "end": 48,
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               }
             ],
             "nonCodeMeta": {
               "nonCodeNodes": {},
-              "start": []
-            }
-          }
+              "start": [],
+              "digest": null
+            },
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }

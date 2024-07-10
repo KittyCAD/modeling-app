@@ -31,6 +31,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -54,6 +55,9 @@ export const Y_AXIS = 'yAxis'
 export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
+export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
+export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
+export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
@@ -95,6 +99,7 @@ export class SceneInfra {
   static instance: SceneInfra
   scene: Scene
   renderer: WebGLRenderer
+  labelRenderer: CSS2DRenderer
   camControls: CameraControls
   isPerspective = true
   fov = 45
@@ -264,6 +269,13 @@ export class SceneInfra {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
+
+    // LABEL RENDERER
+    this.labelRenderer = new CSS2DRenderer()
+    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
+    this.labelRenderer.domElement.style.position = 'absolute'
+    this.labelRenderer.domElement.style.top = '0px'
+    this.labelRenderer.domElement.style.pointerEvents = 'none'
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
@@ -328,6 +340,7 @@ export class SceneInfra {
 
   onWindowResize = () => {
     this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
   }
 
   animate = () => {
@@ -337,6 +350,7 @@ export class SceneInfra {
       // console.log('animation frame', this.cameraControls.camera)
       this.camControls.update()
       this.renderer.render(this.scene, this.camControls.camera)
+      this.labelRenderer.render(this.scene, this.camControls.camera)
     }
   }
 

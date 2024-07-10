@@ -77,14 +77,24 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
     let sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
     let mut extrude_groups = Vec::new();
     for sketch_group in &sketch_groups {
-        // Make sure we exited sketch mode if sketching on a plane.
-        if let SketchSurface::Plane(_) = sketch_group.on {
-            // Disable the sketch mode.
-            // This is necessary for when people don't close the sketch explicitly.
-            // The sketch mode will mess up the extrude direction if still active.
-            args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
-                .await?;
-        }
+        // Before we extrude, we need to enable the sketch mode.
+        // We do this here in case extrude is called out of order.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch_group.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch_group.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.clone().into())
+                } else {
+                    None
+                },
+            },
+        )
+        .await?;
 
         args.send_modeling_cmd(
             id,
@@ -95,6 +105,10 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
             },
         )
         .await?;
+
+        // Disable the sketch mode.
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
         extrude_groups.push(do_post_extrude(sketch_group.clone(), length, id, args.clone()).await?);
     }
 
@@ -107,13 +121,6 @@ pub(crate) async fn do_post_extrude(
     id: Uuid,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
-    // We need to do this after extrude for sketch on face.
-    if let SketchSurface::Face(_) = sketch_group.on {
-        // Disable the sketch mode.
-        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
-            .await?;
-    }
-
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
