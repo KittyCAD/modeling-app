@@ -21,7 +21,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
         fs: Arc::new(kcl_lib::fs::FileManager::new()),
         stdlib: Arc::new(kcl_lib::std::StdLib::new()),
         settings: Default::default(),
-        is_mock: true,
+        context_type: kcl_lib::executor::ContextType::MockCustomForwarded,
     };
     let _memory = ctx.run(&program, None).await?;
 

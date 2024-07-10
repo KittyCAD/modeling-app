@@ -1335,6 +1335,21 @@ impl Default for PipeInfo {
     }
 }
 
+/// The type of ExecutorContext being used
+#[derive(PartialEq, Debug, Clone)]
+pub enum ContextType {
+    /// Live engine connection
+    Live,
+
+    /// Completely mocked connection
+    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// actually make them.
+    Mock,
+
+    /// Handled by some other interpreter/conversion system
+    MockCustomForwarded,
+}
+
 /// The executor context.
 /// Cloning will return another handle to the same engine connection/session,
 /// as this uses `Arc` under the hood.
@@ -1344,9 +1359,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
-    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
-    /// actually make them.
-    pub is_mock: bool,
+    pub context_type: ContextType,
 }
 
 /// The executor settings.
@@ -1447,8 +1460,12 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             settings,
-            is_mock: false,
+            context_type: ContextType::Live,
         })
+    }
+
+    pub fn is_mock(&self) -> bool {
+        self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
     /// For executing unit tests.
@@ -1858,7 +1875,7 @@ mod tests {
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: ContextType::Mock,
         };
         let memory = ctx.run(&program, None).await?;
 

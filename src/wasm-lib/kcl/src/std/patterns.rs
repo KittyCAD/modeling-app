@@ -146,7 +146,7 @@ async fn inner_pattern_transform<'a>(
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(starting_extrude_groups);
     }
 
@@ -341,7 +341,7 @@ async fn inner_pattern_linear_2d(
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
     let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(starting_sketch_groups);
     }
 
@@ -417,7 +417,7 @@ async fn inner_pattern_linear_3d(
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(starting_extrude_groups);
     }
 
@@ -610,7 +610,7 @@ async fn inner_pattern_circular_2d(
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
     let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting_sketch_groups);
     }
 
@@ -675,7 +675,7 @@ async fn inner_pattern_circular_3d(
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(starting_extrude_groups);
     }
 
