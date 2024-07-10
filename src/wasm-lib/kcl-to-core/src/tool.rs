@@ -1,5 +1,5 @@
-use std::{env, fs};
 use kcl_to_core::*;
+use std::{env, fs};
 
 #[tokio::main]
 async fn main() {
@@ -11,11 +11,9 @@ async fn main() {
     }
 
     let file_path = &args[1];
-    let kcl = fs::read_to_string(file_path)
-        .expect("read file");
+    let kcl = fs::read_to_string(file_path).expect("read file");
 
-    let result = kcl_to_engine_core(&kcl).await
-        .expect("kcl conversion");
+    let result = kcl_to_engine_core(&kcl).await.expect("kcl conversion");
 
     println!("{}", result);
 }

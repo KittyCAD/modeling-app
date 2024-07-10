@@ -1,12 +1,10 @@
+use anyhow::Result;
+use kcl_lib::{errors::KclError, executor::DefaultPlanes};
+use kittycad::types::{ModelingCmd, OkWebSocketResponseData, PathSegment::*, WebSocketRequest, WebSocketResponse};
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
 };
-use anyhow::Result;
-use kcl_lib::{
-    errors::KclError, executor::DefaultPlanes,
-};
-use kittycad::types::{ModelingCmd, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse, PathSegment::*};
 
 const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
 
@@ -49,13 +47,15 @@ fn codegen_cpp_repl_uuid_setters(entity_ids: &Vec<uuid::Uuid>) -> String {
     for i in 0..entity_ids.len() {
         let id = entity_ids[i];
         let cpp_id = id_to_cpp(&entity_ids[i]);
-        let iter = format!(r#"
+        let iter = format!(
+            r#"
             //change object id -> {id}
             auto repl_{cpp_id} = scene->getSceneObject(reps[{i}]);
             scene->removeSceneObject(repl_{cpp_id}->getUUID(), false);
             repl_{cpp_id}->setUUID(Utils::UUID("{id}"));
             scene->addSceneObject(repl_{cpp_id});
-        "#);
+        "#
+        );
         codegen.push_str(&iter);
     }
 
@@ -216,7 +216,13 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                         };
 
                         if new_code.len() > 0 {
-                            let new_code = new_code.trim().split(' ').filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ") + "\n";
+                            let new_code = new_code
+                                .trim()
+                                .split(' ')
+                                .filter(|s| !s.is_empty())
+                                .collect::<Vec<_>>()
+                                .join(" ")
+                                + "\n";
                             test_code.push_str(&new_code);
                         }
                     }

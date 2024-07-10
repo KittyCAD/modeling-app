@@ -1,8 +1,6 @@
 use anyhow::Result;
-use std::sync::{
-    Arc, Mutex
-};
 use kcl_lib::executor::ExecutorContext;
+use std::sync::{Arc, Mutex};
 
 #[cfg(not(target_arch = "wasm32"))]
 mod conn_mock_core;
@@ -17,7 +15,9 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let ref_result = Arc::clone(&result);
 
     let ctx = ExecutorContext {
-        engine: Arc::new(Box::new(crate::conn_mock_core::EngineConnection::new(ref_result).await?)),
+        engine: Arc::new(Box::new(
+            crate::conn_mock_core::EngineConnection::new(ref_result).await?,
+        )),
         fs: Arc::new(kcl_lib::fs::FileManager::new()),
         stdlib: Arc::new(kcl_lib::std::StdLib::new()),
         settings: Default::default(),

@@ -42,7 +42,11 @@ pub async fn execute_wasm(
         ))
     };
     let fs = Arc::new(kcl_lib::fs::FileManager::new(fs_manager));
-    let context_type = if is_mock { kcl_lib::executor::ContextType::Mock } else { kcl_lib::executor::ContextType::Live }
+    let context_type = if is_mock {
+        kcl_lib::executor::ContextType::Mock
+    } else {
+        kcl_lib::executor::ContextType::Live
+    };
     let ctx = kcl_lib::executor::ExecutorContext {
         engine,
         fs,
