@@ -57,7 +57,7 @@ export type CommandBarMachineEvent =
     }
   | {
       type: 'Find and select command'
-      data: { name: string; ownerMachine: string }
+      data: { name: string; groupId: string }
     }
   | {
       type: 'Change current argument'
@@ -122,7 +122,7 @@ export const commandBarMachine = createMachine(
                       !event.data.commands.some(
                         (c2) =>
                           c2.name === c.name &&
-                          c2.ownerMachine === c.ownerMachine
+                          c2.groupId === c.groupId
                       )
                   ),
               }),
@@ -395,7 +395,7 @@ export const commandBarMachine = createMachine(
           const found = c.commands.find(
             (cmd) =>
               cmd.name === e.data.name &&
-              cmd.ownerMachine === e.data.ownerMachine
+              cmd.groupId === e.data.groupId
           )
 
           return !!found ? found : c.selectedCommand
@@ -514,7 +514,7 @@ export const commandBarMachine = createMachine(
 )
 
 function sortCommands(a: Command, b: Command) {
-  if (b.ownerMachine === 'auth') return -1
-  if (a.ownerMachine === 'auth') return 1
+  if (b.groupId === 'auth') return -1
+  if (a.groupId === 'auth') return 1
   return a.name.localeCompare(b.name)
 }

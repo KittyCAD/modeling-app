@@ -60,7 +60,8 @@ export default function useStateMachineCommands<
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map((type) =>
         createMachineCommand<T, S>({
-          ownerMachine: machineId,
+          // The group is the owner machine's ID.
+          groupId: machineId,
           type,
           state,
           send,
