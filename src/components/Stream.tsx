@@ -145,7 +145,6 @@ export const Stream = () => {
 
     // Do not immediately play the stream!
     videoRef.current.srcObject = context.store.mediaStream
-    videoRef.current.pause()
 
     send({
       type: 'Set context',
