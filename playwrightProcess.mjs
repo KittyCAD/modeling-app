@@ -42,11 +42,12 @@ const processReport = (suites) => {
       for (const spec of suite.specs) {
         for (const test of spec.tests) {
           for (const result of test.results) {
-            if (result.status === 'failed' && test.expectedStatus === 'passed') {
+            if ((result.status !== 'passed') && test.expectedStatus === 'passed') {
               failedTests.push({
                 name: (name + ' -- ' + spec.title) + (test.title ? ` -- ${test.title}` : ''),
+                status: result.status,
                 projectName: test.projectName,
-                error: result.error.stack
+                error: result.error?.stack,
               })
             }
           }
