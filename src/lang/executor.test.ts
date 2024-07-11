@@ -1,8 +1,14 @@
 import fs from 'node:fs'
 
-import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
-import { enginelessExecutor } from '../lib/testHelpers'
+import { parse, ProgramMemory, SketchGroup, initPromise, Program } from './wasm'
+import {
+  MockEngineCommandManager,
+  enginelessExecutor,
+} from '../lib/testHelpers'
 import { KCLError } from './errors'
+import { executeAst } from './langHelpers'
+import { EngineCommandManager } from './std/engineConnection'
+import { getNodePathFromSourceRange } from './queryAst'
 
 beforeAll(async () => {
   await initPromise
@@ -107,32 +113,6 @@ const newVar = myVar + 1`
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(7)
   })
-
-  // Enable rotations #152
-  // it('rotated sketch', async () => {
-  //   const code = [
-  //     'const mySk1 = startSketchAt([0,0])',
-  //     '  |> lineTo([1,1], %)',
-  //     '  |> lineTo([0, 1], %, "myPath")',
-  //     '  |> lineTo([1, 1], %)',
-  //     'const rotated = rx(90, mySk1)',
-  //   ].join('\n')
-  //   const { root } = await exe(code)
-  //   expect(root.mySk1.value).toHaveLength(3)
-  //   expect(root?.rotated?.type).toBe('SketchGroup')
-  //   if (
-  //     root?.mySk1?.type !== 'SketchGroup' ||
-  //     root?.rotated?.type !== 'SketchGroup'
-  //   )
-  //     throw new Error('not a sketch group')
-  //   expect(root.mySk1.rotation).toEqual([0, 0, 0, 1])
-  //   expect(root.rotated.rotation.map((a) => a.toFixed(4))).toEqual([
-  //     '0.7071',
-  //     '0.0000',
-  //     '0.0000',
-  //     '0.7071',
-  //   ])
-  // })
 
   it('execute pipe sketch into call expression', async () => {
     // Enable rotations #152
@@ -414,6 +394,75 @@ const theExtrude = startSketchOn('XY')
         [[129, 135]]
       )
     )
+  })
+})
+
+describe('trying pathToNodeStuff', () => {
+  it('source range should agree with path to node', async () => {
+    const code = `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.72, 4.13], %)
+  |> line([7.11, 3.48], %)
+  |> line([-3.29, -13.86], %)
+  |> close(%)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([8.57, 5.92], %)
+  |> line([13.28, 4], %)`
+    const manager = new MockEngineCommandManager({
+      setIsStreamReady: () => {},
+      setMediaStream: () => {},
+    }) as any as EngineCommandManager
+    const ast = parse(code) as Program
+    const yo = await executeAst({
+      ast,
+      engineCommandManager: manager,
+      useFakeExecutor: true,
+    })
+    const sketch001 = yo.programMemory.root.sketch001 as SketchGroup
+    let derivedPaths: [any, any, any][] = sketch001.value.map(
+      ({ __geoMeta }) => {
+        return [
+          getNodePathFromSourceRange(ast, __geoMeta.sourceRange).map((a) => [
+            String(a[0]),
+            a[1],
+          ]),
+          __geoMeta.pathToNode,
+          __geoMeta.sourceRange,
+        ]
+      }
+    )
+    let snippets = [
+      'line([7.11, 3.48], %)',
+      'line([-3.29, -13.86], %)',
+      'close(%)',
+    ]
+    for (const [
+      index,
+      [sourcePath, wasmPath, range],
+    ] of derivedPaths.entries()) {
+      expect(sourcePath).toEqual(wasmPath)
+      const codeSlice = code.slice(range[0], range[1])
+      expect(snippets[index]).toBe(codeSlice)
+    }
+    const sketch002 = yo.programMemory.root.sketch002 as SketchGroup
+    derivedPaths = sketch002.value.map(({ __geoMeta }) => {
+      return [
+        getNodePathFromSourceRange(ast, __geoMeta.sourceRange).map((a) => [
+          String(a[0]),
+          a[1],
+        ]),
+        __geoMeta.pathToNode,
+        __geoMeta.sourceRange,
+      ]
+    })
+    snippets = ['line([13.28, 4], %)']
+    for (const [
+      index,
+      [sourcePath, wasmPath, range],
+    ] of derivedPaths.entries()) {
+      expect(sourcePath).toEqual(wasmPath)
+      const codeSlice = code.slice(range[0], range[1])
+      expect(snippets[index]).toBe(codeSlice)
+    }
   })
 })
 

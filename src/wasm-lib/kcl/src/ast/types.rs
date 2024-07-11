@@ -3278,7 +3278,10 @@ impl PipeExpression {
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
+        memory.path_to_node.push(("body".to_string(), "PipeExpression".to_string()));
+        let result = execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await;
+        // memory.path_to_node.pop();
+        result
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -3321,13 +3324,16 @@ async fn execute_pipe_body(
     let mut new_pipe_info = PipeInfo::new();
     new_pipe_info.previous_results = Some(output);
     // Evaluate remaining elements.
-    for expression in body {
+    for (indexYo, expression) in body.enumerate() {
+        let mut _memory = memory.clone();
+        _memory.path_to_node.push(((indexYo+1).to_string(), "index".to_string()));
+        
         let output = match expression {
             Value::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &new_pipe_info, ctx).await?
+                binary_expression.get_result(&mut _memory, &new_pipe_info, ctx).await?
             }
-            Value::CallExpression(call_expression) => call_expression.execute(memory, &new_pipe_info, ctx).await?,
-            Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
+            Value::CallExpression(call_expression) => call_expression.execute(&mut _memory, &new_pipe_info, ctx).await?,
+            Value::Identifier(identifier) => _memory.get(&identifier.name, identifier.into())?.clone(),
             _ => {
                 // Return an error this should not happen.
                 return Err(KclError::Semantic(KclErrorDetails {
@@ -3337,6 +3343,7 @@ async fn execute_pipe_body(
             }
         };
         new_pipe_info.previous_results = Some(output);
+        // memory.path_to_node.pop();
     }
     // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
     let final_output = new_pipe_info.previous_results.unwrap();

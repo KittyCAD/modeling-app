@@ -5,7 +5,6 @@ import {
   programMemoryInit,
   kclLint,
 } from 'lang/wasm'
-import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
@@ -65,7 +64,7 @@ export async function executeAst({
       engineCommandManager.startNewSession()
     }
     const programMemory = await (useFakeExecutor
-      ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
+      ? _executor(ast, programMemoryInit(), engineCommandManager, true)
       : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
     await engineCommandManager.waitForAllCommands()

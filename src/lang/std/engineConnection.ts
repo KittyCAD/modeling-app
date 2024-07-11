@@ -1809,7 +1809,7 @@ export class EngineCommandManager extends EventTarget {
     range: SourceRange
     command: EngineCommand
     ast: Program
-    idToRangeMap?: { [key: string]: SourceRange }
+    idToRangeMap?: { [key: string]: [SourceRange, PathToNode] }
   }): Promise<ResolveCommand | void> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1878,7 +1878,8 @@ export class EngineCommandManager extends EventTarget {
     id: string,
     command: Models['ModelingCmd_type'],
     ast?: Program,
-    range?: SourceRange
+    range?: SourceRange,
+    _pathToNode?: PathToNode
   ): Promise<ResolveCommand | void> {
     let resolve: (val: any) => void = () => {}
     const promise: Promise<ResolveCommand | void> = new Promise(
@@ -1899,7 +1900,9 @@ export class EngineCommandManager extends EventTarget {
       if (command.type === 'extrude') return command.target
       // handle other commands that have a parent here
     }
-    const pathToNode = ast
+    const pathToNode = _pathToNode
+      ? _pathToNode
+      : ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
       : []
     this.artifactMap[id] = {
@@ -1945,7 +1948,7 @@ export class EngineCommandManager extends EventTarget {
   async handlePendingBatchCommand(
     id: string,
     commands: Models['ModelingCmdReq_type'][],
-    idToRangeMap?: { [key: string]: SourceRange },
+    idToRangeMap?: { [key: string]: [SourceRange, PathToNode] },
     ast?: Program,
     range?: SourceRange
   ): Promise<ResolveCommand | void> {
@@ -1978,7 +1981,12 @@ export class EngineCommandManager extends EventTarget {
 
     Promise.all(
       commands.map((c) =>
-        this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
+        this.handlePendingCommand(
+          c.cmd_id,
+          c.cmd,
+          ast,
+          ...idToRangeMap[c.cmd_id]
+        )
       )
     )
     return promise
@@ -1990,11 +1998,6 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<string | void> {
-    // console.log('yoo', id,
-    // rangeStr,
-    // pathToNodeStr,
-    // commandStr,
-    // idToRangeStr)
     console.log(
       'pathToNodeStr',
       pathToNodeStr,
@@ -2017,7 +2020,7 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('commandStr is undefined'))
     }
     const range: SourceRange = JSON.parse(rangeStr)
-    const idToRangeMap: { [key: string]: SourceRange } =
+    const idToRangeMap: { [key: string]: [SourceRange, PathToNode] } =
       JSON.parse(idToRangeStr)
 
     const command: EngineCommand = JSON.parse(commandStr)

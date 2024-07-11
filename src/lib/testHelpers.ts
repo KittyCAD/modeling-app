@@ -19,7 +19,7 @@ const defaultPlanes: DefaultPlanes = {
   negYz: uuidv4(),
 }
 
-class MockEngineCommandManager {
+export class MockEngineCommandManager {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(mockParams: {
     setIsStreamReady: (isReady: boolean) => void
@@ -37,6 +37,7 @@ class MockEngineCommandManager {
     range: SourceRange
     command: EngineCommand
   }): Promise<any> {
+    console.log('YOYOYOYOY!!!!!!')
     const response: WebSocketResponse = {
       success: true,
       resp: {
@@ -51,11 +52,18 @@ class MockEngineCommandManager {
   async wasmGetDefaultPlanes(): Promise<string> {
     return JSON.stringify(defaultPlanes)
   }
-  sendModelingCommandFromWasm(
+  yo: any[] = []
+  async sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
-    commandStr: string
+    pathToNodeStr: string,
+    commandStr: string,
+    idToRangeStr: string
   ): Promise<any> {
+    console.log('YOYOYOYOYO<')
+    if (idToRangeStr) {
+      this.yo.push(idToRangeStr)
+    }
     if (id === undefined) {
       return Promise.reject(new Error('id is undefined'))
     }
@@ -71,6 +79,7 @@ class MockEngineCommandManager {
     return this.sendModelingCommand({ id, range, command })
   }
   sendSceneCommand() {}
+  clearDefaultPlanes() {}
 }
 
 export async function enginelessExecutor(
@@ -88,6 +97,7 @@ export async function enginelessExecutor(
   mockEngineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, mockEngineCommandManager, true)
   await mockEngineCommandManager.waitForAllCommands()
+  console.log('hey', (mockEngineCommandManager as any).yo)
   return programMemory
 }
 

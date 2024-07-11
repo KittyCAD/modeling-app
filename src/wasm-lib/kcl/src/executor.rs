@@ -1628,6 +1628,7 @@ impl ExecutorContext {
                     memory.path_to_node.push(("declarations".to_string(), "VariableDeclaration".to_string()));
                     for (index, declaration) in variable_declaration.declarations.iter().enumerate() {
                         memory.path_to_node.push((index.to_string(), "index".to_string()));
+                        memory.path_to_node.push(("init".to_string(), "".to_string()));
                         let var_name = declaration.id.name.to_string();
                         let source_range: SourceRange = declaration.init.clone().into();
                         let metadata = Metadata { source_range, path_to_node: Some(memory.path_to_node.clone())};
@@ -1642,6 +1643,7 @@ impl ExecutorContext {
                             )
                             .await?;
                         memory.add(&var_name, memory_item, source_range)?;
+                        // _memory.path_to_node.pop();
                         // _memory.path_to_node.pop();
                     }
                     // _memory.path_to_node.pop();
