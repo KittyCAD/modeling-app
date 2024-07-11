@@ -1,4 +1,4 @@
-name: CI
+name: build-test-apps
 
 on:
   pull_request:
@@ -16,9 +16,9 @@ env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   check-format:
@@ -453,71 +453,6 @@ jobs:
         with:
           path: "src-tauri/target/release/bundle/msi/*.msi"
           name: updater-test
-
-
-  build-test-app-ubuntu:
-    needs: [prepare-json-files]
-    runs-on: ubuntu-22.04
-    if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v3
-
-      - name: Install ubuntu system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            webkit2gtk-driver \
-            libsoup-3.0-dev \
-            libjavascriptcoregtk-4.1-dev \
-            libwebkit2gtk-4.1-dev \
-            at-spi2-core \
-            xvfb
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
-
-      - run: yarn install
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Setup Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: './src/wasm-lib'
-
-      - name: Run build:wasm
-        run: yarn build:wasm-dev
-
-      - name: Run vite build
-        run: yarn vite build --mode development
-
-      - name: Fix format
-        run: yarn fmt
-
-      - name: Build the app (debug)
-        run: yarn tauri build --debug --bundles
-
-      - name: Run e2e tests
-        run: |
-          cargo install tauri-driver --force
-          source .env.development
-          export VITE_KC_API_BASE_URL
-          xvfb-run yarn test:e2e:tauri
-        env:
-          E2E_APPLICATION: "./src-tauri/target/debug/zoo-modeling-app"
-          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
 
   publish-apps-release:
