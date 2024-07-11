@@ -717,7 +717,7 @@ export const CamDebugSettings = () => {
           if (camSettings.type === 'perspective') {
             sceneInfra.camControls.useOrthographicCamera()
           } else {
-            sceneInfra.camControls.usePerspectiveCamera()
+            sceneInfra.camControls.usePerspectiveCamera(true)
           }
         }}
       />
