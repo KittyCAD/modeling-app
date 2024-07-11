@@ -124,10 +124,12 @@ export const Stream = () => {
     )
       return
     if (!videoRef.current) return
-    if (!context.store?.mediaStream) return
+    const _mediaStream =
+      context.store?.mediaStream || (window as any).mediaStream
+    if (!_mediaStream) return
 
     // Do not immediately play the stream!
-    videoRef.current.srcObject = context.store.mediaStream
+    videoRef.current.srcObject = _mediaStream
     videoRef.current.pause()
 
     send({
