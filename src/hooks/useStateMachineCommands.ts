@@ -62,7 +62,7 @@ export default function useStateMachineCommands<
     const newCommands = state.nextEvents
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .map((type) =>
+      .flatMap((type) =>
         createMachineCommand<T, S>({
           ownerMachine: machineId,
           type,

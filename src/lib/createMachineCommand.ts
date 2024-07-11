@@ -41,13 +41,30 @@ export function createMachineCommand<
   actor,
   commandBarConfig,
   onCancel,
-}: CreateMachineCommandProps<T, S>): Command<
-  T,
-  typeof type,
-  S[typeof type]
-> | null {
+}: CreateMachineCommandProps<T, S>):
+  | Command<T, typeof type, S[typeof type]>
+  | Command<T, typeof type, S[typeof type]>[]
+  | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
-  if (!commandConfig) return null
+  // There may be no command config for this event type,
+  // or there may be multiple commands to create.
+  if (!commandConfig) {
+    return null
+  } else if (commandConfig instanceof Array) {
+    return commandConfig
+      .map((config) =>
+        createMachineCommand({
+          ownerMachine,
+          type,
+          state,
+          send,
+          actor,
+          commandBarConfig: { [type]: config },
+          onCancel,
+        })
+      )
+      .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
+  }
 
   // Hide commands based on platform by returning `null`
   // so the consumer can filter them out
@@ -82,6 +99,10 @@ export function createMachineCommand<
 
   if (onCancel) {
     command.onCancel = onCancel
+  }
+
+  if ('displayName' in commandConfig) {
+    command.displayName = commandConfig.displayName
   }
 
   return command

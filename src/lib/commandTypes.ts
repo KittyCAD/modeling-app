@@ -48,15 +48,19 @@ export type StateMachineCommandSet<
   >
 }>
 
+/**
+ * A configuration object for a set of commands tied to a state machine.
+ * Each event type can have one or more commands associated with it.
+ * @param T The state machine type.
+ * @param Schema The schema for the command set, defined by the developer.
+ */
 export type StateMachineCommandSetConfig<
   T extends AllMachines,
   Schema extends StateMachineCommandSetSchema<T>
 > = Partial<{
-  [EventType in EventFrom<T>['type']]: CommandConfig<
-    T,
-    EventFrom<T>['type'],
-    Schema[EventType]
-  >
+  [EventType in EventFrom<T>['type']]:
+    | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>
+    | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>[]
 }>
 
 export type Command<
