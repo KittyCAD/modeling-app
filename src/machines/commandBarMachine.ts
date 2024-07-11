@@ -120,9 +120,7 @@ export const commandBarMachine = createMachine(
                   context.commands.filter(
                     (c) =>
                       !event.data.commands.some(
-                        (c2) =>
-                          c2.name === c.name &&
-                          c2.groupId === c.groupId
+                        (c2) => c2.name === c.name && c2.groupId === c.groupId
                       )
                   ),
               }),
@@ -393,9 +391,7 @@ export const commandBarMachine = createMachine(
         selectedCommand: (c, e) => {
           if (e.type !== 'Find and select command') return c.selectedCommand
           const found = c.commands.find(
-            (cmd) =>
-              cmd.name === e.data.name &&
-              cmd.groupId === e.data.groupId
+            (cmd) => cmd.name === e.data.name && cmd.groupId === e.data.groupId
           )
 
           return !!found ? found : c.selectedCommand
