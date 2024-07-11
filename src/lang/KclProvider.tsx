@@ -61,8 +61,7 @@ export function KclContextProvider({
         displayName: 'Format Code',
         description: 'Nicely formats the KCL code in the editor.',
         needsReview: false,
-        // TODO: Seems like this is required, but not actually needed.
-        ownerMachine: '',
+        groupId: 'code',
         onSubmit: (data) => {
           kclManager.format()
         },
