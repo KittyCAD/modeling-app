@@ -4,7 +4,7 @@ import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
-import { useAppState } from 'AppState'
+import { useAppState, useAppStream } from 'AppState'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -28,6 +28,7 @@ export function useSetupEngineManager(
   }
 ) {
   const { setAppState } = useAppState()
+  const { setMediaStream } = useAppStream()
 
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
@@ -54,11 +55,7 @@ export function useSetupEngineManager(
       settings.modelingSend
     ) {
       engineCommandManager.start({
-        setMediaStream: (mediaStream) =>
-          settings.modelingSend({
-            type: 'Set context',
-            data: { mediaStream },
-          }),
+        setMediaStream: setMediaStream,
         setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
         width: quadWidth,
         height: quadHeight,
