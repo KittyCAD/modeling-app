@@ -56,7 +56,7 @@ const processReport = (suites) => {
     }
   }
   loopSuites(suites)
-  return failedTests.map(line => JSON.stringify(line))
+  return failedTests.map(line => JSON.stringify(line)).join('\n')
 }
 const failedTests = processReport(JSON.parse(data).suites)
 // log to stdout to be piped to axiom
