@@ -62,6 +62,7 @@ export function KclContextProvider({
         description: 'Nicely formats the KCL code in the editor.',
         needsReview: false,
         groupId: 'code',
+        icon: 'code',
         onSubmit: (data) => {
           kclManager.format()
         },
