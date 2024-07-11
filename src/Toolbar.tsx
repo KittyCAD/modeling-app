@@ -60,7 +60,7 @@ export function Toolbar({
         ? send('CancelSketch')
         : send({
             type: 'change tool',
-            data: 'line',
+            data: { tool: 'line' },
           }),
     { enabled: !disableLineButton, scopes: ['sketch'] }
   )
@@ -75,7 +75,7 @@ export function Toolbar({
         ? send('CancelSketch')
         : send({
             type: 'change tool',
-            data: 'tangentialArc',
+            data: { tool: 'tangentialArc' },
           }),
     { enabled: !disableTangentialArc, scopes: ['sketch'] }
   )
@@ -89,7 +89,7 @@ export function Toolbar({
         ? send('CancelSketch')
         : send({
             type: 'change tool',
-            data: 'rectangle',
+            data: { tool: 'rectangle' },
           }),
     { enabled: !disableRectangle, scopes: ['sketch'] }
   )
@@ -263,7 +263,7 @@ export function Toolbar({
                     ? send('CancelSketch')
                     : send({
                         type: 'change tool',
-                        data: 'line',
+                        data: { tool: 'line' },
                       })
                 }
                 aria-pressed={state?.matches('Sketch.Line tool')}
@@ -293,7 +293,7 @@ export function Toolbar({
                     ? send('CancelSketch')
                     : send({
                         type: 'change tool',
-                        data: 'tangentialArc',
+                        data: { tool: 'tangentialArc' },
                       })
                 }
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
@@ -323,7 +323,7 @@ export function Toolbar({
                     ? send('CancelSketch')
                     : send({
                         type: 'change tool',
-                        data: 'rectangle',
+                        data: { tool: 'rectangle' },
                       })
                 }
                 aria-pressed={state.matches('Sketch.Rectangle tool')}
