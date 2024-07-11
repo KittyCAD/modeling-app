@@ -114,7 +114,7 @@ export function Toolbar({
     () =>
       commandBarSend({
         type: 'Find and select command',
-        data: { name: 'Extrude', ownerMachine: 'modeling' },
+        data: { name: 'Extrude', groupId: 'modeling' },
       }),
     { enabled: !disableAllButtons, scopes: ['modeling'] }
   )
@@ -378,7 +378,7 @@ export function Toolbar({
               onClick={() =>
                 commandBarSend({
                   type: 'Find and select command',
-                  data: { name: 'Extrude', ownerMachine: 'modeling' },
+                  data: { name: 'Extrude', groupId: 'modeling' },
                 })
               }
               disabled={!state.can('Extrude') || disableAllButtons}

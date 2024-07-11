@@ -27,13 +27,10 @@ export class KclPlugin implements PluginValue {
     this.client = client
   }
 
-  private _deffererCodeUpdate = deferExecution(() => {
-    if (this.viewUpdate === null) {
-      return
-    }
-
-    kclManager.executeCode()
-  }, changesDelay)
+  // When a doc update needs to be sent to the server, this holds the
+  // timeout handle for it. When null, the server has the up-to-date
+  // document.
+  private sendScheduledInput: number | null = null
 
   private _deffererUserSelect = deferExecution(() => {
     if (this.viewUpdate === null) {
@@ -101,7 +98,34 @@ export class KclPlugin implements PluginValue {
     codeManager.code = newCode
     codeManager.writeToFile()
 
-    this._deffererCodeUpdate(true)
+    this.scheduleUpdateDoc()
+  }
+
+  scheduleUpdateDoc() {
+    if (this.sendScheduledInput != null)
+      window.clearTimeout(this.sendScheduledInput)
+    this.sendScheduledInput = window.setTimeout(
+      () => this.updateDoc(),
+      changesDelay
+    )
+  }
+
+  updateDoc() {
+    if (this.sendScheduledInput != null) {
+      window.clearTimeout(this.sendScheduledInput)
+      this.sendScheduledInput = null
+    }
+
+    if (!this.client.ready) return
+    try {
+      kclManager.executeCode()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  ensureDocUpdated() {
+    if (this.sendScheduledInput != null) this.updateDoc()
   }
 
   async updateUnits(

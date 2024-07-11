@@ -2,13 +2,18 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function UserMenu() {
   const { context } = useModelingContext()
+  const { auth } = useSettingsAuthContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)
   const [avatarErrored, setAvatarErrored] = useState(false)
-  const buttonDescription = !avatarErrored ? 'your avatar' : 'the menu button'
+
+  const user = auth?.context?.user
+  const errorOrNoImage = !user?.image || avatarErrored
+  const buttonDescription = errorOrNoImage ? 'the menu button' : 'your avatar'
 
   // Set up error handling for the user's avatar image,
   // so the onboarding text can be updated if it fails to load.
