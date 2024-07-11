@@ -1,4 +1,4 @@
-name: build-test-apps
+name: build-test-publish-apps
 
 on:
   pull_request:
@@ -45,13 +45,13 @@ jobs:
             '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - name: Set updater test version
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
           echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
-        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR }}
+        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
         with:
           path: |
             package.json
@@ -62,7 +62,7 @@ jobs:
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
-  build-app-macos:
+  build-test-app-macos:
     needs: [prepare-json-files]
     runs-on: macos-14
     steps:
@@ -224,18 +224,18 @@ jobs:
           path: "src-tauri/target/universal-apple-darwin/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
 
       - uses: actions/download-artifact@v3
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
 
       - name: Copy updated .json file for updater test
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: "cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json"
 
       - name: Build the app (release, updater test)
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: "yarn tauri build -c src-tauri/tauri.release.conf.json -b dmg --target universal-apple-darwin"
 
       - uses: actions/upload-artifact@v3
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
           path: "src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg"
           name: updater-test
@@ -371,18 +371,18 @@ jobs:
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
       - uses: actions/download-artifact@v3
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
 
       - name: Copy updated .json file for updater test
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: "cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json"
 
       - name: Build the app (release, updater test)
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi"
 
       - uses: actions/upload-artifact@v3
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
           path: "src-tauri/target/release/bundle/msi/*.msi"
           name: updater-test
@@ -393,7 +393,7 @@ jobs:
     permissions:
       contents: write
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [prepare-json-files, build-app-macos, build-test-app-windows]
+    needs: [prepare-json-files, build-test-app-macos, build-test-app-windows]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
