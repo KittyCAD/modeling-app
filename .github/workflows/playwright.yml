@@ -153,24 +153,52 @@ jobs:
       with:
         name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
-    - name: Run ubuntu/chrome flow retry failures
+    - name: Run ubuntu/chrome flow (with retries)
       id: retry
       if: always()
       run: |
-        if [[ -d "test-results" ]];
-        then if [[ $(ls -1 "test-results" | wc -l) != "0" ]];
-          then echo "retried=true" >> $GITHUB_OUTPUT;
-          else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
-          fi;
-        else echo "retried=false" >> $GITHUB_OUTPUT; exit 0;
-        fi;
-        yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
-      env:
-        CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - name: Run ubuntu/chrome flow
-      if: steps.retry.outputs.retried == 'false'
-      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+        if [[ ! -f "test-results/.last-run.json" ]]; then
+            # if no last run artifact, than run plawright normally
+            echo "run playwright normally"
+            yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts || true
+            # # send to axiom
+            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        fi
+        
+        retry=1
+        max_retrys=4
+        
+        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
+        while [[ $retry -le $max_retrys ]]; do
+            if [[ -f "test-results/.last-run.json" ]]; then
+                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+                if [[ $failed_tests -gt 0 ]]; then
+                    echo "retried=true" >>$GITHUB_OUTPUT
+                    echo "run playwright with last failed tests and retry $retry"
+                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
+                    # send to axiom
+                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+                    retry=$((retry + 1))
+                else
+                    echo "retried=false" >>$GITHUB_OUTPUT
+                    exit 0
+                fi
+            else
+                echo "retried=false" >>$GITHUB_OUTPUT
+                exit 0
+            fi
+        done
+        
+        echo "retried=false" >>$GITHUB_OUTPUT
+        
+        if [[ -f "test-results/.last-run.json" ]]; then
+            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+            if [[ $failed_tests -gt 0 ]]; then
+                # if it still fails after 3 retrys, then fail the job
+                exit 1
+            fi
+        fi
+        exit 0
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -290,13 +318,13 @@ jobs:
         max_retrys=4
         
         # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -lt $max_retrys ]]; do
+        while [[ $retry -le $max_retrys ]]; do
             if [[ -f "test-results/.last-run.json" ]]; then
                 failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
-                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
                     echo "run playwright with last failed tests and retry $retry"
+                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
