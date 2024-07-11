@@ -26,6 +26,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
+import { useAppState } from 'AppState'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -45,6 +46,8 @@ export function App() {
 
   useHotKeyListener()
   const { context } = useModelingContext()
+  const { streamDimensions, didDragInStream, buttonDownInStream } =
+    useAppState()
 
   const { auth, settings } = useSettingsAuthContext()
   const token = auth?.context?.token
@@ -74,7 +77,7 @@ export function App() {
     (p) => p === onboardingStatus.current
   )
     ? 'opacity-20'
-    : context.store?.didDragInStream
+    : didDragInStream
     ? 'opacity-40'
     : ''
 
@@ -92,11 +95,11 @@ export function App() {
       clientX: e.clientX,
       clientY: e.clientY,
       el: e.currentTarget,
-      ...context.store?.streamDimensions,
+      ...streamDimensions,
     })
 
     const newCmdId = uuidv4()
-    if (context.store?.buttonDownInStream === undefined) {
+    if (buttonDownInStream === undefined) {
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
@@ -118,7 +121,7 @@ export function App() {
         className={
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
-          (context.store?.buttonDownInStream ? ' pointer-events-none' : '')
+          (buttonDownInStream ? ' pointer-events-none' : '')
         }
         project={{ project, file }}
         enableMenu={true}

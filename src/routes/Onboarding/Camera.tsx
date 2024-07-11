@@ -8,9 +8,11 @@ import {
 } from 'lib/cameraControls'
 import { SettingsSection } from 'components/Settings/SettingsSection'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useAppState } from 'AppState'
 
 export default function Units() {
   const { context } = useModelingContext()
+  const { buttonDownInStream } = useAppState()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.STREAMING)
   const {
@@ -29,7 +31,7 @@ export default function Units() {
       <div
         className={
           'max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <SettingsSection

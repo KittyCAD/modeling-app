@@ -2,9 +2,11 @@ import usePlatform from 'hooks/usePlatform'
 import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useAppState } from 'AppState'
 
 export default function CmdK() {
-  const { context } = useModelingContext()
+  // const { context } = useModelingContext()
+  const { buttonDownInStream } = useAppState()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.USER_MENU)
   const platformName = usePlatform()
@@ -14,7 +16,7 @@ export default function CmdK() {
       <div
         className={
           'max-w-full xl:max-w-4xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <h2 className="text-2xl font-bold">Command Bar</h2>

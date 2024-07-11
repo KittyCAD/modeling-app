@@ -2,9 +2,11 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { isTauri } from 'lib/isTauri'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useAppState } from 'AppState'
 
 export default function ProjectMenu() {
   const { context } = useModelingContext()
+  const { buttonDownInStream } = useAppState()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EXPORT)
   const tauri = isTauri()
@@ -14,7 +16,7 @@ export default function ProjectMenu() {
       <div
         className={
           'max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1">

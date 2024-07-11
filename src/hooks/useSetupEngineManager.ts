@@ -1,5 +1,5 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
@@ -27,7 +27,7 @@ export function useSetupEngineManager(
     showScaleGrid: boolean
   }
 ) {
-  const { setAppState } = useAppState()
+  const { setAppState, streamDimensions } = useAppState()
 
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
@@ -47,18 +47,17 @@ export function useSetupEngineManager(
       streamWidth,
       streamHeight
     )
-    if (
-      !hasSetNonZeroDimensions.current &&
-      quadHeight &&
-      quadWidth &&
-      settings.modelingSend
-    ) {
+    if (!hasSetNonZeroDimensions.current && quadHeight && quadWidth) {
       engineCommandManager.start({
-        setMediaStream: (mediaStream) =>
-          settings.modelingSend({
-            type: 'Set context',
-            data: { mediaStream },
-          }),
+        // setMediaStream: (mediaStream) =>
+        //   settings.modelingSend({
+        //     type: 'Set context',
+        //     data: { mediaStream },
+        //   }),
+        setMediaStream: (mediaStream) => {
+          ;(window as any).mediaStream = mediaStream
+          setAppState({ mediaStream })
+        },
         setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
         width: quadWidth,
         height: quadHeight,
@@ -79,15 +78,22 @@ export function useSetupEngineManager(
           return modifyGrid(kclManager.engineCommandManager, hidden)
         },
       })
-      settings.modelingSend({
-        type: 'Set context',
-        data: {
-          streamDimensions: {
-            streamWidth: quadWidth,
-            streamHeight: quadHeight,
-          },
-        },
+      setAppState({
+        streamDimensions: { streamWidth: quadWidth, streamHeight: quadHeight },
       })
+      sceneInfra._streamDimensions = {
+        streamWidth: quadWidth,
+        streamHeight: quadHeight,
+      }
+      // settings.modelingSend({
+      //   type: 'Set context',
+      //   data: {
+      //     streamDimensions: {
+      //       streamWidth: quadWidth,
+      //       streamHeight: quadHeight,
+      //     },
+      //   },
+      // })
       hasSetNonZeroDimensions.current = true
     }
   }
@@ -96,6 +102,7 @@ export function useSetupEngineManager(
     streamRef?.current?.offsetWidth,
     streamRef?.current?.offsetHeight,
     settings.modelingSend,
+    setAppState,
   ])
 
   useEffect(() => {
@@ -105,22 +112,29 @@ export function useSetupEngineManager(
         streamRef?.current?.offsetHeight
       )
       if (
-        settings.modelingContext.store.streamDimensions.streamWidth !== width ||
-        settings.modelingContext.store.streamDimensions.streamHeight !== height
+        streamDimensions.streamWidth !== width ||
+        streamDimensions.streamHeight !== height
       ) {
         engineCommandManager.handleResize({
           streamWidth: width,
           streamHeight: height,
         })
-        settings.modelingSend({
-          type: 'Set context',
-          data: {
-            streamDimensions: {
-              streamWidth: width,
-              streamHeight: height,
-            },
-          },
+        setAppState({
+          streamDimensions: { streamWidth: width, streamHeight: height },
         })
+        sceneInfra._streamDimensions = {
+          streamWidth: width,
+          streamHeight: height,
+        }
+        // settings.modelingSend({
+        //   type: 'Set context',
+        //   data: {
+        //     streamDimensions: {
+        //       streamWidth: width,
+        //       streamHeight: height,
+        //     },
+        //   },
+        // })
       }
     }, 500)
 

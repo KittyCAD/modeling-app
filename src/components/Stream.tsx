@@ -9,6 +9,7 @@ import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { useAppState } from 'AppState'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -16,7 +17,10 @@ export const Stream = () => {
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
-  const { state, send, context } = useModelingContext()
+  const { state, send } = useModelingContext()
+  const { mediaStream, streamDimensions, didDragInStream, setAppState } =
+    useAppState()
+
   const { overallState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
 
@@ -124,11 +128,18 @@ export const Stream = () => {
     )
       return
     if (!videoRef.current) return
-    if (!context.store?.mediaStream) return
+    // console.log('setting mideastrema to vi2', mediaStream, (window as any).mediaStream)
+    const _mediaStream = mediaStream || (window as any).mediaStream
+    if (!_mediaStream) return
 
+    // console.log('setting mideastrema to vi')
     // Do not immediately play the stream!
-    videoRef.current.srcObject = context.store.mediaStream
+    videoRef.current.srcObject = _mediaStream
     videoRef.current.pause()
+
+    // setAppState({
+    //   mediaStream,
+    // })
 
     send({
       type: 'Set context',
@@ -136,7 +147,7 @@ export const Stream = () => {
         videoElement: videoRef.current,
       },
     })
-  }, [context.store?.mediaStream])
+  }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
@@ -148,44 +159,49 @@ export const Stream = () => {
       clientX: e.clientX,
       clientY: e.clientY,
       el: videoRef.current,
-      ...context.store?.streamDimensions,
+      ...streamDimensions,
     })
 
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: e.button,
-      },
+    setAppState({
+      buttonDownInStream: e.button,
     })
+    // send({
+    //   type: 'Set context',
+    //   data: {
+    //     buttonDownInStream: e.button,
+    //   },
+    // })
     setClickCoords({ x, y })
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: undefined,
-      },
+    setAppState({
+      buttonDownInStream: undefined,
     })
+    // send({
+    //   type: 'Set context',
+    //   data: {
+    //     buttonDownInStream: undefined,
+    //   },
+    // })
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
 
-    if (!context.store?.didDragInStream && btnName(e).left) {
-      sendSelectEventToEngine(
-        e,
-        videoRef.current,
-        context.store?.streamDimensions
-      )
+    if (!didDragInStream && btnName(e).left) {
+      sendSelectEventToEngine(e, videoRef.current, streamDimensions)
     }
 
-    send({
-      type: 'Set context',
-      data: {
-        didDragInStream: false,
-      },
+    setAppState({
+      didDragInStream: false,
     })
+    // send({
+    //   type: 'Set context',
+    //   data: {
+    //     didDragInStream: false,
+    //   },
+    // })
     setClickCoords(undefined)
   }
 
@@ -199,13 +215,16 @@ export const Stream = () => {
       ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
       0.5
 
-    if (delta > 5 && !context.store?.didDragInStream) {
-      send({
-        type: 'Set context',
-        data: {
-          didDragInStream: true,
-        },
+    if (delta > 5 && !didDragInStream) {
+      setAppState({
+        didDragInStream: true,
       })
+      // send({
+      //   type: 'Set context',
+      //   data: {
+      //     didDragInStream: true,
+      //   },
+      // })
     }
   }
 

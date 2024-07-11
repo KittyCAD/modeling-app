@@ -15,6 +15,7 @@ import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
 import { isTauri } from 'lib/isTauri'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useAppState } from 'AppState'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -24,8 +25,9 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
   const { context } = useModelingContext()
+  const { buttonDownInStream } = useAppState()
   const pointerEventsCssClass =
-    context.store?.buttonDownInStream ||
+    buttonDownInStream ||
     onboardingStatus.current === 'camera' ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
