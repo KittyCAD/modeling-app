@@ -393,7 +393,7 @@ jobs:
     permissions:
       contents: write
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-app-macos, build-test-app-windows]
+    needs: [prepare-json-files, build-app-macos, build-test-app-windows]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
