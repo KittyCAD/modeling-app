@@ -1,3 +1,4 @@
+import { DEV } from 'env'
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
@@ -19,6 +20,8 @@ export const Stream = () => {
   const { state, send, context } = useModelingContext()
   const { overallState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
+
+  const IDLE = false
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
@@ -65,14 +68,16 @@ export const Stream = () => {
     }
 
     // Teardown everything if we go hidden or reconnect
-    if (globalThis?.window?.document) {
-      globalThis.window.document.onvisibilitychange = () => {
-        if (globalThis.window.document.visibilityState === 'hidden') {
-          clearTimeout(timeoutIdIdleA)
-          timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
-        } else if (!engineCommandManager.engineConnection?.isReady()) {
-          clearTimeout(timeoutIdIdleA)
-          engineCommandManager.engineConnection?.connect(true)
+    if (IDLE && DEV) {
+      if (globalThis?.window?.document) {
+        globalThis.window.document.onvisibilitychange = () => {
+          if (globalThis.window.document.visibilityState === 'hidden') {
+            clearTimeout(timeoutIdIdleA)
+            timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
+          } else if (!engineCommandManager.engineConnection?.isReady()) {
+            clearTimeout(timeoutIdIdleA)
+            engineCommandManager.engineConnection?.connect(true)
+          }
         }
       }
     }
@@ -89,26 +94,38 @@ export const Stream = () => {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
-    globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
-    globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
-    globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
-    globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
-    globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    if (IDLE && DEV) {
+      globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
+      globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    }
 
-    timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    if (IDLE && DEV) {
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    }
 
     return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
-      globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('mousemove', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('mousedown', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
-      globalThis?.window?.document?.removeEventListener(
-        'touchstart',
-        onAnyInput
-      )
+      if (IDLE && DEV) {
+        globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'mousemove',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener(
+          'mousedown',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'touchstart',
+          onAnyInput
+        )
+      }
     }
   }, [])
 
