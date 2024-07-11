@@ -28,6 +28,11 @@ export const CommandBarProvider = ({
           Object.keys(context.selectedCommand?.args).length === 0
         )
       },
+      'All arguments are skippable': (context, _event) => {
+        return Object.values(context.selectedCommand!.args!).every(
+          (argConfig) => argConfig.skip
+        )
+      },
     },
   })
 
