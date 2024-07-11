@@ -46,14 +46,14 @@ interface AppStream {
 }
 
 const AppStreamContext = createContext<AppStream>({
-  mediaStream: new MediaStream(),
+  mediaStream: undefined as unknown as MediaStream,
   setMediaStream: () => {},
 })
 
 export const useAppStream = () => useContext(AppStreamContext)
 
 export const AppStreamProvider = ({ children }: { children: ReactNode }) => {
-  const [mediaStream, setMediaStream] = useState<MediaStream>(new MediaStream())
+  const [mediaStream, setMediaStream] = useState<MediaStream>(undefined as unknown as MediaStream,)
 
   return (
     <AppStreamContext.Provider
