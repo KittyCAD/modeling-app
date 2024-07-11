@@ -201,7 +201,10 @@ export class LanguageServerPlugin implements PluginValue {
 
   scheduleSendDoc() {
     if (this.sendScheduled != null) window.clearTimeout(this.sendScheduled)
-    this.sendScheduled = window.setTimeout(() => this.sendDoc(), this.changesDelay)
+    this.sendScheduled = window.setTimeout(
+      () => this.sendDoc(),
+      this.changesDelay
+    )
   }
 
   sendDoc() {
