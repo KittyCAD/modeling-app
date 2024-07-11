@@ -1,4 +1,4 @@
-import { CommandSetConfig } from 'lib/commandTypes'
+import { StateMachineCommandSetConfig } from 'lib/commandTypes'
 import { homeMachine } from 'machines/homeMachine'
 
 export type HomeCommandSchema = {
@@ -17,7 +17,7 @@ export type HomeCommandSchema = {
   }
 }
 
-export const homeCommandBarConfig: CommandSetConfig<
+export const homeCommandBarConfig: StateMachineCommandSetConfig<
   typeof homeMachine,
   HomeCommandSchema
 > = {

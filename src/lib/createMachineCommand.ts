@@ -11,20 +11,20 @@ import {
   CommandArgument,
   CommandArgumentConfig,
   CommandConfig,
-  CommandSetConfig,
-  CommandSetSchema,
+  StateMachineCommandSetConfig,
+  StateMachineCommandSetSchema,
 } from './commandTypes'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 > {
   type: EventFrom<T>['type']
   ownerMachine: T['id']
   state: StateFrom<T>
   send: Function
   actor: InterpreterFrom<T>
-  commandBarConfig?: CommandSetConfig<T, S>
+  commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
 }
 
@@ -32,7 +32,7 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 >({
   ownerMachine,
   type,
@@ -92,7 +92,7 @@ export function createMachineCommand<
 // bundled together into the args for a Command.
 function buildCommandArguments<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>,
+  S extends StateMachineCommandSetSchema<T>,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
 >(
   state: StateFrom<T>,
@@ -112,7 +112,7 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends CommandSetSchema<T> = CommandSetSchema<T>
+  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,

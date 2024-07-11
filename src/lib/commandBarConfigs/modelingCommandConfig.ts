@@ -1,5 +1,5 @@
 import { Models } from '@kittycad/lib'
-import { CommandSetConfig, KclCommandValue } from 'lib/commandTypes'
+import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { Selections } from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
@@ -29,7 +29,7 @@ export type ModelingCommandSchema = {
   }
 }
 
-export const modelingMachineConfig: CommandSetConfig<
+export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
 > = {
