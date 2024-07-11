@@ -35,6 +35,7 @@ import {
   canExtrudeSelection,
   handleSelectionBatch,
   isSelectionLastLine,
+  isRangeInbetweenCharacters,
   isSketchPipe,
   updateSelections,
 } from 'lib/selections'
@@ -425,6 +426,7 @@ export const ModelingMachineProvider = ({
 
           if (
             selectionRanges.codeBasedSelections.length === 0 ||
+            isRangeInbetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
           ) {
             // they have no selection, we should enable the button
