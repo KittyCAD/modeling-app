@@ -160,7 +160,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts || true
+            yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -175,7 +175,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
+                    yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
