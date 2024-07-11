@@ -54,11 +54,13 @@ export function useSetupEngineManager(
       settings.modelingSend
     ) {
       engineCommandManager.start({
-        setMediaStream: (mediaStream) =>
+        setMediaStream: (mediaStream) => {
           settings.modelingSend({
             type: 'Set context',
             data: { mediaStream },
-          }),
+          })
+          ;(window as any).mediaStream = mediaStream
+        },
         setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
         width: quadWidth,
         height: quadHeight,
