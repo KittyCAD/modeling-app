@@ -348,13 +348,13 @@ jobs:
       - name: Build the app (debug) for aarch64
         if: ${{ env.BUILD_RELEASE == 'false' }}
         # .msi bundles aren't supported by tauri on aarch64
-        run: yarn run tauri build --debug --target aarch64-pc-windows-msvc --no-bundle
+        run: yarn run tauri build --debug --target aarch64-pc-windows-msvc -b msi
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.BUILD_RELEASE == 'false' }}
         with:
           name: artifact-aarch64-windows
-          path: src-tauri/target/aarch64-pc-windows-msvc/*/*
+          path: "src-tauri/target/aarch64-pc-windows-msvc/debug/bundle/*/*"
 
       - name: Run e2e tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}

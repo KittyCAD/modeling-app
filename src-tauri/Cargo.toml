@@ -12,6 +12,7 @@ rust-version = "1.70"
 
 [build-dependencies]
 tauri-build = { version = "2.0.0-beta.18", features = [] }
+tauri-bundler = { git = "https://github.com/tauri-apps/tauri", rev = "1a88fc1a9b81bd09fc24cf0dfed95d20dd72a1bb" }
 
 [dependencies]
 anyhow = "1"
