@@ -50,11 +50,7 @@ export function useSetupEngineManager(
     }
     engineCommandManager.start({
       restart,
-      setMediaStream: (mediaStream) =>
-        settings.modelingSend({
-          type: 'Set context',
-          data: { mediaStream },
-        }),
+      setMediaStream: (mediaStream) => setMediaStream(mediaStream),
       setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
       width: quadWidth,
       height: quadHeight,
@@ -183,7 +179,13 @@ export function useSetupEngineManager(
     // Engine relies on many settings so we should rebind events when it changes
     // We have to list out the ones we care about because the settings object holds
     // non-settings too...
-  }, [settings.enableSSAO, settings.highlightEdges, settings.showScaleGrid, settings.theme, settings.pool])
+  }, [
+    settings.enableSSAO,
+    settings.highlightEdges,
+    settings.showScaleGrid,
+    settings.theme,
+    settings.pool,
+  ])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
