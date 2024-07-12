@@ -3570,7 +3570,7 @@ test.describe('Command bar tests', () => {
     await themeOption.click()
     await expect(commandThemeArgButton).toBeDisabled()
     await commandOptionInput.focus()
-    await cmdSearchBar.fill('lig')
+    await commandOptionInput.fill('lig')
     await commandLevelArgButton.click()
     await expect(commandLevelArgButton).toBeDisabled()
 
@@ -3673,7 +3673,9 @@ test.describe('Command bar tests', () => {
     await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
-    await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'distance', exact: false })
+    ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
@@ -3693,7 +3695,7 @@ test.describe('Command bar tests', () => {
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'distance: 5', exact: false })
+      page.getByRole('button', { name: 'distance', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -3750,6 +3752,7 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
     // Click in the scene a couple times to draw a line
     // so tangential arc is valid
     await page.mouse.click(700, 200)
+    await page.mouse.move(700, 300, { steps: 5 })
     await page.mouse.click(700, 300)
 
     // switch to tangential arc via command bar
@@ -4711,7 +4714,7 @@ test.describe('Sketch tests', () => {
     // sketch selection should already have been made. "Selection 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'Selection 1 face' })
+      page.getByRole('button', { name: 'selection: 1 face' })
     ).toBeVisible()
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {
