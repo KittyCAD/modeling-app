@@ -173,7 +173,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                             ModelingCmd::MovePathPen { path, to } => {
                                 format!(
                                     r#"
-                                    path_{}->moveTo({{ {}, {}, 0.0 }});
+                                    path_{}->moveTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor);
                                 "#,
                                     id_to_cpp(path),
                                     to.x,
