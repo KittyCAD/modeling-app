@@ -74,6 +74,15 @@ export function KclContextProvider({
         commands,
       },
     })
+
+    return () => {
+      commandBarSend({
+        type: 'Remove commands',
+        data: {
+          commands,
+        },
+      })
+    }
   }, [])
 
   return (
