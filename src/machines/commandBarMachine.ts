@@ -510,7 +510,9 @@ export const commandBarMachine = createMachine(
 )
 
 function sortCommands(a: Command, b: Command) {
-  if (b.groupId === 'auth') return -1
-  if (a.groupId === 'auth') return 1
+  if (b.groupId === 'auth' && !(a.groupId === 'auth')) return -2
+  if (a.groupId === 'auth' && !(b.groupId === 'auth')) return 2
+  if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
+  if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
 }
