@@ -3513,9 +3513,10 @@ test.describe('Command bar tests', () => {
       name: 'theme',
       exact: false,
     })
-    const commandOptionInput = page.getByPlaceholder('Select an option')
     const commandLevelArgButton = page.getByRole('button', { name: 'level' })
     const commandThemeArgButton = page.getByRole('button', { name: 'value' })
+    // This selector changes after we set the setting
+    let commandOptionInput = page.getByPlaceholder('Select an option')
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3537,7 +3538,7 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -3560,14 +3561,16 @@ test.describe('Command bar tests', () => {
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
 
+    commandOptionInput = page.getByPlaceholder('system')
+
     // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
     await commandBarButton.click()
     await cmdSearchBar.focus()
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     await themeOption.click()
     await expect(commandThemeArgButton).toBeDisabled()
     await commandOptionInput.focus()
-    await page.keyboard.type('lig')
+    await cmdSearchBar.fill('lig')
     await commandLevelArgButton.click()
     await expect(commandLevelArgButton).toBeDisabled()
 
@@ -3599,7 +3602,7 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     const themeOption = page.getByRole('option', {
       name: 'Settings · app · theme',
     })
@@ -3685,11 +3688,12 @@ test.describe('Command bar tests', () => {
 
     // Review step and argument hotkeys
     await expect(submitButton).toBeEnabled()
-    await page.keyboard.press('Backspace')
+    await expect(submitButton).toBeFocused()
+    await submitButton.press('Backspace')
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 5', exact: false })
+      page.getByRole('button', { name: 'distance: 5', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
