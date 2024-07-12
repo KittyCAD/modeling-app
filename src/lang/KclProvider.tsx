@@ -83,7 +83,7 @@ export function KclContextProvider({
         },
       })
     }
-  }, [])
+  }, [kclManager, commandBarSend])
 
   return (
     <KclContext.Provider
