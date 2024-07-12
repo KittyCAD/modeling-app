@@ -20,7 +20,7 @@ interface CreateMachineCommandProps<
   S extends CommandSetSchema<T>
 > {
   type: EventFrom<T>['type']
-  ownerMachine: T['id']
+  groupId: T['id']
   state: StateFrom<T>
   send: Function
   actor: InterpreterFrom<T>
@@ -34,7 +34,7 @@ export function createMachineCommand<
   T extends AnyStateMachine,
   S extends CommandSetSchema<T>
 >({
-  ownerMachine,
+  groupId,
   type,
   state,
   send,
@@ -62,7 +62,7 @@ export function createMachineCommand<
 
   const command: Command<T, typeof type, S[typeof type]> = {
     name: type,
-    ownerMachine: ownerMachine,
+    groupId,
     icon,
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
