@@ -66,7 +66,7 @@ export type CommandBarMachineEvent =
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswZJbPltM0U3eXLZAsRFeQcrerUHRbTFvfkmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUilkskqdiUWjWCAcDC0kjUqnElkc6lkoK0JzOT0CnWo1zIAEEIARvn48LA-uwuIC4qAEqIHJjJPJcYtxFoYdJFFjVsZEG5pqCquJxJoGvJxOUCT82sSrj0AEpgdCoABuYC+yog9OYIyZsQmYmhWzMmTqLnU0kyikRGVRbj5lg2SmUam5StpFxIkgAymBXh8HlADQGyKHw58aecGZEzUDWYgchY7CisWoSlpQQ5EVDLJJxKkdIpyypUop-ed2kHCW0Xu9uD1kwDzcCEJCtlUNgWhZZ1OlnaKEBpZJItHVzDZ5xlpPWiZdDc8w22Ow5wozosyLUiVNMSg5ytVKmfrIipzO564z2otPVpI1vKd18SAOJYbgACzAEhI3wUgoAAV3QQZuFgCg-1wGAvjAkgSCgkCSHAyCcG4TtUxZYRED2TQZGSOw80qaQ7ARCc9mmZYSksextGkNJBRXFUOh-f9AOA0CIKgmCABE4E3D5oyTE1-lww8clKBjZF2Bh5SFZwXUUyRVDzJwNE2LQzzYwNJE4gCgJwKNeMw6DJHJAB3LAYlM-AHjYMDuFjMCACN0B4NCMKgnD927dMkWSUs8yY8RISfWQshvcsrDlapshULJPHfZsDKM7iHPM-jJAANSwShOAgX9IzICB+DASQHh1VAAGsqp1Qrit-MByXQvisP8sY8ISZwbCsDllBLSwz1qRFBQsRZ5WRIVkui-TG0M39jJ4jqLNgfLmpK3hTLIQCSFQIM2EoX8ADMjvQSQmqKna2vWvyJL3HrD1SEoyzSdJUkUm9dnUtQn10aK6hkxbiU1HVODAay3M87zE1+J6UwCtN8IQUauR0OZ0ksFwUUqRFPWmUdouPXR3TBjoIahmHKQIHKuqRrtUYSaVShhLF+TkeTzBFQosVKDRM2RVInEdSmg2p6GyE1bU9R8zrsKZqSexFqQHWlHNXHzCbFhnX1+UydFkVxiXJClmGAFEIG8hmld3ZGXp7TR5C5RSCxdjlQV1tR9bqaVdhsSFxDN5AALeOrgPa3ysJgiqcCqmr6sa7bWujxXjQd5nesQZYthsblIQYJx6hUic9AsdEFT2HQzByVLmgDJaw-eSOHPTjbysq6qcFqhrrtT9sO-4ugd1NFGc4QXEPo5eVLGsFxlnKREXGnZI9HcT1mOikO0s-S5w7bqNh9j-bkKOyQTvOy6B9utOHtj7qD1V8pSyrHJZ3STY4QmjQ0R2Ww0oSjuF3u+HAqAIBwEEOlRs48nZBVENkKQNprC42qBoJ0LothaXMJ9aElRXDLj3k3VUpJIBwOfgg4oMx8y41SPUOY8p5DFk2GiKoxsoRVmhGoM2cY2zAQRngChgU0a7HZtFH0ilRp1D5usVh6JXCKD2CUdI8lQ7rlbB8chkkJ6HkxFsBeulbQZAUCwrYCiqzIhyE+fqZtMomTMg-aCwiWYEV2NOBUCghQ6EFGzYsvpwQUT5MxawFECx2JWllRxMdLI2TsrtKMTkXIuMnmeCiZYwrePMFWCKv1XZKVGroWwmxNARK4g4hWG0tp3wSSk16lQpC41ULjV8uxUjSBvFCNEDTdCOkWCY44xCGzgzAJDaGdTnaZHBADYcqg5DpCovzeRno5izA0BeUOh8o5OPgDo+BaNvqV0xNFaE7gdYTnnvkmUChdKEMyF4LwQA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswZJbPltM0U3eXLZAsRFeQcrerUHRbTFvfkmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUilkskqdiUWjWCAcDC0kjUqnElkc6lkoK0JzOT0CnWo1zIAEEIARvn48LA-uwuIC4qAEqIHJjJPJcYtxFoYdJFFjVsZEG5pqCquJxJoGvJxOUCT82sSrj0AEpgdCoABuYC+yog9OYIyZsQmYmhWzMmTqLnU0kyikRGVRbj5lg2SmUam5StpFxIkgAymBXh8HlADQGyKHw58aecGZEzUDWYgchY7CisWoSlpQQ5EVDLJJxKkdIpyypUop-ed2kHCW0Xu9uD1kwDzcCEJCtlUNgWhZZ1OlnaKEBpZJItHVzDZ5xlpPWiZdDc8w22Ow5wozosyLUiVNMSg5ytVKmfrIipzO564z2otPVpI1vKd18SAOJYbgACzAEhI3wUgoAAV3QQZuFgCg-1wGAvjAkgSCgkCSHAyCcG4TtUxZYRED2TQZGSOw80qaQ7ARCc9mmZYSksextGkNJBRXFUOh-f9AOA0CIKgmCABE4E3D5oyTE1-lww8clKBjZF2Bh5SFZwXUUyRVDzJwNE2LQzzYwNJE4gCgJwKNeMw6DJHJAB3LAYlM-AHjYMDuFjMCACN0B4NCMKgnD927dMkWSUs8yY8RISfWQshvcsrDlapshULJPHfZsDKM7iHPM-jJAANSwShOAgX9IzICB+DASQHh1VAAGsqp1Qrit-MByXQvisP8sY8ISZwbCsDllBLSwz1qRFBQsRZ5WRIVkui-TG0M39jJ4jqLNgfLmpK3hTLIQCSFQIM2EoX8ADMjvQSQmqKna2vWvyJL3HrD1SEoyzSdJUkUm9dnUtQn10aK6hkxbiU1HVODAay3M87zE1+J6UwCtN8IQUauR0OZ0ksFwUUqRFPWmUdouPXR3TBjoIahmHKQIHKuqRrtUYSaVShhLF+TkeTzBFQosVKDRM2RVInEdSmg2p6GyE1bU9R8zrsKZqSexFqQHWlHNXHzCbFhnX1+UydFkVxiXJClmGAFEIG8hmld3ZGXp7TR5C5RSCxdjlQV1tR9bqaVdhsSFxDN5AALeOrgPa3ysJgiqcCqmr6sa7bWujxXjQd5nesQZYthsblIQYJx6hUic9AsdEFT2HQzByVLmgDJaw-eSOHPTjbysq6qcFqhrrtT9sO-4ugd1NFGc4QXEPo5eVLGsFxlnKREXGnZI9HcT1mOikO0s-S5w7bqNh9j-bkKOyQTvOy6B9utOHtj7qD1V8pSyrHJZ3STY4QmjQ0R2Ww0oSjuF3u+HAqAIBwEEOlRs48nZBVENkKQNprC42qBoJ0LprT2FGgsFwvpcTLj3k3VUpJIBwOfgg4oMx8y41SPUOY8p5DFk2GiKoxsoRVmhGoM2cY2zAQRngChgU0a7HZtFH0ilRp1D5usVh6JXCKD2CUdI8lQ7rlbB8chkkJ6HkxFsBeulbQZAUCwrYCiqzIhyE+fqZtMomTMg-aCwiWYEV2NOBUCghQ6EFGzF0fIZCpHSCiR07hXBEMbg2b8K0sqOJjpZGydldpRici5Fxk8zwUTLGFbx5gqwRV+q7JSo1dC2E2JoOxMSHEKw2ltO+yT0mvUqFIXGqhcavl2KkaQN4oRomaboR0iwTHHGIVEqmYBIbQ0ac7TI4IAbDlUHIdIVF+byM9HMWYGgLyh0PlHJx8AdHwLRt9SumJorQncDrCc88ikygULpcJmQvBeCAA */
     predictableActionArguments: true,
     tsTypes: {} as import('./commandBarMachine.typegen').Typegen0,
     context: {
@@ -199,7 +199,7 @@ export const commandBarMachine = createMachine(
           'Change current argument': {
             target: 'Gathering arguments',
             internal: true,
-            actions: ['Remove current argument and set a new one'],
+            actions: ['Set current argument'],
           },
 
           'Deselect command': {
@@ -355,27 +355,11 @@ export const commandBarMachine = createMachine(
           switch (event.type) {
             case 'Edit argument':
               return event.data.arg
+            case 'Change current argument':
+              return Object.values(event.data)[0]
             default:
               return context.currentArgument
           }
-        },
-      }),
-      'Remove current argument and set a new one': assign({
-        argumentsToSubmit: (context, event) => {
-          if (
-            event.type !== 'Change current argument' ||
-            !context.currentArgument
-          )
-            return context.argumentsToSubmit
-          const { name } = context.currentArgument
-
-          const { [name]: _, ...rest } = context.argumentsToSubmit
-          return rest
-        },
-        currentArgument: (context, event) => {
-          if (event.type !== 'Change current argument')
-            return context.currentArgument
-          return Object.values(event.data)[0]
         },
       }),
       'Clear argument data': assign({
