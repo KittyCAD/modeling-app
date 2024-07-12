@@ -143,14 +143,18 @@ interface Memory {
   [key: string]: MemoryItem
 }
 
+interface Environment {
+  bindings: Memory
+}
+
 export interface ProgramMemory {
-  root: Memory
+  environments: Environment[]
   return: ProgramReturn | null
 }
 
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = { environments: [], return: null },
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ProgramMemory> => {
@@ -171,7 +175,7 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = { environments: [], return: null },
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ProgramMemory> => {
