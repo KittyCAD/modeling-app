@@ -4711,10 +4711,10 @@ test.describe('Sketch tests', () => {
     // click extrude
     await page.getByRole('button', { name: 'Extrude' }).click()
 
-    // sketch selection should already have been made. "Selection 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'selection: 1 face' })
+      page.getByRole('button', { name: 'selection : 1 face', exact: false })
     ).toBeVisible()
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {
