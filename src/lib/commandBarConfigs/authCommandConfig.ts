@@ -1,9 +1,9 @@
-import { CommandSetConfig } from 'lib/commandTypes'
+import { StateMachineCommandSetConfig } from 'lib/commandTypes'
 import { authMachine } from 'machines/authMachine'
 
 type AuthCommandSchema = {}
 
-export const authCommandBarConfig: CommandSetConfig<
+export const authCommandBarConfig: StateMachineCommandSetConfig<
   typeof authMachine,
   AuthCommandSchema
 > = {

@@ -70,7 +70,7 @@ function CommandComboBox({
       >
         {filteredOptions?.map((option) => (
           <Combobox.Option
-            key={option.name}
+            key={option.groupId + option.name + (option.displayName || '')}
             value={option}
             className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
           >

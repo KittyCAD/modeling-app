@@ -42,7 +42,7 @@ import {
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -920,7 +920,7 @@ export const ModelingMachineProvider = ({
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
-    commandBarConfig: modelingMachineConfig,
+    commandBarConfig: modelingMachineCommandConfig,
     allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically

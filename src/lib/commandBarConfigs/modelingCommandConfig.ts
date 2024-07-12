@@ -1,8 +1,8 @@
 import { Models } from '@kittycad/lib'
-import { CommandSetConfig, KclCommandValue } from 'lib/commandTypes'
+import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { Selections } from 'lib/selections'
-import { modelingMachine } from 'machines/modelingMachine'
+import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -27,9 +27,12 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  'change tool': {
+    tool: SketchTool
+  }
 }
 
-export const modelingMachineConfig: CommandSetConfig<
+export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
 > = {
@@ -37,22 +40,47 @@ export const modelingMachineConfig: CommandSetConfig<
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
-  // TODO the event is no 'change tool' with data: 'line', 'rectangle' etc
-  // 'Equip Line tool': {
-  //   description: 'Start drawing straight lines.',
-  //   icon: 'line',
-  //   displayName: 'Line',
-  // },
-  // 'Equip tangential arc to': {
-  //   description: 'Start drawing an arc tangent to the current segment.',
-  //   icon: 'arc',
-  //   displayName: 'Tangential Arc',
-  // },
-  // 'Equip rectangle tool': {
-  //   description: 'Start drawing a rectangle.',
-  //   icon: 'rectangle',
-  //   displayName: 'Rectangle',
-  // },
+  'change tool': [
+    {
+      description: 'Start drawing straight lines.',
+      icon: 'line',
+      displayName: 'Line',
+      args: {
+        tool: {
+          defaultValue: 'line',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+    {
+      description: 'Start drawing an arc tangent to the current segment.',
+      icon: 'arc',
+      displayName: 'Tangential Arc',
+      args: {
+        tool: {
+          defaultValue: 'tangentialArc',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+    {
+      description: 'Start drawing a rectangle.',
+      icon: 'rectangle',
+      displayName: 'Rectangle',
+      args: {
+        tool: {
+          defaultValue: 'rectangle',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+  ],
   Export: {
     description: 'Export the current model.',
     icon: 'exportFile',

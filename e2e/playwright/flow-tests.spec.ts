@@ -3717,6 +3717,46 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
       ) // remove newlines
     )
   })
+
+  test('Can switch between sketch tools via command bar', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
+    const cmdBarButton = page.getByRole('button', { name: 'Commands' })
+    const rectangleToolCommand = page.getByRole('option', {
+      name: 'Rectangle',
+    })
+    const rectangleToolButton = page.getByRole('button', { name: 'Rectangle' })
+    const lineToolCommand = page.getByRole('option', { name: 'Line' })
+    const lineToolButton = page.getByRole('button', { name: 'Line' })
+    const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
+    const arcToolButton = page.getByRole('button', { name: 'Tangential Arc' })
+
+    // Start a sketch
+    await sketchButton.click()
+    await page.mouse.click(700, 200)
+
+    // Switch between sketch tools via the command bar
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await rectangleToolCommand.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await lineToolCommand.click()
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+
+    // Click in the scene a couple times to draw a line
+    // so tangential arc is valid
+    await page.mouse.click(700, 200)
+    await page.mouse.click(700, 300)
+
+    // switch to tangential arc via command bar
+    await cmdBarButton.click()
+    await arcToolCommand.click()
+    await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
+  })
 })
 
 test.describe('Regression tests', () => {
