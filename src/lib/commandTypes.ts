@@ -69,7 +69,7 @@ export type Command<
   CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
 > = {
   name: CommandName
-  ownerMachine: T['id']
+  groupId: T['id']
   needsReview: boolean
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
@@ -88,7 +88,7 @@ export type CommandConfig<
   CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
 > = Omit<
   Command<T, CommandName, CommandSchema>,
-  'name' | 'ownerMachine' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
+  'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: true
   args?: {

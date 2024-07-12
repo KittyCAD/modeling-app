@@ -195,13 +195,14 @@ export class CompletionRequester implements PluginValue {
 
   private queuedUids: string[] = []
 
-  private _deffererCodeUpdate = deferExecution(() => {
-    this.requestCompletions()
-  }, changesDelay)
-
   private _deffererUserSelect = deferExecution(() => {
     this.rejectSuggestionCommand()
   }, changesDelay)
+
+  // When a doc update needs to be sent to the server, this holds the
+  // timeout handle for it. When null, the server has the up-to-date
+  // document.
+  private sendScheduledInput: number | null = null
 
   constructor(readonly view: EditorView, client: LanguageServerClient) {
     this.client = client
@@ -245,7 +246,34 @@ export class CompletionRequester implements PluginValue {
     }
 
     this.lastPos = this.view.state.selection.main.head
-    if (viewUpdate.docChanged) this._deffererCodeUpdate(true)
+    if (viewUpdate.docChanged) this.scheduleUpdateDoc()
+  }
+
+  scheduleUpdateDoc() {
+    if (this.sendScheduledInput != null)
+      window.clearTimeout(this.sendScheduledInput)
+    this.sendScheduledInput = window.setTimeout(
+      () => this.updateDoc(),
+      changesDelay
+    )
+  }
+
+  updateDoc() {
+    if (this.sendScheduledInput != null) {
+      window.clearTimeout(this.sendScheduledInput)
+      this.sendScheduledInput = null
+    }
+
+    if (!this.client.ready) return
+    try {
+      this.requestCompletions()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  ensureDocUpdated() {
+    if (this.sendScheduledInput != null) this.updateDoc()
   }
 
   ghostText(): GhostText | null {

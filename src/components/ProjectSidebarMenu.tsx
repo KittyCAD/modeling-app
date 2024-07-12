@@ -82,11 +82,11 @@ function ProjectMenuPopover({
 }) {
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
-  const exportCommandInfo = { name: 'Export', ownerMachine: 'modeling' }
-  const findCommand = (obj: { name: string; ownerMachine: string }) =>
+  const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commandBarState.context.commands.find(
-        (c) => c.name === obj.name && c.ownerMachine === obj.ownerMachine
+        (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
 
