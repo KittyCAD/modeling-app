@@ -1063,6 +1063,7 @@ export const modelingMachine = createMachine(
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
+        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
           zoomToFit: true,
