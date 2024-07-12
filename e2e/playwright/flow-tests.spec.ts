@@ -3500,10 +3500,22 @@ test.describe('Command bar tests', () => {
       `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
   })
-  test('Command bar works and can change a setting', async ({ page }) => {
+  test('Command bar can change a setting, and switch back and forth between arguments', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    const themeOption = page.getByRole('option', {
+      name: 'theme',
+      exact: false,
+    })
+    const commandOptionInput = page.getByPlaceholder('Select an option')
+    const commandLevelArgButton = page.getByRole('button', { name: 'level' })
+    const commandThemeArgButton = page.getByRole('button', { name: 'value' })
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3515,23 +3527,17 @@ test.describe('Command bar tests', () => {
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
     await page.keyboard.type('theme')
-    const themeOption = page.getByRole('option', {
-      name: 'Settings · app · theme',
-    })
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -3553,6 +3559,22 @@ test.describe('Command bar tests', () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
+    await commandBarButton.click()
+    await cmdSearchBar.focus()
+    await page.keyboard.type('theme')
+    await themeOption.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await commandOptionInput.focus()
+    await page.keyboard.type('lig')
+    await commandLevelArgButton.click()
+    await expect(commandLevelArgButton).toBeDisabled()
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
+    await commandThemeArgButton.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await expect(commandLevelArgButton).toHaveText('level: project')
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
