@@ -39,3 +39,32 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     </AppStateContext.Provider>
   )
 }
+
+interface AppStream {
+  mediaStream: MediaStream
+  setMediaStream: (mediaStream: MediaStream) => void
+}
+
+const AppStreamContext = createContext<AppStream>({
+  mediaStream: undefined as unknown as MediaStream,
+  setMediaStream: () => {},
+})
+
+export const useAppStream = () => useContext(AppStreamContext)
+
+export const AppStreamProvider = ({ children }: { children: ReactNode }) => {
+  const [mediaStream, setMediaStream] = useState<MediaStream>(
+    undefined as unknown as MediaStream
+  )
+
+  return (
+    <AppStreamContext.Provider
+      value={{
+        mediaStream,
+        setMediaStream,
+      }}
+    >
+      {children}
+    </AppStreamContext.Provider>
+  )
+}
