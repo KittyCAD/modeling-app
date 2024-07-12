@@ -6,7 +6,11 @@ import { modelingMachine } from 'machines/modelingMachine'
 import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
-import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
+import {
+  Command,
+  StateMachineCommandSetConfig,
+  StateMachineCommandSetSchema,
+} from 'lib/commandTypes'
 import { useKclContext } from 'lang/KclProvider'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
@@ -21,20 +25,20 @@ export type AllMachines =
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 > {
   machineId: T['id']
   state: StateFrom<T>
   send: Function
   actor: InterpreterFrom<T>
-  commandBarConfig?: CommandSetConfig<T, S>
+  commandBarConfig?: StateMachineCommandSetConfig<T, S>
   allCommandsRequireNetwork?: boolean
   onCancel?: () => void
 }
 
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 >({
   machineId,
   state,
@@ -58,7 +62,7 @@ export default function useStateMachineCommands<
     const newCommands = state.nextEvents
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .map((type) =>
+      .flatMap((type) =>
         createMachineCommand<T, S>({
           // The group is the owner machine's ID.
           groupId: machineId,
