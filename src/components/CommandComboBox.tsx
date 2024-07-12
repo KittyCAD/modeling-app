@@ -72,17 +72,21 @@ function CommandComboBox({
           <Combobox.Option
             key={option.groupId + option.name + (option.displayName || '')}
             value={option}
-            className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
+            className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
           >
             {'icon' in option && option.icon && (
               <CustomIcon name={option.icon} className="w-5 h-5" />
             )}
-            <p className="flex-grow">{option.displayName || option.name} </p>
-            {option.description && (
-              <p className="text-xs text-chalkboard-60 dark:text-chalkboard-40">
-                {option.description}
+            <div className="flex-grow flex flex-col">
+              <p className="my-0 leading-tight">
+                {option.displayName || option.name}{' '}
               </p>
-            )}
+              {option.description && (
+                <p className="my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50">
+                  {option.description}
+                </p>
+              )}
+            </div>
           </Combobox.Option>
         ))}
       </Combobox.Options>

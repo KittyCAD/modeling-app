@@ -81,6 +81,7 @@ export function createMachineCommand<
     name: type,
     groupId,
     icon,
+    description: commandConfig.description,
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
       if (data !== undefined && data !== null) {
