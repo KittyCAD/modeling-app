@@ -23,7 +23,8 @@ use crate::{
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgramMemory {
-    pub root: HashMap<String, MemoryItem>,
+    /// Stack of environments.  Each environment corresponds to a call frame.
+    environments: Vec<Environment>,
     #[serde(rename = "return")]
     pub return_: Option<ProgramReturn>,
 }
@@ -31,7 +32,100 @@ pub struct ProgramMemory {
 impl ProgramMemory {
     pub fn new() -> Self {
         Self {
-            root: HashMap::from([
+            environments: vec![Environment::root()],
+            return_: None,
+        }
+    }
+
+    fn current_env(&self) -> EnvironmentRef {
+        // Prevent underflow.
+        assert!(
+            !self.environments.is_empty(),
+            "Expected top-level environment in memory"
+        );
+        let current_env = self.environments.len() - 1;
+
+        EnvironmentRef(current_env)
+    }
+
+    pub fn push_call_frame(&mut self) {
+        self.environments.push(Environment::new());
+    }
+
+    /// Add to the program memory.
+    pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
+        // Always add to the current environment.
+        let current_env = self.current_env();
+
+        if self.environments[current_env.index()].contains_key(key) {
+            return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
+                message: format!("Cannot redefine `{}`", key),
+                source_ranges: vec![source_range],
+            }));
+        }
+
+        self.environments[current_env.index()].insert(key.to_string(), value);
+
+        Ok(())
+    }
+
+    /// Get a value from the program memory.
+    /// Return Err if not found.
+    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
+        for env in self.environments.iter().rev() {
+            if let Some(item) = env.bindings.get(var) {
+                return Ok(item);
+            }
+        }
+
+        Err(KclError::UndefinedValue(KclErrorDetails {
+            message: format!("memory item key `{}` is not defined", var),
+            source_ranges: vec![source_range],
+        }))
+    }
+
+    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+        self.environments
+            .iter()
+            .flat_map(|env| {
+                env.bindings
+                    .values()
+                    .filter_map(|item| match item {
+                        MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                        _ => None,
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .collect()
+    }
+}
+
+impl Default for ProgramMemory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// An index pointing to an environment.
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+struct EnvironmentRef(usize);
+
+impl EnvironmentRef {
+    pub fn index(&self) -> usize {
+        self.0
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+struct Environment {
+    bindings: HashMap<String, MemoryItem>,
+}
+
+impl Environment {
+    fn root() -> Self {
+        Self {
+            bindings: HashMap::from([
                 (
                     "ZERO".to_string(),
                     MemoryItem::UserVal(UserVal {
@@ -61,50 +155,21 @@ impl ProgramMemory {
                     }),
                 ),
             ]),
-            return_: None,
         }
     }
 
-    /// Add to the program memory.
-    pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
-        if self.root.contains_key(key) {
-            return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
-                message: format!("Cannot redefine `{}`", key),
-                source_ranges: vec![source_range],
-            }));
+    fn new() -> Self {
+        Self {
+            bindings: HashMap::default(),
         }
-
-        self.root.insert(key.to_string(), value);
-
-        Ok(())
     }
 
-    /// Get a value from the program memory.
-    /// Return Err if not found.
-    pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
-        self.root.get(key).ok_or_else(|| {
-            KclError::UndefinedValue(KclErrorDetails {
-                message: format!("memory item key `{}` is not defined", key),
-                source_ranges: vec![source_range],
-            })
-        })
+    fn insert(&mut self, key: String, value: MemoryItem) {
+        self.bindings.insert(key, value);
     }
 
-    /// Find all extrude groups in the memory that are on a specific sketch group id.
-    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
-        self.root
-            .values()
-            .filter_map(|item| match item {
-                MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
-                _ => None,
-            })
-            .collect()
-    }
-}
-
-impl Default for ProgramMemory {
-    fn default() -> Self {
-        Self::new()
+    fn contains_key(&self, key: &str) -> bool {
+        self.bindings.contains_key(key)
     }
 }
 
@@ -1560,16 +1625,13 @@ impl ExecutorContext {
                                 memory.return_ = result.return_;
                             }
                             FunctionKind::UserDefined => {
-                                if let Some(func) = memory.clone().root.get(&fn_name) {
-                                    let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
+                                // TODO: Why do we change the source range to
+                                // the call expression instead of keeping the
+                                // range of the callee?
+                                let func = memory.get(&fn_name, call_expr.into())?;
+                                let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
 
-                                    memory.return_ = result;
-                                } else {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("No such name {} defined", fn_name),
-                                        source_ranges: vec![call_expr.into()],
-                                    }));
-                                }
+                                memory.return_ = result;
                             }
                         }
                     }
@@ -1680,7 +1742,9 @@ impl ExecutorContext {
                      _metadata: Vec<Metadata>,
                      ctx: ExecutorContext| {
                         Box::pin(async move {
-                            let mut fn_memory = assign_args_to_params(&function_expression, args, memory.clone())?;
+                            let mut body_memory = memory.clone();
+                            body_memory.push_call_frame();
+                            let mut fn_memory = assign_args_to_params(&function_expression, args, body_memory)?;
 
                             let result = ctx
                                 .inner_execute(&function_expression.body, &mut fn_memory, BodyType::Block)
@@ -1796,7 +1860,8 @@ fn assign_args_to_params(
         return Err(err_wrong_number_args);
     }
 
-    // Add the arguments to the memory.
+    // Add the arguments to the memory.  A new call frame should have already
+    // been created.
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
@@ -1862,11 +1927,19 @@ const newVar = myVar + 1"#;
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(5),
-            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+            memory
+                .get("myVar", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
         assert_eq!(
             serde_json::json!(6.0),
-            memory.root.get("newVar").unwrap().get_json_value().unwrap()
+            memory
+                .get("newVar", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -1891,13 +1964,21 @@ const intersect = segEndX('yo2', part001)"#,
         let memory = parse_execute(&ast_fn("-1")).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0 + 2.0f64.sqrt()),
-            memory.root.get("intersect").unwrap().get_json_value().unwrap()
+            memory
+                .get("intersect", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
 
         let memory = parse_execute(&ast_fn("0")).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0000000000000002),
-            memory.root.get("intersect").unwrap().get_json_value().unwrap()
+            memory
+                .get("intersect", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -2216,12 +2297,108 @@ const thisBox = box([[0,0], 6, 10, 3])
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_with_parameter_redefined_outside() {
+        let ast = r#"
+fn myIdentity = (x) => {
+  return x
+}
+
+const x = 33
+
+const two = myIdentity(2)"#;
+
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(2),
+            memory
+                .get("two", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(33),
+            memory
+                .get("x", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_referencing_variable_in_parent_scope() {
+        let ast = r#"
+const x = 22
+const y = 3
+
+fn add = (x) => {
+  return x + y
+}
+
+const answer = add(2)"#;
+
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(5.0),
+            memory
+                .get("answer", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(22),
+            memory
+                .get("x", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_redefining_variable_in_parent_scope() {
+        let ast = r#"
+const x = 1
+
+fn foo = () => {
+  const x = 2
+  return x
+}
+
+const answer = foo()"#;
+
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(2),
+            memory
+                .get("answer", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(1),
+            memory
+                .get("x", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(5.0),
-            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+            memory
+                .get("myVar", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -2231,7 +2408,11 @@ const thisBox = box([[0,0], 6, 10, 3])
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(7.4),
-            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+            memory
+                .get("myVar", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -2241,7 +2422,11 @@ const thisBox = box([[0,0], 6, 10, 3])
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0),
-            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+            memory
+                .get("myVar", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -2251,7 +2436,11 @@ const thisBox = box([[0,0], 6, 10, 3])
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(std::f64::consts::TAU),
-            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+            memory
+                .get("myVar", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -2261,7 +2450,11 @@ const thisBox = box([[0,0], 6, 10, 3])
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(7.4),
-            memory.root.get("thing").unwrap().get_json_value().unwrap()
+            memory
+                .get("thing", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
         );
     }
 
@@ -2391,7 +2584,9 @@ const bracket = startSketchOn('XY')
         fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
             let mut program_memory = ProgramMemory::new();
             for (name, item) in items {
-                program_memory.root.insert(name.to_string(), item.clone());
+                program_memory
+                    .add(name.as_str(), item.clone(), SourceRange::default())
+                    .unwrap();
             }
             program_memory
         }
