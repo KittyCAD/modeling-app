@@ -68,20 +68,10 @@ export function KclContextProvider({
         },
       },
     ]
-    commandBarSend({
-      type: 'Add commands',
-      data: {
-        commands,
-      },
-    })
+    commandBarSend({ type: 'Add commands', data: { commands } })
 
     return () => {
-      commandBarSend({
-        type: 'Remove commands',
-        data: {
-          commands,
-        },
-      })
+      commandBarSend({ type: 'Remove commands', data: { commands } })
     }
   }, [kclManager, commandBarSend])
 
