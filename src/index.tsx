@@ -13,6 +13,7 @@ import {
   UpdaterRestartModal,
   createUpdaterRestartModal,
 } from 'components/UpdaterRestartModal'
+import { AppStreamProvider } from 'AppState'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -26,28 +27,30 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   <HotkeysProvider>
-    <Router />
-    <Toaster
-      position="bottom-center"
-      toastOptions={{
-        style: {
-          borderRadius: '3px',
-        },
-        className:
-          'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
-        success: {
-          iconTheme: {
-            primary: 'oklch(89% 0.16 143.4deg)',
-            secondary: 'oklch(48.62% 0.1654 142.5deg)',
+    <AppStreamProvider>
+      <Router />
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            borderRadius: '3px',
           },
-          duration:
-            window?.localStorage.getItem('playwright') === 'true'
-              ? 10 // speed up e2e tests
-              : 1500,
-        },
-      }}
-    />
-    <ModalContainer />
+          className:
+            'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
+          success: {
+            iconTheme: {
+              primary: 'oklch(89% 0.16 143.4deg)',
+              secondary: 'oklch(48.62% 0.1654 142.5deg)',
+            },
+            duration:
+              window?.localStorage.getItem('playwright') === 'true'
+                ? 10 // speed up e2e tests
+                : 1500,
+          },
+        }}
+      />
+      <ModalContainer />
+    </AppStreamProvider>
   </HotkeysProvider>
 )
 

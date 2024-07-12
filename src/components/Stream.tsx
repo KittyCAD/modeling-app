@@ -9,6 +9,7 @@ import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { useAppStream } from 'AppState'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -17,6 +18,7 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
+  const { mediaStream } = useAppStream()
   const { overallState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
 
@@ -124,12 +126,10 @@ export const Stream = () => {
     )
       return
     if (!videoRef.current) return
-    const _mediaStream =
-      context.store?.mediaStream || (window as any).mediaStream
-    if (!_mediaStream) return
+    if (!mediaStream) return
 
     // Do not immediately play the stream!
-    videoRef.current.srcObject = _mediaStream
+    videoRef.current.srcObject = mediaStream
     videoRef.current.pause()
 
     send({
@@ -138,7 +138,7 @@ export const Stream = () => {
         videoElement: videoRef.current,
       },
     })
-  }, [context.store?.mediaStream])
+  }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return

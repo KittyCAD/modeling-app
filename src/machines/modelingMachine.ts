@@ -138,7 +138,6 @@ export type SegmentOverlayPayload =
     }
 
 interface Store {
-  mediaStream?: MediaStream
   videoElement?: HTMLVideoElement
   buttonDownInStream: number | undefined
   didDragInStream: boolean
