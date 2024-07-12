@@ -42,7 +42,7 @@ fn generate_repl_uuids(count: usize) -> Vec<uuid::Uuid> {
 }
 
 #[allow(clippy::needless_range_loop)]
-fn codegen_cpp_repl_uuid_setters(entity_ids: &[uuid::Uuid]) -> String {
+fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> String {
     let mut codegen = String::new();
 
     for i in 0..entity_ids.len() {
@@ -51,7 +51,7 @@ fn codegen_cpp_repl_uuid_setters(entity_ids: &[uuid::Uuid]) -> String {
         let iter = format!(
             r#"
             //change object id -> {id}
-            auto repl_{cpp_id} = scene->getSceneObject(reps[{i}]);
+            auto repl_{cpp_id} = scene->getSceneObject(reps_{reps_id}[{i}]);
             scene->removeSceneObject(repl_{cpp_id}->getUUID(), false);
             repl_{cpp_id}->setUUID(Utils::UUID("{id}"));
             scene->addSceneObject(repl_{cpp_id});
@@ -272,12 +272,12 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
 
                                 let mut base_code: String = format!(
                                     r#"
-                                    auto reps = scene->entityCircularPattern(Utils::UUID("{}"), {num_repetitions}, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, {arc_degrees}, {rotate_duplicates});
+                                    auto reps_{cpp_id} = scene->entityCircularPattern(Utils::UUID("{}"), {num_repetitions}, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, {arc_degrees}, {rotate_duplicates});
                                 "#,
                                     entity_id, axis.x, axis.y, axis.z, center.x, center.y, center.z
                                 );
 
-                                let repl_uuid_fix_code = codegen_cpp_repl_uuid_setters(&entity_ids);
+                                let repl_uuid_fix_code = codegen_cpp_repl_uuid_setters(&cpp_id, &entity_ids);
                                 base_code.push_str(&repl_uuid_fix_code);
 
                                 base_code
