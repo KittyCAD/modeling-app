@@ -24,7 +24,7 @@ use crate::{
 #[serde(rename_all = "camelCase")]
 pub struct ProgramMemory {
     /// Stack of environments.  Each environment corresponds to a call frame.
-    environments: Vec<Environment>,
+    pub environments: Vec<Environment>,
     #[serde(rename = "return")]
     pub return_: Option<ProgramReturn>,
 }
@@ -118,7 +118,7 @@ impl EnvironmentRef {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-struct Environment {
+pub struct Environment {
     bindings: HashMap<String, MemoryItem>,
 }
 
