@@ -23,7 +23,7 @@ export const Stream = () => {
   const { overallState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
 
-  const IDLE = false
+  const IDLE = true
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||

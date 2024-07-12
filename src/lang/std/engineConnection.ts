@@ -1258,6 +1258,7 @@ export class EngineCommandManager extends EventTarget {
   }: CustomEvent<NewTrackArgs>) => {}
 
   start({
+    restart,
     setMediaStream,
     setIsStreamReady,
     width,
@@ -1273,6 +1274,7 @@ export class EngineCommandManager extends EventTarget {
       showScaleGrid: false,
     },
   }: {
+    restart?: boolean
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number

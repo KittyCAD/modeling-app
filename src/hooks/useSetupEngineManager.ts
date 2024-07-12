@@ -38,14 +38,18 @@ export function useSetupEngineManager(
     engineCommandManager.pool = settings.pool
   }
 
-  const startEngineInstance = () => {
+  const startEngineInstance = (restart: boolean = false) => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
     const { width: quadWidth, height: quadHeight } = getDimensions(
       streamRef?.current?.offsetWidth ?? 0,
       streamRef?.current?.offsetHeight ?? 0
     )
+    if (restart) {
+      kclManager.isFirstRender = false
+    }
     engineCommandManager.start({
+      restart,
       setMediaStream: (mediaStream) =>
         settings.modelingSend({
           type: 'Set context',
@@ -124,7 +128,7 @@ export function useSetupEngineManager(
     }, 500)
 
     const onOnline = () => {
-      startEngineInstance()
+      startEngineInstance(true)
     }
 
     const onVisibilityChange = () => {
@@ -154,6 +158,7 @@ export function useSetupEngineManager(
     window.document.addEventListener('touchstart', onAnyInput)
 
     const onOffline = () => {
+      kclManager.isFirstRender = true
       engineCommandManager.tearDown()
     }
 
@@ -176,7 +181,9 @@ export function useSetupEngineManager(
     }
 
     // Engine relies on many settings so we should rebind events when it changes
-  }, [...Object.values(settings)])
+    // We have to list out the ones we care about because the settings object holds
+    // non-settings too...
+  }, [settings.enableSSAO, settings.highlightEdges, settings.showScaleGrid, settings.theme, settings.pool])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
