@@ -54,7 +54,7 @@ export function createMachineCommand<
     return commandConfig
       .map((config) =>
         createMachineCommand({
-          ownerMachine,
+          groupId,
           type,
           state,
           send,
