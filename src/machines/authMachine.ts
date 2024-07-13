@@ -124,7 +124,7 @@ async function getUser(context: UserContext) {
   }
 
   if (!token && isTauri()) return Promise.reject(new Error('No token found'))
-  if (token) headers['Authorization'] = `Bearer ${context.token}`
+  if (token) headers['Authorization'] = `Bearer ${token}`
 
   if (SKIP_AUTH) {
     // For local tests
