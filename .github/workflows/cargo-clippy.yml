@@ -63,5 +63,4 @@ jobs:
       # If this fails, run "cargo check" to update Cargo.lock,
       # then add Cargo.lock to the PR.
       - name: Check Cargo.lock doesn't need updating
-        run: |
-          cargo check --locked || echo "Pls run cargo check and commit the changed Cargo.lock"
+        run: "./scripts/check-tauri-lockfile.sh"
