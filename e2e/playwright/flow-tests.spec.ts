@@ -3500,10 +3500,23 @@ test.describe('Command bar tests', () => {
       `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
   })
-  test('Command bar works and can change a setting', async ({ page }) => {
+  test('Command bar can change a setting, and switch back and forth between arguments', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    const themeOption = page.getByRole('option', {
+      name: 'theme',
+      exact: false,
+    })
+    const commandLevelArgButton = page.getByRole('button', { name: 'level' })
+    const commandThemeArgButton = page.getByRole('button', { name: 'value' })
+    // This selector changes after we set the setting
+    let commandOptionInput = page.getByPlaceholder('Select an option')
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3515,23 +3528,17 @@ test.describe('Command bar tests', () => {
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
-    const themeOption = page.getByRole('option', {
-      name: 'Settings · app · theme',
-    })
+    await cmdSearchBar.fill('theme')
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -3553,6 +3560,24 @@ test.describe('Command bar tests', () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    commandOptionInput = page.getByPlaceholder('system')
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
+    await commandBarButton.click()
+    await cmdSearchBar.focus()
+    await cmdSearchBar.fill('theme')
+    await themeOption.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await commandOptionInput.focus()
+    await commandOptionInput.fill('lig')
+    await commandLevelArgButton.click()
+    await expect(commandLevelArgButton).toBeDisabled()
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
+    await commandThemeArgButton.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await expect(commandLevelArgButton).toHaveText('level: project')
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
@@ -3577,7 +3602,7 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     const themeOption = page.getByRole('option', {
       name: 'Settings · app · theme',
     })
@@ -3648,7 +3673,9 @@ test.describe('Command bar tests', () => {
     await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
-    await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'distance', exact: false })
+    ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
@@ -3663,11 +3690,12 @@ test.describe('Command bar tests', () => {
 
     // Review step and argument hotkeys
     await expect(submitButton).toBeEnabled()
-    await page.keyboard.press('Backspace')
+    await expect(submitButton).toBeFocused()
+    await submitButton.press('Backspace')
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 5', exact: false })
+      page.getByRole('button', { name: 'distance', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -3724,6 +3752,7 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
     // Click in the scene a couple times to draw a line
     // so tangential arc is valid
     await page.mouse.click(700, 200)
+    await page.mouse.move(700, 300, { steps: 5 })
     await page.mouse.click(700, 300)
 
     // switch to tangential arc via command bar
@@ -4682,10 +4711,10 @@ test.describe('Sketch tests', () => {
     // click extrude
     await page.getByRole('button', { name: 'Extrude' }).click()
 
-    // sketch selection should already have been made. "Selection 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'Selection 1 face' })
+      page.getByRole('button', { name: 'selection : 1 face', exact: false })
     ).toBeVisible()
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {

@@ -203,7 +203,7 @@ export const commandBarMachine = createMachine(
           'Change current argument': {
             target: 'Gathering arguments',
             internal: true,
-            actions: ['Remove current argument and set a new one'],
+            actions: ['Set current argument'],
           },
 
           'Deselect command': {
@@ -359,27 +359,11 @@ export const commandBarMachine = createMachine(
           switch (event.type) {
             case 'Edit argument':
               return event.data.arg
+            case 'Change current argument':
+              return Object.values(event.data)[0]
             default:
               return context.currentArgument
           }
-        },
-      }),
-      'Remove current argument and set a new one': assign({
-        argumentsToSubmit: (context, event) => {
-          if (
-            event.type !== 'Change current argument' ||
-            !context.currentArgument
-          )
-            return context.argumentsToSubmit
-          const { name } = context.currentArgument
-
-          const { [name]: _, ...rest } = context.argumentsToSubmit
-          return rest
-        },
-        currentArgument: (context, event) => {
-          if (event.type !== 'Change current argument')
-            return context.currentArgument
-          return Object.values(event.data)[0]
         },
       }),
       'Clear argument data': assign({
