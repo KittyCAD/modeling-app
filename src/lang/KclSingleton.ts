@@ -33,10 +33,7 @@ export class KclManager {
     },
     digest: null,
   }
-  private _programMemory: ProgramMemory = {
-    root: {},
-    return: null,
-  }
+  private _programMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
@@ -505,7 +502,7 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
-  const firstSketchOrExtrudeGroup = Object.values(programMemory.root).find(
+  const firstSketchOrExtrudeGroup = programMemory.values().find(
     (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
   ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&

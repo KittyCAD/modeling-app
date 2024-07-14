@@ -130,7 +130,7 @@ export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
 export class SceneEntities {
   engineCommandManager: EngineCommandManager
   scene: Scene
-  sceneProgramMemory: ProgramMemory = { root: {}, return: null }
+  sceneProgramMemory: ProgramMemory = ProgramMemory.empty()
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
@@ -550,9 +550,9 @@ export class SceneEntities {
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
 
-    const sg = kclManager.programMemory.root[
+    const sg = kclManager.programMemory.get(
       variableDeclarationName
-    ] as SketchGroup
+    ) as SketchGroup
     const lastSeg = sg.value.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
@@ -768,9 +768,9 @@ export class SceneEntities {
           programMemoryOverride,
         })
         this.sceneProgramMemory = programMemory
-        const sketchGroup = programMemory.root[
+        const sketchGroup = programMemory.get(
           variableDeclarationName
-        ] as SketchGroup
+        ) as SketchGroup
         const sgPaths = sketchGroup.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -820,9 +820,9 @@ export class SceneEntities {
 
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
-          const sketchGroup = programMemory.root[
+          const sketchGroup = programMemory.get(
             variableDeclarationName
-          ] as SketchGroup
+          ) as SketchGroup
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -1081,7 +1081,7 @@ export class SceneEntities {
       })
       this.sceneProgramMemory = programMemory
 
-      const maybeSketchGroup = programMemory.root[variableDeclarationName]
+      const maybeSketchGroup = programMemory.get(variableDeclarationName)
       let sketchGroup = undefined
       if (maybeSketchGroup.type === 'SketchGroup') {
         sketchGroup = maybeSketchGroup
@@ -1773,7 +1773,7 @@ function prepareTruncatedMemoryAndAst(
   if (err(_node)) return _node
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
   const lastSeg = (
-    programMemory.root[variableDeclarationName] as SketchGroup
+    programMemory.get(variableDeclarationName) as SketchGroup
   ).value.slice(-1)[0]
   if (draftSegment) {
     // truncatedAst needs to setup with another segment at the end
@@ -1848,7 +1848,8 @@ function prepareTruncatedMemoryAndAst(
     }
 
     if (value.type === 'TagIdentifier') {
-      programMemoryOverride.root[key] = JSON.parse(JSON.stringify(value))
+      const error = programMemoryOverride.set(key, JSON.parse(JSON.stringify(value)))
+      if (err(error)) return error
     }
   }
 
@@ -1858,12 +1859,12 @@ function prepareTruncatedMemoryAndAst(
       continue
     }
     const name = node.declarations[0].id.name
-    // const memoryItem = kclManager.programMemory.root[name]
-    const memoryItem = programMemory.root[name]
+    const memoryItem = programMemory.get(name)
     if (!memoryItem) {
       continue
     }
-    programMemoryOverride.root[name] = JSON.parse(JSON.stringify(memoryItem))
+    const error = programMemoryOverride.set(name, JSON.parse(JSON.stringify(memoryItem)))
+    if (err(error)) return error
   }
   return {
     truncatedAst,

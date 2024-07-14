@@ -421,7 +421,7 @@ const theExtrude = startSketchOn('XY')
 
 async function exe(
   code: string,
-  programMemory: ProgramMemory = { root: {}, return: null }
+  programMemory: ProgramMemory = ProgramMemory.empty()
 ) {
   const ast = parse(code)
 
