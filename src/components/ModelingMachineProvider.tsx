@@ -495,9 +495,10 @@ export const ModelingMachineProvider = ({
                 pathToSelectedNode,
                 'CallExpression'
               )
-              if (err(segmentNode)) return false
-              if (segmentNode.node.type === 'CallExpression') {
-                // check wethe segment is in sketchLineHelperMap
+              if (
+                'node' in segmentNode &&
+                segmentNode.node.type === 'CallExpression'
+              ) {
                 const segmentName = segmentNode.node.callee.name
                 if (segmentName in sketchLineHelperMap) {
                   return true

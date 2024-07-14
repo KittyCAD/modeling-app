@@ -123,7 +123,7 @@ export function Toolbar({
     () =>
       commandBarSend({
         type: 'Find and select command',
-        data: { name: 'Fillet', ownerMachine: 'modeling' },
+        data: { name: 'Fillet', groupId: 'modeling' },
       }),
     { enabled: !disableAllButtons, scopes: ['modeling'] }
   )
@@ -421,7 +421,7 @@ export function Toolbar({
               onClick={() =>
                 commandBarSend({
                   type: 'Find and select command',
-                  data: { name: 'Fillet', ownerMachine: 'modeling' },
+                  data: { name: 'Fillet', groupId: 'modeling' },
                 })
               }
               disabled={!state.can('Fillet') || disableAllButtons}
