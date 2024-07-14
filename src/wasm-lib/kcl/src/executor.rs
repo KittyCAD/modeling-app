@@ -620,7 +620,7 @@ impl MemoryItem {
             .map(Some)
     }
 
-    fn as_user_val(&self) -> Option<&UserVal> {
+    pub fn as_user_val(&self) -> Option<&UserVal> {
         if let MemoryItem::UserVal(x) = self {
             Some(x)
         } else {

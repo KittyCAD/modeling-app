@@ -1,3 +1,5 @@
+use std::any::type_name;
+
 use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
@@ -7,6 +9,7 @@ use crate::{
     },
 };
 use kittycad::types::OkWebSocketResponseData;
+use serde::de::DeserializeOwned;
 
 use super::{sketch::FaceTag, FnAsArg};
 
@@ -583,49 +586,13 @@ impl Args {
         Ok((data, sketch_set))
     }
 
-    pub fn get_data_and_sketch_group_and_tag<T: serde::de::DeserializeOwned>(
-        &self,
-    ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
-            sg.clone()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_tag_declarator_opt()?
-        } else {
-            None
-        };
-
-        Ok((data, sketch_group, tag))
+    pub fn get_data_and_sketch_group_and_tag<'a, T>(
+        &'a self,
+    ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+    {
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(
@@ -1009,5 +976,167 @@ impl Args {
             message: format!("Expected a face with the tag `{}`", tag.value),
             source_ranges: vec![self.source_range],
         }))
+    }
+}
+
+trait FromArgs<'a>: Sized {
+    fn from_args(args: &'a Args, index: usize) -> Result<Self, KclError>;
+}
+
+pub trait FromMemoryItem<'a>: Sized {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self>;
+}
+
+impl<'a, T> FromArgs<'a> for T
+where
+    T: FromMemoryItem<'a> + Sized,
+{
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let Some(arg) = args.args.get(i) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Expected an argument at index {i}"),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        let Some(val) = T::from_arg(arg) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Argument at index {i} was supposed to be type {} but wasn't",
+                    type_name::<T>()
+                ),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        Ok(val)
+    }
+}
+
+impl<'a, T> FromArgs<'a> for Option<T>
+where
+    T: FromMemoryItem<'a> + Sized,
+{
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let Some(arg) = args.args.get(i) else { return Ok(None) };
+        let Some(val) = T::from_arg(arg) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Argument at index {i} was supposed to be type {} but wasn't",
+                    type_name::<T>()
+                ),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        Ok(Some(val))
+    }
+}
+
+impl<'a, A, B> FromArgs<'a> for (A, B)
+where
+    A: FromArgs<'a>,
+    B: FromArgs<'a>,
+{
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let a = A::from_args(args, i)?;
+        let b = B::from_args(args, i + 1)?;
+        Ok((a, b))
+    }
+}
+
+impl<'a, A, B, C> FromArgs<'a> for (A, B, C)
+where
+    A: FromArgs<'a>,
+    B: FromArgs<'a>,
+    C: FromArgs<'a>,
+{
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let a = A::from_args(args, i)?;
+        let b = B::from_args(args, i + 1)?;
+        let c = C::from_args(args, i + 2)?;
+        Ok((a, b, c))
+    }
+}
+
+impl<'a> FromMemoryItem<'a> for &'a str {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        arg.as_user_val().and_then(|uv| uv.value.as_str())
+    }
+}
+
+impl<'a> FromMemoryItem<'a> for TagDeclarator {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        arg.get_tag_declarator().ok()
+    }
+}
+
+impl<'a> FromMemoryItem<'a> for &'a SketchGroup {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        let MemoryItem::SketchGroup(s) = arg else {
+            return None;
+        };
+        Some(s.as_ref())
+    }
+}
+
+macro_rules! impl_from_arg_via_json {
+    ($typ:path) => {
+        impl<'a> FromMemoryItem<'a> for $typ {
+            fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+                from_user_val(arg)
+            }
+        }
+    };
+}
+
+macro_rules! impl_from_arg_for_array {
+    ($n:literal) => {
+        impl<'a, T> FromMemoryItem<'a> for [T; $n]
+        where
+            T: serde::de::DeserializeOwned + FromMemoryItem<'a>,
+        {
+            fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+                from_user_val(arg)
+            }
+        }
+    };
+}
+
+fn from_user_val<T: DeserializeOwned>(arg: &MemoryItem) -> Option<T> {
+    let MemoryItem::UserVal(v) = arg else {
+        return None;
+    };
+    let v = v.value.to_owned();
+    serde_json::from_value(v).ok()
+}
+
+impl_from_arg_via_json!(super::sketch::AngledLineData);
+impl_from_arg_via_json!(super::sketch::AngledLineToData);
+impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
+impl_from_arg_via_json!(super::sketch::ArcData);
+impl_from_arg_via_json!(super::sketch::TangentialArcData);
+impl_from_arg_via_json!(super::sketch::BezierData);
+impl_from_arg_via_json!(String);
+impl_from_arg_via_json!(u32);
+impl_from_arg_via_json!(u64);
+impl_from_arg_via_json!(f64);
+impl_from_arg_via_json!(bool);
+
+impl_from_arg_for_array!(2);
+impl_from_arg_for_array!(3);
+
+impl<'a> FromMemoryItem<'a> for &'a Box<SketchGroup> {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        let MemoryItem::SketchGroup(s) = arg else {
+            return None;
+        };
+        Some(s)
+    }
+}
+
+impl<'a> FromMemoryItem<'a> for Box<SketchGroup> {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        let MemoryItem::SketchGroup(s) = arg else {
+            return None;
+        };
+        Some(s.to_owned())
     }
 }
