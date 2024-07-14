@@ -147,14 +147,93 @@ interface Environment {
   bindings: Memory
 }
 
-export interface ProgramMemory {
+interface RawProgramMemory {
   environments: Environment[]
   return: ProgramReturn | null
 }
 
+export class ProgramMemory {
+  private environments: Environment[]
+  private return: ProgramReturn | null = null
+
+  /**
+   * Empty memory doesn't include prelude definitions.
+   */
+  static empty(): ProgramMemory {
+    return new ProgramMemory()
+  }
+
+  constructor(environments: Environment[] = [{ bindings: {} }], returnVal: ProgramReturn | null = null) {
+    console.info('ProgramMemory.constructor', ...environments)
+    this.environments = environments
+    this.return = returnVal
+  }
+
+  has(name: string): boolean {
+    for (let i = this.environments.length - 1; i >= 0; i--) {
+      const env = this.environments[i]
+      if (env.bindings.hasOwnProperty(name)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  get(name: string): MemoryItem | null {
+    for (let i = this.environments.length - 1; i >= 0; i--) {
+      const env = this.environments[i]
+      const value = env.bindings[name]
+      if (value !== undefined) {
+        return env.bindings[name]
+      }
+    }
+    return null
+  }
+
+  set(name: string, value: MemoryItem): Error | null {
+    console.info('ProgramMemory.set', name, value)
+    if (this.environments.length === 0) {
+      return new Error('No environment to set memory in')
+    }
+    const env = this.environments[this.environments.length - 1]
+    env.bindings[name] = value
+    return null
+  }
+
+  /**
+   * Returns all variable entries in memory.  Structure returned is flat.  If
+   * variables are shadowed, they're not included.
+   */
+  flatEntries(): Map<string, MemoryItem> {
+    const map = new Map<string, MemoryItem>()
+    for (let i = this.environments.length - 1; i >= 0; i--) {
+      const env = this.environments[i]
+      for (const key of Object.getOwnPropertyNames(env.bindings)) {
+        const value = env.bindings[key]
+        map.set(key, value)
+      }
+    }
+    return map
+  }
+
+  /**
+   * More local variables are sorted earlier than more global variables.
+   */
+  values(): MemoryItem[] {
+    const values = []
+    for (let i = this.environments.length - 1; i >= 0; i--) {
+      const env = this.environments[i]
+      for (const value of Object.values(env.bindings)) {
+        values.push(value)
+      }
+    }
+    return values
+  }
+}
+
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { environments: [], return: null },
+  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ProgramMemory> => {
@@ -175,7 +254,7 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { environments: [], return: null },
+  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ProgramMemory> => {
@@ -190,7 +269,7 @@ export const _executor = async (
       baseUnit =
         (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     }
-    const memory: ProgramMemory = await execute_wasm(
+    const memory: RawProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
       baseUnit,
@@ -198,7 +277,7 @@ export const _executor = async (
       fileSystemManager,
       isMock
     )
-    return memory
+    return new ProgramMemory(memory.environments, memory.return)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -335,8 +414,8 @@ export function getTangentialArcToInfo({
 
 export function programMemoryInit(): ProgramMemory | Error {
   try {
-    const memory: ProgramMemory = program_memory_init()
-    return memory
+    const memory: RawProgramMemory = program_memory_init()
+    return new ProgramMemory(memory.environments, memory.return)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
