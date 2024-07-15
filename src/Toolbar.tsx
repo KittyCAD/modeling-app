@@ -415,7 +415,7 @@ export function Toolbar({
             </ActionButton>
           </li>
         )}
-        {state.matches('idle') && DEV && (
+        {state.matches('idle') && (DEV || (window as any)._enableFillet) && (
           <li className="contents">
             <ActionButton
               className={buttonClassName}
