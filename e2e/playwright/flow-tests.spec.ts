@@ -3099,6 +3099,49 @@ const sketch002 = startSketchOn(extrude001, $seg01)
     ).not.toBeDisabled()
   })
 
+  test('Fillet button states test', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([10, 0], %)`).click()
+    const selectClose = () => page.getByText(`close(%)`).click()
+    const clickEmpty = () => page.mouse.click(950, 100)
+
+    // expect fillet button without any bodies in the scene
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+
+    // test fillet button with the body in the scene
+    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
+const extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.fill(codeToAdd)
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+    await selectClose()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+  })
+
   const removeAfterFirstParenthesis = (inputString: string) => {
     const index = inputString.indexOf('(')
     if (index !== -1) {
@@ -3500,6 +3543,44 @@ test.describe('Command bar tests', () => {
       `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
   })
+
+  test('Fillet from command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-10, sketch001)`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
+
+    await selectSegment()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Fillet' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toContainText(
+      `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
+    )
+  })
+
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
   }) => {

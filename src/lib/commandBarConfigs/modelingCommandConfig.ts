@@ -27,6 +27,11 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Fillet: {
+    // todo
+    selection: Selections
+    radius: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -179,6 +184,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       //   })),
       // },
       distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Fillet: {
+    // todo
+    description: 'Fillet edge',
+    icon: 'fillet',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: [
+          'default',
+          'line-end',
+          'line-mid',
+          'extrude-wall', // to fix: accespts only this selection type
+          'start-cap',
+          'end-cap',
+          'point',
+          'edge',
+          'line',
+          'arc',
+          'all',
+        ],
+        multiple: true, // TODO: multiple selection like in extrude command
+        required: true,
+        skip: true,
+      },
+      radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,

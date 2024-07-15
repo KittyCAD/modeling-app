@@ -304,7 +304,6 @@ describe('testing sketchOnExtrudedFace', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([9.7, 9.19], %)`
     const segmentRange: [number, number] = [
       code.indexOf(segmentSnippet),
@@ -321,8 +320,7 @@ describe('testing sketchOnExtrudedFace', () => {
     const extruded = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode,
-      programMemory
+      extrudePathToNode
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -345,7 +343,6 @@ const sketch001 = startSketchOn(part001, seg01)`)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `close(%)`
     const segmentRange: [number, number] = [
       code.indexOf(segmentSnippet),
@@ -362,8 +359,7 @@ const sketch001 = startSketchOn(part001, seg01)`)
     const extruded = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode,
-      programMemory
+      extrudePathToNode
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -386,7 +382,6 @@ const sketch001 = startSketchOn(part001, seg01)`)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
     const sketchSnippet = `startProfileAt([3.58, 2.06], %)`
     const sketchRange: [number, number] = [
       code.indexOf(sketchSnippet),
@@ -404,7 +399,6 @@ const sketch001 = startSketchOn(part001, seg01)`)
       ast,
       sketchPathToNode,
       extrudePathToNode,
-      programMemory,
       'end'
     )
     if (err(extruded)) throw extruded
@@ -436,7 +430,6 @@ const sketch001 = startSketchOn(part001, 'END')`)
     const part001 = extrude(5 + 7, sketch001)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([4.99, -0.46], %)`
     const segmentRange: [number, number] = [
       code.indexOf(segmentSnippet),
@@ -453,8 +446,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
     const updatedAst = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode,
-      programMemory
+      extrudePathToNode
     )
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)

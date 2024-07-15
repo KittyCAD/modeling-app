@@ -33,6 +33,7 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
   canExtrudeSelection,
+  canFilletSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -72,6 +73,7 @@ import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
+import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -444,6 +446,12 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
         },
+        'has valid fillet selection': ({ selectionRanges }) =>
+          hasValidFilletSelection({
+            selectionRanges,
+            ast: kclManager.ast,
+            code: codeManager.code,
+          }),
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -494,7 +502,6 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               data.sketchPathToNode,
               data.extrudePathToNode,
-              kclManager.programMemory,
               data.cap
             )
             if (trap(sketched)) return Promise.reject(sketched)
