@@ -177,7 +177,7 @@ export class ProgramMemory {
     currentEnv: EnvironmentRef = 0,
     returnVal: ProgramReturn | null = null
   ) {
-    console.info('ProgramMemory.constructor', ...environments)
+    console.info('ProgramMemory.constructor', ...environments, currentEnv)
     this.environments = environments
     this.currentEnv = currentEnv
     this.return = returnVal
