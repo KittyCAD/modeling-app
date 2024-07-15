@@ -186,22 +186,31 @@ export class ProgramMemory {
   }
 
   has(name: string): boolean {
-    for (let i = this.environments.length - 1; i >= 0; i--) {
-      const env = this.environments[i]
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef[0]]
       if (env.bindings.hasOwnProperty(name)) {
         return true
       }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
     }
     return false
   }
 
   get(name: string): MemoryItem | null {
-    for (let i = this.environments.length - 1; i >= 0; i--) {
-      const env = this.environments[i]
-      const value = env.bindings[name]
-      if (value !== undefined) {
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef[0]]
+      if (env.bindings.hasOwnProperty(name)) {
         return env.bindings[name]
       }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
     }
     return null
   }
@@ -216,28 +225,24 @@ export class ProgramMemory {
     return null
   }
 
-  setInEnv(
-    envRef: EnvironmentRef,
-    name: string,
-    value: MemoryItem
-  ): Error | null {
-    console.info('ProgramMemory.set', envRef, name, value)
-    const env = this.environments[envRef[0]]
-    if (!env) {
-      return new Error('No environment at index ' + envRef[0])
-    }
-    env.bindings[name] = value
-    return null
+  /**
+   * Returns a new ProgramMemory with only `MemoryItem`s that pass the
+   * predicate.  Values are deep copied.
+   */
+  filterVariables(predicate: (value: MemoryItem) => boolean): ProgramMemory {
+    const newEnvironments = this.environments.map((env) => {
+      const newBindings = Object.fromEntries(
+        Object.entries(env.bindings).filter(([key, value]) =>
+          predicate(value)
+        ).map(([key, value]) => [key, JSON.parse(JSON.stringify(value))])
+      )
+      return { bindings: newBindings, parent: env.parent }
+    })
+    return new ProgramMemory(newEnvironments, this.currentEnv, this.return)
   }
 
   allEnvironments(): Environment[] {
     return this.environments
-  }
-
-  addNewEnvironment(): EnvironmentRef {
-    const index = this.environments.length
-    this.environments.push(emptyEnvironment())
-    return [index]
   }
 
   /**

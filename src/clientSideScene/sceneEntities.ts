@@ -47,7 +47,6 @@ import {
   PipeExpression,
   Program,
   ProgramMemory,
-  programMemoryInit,
   recast,
   SketchGroup,
   ExtrudeGroup,
@@ -1824,42 +1823,26 @@ function prepareTruncatedMemoryAndAst(
     ..._ast,
     body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
   }
-  const programMemoryOverride = programMemoryInit()
-  if (err(programMemoryOverride)) return programMemoryOverride
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
   let start = _node.node.start
-  const allEnvs = programMemory.allEnvironments()
-  for (const env of allEnvs) {
-    const newEnvRef = programMemoryOverride.addNewEnvironment()
-    for (const key in env.bindings) {
-      const value = env.bindings[key]
-      if (!('__meta' in value)) {
-        continue
-      }
-      if (
-        value.__meta === undefined ||
-        value.__meta.length === 0 ||
-        value.__meta[0].sourceRange === undefined
-      ) {
-        continue
-      }
-
-      if (value.__meta[0].sourceRange[0] >= start) {
-        // We only want things before our start point.
-        continue
-      }
-
-      if (value.type === 'TagIdentifier') {
-        const error = programMemoryOverride.setInEnv(
-          newEnvRef,
-          key,
-          JSON.parse(JSON.stringify(value))
-        )
-        if (err(error)) return error
-      }
+  const programMemoryOverride = programMemory.filterVariables((value) => {
+    if (
+      !('__meta' in value) ||
+      value.__meta === undefined ||
+      value.__meta.length === 0 ||
+      value.__meta[0].sourceRange === undefined
+    ) {
+      return false
     }
-  }
+
+    if (value.__meta[0].sourceRange[0] >= start) {
+      // We only want things before our start point.
+      return false
+    }
+
+    return value.type === 'TagIdentifier'
+  })
 
   for (let i = 0; i < bodyIndex; i++) {
     const node = _ast.body[i]
