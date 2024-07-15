@@ -10,6 +10,10 @@ import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAppStream } from 'AppState'
+import {
+  EngineConnectionStateType,
+  DisconnectingType,
+} from 'lang/std/engineConnection'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -19,14 +23,27 @@ export const Stream = () => {
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
   const { mediaStream } = useAppStream()
-  const { overallState } = useNetworkContext()
+  const { overallState, immediateState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
 
   const IDLE = settings.context.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  useEffect(() => {
+    if (
+      immediateState.type === EngineConnectionStateType.Disconnecting &&
+      immediateState.value.type === DisconnectingType.Pause
+    ) {
+      setIsPaused(true)
+    }
+    if (immediateState.type === EngineConnectionStateType.Connecting) {
+      setIsPaused(false)
+    }
+  }, [immediateState])
 
   // Linux has a default behavior to paste text on middle mouse up
   // This adds a listener to block that pasting if the click target
@@ -64,7 +81,7 @@ export const Stream = () => {
       sceneInfra.modelingSend({ type: 'Cancel' })
       // Give video time to pause
       window.requestAnimationFrame(() => {
-        engineCommandManager.tearDown()
+        engineCommandManager.tearDown({ idleMode: true })
       })
     }
 
@@ -258,6 +275,32 @@ export const Stream = () => {
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
+      {isPaused && (
+        <div className="text-center absolute inset-0">
+          <div
+            className="flex flex-col items-center justify-center h-screen"
+            data-testid="paused"
+          >
+            <div className="border-primary border p-2 rounded-sm">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M2 12V0H0V12H2ZM8 12V0H6V12H8Z"
+                  fill="var(--primary)"
+                />
+              </svg>
+            </div>
+            <p className="text-base mt-2 text-primary bold">Paused</p>
+          </div>
+        </div>
+      )}
       {(!isNetworkOkay || isLoading || isFirstRender) && !isFreezeFrame && (
         <div className="text-center absolute inset-0">
           <Loading>
