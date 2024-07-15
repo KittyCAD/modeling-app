@@ -3099,6 +3099,49 @@ const sketch002 = startSketchOn(extrude001, $seg01)
     ).not.toBeDisabled()
   })
 
+  test('Fillet button states test', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([10, 0], %)`).click()
+    const selectClose = () => page.getByText(`close(%)`).click()
+    const clickEmpty = () => page.mouse.click(950, 100)
+
+    // expect fillet button without any bodies in the scene
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+
+    // test fillet button with the body in the scene
+    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
+const extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.fill(codeToAdd)
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+    await selectClose()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+  })
+
   const removeAfterFirstParenthesis = (inputString: string) => {
     const index = inputString.indexOf('(')
     if (index !== -1) {
@@ -3500,10 +3543,61 @@ test.describe('Command bar tests', () => {
       `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
   })
-  test('Command bar works and can change a setting', async ({ page }) => {
+
+  test('Fillet from command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-10, sketch001)`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
+
+    await selectSegment()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Fillet' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toContainText(
+      `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
+    )
+  })
+
+  test('Command bar can change a setting, and switch back and forth between arguments', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    const themeOption = page.getByRole('option', {
+      name: 'theme',
+      exact: false,
+    })
+    const commandLevelArgButton = page.getByRole('button', { name: 'level' })
+    const commandThemeArgButton = page.getByRole('button', { name: 'value' })
+    // This selector changes after we set the setting
+    let commandOptionInput = page.getByPlaceholder('Select an option')
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3515,23 +3609,17 @@ test.describe('Command bar tests', () => {
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
-    const themeOption = page.getByRole('option', {
-      name: 'Settings · app · theme',
-    })
+    await cmdSearchBar.fill('theme')
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -3553,6 +3641,24 @@ test.describe('Command bar tests', () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    commandOptionInput = page.getByPlaceholder('system')
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
+    await commandBarButton.click()
+    await cmdSearchBar.focus()
+    await cmdSearchBar.fill('theme')
+    await themeOption.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await commandOptionInput.focus()
+    await commandOptionInput.fill('lig')
+    await commandLevelArgButton.click()
+    await expect(commandLevelArgButton).toBeDisabled()
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
+    await commandThemeArgButton.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await expect(commandLevelArgButton).toHaveText('level: project')
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
@@ -3577,7 +3683,7 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     const themeOption = page.getByRole('option', {
       name: 'Settings · app · theme',
     })
@@ -3648,7 +3754,9 @@ test.describe('Command bar tests', () => {
     await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
-    await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'distance', exact: false })
+    ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
@@ -3663,11 +3771,12 @@ test.describe('Command bar tests', () => {
 
     // Review step and argument hotkeys
     await expect(submitButton).toBeEnabled()
-    await page.keyboard.press('Backspace')
+    await expect(submitButton).toBeFocused()
+    await submitButton.press('Backspace')
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 5', exact: false })
+      page.getByRole('button', { name: 'distance', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -3690,6 +3799,47 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
         ''
       ) // remove newlines
     )
+  })
+
+  test('Can switch between sketch tools via command bar', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
+    const cmdBarButton = page.getByRole('button', { name: 'Commands' })
+    const rectangleToolCommand = page.getByRole('option', {
+      name: 'Rectangle',
+    })
+    const rectangleToolButton = page.getByRole('button', { name: 'Rectangle' })
+    const lineToolCommand = page.getByRole('option', { name: 'Line' })
+    const lineToolButton = page.getByRole('button', { name: 'Line' })
+    const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
+    const arcToolButton = page.getByRole('button', { name: 'Tangential Arc' })
+
+    // Start a sketch
+    await sketchButton.click()
+    await page.mouse.click(700, 200)
+
+    // Switch between sketch tools via the command bar
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await rectangleToolCommand.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await lineToolCommand.click()
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+
+    // Click in the scene a couple times to draw a line
+    // so tangential arc is valid
+    await page.mouse.click(700, 200)
+    await page.mouse.move(700, 300, { steps: 5 })
+    await page.mouse.click(700, 300)
+
+    // switch to tangential arc via command bar
+    await cmdBarButton.click()
+    await arcToolCommand.click()
+    await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
   })
 })
 
@@ -4642,10 +4792,10 @@ test.describe('Sketch tests', () => {
     // click extrude
     await page.getByRole('button', { name: 'Extrude' }).click()
 
-    // sketch selection should already have been made. "Selection 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'Selection 1 face' })
+      page.getByRole('button', { name: 'selection : 1 face', exact: false })
     ).toBeVisible()
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {

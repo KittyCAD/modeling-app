@@ -221,7 +221,7 @@ describe('testing addTagForSketchOnFace', () => {
     const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
     const sketchOnFaceRetVal = addTagForSketchOnFace(
       {
-        previousProgramMemory: programMemory,
+        // previousProgramMemory: programMemory, // redundant?
         pathToNode,
         node: ast,
       },
