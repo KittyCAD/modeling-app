@@ -131,6 +131,16 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  code: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.7071 5L7.77734 14.7794L8.73527 15.0663L11.665 5.28698L10.7071 5ZM2.35356 9.64644L5.85362 6.14644L6.56072 6.85355L3.41423 10L6.56072 13.1464L5.85362 13.8536L2.35356 10.3536L2 10L2.35356 9.64644ZM17.0607 9.64644L13.5607 6.14644L12.8536 6.85355L16 10L12.8536 13.1464L13.5607 13.8535L17.0607 10.3536L17.4142 10L17.0607 9.64644Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   dimension: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -173,6 +183,22 @@ const CustomIconMap = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M10 3L10.3536 3.35355L12.3536 5.35355L11.6465 6.06066L10.5 4.91421V11.5854C11.0826 11.7913 11.5 12.3469 11.5 13C11.5 13.8284 10.8284 14.5 10 14.5C9.17157 14.5 8.5 13.8284 8.5 13C8.5 12.3469 8.91741 11.7913 9.5 11.5854V4.91421L8.35356 6.06066L7.64645 5.35355L9.64645 3.35355L10 3ZM1.95887 12.3282L8 8.63644V9.80838L2.91773 12.9142L10 17.2423L17.0823 12.9142L12 9.80838V8.63644L18.0411 12.3282L19 12.9142L19 14.9683H18V13.5253L10.5 18.1087V19.9683H9.5V18.1087L2 13.5253V14.9683H1L1 12.9142L1.95887 12.3282Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  fillet: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 5H5V15H15V12C15 8.13401 11.866 5 8 5ZM5 4H4V5V15V16H5H15H16V15V12C16 7.58172 12.4183 4 8 4H5Z"
+        fill="currentColor"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.5 3.5H5.5H8.5C12.9183 3.5 16.5 7.08172 16.5 11.5V14.5V15.5H16V12C16 7.58172 12.4182 4 7.99996 4H4.5V3.5Z"
         fill="currentColor"
       />
     </svg>

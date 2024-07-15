@@ -32,6 +32,11 @@ export interface ModifyAstBase {
   pathToNode: PathToNode
 }
 
+export interface AddTagInfo {
+  node: Program
+  pathToNode: PathToNode
+}
+
 interface addCall extends ModifyAstBase {
   to: [number, number]
   from: [number, number]
@@ -127,7 +132,8 @@ export interface SketchLineHelper {
         pathToNode: PathToNode
       }
     | Error
-  addTag: (a: ModifyAstBase) =>
+  getTag: (a: CallExpression) => string | Error
+  addTag: (a: AddTagInfo) =>
     | {
         modifiedAst: Program
         tag: string

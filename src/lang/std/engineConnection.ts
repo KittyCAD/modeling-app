@@ -302,6 +302,30 @@ class EngineConnection extends EventTarget {
   mediaStream?: MediaStream
   freezeFrame: boolean = false
 
+  onIceCandidate = function (
+    this: RTCPeerConnection,
+    event: RTCPeerConnectionIceEvent
+  ) {}
+  onIceCandidateError = function (
+    this: RTCPeerConnection,
+    event: RTCPeerConnectionIceErrorEvent
+  ) {}
+  onConnectionStateChange = function (this: RTCPeerConnection, event: Event) {}
+  onDataChannelOpen = function (this: RTCDataChannel, event: Event) {}
+  onDataChannelClose = function (this: RTCDataChannel, event: Event) {}
+  onDataChannelError = function (this: RTCDataChannel, event: Event) {}
+  onDataChannelMessage = function (this: RTCDataChannel, event: MessageEvent) {}
+  onDataChannel = function (
+    this: RTCPeerConnection,
+    event: RTCDataChannelEvent
+  ) {}
+  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) {}
+  onWebSocketOpen = function (event: Event) {}
+  onWebSocketClose = function (event: Event) {}
+  onWebSocketError = function (event: Event) {}
+  onWebSocketMessage = function (event: MessageEvent) {}
+  onNetworkStatusReady = () => {}
+
   private _state: EngineConnectionState = {
     type: EngineConnectionStateType.Fresh,
   }
@@ -346,6 +370,7 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
+  private pingIntervalId: ReturnType<typeof setInterval>
 
   constructor({
     engineCommandManager,
@@ -368,7 +393,7 @@ class EngineConnection extends EventTarget {
     // Without an interval ping, our connection will timeout.
     // If this.freezeFrame is true we skip this logic so only reconnect
     // happens on mouse move
-    setInterval(() => {
+    this.pingIntervalId = setInterval(() => {
       if (this.freezeFrame) return
 
       switch (this.state.type as EngineConnectionStateType) {
@@ -434,6 +459,44 @@ class EngineConnection extends EventTarget {
   tearDown(opts?: { freeze: boolean }) {
     this.freezeFrame = opts?.freeze ?? false
     this.disconnectAll()
+    clearInterval(this.pingIntervalId)
+
+    this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
+    this.pc?.removeEventListener('icecandidateerror', this.onIceCandidateError)
+    this.pc?.removeEventListener(
+      'connectionstatechange',
+      this.onConnectionStateChange
+    )
+    this.pc?.removeEventListener('track', this.onTrack)
+
+    this.unreliableDataChannel?.removeEventListener(
+      'open',
+      this.onDataChannelOpen
+    )
+    this.unreliableDataChannel?.removeEventListener(
+      'close',
+      this.onDataChannelClose
+    )
+    this.unreliableDataChannel?.removeEventListener(
+      'error',
+      this.onDataChannelError
+    )
+    this.unreliableDataChannel?.removeEventListener(
+      'message',
+      this.onDataChannelMessage
+    )
+    this.pc?.removeEventListener('datachannel', this.onDataChannel)
+
+    this.websocket?.removeEventListener('open', this.onWebSocketOpen)
+    this.websocket?.removeEventListener('close', this.onWebSocketClose)
+    this.websocket?.removeEventListener('error', this.onWebSocketError)
+    this.websocket?.removeEventListener('message', this.onWebSocketMessage)
+
+    window.removeEventListener(
+      'use-network-status-ready',
+      this.onNetworkStatusReady
+    )
+
     this.state = {
       type: EngineConnectionStateType.Disconnecting,
       value: { type: DisconnectingType.Quit },
@@ -477,7 +540,7 @@ class EngineConnection extends EventTarget {
         },
       }
 
-      this.pc.addEventListener('icecandidate', (event) => {
+      this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
         if (event.candidate === null) {
           return
         }
@@ -499,18 +562,20 @@ class EngineConnection extends EventTarget {
             usernameFragment: event.candidate.usernameFragment || undefined,
           },
         })
-      })
+      }
+      this.pc.addEventListener('icecandidate', this.onIceCandidate)
 
-      this.pc.addEventListener('icecandidateerror', (_event: Event) => {
+      this.onIceCandidateError = (_event: Event) => {
         const event = _event as RTCPeerConnectionIceErrorEvent
         console.warn(
           `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
         )
-      })
+      }
+      this.pc.addEventListener('icecandidateerror', this.onIceCandidateError)
 
       // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
       // Event type: generic Event type...
-      this.pc.addEventListener('connectionstatechange', (event: any) => {
+      this.onConnectionStateChange = (event: any) => {
         console.log('connectionstatechange: ' + event.target?.connectionState)
         switch (event.target?.connectionState) {
           // From what I understand, only after have we done the ICE song and
@@ -539,9 +604,13 @@ class EngineConnection extends EventTarget {
           default:
             break
         }
-      })
+      }
+      this.pc.addEventListener(
+        'connectionstatechange',
+        this.onConnectionStateChange
+      )
 
-      this.pc.addEventListener('track', (event) => {
+      this.onTrack = (event) => {
         const mediaStream = event.streams[0]
 
         this.state = {
@@ -625,9 +694,10 @@ class EngineConnection extends EventTarget {
         // to pass it to the rest of the application.
 
         this.mediaStream = mediaStream
-      })
+      }
+      this.pc.addEventListener('track', this.onTrack)
 
-      this.pc.addEventListener('datachannel', (event) => {
+      this.onDataChannel = (event) => {
         this.unreliableDataChannel = event.channel
 
         this.state = {
@@ -638,7 +708,7 @@ class EngineConnection extends EventTarget {
           },
         }
 
-        this.unreliableDataChannel.addEventListener('open', (event) => {
+        this.onDataChannelOpen = (event) => {
           this.state = {
             type: EngineConnectionStateType.Connecting,
             value: {
@@ -654,14 +724,22 @@ class EngineConnection extends EventTarget {
           this.dispatchEvent(
             new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
           )
-        })
+        }
+        this.unreliableDataChannel?.addEventListener(
+          'open',
+          this.onDataChannelOpen
+        )
 
-        this.unreliableDataChannel.addEventListener('close', (event) => {
+        this.onDataChannelClose = (event) => {
           this.disconnectAll()
           this.finalizeIfAllConnectionsClosed()
-        })
+        }
+        this.unreliableDataChannel?.addEventListener(
+          'close',
+          this.onDataChannelClose
+        )
 
-        this.unreliableDataChannel.addEventListener('error', (event) => {
+        this.onDataChannelError = (event) => {
           this.disconnectAll()
 
           this.state = {
@@ -674,8 +752,13 @@ class EngineConnection extends EventTarget {
               },
             },
           }
-        })
-        this.unreliableDataChannel.addEventListener('message', (event) => {
+        }
+        this.unreliableDataChannel?.addEventListener(
+          'error',
+          this.onDataChannelError
+        )
+
+        this.onDataChannelMessage = (event) => {
           const result: UnreliableResponses = JSON.parse(event.data)
           Object.values(
             this.engineCommandManager.unreliableSubscriptions[result.type] || {}
@@ -697,8 +780,13 @@ class EngineConnection extends EventTarget {
               }
             }
           )
-        })
-      })
+        }
+        this.unreliableDataChannel.addEventListener(
+          'message',
+          this.onDataChannelMessage
+        )
+      }
+      this.pc.addEventListener('datachannel', this.onDataChannel)
     }
 
     const createWebSocketConnection = () => {
@@ -712,7 +800,7 @@ class EngineConnection extends EventTarget {
       this.websocket = new WebSocket(this.url, [])
       this.websocket.binaryType = 'arraybuffer'
 
-      this.websocket.addEventListener('open', (event) => {
+      this.onWebSocketOpen = (event) => {
         this.state = {
           type: EngineConnectionStateType.Connecting,
           value: {
@@ -733,14 +821,16 @@ class EngineConnection extends EventTarget {
         // Send an initial ping
         this.send({ type: 'ping' })
         this.pingPongSpan.ping = new Date()
-      })
+      }
+      this.websocket.addEventListener('open', this.onWebSocketOpen)
 
-      this.websocket.addEventListener('close', (event) => {
+      this.onWebSocketClose = (event) => {
         this.disconnectAll()
         this.finalizeIfAllConnectionsClosed()
-      })
+      }
+      this.websocket.addEventListener('close', this.onWebSocketClose)
 
-      this.websocket.addEventListener('error', (event) => {
+      this.onWebSocketError = (event) => {
         this.disconnectAll()
 
         this.state = {
@@ -753,9 +843,10 @@ class EngineConnection extends EventTarget {
             },
           },
         }
-      })
+      }
+      this.websocket.addEventListener('error', this.onWebSocketError)
 
-      this.websocket.addEventListener('message', (event) => {
+      this.onWebSocketMessage = (event) => {
         // In the EngineConnection, we're looking for messages to/from
         // the server that relate to the ICE handshake, or WebRTC
         // negotiation. There may be other messages (including ArrayBuffer
@@ -960,15 +1051,20 @@ class EngineConnection extends EventTarget {
             })
             break
         }
-      })
+      }
+      this.websocket.addEventListener('message', this.onWebSocketMessage)
     }
 
     if (reconnecting) {
       createWebSocketConnection()
     } else {
-      window.addEventListener('use-network-status-ready', () => {
+      this.onNetworkStatusReady = () => {
         createWebSocketConnection()
-      })
+      }
+      window.addEventListener(
+        'use-network-status-ready',
+        this.onNetworkStatusReady
+      )
     }
   }
   // Do not change this back to an object or any, we should only be sending the
@@ -1154,7 +1250,15 @@ export class EngineCommandManager extends EventTarget {
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
   private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
+  private onEngineConnectionOpened = () => {}
+  private onEngineConnectionClosed = () => {}
+  private onEngineConnectionStarted = ({ detail: engineConnection }: any) => {}
+  private onEngineConnectionNewTrack = ({
+    detail,
+  }: CustomEvent<NewTrackArgs>) => {}
+
   start({
+    restart,
     setMediaStream,
     setIsStreamReady,
     width,
@@ -1170,6 +1274,7 @@ export class EngineCommandManager extends EventTarget {
       showScaleGrid: false,
     },
   }: {
+    restart?: boolean
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
@@ -1215,162 +1320,168 @@ export class EngineCommandManager extends EventTarget {
       })
     )
 
+    this.onEngineConnectionOpened = () => {
+      // Set the stream background color
+      // This takes RGBA values from 0-1
+      // So we convert from the conventional 0-255 found in Figma
+
+      void this.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'set_background_color',
+          color: getThemeColorForEngine(settings.theme),
+        },
+      })
+
+      // Sets the default line colors
+      const opposingTheme = getOppositeTheme(settings.theme)
+      this.sendSceneCommand({
+        cmd_id: uuidv4(),
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'set_default_system_properties',
+          color: getThemeColorForEngine(opposingTheme),
+        },
+      })
+
+      // Set the edge lines visibility
+      this.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
+          hidden: !settings.highlightEdges,
+        },
+      })
+
+      this._camControlsCameraChange()
+      this.sendSceneCommand({
+        // CameraControls subscribes to default_camera_get_settings response events
+        // firing this at connection ensure the camera's are synced initially
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      // We want modify the grid first because we don't want it to flash.
+      // Ideally these would already be default hidden in engine (TODO do
+      // that) https://github.com/KittyCAD/engine/issues/2282
+      this.modifyGrid(!settings.showScaleGrid)?.then(async () => {
+        await this.initPlanes()
+        this.resolveReady()
+        setIsStreamReady(true)
+        await executeCode()
+      })
+    }
     this.engineConnection.addEventListener(
       EngineConnectionEvents.Opened,
-      () => {
-        // Set the stream background color
-        // This takes RGBA values from 0-1
-        // So we convert from the conventional 0-255 found in Figma
-
-        void this.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_background_color',
-            color: getThemeColorForEngine(settings.theme),
-          },
-        })
-
-        // Sets the default line colors
-        const opposingTheme = getOppositeTheme(settings.theme)
-        this.sendSceneCommand({
-          cmd_id: uuidv4(),
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'set_default_system_properties',
-            color: getThemeColorForEngine(opposingTheme),
-          },
-        })
-
-        // Set the edge lines visibility
-        this.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
-            hidden: !settings.highlightEdges,
-          },
-        })
-
-        this._camControlsCameraChange()
-        this.sendSceneCommand({
-          // CameraControls subscribes to default_camera_get_settings response events
-          // firing this at connection ensure the camera's are synced initially
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_get_settings',
-          },
-        })
-        // We want modify the grid first because we don't want it to flash.
-        // Ideally these would already be default hidden in engine (TODO do
-        // that) https://github.com/KittyCAD/engine/issues/2282
-        this.modifyGrid(!settings.showScaleGrid)?.then(async () => {
-          await this.initPlanes()
-          this.resolveReady()
-          setIsStreamReady(true)
-          await executeCode()
-        })
-      }
+      this.onEngineConnectionOpened
     )
 
+    this.onEngineConnectionClosed = () => {
+      setIsStreamReady(false)
+    }
     this.engineConnection.addEventListener(
       EngineConnectionEvents.Closed,
-      () => {
-        setIsStreamReady(false)
-      }
+      this.onEngineConnectionClosed
     )
 
-    this.engineConnection.addEventListener(
-      EngineConnectionEvents.ConnectionStarted,
-      ({ detail: engineConnection }: any) => {
-        engineConnection?.pc?.addEventListener(
-          'datachannel',
-          (event: RTCDataChannelEvent) => {
-            let unreliableDataChannel = event.channel
+    this.onEngineConnectionStarted = ({ detail: engineConnection }: any) => {
+      engineConnection?.pc?.addEventListener(
+        'datachannel',
+        (event: RTCDataChannelEvent) => {
+          let unreliableDataChannel = event.channel
 
-            unreliableDataChannel.addEventListener(
-              'message',
-              (event: MessageEvent) => {
-                const result: UnreliableResponses = JSON.parse(event.data)
-                Object.values(
-                  this.unreliableSubscriptions[result.type] || {}
-                ).forEach(
-                  // TODO: There is only one response that uses the unreliable channel atm,
-                  // highlight_set_entity, if there are more it's likely they will all have the same
-                  // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-                  // per unreliable subscription.
-                  (callback) => {
-                    let data = result?.data
-                    if (isHighlightSetEntity_type(data)) {
-                      if (
-                        data.sequence !== undefined &&
-                        data.sequence > this.inSequence
-                      ) {
-                        this.inSequence = data.sequence
-                        callback(result)
-                      }
+          unreliableDataChannel.addEventListener(
+            'message',
+            (event: MessageEvent) => {
+              const result: UnreliableResponses = JSON.parse(event.data)
+              Object.values(
+                this.unreliableSubscriptions[result.type] || {}
+              ).forEach(
+                // TODO: There is only one response that uses the unreliable channel atm,
+                // highlight_set_entity, if there are more it's likely they will all have the same
+                // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+                // per unreliable subscription.
+                (callback) => {
+                  let data = result?.data
+                  if (isHighlightSetEntity_type(data)) {
+                    if (
+                      data.sequence !== undefined &&
+                      data.sequence > this.inSequence
+                    ) {
+                      this.inSequence = data.sequence
+                      callback(result)
                     }
                   }
-                )
-              }
-            )
-          }
-        )
-
-        // When the EngineConnection starts a connection, we want to register
-        // callbacks into the WebSocket/PeerConnection.
-        engineConnection.websocket?.addEventListener('message', ((
-          event: MessageEvent
-        ) => {
-          if (event.data instanceof ArrayBuffer) {
-            // If the data is an ArrayBuffer, it's  the result of an export command,
-            // because in all other cases we send JSON strings. But in the case of
-            // export we send a binary blob.
-            // Pass this to our export function.
-            exportSave(event.data).then(() => {
-              this.pendingExport?.resolve()
-            }, this.pendingExport?.reject)
-          } else {
-            const message: Models['WebSocketResponse_type'] = JSON.parse(
-              event.data
-            )
-            if (
-              message.success &&
-              (message.resp.type === 'modeling' ||
-                message.resp.type === 'modeling_batch') &&
-              message.request_id
-            ) {
-              this.handleModelingCommand(
-                message.resp,
-                message.request_id,
-                message
+                }
               )
-            } else if (
-              !message.success &&
-              message.request_id &&
-              this.artifactMap[message.request_id]
-            ) {
-              this.handleFailedModelingCommand(message.request_id, message)
             }
+          )
+        }
+      )
+
+      // When the EngineConnection starts a connection, we want to register
+      // callbacks into the WebSocket/PeerConnection.
+      engineConnection.websocket?.addEventListener('message', ((
+        event: MessageEvent
+      ) => {
+        if (event.data instanceof ArrayBuffer) {
+          // If the data is an ArrayBuffer, it's  the result of an export command,
+          // because in all other cases we send JSON strings. But in the case of
+          // export we send a binary blob.
+          // Pass this to our export function.
+          exportSave(event.data).then(() => {
+            this.pendingExport?.resolve()
+          }, this.pendingExport?.reject)
+        } else {
+          const message: Models['WebSocketResponse_type'] = JSON.parse(
+            event.data
+          )
+          if (
+            message.success &&
+            (message.resp.type === 'modeling' ||
+              message.resp.type === 'modeling_batch') &&
+            message.request_id
+          ) {
+            this.handleModelingCommand(
+              message.resp,
+              message.request_id,
+              message
+            )
+          } else if (
+            !message.success &&
+            message.request_id &&
+            this.artifactMap[message.request_id]
+          ) {
+            this.handleFailedModelingCommand(message.request_id, message)
           }
-        }) as EventListener)
+        }
+      }) as EventListener)
 
-        this.engineConnection?.addEventListener(
-          EngineConnectionEvents.NewTrack,
-          (({ detail: { mediaStream } }: CustomEvent<NewTrackArgs>) => {
-            mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-              console.error(
-                'video track mute: check webrtc internals -> inbound rtp'
-              )
-            })
+      this.onEngineConnectionNewTrack = ({
+        detail: { mediaStream },
+      }: CustomEvent<NewTrackArgs>) => {
+        mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
+          console.error(
+            'video track mute: check webrtc internals -> inbound rtp'
+          )
+        })
 
-            setMediaStream(mediaStream)
-          }) as EventListener
-        )
-
-        this.engineConnection?.connect()
+        setMediaStream(mediaStream)
       }
+      this.engineConnection?.addEventListener(
+        EngineConnectionEvents.NewTrack,
+        this.onEngineConnectionNewTrack as EventListener
+      )
+
+      this.engineConnection?.connect()
+    }
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.ConnectionStarted,
+      this.onEngineConnectionStarted
     )
   }
 
@@ -1629,7 +1740,26 @@ export class EngineCommandManager extends EventTarget {
   }
   tearDown() {
     if (this.engineConnection) {
+      this.engineConnection.removeEventListener(
+        EngineConnectionEvents.Opened,
+        this.onEngineConnectionOpened
+      )
+      this.engineConnection.removeEventListener(
+        EngineConnectionEvents.Closed,
+        this.onEngineConnectionClosed
+      )
+      this.engineConnection.removeEventListener(
+        EngineConnectionEvents.ConnectionStarted,
+        this.onEngineConnectionStarted
+      )
+      this.engineConnection.removeEventListener(
+        EngineConnectionEvents.NewTrack,
+        this.onEngineConnectionNewTrack as EventListener
+      )
+
       this.engineConnection?.tearDown()
+      this.engineConnection = undefined
+
       // Our window.tearDown assignment causes this case to happen which is
       // only really for tests.
       // @ts-ignore
