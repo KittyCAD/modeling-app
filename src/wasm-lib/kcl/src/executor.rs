@@ -100,18 +100,6 @@ impl ProgramMemory {
             })
             .collect()
     }
-
-    /// Get all TagDeclarators and TagIdentifiers in the memory.
-    pub fn get_tags(&self) -> HashMap<String, MemoryItem> {
-        self.root
-            .values()
-            .filter_map(|item| match item {
-                MemoryItem::TagDeclarator(t) => Some((t.name.to_string(), item.clone())),
-                MemoryItem::TagIdentifier(t) => Some((t.value.to_string(), item.clone())),
-                _ => None,
-            })
-            .collect::<HashMap<String, MemoryItem>>()
-    }
 }
 
 impl Default for ProgramMemory {
