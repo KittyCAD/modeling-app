@@ -226,17 +226,25 @@ export class ProgramMemory {
   /**
    * Returns a new ProgramMemory with only `MemoryItem`s that pass the
    * predicate.  Values are deep copied.
+   *
+   * Note: Return value of the returned ProgramMemory is always null.
    */
   filterVariables(predicate: (value: MemoryItem) => boolean): ProgramMemory {
-    const newEnvironments = this.environments.map((env) => {
-      const newBindings = Object.fromEntries(
-        Object.entries(env.bindings).filter(([key, value]) =>
-          predicate(value)
-        ).map(([key, value]) => [key, JSON.parse(JSON.stringify(value))])
+    const environments = this.environments.map((env) => {
+      const bindings = Object.fromEntries(
+        Object.entries(env.bindings)
+          .filter(([key, value]) =>
+            // Pass the predicate.
+            predicate(value)
+          )
+          .map(([key, value]) =>
+            // Deep copy.
+            [key, JSON.parse(JSON.stringify(value))]
+          )
       )
-      return { bindings: newBindings, parent: env.parent }
+      return { bindings, parent: env.parent }
     })
-    return new ProgramMemory(newEnvironments, this.currentEnv, this.return)
+    return new ProgramMemory(environments, this.currentEnv, null)
   }
 
   allEnvironments(): Environment[] {
