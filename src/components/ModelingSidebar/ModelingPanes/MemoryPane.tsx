@@ -82,7 +82,7 @@ export const MemoryPane = () => {
 
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
-  for (const [key, val] of programMemory?.flatEntries()) {
+  for (const [key, val] of programMemory?.visibleEntries()) {
     if (typeof val.value !== 'function') {
       if (val.type === 'SketchGroup') {
         processedMemory[key] = val.value.map(({ __geoMeta, ...rest }: Path) => {

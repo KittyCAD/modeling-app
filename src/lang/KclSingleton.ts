@@ -503,7 +503,7 @@ function defaultSelectionFilter(
   engineCommandManager: EngineCommandManager
 ) {
   const firstSketchOrExtrudeGroup = programMemory
-    .values()
+    .visibleValues()
     .find(
       (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
     ) as SketchGroup | ExtrudeGroup

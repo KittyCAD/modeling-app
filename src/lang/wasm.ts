@@ -252,10 +252,11 @@ export class ProgramMemory {
   }
 
   /**
-   * Returns all variable entries in memory.  Structure returned is flat.  If
-   * variables are shadowed, they're not included.
+   * Returns all variable entries in memory that are visible, in a flat
+   * structure.  If variables are shadowed, they're not visible, and therefore,
+   * not included.
    */
-  flatEntries(): Map<string, MemoryItem> {
+  visibleEntries(): Map<string, MemoryItem> {
     const map = new Map<string, MemoryItem>()
     let envRef = this.currentEnv
     while (true) {
@@ -275,10 +276,11 @@ export class ProgramMemory {
   }
 
   /**
-   * More local variables are sorted earlier than more global variables.
+   * Returns values of visible variables.  More local variables are sorted
+   * earlier than more global variables.
    */
-  values(): MemoryItem[] {
-    return Array.from(this.flatEntries().values())
+  visibleValues(): MemoryItem[] {
+    return Array.from(this.visibleEntries().values())
   }
 
   /**
