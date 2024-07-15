@@ -264,7 +264,7 @@ export const hasValidFilletSelection = ({
     }
   }
 
-  // case 2: scketch segment selected, test whether it is extruded
+  // case 2: sketch segment selected, test whether it is extruded
   // TODO: add loft / sweep check
   if (selectionRanges.codeBasedSelections.length > 0) {
     const isExtruded = hasSketchPipeBeenExtruded(
