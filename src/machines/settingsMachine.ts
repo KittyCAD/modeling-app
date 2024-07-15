@@ -63,6 +63,12 @@ export const settingsMachine = createMachine(
             ],
           },
 
+          'set.app.streamIdleMode': {
+            target: 'persisting settings',
+
+            actions: ['setSettingAtLevel', 'toastSuccess'],
+          },
+
           'set.modeling.highlightEdges': {
             target: 'persisting settings',
 

@@ -1,4 +1,3 @@
-import { DEV } from 'env'
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
@@ -23,7 +22,7 @@ export const Stream = () => {
   const { overallState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
 
-  const IDLE = true
+  const IDLE = settings.context.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
@@ -69,19 +68,22 @@ export const Stream = () => {
       })
     }
 
-    // Teardown everything if we go hidden or reconnect
-    if (IDLE && DEV) {
-      if (globalThis?.window?.document) {
-        globalThis.window.document.onvisibilitychange = () => {
-          if (globalThis.window.document.visibilityState === 'hidden') {
-            clearTimeout(timeoutIdIdleA)
-            timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
-          } else if (!engineCommandManager.engineConnection?.isReady()) {
-            clearTimeout(timeoutIdIdleA)
-            engineCommandManager.engineConnection?.connect(true)
-          }
-        }
+    const onVisibilityChange = () => {
+      if (globalThis.window.document.visibilityState === 'hidden') {
+        clearTimeout(timeoutIdIdleA)
+        timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
+      } else if (!engineCommandManager.engineConnection?.isReady()) {
+        clearTimeout(timeoutIdIdleA)
+        engineCommandManager.engineConnection?.connect(true)
       }
+    }
+
+    // Teardown everything if we go hidden or reconnect
+    if (IDLE) {
+      globalThis?.window?.document?.addEventListener(
+        'visibilitychange',
+        onVisibilityChange
+      )
     }
 
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
@@ -93,7 +95,7 @@ export const Stream = () => {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
-    if (IDLE && DEV) {
+    if (IDLE) {
       globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
       globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
       globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
@@ -101,7 +103,7 @@ export const Stream = () => {
       globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
     }
 
-    if (IDLE && DEV) {
+    if (IDLE) {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
@@ -109,7 +111,14 @@ export const Stream = () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
-      if (IDLE && DEV) {
+      if (IDLE) {
+        clearTimeout(timeoutIdIdleA)
+        clearTimeout(timeoutIdIdleB)
+
+        globalThis?.window?.document?.removeEventListener(
+          'visibilitychange',
+          onVisibilityChange
+        )
         globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
         globalThis?.window?.document?.removeEventListener(
           'mousemove',
@@ -126,7 +135,7 @@ export const Stream = () => {
         )
       }
     }
-  }, [])
+  }, [IDLE])
 
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
