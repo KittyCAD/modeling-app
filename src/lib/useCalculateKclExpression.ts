@@ -90,7 +90,11 @@ export function useCalculateKclExpression({
 
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
-        const error = _programMem.set(key, { type: 'userVal', value, __meta: [] })
+        const error = _programMem.set(key, {
+          type: 'userVal',
+          value,
+          __meta: [],
+        })
         if (trap(error, { suppress: true })) return
       }
       const { programMemory } = await executeAst({

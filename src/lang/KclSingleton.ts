@@ -502,9 +502,11 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
-  const firstSketchOrExtrudeGroup = programMemory.values().find(
-    (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
-  ) as SketchGroup | ExtrudeGroup
+  const firstSketchOrExtrudeGroup = programMemory
+    .values()
+    .find(
+      (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
+    ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',

@@ -1851,7 +1851,11 @@ function prepareTruncatedMemoryAndAst(
       }
 
       if (value.type === 'TagIdentifier') {
-        const error = programMemoryOverride.setInEnv(newEnvRef, key, JSON.parse(JSON.stringify(value)))
+        const error = programMemoryOverride.setInEnv(
+          newEnvRef,
+          key,
+          JSON.parse(JSON.stringify(value))
+        )
         if (err(error)) return error
       }
     }
@@ -1867,7 +1871,10 @@ function prepareTruncatedMemoryAndAst(
     if (!memoryItem) {
       continue
     }
-    const error = programMemoryOverride.set(name, JSON.parse(JSON.stringify(memoryItem)))
+    const error = programMemoryOverride.set(
+      name,
+      JSON.parse(JSON.stringify(memoryItem))
+    )
     if (err(error)) return error
   }
   return {

@@ -216,26 +216,28 @@ const newVar = myVar + 1`
     )
     const mem = await exe(code)
     // TODO path to node is probably wrong here, zero indexes are not correct
-    expect(mem.allEnvironments()).toEqual([{
-      three: {
-        type: 'UserVal',
-        value: 3,
-        __meta: [
-          {
-            sourceRange: [14, 15],
-          },
-        ],
+    expect(mem.allEnvironments()).toEqual([
+      {
+        three: {
+          type: 'UserVal',
+          value: 3,
+          __meta: [
+            {
+              sourceRange: [14, 15],
+            },
+          ],
+        },
+        yo: {
+          type: 'UserVal',
+          value: [1, '2', 3, 9],
+          __meta: [
+            {
+              sourceRange: [27, 49],
+            },
+          ],
+        },
       },
-      yo: {
-        type: 'UserVal',
-        value: [1, '2', 3, 9],
-        __meta: [
-          {
-            sourceRange: [27, 49],
-          },
-        ],
-      },
-    }])
+    ])
   })
   it('execute object expression', async () => {
     const code = [

@@ -177,7 +177,8 @@ export class ProgramMemory {
   constructor(
     environments: Environment[] = [emptyEnvironment()],
     currentEnv: EnvironmentRef = [0],
-    returnVal: ProgramReturn | null = null) {
+    returnVal: ProgramReturn | null = null
+  ) {
     console.info('ProgramMemory.constructor', ...environments)
     this.environments = environments
     this.currentEnv = currentEnv
@@ -215,7 +216,11 @@ export class ProgramMemory {
     return null
   }
 
-  setInEnv(envRef: EnvironmentRef, name: string, value: MemoryItem): Error | null {
+  setInEnv(
+    envRef: EnvironmentRef,
+    name: string,
+    value: MemoryItem
+  ): Error | null {
     console.info('ProgramMemory.set', envRef, name, value)
     const env = this.environments[envRef[0]]
     if (!env) {
@@ -272,7 +277,7 @@ export class ProgramMemory {
     return {
       environments: this.environments,
       currentEnv: this.currentEnv,
-      return: this.return
+      return: this.return,
     }
   }
 }
@@ -323,7 +328,11 @@ export const _executor = async (
       fileSystemManager,
       isMock
     )
-    return new ProgramMemory(memory.environments, memory.currentEnv, memory.return)
+    return new ProgramMemory(
+      memory.environments,
+      memory.currentEnv,
+      memory.return
+    )
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -461,7 +470,11 @@ export function getTangentialArcToInfo({
 export function programMemoryInit(): ProgramMemory | Error {
   try {
     const memory: RawProgramMemory = program_memory_init()
-    return new ProgramMemory(memory.environments, memory.currentEnv, memory.return)
+    return new ProgramMemory(
+      memory.environments,
+      memory.currentEnv,
+      memory.return
+    )
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
