@@ -249,12 +249,19 @@ export class ProgramMemory {
    */
   flatEntries(): Map<string, MemoryItem> {
     const map = new Map<string, MemoryItem>()
-    for (let i = this.environments.length - 1; i >= 0; i--) {
-      const env = this.environments[i]
-      for (const key of Object.getOwnPropertyNames(env.bindings)) {
-        const value = env.bindings[key]
-        map.set(key, value)
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      for (const [name, value] of Object.entries(env.bindings)) {
+        // Don't include shadowed variables.
+        if (!map.has(name)) {
+          map.set(name, value)
+        }
       }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
     }
     return map
   }
@@ -263,14 +270,7 @@ export class ProgramMemory {
    * More local variables are sorted earlier than more global variables.
    */
   values(): MemoryItem[] {
-    const values = []
-    for (let i = this.environments.length - 1; i >= 0; i--) {
-      const env = this.environments[i]
-      for (const value of Object.values(env.bindings)) {
-        values.push(value)
-      }
-    }
-    return values
+    return Array.from(this.flatEntries().values())
   }
 
   /**
