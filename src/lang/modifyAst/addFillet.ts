@@ -17,9 +17,19 @@ import {
   createIdentifier,
   createPipeExpression,
 } from '../modifyAst'
-import { getNodeFromPath, traverse } from '../queryAst'
-import { addTagForSketchOnFace, sketchLineHelperMap } from '../std/sketch'
+import {
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+  hasSketchPipeBeenExtruded,
+  traverse,
+} from '../queryAst'
+import {
+  addTagForSketchOnFace,
+  getTagFromCallExpression,
+  sketchLineHelperMap,
+} from '../std/sketch'
 import { err } from 'lib/trap'
+import { Selections, canFilletSelection } from 'lib/selections'
 // import { forEach } from 'jszip'
 
 export function addFillet(
@@ -124,10 +134,10 @@ export function addFillet(
           const hasTag = node.properties.some((prop) => {
             const isTagProp = prop.key.name === 'tags'
             if (isTagProp && prop.value.type === 'ArrayExpression') {
-              return prop.value.elements.some((element) => {
-                // console.log()
-                return element.type === 'Identifier' && element.name === tag
-              })
+              return prop.value.elements.some(
+                (element) =>
+                  element.type === 'Identifier' && element.name === tag
+              )
             }
             return false
           })
@@ -179,9 +189,6 @@ export function addFillet(
     // 2. fillet case
 
     // there are 2 options here:
-    // 2.1. selected edge has the same tag as the existing fillet
-    // 2.2. selected edge has a different tag from the existing fillet
-    // or no tag at all
 
     const existingFilletCall = extrudeInit.body.find((node) => {
       return node.type === 'CallExpression' && node.callee.name === 'fillet'
@@ -223,4 +230,176 @@ export function addFillet(
   }
 
   return new Error('Unsupported extrude type.')
+}
+
+export const hasValidFilletSelection = ({
+  selectionRanges,
+  ast,
+  code,
+}: {
+  selectionRanges: Selections
+  ast: Program
+  code: string
+}) => {
+  // case 0: check if there is anything filletable in the scene
+  let extrudeExists = false
+  traverse(ast, {
+    enter(node) {
+      if (node.type === 'CallExpression' && node.callee.name === 'extrude') {
+        extrudeExists = true
+      }
+    },
+  })
+  if (!extrudeExists) return false
+
+  // case 1: nothing selected, test whether the extrusion exists
+  if (selectionRanges) {
+    if (selectionRanges.codeBasedSelections.length === 0) {
+      return true
+    }
+    const range0 = selectionRanges.codeBasedSelections[0].range[0]
+    const codeLength = code.length
+    if (range0 === codeLength) {
+      return true
+    }
+  }
+
+  // case 2: scketch segment selected, test whether it is extruded
+  // TODO: add loft / sweep check
+  if (selectionRanges.codeBasedSelections.length > 0) {
+    const isExtruded = hasSketchPipeBeenExtruded(
+      selectionRanges.codeBasedSelections[0],
+      ast
+    )
+    if (isExtruded) {
+      const pathToSelectedNode = getNodePathFromSourceRange(
+        ast,
+        selectionRanges.codeBasedSelections[0].range
+      )
+      const segmentNode = getNodeFromPath<CallExpression>(
+        ast,
+        pathToSelectedNode,
+        'CallExpression'
+      )
+      if (err(segmentNode)) return false
+      if (segmentNode.node.type === 'CallExpression') {
+        const segmentName = segmentNode.node.callee.name
+        if (segmentName in sketchLineHelperMap) {
+          const edges = isTagUsedInFillet({
+            ast,
+            callExp: segmentNode.node,
+          })
+          // edge has already been filleted
+          if (
+            ['edge', 'default'].includes(
+              selectionRanges.codeBasedSelections[0].type
+            ) &&
+            edges.includes('baseEdge')
+          )
+            return false
+          return true
+        } else {
+          return false
+        }
+      }
+    } else {
+      return false
+    }
+  }
+
+  return canFilletSelection(selectionRanges)
+}
+
+type EdgeTypes =
+  | 'baseEdge'
+  | 'getNextAdjacentEdge'
+  | 'getPreviousAdjacentEdge'
+  | 'getOppositeEdge'
+
+export const isTagUsedInFillet = ({
+  ast,
+  callExp,
+}: {
+  ast: Program
+  callExp: CallExpression
+}): Array<EdgeTypes> => {
+  const tag = getTagFromCallExpression(callExp)
+  if (err(tag)) return []
+
+  let inFillet = false
+  let inObj = false
+  let inTagHelper: EdgeTypes | '' = ''
+  const edges: Array<EdgeTypes> = []
+  traverse(ast, {
+    enter: (node) => {
+      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
+        inFillet = true
+      }
+      if (inFillet && node.type === 'ObjectExpression') {
+        node.properties.forEach((prop) => {
+          if (
+            prop.key.name === 'tags' &&
+            prop.value.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
+      }
+      if (
+        inObj &&
+        inFillet &&
+        node.type === 'CallExpression' &&
+        (node.callee.name === 'getOppositeEdge' ||
+          node.callee.name === 'getNextAdjacentEdge' ||
+          node.callee.name === 'getPreviousAdjacentEdge')
+      ) {
+        inTagHelper = node.callee.name
+      }
+      if (
+        inObj &&
+        inFillet &&
+        !inTagHelper &&
+        node.type === 'Identifier' &&
+        node.name === tag
+      ) {
+        edges.push('baseEdge')
+      }
+      if (
+        inObj &&
+        inFillet &&
+        inTagHelper &&
+        node.type === 'Identifier' &&
+        node.name === tag
+      ) {
+        edges.push(inTagHelper)
+      }
+    },
+    leave: (node) => {
+      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
+        inFillet = false
+      }
+      if (inFillet && node.type === 'ObjectExpression') {
+        node.properties.forEach((prop) => {
+          if (
+            prop.key.name === 'tags' &&
+            prop.value.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
+      }
+      if (
+        inObj &&
+        inFillet &&
+        node.type === 'CallExpression' &&
+        (node.callee.name === 'getOppositeEdge' ||
+          node.callee.name === 'getNextAdjacentEdge' ||
+          node.callee.name === 'getPreviousAdjacentEdge')
+      ) {
+        inTagHelper = ''
+      }
+    },
+  })
+
+  return edges
 }

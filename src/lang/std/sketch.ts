@@ -37,7 +37,6 @@ import {
   VarValueKeys,
   ArrayOrObjItemInput,
   AddTagInfo,
-  ModifyAstBase,
 } from 'lang/std/stdTypes'
 
 import {
@@ -309,6 +308,19 @@ function singleRawValueHelper(
   ]
 }
 
+function getTag(index = 2): SketchLineHelper['getTag'] {
+  return (callExp: CallExpression) => {
+    if (callExp.type !== 'CallExpression')
+      return new Error('Not a CallExpression')
+    const arg = callExp.arguments?.[index]
+    if (!arg) return new Error('No argument')
+    console.log('arg', arg)
+    if (arg.type !== 'TagDeclarator')
+      return new Error('Tag not a TagDeclarator')
+    return arg.value
+  }
+}
+
 export const lineTo: SketchLineHelper = {
   add: ({
     node,
@@ -378,6 +390,7 @@ export const lineTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -504,6 +517,7 @@ export const line: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -564,6 +578,7 @@ export const xLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
@@ -624,6 +639,7 @@ export const yLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
@@ -683,6 +699,7 @@ export const xLine: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
@@ -739,6 +756,7 @@ export const yLine: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
@@ -831,6 +849,7 @@ export const tangentialArcTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
     if (callExp.type !== 'CallExpression') return []
@@ -949,6 +968,7 @@ export const angledLine: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -1045,6 +1065,7 @@ export const angledLineOfXLength: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -1141,6 +1162,7 @@ export const angledLineOfYLength: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -1228,6 +1250,7 @@ export const angledLineToX: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -1317,6 +1340,7 @@ export const angledLineToY: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
@@ -1441,6 +1465,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       pathToNode,
     }
   },
+  getTag: getTag(),
   addTag: addTag(),
   getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
     if (callExp.type !== 'CallExpression') return []
@@ -1802,6 +1827,17 @@ export function addTagForSketchOnFace(a: AddTagInfo, expressionName: string) {
     return addTag(a)
   }
   return new Error(`"${expressionName}" is not a sketch line helper`)
+}
+
+export function getTagFromCallExpression(
+  callExp: CallExpression
+): string | Error {
+  if (callExp.callee.name === 'close') return getTag(1)(callExp)
+  if (callExp.callee.name in sketchLineHelperMap) {
+    const { getTag } = sketchLineHelperMap[callExp.callee.name]
+    return getTag(callExp)
+  }
+  return new Error(`"${callExp.callee.name}" is not a sketch line helper`)
 }
 
 function isAngleLiteral(lineArugement: Value): boolean {

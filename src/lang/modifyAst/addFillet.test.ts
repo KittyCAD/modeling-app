@@ -1,8 +1,16 @@
-import { parse, recast, initPromise, PathToNode, Value, Program } from '../wasm'
-import { addFillet } from './addFillet'
-import { getNodePathFromSourceRange } from '../queryAst'
+import {
+  parse,
+  recast,
+  initPromise,
+  PathToNode,
+  Value,
+  Program,
+  CallExpression,
+} from '../wasm'
+import { addFillet, isTagUsedInFillet } from './addFillet'
+import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
-import { enginelessExecutor } from '../../lib/testHelpers'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise // Initialize the WASM environment before running tests
@@ -227,5 +235,81 @@ const extrude001 = extrude(50, sketch001)
       radius,
       expectedCode
     )
+  })
+})
+
+describe('Testing isTagUsedInFillet', () => {
+  const code = `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.72, 4.13], %)
+  |> line([7.11, 3.48], %, $seg01)
+  |> line([-3.29, -13.85], %)
+  |> line([-6.37, 3.88], %, $seg02)
+  |> close(%)
+const extrude001 = extrude(-5, sketch001)
+  |> fillet({
+       radius: 1.11,
+       tags: [
+         getOppositeEdge(seg01, %),
+         seg01,
+         getPreviousAdjacentEdge(seg02, %)
+       ]
+     }, %)
+`
+  it('should correctly identify getOppositeEdge and baseEdge edges', () => {
+    const ast = parse(code)
+    if (err(ast)) return
+    const lineOfInterest = `line([7.11, 3.48], %, $seg01)`
+    const range: [number, number] = [
+      code.indexOf(lineOfInterest),
+      code.indexOf(lineOfInterest) + lineOfInterest.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+    if (err(pathToNode)) return
+    const callExp = getNodeFromPath<CallExpression>(
+      ast,
+      pathToNode,
+      'CallExpression'
+    )
+    if (err(callExp)) return
+    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    expect(edges).toEqual(['getOppositeEdge', 'baseEdge'])
+  })
+  it('should correctly identify getPreviousAdjacentEdge edges', () => {
+    const ast = parse(code)
+    if (err(ast)) return
+    const lineOfInterest = `line([-6.37, 3.88], %, $seg02)`
+    const range: [number, number] = [
+      code.indexOf(lineOfInterest),
+      code.indexOf(lineOfInterest) + lineOfInterest.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+    if (err(pathToNode)) return
+    const callExp = getNodeFromPath<CallExpression>(
+      ast,
+      pathToNode,
+      'CallExpression'
+    )
+    if (err(callExp)) return
+    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    expect(edges).toEqual(['getPreviousAdjacentEdge'])
+  })
+  it('should correctly identify no edges', () => {
+    const ast = parse(code)
+    if (err(ast)) return
+    const lineOfInterest = `line([-3.29, -13.85], %)`
+    const range: [number, number] = [
+      code.indexOf(lineOfInterest),
+      code.indexOf(lineOfInterest) + lineOfInterest.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+    if (err(pathToNode)) return
+    const callExp = getNodeFromPath<CallExpression>(
+      ast,
+      pathToNode,
+      'CallExpression'
+    )
+    if (err(callExp)) return
+    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    expect(edges).toEqual([])
   })
 })

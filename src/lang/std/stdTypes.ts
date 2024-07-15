@@ -132,6 +132,7 @@ export interface SketchLineHelper {
         pathToNode: PathToNode
       }
     | Error
+  getTag: (a: CallExpression) => string | Error
   addTag: (a: AddTagInfo) =>
     | {
         modifiedAst: Program
