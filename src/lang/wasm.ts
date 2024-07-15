@@ -143,9 +143,7 @@ interface Memory {
   [key: string]: MemoryItem
 }
 
-interface EnvironmentRef {
-  0: number
-}
+type EnvironmentRef = number
 
 interface Environment {
   bindings: Memory
@@ -176,7 +174,7 @@ export class ProgramMemory {
 
   constructor(
     environments: Environment[] = [emptyEnvironment()],
-    currentEnv: EnvironmentRef = [0],
+    currentEnv: EnvironmentRef = 0,
     returnVal: ProgramReturn | null = null
   ) {
     console.info('ProgramMemory.constructor', ...environments)
@@ -188,7 +186,7 @@ export class ProgramMemory {
   has(name: string): boolean {
     let envRef = this.currentEnv
     while (true) {
-      const env = this.environments[envRef[0]]
+      const env = this.environments[envRef]
       if (env.bindings.hasOwnProperty(name)) {
         return true
       }
@@ -203,7 +201,7 @@ export class ProgramMemory {
   get(name: string): MemoryItem | null {
     let envRef = this.currentEnv
     while (true) {
-      const env = this.environments[envRef[0]]
+      const env = this.environments[envRef]
       if (env.bindings.hasOwnProperty(name)) {
         return env.bindings[name]
       }
@@ -220,7 +218,7 @@ export class ProgramMemory {
     if (this.environments.length === 0) {
       return new Error('No environment to set memory in')
     }
-    const env = this.environments[this.currentEnv[0]]
+    const env = this.environments[this.currentEnv]
     env.bindings[name] = value
     return null
   }
