@@ -99,6 +99,10 @@ name = "compiler_benchmark_iai"
 harness = false
 
 [[bench]]
+name = "digest_benchmark"
+harness = false
+
+[[bench]]
 name = "lsp_semantic_tokens_benchmark_criterion"
 harness = false
 required-features = ["lsp-test-util"]
