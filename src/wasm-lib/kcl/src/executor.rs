@@ -23,8 +23,8 @@ use crate::{
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgramMemory {
-    /// Stack of environments.  Each environment corresponds to a call frame.
     pub environments: Vec<Environment>,
+    pub current_env: EnvironmentRef,
     #[serde(rename = "return")]
     pub return_: Option<ProgramReturn>,
 }
@@ -33,38 +33,29 @@ impl ProgramMemory {
     pub fn new() -> Self {
         Self {
             environments: vec![Environment::root()],
+            current_env: EnvironmentRef::root(),
             return_: None,
         }
     }
 
-    fn current_env(&self) -> EnvironmentRef {
-        // Prevent underflow.
-        assert!(
-            !self.environments.is_empty(),
-            "Expected top-level environment in memory"
-        );
-        let current_env = self.environments.len() - 1;
-
-        EnvironmentRef(current_env)
+    pub fn new_env_for_call(&mut self, parent: EnvironmentRef) -> EnvironmentRef {
+        let new_env_ref = EnvironmentRef(self.environments.len());
+        let new_env = Environment::new(parent);
+        self.environments.push(new_env);
+        new_env_ref
     }
 
-    pub fn push_call_frame(&mut self) {
-        self.environments.push(Environment::new());
-    }
-
-    /// Add to the program memory.
+    /// Add to the program memory in the current scope.
     pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
-        // Always add to the current environment.
-        let current_env = self.current_env();
-
-        if self.environments[current_env.index()].contains_key(key) {
+        // TODO: Use the Entry API.
+        if self.environments[self.current_env.index()].contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine `{}`", key),
                 source_ranges: vec![source_range],
             }));
         }
 
-        self.environments[current_env.index()].insert(key.to_string(), value);
+        self.environments[self.current_env.index()].insert(key.to_string(), value);
 
         Ok(())
     }
@@ -72,9 +63,16 @@ impl ProgramMemory {
     /// Get a value from the program memory.
     /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
-        for env in self.environments.iter().rev() {
+        let mut env_ref = self.current_env;
+        loop {
+            let env = &self.environments[env_ref.index()];
             if let Some(item) = env.bindings.get(var) {
                 return Ok(item);
+            }
+            if let Some(parent) = env.parent {
+                env_ref = parent;
+            } else {
+                break;
             }
         }
 
@@ -109,9 +107,13 @@ impl Default for ProgramMemory {
 
 /// An index pointing to an environment.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-struct EnvironmentRef(usize);
+pub struct EnvironmentRef(usize);
 
 impl EnvironmentRef {
+    pub fn root() -> Self {
+        Self(0)
+    }
+
     pub fn index(&self) -> usize {
         self.0
     }
@@ -120,10 +122,11 @@ impl EnvironmentRef {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 pub struct Environment {
     bindings: HashMap<String, MemoryItem>,
+    parent: Option<EnvironmentRef>,
 }
 
 impl Environment {
-    fn root() -> Self {
+    pub fn root() -> Self {
         Self {
             bindings: HashMap::from([
                 (
@@ -155,20 +158,31 @@ impl Environment {
                     }),
                 ),
             ]),
+            parent: None,
         }
     }
 
-    fn new() -> Self {
+    pub fn new(parent: EnvironmentRef) -> Self {
         Self {
-            bindings: HashMap::default(),
+            bindings: HashMap::new(),
+            parent: Some(parent),
         }
     }
 
-    fn insert(&mut self, key: String, value: MemoryItem) {
+    pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
+        self.bindings.get(key).ok_or_else(|| {
+            KclError::UndefinedValue(KclErrorDetails {
+                message: format!("memory item key `{}` is not defined", key),
+                source_ranges: vec![source_range],
+            })
+        })
+    }
+
+    pub fn insert(&mut self, key: String, value: MemoryItem) {
         self.bindings.insert(key, value);
     }
 
-    fn contains_key(&self, key: &str) -> bool {
+    pub fn contains_key(&self, key: &str) -> bool {
         self.bindings.contains_key(key)
     }
 }
@@ -226,6 +240,7 @@ pub enum MemoryItem {
         #[serde(skip)]
         func: Option<MemoryFunction>,
         expression: Box<FunctionExpression>,
+        memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -711,6 +726,7 @@ impl MemoryItem {
         let MemoryItem::Function {
             func,
             expression,
+            memory: _,
             meta: _,
         } = &self
         else {
@@ -801,10 +817,15 @@ impl MemoryItem {
     pub async fn call_fn(
         &self,
         args: Vec<MemoryItem>,
-        memory: ProgramMemory,
         ctx: ExecutorContext,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        let MemoryItem::Function { func, expression, meta } = &self else {
+        let MemoryItem::Function {
+            func,
+            expression,
+            memory: closure_memory,
+            meta,
+        } = &self
+        else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: "not a in memory function".to_string(),
                 source_ranges: vec![],
@@ -816,7 +837,14 @@ impl MemoryItem {
                 source_ranges: vec![],
             }));
         };
-        func(args, memory, expression.clone(), meta.clone(), ctx).await
+        func(
+            args,
+            closure_memory.as_ref().clone(),
+            expression.clone(),
+            meta.clone(),
+            ctx,
+        )
+        .await
     }
 }
 
@@ -1629,7 +1657,7 @@ impl ExecutorContext {
                                 // the call expression instead of keeping the
                                 // range of the callee?
                                 let func = memory.get(&fn_name, call_expr.into())?;
-                                let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
+                                let result = func.call_fn(args.clone(), self.clone()).await?;
 
                                 memory.return_ = result;
                             }
@@ -1742,8 +1770,13 @@ impl ExecutorContext {
                      _metadata: Vec<Metadata>,
                      ctx: ExecutorContext| {
                         Box::pin(async move {
+                            // Create a new environment to execute the function
+                            // body in.  Its parent should be the environment of
+                            // the closure.
                             let mut body_memory = memory.clone();
-                            body_memory.push_call_frame();
+                            let closure_env = memory.current_env;
+                            let body_env = body_memory.new_env_for_call(closure_env);
+                            body_memory.current_env = body_env;
                             let mut fn_memory = assign_args_to_params(&function_expression, args, body_memory)?;
 
                             let result = ctx
@@ -1758,6 +1791,7 @@ impl ExecutorContext {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],
                     func: Some(mem_func),
+                    memory: Box::new(memory.clone()),
                 }
             }
             Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, self).await?,
@@ -2294,6 +2328,29 @@ const thisBox = box([[0,0], 6, 10, 3])
 
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_closure_does_not_capture_future_definitions() {
+        let ast = r#"
+fn returnX = () => {
+  // x shouldn't be defined yet.
+  return x
+}
+
+const x = 5
+
+const answer = returnX()"#;
+
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        assert_eq!(
+            err,
+            KclError::UndefinedValue(KclErrorDetails {
+                message: "memory item key `x` is not defined".to_owned(),
+                source_ranges: vec![SourceRange([64, 65]), SourceRange([97, 106])],
+            }),
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
