@@ -16,6 +16,7 @@ import {
   canRectangleTool,
   isEditingExistingSketch,
 } from 'machines/modelingMachine'
+import { DEV } from 'env'
 
 export function Toolbar({
   className = '',
@@ -118,6 +119,7 @@ export function Toolbar({
       }),
     { enabled: !disableAllButtons, scopes: ['modeling'] }
   )
+  const disableFillet = !state.can('Fillet') || disableAllButtons
   useHotkeys(
     'f',
     () =>
@@ -125,7 +127,7 @@ export function Toolbar({
         type: 'Find and select command',
         data: { name: 'Fillet', groupId: 'modeling' },
       }),
-    { enabled: !disableAllButtons, scopes: ['modeling'] }
+    { enabled: !disableFillet, scopes: ['modeling'] }
   )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
@@ -413,7 +415,7 @@ export function Toolbar({
             </ActionButton>
           </li>
         )}
-        {state.matches('idle') && (
+        {state.matches('idle') && DEV && (
           <li className="contents">
             <ActionButton
               className={buttonClassName}
@@ -424,10 +426,8 @@ export function Toolbar({
                   data: { name: 'Fillet', groupId: 'modeling' },
                 })
               }
-              disabled={!state.can('Fillet') || disableAllButtons}
-              title={
-                state.can('Fillet') ? 'fillet' : 'sketches need to be closed'
-              }
+              disabled={disableFillet}
+              title={disableFillet ? 'fillet' : "edge can't be filleted"}
               iconStart={{
                 icon: 'fillet', // todo: add fillet icon
                 iconClassName,

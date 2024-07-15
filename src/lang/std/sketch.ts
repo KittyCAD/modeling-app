@@ -314,7 +314,6 @@ function getTag(index = 2): SketchLineHelper['getTag'] {
       return new Error('Not a CallExpression')
     const arg = callExp.arguments?.[index]
     if (!arg) return new Error('No argument')
-    console.log('arg', arg)
     if (arg.type !== 'TagDeclarator')
       return new Error('Tag not a TagDeclarator')
     return arg.value
