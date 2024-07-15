@@ -3,7 +3,7 @@ import { kclManager, engineCommandManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { Value, parse } from 'lang/wasm'
+import { ProgramMemory, Value, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'lang/langHelpers'
 import { err, trap } from 'lib/trap'
@@ -88,7 +88,7 @@ export function useCalculateKclExpression({
       if (err(ast)) return
       if (trap(ast, { suppress: true })) return
 
-      const _programMem: any = { root: {}, return: null }
+      const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, { type: 'userVal', value, __meta: [] })
         if (trap(error, { suppress: true })) return

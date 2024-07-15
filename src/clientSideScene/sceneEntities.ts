@@ -1083,7 +1083,7 @@ export class SceneEntities {
 
       const maybeSketchGroup = programMemory.get(variableDeclarationName)
       let sketchGroup = undefined
-      if (maybeSketchGroup.type === 'SketchGroup') {
+      if (maybeSketchGroup?.type === 'SketchGroup') {
         sketchGroup = maybeSketchGroup
       } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
         sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
@@ -1901,7 +1901,7 @@ export function sketchGroupFromPathToNode({
   )
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
-  const result = programMemory.root[varDec?.id?.name || '']
+  const result = programMemory.get(varDec?.id?.name || '')
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }
