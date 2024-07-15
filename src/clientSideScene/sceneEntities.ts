@@ -1829,27 +1829,31 @@ function prepareTruncatedMemoryAndAst(
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
   let start = _node.node.start
-  for (const key in programMemory.root) {
-    const value = programMemory.root[key]
-    if (!('__meta' in value)) {
-      continue
-    }
-    if (
-      value.__meta === undefined ||
-      value.__meta.length === 0 ||
-      value.__meta[0].sourceRange === undefined
-    ) {
-      continue
-    }
+  const allEnvs = programMemory.allEnvironments()
+  for (const env of allEnvs) {
+    const newEnvRef = programMemoryOverride.addNewEnvironment()
+    for (const key in env.bindings) {
+      const value = env.bindings[key]
+      if (!('__meta' in value)) {
+        continue
+      }
+      if (
+        value.__meta === undefined ||
+        value.__meta.length === 0 ||
+        value.__meta[0].sourceRange === undefined
+      ) {
+        continue
+      }
 
-    if (value.__meta[0].sourceRange[0] >= start) {
-      // We only want things before our start point.
-      continue
-    }
+      if (value.__meta[0].sourceRange[0] >= start) {
+        // We only want things before our start point.
+        continue
+      }
 
-    if (value.type === 'TagIdentifier') {
-      const error = programMemoryOverride.set(key, JSON.parse(JSON.stringify(value)))
-      if (err(error)) return error
+      if (value.type === 'TagIdentifier') {
+        const error = programMemoryOverride.setInEnv(newEnvRef, key, JSON.parse(JSON.stringify(value)))
+        if (err(error)) return error
+      }
     }
   }
 

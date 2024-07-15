@@ -143,18 +143,29 @@ interface Memory {
   [key: string]: MemoryItem
 }
 
+interface EnvironmentRef {
+  0: number
+}
+
 interface Environment {
   bindings: Memory
+  parent: EnvironmentRef | null
+}
+
+function emptyEnvironment(): Environment {
+  return { bindings: {}, parent: null }
 }
 
 interface RawProgramMemory {
   environments: Environment[]
+  currentEnv: EnvironmentRef
   return: ProgramReturn | null
 }
 
 export class ProgramMemory {
   private environments: Environment[]
-  private return: ProgramReturn | null = null
+  private currentEnv: EnvironmentRef
+  private return: ProgramReturn | null
 
   /**
    * Empty memory doesn't include prelude definitions.
@@ -163,9 +174,13 @@ export class ProgramMemory {
     return new ProgramMemory()
   }
 
-  constructor(environments: Environment[] = [{ bindings: {} }], returnVal: ProgramReturn | null = null) {
+  constructor(
+    environments: Environment[] = [emptyEnvironment()],
+    currentEnv: EnvironmentRef = [0],
+    returnVal: ProgramReturn | null = null) {
     console.info('ProgramMemory.constructor', ...environments)
     this.environments = environments
+    this.currentEnv = currentEnv
     this.return = returnVal
   }
 
@@ -195,9 +210,29 @@ export class ProgramMemory {
     if (this.environments.length === 0) {
       return new Error('No environment to set memory in')
     }
-    const env = this.environments[this.environments.length - 1]
+    const env = this.environments[this.currentEnv[0]]
     env.bindings[name] = value
     return null
+  }
+
+  setInEnv(envRef: EnvironmentRef, name: string, value: MemoryItem): Error | null {
+    console.info('ProgramMemory.set', envRef, name, value)
+    const env = this.environments[envRef[0]]
+    if (!env) {
+      return new Error('No environment at index ' + envRef[0])
+    }
+    env.bindings[name] = value
+    return null
+  }
+
+  allEnvironments(): Environment[] {
+    return this.environments
+  }
+
+  addNewEnvironment(): EnvironmentRef {
+    const index = this.environments.length
+    this.environments.push(emptyEnvironment())
+    return [index]
   }
 
   /**
@@ -228,6 +263,17 @@ export class ProgramMemory {
       }
     }
     return values
+  }
+
+  /**
+   * Return the representation that can be serialized to JSON.
+   */
+  toRaw(): RawProgramMemory {
+    return {
+      environments: this.environments,
+      currentEnv: this.currentEnv,
+      return: this.return
+    }
   }
 }
 
@@ -271,13 +317,13 @@ export const _executor = async (
     }
     const memory: RawProgramMemory = await execute_wasm(
       JSON.stringify(node),
-      JSON.stringify(programMemory),
+      JSON.stringify(programMemory.toRaw()),
       baseUnit,
       engineCommandManager,
       fileSystemManager,
       isMock
     )
-    return new ProgramMemory(memory.environments, memory.return)
+    return new ProgramMemory(memory.environments, memory.currentEnv, memory.return)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -415,7 +461,7 @@ export function getTangentialArcToInfo({
 export function programMemoryInit(): ProgramMemory | Error {
   try {
     const memory: RawProgramMemory = program_memory_init()
-    return new ProgramMemory(memory.environments, memory.return)
+    return new ProgramMemory(memory.environments, memory.currentEnv, memory.return)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
