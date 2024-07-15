@@ -1132,10 +1132,30 @@ export const modelingMachine = createMachine(
           selection.codeBasedSelections[0].range
         )
 
+        const varDecNode = getNodeFromPath<VariableDeclaration>(
+          ast,
+          pathToSegmentNode,
+          'VariableDeclaration'
+        )
+        if (err(varDecNode)) return
+        const sketchVar = varDecNode.node.declarations[0].id.name
+        const sketchGroup = kclManager.programMemory.root[sketchVar]
+        if (sketchGroup.type !== 'SketchGroup') return
+        const idArtifact = engineCommandManager.artifactMap[sketchGroup.id]
+        if (idArtifact.commandType !== 'start_path') return
+        const extrusionArtifactId = (idArtifact as any)?.extrusions?.[0]
+        if (typeof extrusionArtifactId !== 'string') return
+        const extrusionArtifact = (engineCommandManager.artifactMap as any)[
+          extrusionArtifactId
+        ]
+        if (!extrusionArtifact) return
+        const pathToExtrudeNode = getNodePathFromSourceRange(
+          ast,
+          extrusionArtifact.range
+        )
+
         // we assume that there is only one body related to the sketch
         // and apply the fillet to it
-
-        const pathToExtrudeNode: PathToNode = []
 
         const addFilletResult = addFillet(
           ast,
@@ -1144,7 +1164,6 @@ export const modelingMachine = createMachine(
           'variableName' in radius
             ? radius.variableIdentifierAst
             : radius.valueAst
-          // kclManager.programMemory
         )
 
         if (trap(addFilletResult)) return

@@ -495,7 +495,8 @@ export const ModelingMachineProvider = ({
                 pathToSelectedNode,
                 'CallExpression'
               )
-              if ('node' in segmentNode) {
+              if (err(segmentNode)) return false
+              if (segmentNode.node.type === 'CallExpression') {
                 // check wethe segment is in sketchLineHelperMap
                 const segmentName = segmentNode.node.callee.name
                 if (segmentName in sketchLineHelperMap) {
@@ -561,7 +562,6 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               data.sketchPathToNode,
               data.extrudePathToNode,
-              kclManager.programMemory,
               data.cap
             )
             if (trap(sketched)) return Promise.reject(sketched)
