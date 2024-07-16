@@ -33,6 +33,7 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
   canExtrudeSelection,
+  canFilletSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -42,7 +43,7 @@ import {
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -72,6 +73,7 @@ import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
+import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -444,6 +446,12 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
         },
+        'has valid fillet selection': ({ selectionRanges }) =>
+          hasValidFilletSelection({
+            selectionRanges,
+            ast: kclManager.ast,
+            code: codeManager.code,
+          }),
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -494,7 +502,6 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               data.sketchPathToNode,
               data.extrudePathToNode,
-              kclManager.programMemory,
               data.cap
             )
             if (trap(sketched)) return Promise.reject(sketched)
@@ -920,7 +927,7 @@ export const ModelingMachineProvider = ({
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
-    commandBarConfig: modelingMachineConfig,
+    commandBarConfig: modelingMachineCommandConfig,
     allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically

@@ -16,6 +16,7 @@ import {
   canRectangleTool,
   isEditingExistingSketch,
 } from 'machines/modelingMachine'
+import { DEV } from 'env'
 
 export function Toolbar({
   className = '',
@@ -60,7 +61,7 @@ export function Toolbar({
         ? send('CancelSketch')
         : send({
             type: 'change tool',
-            data: 'line',
+            data: { tool: 'line' },
           }),
     { enabled: !disableLineButton, scopes: ['sketch'] }
   )
@@ -75,7 +76,7 @@ export function Toolbar({
         ? send('CancelSketch')
         : send({
             type: 'change tool',
-            data: 'tangentialArc',
+            data: { tool: 'tangentialArc' },
           }),
     { enabled: !disableTangentialArc, scopes: ['sketch'] }
   )
@@ -89,7 +90,7 @@ export function Toolbar({
         ? send('CancelSketch')
         : send({
             type: 'change tool',
-            data: 'rectangle',
+            data: { tool: 'rectangle' },
           }),
     { enabled: !disableRectangle, scopes: ['sketch'] }
   )
@@ -114,9 +115,19 @@ export function Toolbar({
     () =>
       commandBarSend({
         type: 'Find and select command',
-        data: { name: 'Extrude', ownerMachine: 'modeling' },
+        data: { name: 'Extrude', groupId: 'modeling' },
       }),
     { enabled: !disableAllButtons, scopes: ['modeling'] }
+  )
+  const disableFillet = !state.can('Fillet') || disableAllButtons
+  useHotkeys(
+    'f',
+    () =>
+      commandBarSend({
+        type: 'Find and select command',
+        data: { name: 'Fillet', groupId: 'modeling' },
+      }),
+    { enabled: !disableFillet, scopes: ['modeling'] }
   )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
@@ -263,7 +274,7 @@ export function Toolbar({
                     ? send('CancelSketch')
                     : send({
                         type: 'change tool',
-                        data: 'line',
+                        data: { tool: 'line' },
                       })
                 }
                 aria-pressed={state?.matches('Sketch.Line tool')}
@@ -293,7 +304,7 @@ export function Toolbar({
                     ? send('CancelSketch')
                     : send({
                         type: 'change tool',
-                        data: 'tangentialArc',
+                        data: { tool: 'tangentialArc' },
                       })
                 }
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
@@ -323,7 +334,7 @@ export function Toolbar({
                     ? send('CancelSketch')
                     : send({
                         type: 'change tool',
-                        data: 'rectangle',
+                        data: { tool: 'rectangle' },
                       })
                 }
                 aria-pressed={state.matches('Sketch.Rectangle tool')}
@@ -378,7 +389,7 @@ export function Toolbar({
               onClick={() =>
                 commandBarSend({
                   type: 'Find and select command',
-                  data: { name: 'Extrude', ownerMachine: 'modeling' },
+                  data: { name: 'Extrude', groupId: 'modeling' },
                 })
               }
               disabled={!state.can('Extrude') || disableAllButtons}
@@ -400,6 +411,36 @@ export function Toolbar({
                 className="!px-2 !text-xs"
               >
                 Shortcut: E
+              </Tooltip>
+            </ActionButton>
+          </li>
+        )}
+        {state.matches('idle') && (DEV || (window as any)._enableFillet) && (
+          <li className="contents">
+            <ActionButton
+              className={buttonClassName}
+              Element="button"
+              onClick={() =>
+                commandBarSend({
+                  type: 'Find and select command',
+                  data: { name: 'Fillet', groupId: 'modeling' },
+                })
+              }
+              disabled={disableFillet}
+              title={disableFillet ? 'fillet' : "edge can't be filleted"}
+              iconStart={{
+                icon: 'fillet', // todo: add fillet icon
+                iconClassName,
+                bgClassName,
+              }}
+            >
+              Fillet
+              <Tooltip
+                delay={1250}
+                position="bottom"
+                className="!px-2 !text-xs"
+              >
+                Shortcut: F
               </Tooltip>
             </ActionButton>
           </li>

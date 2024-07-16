@@ -112,13 +112,13 @@ jobs:
             '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - name: Set updater test version
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
           echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
-        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR }}
+        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
         with:
           path: |
             package.json
@@ -387,24 +387,24 @@ jobs:
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
       - uses: actions/download-artifact@v3
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
 
       - name: Copy updated .json file for updater test
-        if: env.CUT_RELEASE_PR
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
           ls -l artifact
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
           cat src-tauri/tauri.release.conf.json
 
       - name: Build the app (release, updater test)
-        if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
+        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
         env:
           TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
           TAURI_BUNDLE_ARGS: "-b ${{ matrix.os == 'windows-latest' && 'msi' || 'dmg' }}"
         run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }} ${{ env.TAURI_ARGS_MACOS }}"
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.CUT_RELEASE_PR && matrix.os != 'ubuntu-latest' }}
+        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
         with:
           path: "${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg' || 'src-tauri/target/release/bundle/msi/*.msi' }}"
           name: updater-test

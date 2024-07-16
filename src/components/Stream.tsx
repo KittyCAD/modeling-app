@@ -1,3 +1,4 @@
+import { DEV } from 'env'
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
@@ -6,9 +7,10 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { butName } from 'lib/cameraControls'
+import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { useAppStream } from 'AppState'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -17,8 +19,11 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
+  const { mediaStream } = useAppStream()
   const { overallState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
+
+  const IDLE = true
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
@@ -51,7 +56,7 @@ export const Stream = () => {
       capture: true,
     })
 
-    const IDLE_TIME_MS = 1000 * 20
+    const IDLE_TIME_MS = 1000 * 60 * 2
     let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
 
     const teardown = () => {
@@ -60,19 +65,21 @@ export const Stream = () => {
       sceneInfra.modelingSend({ type: 'Cancel' })
       // Give video time to pause
       window.requestAnimationFrame(() => {
-        engineCommandManager.engineConnection?.tearDown({ freeze: true })
+        engineCommandManager.tearDown()
       })
     }
 
     // Teardown everything if we go hidden or reconnect
-    if (globalThis?.window?.document) {
-      globalThis.window.document.onvisibilitychange = () => {
-        if (globalThis.window.document.visibilityState === 'hidden') {
-          clearTimeout(timeoutIdIdleA)
-          timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
-        } else if (!engineCommandManager.engineConnection?.isReady()) {
-          clearTimeout(timeoutIdIdleA)
-          engineCommandManager.engineConnection?.connect(true)
+    if (IDLE && DEV) {
+      if (globalThis?.window?.document) {
+        globalThis.window.document.onvisibilitychange = () => {
+          if (globalThis.window.document.visibilityState === 'hidden') {
+            clearTimeout(timeoutIdIdleA)
+            timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
+          } else if (!engineCommandManager.engineConnection?.isReady()) {
+            clearTimeout(timeoutIdIdleA)
+            engineCommandManager.engineConnection?.connect(true)
+          }
         }
       }
     }
@@ -80,35 +87,44 @@ export const Stream = () => {
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
     const onAnyInput = () => {
-      if (!engineCommandManager.engineConnection?.isReady()) {
-        engineCommandManager.engineConnection?.connect(true)
-      }
       // Clear both timers
       clearTimeout(timeoutIdIdleA)
       clearTimeout(timeoutIdIdleB)
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
-    globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
-    globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
-    globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
-    globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
-    globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    if (IDLE && DEV) {
+      globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
+      globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    }
 
-    timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    if (IDLE && DEV) {
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    }
 
     return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
-      globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('mousemove', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('mousedown', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
-      globalThis?.window?.document?.removeEventListener(
-        'touchstart',
-        onAnyInput
-      )
+      if (IDLE && DEV) {
+        globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'mousemove',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener(
+          'mousedown',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'touchstart',
+          onAnyInput
+        )
+      }
     }
   }, [])
 
@@ -124,10 +140,10 @@ export const Stream = () => {
     )
       return
     if (!videoRef.current) return
-    if (!context.store?.mediaStream) return
+    if (!mediaStream) return
 
     // Do not immediately play the stream!
-    videoRef.current.srcObject = context.store.mediaStream
+    videoRef.current.srcObject = mediaStream
     videoRef.current.pause()
 
     send({
@@ -136,7 +152,7 @@ export const Stream = () => {
         videoElement: videoRef.current,
       },
     })
-  }, [context.store?.mediaStream])
+  }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
@@ -172,7 +188,7 @@ export const Stream = () => {
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
 
-    if (!context.store?.didDragInStream && butName(e).left) {
+    if (!context.store?.didDragInStream && btnName(e).left) {
       sendSelectEventToEngine(
         e,
         videoRef.current,

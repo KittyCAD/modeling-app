@@ -33,13 +33,13 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
-export type CommandSetSchema<T extends AnyStateMachine> = Partial<{
+export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
 }>
 
-export type CommandSet<
+export type StateMachineCommandSet<
   T extends AllMachines,
-  Schema extends CommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>
 > = Partial<{
   [EventType in EventFrom<T>['type']]: Command<
     T,
@@ -48,24 +48,28 @@ export type CommandSet<
   >
 }>
 
-export type CommandSetConfig<
+/**
+ * A configuration object for a set of commands tied to a state machine.
+ * Each event type can have one or more commands associated with it.
+ * @param T The state machine type.
+ * @param Schema The schema for the command set, defined by the developer.
+ */
+export type StateMachineCommandSetConfig<
   T extends AllMachines,
-  Schema extends CommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>
 > = Partial<{
-  [EventType in EventFrom<T>['type']]: CommandConfig<
-    T,
-    EventFrom<T>['type'],
-    Schema[EventType]
-  >
+  [EventType in EventFrom<T>['type']]:
+    | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>
+    | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>[]
 }>
 
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends CommandSetSchema<T>[CommandName] = CommandSetSchema<T>[CommandName]
+  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
 > = {
   name: CommandName
-  ownerMachine: T['id']
+  groupId: T['id']
   needsReview: boolean
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
@@ -81,10 +85,10 @@ export type Command<
 export type CommandConfig<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends CommandSetSchema<T>[CommandName] = CommandSetSchema<T>[CommandName]
+  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
 > = Omit<
   Command<T, CommandName, CommandSchema>,
-  'name' | 'ownerMachine' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
+  'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: true
   args?: {

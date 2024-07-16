@@ -124,7 +124,8 @@ export function createSettingsCommand({
     displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), {
       separator: ' ',
     })}`,
-    ownerMachine: 'settings',
+    description: settingConfig.description,
+    groupId: 'settings',
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
