@@ -204,6 +204,7 @@ function ModelingSidebarSection({
                 id={`${pane.id}-pane`}
                 title={pane.title}
                 Menu={pane.Menu}
+                onClose={() => togglePane(pane.id)}
               >
                 {pane.Content instanceof Function ? (
                   <pane.Content />
