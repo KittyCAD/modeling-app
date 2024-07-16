@@ -184,7 +184,6 @@ export class ProgramMemory {
     currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
     returnVal: ProgramReturn | null = null
   ) {
-    console.info('ProgramMemory.constructor', ...environments, currentEnv)
     this.environments = environments
     this.currentEnv = currentEnv
     this.return = returnVal
@@ -221,7 +220,6 @@ export class ProgramMemory {
   }
 
   set(name: string, value: MemoryItem): Error | null {
-    console.info('ProgramMemory.set', name, value)
     if (this.environments.length === 0) {
       return new Error('No environment to set memory in')
     }
