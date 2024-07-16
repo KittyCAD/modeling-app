@@ -296,61 +296,16 @@ impl Args {
     }
 
     pub fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
-        let first_value = self.args.first().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = first_value {
-            sg.clone()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        let tag = if let Some(tag) = self.args.get(1) {
-            tag.get_tag_declarator_opt()?
-        } else {
-            None
-        };
-
-        Ok((sketch_group, tag))
+        FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Option<FaceTag>), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        if let Some(second_value) = self.args.get(1) {
-            let tag: FaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize FaceTag from JSON: {}", e),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-            Ok((data, Some(tag)))
-        } else {
-            Ok((data, None))
-        }
+    pub fn get_data_and_optional_tag<'a, T: serde::de::DeserializeOwned>(
+        &'a self,
+    ) -> Result<(T, Option<FaceTag>), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+    {
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<SketchGroup>), KclError> {
@@ -441,55 +396,13 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(
-        &self,
-    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Plane as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_surface = if let MemoryItem::Plane(p) = second_value {
-            SketchSurface::Plane(p.clone())
-        } else if let MemoryItem::Face(face) = second_value {
-            SketchSurface::Face(face.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a plane or face (SketchSurface) as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        let tag = if let Some(tag) = self.args.get(2) {
-            tag.get_tag_declarator_opt()?
-        } else {
-            None
-        };
-
-        Ok((data, sketch_surface, tag))
+    pub fn get_data_and_sketch_surface<'a, T: serde::de::DeserializeOwned>(
+        &'a self,
+    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+    {
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_data_and_extrude_group_set<'a, T: serde::de::DeserializeOwned>(
@@ -768,6 +681,8 @@ impl_from_arg_via_json!(super::patterns::CircularPattern3dData);
 impl_from_arg_via_json!(super::helix::HelixData);
 impl_from_arg_via_json!(super::shell::ShellData);
 impl_from_arg_via_json!(super::fillet::FilletData);
+impl_from_arg_via_json!(super::sketch::SketchData);
+impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);
 impl_from_arg_via_json!(u64);
@@ -826,6 +741,15 @@ impl<'a> FromMemoryItem<'a> for SketchSurfaceOrGroup {
             MemoryItem::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
             MemoryItem::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
             MemoryItem::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
+            _ => None,
+        }
+    }
+}
+impl<'a> FromMemoryItem<'a> for SketchSurface {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        match arg {
+            MemoryItem::Plane(sg) => Some(Self::Plane(sg.clone())),
+            MemoryItem::Face(sg) => Some(Self::Face(sg.clone())),
             _ => None,
         }
     }
