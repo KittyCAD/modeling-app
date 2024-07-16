@@ -82,8 +82,9 @@ impl ProgramMemory {
     }
 
     /// Find all extrude groups in the memory that are on a specific sketch group id.
+    /// This does not look inside closures.  But as long as we do not allow
+    /// mutation of variables in KCL, closure memory should be a subset of this.
     pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
-        // TODO: This is broken since adding closures.
         self.environments
             .iter()
             .flat_map(|env| {
