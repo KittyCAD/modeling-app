@@ -30,7 +30,6 @@ import {
 } from '../std/sketch'
 import { err } from 'lib/trap'
 import { Selections, canFilletSelection } from 'lib/selections'
-// import { forEach } from 'jszip'
 
 export function addFillet(
   node: Program,
