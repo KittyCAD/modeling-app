@@ -1789,6 +1789,9 @@ impl ExecutorContext {
                         })
                     },
                 );
+                // Cloning memory here is crucial for semantics so that we close
+                // over variables.  Variables defined lexically later shouldn't
+                // be available to the function body.
                 MemoryItem::Function {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],

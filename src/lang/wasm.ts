@@ -162,6 +162,11 @@ interface RawProgramMemory {
   return: ProgramReturn | null
 }
 
+/**
+ * This duplicates logic in Rust.  The hope is to keep ProgramMemory internals
+ * isolated from the rest of the TypeScript code so that we can move it to Rust
+ * in the future.
+ */
 export class ProgramMemory {
   private environments: Environment[]
   private currentEnv: EnvironmentRef
@@ -494,6 +499,9 @@ export function getTangentialArcToInfo({
   }
 }
 
+/**
+ * Returns new ProgramMemory with prelude definitions.
+ */
 export function programMemoryInit(): ProgramMemory | Error {
   try {
     const memory: RawProgramMemory = program_memory_init()
