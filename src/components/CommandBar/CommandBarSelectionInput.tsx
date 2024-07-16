@@ -18,7 +18,7 @@ const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
   point: ['point', 'line-end', 'line-mid'],
 }
 
-function getSemanticSelectionType(selectionType: string[]) {
+function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
   const semanticSelectionType = new Set()
   selectionType.forEach((type) => {
     Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
