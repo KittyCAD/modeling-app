@@ -727,7 +727,7 @@ impl MemoryItem {
         let MemoryItem::Function {
             func,
             expression,
-            memory: _,
+            memory,
             meta: _,
         } = &self
         else {
@@ -745,6 +745,7 @@ impl MemoryItem {
         Ok(FnAsArg {
             func,
             expr: expression.to_owned(),
+            memory: memory.to_owned(),
         })
     }
 
@@ -2353,6 +2354,42 @@ const answer = returnX()"#;
             KclError::UndefinedValue(KclErrorDetails {
                 message: "memory item key `x` is not defined".to_owned(),
                 source_ranges: vec![SourceRange([64, 65]), SourceRange([97, 106])],
+            }),
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_closure_does_not_capture_future_definitions_in_pattern_transform() {
+        let ast = r#"
+fn transform = (replicaId) => {
+  // x shouldn't be defined yet.
+  let scale = x
+  return {
+    translate: [0, 0, replicaId * 10],
+    scale: [scale, 1, 0],
+  }
+}
+
+fn layer = () => {
+  return startSketchOn("XY")
+    |> circle([0, 0], 1, %, 'tag1')
+    |> extrude(10, %)
+}
+
+const x = 5
+
+// The 10 layers are replicas of each other, with a transform applied to each.
+let shape = layer() |> patternTransform(10, transform, %)
+
+"#;
+
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        assert_eq!(
+            err,
+            KclError::UndefinedValue(KclErrorDetails {
+                message: "memory item key `x` is not defined".to_owned(),
+                source_ranges: vec![SourceRange([80, 81])],
             }),
         );
     }
