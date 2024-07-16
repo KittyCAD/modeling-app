@@ -261,6 +261,7 @@ code {
 @layer components {
   kbd.hotkey {
     @apply font-mono text-xs inline-block px-1 py-0.5 rounded-sm;
+    @apply text-chalkboard-70 dark:text-chalkboard-40;
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
   }
 }
