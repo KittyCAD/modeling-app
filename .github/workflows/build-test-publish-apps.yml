@@ -412,7 +412,8 @@ jobs:
         run: |
           ls -l artifact/*/*oo*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
-          WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
+          WINDOWS_X86_64_SIG=`cat artifact/msi/*x64*.msi.zip.sig`
+          WINDOWS_AARCH64_SIG=`cat artifact/msi/*arm64*.msi.zip.sig`
           RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
@@ -420,8 +421,10 @@ jobs:
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}.app.tar.gz" \
-            --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_x86_64_sig "$WINDOWS_X86_64_SIG" \
+            --arg windows_x86_64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_aarch64_sig "$WINDOWS_AARCH64_SIG" \
+            --arg windows_aarch64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_arm64_en-US.msi.zip" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -436,8 +439,12 @@ jobs:
                   "url": $darwin_url
                 },
                 "windows-x86_64": {
-                  "signature": $windows_sig,
-                  "url": $windows_url
+                  "signature": $windows_x86_64_sig,
+                  "url": $windows_x86_64_url
+                },
+                "windows-aarch64": {
+                  "signature": $windows_aarch64_sig,
+                  "url": $windows_aarch64_url
                 }
               }
             }' > last_update.json
@@ -451,7 +458,8 @@ jobs:
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_universal.dmg" \
-            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi" \
+            --arg windows_x86_64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi" \
+            --arg windows_aarch64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_arm64_en-US.msi" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -461,7 +469,10 @@ jobs:
                   "url": $darwin_url
                 },
                 "msi-x86_64": {
-                  "url": $windows_url
+                  "url": $windows_x86_64_url
+                },
+                "msi-aarch64": {
+                  "url": $windows_aarch64_url
                 }
               }
             }' > last_download.json
