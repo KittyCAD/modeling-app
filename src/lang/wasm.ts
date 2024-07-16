@@ -266,8 +266,12 @@ export class ProgramMemory {
     return new ProgramMemory(environments, this.currentEnv, null)
   }
 
-  allEnvironments(): Environment[] {
-    return this.environments
+  numEnvironments(): number {
+    return this.environments.length
+  }
+
+  numVariables(envRef: EnvironmentRef): number {
+    return Object.keys(this.environments[envRef]).length
   }
 
   /**
