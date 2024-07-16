@@ -207,9 +207,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_optional_tag<'a, T: serde::de::DeserializeOwned>(
-        &'a self,
-    ) -> Result<(T, Option<FaceTag>), KclError>
+    pub fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
@@ -239,34 +237,28 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_surface<'a, T: serde::de::DeserializeOwned>(
-        &'a self,
-    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    pub fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_extrude_group_set<'a, T: serde::de::DeserializeOwned>(
-        &'a self,
-    ) -> Result<(T, ExtrudeGroupSet), KclError>
+    pub fn get_data_and_extrude_group_set<'a, T>(&'a self) -> Result<(T, ExtrudeGroupSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_extrude_group<'a, T: serde::de::DeserializeOwned>(
-        &'a self,
-    ) -> Result<(T, Box<ExtrudeGroup>), KclError>
+    pub fn get_data_and_extrude_group<'a, T>(&'a self) -> Result<(T, Box<ExtrudeGroup>), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_extrude_group_and_tag<'a, T: serde::de::DeserializeOwned>(
+    pub fn get_data_and_extrude_group_and_tag<'a, T>(
         &'a self,
     ) -> Result<(T, Box<ExtrudeGroup>, Option<TagDeclarator>), KclError>
     where
