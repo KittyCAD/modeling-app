@@ -2371,12 +2371,9 @@ async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
         })
         .await;
 
-    let mut default_hashed = crate::ast::types::Program::default();
-    default_hashed.compute_digest();
-
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast, default_hashed);
+    assert_eq!(ast, crate::ast::types::Program::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
@@ -2838,12 +2835,9 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
-    let mut default_hashed = crate::ast::types::Program::default();
-    default_hashed.compute_digest();
-
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != default_hashed);
+    assert!(ast != crate::ast::types::Program::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
     // Now it should be the default memory.
