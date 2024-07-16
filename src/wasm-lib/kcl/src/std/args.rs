@@ -11,7 +11,7 @@ use crate::{
 use kittycad::types::OkWebSocketResponseData;
 use serde::de::DeserializeOwned;
 
-use super::{sketch::FaceTag, FnAsArg};
+use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
 
 #[derive(Debug, Clone)]
 pub struct Args {
@@ -150,36 +150,7 @@ impl Args {
     }
 
     pub fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, ExtrudeGroupSet), KclError> {
-        let sr = vec![self.source_range];
-        let mut args = self.args.iter();
-        let num_repetitions = args.next().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: "Missing first argument (should be the number of repetitions)".to_owned(),
-                source_ranges: sr.clone(),
-            })
-        })?;
-        let num_repetitions = num_repetitions.get_u32(sr.clone())?;
-        let transform = args.next().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: "Missing second argument (should be the transform function)".to_owned(),
-                source_ranges: sr.clone(),
-            })
-        })?;
-        let func = transform.get_function(sr.clone())?;
-        let eg = args.next().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: "Missing third argument (should be a Sketch/ExtrudeGroup or an array of Sketch/ExtrudeGroups)"
-                    .to_owned(),
-                source_ranges: sr.clone(),
-            })
-        })?;
-        let eg = eg.get_extrude_group_set().map_err(|_e| {
-            KclError::Type(KclErrorDetails {
-                message: "Third argument was not an ExtrudeGroup".to_owned(),
-                source_ranges: sr.clone(),
-            })
-        })?;
-        Ok((num_repetitions, func, eg))
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_hypotenuse_leg(&self) -> Result<(f64, f64), KclError> {
@@ -206,94 +177,7 @@ impl Args {
         ),
         KclError,
     > {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a [number, number] as the first argument, found `{:?}`",
-                        self.args
-                    ),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let center: [f64; 2] = if let serde_json::Value::Array(arr) = first_value {
-            if arr.len() != 2 {
-                return Err(KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a [number, number] as the first argument, found `{:?}`",
-                        self.args
-                    ),
-                    source_ranges: vec![self.source_range],
-                }));
-            }
-            let x = parse_json_number_as_f64(&arr[0], self.source_range)?;
-            let y = parse_json_number_as_f64(&arr[1], self.source_range)?;
-            [x, y]
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a [number, number] as the first argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        let second_value = self
-            .args
-            .get(1)
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a number as the second argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let radius: f64 = serde_json::from_value(second_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize number from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let third_value = self.args.get(2).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_group_or_surface = if let MemoryItem::SketchGroup(sg) = third_value {
-            crate::std::shapes::SketchSurfaceOrGroup::SketchGroup(sg.clone())
-        } else if let MemoryItem::Plane(sg) = third_value {
-            crate::std::shapes::SketchSurfaceOrGroup::SketchSurface(SketchSurface::Plane(sg.clone()))
-        } else if let MemoryItem::Face(sg) = third_value {
-            crate::std::shapes::SketchSurfaceOrGroup::SketchSurface(SketchSurface::Face(sg.clone()))
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        let tag = if let Some(tag) = self.args.get(3) {
-            tag.get_tag_declarator_opt()?
-        } else {
-            None
-        };
-
-        Ok((center, radius, sketch_group_or_surface, tag))
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_segment_name_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
@@ -974,6 +858,21 @@ where
         Ok((a, b, c))
     }
 }
+impl<'a, A, B, C, D> FromArgs<'a> for (A, B, C, D)
+where
+    A: FromArgs<'a>,
+    B: FromArgs<'a>,
+    C: FromArgs<'a>,
+    D: FromArgs<'a>,
+{
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let a = A::from_args(args, i)?;
+        let b = B::from_args(args, i + 1)?;
+        let c = C::from_args(args, i + 2)?;
+        let d = D::from_args(args, i + 3)?;
+        Ok((a, b, c, d))
+    }
+}
 
 impl<'a> FromMemoryItem<'a> for &'a str {
     fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
@@ -1073,5 +972,27 @@ impl<'a> FromMemoryItem<'a> for Box<ExtrudeGroup> {
             return None;
         };
         Some(s.to_owned())
+    }
+}
+
+impl<'a> FromMemoryItem<'a> for FnAsArg<'a> {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        arg.get_function()
+    }
+}
+
+impl<'a> FromMemoryItem<'a> for ExtrudeGroupSet {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        arg.get_extrude_group_set().ok()
+    }
+}
+impl<'a> FromMemoryItem<'a> for SketchSurfaceOrGroup {
+    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+        match arg {
+            MemoryItem::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
+            MemoryItem::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
+            MemoryItem::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
+            _ => None,
+        }
     }
 }

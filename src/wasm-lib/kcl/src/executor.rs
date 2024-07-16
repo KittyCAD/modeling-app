@@ -642,25 +642,17 @@ impl MemoryItem {
     }
 
     /// If this value is of type function, return it.
-    pub fn get_function(&self, source_ranges: Vec<SourceRange>) -> Result<FnAsArg<'_>, KclError> {
+    pub fn get_function(&self) -> Option<FnAsArg<'_>> {
         let MemoryItem::Function {
             func,
             expression,
             meta: _,
         } = &self
         else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "not an in-memory function".to_string(),
-                source_ranges,
-            }));
+            return None;
         };
-        let func = func.as_ref().ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("Not an in-memory function: {:?}", expression),
-                source_ranges,
-            })
-        })?;
-        Ok(FnAsArg {
+        let func = func.as_ref()?;
+        Some(FnAsArg {
             func,
             expr: expression.to_owned(),
         })
