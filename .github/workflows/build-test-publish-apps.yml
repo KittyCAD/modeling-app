@@ -218,7 +218,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: "yarn tauri build --config --target universal-apple-darwin"
+        run: "yarn tauri build --config src-tauri/tauri.release.conf.json --target universal-apple-darwin"
 
       - uses: actions/upload-artifact@v3
         with:
