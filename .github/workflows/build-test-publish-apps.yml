@@ -334,7 +334,7 @@ jobs:
         if: ${{ env.BUILD_RELEASE == 'false' }}
         run: "yarn run tauri build --debug"
 
-      - name: Build the app (release) and sign
+      - name: Build the app (release) and sign for x86_64
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -346,15 +346,18 @@ jobs:
           path: "src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
 
       - name: Build the app (debug) for aarch64
-        if: ${{ env.BUILD_RELEASE == 'false' }}
-        # .msi bundles aren't supported by tauri on aarch64
-        run: yarn run tauri build --debug --target aarch64-pc-windows-msvc -b msi
+        run: yarn run tauri build --debug --target aarch64-pc-windows-msvc
+
+      - name: Build the app (release) and sign for aarch64
+        if: ${{ env.BUILD_RELEASE == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: "yarn tauri build --config src-tauri\\tauri.release.conf.json --target aarch64-pc-windows-msvc"
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.BUILD_RELEASE == 'false' }}
         with:
-          name: artifact-aarch64-windows
-          path: "src-tauri/target/aarch64-pc-windows-msvc/debug/bundle/*/*"
+          path: "src-tauri/target/aarch64-pc-windows-msvc/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
 
       - name: Run e2e tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
