@@ -354,12 +354,16 @@ impl Args {
     }
 }
 
+/// Types which impl this trait can be read out of the `Args` passed into a KCL function.
 pub trait FromArgs<'a>: Sized {
+    /// Get this type from the args passed into a KCL function, at the given index in the argument list.
     fn from_args(args: &'a Args, index: usize) -> Result<Self, KclError>;
 }
 
+/// Types which impl this trait can be extracted from a `MemoryItem`.
 pub trait FromMemoryItem<'a>: Sized {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self>;
+    /// Try to convert a MemoryItem into this type.
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self>;
 }
 
 impl<'a, T> FromArgs<'a> for T
@@ -373,7 +377,7 @@ where
                 source_ranges: vec![args.source_range],
             }));
         };
-        let Some(val) = T::from_arg(arg) else {
+        let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but wasn't",
@@ -392,7 +396,7 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
-        let Some(val) = T::from_arg(arg) else {
+        let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but wasn't",
@@ -447,25 +451,25 @@ where
 }
 
 impl<'a> FromMemoryItem<'a> for &'a str {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         arg.as_user_val().and_then(|uv| uv.value.as_str())
     }
 }
 
 impl<'a> FromMemoryItem<'a> for TagDeclarator {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }
 }
 
 impl<'a> FromMemoryItem<'a> for TagIdentifier {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         arg.get_tag_identifier().ok()
     }
 }
 
 impl<'a> FromMemoryItem<'a> for &'a SketchGroup {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         let MemoryItem::SketchGroup(s) = arg else {
             return None;
         };
@@ -476,7 +480,7 @@ impl<'a> FromMemoryItem<'a> for &'a SketchGroup {
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromMemoryItem<'a> for $typ {
-            fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+            fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
                 from_user_val(arg)
             }
         }
@@ -489,7 +493,7 @@ macro_rules! impl_from_arg_for_array {
         where
             T: serde::de::DeserializeOwned + FromMemoryItem<'a>,
         {
-            fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+            fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
                 from_user_val(arg)
             }
         }
@@ -532,7 +536,7 @@ impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
 
 impl<'a> FromMemoryItem<'a> for &'a Box<SketchGroup> {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         let MemoryItem::SketchGroup(s) = arg else {
             return None;
         };
@@ -541,7 +545,7 @@ impl<'a> FromMemoryItem<'a> for &'a Box<SketchGroup> {
 }
 
 impl<'a> FromMemoryItem<'a> for Box<SketchGroup> {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         let MemoryItem::SketchGroup(s) = arg else {
             return None;
         };
@@ -550,7 +554,7 @@ impl<'a> FromMemoryItem<'a> for Box<SketchGroup> {
 }
 
 impl<'a> FromMemoryItem<'a> for Box<ExtrudeGroup> {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         let MemoryItem::ExtrudeGroup(s) = arg else {
             return None;
         };
@@ -559,23 +563,23 @@ impl<'a> FromMemoryItem<'a> for Box<ExtrudeGroup> {
 }
 
 impl<'a> FromMemoryItem<'a> for FnAsArg<'a> {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         arg.get_function()
     }
 }
 
 impl<'a> FromMemoryItem<'a> for ExtrudeGroupSet {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         arg.get_extrude_group_set().ok()
     }
 }
 impl<'a> FromMemoryItem<'a> for SketchGroupSet {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         arg.get_sketch_group_set().ok()
     }
 }
 impl<'a> FromMemoryItem<'a> for SketchSurfaceOrGroup {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         match arg {
             MemoryItem::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
             MemoryItem::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
@@ -585,7 +589,7 @@ impl<'a> FromMemoryItem<'a> for SketchSurfaceOrGroup {
     }
 }
 impl<'a> FromMemoryItem<'a> for SketchSurface {
-    fn from_arg(arg: &'a MemoryItem) -> Option<Self> {
+    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
         match arg {
             MemoryItem::Plane(sg) => Some(Self::Plane(sg.clone())),
             MemoryItem::Face(sg) => Some(Self::Face(sg.clone())),
