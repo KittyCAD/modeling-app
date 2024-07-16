@@ -347,6 +347,7 @@ jobs:
           path: "src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
 
       - name: Build the app (debug) for aarch64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
         run: yarn run tauri build --debug --target aarch64-pc-windows-msvc
 
       - name: Build the app (release) and sign for aarch64
