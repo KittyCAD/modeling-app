@@ -151,7 +151,6 @@ describe('ZMA authorized user flows', () => {
       expect(await errorText.getText()).toContain('unexpected error')
     }
     await browser.execute(`window.location.href = "${tauriProtocol}/home"`)
-
   })
 })
 
