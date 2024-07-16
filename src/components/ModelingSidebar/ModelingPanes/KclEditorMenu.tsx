@@ -24,14 +24,12 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           }
         }}
       >
-        <Menu.Button className="p-0 border-none relative">
+        <Menu.Button className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
           <ActionIcon
             icon="three-dots"
             className="p-1"
             size="sm"
-            bgClassName={
-              '!bg-transparent hover:!bg-primary/10 hover:dark:!bg-chalkboard-100 ui-open:!bg-primary/10 dark:ui-open:!bg-chalkboard-100 rounded-sm'
-            }
+            bgClassName="bg-transparent dark:bg-transparent"
             iconClassName={'!text-chalkboard-90 dark:!text-chalkboard-40'}
           />
         </Menu.Button>

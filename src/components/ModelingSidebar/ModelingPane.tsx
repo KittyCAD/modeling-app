@@ -27,9 +27,9 @@ export const ModelingPaneHeader = ({
         iconStart={{
           icon: 'close',
           iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
+          bgClassName: 'bg-transparent dark:bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
         onClick={onClose}
       >
         <Tooltip position="bottom-right" delay={750}>
