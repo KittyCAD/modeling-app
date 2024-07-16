@@ -276,6 +276,8 @@ export class ProgramMemory {
    * Returns all variable entries in memory that are visible, in a flat
    * structure.  If variables are shadowed, they're not visible, and therefore,
    * not included.
+   *
+   * This should only be used to display in the MemoryPane UI.
    */
   visibleEntries(): Map<string, MemoryItem> {
     const map = new Map<string, MemoryItem>()
@@ -297,15 +299,20 @@ export class ProgramMemory {
   }
 
   /**
-   * Returns values of visible variables.  More local variables are sorted
-   * earlier than more global variables.
+   * Returns true if any visible variables are a SketchGroup or ExtrudeGroup.
    */
-  visibleValues(): MemoryItem[] {
-    return Array.from(this.visibleEntries().values())
+  hasSketchOrExtrudeGroup(): boolean {
+    for (const node of this.visibleEntries().values()) {
+      if (node.type === 'ExtrudeGroup' || node.type === 'SketchGroup') {
+        return true
+      }
+    }
+    return false
   }
 
   /**
-   * Return the representation that can be serialized to JSON.
+   * Return the representation that can be serialized to JSON.  This should only
+   * be used within this module.
    */
   toRaw(): RawProgramMemory {
     return {

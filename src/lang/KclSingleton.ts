@@ -14,9 +14,7 @@ import {
   Program,
   ProgramMemory,
   recast,
-  SketchGroup,
   SourceRange,
-  ExtrudeGroup,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -502,12 +500,7 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
-  const firstSketchOrExtrudeGroup = programMemory
-    .visibleValues()
-    .find(
-      (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
-    ) as SketchGroup | ExtrudeGroup
-  firstSketchOrExtrudeGroup &&
+  programMemory.hasSketchOrExtrudeGroup() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
