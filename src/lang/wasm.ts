@@ -145,6 +145,8 @@ interface Memory {
 
 type EnvironmentRef = number
 
+const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
+
 interface Environment {
   bindings: Memory
   parent: EnvironmentRef | null
@@ -174,7 +176,7 @@ export class ProgramMemory {
 
   constructor(
     environments: Environment[] = [emptyEnvironment()],
-    currentEnv: EnvironmentRef = 0,
+    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
     returnVal: ProgramReturn | null = null
   ) {
     console.info('ProgramMemory.constructor', ...environments, currentEnv)
@@ -229,21 +231,33 @@ export class ProgramMemory {
    *
    * Note: Return value of the returned ProgramMemory is always null.
    */
-  filterVariables(predicate: (value: MemoryItem) => boolean): ProgramMemory {
-    const environments = this.environments.map((env) => {
-      const bindings = Object.fromEntries(
-        Object.entries(env.bindings)
-          .filter(([key, value]) =>
-            // Pass the predicate.
-            predicate(value)
-          )
-          .map(([key, value]) =>
-            // Deep copy.
-            [key, JSON.parse(JSON.stringify(value))]
-          )
-      )
-      return { bindings, parent: env.parent }
-    })
+  filterVariables(
+    keepPrelude: boolean,
+    predicate: (value: MemoryItem) => boolean
+  ): ProgramMemory | Error {
+    const environments: Environment[] = []
+    for (const [i, env] of this.environments.entries()) {
+      let bindings: Memory
+      if (i === ROOT_ENVIRONMENT_REF && keepPrelude) {
+        // Get prelude definitions.  Create these first so that they're always
+        // first in iteration order.
+        const memoryOrError = programMemoryInit()
+        if (err(memoryOrError)) return memoryOrError
+        bindings = memoryOrError.environments[0].bindings
+      } else {
+        bindings = emptyEnvironment().bindings
+      }
+
+      for (const [name, value] of Object.entries(env.bindings)) {
+        // Check the predicate.
+        if (!predicate(value)) {
+          continue
+        }
+        // Deep copy.
+        bindings[name] = JSON.parse(JSON.stringify(value))
+      }
+      environments.push({ bindings, parent: env.parent })
+    }
     return new ProgramMemory(environments, this.currentEnv, null)
   }
 

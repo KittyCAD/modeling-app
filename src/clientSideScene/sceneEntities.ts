@@ -1826,7 +1826,7 @@ function prepareTruncatedMemoryAndAst(
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
   let start = _node.node.start
-  const programMemoryOverride = programMemory.filterVariables((value) => {
+  const programMemoryOverride = programMemory.filterVariables(true, (value) => {
     if (
       !('__meta' in value) ||
       value.__meta === undefined ||
@@ -1843,6 +1843,7 @@ function prepareTruncatedMemoryAndAst(
 
     return value.type === 'TagIdentifier'
   })
+  if (err(programMemoryOverride)) return programMemoryOverride
 
   for (let i = 0; i < bodyIndex; i++) {
     const node = _ast.body[i]

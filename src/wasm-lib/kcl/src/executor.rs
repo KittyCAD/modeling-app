@@ -129,6 +129,7 @@ pub struct Environment {
 impl Environment {
     pub fn root() -> Self {
         Self {
+            // Prelude
             bindings: HashMap::from([
                 (
                     "ZERO".to_string(),
