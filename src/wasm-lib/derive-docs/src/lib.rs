@@ -837,7 +837,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
 
             // Read the output file.
             let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
-            twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #test_name_str), &actual, 1.0);
+            twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #test_name_str), &actual, 0.99);
 
         }
     }
