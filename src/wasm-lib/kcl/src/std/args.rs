@@ -185,114 +185,22 @@ impl Args {
     }
 
     pub fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
-        let first_value = self.args.first().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_set = match first_value.get_sketch_group_set() {
-            Ok(set) => set,
-            Err(err) => {
-                return Err(KclError::Type(KclErrorDetails {
-                    message: format!("Expected an SketchGroupSet as the first argument: {}", err),
-                    source_ranges: vec![self.source_range],
-                }))
-            }
-        };
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
-            sg.clone()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        Ok((sketch_set, sketch_group))
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
-        let first_value = self.args.first().ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = first_value {
-            sg.clone()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        Ok(sketch_group)
+        FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data<T: serde::de::DeserializeOwned>(&self) -> Result<T, KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        Ok(data)
+    pub fn get_data<'a, T>(&'a self) -> Result<T, KclError>
+    where
+        T: FromArgs<'a> + serde::de::DeserializeOwned,
+    {
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-        let data: String = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a file path string: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        if let Some(second_value) = self.args.get(1) {
-            let options: crate::std::import::ImportFormat = serde_json::from_value(second_value.get_json_value()?)
-                .map_err(|e| {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("Expected input format data: {}", e),
-                        source_ranges: vec![self.source_range],
-                    })
-                })?;
-            Ok((data, Some(options)))
-        } else {
-            Ok((data, None))
-        }
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
@@ -308,83 +216,18 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<SketchGroup>), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
-            sg.clone()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        Ok((data, sketch_group))
+    pub fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, Box<SketchGroup>), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromArgs<'a>,
+    {
+        FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_group_set<T: serde::de::DeserializeOwned>(
-        &self,
-    ) -> Result<(T, SketchGroupSet), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let sketch_set = match second_value.get_sketch_group_set() {
-            Ok(set) => set,
-            Err(err) => {
-                return Err(KclError::Type(KclErrorDetails {
-                    message: format!("Expected an SketchGroupSet as the second argument: {}", err),
-                    source_ranges: vec![self.source_range],
-                }))
-            }
-        };
-
-        Ok((data, sketch_set))
+    pub fn get_data_and_sketch_group_set<'a, T>(&'a self) -> Result<(T, SketchGroupSet), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromArgs<'a>,
+    {
+        FromArgs::from_args(self, 0)
     }
 
     pub fn get_data_and_sketch_group_and_tag<'a, T>(
@@ -519,7 +362,7 @@ impl Args {
     }
 }
 
-trait FromArgs<'a>: Sized {
+pub trait FromArgs<'a>: Sized {
     fn from_args(args: &'a Args, index: usize) -> Result<Self, KclError>;
 }
 
@@ -678,10 +521,14 @@ impl_from_arg_via_json!(super::sketch::BezierData);
 impl_from_arg_via_json!(super::chamfer::ChamferData);
 impl_from_arg_via_json!(super::patterns::LinearPattern3dData);
 impl_from_arg_via_json!(super::patterns::CircularPattern3dData);
+impl_from_arg_via_json!(super::patterns::LinearPattern2dData);
+impl_from_arg_via_json!(super::patterns::CircularPattern2dData);
 impl_from_arg_via_json!(super::helix::HelixData);
 impl_from_arg_via_json!(super::shell::ShellData);
 impl_from_arg_via_json!(super::fillet::FilletData);
+impl_from_arg_via_json!(super::revolve::RevolveData);
 impl_from_arg_via_json!(super::sketch::SketchData);
+impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);
