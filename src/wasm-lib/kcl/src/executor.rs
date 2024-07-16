@@ -47,7 +47,6 @@ impl ProgramMemory {
 
     /// Add to the program memory in the current scope.
     pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
-        // TODO: Use the Entry API.
         if self.environments[self.current_env.index()].contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine `{}`", key),
