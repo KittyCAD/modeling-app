@@ -175,7 +175,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
-                className="h-8 w-8 rounded-full"
+                className="h-7 w-7 rounded-full"
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />
@@ -191,7 +191,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
           />
         </div>
-        <Tooltip position="bottom-left" delay={1000} hoverOnly>
+        <Tooltip position="bottom-right" delay={1000} hoverOnly>
           User menu
         </Tooltip>
       </Popover.Button>

@@ -42,7 +42,7 @@ const ProjectSidebarMenu = ({
   )
 }
 
-export function AppLogoLink({
+function AppLogoLink({
   project,
   file,
 }: {
@@ -76,7 +76,7 @@ export function AppLogoLink({
   )
 }
 
-export function ProjectMenuPopover({
+function ProjectMenuPopover({
   project,
   file,
 }: {
