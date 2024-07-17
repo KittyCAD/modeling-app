@@ -131,6 +131,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         {
           id: 'sign-out',
           Element: 'button',
+          'data-testid': 'user-sidebar-sign-out',
           children: 'Sign out',
           onClick: () => send('Log out'),
           className: '', // Just making TS's filter type coercion happy 😠
