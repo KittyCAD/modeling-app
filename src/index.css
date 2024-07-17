@@ -260,9 +260,10 @@ code {
 
 @layer components {
   kbd.hotkey {
-    @apply font-mono text-xs inline-block px-1 py-0.5 rounded-sm;
+    @apply font-mono text-xs inline-block px-0.5 py-[2px] rounded;
     @apply text-chalkboard-70 dark:text-chalkboard-40;
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
+    @apply border border-t-0 border-b-2 border-chalkboard-30 dark:border-chalkboard-70;
   }
 }
 

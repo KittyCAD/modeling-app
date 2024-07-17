@@ -22,116 +22,123 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const navigate = useNavigate()
   const send = useSettingsAuthContext()?.auth?.send
 
+  // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
-    () => [
-      {
-        id: 'settings',
-        Element: 'button',
-        children: (
-          <>
-            <span className="flex-1">User settings</span>
-            <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-              isTauri() ? '' : '⬆'
-            },`}</kbd>
-          </>
-        ),
-        onClick: () => {
-          const targetPath = location.pathname.includes(paths.FILE)
-            ? filePath + paths.SETTINGS
-            : paths.HOME + paths.SETTINGS
-          navigate(targetPath + '?tab=user')
+    () =>
+      [
+        {
+          id: 'settings',
+          Element: 'button',
+          children: (
+            <>
+              <span className="flex-1">User settings</span>
+              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
+                isTauri() ? '' : '⬆'
+              },`}</kbd>
+            </>
+          ),
+          onClick: () => {
+            const targetPath = location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS
+              : paths.HOME + paths.SETTINGS
+            navigate(targetPath + '?tab=user')
+          },
         },
-      },
-      {
-        id: 'keybindings',
-        Element: 'button',
-        children: 'Keyboard shortcuts',
-        onClick: () => {
-          const targetPath = location.pathname.includes(paths.FILE)
-            ? filePath + paths.SETTINGS
-            : paths.HOME + paths.SETTINGS
-          navigate(targetPath + '?tab=keybindings')
+        {
+          id: 'keybindings',
+          Element: 'button',
+          children: 'Keyboard shortcuts',
+          onClick: () => {
+            const targetPath = location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS
+              : paths.HOME + paths.SETTINGS
+            navigate(targetPath + '?tab=keybindings')
+          },
         },
-      },
-      {
-        id: 'account',
-        Element: 'externalLink',
-        to: 'https://zoo.dev/account',
-        children: (
-          <>
-            <span className="flex-1">Manage account</span>
-            <CustomIcon
-              name="link"
-              className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-          </>
-        ),
-      },
-      'break',
-      {
-        id: 'request-feature',
-        Element: 'externalLink',
-        to: 'https://github.com/KittyCAD/modeling-app/discussions',
-        children: (
-          <>
-            <span className="flex-1">Request a feature</span>
-            <CustomIcon
-              name="link"
-              className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-          </>
-        ),
-      },
-      {
-        id: 'report-bug',
-        Element: 'externalLink',
-        to: 'https://github.com/KittyCAD/modeling-app/issues/new/choose',
-        children: (
-          <>
-            <span className="flex-1">Report a bug</span>
-            <CustomIcon
-              name="link"
-              className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-          </>
-        ),
-      },
-      {
-        id: 'community',
-        Element: 'externalLink',
-        to: 'https://discord.gg/JQEpHR7Nt2',
-        children: (
-          <>
-            <span className="flex-1">Ask the community</span>
-            <CustomIcon
-              name="link"
-              className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-          </>
-        ),
-      },
-      {
-        id: 'release-notes',
-        Element: 'externalLink',
-        to: 'https://github.com/KittyCAD/modeling-app/releases',
-        children: (
-          <>
-            <span className="flex-1">Release notes</span>
-            <CustomIcon
-              name="link"
-              className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-          </>
-        ),
-      },
-      'break',
-      {
-        id: 'sign-out',
-        Element: 'button',
-        children: 'Sign out',
-        onClick: () => send('Log out'),
-      },
-    ],
+        {
+          id: 'account',
+          Element: 'externalLink',
+          to: 'https://zoo.dev/account',
+          children: (
+            <>
+              <span className="flex-1">Manage account</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        'break',
+        {
+          id: 'request-feature',
+          Element: 'externalLink',
+          to: 'https://github.com/KittyCAD/modeling-app/discussions',
+          children: (
+            <>
+              <span className="flex-1">Request a feature</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
+          id: 'report-bug',
+          Element: 'externalLink',
+          to: 'https://github.com/KittyCAD/modeling-app/issues/new/choose',
+          children: (
+            <>
+              <span className="flex-1">Report a bug</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
+          id: 'community',
+          Element: 'externalLink',
+          to: 'https://discord.gg/JQEpHR7Nt2',
+          children: (
+            <>
+              <span className="flex-1">Ask the community</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
+          id: 'release-notes',
+          Element: 'externalLink',
+          to: 'https://github.com/KittyCAD/modeling-app/releases',
+          children: (
+            <>
+              <span className="flex-1">Release notes</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        'break',
+        {
+          id: 'sign-out',
+          Element: 'button',
+          children: 'Sign out',
+          onClick: () => send('Log out'),
+          className: '', // Just making TS's filter type coercion happy 😠
+        },
+      ].filter(
+        (props) =>
+          props === 'break' ||
+          (typeof props !== 'string' && !props.className?.includes('hidden'))
+      ) as (ActionButtonProps | 'break')[],
     [platform, location, filePath, navigate, send]
   )
 
@@ -195,8 +202,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         </ActionButton>
       )}
       <Transition
-        enter="duration-75 ease-out"
-        enterFrom="opacity-0 translate-y-4"
+        enter="duration-100 ease-out"
+        enterFrom="opacity-0 -translate-y-2"
         enterTo="opacity-100 translate-y-0"
         as={Fragment}
       >
@@ -208,7 +215,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           {({ close }) => (
             <>
               {user && (
-                <div className="flex flex-col gap-1 px-3 py-3 bg-chalkboard-20 dark:bg-chalkboard-80/50">
+                <div className="flex flex-col gap-1 px-2.5 py-3 bg-chalkboard-20 dark:bg-chalkboard-80/50">
                   <p className="m-0 text-mono text-xs" data-testid="username">
                     {displayedName || ''}
                   </p>
@@ -222,21 +229,22 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   )}
                 </div>
               )}
-              <ul className="relative flex flex-col gap-1 items-stretch content-stretch">
+              <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
                 {userMenuItems.map((props, index) => {
-                  if (props === 'break')
-                    return (
+                  if (props === 'break') {
+                    return index !== userMenuItems.length - 1 ? (
                       <li key={`break-${index}`} className="contents">
                         <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
                       </li>
-                    )
+                    ) : null
+                  }
 
                   const { id, children, ...rest } = props
                   return (
                     <li key={id} className="contents">
                       <ActionButton
                         {...rest}
-                        className="!font-sans flex items-center gap-2 m-[2px] rounded-sm py-1 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
+                        className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                         onMouseUp={() => {
                           close()
                         }}

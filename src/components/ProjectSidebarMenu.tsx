@@ -97,60 +97,66 @@ export function ProjectMenuPopover({
       )
     )
 
+  // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
-    () => [
-      {
-        id: 'settings',
-        Element: 'button',
-        children: (
-          <>
-            <span className="flex-1">Project settings</span>
-            <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-              isTauri() ? '' : '⬆'
-            },`}</kbd>
-          </>
-        ),
-        onClick: () => {
-          const targetPath = location.pathname.includes(paths.FILE)
-            ? filePath + paths.SETTINGS
-            : paths.HOME + paths.SETTINGS
-          navigate(targetPath + '?tab=project')
+    () =>
+      [
+        {
+          id: 'settings',
+          Element: 'button',
+          children: (
+            <>
+              <span className="flex-1">Project settings</span>
+              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
+                isTauri() ? '' : '⬆'
+              },`}</kbd>
+            </>
+          ),
+          onClick: () => {
+            const targetPath = location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS
+              : paths.HOME + paths.SETTINGS
+            navigate(targetPath + '?tab=project')
+          },
         },
-      },
-      'break',
-      {
-        id: 'export',
-        Element: 'button',
-        children: (
-          <>
-            <span>Export current part</span>
-            {!findCommand(exportCommandInfo) && (
-              <Tooltip position="right" className="!max-w-none min-w-fit">
-                Awaiting engine connection
-              </Tooltip>
-            )}
-          </>
-        ),
-        disabled: !findCommand(exportCommandInfo),
-        onClick: () =>
-          commandBarSend({
-            type: 'Find and select command',
-            data: exportCommandInfo,
-          }),
-      },
-      'break',
-      {
-        id: 'go-home',
-        Element: 'button',
-        children: 'Go to Home',
-        className: !isTauri() ? 'hidden' : '',
-        onClick: () => {
-          onProjectClose(file || null, project?.path || null, true)
-          // Clear the scene and end the session.
-          engineCommandManager.endSession()
+        'break',
+        {
+          id: 'export',
+          Element: 'button',
+          children: (
+            <>
+              <span>Export current part</span>
+              {!findCommand(exportCommandInfo) && (
+                <Tooltip position="right" className="!max-w-none min-w-fit">
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(exportCommandInfo),
+          onClick: () =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: exportCommandInfo,
+            }),
         },
-      },
-    ],
+        'break',
+        {
+          id: 'go-home',
+          Element: 'button',
+          children: 'Go to Home',
+          className: !isTauri() ? 'hidden' : '',
+          onClick: () => {
+            onProjectClose(file || null, project?.path || null, true)
+            // Clear the scene and end the session.
+            engineCommandManager.endSession()
+          },
+        },
+      ].filter(
+        (props) =>
+          props === 'break' ||
+          (typeof props !== 'string' && !props.className?.includes('hidden'))
+      ) as (ActionButtonProps | 'break')[],
     [
       platform,
       findCommand,
@@ -187,7 +193,7 @@ export function ProjectMenuPopover({
 
       <Transition
         enter="duration-100 ease-out"
-        enterFrom="opacity-0 translate-y-2"
+        enterFrom="opacity-0 -translate-y-2"
         enterTo="opacity-100 translate-y-0"
         as={Fragment}
       >
@@ -197,14 +203,15 @@ export function ProjectMenuPopover({
           shadow-lg`}
         >
           {({ close }) => (
-            <ul className="relative flex flex-col gap-1 items-stretch content-stretch">
+            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
               {projectMenuItems.map((props, index) => {
-                if (props === 'break')
-                  return (
+                if (props === 'break') {
+                  return index !== projectMenuItems.length - 1 ? (
                     <li key={`break-${index}`} className="contents">
                       <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
                     </li>
-                  )
+                  ) : null
+                }
 
                 const { id, className, children, ...rest } = props
                 return (
@@ -212,7 +219,7 @@ export function ProjectMenuPopover({
                     <ActionButton
                       {...rest}
                       className={
-                        'relative !font-sans flex items-center gap-2 m-[2px] rounded-sm py-1 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
+                        'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
                         className
                       }
                       onMouseUp={() => {
