@@ -13,7 +13,7 @@ body:
     attributes:
       label: Paste minimal KCL source that produces a cryptic error
       description: Minimal KCL reproducer that produces a cryptic error
-      placeholder: ""
+      placeholder: "const ..."
     validations:
       required: true
 
