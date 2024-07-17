@@ -501,10 +501,10 @@ macro_rules! impl_from_arg_for_array {
 }
 
 fn from_user_val<T: DeserializeOwned>(arg: &MemoryItem) -> Option<T> {
-    let MemoryItem::UserVal(v) = arg else {
-        return None;
+    let v = match arg {
+        MemoryItem::UserVal(v) => v.value.clone(),
+        other => serde_json::to_value(other).ok()?,
     };
-    let v = v.value.to_owned();
     serde_json::from_value(v).ok()
 }
 
