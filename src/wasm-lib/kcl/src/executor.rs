@@ -1774,8 +1774,9 @@ impl ExecutorContext {
                      ctx: ExecutorContext| {
                         Box::pin(async move {
                             // Create a new environment to execute the function
-                            // body in.  Its parent should be the environment of
-                            // the closure.
+                            // body in so that local variables shadow variables
+                            // in the parent scope.  The new environment's
+                            // parent should be the environment of the closure.
                             let mut body_memory = memory.clone();
                             let closure_env = memory.current_env;
                             let body_env = body_memory.new_env_for_call(closure_env);
