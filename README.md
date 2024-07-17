@@ -135,9 +135,18 @@ After it runs you should just need to push the push the branch and open a PR (it
 
 The PR may serve as a place to discuss the human-readable changelog and extra QA. 
 
-2. Merge the PR
+2. Smoke test the artifact from the above PR
+We don't have a strict process, but click around and check for anything obvious
+One of the artifacts is called updater-test, because we don't have a way to test this fully automated, we have a semi-automated process.
 
-3. Profit (A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions if the PR was correctly named)
+Download updater-test zip file, install the app, run it, expect an updater prompt to v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
+
+3. Merge the PR
+
+
+4. Profit (A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions if the PR was correctly named)
+
+
 
 ## Fuzzing the parser
 
