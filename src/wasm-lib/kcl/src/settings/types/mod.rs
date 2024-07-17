@@ -234,6 +234,9 @@ pub struct AppSettings {
     /// This setting only applies to the web app. And is temporary until we have Linux support.
     #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
     pub dismiss_web_banner: bool,
+    /// When the user is idle, and this is true, the stream will be torn down.
+    #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
+    stream_idle_mode: bool,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -651,6 +654,7 @@ textWrapping = true
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        stream_idle_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -710,6 +714,7 @@ includeSettings = false
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        stream_idle_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -774,6 +779,7 @@ defaultProjectName = "projects-$nnn"
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        stream_idle_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -850,6 +856,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        stream_idle_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,

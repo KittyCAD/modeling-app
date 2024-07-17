@@ -44,7 +44,7 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const { context } = useModelingContext()
+  const { context, state } = useModelingContext()
 
   const { auth, settings } = useSettingsAuthContext()
   const token = auth?.context?.token
@@ -57,7 +57,6 @@ export function App() {
   const {
     app: { onboardingStatus },
   } = settings.context
-  const { state } = useModelingContext()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
