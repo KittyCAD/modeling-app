@@ -123,6 +123,7 @@ includeSettings = false
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        stream_idle_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,

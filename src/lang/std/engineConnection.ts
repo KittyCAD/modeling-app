@@ -143,6 +143,7 @@ export enum DisconnectingType {
   Error = 'error',
   Timeout = 'timeout',
   Quit = 'quit',
+  Pause = 'pause',
 }
 
 // Sorted by severity
@@ -200,6 +201,7 @@ export type DisconnectingValue =
   | State<DisconnectingType.Error, ErrorType>
   | State<DisconnectingType.Timeout, void>
   | State<DisconnectingType.Quit, void>
+  | State<DisconnectingType.Pause, void>
 
 // These are ordered by the expected sequence.
 export enum ConnectingType {
@@ -300,7 +302,7 @@ class EngineConnection extends EventTarget {
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
   mediaStream?: MediaStream
-  freezeFrame: boolean = false
+  idleMode: boolean = false
 
   onIceCandidate = function (
     this: RTCPeerConnection,
@@ -391,10 +393,10 @@ class EngineConnection extends EventTarget {
     this.pingPongSpan = { ping: undefined, pong: undefined }
 
     // Without an interval ping, our connection will timeout.
-    // If this.freezeFrame is true we skip this logic so only reconnect
+    // If this.idleMode is true we skip this logic so only reconnect
     // happens on mouse move
     this.pingIntervalId = setInterval(() => {
-      if (this.freezeFrame) return
+      if (this.idleMode) return
 
       switch (this.state.type as EngineConnectionStateType) {
         case EngineConnectionStateType.ConnectionEstablished:
@@ -456,8 +458,8 @@ class EngineConnection extends EventTarget {
     return this.state.type === EngineConnectionStateType.ConnectionEstablished
   }
 
-  tearDown(opts?: { freeze: boolean }) {
-    this.freezeFrame = opts?.freeze ?? false
+  tearDown(opts?: { idleMode: boolean }) {
+    this.idleMode = opts?.idleMode ?? false
     this.disconnectAll()
     clearInterval(this.pingIntervalId)
 
@@ -497,10 +499,19 @@ class EngineConnection extends EventTarget {
       this.onNetworkStatusReady
     )
 
-    this.state = {
-      type: EngineConnectionStateType.Disconnecting,
-      value: { type: DisconnectingType.Quit },
-    }
+    this.state = opts?.idleMode
+      ? {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Pause,
+          },
+        }
+      : {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Quit,
+          },
+        }
   }
 
   /**
@@ -1099,8 +1110,6 @@ class EngineConnection extends EventTarget {
       this.unreliableDataChannel?.readyState === 'closed'
     if (allClosed) {
       // Do not notify the rest of the program that we have cut off anything.
-      if (this.freezeFrame) return
-
       this.state = { type: EngineConnectionStateType.Disconnected }
     }
   }
@@ -1738,7 +1747,7 @@ export class EngineCommandManager extends EventTarget {
       }
     }
   }
-  tearDown() {
+  tearDown(opts?: { idleMode: boolean }) {
     if (this.engineConnection) {
       this.engineConnection.removeEventListener(
         EngineConnectionEvents.Opened,
@@ -1757,7 +1766,7 @@ export class EngineCommandManager extends EventTarget {
         this.onEngineConnectionNewTrack as EventListener
       )
 
-      this.engineConnection?.tearDown()
+      this.engineConnection?.tearDown(opts)
       this.engineConnection = undefined
 
       // Our window.tearDown assignment causes this case to happen which is
@@ -1765,7 +1774,7 @@ export class EngineCommandManager extends EventTarget {
       // @ts-ignore
     } else if (this.engineCommandManager?.engineConnection) {
       // @ts-ignore
-      this.engineCommandManager?.engineConnection?.tearDown()
+      this.engineCommandManager?.engineConnection?.tearDown(opts)
     }
   }
   async startNewSession() {

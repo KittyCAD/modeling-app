@@ -6,6 +6,7 @@ import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   EngineConnectionStateType,
+  EngineConnectionState,
   ErrorType,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
@@ -19,6 +20,7 @@ export enum NetworkHealthState {
 }
 
 export interface NetworkStatus {
+  immediateState: EngineConnectionState
   hasIssues: boolean | undefined
   overallState: NetworkHealthState
   internetConnected: boolean
@@ -33,6 +35,9 @@ export interface NetworkStatus {
 // Must be called from one place in the application.
 // We've chosen the <Router /> component for this.
 export function useNetworkStatus() {
+  const [immediateState, setImmediateState] = useState<EngineConnectionState>({
+    type: EngineConnectionStateType.Disconnected,
+  })
   const [steps, setSteps] = useState(
     structuredClone(initialConnectingTypeGroupState)
   )
@@ -126,6 +131,7 @@ export function useNetworkStatus() {
     const onConnectionStateChange = ({
       detail: engineConnectionState,
     }: CustomEvent) => {
+      setImmediateState(engineConnectionState)
       setSteps((steps) => {
         let nextSteps = structuredClone(steps)
 
@@ -215,6 +221,7 @@ export function useNetworkStatus() {
   }, [])
 
   return {
+    immediateState,
     hasIssues,
     overallState,
     internetConnected,
