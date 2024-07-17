@@ -234,6 +234,15 @@ jobs:
 
       - name: Build the app (release, updater test)
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: "yarn tauri build -c src-tauri/tauri.release.conf.json -b dmg --target universal-apple-darwin"
 
       - uses: actions/upload-artifact@v3
@@ -383,10 +392,16 @@ jobs:
 
       - name: Build the app (release, updater test) for x86_64
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi"
 
       - name: Build the app (release, updater test) for aarch64
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi -t aarch64-pc-windows-msvc"
 
       - uses: actions/upload-artifact@v3
