@@ -161,6 +161,14 @@ impl EngineConnection {
     }
 
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
+        // allowing the field_reassign_with_default lint here because the
+        // defaults for this object don't match the type defaults. We want
+        // to inherent the default config
+        //
+        // See the `impl Default for WebSocketConfig` in
+        // `tungstenite/protocol/mod.rs`
+
+        #[allow(clippy::field_reassign_with_default)]
         let mut wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default();
         // 4294967296 bytes, which is around 4.2 GB.
         wsconfig.max_message_size = Some(0x100000000);
