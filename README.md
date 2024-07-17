@@ -124,28 +124,39 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-1. Bump the versions by running `./make-realease.sh` while on a fresh pull of main
+#### 1. Bump the versions by running `./make-release.sh` and create a Cut Release PR
 
-That will create the branch with the updated json files for you.
-run `./make-release.sh` for a patch update
-run `./make-release.sh "minor"` for minor
-run `./make-release.sh "major"` for major
+That will create the branch with the updated json files for you:
+- run `./make-release.sh` or `./make-release.sh patch` for a patch update;
+- run `./make-release.sh minor` for minor; or
+- run `./make-release.sh major` for major.
 
-After it runs you should just need to push the push the branch and open a PR (it will suggest a changelog for you too, delete any that are not user facing)
+After it runs you should just need the push the branch and open a PR.
 
-The PR may serve as a place to discuss the human-readable changelog and extra QA. 
+**Important:** It needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
 
-2. Smoke test the artifact from the above PR
-We don't have a strict process, but click around and check for anything obvious
-One of the artifacts is called updater-test, because we don't have a way to test this fully automated, we have a semi-automated process.
+The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
 
-Download updater-test zip file, install the app, run it, expect an updater prompt to v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
+#### 2. Smoke test artifacs from the Cut Release PR
 
-3. Merge the PR
+The release builds can be find under the `artifact` zip, at the very bottom of the `ci` action page for each commit on this branch.
+
+We don't have a strict process, but click around and check for anything obvious, posting results as comments in the Cut Release PR.
+
+The other `ci` output in Cut Release PRs is `updater-test`, because we don't have a way to test this fully automated, we have a semi-automated process. Download updater-test zip file, install the app, run it, expect an updater prompt to a dummy v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
+
+#### 3. Merge the Cut Release PR
+
+This will kick the `create-release` action, that creates a _Draft_ release out of this Cut Release PR merge after less than a minute, with the new version as title and Cut Release PR as description.
 
 
-4. Profit (A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions if the PR was correctly named)
+#### 4. Publish the release
 
+Head over to https://github.com/KittyCAD/modeling-app/releases, the draft release corresponding to the merged Cut Release PR should show up at the top as _Draft_. Click on it, verify the content, and hit _Publish_.
+
+#### 5. Profit
+
+A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter.
 
 
 ## Fuzzing the parser
