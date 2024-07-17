@@ -161,10 +161,15 @@ impl EngineConnection {
     }
 
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
+        let mut wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default();
+        // 4294967296 bytes, which is around 4.2 GB.
+        wsconfig.max_message_size = Some(0x100000000);
+        wsconfig.max_frame_size = Some(0x100000000);
+
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
             tokio_tungstenite::tungstenite::protocol::Role::Client,
-            Some(tokio_tungstenite::tungstenite::protocol::WebSocketConfig { ..Default::default() }),
+            Some(wsconfig),
         )
         .await;
 
