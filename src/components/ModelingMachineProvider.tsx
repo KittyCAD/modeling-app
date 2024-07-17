@@ -33,7 +33,6 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
   canExtrudeSelection,
-  canFilletSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
