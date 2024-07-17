@@ -2337,7 +2337,7 @@ const thisBox = box([[0,0], 6, 10, 3])
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_closure_does_not_capture_future_definitions() {
+    async fn test_function_cannot_access_future_definitions() {
         let ast = r#"
 fn returnX = () => {
   // x shouldn't be defined yet.
@@ -2360,7 +2360,7 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_closure_does_not_capture_future_definitions_in_pattern_transform() {
+    async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
 fn transform = (replicaId) => {
   // x shouldn't be defined yet.
@@ -2381,7 +2381,6 @@ const x = 5
 
 // The 10 layers are replicas of each other, with a transform applied to each.
 let shape = layer() |> patternTransform(10, transform, %)
-
 "#;
 
         let result = parse_execute(ast).await;
@@ -2396,7 +2395,7 @@ let shape = layer() |> patternTransform(10, transform, %)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_with_function_with_parameter_redefined_outside() {
+    async fn test_execute_function_with_parameter_redefined_outside() {
         let ast = r#"
 fn myIdentity = (x) => {
   return x
@@ -2426,7 +2425,7 @@ const two = myIdentity(2)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_with_function_referencing_variable_in_parent_scope() {
+    async fn test_execute_function_referencing_variable_in_parent_scope() {
         let ast = r#"
 const x = 22
 const y = 3
@@ -2457,7 +2456,7 @@ const answer = add(2)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_with_function_redefining_variable_in_parent_scope() {
+    async fn test_execute_function_redefining_variable_in_parent_scope() {
         let ast = r#"
 const x = 1
 
@@ -2481,6 +2480,40 @@ const answer = foo()"#;
             serde_json::json!(1),
             memory
                 .get("x", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_pattern_transform_function_redefining_variable_in_parent_scope() {
+        let ast = r#"
+const scale = 100
+fn transform = (replicaId) => {
+  // Redefine same variable as in parent scope.
+  const scale = 2
+  return {
+    translate: [0, 0, replicaId * 10],
+    scale: [scale, 1, 0],
+  }
+}
+
+fn layer = () => {
+  return startSketchOn("XY")
+    |> circle([0, 0], 1, %, 'tag1')
+    |> extrude(10, %)
+}
+
+// The 10 layers are replicas of each other, with a transform applied to each.
+let shape = layer() |> patternTransform(10, transform, %)"#;
+
+        let memory = parse_execute(ast).await.unwrap();
+        // TODO: Assert that scale 2 was used.
+        assert_eq!(
+            serde_json::json!(100),
+            memory
+                .get("scale", SourceRange::default())
                 .unwrap()
                 .get_json_value()
                 .unwrap()
