@@ -1797,20 +1797,20 @@ async fn serial_test_plumbus_fillets() {
   return sg
 }
 
-fn pentagon = (len, taga, tagb, tagc) => {
+fn pentagon = (len) => {
   const sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %,taga)
+  |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
-       angle: segAng(taga, %) + 180 - 108,
+       angle: segAng(a, %) + 180 - 108,
        length: len
-     }, %, tagb)
+     }, %, $b)
   |> angledLine({
-       angle: segAng(tagb, %) + 180 - 108,
+       angle: segAng(b, %) + 180 - 108,
        length: len
-     }, %,tagc)
+     }, %, $c)
   |> angledLine({
-       angle: segAng(tagc, %) + 180 - 108,
+       angle: segAng(c, %) + 180 - 108,
        length: len
      }, %, $d)
   |> angledLine({
@@ -1821,7 +1821,7 @@ fn pentagon = (len, taga, tagb, tagc) => {
   return sg
 }
 
-const p = pentagon(32, $a, $b, $c)
+const p = pentagon(32)
   |> extrude(10, %)
 
 const plumbus0 = make_circle(p,a,  $arc_a, [0, 0], 2.5)
