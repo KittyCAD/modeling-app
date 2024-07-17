@@ -14,7 +14,7 @@ body:
       label: Paste minimal KCL source that produces a cryptic error
       description: Minimal KCL reproducer that produces a cryptic error
       placeholder: "const ..."
-      render: shell
+      render: javascript
     validations:
       required: true
 
