@@ -1081,7 +1081,7 @@ export const modelingMachine = createMachine(
             type: 'start_path',
           },
         })
-        if (!engineCommandManager.engineConnection?.freezeFrame) {
+        if (!engineCommandManager.engineConnection?.idleMode) {
           store.videoElement?.play()
         }
         if (updatedAst?.selections) {
