@@ -29,7 +29,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         Element: 'button',
         children: (
           <>
-            <span className="flex-1">Settings</span>
+            <span className="flex-1">User settings</span>
             <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
               isTauri() ? '' : '⬆'
             },`}</kbd>
@@ -39,7 +39,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           const targetPath = location.pathname.includes(paths.FILE)
             ? filePath + paths.SETTINGS
             : paths.HOME + paths.SETTINGS
-          navigate(targetPath)
+          navigate(targetPath + '?tab=user')
         },
       },
       {
@@ -132,7 +132,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         onClick: () => send('Log out'),
       },
     ],
-    []
+    [platform, location, filePath, navigate, send]
   )
 
   // This image host goes down sometimes. We will instead rewrite the
@@ -160,7 +160,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     <Popover className="relative">
       {user?.image && !imageLoadFailed ? (
         <Popover.Button
-          className="relative group border-0 w-fit min-w-max p-0"
+          className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           data-testid="user-sidebar-toggle"
         >
           <div className="flex items-center">
@@ -186,7 +186,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         <ActionButton
           Element={Popover.Button}
           iconStart={{ icon: 'menu' }}
-          className="border-transparent !px-0"
+          className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           data-testid="user-sidebar-toggle"
         >
           <Tooltip position="bottom-left" delay={1000} hoverOnly>
@@ -201,7 +201,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         as={Fragment}
       >
         <Popover.Panel
-          className={`absolute top-full left-0 mt-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
         >

@@ -40,17 +40,22 @@ export const AppHeader = ({
     >
       <div className="!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2">
         <AppLogoLink project={project?.project} file={project?.file} />
-        <UserSidebarMenu user={user} />
-        {enableMenu ? (
-          <ProjectMenuPopover project={project?.project} file={project?.file} />
-        ) : (
-          <span
-            className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
-            data-testid="project-name"
-          >
-            {project?.project?.name ? project.project.name : APP_NAME}
-          </span>
-        )}
+        <div className="flex items-center">
+          <UserSidebarMenu user={user} />
+          {enableMenu ? (
+            <ProjectMenuPopover
+              project={project?.project}
+              file={project?.file}
+            />
+          ) : (
+            <span
+              className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+              data-testid="project-name"
+            >
+              {project?.project?.name ? project.project.name : APP_NAME}
+            </span>
+          )}
+        </div>
       </div>
       {/* Toolbar if the context deems it */}
       <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
