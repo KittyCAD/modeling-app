@@ -13,7 +13,8 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  # CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  CUT_RELEASE_PR: true
   # BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: true
 
@@ -48,7 +49,7 @@ jobs:
       - name: Set updater test version
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
-          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/updater-test/last_update.json' \
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
