@@ -346,6 +346,7 @@ export class KclManager {
       return
     }
     this.ast = { ...ast }
+    this.isExecuting = true // executeAst sets this to false again
     return this.executeAst(ast, zoomToFit)
   }
   format() {
