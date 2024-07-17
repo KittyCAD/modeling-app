@@ -1,0 +1,36 @@
+name: Cryptic KCL Error
+description: File a bug report for source code that produces a confusing error
+title: "[CRYPTIC]: "
+labels: ["cryptic-error"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: "Thank you for taking the time to report a confusing error. Please provide as much information as possible to help us resolve it."
+
+  - type: textarea
+    id: kcl
+    attributes:
+      label: Paste minimal KCL source that produces a cryptic error
+      description: Minimal KCL reproducer that produces a cryptic error
+      placeholder: ""
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Description of what you expected to happen (if you know).
+      placeholder: "I expected that..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+      placeholder: "Anything else you want to add..."
+    validations:
+      required: false
