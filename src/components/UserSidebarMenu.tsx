@@ -37,6 +37,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               },`}</kbd>
             </>
           ),
+          'data-testid': 'user-settings',
           onClick: () => {
             const targetPath = location.pathname.includes(paths.FILE)
               ? filePath + paths.SETTINGS
