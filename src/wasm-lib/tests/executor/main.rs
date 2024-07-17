@@ -1045,6 +1045,14 @@ async fn serial_test_import_obj_with_mtl_units() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_stl() {
+    let code = r#"const model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_stl.png", &result, MIN_DIFF);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_import_gltf_with_bin() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
 
