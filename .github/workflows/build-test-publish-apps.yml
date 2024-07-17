@@ -381,14 +381,24 @@ jobs:
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: "cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json"
 
-      - name: Build the app (release, updater test)
+      - name: Build the app (release, updater test) for x86_64
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi"
+
+      - name: Build the app (release, updater test) for aarch64
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi -t aarch64-pc-windows-msvc"
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
           path: "src-tauri/target/release/bundle/msi/*.msi"
+          name: updater-test
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        with:
+          path: "src-tauri/target/aarch64-pc-windows-msvc/release/bundle/msi/*.msi"
           name: updater-test
 
 
