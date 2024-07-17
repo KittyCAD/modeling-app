@@ -277,7 +277,6 @@ async fn inner_import(
     }
 
     let id = uuid::Uuid::new_v4();
-    println!("Importing files: {:?}", import_files);
     let resp = args
         .send_modeling_cmd(
             id,
@@ -287,8 +286,6 @@ async fn inner_import(
             },
         )
         .await?;
-
-    println!("{:?}", resp);
 
     let kittycad::types::OkWebSocketResponseData::Modeling {
         modeling_response: kittycad::types::OkModelingCmdResponse::ImportFiles { data: imported_files },
