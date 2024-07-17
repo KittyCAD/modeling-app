@@ -1802,15 +1802,15 @@ fn pentagon = (len, taga, tagb, tagc) => {
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %,taga)
   |> angledLine({
-       angle: segAng(a, %) + 180 - 108,
+       angle: segAng(taga, %) + 180 - 108,
        length: len
      }, %, tagb)
   |> angledLine({
-       angle: segAng(b, %) + 180 - 108,
+       angle: segAng(tagb, %) + 180 - 108,
        length: len
      }, %,tagc)
   |> angledLine({
-       angle: segAng(c, %) + 180 - 108,
+       angle: segAng(tagc, %) + 180 - 108,
        length: len
      }, %, $d)
   |> angledLine({
