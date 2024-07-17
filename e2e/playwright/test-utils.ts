@@ -122,7 +122,7 @@ export const wiggleMove = async (
   const step = dist / steps
   for (let i = 0, j = 0; i < dist; i += step, j += 1) {
     if (locator) {
-      const isElVis = await page.locator(locator).isVisible()
+      const isElVis = await page.locator(locator).isVisible({ timeout: 100 })
       if (isElVis) return
     }
     const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
