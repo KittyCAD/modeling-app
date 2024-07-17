@@ -165,13 +165,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
 
   return (
     <Popover className="relative">
-      {user?.image && !imageLoadFailed ? (
-        <Popover.Button
-          className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-          data-testid="user-sidebar-toggle"
-        >
-          <div className="flex items-center">
-            <div className="rounded-full border overflow-hidden">
+      <Popover.Button
+        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+        data-testid="user-sidebar-toggle"
+      >
+        <div className="flex items-center">
+          <div className="rounded-full border overflow-hidden">
+            {user?.image && !imageLoadFailed ? (
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
@@ -179,28 +179,22 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />
-            </div>
-            <CustomIcon
-              name="caretDown"
-              className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
-            />
+            ) : (
+              <CustomIcon
+                name="person"
+                className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
+              />
+            )}
           </div>
-          <Tooltip position="bottom-left" delay={1000} hoverOnly>
-            User menu
-          </Tooltip>
-        </Popover.Button>
-      ) : (
-        <ActionButton
-          Element={Popover.Button}
-          iconStart={{ icon: 'menu' }}
-          className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-          data-testid="user-sidebar-toggle"
-        >
-          <Tooltip position="bottom-left" delay={1000} hoverOnly>
-            User menu
-          </Tooltip>
-        </ActionButton>
-      )}
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+          />
+        </div>
+        <Tooltip position="bottom-left" delay={1000} hoverOnly>
+          User menu
+        </Tooltip>
+      </Popover.Button>
       <Transition
         enter="duration-100 ease-out"
         enterFrom="opacity-0 -translate-y-2"
