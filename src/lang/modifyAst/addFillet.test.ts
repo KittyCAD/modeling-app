@@ -7,10 +7,15 @@ import {
   Program,
   CallExpression,
 } from '../wasm'
-import { addFillet, isTagUsedInFillet } from './addFillet'
+import {
+  addFillet,
+  hasValidFilletSelection,
+  isTagUsedInFillet,
+} from './addFillet'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
+import { Selections } from 'lib/selections'
 
 beforeAll(async () => {
   await initPromise // Initialize the WASM environment before running tests
@@ -311,5 +316,84 @@ const extrude001 = extrude(-5, sketch001)
     if (err(callExp)) return
     const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
     expect(edges).toEqual([])
+  })
+})
+
+describe('Testing button states', () => {
+  const runButtonStateTest = async (
+    code: string,
+    segmentSnippet: string,
+    expectedState: boolean
+  ) => {
+    // ast
+    const astOrError = parse(code)
+    if (astOrError instanceof Error) {
+      return new Error('AST not found')
+    }
+    const ast = astOrError as Program
+
+    // selectionRanges
+    const range: [number, number] = segmentSnippet
+      ? [
+          code.indexOf(segmentSnippet),
+          code.indexOf(segmentSnippet) + segmentSnippet.length,
+        ]
+      : [ast.end, ast.end] // empty line in the end of the code
+
+    const selectionRanges: Selections = {
+      codeBasedSelections: [
+        {
+          range,
+          type: 'default',
+        },
+      ],
+      otherSelections: [],
+    }
+
+    // state
+    const buttonState = hasValidFilletSelection({
+      ast,
+      selectionRanges,
+      code,
+    })
+
+    expect(buttonState).toEqual(expectedState)
+  }
+  const codeWithBody: string = `
+    const sketch001 = startSketchOn('XY')
+      |> startProfileAt([-20, -5], %)
+      |> line([0, 10], %)
+      |> line([10, 0], %)
+      |> line([0, -10], %)
+      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> close(%)
+    const extrude001 = extrude(-10, sketch001)
+  `
+  const codeWithoutBodies: string = `
+    const sketch001 = startSketchOn('XY')
+      |> startProfileAt([-20, -5], %)
+      |> line([0, 10], %)
+      |> line([10, 0], %)
+      |> line([0, -10], %)
+      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> close(%)
+  `
+  // body is missing
+  it('should return false when body is missing and nothing is selected', async () => {
+    await runButtonStateTest(codeWithoutBodies, '', false)
+  })
+  it('should return false when body is missing and segment is selected', async () => {
+    await runButtonStateTest(codeWithoutBodies, `line([10, 0], %)`, false)
+  })
+
+  // body exists
+  it('should return true when body exists and nothing is selected', async () => {
+    await runButtonStateTest(codeWithBody, '', true)
+  })
+  it('should return true when body exists and segment is selected', async () => {
+    await runButtonStateTest(codeWithBody, `line([10, 0], %)`, true)
+  })
+  it('hould return false when body exists and not a segment is selected', async () => {
+    await runButtonStateTest(codeWithBody, `close(%)`, false)
   })
 })
