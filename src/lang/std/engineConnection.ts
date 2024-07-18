@@ -879,8 +879,7 @@ class EngineConnection extends EventTarget {
             .join('\n')
           if (message.request_id) {
             const artifactThatFailed =
-              this.engineCommandManager.artifactMap[message.request_id] ||
-              this.engineCommandManager.lastArtifactMap[message.request_id]
+              this.engineCommandManager.artifactMap[message.request_id]
             console.error(
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.commandType}`
@@ -1183,13 +1182,6 @@ export class EngineCommandManager extends EventTarget {
    * of the KCL code that generated it.
    */
   artifactMap: ArtifactMap = {}
-  /**
-   * The {@link ArtifactMap} from the previous engine connection. This is used as a fallback
-   * when the engine connection is reset without a full client-side refresh.
-   *
-   * @deprecated This was used during a short time when we were choosing to not execute the engine in certain cases.
-   */
-  lastArtifactMap: ArtifactMap = {}
   /**
    * The client-side representation of the scene command artifacts that have been sent to the server;
    * that is, the *non-modeling* commands and corresponding artifacts.
@@ -1593,10 +1585,7 @@ export class EngineCommandManager extends EventTarget {
       type: 'receive-reliable',
       data: message,
       id,
-      cmd_type:
-        command?.commandType ||
-        this.lastArtifactMap[id]?.commandType ||
-        sceneCommand?.commandType,
+      cmd_type: command?.commandType || sceneCommand?.commandType,
     })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
@@ -1778,7 +1767,6 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
   }
