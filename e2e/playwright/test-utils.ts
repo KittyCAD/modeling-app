@@ -16,14 +16,14 @@ export const TEST_COLORS = {
 } as const
 
 async function waitForPageLoad(page: Page) {
-  // wait for 'Loading stream...' spinner
-  await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
-  await page
-    .getByTestId('loading')
-    .waitFor({ state: 'detached', timeout: 20_000 })
+  await expect(page.getByTestId('loading')).not.toBeAttached({
+    timeout: 20_000,
+  })
 
-  await page.getByTestId('start-sketch').waitFor()
+  await expect(page.getByTestId('start-sketch')).toBeEnabled({
+    timeout: 20_000,
+  })
 }
 
 async function removeCurrentCode(page: Page) {
