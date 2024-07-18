@@ -25,11 +25,11 @@ export function UnitsMenu() {
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg`}
           >
-            <ul className="relative flex flex-col gap-0.5 items-stretch content-stretch">
+            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
               {baseUnitsUnion.map((unit) => (
                 <li key={unit} className="contents">
                   <button
-                    className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
+                    className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
                       settings.send({
                         type: 'set.modeling.defaultUnit',
