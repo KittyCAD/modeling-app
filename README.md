@@ -137,7 +137,7 @@ After it runs you should just need the push the branch and open a PR.
 
 The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
 
-#### 2. Smoke test artifacs from the Cut Release PR
+#### 2. Smoke test artifacts from the Cut Release PR
 
 The release builds can be find under the `artifact` zip, at the very bottom of the `ci` action page for each commit on this branch.
 
