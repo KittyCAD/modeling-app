@@ -30,8 +30,10 @@ export class KclManager {
       nonCodeNodes: {},
       start: [],
       digest: null,
+      gid: 0n,
     },
     digest: null,
+    gid: 0n,
   }
   private _programMemory: ProgramMemory = {
     root: {},
@@ -163,8 +165,10 @@ export class KclManager {
         nonCodeNodes: {},
         start: [],
         digest: null,
+        gid: 0n,
       },
       digest: null,
+      gid: 0n,
     }
   }
 

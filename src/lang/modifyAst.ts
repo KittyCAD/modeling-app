@@ -244,6 +244,7 @@ export function mutateObjExpProp(
         start: 0,
         end: 0,
         digest: null,
+        gid: 0n,
       })
     }
   }
@@ -484,6 +485,7 @@ export function createLiteral(value: string | number): Literal {
     value,
     raw: `${value}`,
     digest: null,
+    gid: 0n,
   }
 }
 
@@ -494,6 +496,7 @@ export function createTagDeclarator(value: string): TagDeclarator {
     end: 0,
     digest: null,
     value,
+    gid: 0n,
   }
 }
 
@@ -504,6 +507,7 @@ export function createIdentifier(name: string): Identifier {
     end: 0,
     digest: null,
     name,
+    gid: 0n,
   }
 }
 
@@ -513,6 +517,7 @@ export function createPipeSubstitution(): PipeSubstitution {
     start: 0,
     end: 0,
     digest: null,
+    gid: 0n,
   }
 }
 
@@ -530,10 +535,12 @@ export function createCallExpressionStdLib(
       end: 0,
       digest: null,
       name,
+      gid: 0n,
     },
     optional: false,
     arguments: args,
     digest: null,
+    gid: 0n,
   }
 }
 
@@ -551,10 +558,12 @@ export function createCallExpression(
       end: 0,
       digest: null,
       name,
+      gid: 0n,
     },
     optional: false,
     arguments: args,
     digest: null,
+    gid: 0n,
   }
 }
 
@@ -567,6 +576,7 @@ export function createArrayExpression(
     end: 0,
     digest: null,
     elements,
+    gid: 0n,
   }
 }
 
@@ -578,8 +588,9 @@ export function createPipeExpression(
     start: 0,
     end: 0,
     digest: null,
+    gid: 0n,
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
+    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null, gid: 0n },
   }
 }
 
@@ -593,12 +604,14 @@ export function createVariableDeclaration(
     start: 0,
     end: 0,
     digest: null,
+    gid: 0n,
     declarations: [
       {
         type: 'VariableDeclarator',
         start: 0,
         end: 0,
         digest: null,
+        gid: 0n,
         id: createIdentifier(varName),
         init,
       },
@@ -615,12 +628,14 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     digest: null,
+    gid: 0n,
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
       key: createIdentifier(key),
       digest: null,
+      gid: 0n,
       value,
     })),
   }
@@ -635,6 +650,7 @@ export function createUnaryExpression(
     start: 0,
     end: 0,
     digest: null,
+    gid: 0n,
     operator,
     argument,
   }
@@ -650,6 +666,7 @@ export function createBinaryExpression([left, operator, right]: [
     start: 0,
     end: 0,
     digest: null,
+    gid: 0n,
     operator,
     left,
     right,
