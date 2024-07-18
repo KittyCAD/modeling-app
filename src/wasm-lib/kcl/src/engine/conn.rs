@@ -160,7 +160,6 @@ impl EngineConnection {
         Ok(())
     }
 
-    #[allow(clippy::field_reassign_with_default)]
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
         // allowing the field_reassign_with_default lint here because the
         // defaults for this object don't match the type defaults. We want
@@ -169,10 +168,12 @@ impl EngineConnection {
         // See the `impl Default for WebSocketConfig` in
         // `tungstenite/protocol/mod.rs`
 
-        let mut wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default();
-        // 4294967296 bytes, which is around 4.2 GB.
-        wsconfig.max_message_size = Some(0x100000000);
-        wsconfig.max_frame_size = Some(0x100000000);
+        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
+            // 4294967296 bytes, which is around 4.2 GB.
+            max_message_size: Some(0x100000000),
+            max_frame_size: Some(0x100000000),
+            ..Default::default()
+        };
 
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
