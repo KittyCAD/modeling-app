@@ -29,7 +29,7 @@ const runFilletTest = async (
   expectedCode: string
 ) => {
   const astOrError = parse(code)
-  if (astOrError instanceof Error) {
+  if (err(astOrError)) {
     return new Error('AST not found')
   }
 
@@ -53,14 +53,14 @@ const runFilletTest = async (
     ast,
     extrudeRange
   )
-  if (pathToExtrudeNode instanceof Error) {
+  if (err(pathToExtrudeNode)) {
     return new Error('Path to extrude node not found')
   }
 
   // const radius = createLiteral(5) as Value
 
   const result = addFillet(ast, pathToSegmentNode, pathToExtrudeNode, radius)
-  if (result instanceof Error) {
+  if (err(result)) {
     return result
   }
   const { modifiedAst } = result
@@ -327,7 +327,7 @@ describe('Testing button states', () => {
   ) => {
     // ast
     const astOrError = parse(code)
-    if (astOrError instanceof Error) {
+    if (err(astOrError)) {
       return new Error('AST not found')
     }
     const ast = astOrError as Program
