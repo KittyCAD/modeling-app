@@ -2880,6 +2880,30 @@ impl BinaryExpression {
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
+        // First check if we are doing short-circuiting logical operator.
+        if self.operator == BinaryOperator::LogicalOr {
+            let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+            let left = json_to_bool(&left_json_value);
+            if left {
+                // Short-circuit.
+                return Ok(MemoryItem::UserVal(UserVal {
+                    value: serde_json::Value::Bool(left),
+                    meta: vec![Metadata {
+                        source_range: self.into(),
+                    }],
+                }));
+            }
+
+            let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+            let right = json_to_bool(&right_json_value);
+            return Ok(MemoryItem::UserVal(UserVal {
+                value: serde_json::Value::Bool(right),
+                meta: vec![Metadata {
+                    source_range: self.into(),
+                }],
+            }));
+        }
+
         let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
         let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
 
@@ -2909,6 +2933,9 @@ impl BinaryExpression {
             BinaryOperator::Div => (left / right).into(),
             BinaryOperator::Mod => (left % right).into(),
             BinaryOperator::Pow => (left.powf(right)).into(),
+            BinaryOperator::LogicalOr => {
+                unreachable!("LogicalOr should have been handled above")
+            }
         };
 
         Ok(MemoryItem::UserVal(UserVal {
@@ -2950,6 +2977,27 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
+pub fn json_to_bool(j: &serde_json::Value) -> bool {
+    match j {
+        JValue::Null => false,
+        JValue::Bool(b) => *b,
+        JValue::Number(n) => {
+            if let Some(n) = n.as_u64() {
+                n != 0
+            } else if let Some(n) = n.as_i64() {
+                n != 0
+            } else if let Some(x) = n.as_f64() {
+                x != 0.0 && !x.is_nan()
+            } else {
+                false
+            }
+        }
+        JValue::String(s) => !s.is_empty(),
+        JValue::Array(a) => !a.is_empty(),
+        JValue::Object(_) => false,
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -2980,6 +3028,10 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
+    /// Logical OR.
+    #[serde(rename = "||")]
+    #[display("||")]
+    LogicalOr,
 }
 
 /// Mathematical associativity.
@@ -3008,6 +3060,7 @@ impl BinaryOperator {
             BinaryOperator::Div => *b"div",
             BinaryOperator::Mod => *b"mod",
             BinaryOperator::Pow => *b"pow",
+            BinaryOperator::LogicalOr => *b"lor",
         }
     }
 
@@ -3018,6 +3071,7 @@ impl BinaryOperator {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
             BinaryOperator::Pow => 6,
+            BinaryOperator::LogicalOr => 3,
         }
     }
 
@@ -3025,7 +3079,7 @@ impl BinaryOperator {
     /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn associativity(&self) -> Associativity {
         match self {
-            Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
+            Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod | Self::LogicalOr => Associativity::Left,
             Self::Pow => Associativity::Right,
         }
     }
@@ -3089,6 +3143,21 @@ impl UnaryExpression {
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
+        if self.operator == UnaryOperator::Not {
+            let value = self
+                .argument
+                .get_result(memory, pipe_info, ctx)
+                .await?
+                .get_json_value()?;
+            let negated = !json_to_bool(&value);
+            return Ok(MemoryItem::UserVal(UserVal {
+                value: serde_json::Value::Bool(negated),
+                meta: vec![Metadata {
+                    source_range: self.into(),
+                }],
+            }));
+        }
+
         let num = parse_json_number_as_f64(
             &self
                 .argument

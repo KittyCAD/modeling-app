@@ -2514,6 +2514,57 @@ let shape = layer() |> patternTransform(10, transform, %)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_ycombinator_is_even() {
+        let ast = r#"
+// Heavily inspired by: https://raganwald.com/2018/09/10/why-y.html
+fn why = (f) => {
+  fn inner = (maker) => {
+    fn inner2 = (x) => {
+      return f(maker(maker), x)
+    }
+    return inner2
+  }
+
+  return inner(
+    (maker) => {
+      fn inner2 = (x) => {
+        return f(maker(maker), x)
+      }
+      return inner2
+    }
+  )
+}
+
+fn innerIsEven = (self, n) => {
+  return !n || !self(n - 1)
+}
+
+const isEven = why(innerIsEven)
+
+const two = isEven(2)
+const three = isEven(3)
+"#;
+
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(true),
+            memory
+                .get("two", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(false),
+            memory
+                .get("three", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
         let memory = parse_execute(ast).await.unwrap();

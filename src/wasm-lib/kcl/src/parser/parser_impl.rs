@@ -299,6 +299,7 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "*" => BinaryOperator::Mul,
             "%" => BinaryOperator::Mod,
             "^" => BinaryOperator::Pow,
+            "||" => BinaryOperator::LogicalOr,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),
@@ -1136,11 +1137,11 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
-            // TODO: negation. Original parser doesn't support `not` yet.
             TokenType::Operator => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
                 message: format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             })),
+            TokenType::Bang => Ok((UnaryOperator::Not, token)),
             other => Err(KclError::Syntax(KclErrorDetails { source_ranges: token.as_source_ranges(), message: format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) })),
         })
         .context(expected("a unary expression, e.g. -x or -3"))

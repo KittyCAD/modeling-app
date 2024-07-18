@@ -90,7 +90,7 @@ fn word(i: &mut Located<&str>) -> PResult<Token> {
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "||", "|", "^",
     ))
     .with_span()
     .parse_next(i)?;
