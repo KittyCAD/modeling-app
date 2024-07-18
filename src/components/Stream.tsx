@@ -157,6 +157,7 @@ export const Stream = () => {
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
     if (!kclManager.isFirstRender) videoRef.current?.play()
+    setIsFreezeFrame(!kclManager.isFirstRender)
   }, [kclManager.isFirstRender])
 
   useEffect(() => {
