@@ -320,9 +320,8 @@ fn generate_repl_uuids(count: usize) -> Vec<uuid::Uuid> {
 fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> String {
     let mut codegen = String::new();
 
-    for i in 0..entity_ids.len() {
-        let id = entity_ids[i];
-        let cpp_id = id_to_cpp(&entity_ids[i]);
+    for (i, id) in entity_ids.into_iter().enumerate() {
+        let cpp_id = id_to_cpp(&id);
         let iter = format!(
             r#"
             //change object id -> {id}
