@@ -471,8 +471,10 @@ export const doExport = async (
   page: Page
 ): Promise<Paths> => {
   await page.getByRole('button', { name: APP_NAME }).click()
-  await expect(page.getByRole('button', { name: 'Export Part' })).toBeVisible()
-  await page.getByRole('button', { name: 'Export Part' }).click()
+  await expect(
+    page.getByRole('button', { name: 'Export', exact: false })
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Export', exact: false }).click()
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar
