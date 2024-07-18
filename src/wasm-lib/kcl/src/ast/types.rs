@@ -26,7 +26,7 @@ use crate::{
         BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
         TagIdentifier, UserVal,
     },
-    parser::PIPE_OPERATOR,
+    parser::{parser_impl::generate_gid, PIPE_OPERATOR},
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
 
@@ -47,6 +47,7 @@ pub struct Program {
     pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 macro_rules! compute_digest {
@@ -969,6 +970,7 @@ pub struct NonCodeNode {
     pub value: NonCodeValue,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl From<NonCodeNode> for SourceRange {
@@ -1136,6 +1138,7 @@ pub struct NonCodeMeta {
     pub start: Vec<NonCodeNode>,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1162,6 +1165,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             non_code_nodes,
             start: helper.start,
             digest: None,
+            gid: generate_gid(),
         })
     }
 }
@@ -1206,6 +1210,7 @@ pub struct ExpressionStatement {
     pub expression: Value,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(ExpressionStatement);
@@ -1228,6 +1233,7 @@ pub struct CallExpression {
     pub optional: bool,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(CallExpression);
@@ -1247,6 +1253,7 @@ impl CallExpression {
             arguments,
             optional: false,
             digest: None,
+            gid: generate_gid(),
         })
     }
 
@@ -1498,6 +1505,7 @@ pub struct VariableDeclaration {
     pub kind: VariableKind, // Change to enum if there are specific values
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl From<&VariableDeclaration> for Vec<CompletionItem> {
@@ -1552,6 +1560,7 @@ impl VariableDeclaration {
             declarations,
             kind,
             digest: None,
+            gid: generate_gid(),
         }
     }
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
@@ -1784,6 +1793,7 @@ pub struct VariableDeclarator {
     pub init: Value,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(VariableDeclarator);
@@ -1796,6 +1806,7 @@ impl VariableDeclarator {
             id: Identifier::new(name),
             init,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -1820,6 +1831,7 @@ pub struct Literal {
     pub raw: String,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(Literal);
@@ -1832,6 +1844,7 @@ impl Literal {
             raw: JValue::from(value.clone()).to_string(),
             value,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -1898,6 +1911,7 @@ pub struct Identifier {
     pub name: String,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(Identifier);
@@ -1909,6 +1923,7 @@ impl Identifier {
             end: 0,
             name: name.to_string(),
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -1945,6 +1960,7 @@ pub struct TagDeclarator {
     pub name: String,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(TagDeclarator);
@@ -2016,6 +2032,7 @@ impl TagDeclarator {
             end: 0,
             name: name.to_string(),
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -2086,6 +2103,7 @@ pub struct PipeSubstitution {
     pub end: usize,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(PipeSubstitution);
@@ -2096,6 +2114,7 @@ impl PipeSubstitution {
             start: 0,
             end: 0,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -2126,6 +2145,7 @@ pub struct ArrayExpression {
     pub elements: Vec<Value>,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(ArrayExpression);
@@ -2143,6 +2163,7 @@ impl ArrayExpression {
             end: 0,
             elements,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -2292,6 +2313,7 @@ pub struct ObjectExpression {
     pub properties: Vec<ObjectProperty>,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl ObjectExpression {
@@ -2301,6 +2323,7 @@ impl ObjectExpression {
             end: 0,
             properties,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -2463,6 +2486,7 @@ pub struct ObjectProperty {
     pub value: Value,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(ObjectProperty);
@@ -2612,6 +2636,7 @@ pub struct MemberExpression {
     pub computed: bool,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(MemberExpression);
@@ -2785,6 +2810,7 @@ pub struct BinaryExpression {
     pub right: BinaryPart,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(BinaryExpression);
@@ -2798,6 +2824,7 @@ impl BinaryExpression {
             left,
             right,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -3041,6 +3068,7 @@ pub struct UnaryExpression {
     pub argument: BinaryPart,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(UnaryExpression);
@@ -3053,6 +3081,7 @@ impl UnaryExpression {
             operator,
             argument,
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -3159,6 +3188,7 @@ pub struct PipeExpression {
     pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(PipeExpression);
@@ -3177,6 +3207,7 @@ impl PipeExpression {
             body,
             non_code_meta: Default::default(),
             digest: None,
+            gid: generate_gid(),
         }
     }
 
@@ -3423,6 +3454,7 @@ pub struct Parameter {
     pub optional: bool,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl Parameter {
@@ -3454,6 +3486,7 @@ pub struct FunctionExpression {
     pub return_type: Option<FnArgType>,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -3508,6 +3541,7 @@ impl FunctionExpression {
             body,
             digest: _,
             return_type: _,
+            gid: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
         let mut params_optional = Vec::with_capacity(params.len());
@@ -3589,6 +3623,7 @@ pub struct ReturnStatement {
     pub argument: Value,
 
     pub digest: Option<Digest>,
+    pub gid: u64,
 }
 
 impl_value_meta!(ReturnStatement);
@@ -5330,10 +5365,12 @@ const firstExtrude = startSketchOn('XY')
                             end: 40,
                             name: "thing".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
-                        digest: None
+                        digest: None,
+                        gid: generate_gid(),
                     },
                     Parameter {
                         identifier: Identifier {
@@ -5341,21 +5378,25 @@ const firstExtrude = startSketchOn('XY')
                             end: 56,
                             name: "things".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
-                        digest: None
+                        digest: None,
+                        gid: generate_gid(),
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 68,
                             end: 72,
                             name: "more".to_owned(),
-                            digest: None
+                            digest: None,
+                            gid: generate_gid(),
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
-                        digest: None
+                        digest: None,
+                        gid: generate_gid(),
                     }
                 ]
             })
@@ -5391,33 +5432,39 @@ const firstExtrude = startSketchOn('XY')
                             start: 18,
                             end: 23,
                             name: "thing".to_owned(),
-                            digest: None
+                            digest: None,
+                            gid: generate_gid(),
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
-                        digest: None
+                        digest: None,
+                        gid: generate_gid(),
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 33,
                             end: 39,
                             name: "things".to_owned(),
-                            digest: None
+                            digest: None,
+                            gid: generate_gid(),
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
-                        digest: None
+                        digest: None,
+                        gid: generate_gid(),
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 51,
                             end: 55,
                             name: "more".to_owned(),
-                            digest: None
+                            digest: None,
+                            gid: generate_gid(),
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
-                        digest: None
+                        digest: None,
+                        gid: generate_gid(),
                     }
                 ]
             })
@@ -5511,9 +5558,11 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     return_type: None,
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -5528,10 +5577,12 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: None,
                         optional: false,
                         digest: None,
+                        gid: generate_gid(),
                     }],
                     body: Program {
                         start: 0,
@@ -5539,9 +5590,11 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     return_type: None,
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -5556,10 +5609,12 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: None,
                         optional: true,
                         digest: None,
+                        gid: generate_gid(),
                     }],
                     body: Program {
                         start: 0,
@@ -5567,9 +5622,11 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     return_type: None,
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -5585,10 +5642,12 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "foo".to_owned(),
                                 digest: None,
+                                gid: generate_gid(),
                             },
                             type_: None,
                             optional: false,
                             digest: None,
+                            gid: generate_gid(),
                         },
                         Parameter {
                             identifier: Identifier {
@@ -5596,10 +5655,12 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "bar".to_owned(),
                                 digest: None,
+                                gid: generate_gid(),
                             },
                             type_: None,
                             optional: true,
                             digest: None,
+                            gid: generate_gid(),
                         },
                     ],
                     body: Program {
@@ -5608,9 +5669,11 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     return_type: None,
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
         ]
@@ -5636,6 +5699,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             start: _,
             end: _,
             digest: None,
+            gid: _,
         }) = program.body.first().unwrap()
         else {
             panic!("expected a function!");

@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::sync::Mutex;
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
@@ -29,6 +30,16 @@ mod error;
 type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
 
 type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
+
+static mut GID_GENERATOR_COUNTER: Mutex<u64> = Mutex::new(0);
+
+pub fn generate_gid() -> u64 {
+    unsafe {
+        let mut counter = GID_GENERATOR_COUNTER.lock().unwrap();
+        *counter += 1;
+        *counter
+    }
+}
 
 pub fn run_parser(i: TokenSlice) -> Result<Program, KclError> {
     program.parse(i).map_err(KclError::from)
@@ -88,6 +99,7 @@ fn non_code_node(i: TokenSlice) -> PResult<NonCodeNode> {
                         NonCodeValue::BlockComment { value, style }
                     },
                     digest: None,
+                    gid: generate_gid(),
                 }),
                 _ => None,
             })
@@ -126,6 +138,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
                 end: token.end,
                 value,
                 digest: None,
+                gid: generate_gid(),
             })
         }
     })
@@ -196,6 +209,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
         body: values,
         non_code_meta,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -217,6 +231,7 @@ fn bool_value(i: TokenSlice) -> PResult<Literal> {
         value: LiteralValue::Bool(value),
         raw: value.to_string(),
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -247,6 +262,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         value,
         raw: token.value.clone(),
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -280,6 +296,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
         value,
         raw: token.value.clone(),
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -438,6 +455,7 @@ fn shebang(i: TokenSlice) -> PResult<NonCodeNode> {
             value: format!("#!{}", value),
         },
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -464,6 +482,7 @@ fn array(i: TokenSlice) -> PResult<ArrayExpression> {
         end,
         elements,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -481,6 +500,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
                 value: num.into(),
                 raw: num.to_string(),
                 digest: None,
+                gid: generate_gid(),
             }))
         })
         .collect())
@@ -505,6 +525,7 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
         key,
         value: val,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -525,6 +546,7 @@ fn object(i: TokenSlice) -> PResult<ObjectExpression> {
         end,
         properties,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -536,6 +558,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
                 start: token.start,
                 end: token.end,
                 digest: None,
+                gid: generate_gid(),
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -576,6 +599,7 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
         body,
         return_type,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -624,6 +648,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
         computed,
         property,
         digest: None,
+        gid: generate_gid(),
     };
 
     // Each remaining member wraps the current member expression inside another member expression.
@@ -639,6 +664,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
                 computed,
                 property,
                 digest: None,
+                gid: generate_gid(),
             }
         }))
 }
@@ -791,6 +817,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                     end: ws_token.end,
                     value: NonCodeValue::NewLine,
                     digest: None,
+                    gid: generate_gid(),
                 }));
             }
         }
@@ -873,6 +900,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         body,
         non_code_meta,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -900,6 +928,7 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
         end: argument.end(),
         argument,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -1038,9 +1067,11 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             id,
             init: val,
             digest: None,
+            gid: generate_gid(),
         }],
         kind,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -1054,6 +1085,7 @@ impl TryFrom<Token> for Identifier {
                 end: token.end,
                 name: token.value,
                 digest: None,
+                gid: generate_gid(),
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -1085,6 +1117,7 @@ impl TryFrom<Token> for TagDeclarator {
                 end: token.end,
                 name: token.value,
                 digest: None,
+                gid: generate_gid(),
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -1152,6 +1185,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
         operator,
         argument,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -1230,6 +1264,7 @@ fn expression(i: TokenSlice) -> PResult<ExpressionStatement> {
         end: val.end(),
         expression: val,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -1448,6 +1483,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
                 type_,
                 optional,
                 digest: None,
+                gid: generate_gid(),
             })
         })
         .collect::<Result<_, _>>()
@@ -1538,6 +1574,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
                                 end: literal.end,
                                 name: name.to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             };
                             let tag = tag
                                 .into_valid_binding_name()
@@ -1577,6 +1614,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
                                 end: literal.end,
                                 name: name.to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             };
 
                             // Replace the literal with the tag.
@@ -1606,6 +1644,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
         arguments: args,
         optional: false,
         digest: None,
+        gid: generate_gid(),
     })
 }
 
@@ -1783,8 +1822,10 @@ const mySk1 = startSketchAt([0, 0])"#;
                             value: 2u32.into(),
                             raw: "2".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         })),
                         digest: None,
+                        gid: generate_gid(),
                     })],
                     non_code_meta: NonCodeMeta {
                         non_code_nodes: Default::default(),
@@ -1792,14 +1833,18 @@ const mySk1 = startSketchAt([0, 0])"#;
                             start: 7,
                             end: 25,
                             value: NonCodeValue::NewLine,
-                            digest: None
+                            digest: None,
+                            gid: generate_gid(),
                         }],
                         digest: None,
+                        gid: generate_gid(),
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
                 return_type: None,
                 digest: None,
+                gid: generate_gid(),
             }
         );
     }
@@ -1849,6 +1894,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     style: CommentStyle::Line
                 },
                 digest: None,
+                gid: generate_gid(),
             }],
             non_code_meta.start,
         );
@@ -1862,12 +1908,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
                 NonCodeNode {
                     start: 82,
                     end: 86,
                     value: NonCodeValue::NewLine,
                     digest: None,
+                    gid: generate_gid(),
                 },
             ]),
             non_code_meta.non_code_nodes.get(&0),
@@ -1881,6 +1929,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     style: CommentStyle::Line
                 },
                 digest: None,
+                gid: generate_gid(),
             }]),
             non_code_meta.non_code_nodes.get(&1),
         );
@@ -1949,6 +1998,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 value: 3u32.into(),
                 raw: "3".to_owned(),
                 digest: None,
+                gid: generate_gid(),
             }))
         );
     }
@@ -2083,6 +2133,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Line,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2095,6 +2146,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2107,6 +2159,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2119,6 +2172,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2132,6 +2186,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2147,6 +2202,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2162,6 +2218,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
             (
@@ -2175,6 +2232,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         style: CommentStyle::Block,
                     },
                     digest: None,
+                    gid: generate_gid(),
                 },
             ),
         ]
@@ -2319,6 +2377,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 value: 5u32.into(),
                 raw: "5".to_owned(),
                 digest: None,
+                gid: generate_gid(),
             })),
             right: BinaryPart::Literal(Box::new(Literal {
                 start: 4,
@@ -2326,14 +2385,17 @@ const mySk1 = startSketchAt([0, 0])"#;
                 value: "a".into(),
                 raw: r#""a""#.to_owned(),
                 digest: None,
+                gid: generate_gid(),
             })),
             digest: None,
+            gid: generate_gid(),
         };
         let expected = vec![BodyItem::ExpressionStatement(ExpressionStatement {
             start: 0,
             end: 7,
             expression: Value::BinaryExpression(Box::new(expr)),
             digest: None,
+            gid: generate_gid(),
         })];
         assert_eq!(expected, actual);
     }
@@ -2436,6 +2498,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: 5u32.into(),
                         raw: "5".to_string(),
                         digest: None,
+                        gid: generate_gid(),
                     })),
                     operator: BinaryOperator::Add,
                     right: BinaryPart::Literal(Box::new(Literal {
@@ -2444,13 +2507,17 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: 6u32.into(),
                         raw: "6".to_string(),
                         digest: None,
+                        gid: generate_gid(),
                     })),
                     digest: None,
+                    gid: generate_gid(),
                 })),
                 digest: None,
+                gid: generate_gid(),
             })],
             non_code_meta: NonCodeMeta::default(),
             digest: None,
+            gid: generate_gid(),
         };
 
         assert_eq!(result, expected_result);
@@ -2720,10 +2787,12 @@ e
                         end: 0,
                         name: "a".to_owned(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     type_: None,
                     optional: true,
                     digest: None,
+                    gid: generate_gid(),
                 }],
                 true,
             ),
@@ -2734,10 +2803,12 @@ e
                         end: 0,
                         name: "a".to_owned(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     type_: None,
                     optional: false,
                     digest: None,
+                    gid: generate_gid(),
                 }],
                 true,
             ),
@@ -2749,10 +2820,12 @@ e
                             end: 0,
                             name: "a".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: None,
                         optional: false,
                         digest: None,
+                        gid: generate_gid(),
                     },
                     Parameter {
                         identifier: Identifier {
@@ -2760,10 +2833,12 @@ e
                             end: 0,
                             name: "b".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: None,
                         optional: true,
                         digest: None,
+                        gid: generate_gid(),
                     },
                 ],
                 true,
@@ -2776,10 +2851,12 @@ e
                             end: 0,
                             name: "a".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: None,
                         optional: true,
                         digest: None,
+                        gid: generate_gid(),
                     },
                     Parameter {
                         identifier: Identifier {
@@ -2787,10 +2864,12 @@ e
                             end: 0,
                             name: "b".to_owned(),
                             digest: None,
+                            gid: generate_gid(),
                         },
                         type_: None,
                         optional: false,
                         digest: None,
+                        gid: generate_gid(),
                     },
                 ],
                 false,
@@ -2823,6 +2902,7 @@ e
                         end: 13,
                         name: "myArray".to_string(),
                         digest: None,
+                        gid: generate_gid(),
                     },
                     init: Value::ArrayExpression(Box::new(ArrayExpression {
                         start: 16,
@@ -2834,6 +2914,7 @@ e
                                 value: 0u32.into(),
                                 raw: "0".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2841,6 +2922,7 @@ e
                                 value: 1u32.into(),
                                 raw: "1".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2848,6 +2930,7 @@ e
                                 value: 2u32.into(),
                                 raw: "2".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2855,6 +2938,7 @@ e
                                 value: 3u32.into(),
                                 raw: "3".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2862,6 +2946,7 @@ e
                                 value: 4u32.into(),
                                 raw: "4".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2869,6 +2954,7 @@ e
                                 value: 5u32.into(),
                                 raw: "5".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2876,6 +2962,7 @@ e
                                 value: 6u32.into(),
                                 raw: "6".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2883,6 +2970,7 @@ e
                                 value: 7u32.into(),
                                 raw: "7".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2890,6 +2978,7 @@ e
                                 value: 8u32.into(),
                                 raw: "8".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2897,6 +2986,7 @@ e
                                 value: 9u32.into(),
                                 raw: "9".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
@@ -2904,17 +2994,22 @@ e
                                 value: 10u32.into(),
                                 raw: "10".to_string(),
                                 digest: None,
+                                gid: generate_gid(),
                             })),
                         ],
                         digest: None,
+                        gid: generate_gid(),
                     })),
                     digest: None,
+                    gid: generate_gid(),
                 }],
                 kind: VariableKind::Const,
                 digest: None,
+                gid: generate_gid(),
             })],
             non_code_meta: NonCodeMeta::default(),
             digest: None,
+            gid: generate_gid(),
         };
 
         assert_eq!(result, expected_result);
