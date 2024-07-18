@@ -12,7 +12,7 @@ import { codeManager } from './singletons'
 export default function useHotkeyWrapper(
   hotkey: string[],
   callback: () => void,
-  additionalOptions?: Options
+  additionalOptions: Options = { preventDefault: true }
 ) {
   useHotkeys(hotkey, callback, additionalOptions)
   useEffect(() => {

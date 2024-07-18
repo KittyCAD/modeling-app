@@ -65,6 +65,7 @@ export default class CodeManager {
         this._hotkeys[key]()
         return false
       },
+      preventDefault: true,
     }))
   }
 
