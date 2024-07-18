@@ -178,6 +178,8 @@ export const Stream = () => {
         videoElement: videoRef.current,
       },
     })
+
+    setIsLoading(false)
   }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
