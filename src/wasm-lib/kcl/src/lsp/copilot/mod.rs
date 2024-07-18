@@ -224,8 +224,8 @@ impl Backend {
         let mut completion_list = vec![];
 
         if self.dev_mode {
-            // Sleep for 45 seconds to simulate a slow response.
-            tokio::time::sleep(tokio::time::Duration::from_secs(45)).await;
+            // Sleep for seconds to simulate a slow response.
+            tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
             completion_list.push(
                 r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
