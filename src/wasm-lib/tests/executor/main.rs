@@ -1300,7 +1300,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "Expected a SketchGroup or SketchSurface as the third argument, found `[UserVal(UserVal { value: Array [Number(2), Number(2)], meta: [Metadata { source_range: SourceRange([164, 170]) }] }), UserVal(UserVal { value: Number(0.5), meta: [Metadata { source_range: SourceRange([172, 174]) }] })]`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "Expected an argument at index 2" }"#,
     );
 }
 
@@ -1398,7 +1398,7 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([891, 940])], message: "Expected a [number, number] as the first argument, found `[UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([898, 902]) }] }), UserVal(UserVal { value: Array [Number(-6.0), Number(6)], meta: [Metadata { source_range: SourceRange([904, 927]) }] }), UserVal(UserVal { value: Number(1), meta: [Metadata { source_range: SourceRange([760, 761]) }] })]`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([891, 940])], message: "Argument at index 0 was supposed to be type [f64; 2] but wasn't" }"#,
     );
 }
 
