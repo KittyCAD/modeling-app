@@ -49,9 +49,9 @@ export const AppHeader = ({
           <>
             <CommandBarOpenButton />
             <RefreshButton />
-            <UserSidebarMenu user={user} />
           </>
         )}
+        <UserSidebarMenu user={user} />
       </div>
     </header>
   )
