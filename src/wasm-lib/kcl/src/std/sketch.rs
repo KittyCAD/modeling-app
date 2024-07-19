@@ -25,6 +25,9 @@ use crate::{
     },
 };
 
+#[cfg(target_arch = "wasm32")]
+use crate::wasm::*;
+
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
@@ -799,6 +802,8 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
     name = "startSketchAt",
 }]
 async fn inner_start_sketch_at(data: [f64; 2], args: Args) -> Result<Box<SketchGroup>, KclError> {
+    #[cfg(target_arch = "wasm32")]
+    console_log!("{:?}", args);
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
     let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;

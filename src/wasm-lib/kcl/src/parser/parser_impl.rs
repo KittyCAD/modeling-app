@@ -40,7 +40,9 @@ pub fn generate_gid() -> u32 {
         let mut counter = GID_GENERATOR_COUNTER.lock().unwrap();
         *counter += 1;
         // Avoid panic on overflow
-        if *counter == 2u32.pow(32) - 1 {
+        // 2u32.pow(32) - 1 but we can't calculate this because it'd overflow
+        // immediately, so I just inline the value.
+        if *counter == 4294967295 {
           // Skip 0 intentionally since it has special meaning
           *counter = 1
         }
