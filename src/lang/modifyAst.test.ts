@@ -105,7 +105,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -113,7 +113,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -121,7 +121,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -129,7 +129,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -137,7 +137,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -145,7 +145,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -153,7 +153,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -161,7 +161,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
         {
           type: 'Identifier',
@@ -169,7 +169,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           digest: null,
-          gid: 0n,
+          gid: 0,
         },
       ] satisfies Identifier[]),
       'yo',
@@ -185,9 +185,9 @@ describe('Testing addSketchTo', () => {
         body: [],
         start: 0,
         end: 0,
-        nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null, gid: 0n },
+        nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null, gid: 0 },
         digest: null,
-        gid: 0n,
+        gid: 0,
       },
       'yz'
     )

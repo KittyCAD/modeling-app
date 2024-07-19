@@ -47,7 +47,7 @@ pub struct Program {
     pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 macro_rules! compute_digest {
@@ -970,7 +970,7 @@ pub struct NonCodeNode {
     pub value: NonCodeValue,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl From<NonCodeNode> for SourceRange {
@@ -1138,7 +1138,7 @@ pub struct NonCodeMeta {
     pub start: Vec<NonCodeNode>,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1210,7 +1210,7 @@ pub struct ExpressionStatement {
     pub expression: Value,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(ExpressionStatement);
@@ -1233,7 +1233,7 @@ pub struct CallExpression {
     pub optional: bool,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(CallExpression);
@@ -1505,7 +1505,7 @@ pub struct VariableDeclaration {
     pub kind: VariableKind, // Change to enum if there are specific values
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl From<&VariableDeclaration> for Vec<CompletionItem> {
@@ -1793,7 +1793,7 @@ pub struct VariableDeclarator {
     pub init: Value,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(VariableDeclarator);
@@ -1831,7 +1831,7 @@ pub struct Literal {
     pub raw: String,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(Literal);
@@ -1911,7 +1911,7 @@ pub struct Identifier {
     pub name: String,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(Identifier);
@@ -1960,7 +1960,7 @@ pub struct TagDeclarator {
     pub name: String,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(TagDeclarator);
@@ -2103,7 +2103,7 @@ pub struct PipeSubstitution {
     pub end: usize,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(PipeSubstitution);
@@ -2145,7 +2145,7 @@ pub struct ArrayExpression {
     pub elements: Vec<Value>,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(ArrayExpression);
@@ -2313,7 +2313,7 @@ pub struct ObjectExpression {
     pub properties: Vec<ObjectProperty>,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl ObjectExpression {
@@ -2486,7 +2486,7 @@ pub struct ObjectProperty {
     pub value: Value,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(ObjectProperty);
@@ -2636,7 +2636,7 @@ pub struct MemberExpression {
     pub computed: bool,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(MemberExpression);
@@ -2810,7 +2810,7 @@ pub struct BinaryExpression {
     pub right: BinaryPart,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(BinaryExpression);
@@ -3068,7 +3068,7 @@ pub struct UnaryExpression {
     pub argument: BinaryPart,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(UnaryExpression);
@@ -3188,7 +3188,7 @@ pub struct PipeExpression {
     pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(PipeExpression);
@@ -3454,7 +3454,7 @@ pub struct Parameter {
     pub optional: bool,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl Parameter {
@@ -3486,7 +3486,7 @@ pub struct FunctionExpression {
     pub return_type: Option<FnArgType>,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -3623,7 +3623,7 @@ pub struct ReturnStatement {
     pub argument: Value,
 
     pub digest: Option<Digest>,
-    pub gid: u64,
+    pub gid: u32,
 }
 
 impl_value_meta!(ReturnStatement);

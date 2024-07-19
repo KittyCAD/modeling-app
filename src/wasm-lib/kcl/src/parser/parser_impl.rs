@@ -31,12 +31,19 @@ type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
 
 type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
-static mut GID_GENERATOR_COUNTER: Mutex<u64> = Mutex::new(0);
+static mut GID_GENERATOR_COUNTER: Mutex<u32> = Mutex::new(0);
 
-pub fn generate_gid() -> u64 {
+/// Generates a "global identifier", intended for use with AST nodes.
+/// 0 is a special GID which stands for an invalid GID.
+pub fn generate_gid() -> u32 {
     unsafe {
         let mut counter = GID_GENERATOR_COUNTER.lock().unwrap();
         *counter += 1;
+        // Avoid panic on overflow
+        if *counter == 2u32.pow(32) - 1 {
+          // Skip 0 intentionally since it has special meaning
+          *counter = 1
+        }
         *counter
     }
 }

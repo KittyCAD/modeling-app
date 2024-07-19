@@ -1975,7 +1975,12 @@ export class EngineCommandManager extends EventTarget {
       typeof command !== 'string' &&
       command.type === 'modeling_cmd_batch_req'
     ) {
-      return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
+      return this.handlePendingBatchCommand(
+        id,
+        command.requests,
+        idToRangeMap,
+        ast
+      )
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
@@ -1984,7 +1989,8 @@ export class EngineCommandManager extends EventTarget {
         return this.handlePendingBatchCommand(
           id,
           parseCommand.requests,
-          idToRangeMap
+          idToRangeMap,
+          ast
         )
       }
     }
