@@ -12,9 +12,11 @@ import { codeManager } from './singletons'
 export default function useHotkeyWrapper(
   hotkey: string[],
   callback: () => void,
-  additionalOptions: Options = { preventDefault: true }
+  additionalOptions?: Options
 ) {
-  useHotkeys(hotkey, callback, additionalOptions)
+  const defaultOptions = { preventDefault: true }
+  const options = { ...defaultOptions, ...additionalOptions }
+  useHotkeys(hotkey, callback, options)
   useEffect(() => {
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)
