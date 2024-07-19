@@ -1511,8 +1511,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 })
 
 test.describe('Copilot ghost text', () => {
-  // Set the timeout for this test to 30 seconds.
-  test.setTimeout(30000)
+  test.describe.configure({ timeout: 30_000 })
   test('completes code in empty file', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
