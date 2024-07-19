@@ -1,6 +1,6 @@
 {
   "name": "zoo-modeling-app",
-  "version": "0.24.2",
+  "version": "0.24.3",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.17.0",

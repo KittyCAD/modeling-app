@@ -45,9 +45,6 @@ export function useSetupEngineManager(
       streamRef?.current?.offsetWidth ?? 0,
       streamRef?.current?.offsetHeight ?? 0
     )
-    if (restart) {
-      kclManager.isFirstRender = false
-    }
     engineCommandManager.start({
       restart,
       setMediaStream: (mediaStream) => setMediaStream(mediaStream),
