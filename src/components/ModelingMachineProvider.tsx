@@ -33,7 +33,6 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
   canExtrudeSelection,
-  canFilletSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -132,6 +131,9 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
+            // blocks entering a sketch until after exit sketch code has run
+            kclManager.isExecuting = true
+
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
@@ -166,7 +168,7 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
             kclManager.executeCode(true).then(() => {
-              if (engineCommandManager.engineConnection?.freezeFrame) return
+              if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play()
             })

@@ -7221,6 +7221,7 @@ test.describe('Test network and connection issues', () => {
 
     // Expect the network to be up
     await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(page.getByTestId('loading-stream')).not.toBeAttached()
 
     // Click off the code pane.
     await page.mouse.click(100, 100)
