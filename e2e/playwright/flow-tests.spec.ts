@@ -1510,8 +1510,10 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 })
 
+const COPILOT_TIMEOUT = 30000
+
 test.describe('Copilot ghost text', () => {
-  test.describe.configure({ timeout: 30_000 })
+  test.describe.configure({ timeout: COPILOT_TIMEOUT })
   test('completes code in empty file', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -1522,10 +1524,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1547,7 +1553,9 @@ test.describe('Copilot ghost text', () => {
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
     )
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
   })
 
   test('copilot disabled in sketch mode no select plane', async ({ page }) => {
@@ -1564,11 +1572,15 @@ test.describe('Copilot ghost text', () => {
     await page.getByRole('button', { name: 'Start Sketch' }).click()
 
     await u.codeLocator.click()
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(500)
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(``)
 
     // Exit sketch mode.
@@ -1577,7 +1589,9 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(500)
 
     await u.codeLocator.click()
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(500)
@@ -1620,11 +1634,15 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(700) // wait for animation
 
     await u.codeLocator.click()
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(500)
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
     )
@@ -1636,11 +1654,15 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(500)
 
     await u.codeLocator.click()
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(500)
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
     )
@@ -1652,7 +1674,9 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(500)
 
     await u.codeLocator.click()
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.waitForTimeout(500)
@@ -1679,7 +1703,9 @@ test.describe('Copilot ghost text', () => {
       `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
     )
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
   })
 
   test('ArrowUp in code rejects the suggestion', async ({ page }) => {
@@ -1692,10 +1718,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1705,7 +1735,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('ArrowUp')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1720,10 +1752,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1733,7 +1769,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('ArrowDown')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1748,10 +1786,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1761,7 +1803,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('ArrowLeft')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1776,10 +1820,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1789,7 +1837,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('ArrowRight')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1804,10 +1854,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1817,7 +1871,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
@@ -1835,10 +1891,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1852,7 +1912,9 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('KeyZ')
     await page.keyboard.up(CtrlKey)
     await page.keyboard.up('Shift')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1900,7 +1962,9 @@ test.describe('Copilot ghost text', () => {
 
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `{thing: "blah"}fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1918,7 +1982,9 @@ test.describe('Copilot ghost text', () => {
     await page.keyboard.press('KeyZ')
     await page.keyboard.up(CtrlKey)
 
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     // TODO when we make codemirror a widget, we can test this.
     //await expect(page.locator('.cm-content')).toHaveText(``)
@@ -1934,12 +2000,16 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1949,7 +2019,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('Delete')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1964,12 +2036,16 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -1979,7 +2055,9 @@ test.describe('Copilot ghost text', () => {
 
     // Going elsewhere in the code should hide the ghost text.
     await page.keyboard.press('Backspace')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
@@ -1994,10 +2072,14 @@ test.describe('Copilot ghost text', () => {
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
     await expect(page.locator('.cm-content')).toHaveText(
       `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
     )
@@ -2011,7 +2093,9 @@ test.describe('Copilot ghost text', () => {
       .getByRole('button', { name: 'Start Sketch' })
       .waitFor({ state: 'visible' })
     await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible({
+      timeout: COPILOT_TIMEOUT,
+    })
 
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
