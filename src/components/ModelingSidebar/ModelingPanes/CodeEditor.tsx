@@ -163,7 +163,7 @@ export function useCodeMirror(props: UseCodeMirror) {
         effects: StateEffect.reconfigure.of(targetExtensions),
       })
     }
-  }, [targetExtensions])
+  }, [targetExtensions, view, isFirstRender])
 
   return { view, setView, container, setContainer, state, setState }
 }
