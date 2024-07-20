@@ -134,9 +134,12 @@ const router = createBrowserRouter([
         path: paths.HOME,
         element: (
           <Auth>
-            <Outlet />
-            <Home />
-            <CommandBar />
+            <ModelingMachineProvider>
+              <Outlet />
+              <Home />
+              <CommandBar />
+            </ModelingMachineProvider>
+            <WasmErrBanner />
           </Auth>
         ),
         id: paths.HOME,
