@@ -1217,7 +1217,7 @@ export class EngineCommandManager extends EventTarget {
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
   pendingExport?: {
-    resolve: (filename?: string) => void
+    resolve: (a: null) => void
     reject: (reason: any) => void
   }
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
@@ -1446,7 +1446,7 @@ export class EngineCommandManager extends EventTarget {
           // export we send a binary blob.
           // Pass this to our export function.
           exportSave(event.data).then(() => {
-            this.pendingExport?.resolve()
+            this.pendingExport?.resolve(null)
           }, this.pendingExport?.reject)
           return
         }
@@ -1572,10 +1572,6 @@ export class EngineCommandManager extends EventTarget {
     )
 
     if (command) {
-      // const resolve = command.resolve
-      const oldArtifact = this.artifactMap[id] as ArtifactMapCommand & {
-        extrusions?: string[]
-      }
       const parentId = getParentId()
       const artifact = {
         type: 'result',
@@ -1584,8 +1580,24 @@ export class EngineCommandManager extends EventTarget {
         commandType: command.command.cmd.type,
         parentId: parentId,
       } as ArtifactMapCommand & { extrusions?: string[] }
-      if (oldArtifact?.extrusions) {
-        artifact.extrusions = oldArtifact.extrusions
+      if (command2.type === 'extrude') {
+        const target = this.artifactMap[command2.target]
+        if (target.commandType === 'start_path') {
+          // tsc cannot infer that target can have extrusions
+          // from the commandType (why?) so we need to cast it
+          const typedTarget = target as (
+            | PendingCommand
+            | ResultCommand
+            | FailedCommand
+          ) & { extrusions?: string[] }
+          if (typedTarget?.extrusions?.length) {
+            typedTarget.extrusions.push(id)
+          } else {
+            typedTarget.extrusions = [id]
+          }
+          // Update in the map.
+          this.artifactMap[command2.target] = typedTarget
+        }
       }
       this.artifactMap[id] = artifact
       if (
@@ -1808,13 +1820,13 @@ export class EngineCommandManager extends EventTarget {
   sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
-  ): Promise<any> {
+  ): Promise<Models['WebSocketResponse_type'] | null> {
     if (this.engineConnection === undefined) {
-      return Promise.resolve()
+      return Promise.resolve(null)
     }
 
     if (!this.engineConnection?.isReady()) {
-      return Promise.resolve()
+      return Promise.resolve(null)
     }
 
     if (
@@ -1837,9 +1849,9 @@ export class EngineCommandManager extends EventTarget {
       this.engineConnection?.send(command)
       // TODO - handlePendingCommands does not handle batch commands
       // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
-      return Promise.resolve()
+      return Promise.resolve(null)
     }
-    if (command.type !== 'modeling_cmd_req') return Promise.resolve()
+    if (command.type !== 'modeling_cmd_req') return Promise.resolve(null)
     const cmd = command.cmd
     if (
       (cmd.type === 'camera_drag_move' ||
@@ -1852,7 +1864,7 @@ export class EngineCommandManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
-      return Promise.resolve()
+      return Promise.resolve(null)
     } else if (
       cmd.type === 'highlight_set_entity' &&
       this.engineConnection?.unreliableDataChannel
@@ -1860,7 +1872,7 @@ export class EngineCommandManager extends EventTarget {
       cmd.sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
-      return Promise.resolve()
+      return Promise.resolve(null)
     } else if (
       cmd.type === 'mouse_move' &&
       this.engineConnection.unreliableDataChannel
@@ -1868,9 +1880,9 @@ export class EngineCommandManager extends EventTarget {
       cmd.sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
-      return Promise.resolve()
+      return Promise.resolve(null)
     } else if (cmd.type === 'export') {
-      const promise = new Promise((resolve, reject) => {
+      const promise = new Promise<null>((resolve, reject) => {
         this.pendingExport = { resolve, reject }
       })
       this.engineConnection?.send(command)
@@ -1887,7 +1899,7 @@ export class EngineCommandManager extends EventTarget {
       command,
       idToRangeMap: {},
       range: [0, 0],
-    })
+    }).then(([a]) => a)
     // this.engineConnection?.send(command)
     // return this.handlePendingSceneCommand(command.cmd_id, command.cmd)
   }
@@ -2049,12 +2061,12 @@ export class EngineCommandManager extends EventTarget {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
-    const [engineResponse] = await this.sendCommandVersion2(id, {
+    const resp = await this.sendCommandVersion2(id, {
       command,
       range,
       idToRangeMap,
     })
-    return JSON.stringify(engineResponse)
+    return JSON.stringify(resp[0])
   }
   async sendCommandVersion2(
     id: string,
@@ -2063,7 +2075,7 @@ export class EngineCommandManager extends EventTarget {
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
     }
-  ) {
+  ): Promise<[Models['WebSocketResponse_type']]> {
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
       resolve,
@@ -2129,7 +2141,7 @@ export class EngineCommandManager extends EventTarget {
     this.onPlaneSelectCallback = callback
   }
 
-  async setPlaneHidden(id: string, hidden: boolean): Promise<string> {
+  async setPlaneHidden(id: string, hidden: boolean) {
     return await this.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
