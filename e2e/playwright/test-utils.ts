@@ -140,7 +140,8 @@ export const wiggleMove = async (
   if (testInfo) {
     testInfo?.annotations.push({
       type: '⚠️',
-      description: 'Wiggling the mouse did not make the element visible - refer to the screenshot below to view mouse movements',
+      description:
+        'Wiggling the mouse did not make the element visible - refer to the screenshot below to view mouse movements',
     })
     await showMovementsInScreenshot(page, mouseMovements, testInfo)
   }
@@ -171,7 +172,7 @@ const showMovementsInScreenshot = async (
       if (action === 'click') {
         circle.style.backgroundColor = 'green'
         circle.style.transform = 'rotate(45deg)'
-        // incase click and move are at the same position, ensure click is shown behind
+        // in case click and move are at the same position, ensure click is shown behind
         circle.style.zIndex = '999'
       } else {
         circle.style.backgroundColor = 'red'
