@@ -7,8 +7,6 @@ import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
-let lastMessage = ''
-
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
 
@@ -1450,85 +1448,69 @@ export class EngineCommandManager extends EventTarget {
           exportSave(event.data).then(() => {
             this.pendingExport?.resolve()
           }, this.pendingExport?.reject)
-        } else {
-          const message: Models['WebSocketResponse_type'] = JSON.parse(
-            event.data
-          )
-          const pending = this.pendingCommands[message.request_id || '']
-          if (
+          return
+        }
+
+        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+        const pending = this.pendingCommands[message.request_id || '']
+        if (
+          !(
             pending &&
             message.success &&
             (message.resp.type === 'modeling' ||
               message.resp.type === 'modeling_batch')
-          ) {
-            if (
-              message.resp.type === 'modeling_batch' &&
-              pending.command.type === 'modeling_cmd_batch_req'
-            ) {
-              let individualPendingResponses: {
-                [key: string]: Models['WebSocketRequest_type']
-              } = {}
-              pending.command.requests.forEach(({ cmd, cmd_id }) => {
-                individualPendingResponses[cmd_id] = {
-                  type: 'modeling_cmd_req',
-                  cmd,
-                  cmd_id,
-                }
-              })
-              Object.entries(message.resp.data.responses).forEach(
-                ([key, response]) => {
-                  if (!('response' in response)) return
-                  const command = individualPendingResponses[key]
-                  if (!command) return
-                  this.handleIndividualResponse({
-                    id: key,
-                    pendingMsg: {
-                      ...pending,
-                      command,
-                    },
-                    response: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: response.response,
-                      },
-                    },
-                  })
-                }
-              )
-            } else if (
-              message.resp.type === 'modeling' &&
-              pending.command.type === 'modeling_cmd_req' &&
-              message.request_id
-            ) {
+          )
+        )
+          return
+
+        if (
+          message.resp.type === 'modeling' &&
+          pending.command.type === 'modeling_cmd_req' &&
+          message.request_id
+        ) {
+          this.handleIndividualResponse({
+            id: message.request_id,
+            pendingMsg: pending,
+            response: message.resp,
+          })
+        } else if (
+          message.resp.type === 'modeling_batch' &&
+          pending.command.type === 'modeling_cmd_batch_req'
+        ) {
+          let individualPendingResponses: {
+            [key: string]: Models['WebSocketRequest_type']
+          } = {}
+          pending.command.requests.forEach(({ cmd, cmd_id }) => {
+            individualPendingResponses[cmd_id] = {
+              type: 'modeling_cmd_req',
+              cmd,
+              cmd_id,
+            }
+          })
+          Object.entries(message.resp.data.responses).forEach(
+            ([key, response]) => {
+              if (!('response' in response)) return
+              const command = individualPendingResponses[key]
+              if (!command) return
               this.handleIndividualResponse({
-                id: message.request_id,
-                pendingMsg: pending,
-                response: message.resp,
+                id: key,
+                pendingMsg: {
+                  ...pending,
+                  command,
+                },
+                response: {
+                  type: 'modeling',
+                  data: {
+                    modeling_response: response.response,
+                  },
+                },
               })
             }
-
-            pending.resolve([message])
-            delete this.pendingCommands[message.request_id || '']
-          }
-          if (
-            message.success &&
-            (message.resp.type === 'modeling' ||
-              message.resp.type === 'modeling_batch') &&
-            message.request_id
-          ) {
-            this.handleModelingCommand(
-              message.resp,
-              message.request_id,
-              message
-            )
-          } else if (
-            !message.success &&
-            message.request_id &&
-            this.artifactMap[message.request_id]
-          ) {
-            this.handleFailedModelingCommand(message.request_id, message)
-          }
+          )
         }
+
+        pending.resolve([message])
+        delete this.pendingCommands[message.request_id || '']
       }) as EventListener)
 
       this.onEngineConnectionNewTrack = ({
@@ -1675,188 +1657,7 @@ export class EngineCommandManager extends EventTarget {
     }
     this.engineConnection?.send(resizeCmd)
   }
-  handleModelingCommand(
-    message: OkWebSocketResponseData,
-    id: string,
-    raw: WebSocketResponse
-  ) {
-    if (!(message.type === 'modeling' || message.type === 'modeling_batch')) {
-      return
-    }
 
-    const command = this.artifactMap[id]
-    let modelingResponse: Models['OkModelingCmdResponse_type'] = {
-      type: 'empty',
-    }
-    if ('modeling_response' in message.data) {
-      modelingResponse = message.data.modeling_response
-    }
-    if (
-      command?.type === 'pending' &&
-      command.commandType === 'batch' &&
-      command?.additionalData?.type === 'batch-ids'
-    ) {
-      if ('responses' in message.data) {
-        const batchResponse = message.data.responses as BatchResponseMap
-        // Iterate over the map of responses.
-        Object.entries(batchResponse).forEach(([key, response]) => {
-          // If the response is a success, we resolve the promise.
-          if ('response' in response && response.response) {
-            this.handleModelingCommand(
-              {
-                type: 'modeling',
-                data: {
-                  modeling_response: response.response,
-                },
-              },
-              key,
-              {
-                request_id: key,
-                resp: {
-                  type: 'modeling',
-                  data: {
-                    modeling_response: response.response,
-                  },
-                },
-                success: true,
-              }
-            )
-          } else if ('errors' in response) {
-            this.handleFailedModelingCommand(key, {
-              request_id: key,
-              success: false,
-              errors: response.errors,
-            })
-          }
-        })
-      } else {
-        command.additionalData.ids.forEach((id) => {
-          this.handleModelingCommand(message, id, raw)
-        })
-      }
-      // batch artifact is just a container, we don't need to keep it
-      // once we process all the commands inside it
-      const resolve = command.resolve
-      delete this.artifactMap[id]
-      resolve({
-        id,
-        commandType: command.commandType,
-        range: command.range,
-        raw,
-      })
-      return
-    }
-    const sceneCommand = this.sceneCommandArtifacts[id]
-    this.addCommandLog({
-      type: 'receive-reliable',
-      data: message,
-      id,
-      cmd_type: command?.commandType || sceneCommand?.commandType,
-    })
-    Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
-      (callback) => callback(modelingResponse)
-    )
-
-    if (command && command.type === 'pending') {
-      const resolve = command.resolve
-      const oldArtifact = this.artifactMap[id] as ArtifactMapCommand & {
-        extrusions?: string[]
-      }
-      const artifact = {
-        type: 'result',
-        range: command.range,
-        pathToNode: command.pathToNode,
-        commandType: command.commandType,
-        parentId: command.parentId ? command.parentId : undefined,
-        data: modelingResponse,
-        raw,
-      } as ArtifactMapCommand & { extrusions?: string[] }
-      if (oldArtifact?.extrusions) {
-        artifact.extrusions = oldArtifact.extrusions
-      }
-      this.artifactMap[id] = artifact
-      if (
-        (command.commandType === 'entity_linear_pattern' &&
-          modelingResponse.type === 'entity_linear_pattern') ||
-        (command.commandType === 'entity_circular_pattern' &&
-          modelingResponse.type === 'entity_circular_pattern')
-      ) {
-        const entities = modelingResponse.data.entity_ids
-        entities?.forEach((entity: string) => {
-          this.artifactMap[entity] = artifact
-        })
-      }
-      if (
-        command?.commandType === 'solid3d_get_extrusion_face_info' &&
-        modelingResponse.type === 'solid3d_get_extrusion_face_info'
-      ) {
-        const parent = this.artifactMap[command?.parentId || '']
-        modelingResponse.data.faces.forEach((face) => {
-          if (face.cap !== 'none' && face.face_id && parent) {
-            this.artifactMap[face.face_id] = {
-              ...parent,
-              commandType: 'solid3d_get_extrusion_face_info',
-              additionalData: {
-                type: 'cap',
-                info: face.cap === 'bottom' ? 'start' : 'end',
-              },
-            }
-          }
-          const curveArtifact = this.artifactMap[face?.curve_id || '']
-          if (curveArtifact && face?.face_id) {
-            this.artifactMap[face.face_id] = {
-              ...curveArtifact,
-              commandType: 'solid3d_get_extrusion_face_info',
-            }
-          }
-        })
-      }
-      resolve({
-        id,
-        commandType: command.commandType,
-        range: command.range,
-        data: modelingResponse,
-        raw,
-      })
-    } else if (sceneCommand && sceneCommand.type === 'pending') {
-      const resolve = sceneCommand.resolve
-      const artifact = {
-        type: 'result',
-        range: sceneCommand.range,
-        pathToNode: sceneCommand.pathToNode,
-        commandType: sceneCommand.commandType,
-        parentId: sceneCommand.parentId ? sceneCommand.parentId : undefined,
-        data: modelingResponse,
-        raw,
-      } as const
-      this.sceneCommandArtifacts[id] = artifact
-      resolve({
-        id,
-        commandType: sceneCommand.commandType,
-        range: sceneCommand.range,
-        data: modelingResponse,
-        raw,
-      })
-    } else if (command) {
-      this.artifactMap[id] = {
-        type: 'result',
-        commandType: command?.commandType,
-        range: command?.range,
-        pathToNode: command?.pathToNode,
-        data: modelingResponse,
-        raw,
-      }
-    } else {
-      this.sceneCommandArtifacts[id] = {
-        type: 'result',
-        commandType: sceneCommand?.commandType,
-        range: sceneCommand?.range,
-        pathToNode: sceneCommand?.pathToNode,
-        data: modelingResponse,
-        raw,
-      }
-    }
-  }
   handleFailedModelingCommand(id: string, raw: WebSocketResponse) {
     const failed = raw as Models['FailureWebSocketResponse_type']
     const errors = failed.errors
@@ -2032,12 +1833,6 @@ export class EngineCommandManager extends EventTarget {
       })
     }
 
-    if (
-      command.type === 'modeling_cmd_req' &&
-      command.cmd.type !== lastMessage
-    ) {
-      lastMessage = command.cmd.type
-    }
     if (command.type === 'modeling_cmd_batch_req') {
       this.engineConnection?.send(command)
       // TODO - handlePendingCommands does not handle batch commands
@@ -2088,61 +1883,13 @@ export class EngineCommandManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
-    this.engineConnection?.send(command)
-    return this.handlePendingSceneCommand(command.cmd_id, command.cmd)
-  }
-  sendModelingCommand({
-    id,
-    range,
-    command,
-    ast,
-    idToRangeMap,
-  }: {
-    id: string
-    range: SourceRange
-    command: EngineCommand
-    ast: Program
-    idToRangeMap?: { [key: string]: SourceRange }
-  }): Promise<ResolveCommand | void> {
-    if (this.engineConnection === undefined) {
-      return Promise.resolve()
-    }
-
-    if (!this.engineConnection?.isReady()) {
-      return Promise.resolve()
-    }
-    if (typeof command !== 'string') {
-      this.addCommandLog({
-        type: 'send-modeling',
-        data: command,
-      })
-    } else {
-      this.addCommandLog({
-        type: 'send-modeling',
-        data: JSON.parse(command),
-      })
-    }
-    this.engineConnection?.send(command)
-    if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
-      return this.handlePendingCommand(id, command?.cmd, ast, range)
-    } else if (
-      typeof command !== 'string' &&
-      command.type === 'modeling_cmd_batch_req'
-    ) {
-      return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
-    } else if (typeof command === 'string') {
-      const parseCommand: EngineCommand = JSON.parse(command)
-      if (parseCommand.type === 'modeling_cmd_req') {
-        return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
-      } else if (parseCommand.type === 'modeling_cmd_batch_req') {
-        return this.handlePendingBatchCommand(
-          id,
-          parseCommand.requests,
-          idToRangeMap
-        )
-      }
-    }
-    return Promise.reject(new Error('Expected unreachable reached'))
+    return this.sendCommandVersion2(command.cmd_id, {
+      command,
+      idToRangeMap: {},
+      range: [0, 0],
+    })
+    // this.engineConnection?.send(command)
+    // return this.handlePendingSceneCommand(command.cmd_id, command.cmd)
   }
   handlePendingSceneCommand(
     id: string,
