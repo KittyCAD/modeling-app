@@ -1,4 +1,4 @@
-import { test, expect, Page, Download } from '@playwright/test'
+import { expect, Page, Download, TestInfo } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import os from 'os'
 import fsp from 'fs/promises'
@@ -107,7 +107,7 @@ async function waitForCmdReceive(page: Page, commandType: string) {
 }
 
 export const wiggleMove = async (
-  page: any,
+  page: Page,
   x: number,
   y: number,
   steps: number,
@@ -115,11 +115,13 @@ export const wiggleMove = async (
   ang: number,
   amplitude: number,
   freq: number,
-  locator?: string
+  locator?: string,
+  testInfo?: TestInfo
 ) => {
   const tau = Math.PI * 2
   const deg = tau / 360
   const step = dist / steps
+  let mouseMovements: MouseMovement[] = []
   for (let i = 0, j = 0; i < dist; i += step, j += 1) {
     if (locator) {
       const isElVis = await page.locator(locator).isVisible()
@@ -132,7 +134,71 @@ export const wiggleMove = async (
     ]
     const [xr, yr] = [x2, y2]
     await page.mouse.move(x + xr, y + yr, { steps: 5 })
+    mouseMovements.push({ x: x + xr, y: y + yr, action: 'move' })
   }
+  // element was not visible, show the mouse movements in the screenshot
+  if (testInfo) {
+    testInfo?.annotations.push({
+      type: '⚠️',
+      description:
+        'Wiggling the mouse did not make the element visible - refer to the screenshot below to view mouse movements',
+    })
+    await showMovementsInScreenshot(page, mouseMovements, testInfo)
+  }
+}
+
+export type MouseMovement = {
+  x: number
+  y: number
+  action: 'click' | 'move'
+}
+
+const showMovementsInScreenshot = async (
+  page: Page,
+  mouseMovements: MouseMovement[],
+  testInfo: TestInfo
+) => {
+  await page.evaluate((mouseMovements) => {
+    for (let mouseMovement of mouseMovements) {
+      const { x, y, action } = mouseMovement
+      const elementWidth = action === 'move' ? 3 : 5
+      let circle = document.createElement('div')
+      circle.id = `pw-indicator-x${x}-y${y}`
+      circle.style.position = 'absolute'
+      circle.style.width = `${elementWidth}px`
+      circle.style.height = `${elementWidth}px`
+      circle.style.pointerEvents = 'none'
+
+      if (action === 'click') {
+        circle.style.backgroundColor = 'green'
+        circle.style.transform = 'rotate(45deg)'
+        // in case click and move are at the same position, ensure click is shown behind
+        circle.style.zIndex = '999'
+      } else {
+        circle.style.backgroundColor = 'red'
+        circle.style.borderRadius = '50%'
+        circle.style.zIndex = '1000'
+      }
+
+      circle.style.left = `${x - elementWidth / 2}px`
+      circle.style.top = `${y - elementWidth / 2}px`
+      document.body.appendChild(circle)
+    }
+  }, mouseMovements)
+
+  const screenshot = await page.screenshot()
+  await testInfo.attach('screenshot', {
+    body: screenshot,
+    contentType: 'image/png',
+  })
+  await removeIndicators(page)
+}
+
+const removeIndicators = async (page: Page) => {
+  await page.evaluate(() => {
+    let indicators = document.querySelectorAll('[id*="pw-indicator-"]')
+    indicators.forEach((e) => e.remove())
+  })
 }
 
 export const circleMove = async (
