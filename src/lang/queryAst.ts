@@ -130,8 +130,14 @@ function moreNodePathFromSourceRange(
 
   const isInRange = _node.start <= start && _node.end >= end
 
-  if ((_node.type === 'Identifier' || _node.type === 'Literal') && isInRange)
+  if (
+    (_node.type === 'Identifier' ||
+      _node.type === 'Literal' ||
+      _node.type === 'TagDeclarator') &&
+    isInRange
+  ) {
     return path
+  }
 
   if (_node.type === 'CallExpression' && isInRange) {
     const { callee, arguments: args } = _node
@@ -277,6 +283,15 @@ function moreNodePathFromSourceRange(
         }
       }
     }
+    return path
+  }
+  if (_node.type === 'ReturnStatement' && isInRange) {
+    const { argument } = _node
+    if (argument.start <= start && argument.end >= end) {
+      path.push(['argument', 'ReturnStatement'])
+      return moreNodePathFromSourceRange(argument, sourceRange, path)
+    }
+    return path
   }
   if (_node.type === 'MemberExpression' && isInRange) {
     const { object, property } = _node
