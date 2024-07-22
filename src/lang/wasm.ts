@@ -179,6 +179,10 @@ export class ProgramMemory {
     return new ProgramMemory()
   }
 
+  static fromRaw(raw: RawProgramMemory): ProgramMemory {
+    return new ProgramMemory(raw.environments, raw.currentEnv, raw.return)
+  }
+
   constructor(
     environments: Environment[] = [emptyEnvironment()],
     currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
@@ -187,6 +191,13 @@ export class ProgramMemory {
     this.environments = environments
     this.currentEnv = currentEnv
     this.return = returnVal
+  }
+
+  /**
+   * Returns a deep copy.
+   */
+  clone(): ProgramMemory {
+    return ProgramMemory.fromRaw(JSON.parse(JSON.stringify(this.toRaw())))
   }
 
   has(name: string): boolean {
@@ -369,11 +380,7 @@ export const _executor = async (
       fileSystemManager,
       isMock
     )
-    return new ProgramMemory(
-      memory.environments,
-      memory.currentEnv,
-      memory.return
-    )
+    return ProgramMemory.fromRaw(memory)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
