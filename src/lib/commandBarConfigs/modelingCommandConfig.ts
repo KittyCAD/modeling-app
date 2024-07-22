@@ -88,7 +88,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   ],
   Export: {
     description: 'Export the current model.',
-    icon: 'exportFile',
+    icon: 'floppyDiskArrow',
     needsReview: true,
     args: {
       type: {

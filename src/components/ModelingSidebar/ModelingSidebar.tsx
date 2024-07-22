@@ -34,7 +34,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     {
       id: 'export',
       title: 'Export part',
-      icon: 'exportFile',
+      icon: 'floppyDiskArrow',
+      iconClassName: '!p-0',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
         commandBarSend({
@@ -131,6 +132,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                   title: action.title,
                   icon: action.icon,
                   keybinding: action.keybinding,
+                  iconClassName: action.iconClassName,
+                  iconSize: 'md',
                 }}
                 paneIsOpen={false}
                 onClick={action.action}
@@ -177,6 +180,8 @@ interface ModelingPaneButtonProps {
     title: string
     icon: CustomIconName | IconDefinition
     keybinding: string
+    iconClassName?: string
+    iconSize?: 'sm' | 'md' | 'lg'
   }
   onClick: () => void
   paneIsOpen: boolean
@@ -199,8 +204,8 @@ function ModelingPaneButton({
     >
       <ActionIcon
         icon={paneConfig.icon}
-        className="p-1"
-        size="sm"
+        className={'p-1 ' + paneConfig.iconClassName || ''}
+        size={paneConfig.iconSize || 'sm'}
         iconClassName={
           paneIsOpen
             ? ' !text-chalkboard-10'
@@ -227,6 +232,7 @@ export type SidebarAction = {
   id: string
   title: string
   icon: CustomIconName
+  iconClassName?: string // Just until we get rid of FontAwesome icons
   keybinding: string
   action: () => void
   hideOnPlatform?: 'desktop' | 'web'
