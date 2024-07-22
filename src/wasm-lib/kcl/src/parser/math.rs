@@ -2,6 +2,7 @@ use crate::{
     ast::types::{BinaryExpression, BinaryOperator, BinaryPart},
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
+    parser::parser_impl::generate_gid,
 };
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
@@ -35,6 +36,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<BinaryExpression, KclErro
                     left,
                     right,
                     digest: None,
+                    gid: generate_gid(),
                 }))
             }
             BinaryExpressionToken::Operand(o) => o,
@@ -131,6 +133,7 @@ mod tests {
                 value: n.into(),
                 raw: n.to_string(),
                 digest: None,
+                gid: generate_gid(),
             }))
         }
         let tests: Vec<Vec<BinaryExpressionToken>> = vec![
@@ -149,6 +152,7 @@ mod tests {
                     left: lit(1),
                     right: lit(5),
                     digest: None,
+                    gid: generate_gid(),
                 }))
                 .into(),
                 BinaryOperator::Pow.into(),

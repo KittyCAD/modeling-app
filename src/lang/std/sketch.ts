@@ -1562,10 +1562,12 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
         end: 0,
         body: [],
         digest: null,
+        gid: 0,
         nonCodeMeta: {
           start: [],
           nonCodeNodes: [],
           digest: null,
+          gid: 0,
         },
       },
       pathToNode,

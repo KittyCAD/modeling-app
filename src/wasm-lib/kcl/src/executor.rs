@@ -15,6 +15,7 @@ use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
+    parser::parser_impl::generate_gid,
     settings::types::UnitLength,
     std::{FnAsArg, FunctionKind, StdLib},
 };
@@ -691,6 +692,7 @@ impl MemoryItem {
                     start: u.meta[0].source_range.start(),
                     end: u.meta[0].source_range.end(),
                     digest: None,
+                    gid: generate_gid(),
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -711,6 +713,7 @@ impl MemoryItem {
                         start: u.meta[0].source_range.start(),
                         end: u.meta[0].source_range.end(),
                         digest: None,
+                        gid: generate_gid(),
                     }))
                 } else {
                     Ok(None)
@@ -2362,6 +2365,7 @@ const bracket = startSketchOn('XY')
                 end: 0,
                 name: s.to_owned(),
                 digest: None,
+                gid: generate_gid(),
             }
         }
         fn opt_param(s: &'static str) -> Parameter {
@@ -2370,6 +2374,7 @@ const bracket = startSketchOn('XY')
                 type_: None,
                 optional: true,
                 digest: None,
+                gid: generate_gid(),
             }
         }
         fn req_param(s: &'static str) -> Parameter {
@@ -2378,6 +2383,7 @@ const bracket = startSketchOn('XY')
                 type_: None,
                 optional: false,
                 digest: None,
+                gid: generate_gid(),
             }
         }
         fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
@@ -2462,9 +2468,11 @@ const bracket = startSketchOn('XY')
                     body: Vec::new(),
                     non_code_meta: Default::default(),
                     digest: None,
+                    gid: generate_gid(),
                 },
                 return_type: None,
                 digest: None,
+                gid: generate_gid(),
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

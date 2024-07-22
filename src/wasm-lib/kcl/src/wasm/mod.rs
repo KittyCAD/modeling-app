@@ -4,6 +4,29 @@ use std::{
     task::{Context, Poll},
 };
 
+macro_rules! console_log_iter {
+  ($fmt:literal) => { };
+  ($fmt:literal, $arg:expr) => {
+    js_sys::Array::of1(&wasm_bindgen::JsValue::from_str(&format!($fmt, $arg)))
+  };
+  ($fmt:literal, $($arg:expr),+) => {
+    js_sys::Array::of1(&wasm_bindgen::JsValue::from_str(&format!($fmt, $arg)))
+    .concat(console_log_iter!($fmt, $($arg),+))
+  };
+}
+
+macro_rules! console_log {
+  ($fmt:literal) => { };
+  ($fmt:literal, $($arg:expr),+) => {
+      web_sys::console::log(
+        &console_log_iter!($fmt, $($arg),+)
+      )
+  };
+}
+
+pub(crate) use console_log_iter;
+pub(crate) use console_log;
+
 /// A JsFuture that implements Send and Sync.
 pub struct JsFuture(pub Option<wasm_bindgen_futures::JsFuture>);
 
