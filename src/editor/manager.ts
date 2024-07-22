@@ -131,26 +131,6 @@ export default class EditorManager {
     })
   }
 
-  addDiagnostics(diagnostics: Diagnostic[]): void {
-    if (!this._editorView) return
-
-    forEachDiagnostic(this._editorView.state, function (diag) {
-      diagnostics.push(diag)
-    })
-
-    const uniqueDiagnostics = new Set<Diagnostic>()
-    diagnostics.forEach((diagnostic) => {
-      for (const knownDiagnostic of uniqueDiagnostics.values()) {
-        if (diagnosticIsEqual(diagnostic, knownDiagnostic)) {
-          return
-        }
-      }
-      uniqueDiagnostics.add(diagnostic)
-    })
-
-    this.setDiagnostics([...uniqueDiagnostics])
-  }
-
   undo() {
     if (this._editorView) {
       undo(this._editorView)
