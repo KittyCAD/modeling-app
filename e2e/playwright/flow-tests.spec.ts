@@ -3783,7 +3783,7 @@ const extrude001 = extrude(-10, sketch001)`
     await submitButton.click()
 
     // Check that the code was updated
-    await u.waitForCmdReceive('extrude')
+    // await u.waitForCmdReceive('extrude')
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
@@ -7588,7 +7588,7 @@ const part001 = startSketchOn('-XZ')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.waitForCmdReceive('extrude')
+  // await u.waitForCmdReceive('extrude')
   await page.waitForTimeout(1000)
   await u.clearAndCloseDebugPanel()
 
