@@ -983,7 +983,7 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.root[sketchName] as SketchGroup
+          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict

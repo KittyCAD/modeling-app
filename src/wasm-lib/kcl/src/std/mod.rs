@@ -31,7 +31,7 @@ use crate::{
     ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
-    executor::{MemoryItem, SketchGroup, SketchSurface},
+    executor::{MemoryItem, ProgramMemory, SketchGroup, SketchSurface},
     std::kcl_stdlib::KclStdLibFn,
 };
 pub use args::Args;
@@ -281,6 +281,7 @@ pub enum Primitive {
 pub struct FnAsArg<'a> {
     pub func: &'a crate::executor::MemoryFunction,
     pub expr: Box<FunctionExpression>,
+    pub memory: Box<ProgramMemory>,
 }
 
 #[cfg(test)]
