@@ -80,7 +80,7 @@ export const ModelingPane = ({
       data-testid={detailsTestId}
       id={id}
       className={
-        'group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 ' +
+        'focus-within:border-primary dark:focus-within:border-chalkboard-50 ' +
         pointerEventsCssClass +
         styles.panel +
         ' group ' +

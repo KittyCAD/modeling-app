@@ -100,10 +100,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       <div id="app-sidebar" className={styles.grid + ' flex-1'}>
         <ul
           className={
-            (context.store?.openPanes.length === 0
-              ? 'rounded-r '
-              : '!border-r-transparent ') +
-            'pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
+            (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
+            'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
             'bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 '
           }
         >
@@ -143,7 +141,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         <ul
           id="pane-section"
           className={
-            'col-start-2 col-span-1 flex flex-col gap-2 ' +
+            'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +
             (context.store?.openPanes.length >= 1
               ? `row-start-1 row-end-3`
               : `hidden`)
