@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page, TestInfo } from '@playwright/test'
 import {
   makeTemplate,
   getUtils,
@@ -5801,7 +5801,7 @@ test.describe('Testing segment overlays', () => {
      * @param {number} options.steps - The number of steps to perform
      */
     const _clickConstrained =
-      (page: Page) =>
+      (page: Page, testInfo?: TestInfo) =>
       async ({
         hoverPos,
         constraintType,
@@ -5834,7 +5834,7 @@ test.describe('Testing segment overlays', () => {
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
         await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5, locator)
+        await wiggleMove(page, x, y, 20, 30, ang, 10, 5, locator, testInfo)
 
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
@@ -5955,7 +5955,7 @@ test.describe('Testing segment overlays', () => {
     test.setTimeout(120000)
     test('for segments [line, angledLine, lineTo, xLineTo]', async ({
       page,
-    }) => {
+    }, testInfo) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -5999,7 +5999,7 @@ test.describe('Testing segment overlays', () => {
       await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
 
       const clickUnconstrained = _clickUnconstrained(page)
-      const clickConstrained = _clickConstrained(page)
+      const clickConstrained = _clickConstrained(page, testInfo)
 
       await u.openAndClearDebugPanel()
       await u.sendCustomCmd({
