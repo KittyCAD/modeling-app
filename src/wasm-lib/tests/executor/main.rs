@@ -1784,31 +1784,31 @@ const part002 = startSketchOn(part001, 'end')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_plumbus_fillets() {
-    let code = r#"fn make_circle = (ext, face, tag ,pos, radius) => {
+    let code = r#"fn make_circle = (ext, face, pos, radius) => {
   const sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
        angle_end: 360,
        angle_start: 0,
        radius: radius
-     }, %, tag)
+     }, %, $arc1)
   |> close(%)
 
   return sg
 }
 
-fn pentagon = (len, taga, tagb, tagc) => {
+fn pentagon = (len) => {
   const sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %,taga)
+  |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
        angle: segAng(a, %) + 180 - 108,
        length: len
-     }, %, tagb)
+     }, %, $b)
   |> angledLine({
        angle: segAng(b, %) + 180 - 108,
        length: len
-     }, %,tagc)
+     }, %, $c)
   |> angledLine({
        angle: segAng(c, %) + 180 - 108,
        length: len
@@ -1821,21 +1821,23 @@ fn pentagon = (len, taga, tagb, tagc) => {
   return sg
 }
 
-const p = pentagon(32, $a, $b, $c)
+const p = pentagon(32)
   |> extrude(10, %)
 
-const plumbus0 = make_circle(p,a,  $arc_a, [0, 0], 2.5)
+const circle0 = make_circle(p, p.sketchGroup.tags.a, [0, 0], 2.5)
+const plumbus0 = circle0
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
-       tags: [arc_a, getOppositeEdge(arc_a, %)]
+       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1, %)]
      }, %)
 
-const plumbus1 = make_circle(p, b,$arc_b, [0, 0], 2.5)
+const circle1 = make_circle(p, p.sketchGroup.tags.b, [0, 0], 2.5)
+const plumbus1 = circle1
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
-        tags: [arc_b, getOppositeEdge(arc_b, %)]
+        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1, %)]
       }, %)
 "#;
 
