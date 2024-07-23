@@ -2022,13 +2022,17 @@ export async function getFaceDetails(
       entity_id: entityId,
     },
   })
-  const faceInfo: Models['GetSketchModePlane_type'] = (
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'get_sketch_mode_plane' },
-    })
-  )?.data?.data
+  const resp = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'get_sketch_mode_plane' },
+  })
+  const faceInfo =
+    resp?.success &&
+    resp?.resp.type === 'modeling' &&
+    resp?.resp?.data?.modeling_response?.type === 'get_sketch_mode_plane'
+      ? resp?.resp?.data?.modeling_response.data
+      : ({} as Models['GetSketchModePlane_type'])
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
