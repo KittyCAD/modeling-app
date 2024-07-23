@@ -12,10 +12,6 @@ import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
 import { useAppState } from 'AppState'
-import {
-  canRectangleTool,
-  isEditingExistingSketch,
-} from 'machines/modelingMachine'
 import { CustomIcon } from 'components/CustomIcon'
 import { toolbarConfig, ToolbarItem, ToolbarModeName } from 'lib/toolbar'
 
@@ -26,10 +22,13 @@ export function Toolbar({
   const { state, send, context } = useModelingContext()
   const { commandBarSend } = useCommandsContext()
   const iconClassName =
-    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-ui-open:!text-chalkboard-10 dark:group-ui-open:!text-chalkboard-10'
+    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-pressed:hover:!text-chalkboard-10'
   const bgClassName = '!bg-transparent'
-  const buttonClassName =
-    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 !border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary pressed:!bg-primary ui-open:!border-primary ui-open:!bg-primary'
+  const buttonBgClassName =
+    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary'
+  const buttonBorderClassName =
+    '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
+
   const pathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
       return false
@@ -61,7 +60,9 @@ export function Toolbar({
       <ul
         {...props}
         ref={toolbarButtonsRef}
-        className={'m-0 py-1 rounded-l-sm flex gap-2 items-center ' + className}
+        className={
+          'm-0 py-1 rounded-l-sm flex gap-1.5 items-center ' + className
+        }
       >
         {toolbarConfig[currentMode].items.map((maybeIconConfig, i) => {
           if (maybeIconConfig === 'break') {
@@ -76,12 +77,11 @@ export function Toolbar({
               <ActionButtonDropdown
                 Element="button"
                 key={maybeIconConfig[0].id}
-                className={'group !gap-0 ' + buttonClassName}
-                iconStart={{
-                  icon: maybeIconConfig[0].icon,
-                  className: iconClassName,
-                  bgClassName: bgClassName,
-                }}
+                className={
+                  'group/wrapper ' +
+                  buttonBorderClassName +
+                  ' !bg-transparent relative group !gap-0'
+                }
                 splitMenuItems={maybeIconConfig.map((itemConfig) => ({
                   label: itemConfig.title,
                   shortcut: itemConfig.shortcut,
@@ -92,10 +92,36 @@ export function Toolbar({
                       commandBarSend,
                     }),
                   disabled:
-                    disableAllButtons || itemConfig.status !== 'available',
+                    disableAllButtons ||
+                    itemConfig.status !== 'available' ||
+                    itemConfig.disabled?.(state) === true,
+                  status: itemConfig.status,
                 }))}
               >
-                <ToolbarItemContents {...maybeIconConfig[0]} />
+                <ActionButton
+                  Element="button"
+                  iconStart={{
+                    icon: maybeIconConfig[0].icon,
+                    className: iconClassName,
+                    bgClassName: bgClassName,
+                  }}
+                  className={'!border-transparent !px-0 ' + buttonBgClassName}
+                  aria-pressed={maybeIconConfig[0].isActive?.(state)}
+                  disabled={
+                    disableAllButtons ||
+                    maybeIconConfig[0].status !== 'available' ||
+                    maybeIconConfig[0].disabled?.(state) === true
+                  }
+                  onClick={() =>
+                    maybeIconConfig[0].onClick({
+                      modelingState: state,
+                      modelingSend: send,
+                      commandBarSend,
+                    })
+                  }
+                >
+                  <ToolbarItemContents {...maybeIconConfig[0]} />
+                </ActionButton>
               </ActionButtonDropdown>
             )
           }
@@ -112,12 +138,18 @@ export function Toolbar({
                 bgClassName: bgClassName,
               }}
               className={
-                'group ' +
-                buttonClassName +
+                'pressed:!text-chalkboard-10 pressed:hovered:!chalkboard-10 ' +
+                buttonBorderClassName +
+                ' ' +
+                buttonBgClassName +
                 (!itemConfig.showTitle ? ' !px-0' : '')
               }
               aria-pressed={itemConfig.isActive?.(state)}
-              disabled={disableAllButtons || itemConfig.status !== 'available'}
+              disabled={
+                disableAllButtons ||
+                itemConfig.status !== 'available' ||
+                itemConfig.disabled?.(state) === true
+              }
               onClick={() =>
                 itemConfig.onClick({
                   modelingState: state,
@@ -160,7 +192,7 @@ function ToolbarItemContents(itemConfig: ToolbarItem) {
       {itemConfig.showTitle && <span>{itemConfig.title}</span>}
       <Tooltip
         position="bottom"
-        wrapperClassName="p-4 !pointer-events-auto"
+        wrapperClassName="!p-4 !pointer-events-auto"
         contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
       >
         <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
@@ -199,18 +231,18 @@ function ToolbarItemContents(itemConfig: ToolbarItem) {
             )
           )}
         </div>
-        <p className="px-2 text-ch">{itemConfig.description}</p>
+        <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
         {itemConfig.links.length > 0 && (
           <>
             <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-            <ul className="p-0 m-0 flex flex-col">
+            <ul className="p-0 px-1 m-0 flex flex-col">
               {itemConfig.links.map((link) => (
                 <li key={link.label} className="contents">
                   <a
                     href={link.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center px-2 py-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
+                    className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
                     onClickCapture={(e) =>
                       e.nativeEvent.stopImmediatePropagation()
                     }

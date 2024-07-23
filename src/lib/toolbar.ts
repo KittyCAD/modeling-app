@@ -243,6 +243,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description: 'Exit the current sketch',
         links: [],
       },
+      'break',
       {
         id: 'line',
         onClick: ({ modelingState, modelingSend }) =>
@@ -264,50 +265,412 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) => state.matches('Sketch.Line tool'),
       },
-      {
-        id: 'tangential-arc',
-        onClick: ({ modelingState, modelingSend }) =>
-          modelingSend({
-            type: 'change tool',
-            data: {
-              tool: !modelingState.matches('Sketch.Tangential arc to')
-                ? 'tangentialArc'
-                : 'none',
+      [
+        {
+          id: 'tangential-arc',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches('Sketch.Tangential arc to')
+                  ? 'tangentialArc'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: 'available',
+          disabled: (state) =>
+            !isEditingExistingSketch(state.context) &&
+            !state.matches('Sketch.Tangential arc to'),
+          title: 'Tangential Arc',
+          shortcut: 'A',
+          description: 'Start drawing an arc tangent to the current segment',
+          links: [],
+          isActive: (state) => state.matches('Sketch.Tangential arc to'),
+        },
+        {
+          id: 'three-point-arc',
+          onClick: () => console.error('Three-point arc not yet implemented'),
+          icon: 'arc',
+          status: 'unavailable',
+          title: 'Three-point Arc',
+          showTitle: false,
+          description: 'Draw a circular arc defined by three points',
+          links: [
+            {
+              label: 'GitHub issue',
+              url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
             },
-          }),
-        icon: 'arc',
-        status: 'available',
-        disabled: (state) =>
-          !isEditingExistingSketch(state.context) &&
-          !state.matches('Sketch.Tangential arc to'),
-        title: 'Tangential Arc',
-        shortcut: 'A',
-        description: 'Start drawing an arc tangent to the current segment',
+          ],
+        },
+      ],
+      {
+        id: 'spline',
+        onClick: () => console.error('Spline not yet implemented'),
+        icon: 'spline',
+        status: 'unavailable',
+        title: 'Spline',
+        showTitle: false,
+        description: 'Draw a spline curve through a series of points',
         links: [],
-        isActive: (state) => state.matches('Sketch.Tangential arc to'),
+      },
+      'break',
+      [
+        {
+          id: 'circle-center',
+          onClick: () => console.error('Center circle not yet implemented'),
+          icon: 'circle',
+          status: 'unavailable',
+          title: 'Center circle',
+          showTitle: false,
+          description: 'Start drawing a circle from its center',
+          links: [
+            {
+              label: 'GitHub issue',
+              url: 'https://github.com/KittyCAD/modeling-app/issues/1501',
+            },
+          ],
+        },
+        {
+          id: 'circle-three-points',
+          onClick: () =>
+            console.error('Three-point circle not yet implemented'),
+          icon: 'circle',
+          status: 'unavailable',
+          disabled: () => true,
+          title: 'Three-point circle',
+          showTitle: false,
+          description: 'Draw a circle defined by three points',
+          links: [],
+        },
+      ],
+      [
+        {
+          id: 'corner-rectangle',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches('Sketch.Rectangle tool')
+                  ? 'rectangle'
+                  : 'none',
+              },
+            }),
+          icon: 'rectangle',
+          status: 'available',
+          disabled: (state) =>
+            !canRectangleTool(state.context) &&
+            !state.matches('Sketch.Rectangle tool'),
+          title: 'Corner rectangle',
+          shortcut: 'R',
+          description: 'Start drawing a rectangle',
+          links: [],
+          isActive: (state) => state.matches('Sketch.Rectangle tool'),
+        },
+        {
+          id: 'center-rectangle',
+          onClick: () => console.error('Center rectangle not yet implemented'),
+          icon: 'rectangle',
+          status: 'unavailable',
+          title: 'Center rectangle',
+          showTitle: false,
+          description: 'Start drawing a rectangle from its center',
+          links: [],
+        },
+      ],
+      {
+        id: 'polygon',
+        onClick: () => console.error('Polygon not yet implemented'),
+        icon: 'polygon',
+        status: 'unavailable',
+        title: 'Polygon',
+        showTitle: false,
+        description: 'Draw a polygon with a specified number of sides',
+        links: [],
       },
       {
-        id: 'rectangle',
-        onClick: ({ modelingState, modelingSend }) =>
-          modelingSend({
-            type: 'change tool',
-            data: {
-              tool: !modelingState.matches('Sketch.Rectangle tool')
-                ? 'rectangle'
-                : 'none',
-            },
-          }),
-        icon: 'rectangle',
-        status: 'available',
-        disabled: (state) =>
-          !canRectangleTool(state.context) &&
-          !state.matches('Sketch.Rectangle tool'),
-        title: 'Rectangle',
-        shortcut: 'R',
-        description: 'Start drawing a rectangle',
+        id: 'text',
+        onClick: () => console.error('Text not yet implemented'),
+        icon: 'text',
+        status: 'unavailable',
+        title: 'Text',
+        showTitle: false,
+        description: 'Add text to your sketch as geometry.',
         links: [],
-        isActive: (state) => state.matches('Sketch.Rectangle tool'),
       },
+      'break',
+      {
+        id: 'mirror',
+        onClick: () => console.error('Mirror not yet implemented'),
+        icon: 'mirror',
+        status: 'unavailable',
+        title: 'Mirror',
+        showTitle: false,
+        description: 'Mirror sketch entities about a line or axis',
+        links: [],
+      },
+      [
+        {
+          id: 'contraint-length',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain length') &&
+              state.can('Constrain length')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain length' }),
+          icon: 'dimension',
+          status: 'available',
+          title: 'Length',
+          showTitle: false,
+          description: 'Constrain the length of a straight segment',
+          links: [],
+        },
+        {
+          id: 'contraint-angle',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain angle') &&
+              state.can('Constrain angle')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain angle' }),
+          status: 'available',
+          title: 'Angle',
+          showTitle: false,
+          description: 'Constrain the angle between two segments',
+          links: [],
+        },
+        {
+          id: 'constraint-vertical',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Make segment vertical') &&
+              state.can('Make segment vertical')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Make segment vertical' }),
+          status: 'available',
+          title: 'Vertical',
+          showTitle: false,
+          description:
+            'Constrain a straight segment to be vertical relative to the sketch',
+          links: [],
+        },
+        {
+          id: 'constraint-horizontal',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Make segment horizontal') &&
+              state.can('Make segment horizontal')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Make segment horizontal' }),
+          status: 'available',
+          title: 'Horizontal',
+          showTitle: false,
+          description:
+            'Constrain a straight segment to be horizontal relative to the sketch',
+          links: [],
+        },
+        {
+          id: 'constraint-parallel',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain parallel') &&
+              state.can('Constrain parallel')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain parallel' }),
+          status: 'available',
+          title: 'Parallel',
+          showTitle: false,
+          description: 'Constrain two segments to be parallel',
+          links: [],
+        },
+        {
+          id: 'constraint-equal-length',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain equal length') &&
+              state.can('Constrain equal length')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain equal length' }),
+          status: 'available',
+          title: 'Equal length',
+          showTitle: false,
+          description: 'Constrain two segments to be equal length',
+          links: [],
+        },
+        {
+          id: 'constraint-horizontal-distance',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain horizontal distance') &&
+              state.can('Constrain horizontal distance')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain horizontal distance' }),
+          status: 'available',
+          title: 'Horizontal distance',
+          showTitle: false,
+          description: 'Constrain the horizontal distance between two points',
+          links: [],
+        },
+        {
+          id: 'constraint-vertical-distance',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain vertical distance') &&
+              state.can('Constrain vertical distance')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain vertical distance' }),
+          status: 'available',
+          title: 'Vertical distance',
+          showTitle: false,
+          description: 'Constrain the vertical distance between two points',
+          links: [],
+        },
+        {
+          id: 'constraint-absolute-x',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain ABS X') &&
+              state.can('Constrain ABS X')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain ABS X' }),
+          status: 'available',
+          title: 'Absolute X',
+          showTitle: false,
+          description: 'Constrain the x-coordinate of a point',
+          links: [],
+        },
+        {
+          id: 'constraint-absolute-y',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain ABS Y') &&
+              state.can('Constrain ABS Y')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain ABS Y' }),
+          status: 'available',
+          title: 'Absolute Y',
+          showTitle: false,
+          description: 'Constrain the y-coordinate of a point',
+          links: [],
+        },
+        {
+          id: 'constraint-perpendicular-distance',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain perpendicular distance') &&
+              state.can('Constrain perpendicular distance')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain perpendicular distance' }),
+          status: 'available',
+          title: 'Perpendicular distance',
+          showTitle: false,
+          description:
+            'Constrain the perpendicular distance between two segments',
+          links: [],
+        },
+        {
+          id: 'constraint-align-horizontal',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain horizontally align') &&
+              state.can('Constrain horizontally align')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain horizontally align' }),
+          status: 'available',
+          title: 'Align horizontal',
+          showTitle: false,
+          description: 'Align the ends of two or more segments horizontally',
+          links: [],
+        },
+        {
+          id: 'constraint-align-vertical',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain vertically align') &&
+              state.can('Constrain vertically align')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain vertically align' }),
+          status: 'available',
+          title: 'Align vertical',
+          showTitle: false,
+          description: 'Align the ends of two or more segments vertically',
+          links: [],
+        },
+        {
+          id: 'snap-to-x',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain snap to X') &&
+              state.can('Constrain snap to X')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain snap to X' }),
+          status: 'available',
+          title: 'Snap to X',
+          showTitle: false,
+          description: 'Snap a point to an x-coordinate',
+          links: [],
+        },
+        {
+          id: 'snap-to-y',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain snap to Y') &&
+              state.can('Constrain snap to Y')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain snap to Y' }),
+          status: 'available',
+          title: 'Snap to Y',
+          showTitle: false,
+          description: 'Snap a point to a y-coordinate',
+          links: [],
+        },
+        {
+          id: 'constraint-remove',
+          disabled: (state) =>
+            !(
+              state.matches('Sketch.SketchIdle') &&
+              state.nextEvents.includes('Constrain remove constraints') &&
+              state.can('Constrain remove constraints')
+            ),
+          onClick: ({ modelingSend }) =>
+            modelingSend({ type: 'Constrain remove constraints' }),
+          status: 'available',
+          title: 'Remove constraints',
+          showTitle: false,
+          description: 'Remove all constraints from the segment',
+          links: [],
+        },
+      ],
     ],
   },
 }
