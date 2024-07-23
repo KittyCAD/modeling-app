@@ -15,11 +15,9 @@ import {
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
-import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
-import { isTauri } from 'lib/isTauri'
-import { join, sep } from '@tauri-apps/api/path'
+import { isDesktop } from 'lib/isDesktop'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
-import { getProjectInfo } from 'lib/tauri'
+import { getProjectInfo } from 'lib/desktop'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -51,7 +49,9 @@ export const FileMachineProvider = ({
           commandBarSend({ type: 'Close' })
           navigate(
             `${PATHS.FILE}/${encodeURIComponent(
-              context.selectedDirectory + sep() + event.data.name
+              context.selectedDirectory +
+                window.electron.path.sep +
+                event.data.name
             )}`
           )
         } else if (
@@ -86,7 +86,7 @@ export const FileMachineProvider = ({
     },
     services: {
       readFiles: async (context: ContextFrom<typeof fileMachine>) => {
-        const newFiles = isTauri()
+        const newFiles = isDesktop()
           ? (await getProjectInfo(context.project.path)).children
           : []
         return {
@@ -99,15 +99,18 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = await join(context.selectedDirectory.path, createdName)
-          await mkdir(createdPath)
+          createdPath = window.electron.path.join(
+            context.selectedDirectory.path,
+            createdName
+          )
+          await window.electron.mkdir(createdPath)
         } else {
           createdPath =
             context.selectedDirectory.path +
-            sep() +
+            window.electron.path.sep +
             createdName +
             (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
-          await create(createdPath)
+          await window.electron.writeFile(createdPath, '')
         }
 
         return {
@@ -121,14 +124,25 @@ export const FileMachineProvider = ({
       ) => {
         const { oldName, newName, isDir } = event.data
         const name = newName ? newName : DEFAULT_FILE_NAME
-        const oldPath = await join(context.selectedDirectory.path, oldName)
-        const newDirPath = await join(context.selectedDirectory.path, name)
+        const oldPath = window.electron.path.join(
+          context.selectedDirectory.path,
+          oldName
+        )
+        const newDirPath = window.electron.path.join(
+          context.selectedDirectory.path,
+          name
+        )
         const newPath =
           newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
-        await rename(oldPath, newPath, {})
+        await window.electron.rename(oldPath, newPath)
 
-        if (oldPath === file?.path && project?.path) {
+        if (!file) {
+          return Promise.reject(new Error('file is not defined'))
+        }
+
+        const currentFilePath = window.electron.path.join(file.path, file.name)
+        if (oldPath === currentFilePath && project?.path) {
           // If we just renamed the current file, navigate to the new path
           navigate(PATHS.FILE + '/' + encodeURIComponent(newPath))
         } else if (file?.path.includes(oldPath)) {
@@ -153,13 +167,15 @@ export const FileMachineProvider = ({
         const isDir = !!event.data.children
 
         if (isDir) {
-          await remove(event.data.path, {
-            recursive: true,
-          }).catch((e) => console.error('Error deleting directory', e))
+          await window.electron
+            .rm(event.data.path, {
+              recursive: true,
+            })
+            .catch((e) => console.error('Error deleting directory', e))
         } else {
-          await remove(event.data.path).catch((e) =>
-            console.error('Error deleting file', e)
-          )
+          await window.electron
+            .rm(event.data.path)
+            .catch((e) => console.error('Error deleting file', e))
         }
 
         // If we just deleted the current file or one of its parent directories,

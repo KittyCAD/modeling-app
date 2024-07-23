@@ -29,7 +29,7 @@ pub trait CoreDump: Clone {
 
     async fn os(&self) -> Result<OsInfo>;
 
-    fn is_tauri(&self) -> Result<bool>;
+    fn is_desktop(&self) -> Result<bool>;
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
 
@@ -81,7 +81,7 @@ pub trait CoreDump: Clone {
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
-            tauri: self.is_tauri()?,
+            tauri: self.is_desktop()?,
             os,
             webrtc_stats,
             github_issue_url: None,

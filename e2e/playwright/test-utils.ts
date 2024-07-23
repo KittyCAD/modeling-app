@@ -17,6 +17,7 @@ import waitOn from 'wait-on'
 import { secrets } from './secrets'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -623,7 +624,9 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   await page.waitForTimeout(3000)
 }
 
-export async function setup(context: BrowserContext, page: Page) {
+// settingsOverrides may need to be augmented to take more generic items,
+// but we'll be strict for now
+export async function setup(context: BrowserContext, page: Page, overrideDirectory?: string) {
   // wait for Vite preview server to be up
   await waitOn({
     resources: ['tcp:3000'],
@@ -640,7 +643,13 @@ export async function setup(context: BrowserContext, page: Page) {
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+      settings: TOML.stringify({
+        ...TEST_SETTINGS,
+        app: {
+          ...TEST_SETTINGS.app,
+          projectDirectory: overrideDirectory || TEST_SETTINGS.app.projectDirectory,
+        },
+      }),
     }
   )
   // kill animations, speeds up tests and reduced flakiness

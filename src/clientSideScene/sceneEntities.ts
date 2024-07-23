@@ -591,7 +591,7 @@ export class SceneEntities {
     const sg = kclManager.programMemory.get(
       variableDeclarationName
     ) as SketchGroup
-    const lastSeg = sg.value.slice(-1)[0] || sg.start
+    const lastSeg = sg?.value?.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
 
