@@ -2,6 +2,7 @@
 
 pub mod args;
 pub mod chamfer;
+pub mod convert;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -45,6 +46,7 @@ lazy_static! {
         Box::new(LegLen),
         Box::new(LegAngX),
         Box::new(LegAngY),
+        Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
