@@ -56,9 +56,6 @@ function isHighlightSetEntity_type(
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
-type BatchResponseMap = {
-  [key: string]: Models['BatchResponse_type']
-}
 
 type ResultCommand = CommandInfo & {
   type: 'result'
@@ -1171,7 +1168,6 @@ export enum EngineCommandManagerEvents {
 interface PendingMessage {
   command: EngineCommand
   range: SourceRange
-  // idToRangeMap: {[key: string] :PathToNode}
   idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
@@ -1190,16 +1186,25 @@ export class EngineCommandManager extends EventTarget {
    * of the KCL code that generated it.
    */
   artifactMap: ArtifactMap = {}
-
+  /**
+   * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
+   */
   pendingCommands: {
-    [id: string]: PendingMessage
+    [commandId: string]: PendingMessage
   } = {}
-  unBatchedCommands: { [id: string]: EngineCommand } = {}
+  /**
+   * The orderedCommands array of all the the commands sent to the engine, un-folded from batches, and made into one long
+   * list of the individual commands, this is used to process all the commands into the artifactMap
+   */
   orderedCommands: {
     command: EngineCommand
     range: SourceRange
   }[] = []
-  responseMap: { [id: string]: OkWebSocketResponseData } = {}
+  /**
+   * A map of the responses to the @this.orderedCommands, when processing the commands into the artifactMap, this response map allow
+   * us to look up the response by command id
+   */
+  responseMap: { [commandId: string]: OkWebSocketResponseData } = {}
   /**
    * The client-side representation of the scene command artifacts that have been sent to the server;
    * that is, the *non-modeling* commands and corresponding artifacts.
@@ -1460,6 +1465,12 @@ export class EngineCommandManager extends EventTarget {
 
         const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
         const pending = this.pendingCommands[message.request_id || '']
+
+        if (pending && !message.success) {
+          // handle bad case
+          pending.reject(`engine error: ${JSON.stringify(message.errors)}`)
+          delete this.pendingCommands[message.request_id || '']
+        }
         if (
           !(
             pending &&
@@ -1508,6 +1519,19 @@ export class EngineCommandManager extends EventTarget {
               if (!('response' in response)) return
               const command = individualPendingResponses[key]
               if (!command) return
+              if (command.type === 'modeling_cmd_req')
+                this.addCommandLog({
+                  type: 'receive-reliable',
+                  data: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: response.response,
+                    },
+                  },
+                  id: key,
+                  cmd_type: command?.cmd?.type,
+                })
+
               this.responseMap[key] = {
                 type: 'modeling',
                 data: {
@@ -1670,51 +1694,6 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(resizeCmd)
   }
 
-  handleFailedModelingCommand(id: string, raw: WebSocketResponse) {
-    const failed = raw as Models['FailureWebSocketResponse_type']
-    const errors = failed.errors
-    if (!id) return
-    const command = this.artifactMap[id]
-    if (command && command.type === 'pending') {
-      this.artifactMap[id] = {
-        type: 'failed',
-        range: command.range,
-        pathToNode: command.pathToNode,
-        commandType: command.commandType,
-        parentId: command.parentId ? command.parentId : undefined,
-        errors,
-      }
-      if (
-        command?.type === 'pending' &&
-        command.commandType === 'batch' &&
-        command?.additionalData?.type === 'batch-ids'
-      ) {
-        command.additionalData.ids.forEach((id) => {
-          this.handleFailedModelingCommand(id, raw)
-        })
-      }
-      // batch artifact is just a container, we don't need to keep it
-      // once we process all the commands inside it
-      const resolve = command.resolve
-      delete this.artifactMap[id]
-      resolve({
-        id,
-        commandType: command.commandType,
-        range: command.range,
-        errors,
-        raw,
-      })
-    } else {
-      this.artifactMap[id] = {
-        type: 'failed',
-        range: command.range,
-        pathToNode: command.pathToNode,
-        commandType: command.commandType,
-        parentId: command.parentId ? command.parentId : undefined,
-        errors,
-      }
-    }
-  }
   tearDown(opts?: { idleMode: boolean }) {
     if (this.engineConnection) {
       this.engineConnection.removeEventListener(
@@ -1897,146 +1876,15 @@ export class EngineCommandManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
-    return this.sendCommandVersion2(command.cmd_id, {
+    return this.sendCommand(command.cmd_id, {
       command,
       idToRangeMap: {},
       range: [0, 0],
     }).then(([a]) => a)
-    // this.engineConnection?.send(command)
-    // return this.handlePendingSceneCommand(command.cmd_id, command.cmd)
   }
-  handlePendingSceneCommand(
-    id: string,
-    command: Models['ModelingCmd_type'],
-    ast?: Program,
-    range?: SourceRange
-  ) {
-    let resolve: (val: any) => void = () => {}
-    const promise = new Promise((_resolve, reject) => {
-      resolve = _resolve
-    })
-    const pathToNode = ast
-      ? getNodePathFromSourceRange(ast, range || [0, 0])
-      : []
-    this.sceneCommandArtifacts[id] = {
-      range: range || [0, 0],
-      pathToNode,
-      type: 'pending',
-      commandType: command.type,
-      promise,
-      resolve,
-    }
-    return promise
-  }
-  handlePendingCommand(
-    id: string,
-    command: Models['ModelingCmd_type'],
-    ast?: Program,
-    range?: SourceRange
-  ): Promise<ResolveCommand | void> {
-    let resolve: (val: any) => void = () => {}
-    const promise: Promise<ResolveCommand | void> = new Promise(
-      (_resolve, reject) => {
-        resolve = _resolve
-      }
-    )
-    const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') return command.path
-      if (command.type === 'solid3d_get_extrusion_face_info') {
-        const edgeArtifact = this.artifactMap[command.edge_id]
-        // edges's parent id is to the original "start_path" artifact
-        if (edgeArtifact && edgeArtifact.parentId) {
-          return edgeArtifact.parentId
-        }
-      }
-      if (command.type === 'close_path') return command.path_id
-      if (command.type === 'extrude') return command.target
-      // handle other commands that have a parent here
-    }
-    const pathToNode = ast
-      ? getNodePathFromSourceRange(ast, range || [0, 0])
-      : []
-    this.artifactMap[id] = {
-      range: range || [0, 0],
-      pathToNode,
-      type: 'pending',
-      commandType: command.type,
-      parentId: getParentId(),
-      promise,
-      resolve,
-    }
-    if (command.type === 'extrude') {
-      this.artifactMap[id] = {
-        range: range || [0, 0],
-        pathToNode,
-        type: 'pending',
-        commandType: 'extrude',
-        parentId: getParentId(),
-        promise,
-        target: command.target,
-        resolve,
-      }
-      const target = this.artifactMap[command.target]
-      if (target.commandType === 'start_path') {
-        // tsc cannot infer that target can have extrusions
-        // from the commandType (why?) so we need to cast it
-        const typedTarget = target as (
-          | PendingCommand
-          | ResultCommand
-          | FailedCommand
-        ) & { extrusions?: string[] }
-        if (typedTarget?.extrusions?.length) {
-          typedTarget.extrusions.push(id)
-        } else {
-          typedTarget.extrusions = [id]
-        }
-        // Update in the map.
-        this.artifactMap[command.target] = typedTarget
-      }
-    }
-    return promise
-  }
-  async handlePendingBatchCommand(
-    id: string,
-    commands: Models['ModelingCmdReq_type'][],
-    idToRangeMap?: { [key: string]: SourceRange },
-    ast?: Program,
-    range?: SourceRange
-  ): Promise<ResolveCommand | void> {
-    let resolve: (val: any) => void = () => {}
-    const promise: Promise<ResolveCommand | void> = new Promise(
-      (_resolve, reject) => {
-        resolve = _resolve
-      }
-    )
-
-    if (!idToRangeMap) {
-      return Promise.reject(
-        new Error('idToRangeMap is required for batch commands')
-      )
-    }
-
-    // Add the overall batch command to the artifact map just so we can track all of the
-    // individual commands that are part of the batch.
-    // we'll delete this artifact once all of the individual commands have been processed.
-    this.artifactMap[id] = {
-      range: range || [0, 0],
-      pathToNode: [],
-      type: 'pending',
-      commandType: 'batch',
-      additionalData: { type: 'batch-ids', ids: commands.map((c) => c.cmd_id) },
-      parentId: undefined,
-      promise,
-      resolve,
-    }
-
-    Promise.all(
-      commands.map((c) =>
-        this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
-      )
-    )
-    return promise
-  }
+  /**
+   * A wrapper around the sendCommand where all inputs are JSON strings
+   */
   async sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
@@ -2063,14 +1911,18 @@ export class EngineCommandManager extends EventTarget {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
-    const resp = await this.sendCommandVersion2(id, {
+    const resp = await this.sendCommand(id, {
       command,
       range,
       idToRangeMap,
     })
     return JSON.stringify(resp[0])
   }
-  async sendCommandVersion2(
+  /**
+   * Common send command function used for both modeling and scene commands
+   * So that both have a common way to send pending commands with promises for the responses
+   */
+  async sendCommand(
     id: string,
     message: {
       command: PendingMessage['command']
@@ -2088,7 +1940,6 @@ export class EngineCommandManager extends EventTarget {
       idToRangeMap: message.idToRangeMap,
     }
     if (message.command.type === 'modeling_cmd_req') {
-      this.unBatchedCommands[id] = message.command
       this.orderedCommands.push({
         command: message.command,
         range: message.range,
@@ -2100,7 +1951,6 @@ export class EngineCommandManager extends EventTarget {
           cmd_id: req.cmd_id,
           cmd: req.cmd,
         }
-        this.unBatchedCommands[req.cmd_id || ''] = cmd
         this.orderedCommands.push({
           command: cmd,
           range: message.idToRangeMap[req.cmd_id || ''],
@@ -2110,18 +1960,10 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(message.command)
     return promise
   }
-  async commandResult(id: string): Promise<any> {
-    const command = this.artifactMap[id]
-    if (!command) {
-      return Promise.reject(new Error('No command found'))
-    }
-    if (command.type === 'result') {
-      return command.data
-    } else if (command.type === 'failed') {
-      return Promise.resolve(command.errors)
-    }
-    return command.promise
-  }
+  /**
+   * When an execution takes place we want to wait until we've got replies for all of the commands
+   * When this is done when we build the artifact map synchronously.
+   */
   async waitForAllCommands() {
     const pendingCommands = Object.values(this.artifactMap).filter(
       ({ type }) => type === 'pending'
@@ -2133,7 +1975,8 @@ export class EngineCommandManager extends EventTarget {
     )
     await Promise.all([...proms, otherPending])
     this.orderedCommands.forEach(({ command, range }) => {
-      if (command.type !== 'modeling_cmd_req') return
+      // expect all to be `modeling_cmd_req` as batch commands have
+      // already been expanded before being added to orderedCommands
       if (command.type !== 'modeling_cmd_req') return
       const id = command.cmd_id
       const response = this.responseMap[id]
