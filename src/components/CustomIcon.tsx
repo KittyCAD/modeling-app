@@ -71,6 +71,46 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  booleanExclude: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 5H5V12H8.33325V15.3333H15.3333V8.33333H12V5ZM12 8.33333H8.33325V12H12V8.33333Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  booleanIntersect: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6 6H11V8H9H8V9V11H6V6ZM8 12H6H5V11V6V5H6H11H12V6V8H14H15V9V14V15H14H9H8V14V12ZM9 12V14H14V9H12V11V12H12H11H9Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  booleanSubtract: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6 6H11V11H6V6ZM5 5H6H11H12V6V8H15V15H7.99998V12H6H5V11V6V5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  booleanUnion: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 5H5V12H8V15H15V8H12V5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   bug: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -317,6 +357,26 @@ const CustomIconMap = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M10.5864 4.46513C11.9532 3.09829 14.1693 3.09829 15.5361 4.46513C16.903 5.83196 16.903 8.04804 15.5361 9.41488L13.5364 11.4147C13.5839 10.9639 13.5635 10.5074 13.4752 10.0616L14.829 8.70777C15.8053 7.73146 15.8053 6.14855 14.829 5.17224C13.8527 4.19592 12.2698 4.19592 11.2935 5.17224L9.17217 7.29356C8.19586 8.26987 8.19586 9.85278 9.17217 10.8291C9.53458 11.1915 9.98056 11.4194 10.4481 11.5127C10.3749 11.6902 10.2662 11.8565 10.122 12.0007L9.76392 12.3587C9.28973 12.1899 8.84465 11.9158 8.46507 11.5362C7.09823 10.1694 7.09823 7.95328 8.46507 6.58645L10.5864 4.46513ZM4.46507 10.5864L6.46488 8.58663C6.41734 9.03738 6.43772 9.49394 6.52601 9.93972L5.17217 11.2935C4.19586 12.2699 4.19586 13.8528 5.17217 14.8291C6.14849 15.8054 7.7314 15.8054 8.70771 14.8291L10.829 12.7078C11.8053 11.7315 11.8053 10.1485 10.829 9.17223C10.4666 8.80983 10.0207 8.58195 9.55314 8.48859C9.62635 8.31113 9.73506 8.14487 9.87926 8.00066L10.2373 7.64262C10.7115 7.81138 11.1566 8.08555 11.5361 8.46512C12.903 9.83196 12.903 12.048 11.5361 13.4149L9.41481 15.5362C8.04798 16.903 5.8319 16.903 4.46507 15.5362C3.09823 14.1694 3.09823 11.9533 4.46507 10.5864Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  lockClosed: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 5.5C8.61929 5.5 7.5 6.61929 7.5 8V9H12.5V8C12.5 6.61929 11.3807 5.5 10 5.5ZM6.5 8V9H6H5V10V15V16H6H14H15V15V10V9H14H13.5V8C13.5 6.067 11.933 4.5 10 4.5C8.067 4.5 6.5 6.067 6.5 8ZM6 10V15H14V10H6ZM10.5 11V12.1338C10.7989 12.3067 11 12.6299 11 13C11 13.5523 10.5523 14 10 14C9.44772 14 9 13.5523 9 13C9 12.6299 9.2011 12.3067 9.5 12.1338V11H10.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  lockOpen: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 4.5C8.61929 4.5 7.5 5.61929 7.5 7H6.5C6.5 5.067 8.067 3.5 10 3.5C11.933 3.5 13.5 5.067 13.5 7V9H14H15V10V15V16H14H6H5V15V10V9H6H12.5V7C12.5 5.61929 11.3807 4.5 10 4.5ZM6 10V15H14V10H6ZM10.5 11V12.1338C10.7989 12.3067 11 12.6299 11 13C11 13.5523 10.5523 14 10 14C9.44772 14 9 13.5523 9 13C9 12.6299 9.2011 12.3067 9.5 12.1338V11H10.5Z"
         fill="currentColor"
       />
     </svg>

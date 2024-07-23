@@ -104,7 +104,7 @@ export const NetworkHealthIndicator = () => {
             'rounded-sm ' + overallConnectionStateColor[overallState].bg
           }
         />
-        <Tooltip position="top-right" className="ui-open:hidden">
+        <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
           Network Health ({NETWORK_HEALTH_TEXT[overallState]})
         </Tooltip>
       </Popover.Button>

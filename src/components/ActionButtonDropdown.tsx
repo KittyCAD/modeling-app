@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 
-type ActionButtonSplitProps = Omit<ActionButtonProps, 'iconEnd'> & {
+type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   splitMenuItems: {
     label: string
     shortcut?: string
@@ -24,7 +24,7 @@ export function ActionButtonDropdown({
         Element="button"
         iconEnd={{
           icon: 'caretDown',
-          className: 'ui-open:rotate-180',
+          className: '!w-3.5 ui-open:rotate-180',
           bgClassName:
             'bg-chalkboard-20 dark:bg-chalkboard-80 ui-open:bg-primary ui-open:text-chalkboard-10',
         }}
@@ -42,11 +42,7 @@ export function ActionButtonDropdown({
               data-testid={item.label}
             >
               <span className="capitalize">{item.label}</span>
-              {item.shortcut && (
-                <kbd className="bg-primary/10 dark:bg-chalkboard-80 dark:group-hover:bg-primary font-mono rounded-sm dark:text-inherit inline-block px-1 border-primary dark:border-chalkboard-90">
-                  {item.shortcut}
-                </kbd>
-              )}
+              {item.shortcut && <kbd className="hotkey">{item.shortcut}</kbd>}
             </button>
           </li>
         ))}
