@@ -1,19 +1,24 @@
-import type { ConfigEnv, UserConfig } from 'vite';
-import { defineConfig, mergeConfig } from 'vite';
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import { configDefaults } from 'vitest/config'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import vitePluginEslint from 'vite-plugin-eslint'
 import vitePluginPackageVersion from 'vite-plugin-package-version'
-import { getBuildConfig, getBuildDefine, external, pluginHotRestart } from './vite.base.config';
+import {
+  getBuildConfig,
+  getBuildDefine,
+  external,
+  pluginHotRestart,
+} from './vite.base.config'
 import viteJsPluginReact from '@vitejs/plugin-react'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-  const forgeEnv = env as ConfigEnv<'build'>;
-  const { forgeConfigSelf } = forgeEnv;
-  const define = getBuildDefine(forgeEnv);
+  const forgeEnv = env as ConfigEnv<'build'>
+  const { forgeConfigSelf } = forgeEnv
+  const define = getBuildDefine(forgeEnv)
   const config: UserConfig = {
     server: {
       open: true,
@@ -74,17 +79,23 @@ export default defineConfig((env) => {
       // Load the Node.js entry.
       mainFields: ['module', 'jsnext:main', 'jsnext'],
       alias: {
-        '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
+        '@kittycad/codemirror-lsp-client':
+          '/packages/codemirror-lsp-client/src',
       },
     },
     plugins: [
-      pluginHotRestart('restart'), viteJsPluginReact(), viteTsconfigPaths(), vitePluginEslint(), vitePluginPackageVersion(), lezer()
+      pluginHotRestart('restart'),
+      viteJsPluginReact(),
+      viteTsconfigPaths(),
+      vitePluginEslint(),
+      vitePluginPackageVersion(),
+      lezer(),
     ],
     worker: {
       plugins: () => [viteTsconfigPaths()],
     },
     define,
-  };
+  }
 
-  return mergeConfig(getBuildConfig(forgeEnv), config);
-});
+  return mergeConfig(getBuildConfig(forgeEnv), config)
+})

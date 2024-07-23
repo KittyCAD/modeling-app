@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "outDir": "dist",
     "paths": {
       "@kittycad/codemirror-lsp-client": [
         "../packages/codemirror-lsp-client/src/index.ts"
