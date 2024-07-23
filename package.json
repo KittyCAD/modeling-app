@@ -2,6 +2,9 @@
   "name": "untitled-app",
   "version": "0.24.10",
   "private": true,
+  "main":"src/main.ts",
+  "description":"Zoo Modeling App - CAD",
+  "license":"none",
   "dependencies": {
     "@codemirror/autocomplete": "^6.17.0",
     "@codemirror/commands": "^6.6.0",
@@ -36,6 +39,7 @@
     "@xstate/react": "^3.2.2",
     "codemirror": "^6.0.1",
     "decamelize": "^6.0.0",
+    "electron-squirrel-startup": "^1.0.1",
     "fuse.js": "^7.0.0",
     "html2canvas-pro": "^1.5.5",
     "json-rpc-2.0": "^1.6.0",
@@ -61,7 +65,7 @@
     "xstate": "^4.38.2"
   },
   "scripts": {
-    "start": "vite",
+    "start": "electron-forge start",
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
     "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm && vite build",
@@ -88,7 +92,9 @@
     "postinstall": "yarn xstate:typegen",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
-    "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts"
+    "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "prettier": {
     "trailingComma": "es5",
@@ -118,6 +124,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^15.0.2",
     "@types/d3-force": "^3.0.10",
+    "@types/electron": "^1.6.10",
     "@types/mocha": "^10.0.6",
     "@types/node": "^18.19.31",
     "@types/pixelmatch": "^5.2.6",
@@ -140,7 +147,7 @@
     "@wdio/spec-reporter": "^8.36.0",
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.19",
-    "d3-force": "^3.0.0",
+    "electron": "^31.2.1",
     "eslint": "^8.57.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-css-modules": "^2.12.0",
