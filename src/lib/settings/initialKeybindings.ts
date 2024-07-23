@@ -1,4 +1,4 @@
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 
 export type InteractionMapItem = {
   name: string
@@ -38,7 +38,7 @@ export const interactionMap: Record<
   Settings: [
     {
       name: 'toggle-settings',
-      sequence: isTauri() ? 'Meta+,' : 'Shift+Meta+,',
+      sequence: isDesktop() ? 'Meta+,' : 'Shift+Meta+,',
       title: 'Toggle Settings',
       description: 'Opens the settings dialog. Always available.',
     },

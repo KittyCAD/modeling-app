@@ -12,7 +12,7 @@ import {
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
 import { open } from '@tauri-apps/plugin-dialog'
 import { CustomIcon } from 'components/CustomIcon'
@@ -192,7 +192,7 @@ export function createSettings() {
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
-        validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
+        validate: (v) => typeof v === 'string' && (v.length > 0 || !isDesktop()),
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (

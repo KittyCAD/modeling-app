@@ -26,8 +26,8 @@ extern "C" {
     #[wasm_bindgen(method, js_name = getOsInfo, catch)]
     fn get_os_info(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
-    #[wasm_bindgen(method, js_name = isTauri, catch)]
-    fn is_tauri(this: &CoreDumpManager) -> Result<bool, js_sys::Error>;
+    #[wasm_bindgen(method, js_name = isDesktop, catch)]
+    fn is_desktop(this: &CoreDumpManager) -> Result<bool, js_sys::Error>;
 
     #[wasm_bindgen(method, js_name = getWebrtcStats, catch)]
     fn get_webrtc_stats(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
@@ -100,9 +100,9 @@ impl CoreDump for CoreDumper {
         Ok(os)
     }
 
-    fn is_tauri(&self) -> Result<bool> {
+    fn is_desktop(&self) -> Result<bool> {
         self.manager
-            .is_tauri()
+            .is_desktop()
             .map_err(|e| anyhow::anyhow!("Failed to get response from is tauri: {:?}", e))
     }
 

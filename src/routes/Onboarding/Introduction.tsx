@@ -7,7 +7,7 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { codeManager, kclManager } from 'lib/singletons'

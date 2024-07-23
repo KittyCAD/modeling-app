@@ -1,5 +1,5 @@
 import { ActionButton } from '../components/ActionButton'
-import { isTauri } from '../lib/isTauri'
+import { isDesktop } from '../lib/isDesktop'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
@@ -61,7 +61,7 @@ const SignIn = () => {
           ZMA is ready for production, please sign up for our mailing list at{' '}
           <a href="https://zoo.dev">zoo.dev</a>.
         </p>
-        {isTauri() ? (
+        {isDesktop() ? (
           <ActionButton
             Element="button"
             onClick={signInTauri}

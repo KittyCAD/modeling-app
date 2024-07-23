@@ -9,7 +9,7 @@ import {
 import { Fragment } from 'react/jsx-runtime'
 import { SettingsSection } from './SettingsSection'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
 import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
@@ -39,7 +39,7 @@ export const AllSettingsFields = forwardRef(
     } = useSettingsAuthContext()
 
     const projectPath =
-      isFileSettings && isTauri()
+      isFileSettings && isDesktop()
         ? decodeURI(
             location.pathname
               .replace(paths.FILE + '/', '')
@@ -156,14 +156,14 @@ export const AllSettingsFields = forwardRef(
             title="Reset settings"
             description={`Restore settings to their default values. Your settings are saved in
                     ${
-                      isTauri()
+                      isDesktop()
                         ? ' a file in the app data folder for your OS.'
                         : " your browser's local storage."
                     }
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {isTauri() && (
+              {isDesktop() && (
                 <ActionButton
                   Element="button"
                   onClick={async () => {

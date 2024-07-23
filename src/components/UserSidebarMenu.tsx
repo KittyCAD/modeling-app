@@ -8,7 +8,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
 import usePlatform from 'hooks/usePlatform'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { CustomIcon } from './CustomIcon'
 
 type User = Models['User_type']
@@ -33,7 +33,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             <>
               <span className="flex-1">User settings</span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isTauri() ? '' : '⬆'
+                isDesktop() ? '' : '⬆'
               },`}</kbd>
             </>
           ),

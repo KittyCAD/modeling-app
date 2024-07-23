@@ -1,13 +1,13 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function ProjectMenu() {
   const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EXPORT)
-  const tauri = isTauri()
+  const tauri = isDesktop()
 
   return (
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">

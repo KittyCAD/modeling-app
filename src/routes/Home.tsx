@@ -28,7 +28,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { join, sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
@@ -38,7 +38,7 @@ import {
   createNewProjectDirectory,
   listProjects,
   renameProjectDirectory,
-} from 'lib/tauri'
+} from 'lib/desktop'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -61,7 +61,7 @@ const Home = () => {
     e.preventDefault()
   })
   useHotkeys(
-    isTauri() ? 'mod+,' : 'shift+mod+,',
+    isDesktop() ? 'mod+,' : 'shift+mod+,',
     () => navigate(paths.HOME + paths.SETTINGS),
     {
       splitKey: '|',

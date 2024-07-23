@@ -1,6 +1,6 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import { getProjectMetaByRouteId, paths } from './paths'
 import { BROWSER_PATH } from 'lib/paths'
 import {
@@ -90,7 +90,7 @@ export const fileLoader: LoaderFunction = async ({
     if (!current_file_name || !current_file_path || !project_name) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
+          `${params.id}${isDesktop() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
         )}`
       )
     }
@@ -113,7 +113,7 @@ export const fileLoader: LoaderFunction = async ({
 
     const projectData: IndexLoaderData = {
       code,
-      project: isTauri()
+      project: isDesktop()
         ? await getProjectInfo(project_path, configuration)
         : {
             name: project_name,
@@ -156,7 +156,7 @@ export const fileLoader: LoaderFunction = async ({
 export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
-  if (!isTauri()) {
+  if (!isDesktop()) {
     return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   const { configuration } = await loadAndValidateSettings()

@@ -1,5 +1,5 @@
 import { appConfigDir } from '@tauri-apps/api/path'
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import type { FileEntry } from 'lib/types'
 import {
   INDEX_IDENTIFIER,
@@ -107,7 +107,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = isTauri() ? await appConfigDir() : '/'
+  const user = isDesktop() ? await appConfigDir() : '/'
   const project = projectPath !== undefined ? projectPath : undefined
 
   return {

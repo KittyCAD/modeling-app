@@ -6,7 +6,7 @@ import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { check } from '@tauri-apps/plugin-updater'
 import {
@@ -84,4 +84,4 @@ const runTauriUpdater = async () => {
   }
 }
 
-isTauri() && runTauriUpdater()
+isDesktop() && runTauriUpdater()

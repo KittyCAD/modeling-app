@@ -16,7 +16,7 @@ import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubsc
 import { engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
@@ -62,7 +62,7 @@ export function App() {
     e.preventDefault()
   })
   useHotkeyWrapper(
-    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
+    [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + paths.SETTINGS),
     {
       splitKey: '|',
