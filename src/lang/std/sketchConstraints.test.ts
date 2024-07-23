@@ -363,7 +363,7 @@ const part001 = startSketchOn('XY')
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
     const _segment = getSketchSegmentFromSourceRange(
-      programMemory.root['part001'] as SketchGroup,
+      programMemory.get('part001') as SketchGroup,
       [index, index]
     )
     if (err(_segment)) throw _segment
@@ -379,7 +379,7 @@ const part001 = startSketchOn('XY')
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
-      programMemory.root['part001'] as SketchGroup,
+      programMemory.get('part001') as SketchGroup,
       [index, index]
     )
     if (err(_segment)) throw _segment

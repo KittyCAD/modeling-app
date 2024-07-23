@@ -143,14 +143,200 @@ interface Memory {
   [key: string]: MemoryItem
 }
 
-export interface ProgramMemory {
-  root: Memory
+type EnvironmentRef = number
+
+const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
+
+interface Environment {
+  bindings: Memory
+  parent: EnvironmentRef | null
+}
+
+function emptyEnvironment(): Environment {
+  return { bindings: {}, parent: null }
+}
+
+interface RawProgramMemory {
+  environments: Environment[]
+  currentEnv: EnvironmentRef
   return: ProgramReturn | null
+}
+
+/**
+ * This duplicates logic in Rust.  The hope is to keep ProgramMemory internals
+ * isolated from the rest of the TypeScript code so that we can move it to Rust
+ * in the future.
+ */
+export class ProgramMemory {
+  private environments: Environment[]
+  private currentEnv: EnvironmentRef
+  private return: ProgramReturn | null
+
+  /**
+   * Empty memory doesn't include prelude definitions.
+   */
+  static empty(): ProgramMemory {
+    return new ProgramMemory()
+  }
+
+  static fromRaw(raw: RawProgramMemory): ProgramMemory {
+    return new ProgramMemory(raw.environments, raw.currentEnv, raw.return)
+  }
+
+  constructor(
+    environments: Environment[] = [emptyEnvironment()],
+    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
+    returnVal: ProgramReturn | null = null
+  ) {
+    this.environments = environments
+    this.currentEnv = currentEnv
+    this.return = returnVal
+  }
+
+  /**
+   * Returns a deep copy.
+   */
+  clone(): ProgramMemory {
+    return ProgramMemory.fromRaw(JSON.parse(JSON.stringify(this.toRaw())))
+  }
+
+  has(name: string): boolean {
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      if (env.bindings.hasOwnProperty(name)) {
+        return true
+      }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
+    }
+    return false
+  }
+
+  get(name: string): MemoryItem | null {
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      if (env.bindings.hasOwnProperty(name)) {
+        return env.bindings[name]
+      }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
+    }
+    return null
+  }
+
+  set(name: string, value: MemoryItem): Error | null {
+    if (this.environments.length === 0) {
+      return new Error('No environment to set memory in')
+    }
+    const env = this.environments[this.currentEnv]
+    env.bindings[name] = value
+    return null
+  }
+
+  /**
+   * Returns a new ProgramMemory with only `MemoryItem`s that pass the
+   * predicate.  Values are deep copied.
+   *
+   * Note: Return value of the returned ProgramMemory is always null.
+   */
+  filterVariables(
+    keepPrelude: boolean,
+    predicate: (value: MemoryItem) => boolean
+  ): ProgramMemory | Error {
+    const environments: Environment[] = []
+    for (const [i, env] of this.environments.entries()) {
+      let bindings: Memory
+      if (i === ROOT_ENVIRONMENT_REF && keepPrelude) {
+        // Get prelude definitions.  Create these first so that they're always
+        // first in iteration order.
+        const memoryOrError = programMemoryInit()
+        if (err(memoryOrError)) return memoryOrError
+        bindings = memoryOrError.environments[0].bindings
+      } else {
+        bindings = emptyEnvironment().bindings
+      }
+
+      for (const [name, value] of Object.entries(env.bindings)) {
+        // Check the predicate.
+        if (!predicate(value)) {
+          continue
+        }
+        // Deep copy.
+        bindings[name] = JSON.parse(JSON.stringify(value))
+      }
+      environments.push({ bindings, parent: env.parent })
+    }
+    return new ProgramMemory(environments, this.currentEnv, null)
+  }
+
+  numEnvironments(): number {
+    return this.environments.length
+  }
+
+  numVariables(envRef: EnvironmentRef): number {
+    return Object.keys(this.environments[envRef]).length
+  }
+
+  /**
+   * Returns all variable entries in memory that are visible, in a flat
+   * structure.  If variables are shadowed, they're not visible, and therefore,
+   * not included.
+   *
+   * This should only be used to display in the MemoryPane UI.
+   */
+  visibleEntries(): Map<string, MemoryItem> {
+    const map = new Map<string, MemoryItem>()
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      for (const [name, value] of Object.entries(env.bindings)) {
+        // Don't include shadowed variables.
+        if (!map.has(name)) {
+          map.set(name, value)
+        }
+      }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
+    }
+    return map
+  }
+
+  /**
+   * Returns true if any visible variables are a SketchGroup or ExtrudeGroup.
+   */
+  hasSketchOrExtrudeGroup(): boolean {
+    for (const node of this.visibleEntries().values()) {
+      if (node.type === 'ExtrudeGroup' || node.type === 'SketchGroup') {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Return the representation that can be serialized to JSON.  This should only
+   * be used within this module.
+   */
+  toRaw(): RawProgramMemory {
+    return {
+      environments: this.environments,
+      currentEnv: this.currentEnv,
+      return: this.return,
+    }
+  }
 }
 
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ProgramMemory> => {
@@ -171,7 +357,7 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ProgramMemory> => {
@@ -186,15 +372,15 @@ export const _executor = async (
       baseUnit =
         (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     }
-    const memory: ProgramMemory = await execute_wasm(
+    const memory: RawProgramMemory = await execute_wasm(
       JSON.stringify(node),
-      JSON.stringify(programMemory),
+      JSON.stringify(programMemory.toRaw()),
       baseUnit,
       engineCommandManager,
       fileSystemManager,
       isMock
     )
-    return memory
+    return ProgramMemory.fromRaw(memory)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -329,10 +515,17 @@ export function getTangentialArcToInfo({
   }
 }
 
+/**
+ * Returns new ProgramMemory with prelude definitions.
+ */
 export function programMemoryInit(): ProgramMemory | Error {
   try {
-    const memory: ProgramMemory = program_memory_init()
-    return memory
+    const memory: RawProgramMemory = program_memory_init()
+    return new ProgramMemory(
+      memory.environments,
+      memory.currentEnv,
+      memory.return
+    )
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())

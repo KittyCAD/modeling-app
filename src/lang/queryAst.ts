@@ -130,8 +130,14 @@ function moreNodePathFromSourceRange(
 
   const isInRange = _node.start <= start && _node.end >= end
 
-  if ((_node.type === 'Identifier' || _node.type === 'Literal') && isInRange)
+  if (
+    (_node.type === 'Identifier' ||
+      _node.type === 'Literal' ||
+      _node.type === 'TagDeclarator') &&
+    isInRange
+  ) {
     return path
+  }
 
   if (_node.type === 'CallExpression' && isInRange) {
     const { callee, arguments: args } = _node
@@ -277,6 +283,15 @@ function moreNodePathFromSourceRange(
         }
       }
     }
+    return path
+  }
+  if (_node.type === 'ReturnStatement' && isInRange) {
+    const { argument } = _node
+    if (argument.start <= start && argument.end >= end) {
+      path.push(['argument', 'ReturnStatement'])
+      return moreNodePathFromSourceRange(argument, sourceRange, path)
+    }
+    return path
   }
   if (_node.type === 'MemberExpression' && isInRange) {
     const { object, property } = _node
@@ -459,8 +474,8 @@ export function findAllPreviousVariablesPath(
   bodyItems?.forEach?.((item) => {
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declarations[0].id.name
-    const varValue = programMemory?.root[varName]
-    if (typeof varValue?.value !== type) return
+    const varValue = programMemory?.get(varName)
+    if (!varValue || typeof varValue?.value !== type) return
     variables.push({
       key: varName,
       value: varValue.value,
@@ -640,7 +655,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const path = programMemory?.root[varName] as SketchGroup
+    const path = programMemory?.get(varName) as SketchGroup
     const _primarySegment = getSketchSegmentFromSourceRange(
       path,
       primaryLine.range
@@ -687,7 +702,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = (programMemory.root[varName] as SketchGroup).value[
+    const prevSegment = (programMemory.get(varName) as SketchGroup).value[
       secondaryIndex - 1
     ]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
@@ -757,7 +772,7 @@ export function hasExtrudeSketchGroup({
   const varDec = varDecMeta.node
   if (varDec.type !== 'VariableDeclaration') return false
   const varName = varDec.declarations[0].id.name
-  const varValue = programMemory?.root[varName]
+  const varValue = programMemory?.get(varName)
   return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
 }
 
