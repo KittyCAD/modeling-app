@@ -38,22 +38,6 @@ export class KclManager {
   private _wasmInitFailed = true
 
   engineCommandManager: EngineCommandManager
-  private _defferer = deferExecution((code: string) => {
-    const ast = this.safeParse(code)
-    if (!ast) {
-      this.clearAst()
-      return
-    }
-    try {
-      const fmtAndStringify = (ast: Program) =>
-        JSON.stringify(parse(recast(ast)))
-      const isAstTheSame = fmtAndStringify(ast) === fmtAndStringify(this._ast)
-      if (isAstTheSame) return
-    } catch (e) {
-      console.error(e)
-    }
-    this.executeAst(ast)
-  }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Program) => void = () => {}
@@ -331,10 +315,8 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(force?: boolean, zoomToFit?: boolean): Promise<void> {
-    // If we want to force it we don't want to defer it.
-    if (!force) return this._defferer(codeManager.code)
-
+  async executeCode(zoomToFit?: boolean): Promise<void> {
+    console.log('[kcl/KclSingleton] executeCode')
     const ast = this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
