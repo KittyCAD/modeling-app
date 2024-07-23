@@ -238,6 +238,7 @@ export const Stream = () => {
     if (!videoRef.current) return
     if (!mediaStream) return
 
+    // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
     try {
       videoRef.current.srcObject = mediaStream

@@ -3,16 +3,22 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewProject } from 'lib/tauriFS'
-import { isTauri } from 'lib/isTauri'
+import { createAndOpenNewProject } from 'lib/desktopFS'
+import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { paths } from 'lib/paths'
 import { codeManager, kclManager } from 'lib/singletons'
-import { APP_NAME } from 'lib/constants'
+import {
+  APP_NAME,
+  ONBOARDING_PROJECT_NAME,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
 import { useState } from 'react'
-import { useLspContext } from 'components/LspProvider'
+import { createNewProjectDirectory, listProjects } from 'lib/desktop'
 import { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
+import { useLspContext } from 'components/LspProvider'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -38,7 +44,7 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
   return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        {!isTauri() ? (
+        {!isDesktop() ? (
           <OnboardingWarningWeb {...props} />
         ) : (
           <OnboardingWarningDesktop {...props} />
