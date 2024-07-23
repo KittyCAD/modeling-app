@@ -100,7 +100,7 @@ export class KclManager {
   set kclErrors(kclErrors) {
     this._kclErrors = kclErrors
     let diagnostics = kclErrorsToDiagnostics(kclErrors)
-    editorManager.setDiagnostics(diagnostics)
+    editorManager.addDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
   }
 
@@ -222,11 +222,7 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
-
-    const lints = await lintAst({ ast: ast })
-    if (lints) {
-      editorManager.setDiagnostics(lints)
-    }
+    editorManager.addDiagnostics(await lintAst({ ast: ast }))
 
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
     defaultSelectionFilter(programMemory, this.engineCommandManager)
@@ -306,11 +302,7 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })
-
-    const lints = await lintAst({ ast: ast })
-    if (lints) {
-      editorManager.setDiagnostics(lints)
-    }
+    editorManager.addDiagnostics(await lintAst({ ast: ast }))
 
     this._logs = logs
     this._kclErrors = errors

@@ -21,13 +21,10 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
-function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
-  return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
-}
-
 export default class EditorManager {
   private _editorView: EditorView | null = null
   private _copilotEnabled: boolean = true
+  private _diagnostics: Diagnostic[] = []
 
   private _isShiftDown: boolean = false
   private _selectionRanges: Selections = {
@@ -116,6 +113,14 @@ export default class EditorManager {
 
   clearDiagnostics(): void {
     this.setDiagnostics([])
+  }
+
+  addDiagnostics(diagnostics: Diagnostic[]): void {
+    if (!this._editorView) return
+    diagnostics.forEach((diagnostic) => {
+      this._diagnostics.push(diagnostic)
+    })
+    this.setDiagnostics(this._diagnostics)
   }
 
   setDiagnostics(diagnostics: Diagnostic[]): void {
