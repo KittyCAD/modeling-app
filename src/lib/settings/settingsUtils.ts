@@ -1,6 +1,6 @@
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { err } from 'lib/trap'
 import {
   defaultAppSettings,
@@ -18,7 +18,7 @@ import {
   readProjectSettingsFile,
   writeAppSettingsFile,
   writeProjectSettingsFile,
-} from 'lib/tauri'
+} from 'lib/desktop'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 
@@ -159,15 +159,15 @@ export async function loadAndValidateSettings(
   projectPath?: string
 ): Promise<AppSettings> {
   const settings = createSettings()
-  const inTauri = isTauri()
+  const onDesktop = isDesktop()
 
-  if (!inTauri) {
+  if (!onDesktop) {
     // Make sure we have wasm initialized.
     await initPromise
   }
 
   // Load the app settings from the file system or localStorage.
-  const appSettings = inTauri
+  const appSettings = onDesktop
     ? await readAppSettingsFile()
     : readLocalStorageAppSettingsFile()
 
@@ -179,7 +179,7 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    const projectSettings = inTauri
+    const projectSettings = onDesktop
       ? await readProjectSettingsFile(projectPath)
       : readLocalStorageProjectSettingsFile()
 
@@ -201,7 +201,7 @@ export async function saveSettings(
 ) {
   // Make sure we have wasm initialized.
   await initPromise
-  const inTauri = isTauri()
+  const onDesktop = isDesktop()
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
@@ -216,7 +216,7 @@ export async function saveSettings(
   if (err(tomlString2)) return
 
   // Write the app settings.
-  if (inTauri) {
+  if (onDesktop) {
     await writeAppSettingsFile(appSettings)
   } else {
     localStorage.setItem(localStorageAppSettingsPath(), tomlString2)
@@ -241,7 +241,7 @@ export async function saveSettings(
   if (err(tomlStr)) return
 
   // Write the project settings.
-  if (inTauri) {
+  if (onDesktop) {
     await writeProjectSettingsFile(projectPath, projectSettings)
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -315,7 +315,7 @@ export function shouldHideSetting(
   return (
     setting.hideOnLevel === settingsLevel ||
     setting.hideOnPlatform === 'both' ||
-    (setting.hideOnPlatform && isTauri()
+    (setting.hideOnPlatform && isDesktop()
       ? setting.hideOnPlatform === 'desktop'
       : setting.hideOnPlatform === 'web')
   )

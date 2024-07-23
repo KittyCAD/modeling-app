@@ -1,6 +1,6 @@
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { parseProjectRoute, readAppSettingsFile } from './tauri'
@@ -38,7 +38,7 @@ export async function getProjectMetaByRouteId(
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
-  const inTauri = isTauri()
+  const inTauri = isDesktop()
 
   if (configuration === undefined) {
     configuration = inTauri

@@ -2,7 +2,7 @@
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
 import { bracket } from 'lib/exampleKcl'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
@@ -21,7 +21,7 @@ export default class CodeManager {
   private _hotkeys: { [key: string]: () => void } = {}
 
   constructor() {
-    if (isTauri()) {
+    if (isDesktop()) {
       this.code = ''
       return
     }
@@ -115,7 +115,7 @@ export default class CodeManager {
   }
 
   async writeToFile() {
-    if (isTauri()) {
+    if (isDesktop()) {
       setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk

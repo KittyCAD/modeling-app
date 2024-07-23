@@ -10,7 +10,7 @@ import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
-import { isTauri } from './lib/isTauri'
+import { isDesktop } from './lib/isDesktop'
 import Home from './routes/Home'
 import { NetworkContext } from './hooks/useNetworkContext'
 import { useNetworkStatus } from './hooks/useNetworkStatus'
@@ -32,7 +32,7 @@ import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
-import { getState, setState } from 'lib/tauri'
+import { getState, setState } from 'lib/desktop'
 import { CoreDumpManager } from 'lib/coredump'
 import { engineCommandManager } from 'lib/singletons'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -66,8 +66,8 @@ const router = createBrowserRouter([
       {
         path: paths.INDEX,
         loader: async () => {
-          const inTauri = isTauri()
-          if (inTauri) {
+          const onDesktop = isDesktop()
+          if (onDesktop) {
             const appState = await getState()
 
             if (appState) {
@@ -84,7 +84,7 @@ const router = createBrowserRouter([
             }
           }
 
-          return inTauri
+          return onDesktop
             ? redirect(paths.HOME)
             : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
         },
@@ -101,7 +101,7 @@ const router = createBrowserRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
-                {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
+                {!isDesktop() && import.meta.env.PROD && <DownloadAppBanner />}
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>

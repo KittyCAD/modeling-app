@@ -1,7 +1,7 @@
 import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import {
   platform as tauriPlatform,
   arch as tauriArch,
@@ -68,7 +68,7 @@ export class CoreDumpManager {
 
   // Get the os information.
   getOsInfo(): Promise<string> {
-    if (this.isTauri()) {
+    if (this.isDesktop()) {
       const osinfo: OsInfo = {
         platform: tauriPlatform(),
         arch: tauriArch(),
@@ -101,8 +101,8 @@ export class CoreDumpManager {
     return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
   }
 
-  isTauri(): boolean {
-    return isTauri()
+  isDesktop(): boolean {
+    return isDesktop()
   }
 
   getWebrtcStats(): Promise<string> {

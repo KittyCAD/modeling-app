@@ -1,5 +1,5 @@
 import { Platform, platform } from '@tauri-apps/plugin-os'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useEffect, useState } from 'react'
 
 export default function usePlatform() {
@@ -10,7 +10,7 @@ export default function usePlatform() {
       setPlatformName(await platform())
     }
 
-    if (isTauri()) {
+    if (isDesktop()) {
       void getPlatform()
     } else {
       if (navigator.userAgent.indexOf('Mac') !== -1) {

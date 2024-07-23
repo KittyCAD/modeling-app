@@ -3,6 +3,7 @@
 
 import { app, BrowserWindow } from 'electron'
 import path from 'path'
+import 'lib/fs'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -41,3 +42,4 @@ app.on('window-all-closed', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
+

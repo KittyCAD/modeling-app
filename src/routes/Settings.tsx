@@ -12,9 +12,9 @@ import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
 import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
 import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
 import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 
-export const APP_VERSION = isTauri()
+export const APP_VERSION = isDesktop()
   ? import.meta.env.PACKAGE_VERSION || 'unknown'
   : 'main'
 

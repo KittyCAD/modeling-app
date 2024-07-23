@@ -1,7 +1,7 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { getUser as getUserTauri } from 'lib/tauri'
 
@@ -123,7 +123,7 @@ async function getUser(context: UserContext) {
     'Content-Type': 'application/json',
   }
 
-  if (!token && isTauri()) return Promise.reject(new Error('No token found'))
+  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${context.token}`
 
   if (SKIP_AUTH) {
@@ -138,7 +138,7 @@ async function getUser(context: UserContext) {
     }
   }
 
-  const userPromise = !isTauri()
+  const userPromise = !isDesktop()
     ? fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -164,7 +164,7 @@ async function getUser(context: UserContext) {
 }
 
 function getCookie(cname: string): string | null {
-  if (isTauri()) {
+  if (isDesktop()) {
     return null
   }
 
