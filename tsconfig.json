@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
+    "outDir": "dist",
     "paths": {
       "@kittycad/codemirror-lsp-client": [
         "../packages/codemirror-lsp-client/src/index.ts"
@@ -20,11 +21,12 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "ES2022",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "composite": true,
