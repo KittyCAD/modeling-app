@@ -26,7 +26,7 @@ export function ActionButtonDropdown({
           icon: 'caretDown',
           className: '!w-3.5 ui-open:rotate-180',
           bgClassName:
-            'bg-chalkboard-20 dark:bg-chalkboard-80 ui-open:bg-primary ui-open:text-chalkboard-10',
+            '!bg-transparent ui-open:!bg-primary ui-open:!text-chalkboard-10',
         }}
       />
       <Popover.Panel
