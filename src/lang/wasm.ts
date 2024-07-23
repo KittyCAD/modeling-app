@@ -85,19 +85,7 @@ export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? 'http://127.0.0.1:3000'
-      : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost' // custom protocol for macOS
-      : window.location.origin.includes('tauri.localhost')
-      ? 'http://tauri.localhost' // fallback for Windows
-      : window.location.origin.includes('localhost')
-      ? 'http://localhost:3000'
-      : window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : 'http://localhost:3000'
-  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  const fullUrl = '/wasm_lib_bg.wasm'
   console.log(`Full URL for WASM: ${fullUrl}`)
 
   return fullUrl
