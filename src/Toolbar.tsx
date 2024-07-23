@@ -22,14 +22,14 @@ export function Toolbar({
   const { state, send, context } = useModelingContext()
   const { commandBarSend } = useCommandsContext()
   const iconClassName =
-    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-pressed:hover:!text-chalkboard-10'
+    'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
   const bgClassName = '!bg-transparent'
   const buttonBgClassName =
-    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary'
+    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
   const buttonBorderClassName =
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
-  const pathId = useMemo(() => {
+  const sketchPathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
       return false
     }
@@ -61,7 +61,8 @@ export function Toolbar({
         {...props}
         ref={toolbarButtonsRef}
         className={
-          'm-0 py-1 rounded-l-sm flex gap-1.5 items-center ' + className
+          'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center ' +
+          className
         }
       >
         {toolbarConfig[currentMode].items.map((maybeIconConfig, i) => {
@@ -84,12 +85,16 @@ export function Toolbar({
                 }
                 splitMenuItems={maybeIconConfig.map((itemConfig) => ({
                   label: itemConfig.title,
-                  shortcut: itemConfig.shortcut,
+                  shortcut:
+                    typeof itemConfig.shortcut === 'string'
+                      ? itemConfig.shortcut
+                      : itemConfig.shortcut?.(state),
                   onClick: () =>
                     itemConfig.onClick({
                       modelingState: state,
                       modelingSend: send,
                       commandBarSend,
+                      sketchPathId,
                     }),
                   disabled:
                     disableAllButtons ||
@@ -117,10 +122,14 @@ export function Toolbar({
                       modelingState: state,
                       modelingSend: send,
                       commandBarSend,
+                      sketchPathId,
                     })
                   }
                 >
-                  <ToolbarItemContents {...maybeIconConfig[0]} />
+                  <ToolbarItemContents
+                    itemConfig={maybeIconConfig[0]}
+                    sketchPathId={sketchPathId}
+                  />
                 </ActionButton>
               </ActionButtonDropdown>
             )
@@ -138,7 +147,7 @@ export function Toolbar({
                 bgClassName: bgClassName,
               }}
               className={
-                'pressed:!text-chalkboard-10 pressed:hovered:!chalkboard-10 ' +
+                'pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
                 buttonBorderClassName +
                 ' ' +
                 buttonBgClassName +
@@ -155,35 +164,54 @@ export function Toolbar({
                   modelingState: state,
                   modelingSend: send,
                   commandBarSend,
+                  sketchPathId,
                 })
               }
             >
-              <ToolbarItemContents {...itemConfig} />
+              <ToolbarItemContents
+                sketchPathId={sketchPathId}
+                itemConfig={itemConfig}
+              />
             </ActionButton>
           )
         })}
       </ul>
+      {state.matches('Sketch no face') && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+          <p className="text-xs">Select a plane or face to start sketching</p>
+        </div>
+      )}
     </menu>
   )
 }
 
-function ToolbarItemContents(itemConfig: ToolbarItem) {
+function ToolbarItemContents({
+  itemConfig,
+  sketchPathId,
+}: {
+  itemConfig: ToolbarItem
+  sketchPathId: string | false
+}) {
   const { state, send } = useModelingContext()
   const { commandBarSend } = useCommandsContext()
   useHotkeys(
-    itemConfig.shortcut || '',
+    (typeof itemConfig.shortcut === 'string'
+      ? itemConfig.shortcut
+      : itemConfig.shortcut?.(state)) || '',
     () => {
       itemConfig.onClick({
         modelingState: state,
         modelingSend: send,
         commandBarSend,
+        sketchPathId,
       })
     },
     {
       enabled:
         itemConfig.status === 'available' &&
         !!itemConfig.shortcut &&
-        itemConfig.disabled?.(state) !== true,
+        itemConfig.disabled?.(state) !== true &&
+        !itemConfig.disableHotkey?.(state),
     }
   )
 
@@ -206,10 +234,14 @@ function ToolbarItemContents(itemConfig: ToolbarItem) {
             {itemConfig.title}
           </span>
           {itemConfig.status === 'available' && itemConfig.shortcut ? (
-            <kbd className="flex-none hotkey">{itemConfig.shortcut}</kbd>
+            <kbd className="flex-none hotkey">
+              {typeof itemConfig.shortcut === 'string'
+                ? itemConfig.shortcut
+                : itemConfig.shortcut(state)}
+            </kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
-              <span className="text-wrap flex-0 text-chalkboard-70 dark:text-chalkboard-40">
+              <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
                 KCL code only
               </span>
               <CustomIcon
@@ -220,7 +252,7 @@ function ToolbarItemContents(itemConfig: ToolbarItem) {
           ) : (
             itemConfig.status === 'unavailable' && (
               <>
-                <span className="text-wrap flex-0 text-chalkboard-70 dark:text-chalkboard-40">
+                <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
                   In development
                 </span>
                 <CustomIcon

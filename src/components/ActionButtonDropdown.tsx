@@ -34,7 +34,7 @@ export function ActionButtonDropdown({
       </Popover.Button>
       <Popover.Panel
         as="ul"
-        className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col gap-1 align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
+        className="!pointer-events-auto absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
       >
         {splitMenuItems.map((item) => (
           <li className="contents" key={item.label}>

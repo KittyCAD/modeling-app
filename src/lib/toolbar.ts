@@ -18,6 +18,7 @@ interface ToolbarItemClickProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
+  sketchPathId: string | false
 }
 
 export type ToolbarItem = {
@@ -26,9 +27,10 @@ export type ToolbarItem = {
   icon?: CustomIconName
   status: 'available' | 'unavailable' | 'kcl-only'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
+  disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string
   showTitle?: boolean
-  shortcut?: string
+  shortcut?: string | ((state: StateFrom<typeof modelingMachine>) => string)
   description: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -233,8 +235,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     check: (state) => state.matches('Sketch'),
     items: [
       {
-        id: 'exit',
-        onClick: ({ modelingSend }) => modelingSend({ type: 'Cancel' }),
+        id: 'sketch-exit',
+        onClick: ({ modelingSend, modelingState }) =>
+          modelingSend({
+            type: 'Cancel',
+          }),
+        disableHotkey: (state) => !state.matches('Sketch.SketchIdle'),
         icon: 'arrowLeft',
         status: 'available',
         title: 'Exit sketch',
@@ -260,7 +266,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         disabled: (state) =>
           state.matches('Sketch.Rectangle tool.Awaiting second corner'),
         title: 'Line',
-        shortcut: 'L',
+        shortcut: (state) => (state.matches('Sketch.Line tool') ? 'Esc' : 'L'),
         description: 'Start drawing straight lines',
         links: [],
         isActive: (state) => state.matches('Sketch.Line tool'),
@@ -283,7 +289,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !isEditingExistingSketch(state.context) &&
             !state.matches('Sketch.Tangential arc to'),
           title: 'Tangential Arc',
-          shortcut: 'A',
+          shortcut: (state) =>
+            state.matches('Sketch.Tangential arc to') ? 'Esc' : 'A',
           description: 'Start drawing an arc tangent to the current segment',
           links: [],
           isActive: (state) => state.matches('Sketch.Tangential arc to'),
@@ -362,7 +369,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !canRectangleTool(state.context) &&
             !state.matches('Sketch.Rectangle tool'),
           title: 'Corner rectangle',
-          shortcut: 'R',
+          shortcut: (state) =>
+            state.matches('Sketch.Rectangle tool') ? 'Esc' : 'R',
           description: 'Start drawing a rectangle',
           links: [],
           isActive: (state) => state.matches('Sketch.Rectangle tool'),
