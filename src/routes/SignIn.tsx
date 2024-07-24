@@ -5,7 +5,7 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
-import { login } from 'lib/tauri'
+import { login } from 'lib/desktop'
 
 const SignIn = () => {
   const {

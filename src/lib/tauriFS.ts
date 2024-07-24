@@ -13,7 +13,7 @@ import {
   createNewProjectDirectory,
   listProjects,
   readAppSettingsFile,
-} from './tauri'
+} from './desktop'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')

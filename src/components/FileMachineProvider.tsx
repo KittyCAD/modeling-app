@@ -19,7 +19,7 @@ import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
 import { isDesktop } from 'lib/isDesktop'
 import { join, sep } from '@tauri-apps/api/path'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
-import { getProjectInfo } from 'lib/tauri'
+import { getProjectInfo } from 'lib/desktop'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

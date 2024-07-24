@@ -17,8 +17,8 @@ import {
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
-import { createNewProjectDirectory, listProjects } from 'lib/tauri'
 import { useState } from 'react'
+import { createNewProjectDirectory, listProjects } from 'lib/desktop'
 
 /**
  * Show either a welcome screen or a warning screen
