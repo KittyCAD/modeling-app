@@ -7,10 +7,6 @@ import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { isDesktop } from './isDesktop'
 
-// All these functions call into lib/electron since many require filesystem
-// access, and the second half is the original tauri code also stored app
-// state on the "desktop" side.
-
 // Get the app state from desktop.
 export async function getState(): Promise<ProjectState | undefined> {
   if (!isDesktop()) {
@@ -31,7 +27,7 @@ export async function renameProjectDirectory(
   projectPath: string,
   newName: string
 ): Promise<string> {
-  return invoke<string>('rename_project_directory', { projectPath, newName })
+  return window.electron.ipcRenderer.invoke<string>('rename_project_directory', { projectPath, newName })
 }
 
 // Get the initial default dir for holding all projects.
