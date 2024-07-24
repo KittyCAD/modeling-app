@@ -153,16 +153,6 @@ function handleIndividualResponse({
       command2.type !== 'start_path' &&
       command2.type !== 'close_path'
     ) {
-      const artifact = {
-        range: range,
-        pathToNode,
-        commandType: 'otherShit',
-        parentId: '',
-      } as ArtifactMapCommand
-      artifacts.push({
-        commandId: id,
-        artifact,
-      })
     }
     if (command2.type === 'extrude') {
       artifacts.push({
@@ -232,6 +222,9 @@ function handleIndividualResponse({
       (command2.type === 'entity_circular_pattern' &&
         modelingResponse.type === 'entity_circular_pattern')
     ) {
+      // TODO this is not working perfectly, maybe it's like a selection filter issue
+      // but when clicking on a instance it does put the cursor somewhat relevant but
+      // edges and what not do not highlight the correct segment.
       const entities = modelingResponse.data.entity_ids
       entities?.forEach((entity: string) => {
         artifacts.push({
