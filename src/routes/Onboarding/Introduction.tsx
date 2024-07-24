@@ -8,12 +8,19 @@ import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { codeManager, kclManager } from 'lib/singletons'
-import { APP_NAME } from 'lib/constants'
+import { join } from '@tauri-apps/api/path'
+import {
+  APP_NAME,
+  ONBOARDING_PROJECT_NAME,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
 import { useState } from 'react'
-import { useLspContext } from 'components/LspProvider'
+import { createNewProjectDirectory, listProjects } from 'lib/desktop'
 import { IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
+import { paths } from 'lib/paths'
+import { useLspContext } from 'components/LspProvider'
+import { useState } from 'react'
 
 /**
  * Show either a welcome screen or a warning screen

@@ -18,7 +18,7 @@ import {
   getProjectInfo,
   initializeProjectDirectory,
   listProjects,
-} from './tauri'
+} from './desktop'
 import { createSettings } from './settings/initialSettings'
 
 // The root loader simply resolves the settings and any errors that

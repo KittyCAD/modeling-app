@@ -13,7 +13,7 @@ import {
   createNewProjectDirectory,
   listProjects,
   readAppSettingsFile,
-} from './tauri'
+} from './desktop'
 import { engineCommandManager } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
