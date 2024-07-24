@@ -10,7 +10,7 @@ Callers should use floor(), ceil(), or other rounding function first if they car
 If the number is NaN or has a magnitude, either positive or negative, that is too large to fit into the internal integer representation, the result is a runtime error.
 
 ```js
-int(num: number) -> i32
+int(num: number) -> i64
 ```
 
 ### Tags
@@ -37,7 +37,7 @@ const pattern01 = patternTransform(int(ceil(5 / 2)), (id) => {
 
 ### Returns
 
-`i32`
+`i64`
 
 
 
