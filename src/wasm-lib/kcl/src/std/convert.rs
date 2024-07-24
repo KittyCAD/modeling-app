@@ -21,11 +21,11 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
     let converted = inner_int(num).map_err(|err| match err {
         ConversionError::Nan => KclError::Semantic(KclErrorDetails {
             message: "NaN cannot be converted to an integer".to_owned(),
-            source_ranges: vec![args.source_range.clone()],
+            source_ranges: vec![args.source_range],
         }),
         ConversionError::TooLarge => KclError::Semantic(KclErrorDetails {
             message: "Number is too large to convert to integer".to_owned(),
-            source_ranges: vec![args.source_range.clone()],
+            source_ranges: vec![args.source_range],
         }),
     })?;
 
@@ -58,7 +58,7 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
 fn inner_int(num: f64) -> Result<i64, ConversionError> {
     if num.is_nan() {
         return Err(ConversionError::Nan);
-    } else if num > 2_f64.powi(53) || num < -2_f64.powi(53) {
+    } else if num > 2_f64.powi(53) || num < -(2_f64.powi(53)) {
         // 2^53 is the largest magnitude integer that can be represented in f64
         // and accurately converted.
         return Err(ConversionError::TooLarge);
@@ -86,10 +86,10 @@ mod tests {
         assert_eq!(inner_int(f64::INFINITY), Err(ConversionError::TooLarge));
         assert_eq!(inner_int(f64::NEG_INFINITY), Err(ConversionError::TooLarge));
         assert_eq!(inner_int(2_f64.powi(53)), Ok(2_i64.pow(53)));
-        assert_eq!(inner_int(-2_f64.powi(53)), Ok(-2_i64.pow(53)));
+        assert_eq!(inner_int(-(2_f64.powi(53))), Ok(-(2_i64.pow(53))));
         // Note: 2_f64.powi(53) + 1.0 can't be represented.
         assert_eq!(inner_int(2_f64.powi(53) + 2.0), Err(ConversionError::TooLarge));
-        assert_eq!(inner_int(-2_f64.powi(53) - 2.0), Err(ConversionError::TooLarge));
-        assert_eq!(inner_int(-2_f64.powi(64)), Err(ConversionError::TooLarge));
+        assert_eq!(inner_int(-(2_f64.powi(53)) - 2.0), Err(ConversionError::TooLarge));
+        assert_eq!(inner_int(-(2_f64.powi(64))), Err(ConversionError::TooLarge));
     }
 }
