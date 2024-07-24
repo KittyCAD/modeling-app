@@ -1388,7 +1388,7 @@ impl CallExpression {
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
-                let result = func.call_fn(fn_args, memory.clone(), ctx.clone()).await.map_err(|e| {
+                let result = func.call_fn(fn_args, ctx.clone()).await.map_err(|e| {
                     // Add the call expression to the source ranges.
                     e.add_source_ranges(vec![self.into()])
                 })?;
