@@ -95,6 +95,7 @@ export function LowerRightControls({
             name="settings"
             className={`w-5 h-5 ${linkOverrideClassName}`}
           />
+          <span className="sr-only">Settings</span>
           <Tooltip position="top" contentClassName="text-xs">
             Settings
           </Tooltip>

@@ -24,6 +24,7 @@
 }
 
 .tooltip {
+  @apply relative;
   inline-size: max-content;
   padding: var(--_p-block) calc(2 * var(--_p-block));
   margin: 0;
@@ -57,6 +58,7 @@
 }
 
 :is(:focus-visible) > .tooltipWrapper.withFocus {
+  visibility: visible;
   opacity: 1;
 }
 
@@ -65,8 +67,8 @@
 }
 
 /* prepend some prose for screen readers only */
-.tooltip::before {
-  content: '; Has tooltip: ';
+.tooltip::before,
+.tooltip::after {
   clip: rect(1px, 1px, 1px, 1px);
   clip-path: inset(50%);
   height: 1px;
@@ -77,11 +79,19 @@
   position: absolute;
 }
 
+.tooltip::before {
+  content: '; Has tooltip: ';
+}
+
 /* Sometimes there's no visible label,
  * so we'll use the tooltip as the label
 */
 .tooltip:only-child::before {
-  content: 'Tooltip:';
+  content: '';
+}
+
+.tooltip:only-child::after {
+  content: ' (tooltip)';
 }
 
 .top,

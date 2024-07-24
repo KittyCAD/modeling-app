@@ -240,7 +240,11 @@ function ModelingPaneButton({
       key={paneConfig.id}
       className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-none"
       onClick={togglePane}
-      data-testid={paneConfig.title}
+      name={paneConfig.title}
+      aria-description={`pane button, hotkey: ${
+        paneConfig.keybinding || 'none'
+      }`}
+      data-testid={paneConfig.id + '-pane-button'}
     >
       <ActionIcon
         icon={paneConfig.icon}
@@ -256,9 +260,9 @@ function ModelingPaneButton({
           (paneConfig.id === currentPane ? '!bg-primary' : '!bg-transparent')
         }
       />
+      <span className="sr-only">{paneConfig.title} pane</span>
       <Tooltip position="right" hoverOnly delay={800}>
-        <span>{paneConfig.title}</span>
-        <br />
+        <span className="flex-1">{paneConfig.title} pane: </span>
         <span className="text-xs capitalize">{paneConfig.keybinding}</span>
       </Tooltip>
     </Tab>

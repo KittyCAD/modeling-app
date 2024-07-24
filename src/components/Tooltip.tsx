@@ -14,6 +14,7 @@ interface TooltipProps extends React.PropsWithChildren {
   contentClassName?: string
   delay?: number
   hoverOnly?: boolean
+  inert?: boolean
 }
 
 export default function Tooltip({
@@ -23,11 +24,12 @@ export default function Tooltip({
   contentClassName,
   delay = 200,
   hoverOnly = false,
+  inert = true,
 }: TooltipProps) {
   return (
     <div
       // @ts-ignore while awaiting merge of this PR for support of "inert" https://github.com/DefinitelyTyped/DefinitelyTyped/pull/60822
-      inert={hoverOnly}
+      inert={inert}
       role="tooltip"
       className={`p-3 ${
         position !== 'left' && position !== 'right' ? 'px-0' : ''

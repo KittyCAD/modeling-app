@@ -9,13 +9,14 @@ import {
 import { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
+
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
   items: (ToolbarItem | ToolbarItem[] | 'break')[]
 }
 
-interface ToolbarItemClickProps {
-  modelingState: StateFrom<typeof modelingMachine>
+export interface ToolbarItemCallbackProps {
+  modelingStateMatches: StateFrom<typeof modelingMachine>['matches']
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
@@ -23,31 +24,53 @@ interface ToolbarItemClickProps {
 
 export type ToolbarItem = {
   id: string
-  onClick: (props: ToolbarItemClickProps) => void
+  onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
   status: 'available' | 'unavailable' | 'kcl-only'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
-  title: string
+  title: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
-  shortcut?: string | ((state: StateFrom<typeof modelingMachine>) => string)
+  hotkey?:
+    | string
+    | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
 }
 
+export type ToolbarItemResolved = Omit<
+  ToolbarItem,
+  'disabled' | 'disableHotkey' | 'hotkey' | 'isActive' | 'title'
+> & {
+  title: string
+  disabled?: boolean
+  disableHotkey?: boolean
+  hotkey?: string | string[]
+  isActive?: boolean
+}
+
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
-    check: (state) => !state.matches('Sketch'),
+    check: (state) =>
+      !(state.matches('Sketch') || state.matches('Sketch no face')),
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend }) => modelingSend({ type: 'Enter sketch' }),
+        onClick: ({ modelingSend, sketchPathId }) =>
+          !sketchPathId
+            ? modelingSend({
+                type: 'Enter sketch',
+                data: { forceNewSketch: true },
+              })
+            : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: 'Sketch',
+        disabled: (state) => !state.matches('idle'),
+        title: ({ sketchPathId }) =>
+          `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
         showTitle: true,
-        shortcut: 'Shift + S',
+        hotkey: 'S',
         description: 'Start drawing a 2D sketch',
         links: [
           { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/startSketchOn' },
@@ -61,10 +84,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
+        disabled: (state) => !state.can('Extrude'),
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
-        shortcut: 'Shift + E',
+        hotkey: 'E',
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
       },
@@ -74,7 +98,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'revolve',
         status: 'kcl-only',
         title: 'Revolve',
-        shortcut: 'Shift + R',
+        hotkey: 'R',
         description:
           'Create a 3D body by rotating a sketch region about an axis.',
         links: [
@@ -91,7 +115,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'sweep',
         status: 'unavailable',
         title: 'Sweep',
-        shortcut: 'Shift + W',
+        hotkey: 'W',
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
@@ -107,7 +131,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'loft',
         status: 'unavailable',
         title: 'Loft',
-        shortcut: 'Shift + L',
+        hotkey: 'L',
         description:
           'Create a 3D body by blending between two or more sketches.',
         links: [
@@ -127,8 +151,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'fillet3d',
         status: DEV ? 'available' : 'kcl-only',
+        disabled: (state) => !state.can('Fillet'),
         title: 'Fillet',
-        shortcut: 'Shift + F',
+        hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
       },
@@ -138,7 +163,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'chamfer3d',
         status: 'kcl-only',
         title: 'Chamfer',
-        shortcut: 'Shift + C',
+        hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' }],
       },
@@ -168,7 +193,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'booleanUnion',
           status: 'unavailable',
           title: 'Union',
-          shortcut: 'Shift + B U',
+          hotkey: 'Shift + B U',
           description: 'Combine two or more solids into a single solid.',
           links: [
             {
@@ -183,7 +208,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'booleanSubtract',
           status: 'unavailable',
           title: 'Subtract',
-          shortcut: 'Shift + B S',
+          hotkey: 'Shift + B S',
           description: 'Subtract one solid from another.',
           links: [
             {
@@ -198,7 +223,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'booleanIntersect',
           status: 'unavailable',
           title: 'Intersect',
-          shortcut: 'Shift + B I',
+          hotkey: 'Shift + B I',
           description: 'Create a solid from the intersection of two solids.',
           links: [
             {
@@ -232,41 +257,46 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     ],
   },
   sketching: {
-    check: (state) => state.matches('Sketch'),
+    check: (state) =>
+      state.matches('Sketch') || state.matches('Sketch no face'),
     items: [
       {
         id: 'sketch-exit',
-        onClick: ({ modelingSend, modelingState }) =>
+        onClick: ({ modelingSend }) =>
           modelingSend({
             type: 'Cancel',
           }),
-        disableHotkey: (state) => !state.matches('Sketch.SketchIdle'),
+        disableHotkey: (state) =>
+          !(
+            state.matches('Sketch.SketchIdle') ||
+            state.matches('Sketch no face')
+          ),
         icon: 'arrowLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
-        shortcut: 'Esc',
+        hotkey: 'Esc',
         description: 'Exit the current sketch',
         links: [],
       },
       'break',
       {
         id: 'line',
-        onClick: ({ modelingState, modelingSend }) =>
+        onClick: ({ modelingStateMatches: matches, modelingSend }) =>
           modelingSend({
             type: 'change tool',
             data: {
-              tool: !modelingState.matches('Sketch.Line tool')
-                ? 'line'
-                : 'none',
+              tool: !matches('Sketch.Line tool') ? 'line' : 'none',
             },
           }),
         icon: 'line',
         status: 'available',
         disabled: (state) =>
+          state.matches('Sketch no face') ||
           state.matches('Sketch.Rectangle tool.Awaiting second corner'),
         title: 'Line',
-        shortcut: (state) => (state.matches('Sketch.Line tool') ? 'Esc' : 'L'),
+        hotkey: (state) =>
+          state.matches('Sketch.Line tool') ? ['Esc', 'L'] : 'L',
         description: 'Start drawing straight lines',
         links: [],
         isActive: (state) => state.matches('Sketch.Line tool'),
@@ -274,11 +304,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'tangential-arc',
-          onClick: ({ modelingState, modelingSend }) =>
+          onClick: ({ modelingStateMatches, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingState.matches('Sketch.Tangential arc to')
+                tool: !modelingStateMatches('Sketch.Tangential arc to')
                   ? 'tangentialArc'
                   : 'none',
               },
@@ -289,8 +319,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !isEditingExistingSketch(state.context) &&
             !state.matches('Sketch.Tangential arc to'),
           title: 'Tangential Arc',
-          shortcut: (state) =>
-            state.matches('Sketch.Tangential arc to') ? 'Esc' : 'A',
+          hotkey: (state) =>
+            state.matches('Sketch.Tangential arc to') ? ['Esc', 'A'] : 'A',
           description: 'Start drawing an arc tangent to the current segment',
           links: [],
           isActive: (state) => state.matches('Sketch.Tangential arc to'),
@@ -354,11 +384,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'corner-rectangle',
-          onClick: ({ modelingState, modelingSend }) =>
+          onClick: ({ modelingStateMatches, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingState.matches('Sketch.Rectangle tool')
+                tool: !modelingStateMatches('Sketch.Rectangle tool')
                   ? 'rectangle'
                   : 'none',
               },
@@ -369,8 +399,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !canRectangleTool(state.context) &&
             !state.matches('Sketch.Rectangle tool'),
           title: 'Corner rectangle',
-          shortcut: (state) =>
-            state.matches('Sketch.Rectangle tool') ? 'Esc' : 'R',
+          hotkey: (state) =>
+            state.matches('Sketch.Rectangle tool') ? ['Esc', 'R'] : 'R',
           description: 'Start drawing a rectangle',
           links: [],
           isActive: (state) => state.matches('Sketch.Rectangle tool'),
@@ -419,7 +449,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       [
         {
-          id: 'contraint-length',
+          id: 'constraint-length',
           disabled: (state) =>
             !(
               state.matches('Sketch.SketchIdle') &&
@@ -436,7 +466,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           links: [],
         },
         {
-          id: 'contraint-angle',
+          id: 'constraint-angle',
           disabled: (state) =>
             !(
               state.matches('Sketch.SketchIdle') &&
@@ -609,7 +639,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain horizontally align' }),
           status: 'available',
-          title: 'Align horizontal',
+          title: 'Horizontally align',
           showTitle: false,
           description: 'Align the ends of two or more segments horizontally',
           links: [],
@@ -625,7 +655,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain vertically align' }),
           status: 'available',
-          title: 'Align vertical',
+          title: 'Vertically align',
           showTitle: false,
           description: 'Align the ends of two or more segments vertically',
           links: [],

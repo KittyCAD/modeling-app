@@ -21,7 +21,7 @@ async function waitForPageLoad(page: Page) {
     timeout: 20_000,
   })
 
-  await expect(page.getByTestId('start-sketch')).toBeEnabled({
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })
 }
@@ -59,27 +59,29 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
 
 async function openKclCodePanel(page: Page) {
   const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  const ariaSelected = await paneLocator?.getAttribute('aria-selected')
+  const isOpen = ariaSelected === 'true'
 
   if (!isOpen) {
     await paneLocator.click()
-    await paneLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+    await expect(await paneLocator).toHaveAttribute('aria-selected', 'true')
   }
 }
 
 async function closeKclCodePanel(page: Page) {
   const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  const ariaSelected = await paneLocator?.getAttribute('aria-selected')
+  const isOpen = ariaSelected === 'true'
+
   if (isOpen) {
     await paneLocator.click()
-    await paneLocator
-      .and(page.locator(':not([aria-selected="true"])'))
-      .waitFor()
+    await expect(await paneLocator).not.toHaveAttribute('aria-selected', 'true')
   }
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
+  const debugLocator = page.getByRole('tab', { name: 'Debug' })
+  await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
 
   if (!isOpen) {
@@ -89,7 +91,8 @@ async function openDebugPanel(page: Page) {
 }
 
 async function closeDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
+  const debugLocator = page.getByRole('tab', { name: 'Debug' })
+  await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
   if (isOpen) {
     await debugLocator.click()

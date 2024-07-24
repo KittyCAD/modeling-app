@@ -95,7 +95,6 @@ export const NetworkHealthIndicator = () => {
         }
         data-testid="network-toggle"
       >
-        <span className="sr-only">Network Health</span>
         <ActionIcon
           icon={overallConnectionStateIcon[overallState]}
           className="p-1"
