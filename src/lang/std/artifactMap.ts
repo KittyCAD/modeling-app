@@ -4,37 +4,47 @@ import { getNodePathFromSourceRange } from 'lang/queryAst'
 
 type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
+interface CommonCommandProperties {
+  range: SourceRange
+  pathToNode: PathToNode
+}
+
+interface ExtrudeArtifact extends CommonCommandProperties {
+  commandType: 'extrude'
+  target: string
+  parentId?: string
+}
+
+interface startPathArtifact extends CommonCommandProperties {
+  commandType: 'start_path'
+  extrusions: string[]
+  parentId?: string
+}
+
+interface ExtrudeCapArtifact extends CommonCommandProperties {
+  commandType: 'extrudeCap'
+  additionalData: {
+    type: 'cap'
+    info: 'start' | 'end'
+  }
+  parentId?: string
+}
+interface ExtrudeWallArtifact extends CommonCommandProperties {
+  commandType: 'extrudeWall'
+  parentId?: string
+}
+
+interface OtherShit extends CommonCommandProperties {
+  commandType: CommandTypes
+  parentId?: string
+}
+
 export type ArtifactMapCommand =
-  | {
-      commandType: 'extrude'
-      range: SourceRange
-      pathToNode: PathToNode
-      target: string
-      parentId?: string
-    }
-  | {
-      commandType: 'start_path'
-      range: SourceRange
-      pathToNode: PathToNode
-      extrusions: string[]
-      parentId?: string
-    }
-  | {
-      commandType: CommandTypes
-      range: SourceRange
-      pathToNode: PathToNode
-      parentId?: string
-      additionalData?:
-        | {
-            type: 'cap'
-            info: 'start' | 'end'
-          }
-        | {
-            type: 'batch-ids'
-            ids: string[]
-            info?: null
-          }
-    }
+  | ExtrudeArtifact
+  | startPathArtifact
+  | ExtrudeCapArtifact
+  | ExtrudeWallArtifact
+  | OtherShit
 
 export type EngineCommand = Models['WebSocketRequest_type']
 
@@ -191,7 +201,7 @@ function handleIndividualResponse({
             commandId: face.face_id,
             artifact: {
               ...parent,
-              commandType: 'solid3d_get_extrusion_face_info',
+              commandType: 'extrudeCap',
               additionalData: {
                 type: 'cap',
                 info: face.cap === 'bottom' ? 'start' : 'end',
@@ -205,7 +215,7 @@ function handleIndividualResponse({
             commandId: face.face_id,
             artifact: {
               ...curveArtifact,
-              commandType: 'solid3d_get_extrusion_face_info',
+              commandType: 'extrudeWall',
             },
           })
         }

@@ -1853,7 +1853,6 @@ export class EngineCommandManager extends EventTarget {
   ): string | undefined {
     const values = Object.entries(this.artifactMap)
     for (const [id, data] of values) {
-
       // // Our range selection seems to just select the cursor position, so either
       // // of these can be right...
       if (

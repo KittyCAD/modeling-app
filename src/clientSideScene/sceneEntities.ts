@@ -1578,7 +1578,11 @@ export class SceneEntities {
         const extrusions =
           this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
 
-        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
+        if (
+          artifact?.commandType !== 'extrudeCap' &&
+          artifact?.commandType !== 'extrudeWall'
+        )
+          return
 
         const faceInfo = await getFaceDetails(_entity_id)
         if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
@@ -1604,7 +1608,7 @@ export class SceneEntities {
             sketchPathToNode,
             extrudePathToNode,
             cap:
-              artifact?.additionalData?.type === 'cap'
+              artifact.commandType === 'extrudeCap'
                 ? artifact.additionalData.info
                 : 'none',
             faceId: _entity_id,
