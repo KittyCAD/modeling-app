@@ -1,5 +1,5 @@
-import { test, expect, Page, Download } from '@playwright/test'
-import { EngineCommand } from '../../src/lang/std/engineConnection'
+import { expect, Page, Download } from '@playwright/test'
+import { EngineCommand } from 'lang/std/artifactMap'
 import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'

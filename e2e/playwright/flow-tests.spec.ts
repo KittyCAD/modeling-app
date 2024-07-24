@@ -26,7 +26,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
