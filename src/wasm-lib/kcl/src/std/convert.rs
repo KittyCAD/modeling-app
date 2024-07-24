@@ -39,56 +39,13 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
 /// has a fractional part, it's truncated, moving the number towards zero.
 ///
 /// ```no_run
-/// const depth = 10
-/// const rackWidth = 100
-/// const toothSize = 10
+/// const sketch001 = startSketchOn('XZ')
+///   |> circle([0, 0], 2, %)
+/// const extrude001 = extrude(5, sketch001)
 ///
-/// const rackSketch = startSketchOn('XZ')
-///   |> startProfileAt([0.35, 0], %)
-///   |> angledLine([0, rackWidth], %, $rectangleSegmentA001)
-///   |> angledLine([
-///        segAng(rectangleSegmentA001, %) + 90,
-///        10.34
-///      ], %, $rectangleSegmentB001)
-///   |> angledLine([
-///        segAng(rectangleSegmentA001, %),
-///        -segLen(rectangleSegmentA001, %)
-///      ], %, $rectangleSegmentC001)
-///   |> lineTo([profileStartX(%), profileStartY(%)], %, $rectangleSegmentD001)
-///   |> close(%)
-///
-/// const toothSketch = startSketchOn('XZ')
-///   |> startProfileAt([
-///        segEndX(rectangleSegmentC001, rackSketch),
-///        segEndY(rectangleSegmentC001, rackSketch)
-///      ], %)
-///   |> angledLine({
-///        angle: segAng(rectangleSegmentC001, rackSketch),
-///        length: -toothSize
-///      }, %, $tag001)
-///   |> angledLine({
-///        angle: segAng(tag001, %) + 120,
-///        length: segLen(tag001, %)
-///      }, %, $tag002)
-///   |> angledLine({
-///        angle: segAng(tag002, %) + 120,
-///        length: segLen(tag002, %)
-///      }, %, $tag003)
-///   |> close(%)
-///
-/// const rack = extrude(depth, rackSketch)
-/// const tooth = extrude(depth, toothSketch)
-///
-/// const teeth = patternTransform(int(rackWidth / toothSize), (index) => {
-///   const offset = toothSize * index
-///   return {
-///     translate: [
-///       offset * cos(segAng(rectangleSegmentA001, rackSketch)),
-///       0,
-///       offset * sin(segAng(rectangleSegmentA001, rackSketch))
-///     ]
-///   }
-/// }, tooth)
+/// const pattern01 = patternTransform(int(ceil(5 / 2)), (id) => {
+///   return { translate: [4 * id, 0, 0] }
+/// }, extrude001)
 /// ```
 #[stdlib {
     name = "int",
