@@ -223,7 +223,8 @@ impl Backend {
         #[cfg(not(test))]
         let mut completion_list = vec![];
 
-        if self.dev_mode {
+        // if self.dev_mode
+        if false {
             completion_list.push(
                 r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
