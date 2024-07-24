@@ -3,7 +3,6 @@
 
 import { app, BrowserWindow } from 'electron'
 import path from 'path'
-import 'lib/fs'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -14,6 +13,12 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: false, // do not give the application implicit system access
+      contextIsolation: true, // expose system functions in preload
+      sandbox: false, // expose nodejs in preload
+      preload: path.join(__dirname, "./preload.js")
+    }
   })
 
   // and load the index.html of the app.
