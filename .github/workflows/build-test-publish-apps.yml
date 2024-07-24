@@ -1,4 +1,4 @@
-name: CI
+name: build-test-publish-apps
 
 on:
   pull_request:
@@ -21,75 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check-format:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
-      - run: yarn install
-      - run: yarn fmt-check
-
-  check-types:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
-      - run: yarn install
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: './src/wasm-lib'
-
-      - run: yarn build:wasm
-      - run: yarn xstate:typegen
-      - run: yarn tsc
-
-
-  check-typos:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-      - name: Install codespell
-        run: |
-            python -m pip install codespell
-      - name: Run codespell
-        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
-
-
-  build-test-web:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
-
-      - run: yarn install
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: './src/wasm-lib'
-
-      - run: yarn build:wasm
-
-      - run: yarn simpleserver:ci
-
-      - run: yarn test:nowatch
-
-
   prepare-json-files:
-    runs-on: ubuntu-latest  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
     steps:
@@ -114,7 +47,7 @@ jobs:
       - name: Set updater test version
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
-          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/updater-test/last_update.json' \
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
@@ -129,18 +62,9 @@ jobs:
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
-  build-test-apps:
+  build-test-app-macos:
     needs: [prepare-json-files]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-14, ubuntu-latest, windows-latest]
-    env:
-      # Specific Apple Universal target for macos
-      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
-      # Only build executable on linux (no appimage or deb)
-      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
@@ -154,28 +78,6 @@ jobs:
           cp artifact/package.json package.json
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
-
-      - name: Update WebView2 on Windows
-        if: matrix.os == 'windows-latest'
-        # Workaround needed to build the tauri windows app with matching edge version.
-        # From https://github.com/actions/runner-images/issues/9538
-        run: |
-          Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile 'setup.exe'
-          Start-Process -FilePath setup.exe -Verb RunAs -Wait
-
-      - name: Install ubuntu system dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            webkit2gtk-driver \
-            libsoup-3.0-dev \
-            libjavascriptcoregtk-4.1-dev \
-            libwebkit2gtk-4.1-dev \
-            at-spi2-core \
-            xvfb
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
@@ -197,60 +99,25 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
-      - name: Run build:wasm manually
-        shell: bash
-        env:
-          MODE: ${{ env.BUILD_RELEASE == 'true' && '--release' || '--debug' }}
-        run: |
-          mkdir src/wasm-lib/pkg; cd src/wasm-lib
-          echo "building with ${{ env.MODE }}"
-          npx wasm-pack build --target web --out-dir pkg ${{ env.MODE }}
-          cd ../../
-          cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+      - name: Run build:wasm
+        run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
 
-      - name: Run vite build (build:both)
+      - name: Run vite build
         run: yarn vite build --mode ${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
 
       - name: Fix format
         run: yarn fmt
 
-      - name: Install x86 target for Universal builds (MacOS only)
-        if: matrix.os == 'macos-14'
+      - name: Install x86 target for Universal builds
         run: |
           rustup target add x86_64-apple-darwin
 
-      - name: Prepare certificate and variables (Windows only)
-        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
-        run: |
-          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
-          cat /d/Certificate_pkcs12.p12
-          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
-          echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
-          echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
-          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
-          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
-          echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
-          echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
-          echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
-        shell: bash
-
-      - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
-        run: |
-          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
-          msiexec /i smtools-windows-x64.msi /quiet /qn
-          smksp_registrar.exe list
-          smctl.exe keypair ls
-          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
-          smksp_cert_sync.exe
-        shell: cmd
-
       - name: Build the app (debug)
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        run: "yarn tauri build --debug --target universal-apple-darwin"
 
       - name: Build for Mac TestFlight (nightly)
-        if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
+        if: ${{ github.event_name == 'schedule' }}
         shell: bash
         run: |
           unset APPLE_SIGNING_IDENTITY
@@ -314,7 +181,7 @@ jobs:
 
       - name: 'Upload to Mac TestFlight (nightly)'
         uses: apple-actions/upload-testflight-build@v1
-        if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
+        if: ${{ github.event_name == 'schedule' }}
         with:
           app-path: 'src-tauri/target/universal-apple-darwin/release/bundle/macos/Zoo Modeling App.pkg'
           issuer-id: ${{ secrets.APPLE_STORE_ISSUER_ID }}
@@ -324,7 +191,7 @@ jobs:
 
 
       - name: Clean up after Mac TestFlight (nightly)
-        if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
+        if: ${{ github.event_name == 'schedule' }}
         shell: bash
         run: |
           git status
@@ -350,35 +217,165 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
-        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        run: "yarn tauri build --config src-tauri/tauri.release.conf.json --target universal-apple-darwin"
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os != 'ubuntu-latest'
-        env:
-          PREFIX: ${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
-          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
         with:
-          path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
+          path: "src-tauri/target/universal-apple-darwin/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
 
-      - name: Run e2e tests (linux only)
-        if: ${{ matrix.os == 'ubuntu-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: |
-          cargo install tauri-driver --force
-          source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
-          export VITE_KC_API_BASE_URL
-          xvfb-run yarn test:e2e:tauri
+      - uses: actions/download-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+
+      - name: Copy updated .json file for updater test
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        run: "cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json"
+
+      - name: Build the app (release, updater test)
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         env:
-          E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/zoo-modeling-app"
-          KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: "yarn tauri build -c src-tauri/tauri.release.conf.json -b dmg --target universal-apple-darwin"
 
-      - name: Run e2e tests (windows only)
-        if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        with:
+          path: "src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg"
+          name: updater-test
+
+
+  build-test-app-windows:
+    needs: [prepare-json-files]
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+
+      - name: Copy updated .json files
+        if: github.event_name == 'schedule'
+        run: |
+          ls -l artifact
+          cp artifact/package.json package.json
+          cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+
+      - name: Update WebView2 on Windows
+        # Workaround needed to build the tauri windows app with matching edge version.
+        # From https://github.com/actions/runner-images/issues/9538
+        run: |
+          Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile 'setup.exe'
+          Start-Process -FilePath setup.exe -Verb RunAs -Wait
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
+
+      - run: yarn install
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src/wasm-lib'
+
+      - name: Install aarch64 target
+        run: rustup target add aarch64-pc-windows-msvc
+
+      - name: Run build:wasm manually
+        shell: bash
+        env:
+          MODE: ${{ env.BUILD_RELEASE == 'true' && '--release' || '--debug' }}
+        run: |
+          mkdir src/wasm-lib/pkg; cd src/wasm-lib
+          echo "building with ${{ env.MODE }}"
+          npx wasm-pack build --target web --out-dir pkg ${{ env.MODE }}
+          cd ../../
+          cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+
+      - name: Run vite build
+        run: yarn vite build --mode ${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
+
+      - name: Fix format
+        run: yarn fmt
+
+      - name: Prepare certificate and variables (Windows only)
+        if: ${{ env.BUILD_RELEASE == 'true' }}
+        run: |
+          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
+          cat /d/Certificate_pkcs12.p12
+          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+          echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
+          echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
+          echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
+          echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Setup certicate with SSM KSP (Windows only)
+        if: ${{ env.BUILD_RELEASE == 'true' }}
+        run: |
+          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
+          msiexec /i smtools-windows-x64.msi /quiet /qn
+          smksp_registrar.exe list
+          smctl.exe keypair ls
+          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
+          smksp_cert_sync.exe
+        shell: cmd
+
+      - name: Build the app (debug) for x86_64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        run: "yarn run tauri build --debug"
+
+      - name: Build the app (release) and sign for x86_64
+        if: ${{ env.BUILD_RELEASE == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: "yarn tauri build --config src-tauri\\tauri.release.conf.json"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: "src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
+
+      - name: Build the app (debug) for aarch64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        run: yarn run tauri build --debug --target aarch64-pc-windows-msvc
+
+      - name: Build the app (release) and sign for aarch64
+        if: ${{ env.BUILD_RELEASE == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: "yarn tauri build --config src-tauri\\tauri.release.conf.json --target aarch64-pc-windows-msvc"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: "src-tauri/target/aarch64-pc-windows-msvc/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/bundle/*/*"
+
+      - name: Run e2e tests
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
           cargo install tauri-driver --force
           yarn wdio run wdio.conf.ts
         env:
-          E2E_APPLICATION: ".\\src-tauri\\target\\${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}\\Zoo Modeling App.exe"
+          E2E_APPLICATION: ".\\src-tauri\\target\\${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}\\zoo-modeling-app.exe"
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
           VITE_KC_API_BASE_URL: ${{ env.BUILD_RELEASE == 'true' && 'https://api.zoo.dev' || 'https://api.dev.zoo.dev' }}
           E2E_TAURI_ENABLED: true
@@ -389,31 +386,41 @@ jobs:
 
       - name: Copy updated .json file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
-        run: |
-          ls -l artifact
-          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
-          cat src-tauri/tauri.release.conf.json
+        run: "cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json"
 
-      - name: Build the app (release, updater test)
-        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
+      - name: Build the app (release, updater test) for x86_64
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         env:
-          TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
-          TAURI_BUNDLE_ARGS: "-b ${{ matrix.os == 'windows-latest' && 'msi' || 'dmg' }}"
-        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }} ${{ env.TAURI_ARGS_MACOS }}"
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi"
+
+      - name: Build the app (release, updater test) for aarch64
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: "yarn tauri build -c src-tauri\\tauri.release.conf.json -b msi -t aarch64-pc-windows-msvc"
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
-          path: "${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg' || 'src-tauri/target/release/bundle/msi/*.msi' }}"
+          path: "src-tauri/target/release/bundle/msi/*.msi"
+          name: updater-test
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        with:
+          path: "src-tauri/target/aarch64-pc-windows-msvc/release/bundle/msi/*.msi"
           name: updater-test
 
 
   publish-apps-release:
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
-    runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
+    needs: [prepare-json-files, build-test-app-macos, build-test-app-windows]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
@@ -429,7 +436,8 @@ jobs:
         run: |
           ls -l artifact/*/*oo*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
-          WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
+          WINDOWS_X86_64_SIG=`cat artifact/msi/*x64*.msi.zip.sig`
+          WINDOWS_AARCH64_SIG=`cat artifact/msi/*arm64*.msi.zip.sig`
           RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
@@ -437,8 +445,10 @@ jobs:
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}.app.tar.gz" \
-            --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_x86_64_sig "$WINDOWS_X86_64_SIG" \
+            --arg windows_x86_64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_aarch64_sig "$WINDOWS_AARCH64_SIG" \
+            --arg windows_aarch64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_arm64_en-US.msi.zip" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -453,8 +463,12 @@ jobs:
                   "url": $darwin_url
                 },
                 "windows-x86_64": {
-                  "signature": $windows_sig,
-                  "url": $windows_url
+                  "signature": $windows_x86_64_sig,
+                  "url": $windows_x86_64_url
+                },
+                "windows-aarch64": {
+                  "signature": $windows_aarch64_sig,
+                  "url": $windows_aarch64_url
                 }
               }
             }' > last_update.json
@@ -468,7 +482,8 @@ jobs:
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_universal.dmg" \
-            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi" \
+            --arg windows_x86_64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi" \
+            --arg windows_aarch64_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_arm64_en-US.msi" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -478,7 +493,10 @@ jobs:
                   "url": $darwin_url
                 },
                 "msi-x86_64": {
-                  "url": $windows_url
+                  "url": $windows_x86_64_url
+                },
+                "msi-aarch64": {
+                  "url": $windows_aarch64_url
                 }
               }
             }' > last_download.json
@@ -522,7 +540,7 @@ jobs:
 
   announce_release:
     needs: [publish-apps-release]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event_name == 'release'
     steps:
       - name: Check out code
