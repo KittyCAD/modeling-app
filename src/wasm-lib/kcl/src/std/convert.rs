@@ -38,6 +38,10 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
 /// care about how numbers with fractional parts are converted.  If the number
 /// has a fractional part, it's truncated, moving the number towards zero.
 ///
+/// If the number is NaN or has a magnitude, either positive or negative, that
+/// is too large to fit into the internal integer representation, the result is
+/// a runtime error.
+///
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
 ///   |> circle([0, 0], 2, %)
