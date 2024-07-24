@@ -1142,7 +1142,7 @@ export const modelingMachine = createMachine(
         const sketchGroup = kclManager.programMemory.get(sketchVar)
         if (sketchGroup?.type !== 'SketchGroup') return
         const idArtifact = engineCommandManager.artifactMap[sketchGroup.id]
-        if (idArtifact.commandType !== 'start_path') return
+        if (idArtifact.commandType !== 'startPath') return
         const extrusionArtifactId = (idArtifact as any)?.extrusions?.[0]
         if (typeof extrusionArtifactId !== 'string') return
         const extrusionArtifact = (engineCommandManager.artifactMap as any)[

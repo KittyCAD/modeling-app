@@ -2,8 +2,6 @@ import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 
-type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
-
 interface CommonCommandProperties {
   range: SourceRange
   pathToNode: PathToNode
@@ -12,13 +10,22 @@ interface CommonCommandProperties {
 interface ExtrudeArtifact extends CommonCommandProperties {
   commandType: 'extrude'
   target: string
-  parentId?: string
+  parentId: string
 }
 
 interface startPathArtifact extends CommonCommandProperties {
-  commandType: 'start_path'
+  commandType: 'startPath'
   extrusions: string[]
   parentId?: string
+}
+
+interface SegmentArtifact extends CommonCommandProperties {
+  commandType: 'segment'
+  parentId: string
+}
+interface CloseArtifact extends CommonCommandProperties {
+  commandType: 'closeSegment'
+  parentId: string
 }
 
 interface ExtrudeCapArtifact extends CommonCommandProperties {
@@ -35,7 +42,7 @@ interface ExtrudeWallArtifact extends CommonCommandProperties {
 }
 
 interface OtherShit extends CommonCommandProperties {
-  commandType: CommandTypes
+  commandType: 'otherShit'
   parentId?: string
 }
 
@@ -44,6 +51,8 @@ export type ArtifactMapCommand =
   | startPathArtifact
   | ExtrudeCapArtifact
   | ExtrudeWallArtifact
+  | SegmentArtifact
+  | CloseArtifact
   | OtherShit
 
 export type EngineCommand = Models['WebSocketRequest_type']
@@ -129,19 +138,6 @@ function handleIndividualResponse({
 
   const range = command.range
   const pathToNode = getNodePathFromSourceRange(ast, range)
-  const getParentId = (): string | undefined => {
-    if (command2.type === 'extend_path') return command2.path
-    if (command2.type === 'solid3d_get_extrusion_face_info') {
-      const edgeArtifact = prevArtifactMap[command2.edge_id]
-      // edges's parent id is to the original "start_path" artifact
-      if (edgeArtifact && edgeArtifact.parentId) {
-        return edgeArtifact.parentId
-      }
-    }
-    if (command2.type === 'close_path') return command2.path_id
-    if (command2.type === 'extrude') return command2.target
-    // handle other commands that have a parent here
-  }
   const modelingResponse = response.data.modeling_response
 
   const artifacts: Array<{
@@ -150,31 +146,85 @@ function handleIndividualResponse({
   }> = []
 
   if (command) {
-    const parentId = getParentId()
-    const artifact = {
-      range: range,
-      pathToNode,
-      commandType: command.command.cmd.type,
-      parentId: parentId,
-    } as ArtifactMapCommand & { extrusions?: string[] }
-    artifacts.push({
-      commandId: id,
-      artifact,
-    })
+    if (
+      command2.type !== 'extrude' &&
+      command2.type !== 'extend_path' &&
+      command2.type !== 'solid3d_get_extrusion_face_info' &&
+      command2.type !== 'start_path' &&
+      command2.type !== 'close_path'
+    ) {
+      const artifact = {
+        range: range,
+        pathToNode,
+        commandType: 'otherShit',
+        parentId: '',
+      } as ArtifactMapCommand
+      artifacts.push({
+        commandId: id,
+        artifact,
+      })
+    }
     if (command2.type === 'extrude') {
-      ;(artifact as any).target = command2.target
-      if (prevArtifactMap[command2.target]?.commandType === 'start_path') {
-        const theArtifact = { ...prevArtifactMap[command2.target] }
-        if ((theArtifact as any)?.extrusions?.length) {
-          ;(theArtifact as any).extrusions.push(id)
-        } else {
-          ;(theArtifact as any).extrusions = [id]
-        }
+      artifacts.push({
+        commandId: id,
+        artifact: {
+          commandType: 'extrude',
+          range,
+          pathToNode,
+          target: command2.target,
+          parentId: command2.target,
+        },
+      })
+
+      const targetArtifact = { ...prevArtifactMap[command2.target] }
+      if (targetArtifact?.commandType === 'startPath') {
         artifacts.push({
           commandId: command2.target,
-          artifact: theArtifact,
+          artifact: {
+            ...targetArtifact,
+            commandType: 'startPath',
+            range: targetArtifact.range,
+            pathToNode: targetArtifact.pathToNode,
+            parentId: targetArtifact.parentId,
+            extrusions: targetArtifact?.extrusions
+              ? [...targetArtifact?.extrusions, id]
+              : [id],
+          },
         })
       }
+    }
+    if (command2.type === 'extend_path') {
+      artifacts.push({
+        commandId: id,
+        artifact: {
+          commandType: 'segment',
+          range,
+          pathToNode,
+          parentId: command2.path,
+        },
+      })
+    }
+    if (command2.type === 'close_path')
+      artifacts.push({
+        commandId: id,
+        artifact: {
+          commandType: 'closeSegment',
+          range,
+          pathToNode,
+          parentId: command2.path_id,
+        },
+      })
+    if (command2.type === 'start_path') {
+      artifacts.push({
+        commandId: id,
+        artifact: {
+          commandType: 'startPath',
+          range,
+          pathToNode,
+          extrusions: [],
+          parentId: '',
+        },
+      })
     }
     if (
       (command2.type === 'entity_linear_pattern' &&
@@ -186,7 +236,12 @@ function handleIndividualResponse({
       entities?.forEach((entity: string) => {
         artifacts.push({
           commandId: entity,
-          artifact,
+          artifact: {
+            range: range,
+            pathToNode,
+            commandType: 'otherShit',
+            parentId: '',
+          } as ArtifactMapCommand,
         })
       })
     }
@@ -194,9 +249,17 @@ function handleIndividualResponse({
       command2.type === 'solid3d_get_extrusion_face_info' &&
       modelingResponse.type === 'solid3d_get_extrusion_face_info'
     ) {
-      const parent = prevArtifactMap[parentId || '']
+      const edgeArtifact = prevArtifactMap[command2.edge_id]
+      const parent =
+        edgeArtifact?.commandType === 'segment'
+          ? prevArtifactMap[edgeArtifact.parentId]
+          : null
       modelingResponse.data.faces.forEach((face) => {
-        if (face.cap !== 'none' && face.face_id && parent) {
+        if (
+          face.cap !== 'none' &&
+          face.face_id &&
+          parent?.commandType === 'startPath'
+        ) {
           artifacts.push({
             commandId: face.face_id,
             artifact: {

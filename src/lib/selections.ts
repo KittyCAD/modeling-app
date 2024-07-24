@@ -518,10 +518,7 @@ function codeToIdSelections(
       let bestCandidate
       entriesWithOverlap.forEach((entry) => {
         if (!entry) return
-        if (
-          type === 'default' &&
-          entry.artifact.commandType === 'extend_path'
-        ) {
+        if (type === 'default' && entry.artifact.commandType === 'segment') {
           bestCandidate = entry
           return
         }
