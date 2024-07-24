@@ -29,7 +29,7 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
         }),
     })?;
 
-    args.make_user_val_from_i32(converted)
+    args.make_user_val_from_i64(converted)
 }
 
 /// Converts a number to an integer.
@@ -55,14 +55,16 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
     name = "int",
     tags = ["convert"],
 }]
-fn inner_int(num: f64) -> Result<i32, ConversionError> {
+fn inner_int(num: f64) -> Result<i64, ConversionError> {
     if num.is_nan() {
         return Err(ConversionError::Nan);
-    } else if num > f64::from(i32::MAX) || num < f64::from(i32::MIN) {
+    } else if num > 2_f64.powi(53) || num < -2_f64.powi(53) {
+        // 2^53 is the largest magnitude integer that can be represented in f64
+        // and accurately converted.
         return Err(ConversionError::TooLarge);
     }
 
-    Ok(num as i32)
+    Ok(num as i64)
 }
 
 #[cfg(test)]
@@ -83,7 +85,11 @@ mod tests {
         assert_eq!(inner_int(f64::NAN), Err(ConversionError::Nan));
         assert_eq!(inner_int(f64::INFINITY), Err(ConversionError::TooLarge));
         assert_eq!(inner_int(f64::NEG_INFINITY), Err(ConversionError::TooLarge));
-        assert_eq!(inner_int(1e32 - 1.0), Err(ConversionError::TooLarge));
-        assert_eq!(inner_int(-1e32), Err(ConversionError::TooLarge));
+        assert_eq!(inner_int(2_f64.powi(53)), Ok(2_i64.pow(53)));
+        assert_eq!(inner_int(-2_f64.powi(53)), Ok(-2_i64.pow(53)));
+        // Note: 2_f64.powi(53) + 1.0 can't be represented.
+        assert_eq!(inner_int(2_f64.powi(53) + 2.0), Err(ConversionError::TooLarge));
+        assert_eq!(inner_int(-2_f64.powi(53) - 2.0), Err(ConversionError::TooLarge));
+        assert_eq!(inner_int(-2_f64.powi(64)), Err(ConversionError::TooLarge));
     }
 }

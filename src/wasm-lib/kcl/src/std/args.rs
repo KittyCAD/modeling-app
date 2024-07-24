@@ -125,7 +125,7 @@ impl Args {
         }))
     }
 
-    pub(crate) fn make_user_val_from_i32(&self, n: i32) -> Result<MemoryItem, KclError> {
+    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> Result<MemoryItem, KclError> {
         self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from(n)))
     }
 
