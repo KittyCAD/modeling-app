@@ -51,7 +51,7 @@ const commonPoints = {
   // num1: 9.64,
   // num2: 19.19,
 }
-
+let log: any[] = []
 test.afterEach(async ({ context, page }, testInfo) => {
   if (testInfo.status === 'skipped') return
   if (testInfo.status === 'failed') return
@@ -93,6 +93,14 @@ test.beforeEach(async ({ context, page }) => {
   )
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+  // get playwright to listen for websocket messages
+  page.on('websocket', (ws) => {
+    console.log(`WebSocket opened: ${ws.url()}>`)
+    ws.on('framesent', (event) => log.push(event.payload))
+    ws.on('framereceived', (event) => log.push(event.payload))
+    ws.on('close', () => log.push('WebSocket closed'))
+  })
+  await page.goto('/')
 })
 
 test.setTimeout(120000)
@@ -7125,7 +7133,92 @@ test.describe('Test network and connection issues', () => {
     await expect(networkToggle).toContainText('Connected')
   })
 
-  test('Engine disconnect & reconnect in sketch mode', async ({
+  async function waitForWSMessage(
+    page: Page,
+    waitForCommand:
+      | 'select_with_point'
+      | 'set_selection_filter'
+      | 'default_camera_set_orthographic'
+      | 'select_add',
+    timeout = 5_000
+  ) {
+
+
+
+    const delay = 10
+    const attempts = timeout / delay
+    log = []
+    for (let i = 0; i < attempts; i += 1) {
+      // console.log('🚀 -----------------------------🚀')
+      // console.log('🚀 ~ test.describe ~ log:', log)
+      // console.log('🚀 -----------------------------🚀')
+      const cmdFound = findMatchingWsEvent(waitForCommand)
+
+      // console.log('🚀 ---------------------------------------🚀')
+      // console.log('🚀 ~ test.describe ~ cmdFound:', cmdFound)
+      // console.log('🚀 ---------------------------------------🚀')
+
+      if (cmdFound) {
+        // command found, now wait for the success message
+        // by waiting on the matching success response corresponding to the request_id
+        const cmdId = JSON.parse(cmdFound).cmd_id
+        const successMessage = findSuccessResponse(cmdId)
+
+        // console.log('🚀 ---------------------------------------------------🚀')
+        // console.log('🚀 ~ test.describe ~ successMessage:', successMessage)
+        // console.log('🚀 ---------------------------------------------------🚀')
+
+        if (successMessage) {
+
+          console.log('🚀 ---------------------------------------------------🚀')
+          console.log('🚀 ~ test.describe ~ successMessage:', successMessage)
+          console.log('🚀 ---------------------------------------------------🚀')
+
+          return true
+        }
+      }
+      await page.waitForTimeout(delay)
+    }
+
+    console.log('🚀 ---------------------------------------------------🚀')
+    console.log('🚀 ~ test.describe ~ waitForCommand:', waitForCommand)
+    console.log('🚀 ~ log...', log)
+    console.log('🚀 -----------------------------🚀')
+
+    return false
+
+    function findSuccessResponse(cmdId: string) {
+      return log.find((wsEvent) => {
+        try {
+          const jsonObj = safeParseJson(wsEvent)
+          return jsonObj && jsonObj.request_id === cmdId && jsonObj.success
+        } catch (error) {
+          return undefined
+        }
+      })
+    }
+
+    function findMatchingWsEvent(cmdType: string) {
+      return log.find((wsEvent) => {
+        try {
+          const wsMessage = safeParseJson(wsEvent)
+          return wsMessage && wsMessage.cmd && wsMessage.cmd.type === cmdType
+        } catch (error) {
+          return undefined
+        }
+      })
+    }
+
+    function safeParseJson(jsonString: string) {
+      try {
+        return JSON.parse(jsonString)
+      } catch (error) {
+        return undefined
+      }
+    }
+  }
+
+  test.only('Engine disconnect & reconnect in sketch mode', async ({
     page,
     browserName,
   }) => {
@@ -7150,20 +7243,19 @@ test.describe('Test network and connection issues', () => {
     // click on "Start Sketch" button
     await u.clearCommandLogs()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(100)
+    await waitForWSMessage(page, 'set_selection_filter')
 
     // select a plane
     await page.mouse.click(700, 200)
-
+    await waitForWSMessage(page, 'default_camera_set_orthographic')
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
     )
     await u.closeDebugPanel()
 
-    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await waitForWSMessage(page, 'select_add')
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)`)
