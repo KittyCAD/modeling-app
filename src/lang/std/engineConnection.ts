@@ -1439,9 +1439,9 @@ export class EngineCommandManager extends EventTarget {
             }
           })
           Object.entries(message.resp.data.responses).forEach(
-            ([key, response]) => {
+            ([commandId, response]) => {
               if (!('response' in response)) return
-              const command = individualPendingResponses[key]
+              const command = individualPendingResponses[commandId]
               if (!command) return
               if (command.type === 'modeling_cmd_req')
                 this.addCommandLog({
@@ -1452,11 +1452,11 @@ export class EngineCommandManager extends EventTarget {
                       modeling_response: response.response,
                     },
                   },
-                  id: key,
+                  id: commandId,
                   cmd_type: command?.cmd?.type,
                 })
 
-              this.responseMap[key] = {
+              this.responseMap[commandId] = {
                 type: 'modeling',
                 data: {
                   modeling_response: response.response,

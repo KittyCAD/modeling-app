@@ -10,20 +10,18 @@ interface CommonCommandProperties {
 interface ExtrudeArtifact extends CommonCommandProperties {
   commandType: 'extrude'
   target: string
-  parentId: string
 }
 
-interface startPathArtifact extends CommonCommandProperties {
+export interface StartPathArtifact extends CommonCommandProperties {
   commandType: 'startPath'
   extrusions: string[]
-  parentId?: string
 }
 
-interface SegmentArtifact extends CommonCommandProperties {
+export interface SegmentArtifact extends CommonCommandProperties {
   commandType: 'segment'
   parentId: string
 }
-interface CloseArtifact extends CommonCommandProperties {
+export interface CloseArtifact extends CommonCommandProperties {
   commandType: 'closeSegment'
   parentId: string
 }
@@ -34,21 +32,20 @@ interface ExtrudeCapArtifact extends CommonCommandProperties {
     type: 'cap'
     info: 'start' | 'end'
   }
-  parentId?: string
+  parentId: string
 }
 interface ExtrudeWallArtifact extends CommonCommandProperties {
   commandType: 'extrudeWall'
-  parentId?: string
+  parentId: string
 }
 
 interface OtherShit extends CommonCommandProperties {
   commandType: 'otherShit'
-  parentId?: string
 }
 
 export type ArtifactMapCommand =
   | ExtrudeArtifact
-  | startPathArtifact
+  | StartPathArtifact
   | ExtrudeCapArtifact
   | ExtrudeWallArtifact
   | SegmentArtifact
@@ -162,7 +159,6 @@ function handleIndividualResponse({
           range,
           pathToNode,
           target: command2.target,
-          parentId: command2.target,
         },
       })
 
@@ -175,7 +171,6 @@ function handleIndividualResponse({
             commandType: 'startPath',
             range: targetArtifact.range,
             pathToNode: targetArtifact.pathToNode,
-            parentId: targetArtifact.parentId,
             extrusions: targetArtifact?.extrusions
               ? [...targetArtifact?.extrusions, id]
               : [id],
@@ -212,7 +207,6 @@ function handleIndividualResponse({
           range,
           pathToNode,
           extrusions: [],
-          parentId: '',
         },
       })
     }
@@ -233,8 +227,7 @@ function handleIndividualResponse({
             range: range,
             pathToNode,
             commandType: 'otherShit',
-            parentId: '',
-          } as ArtifactMapCommand,
+          },
         })
       })
     }
@@ -256,36 +249,40 @@ function handleIndividualResponse({
           artifacts.push({
             commandId: face.face_id,
             artifact: {
-              ...parent,
+              // ...parent,
               commandType: 'extrudeCap',
               additionalData: {
                 type: 'cap',
                 info: face.cap === 'bottom' ? 'start' : 'end',
               },
+              range: parent.range,
+              pathToNode: parent.pathToNode,
+              parentId:
+                edgeArtifact?.commandType === 'segment'
+                  ? edgeArtifact.parentId
+                  : '',
             },
           })
         }
         const curveArtifact = prevArtifactMap[face?.curve_id || '']
-        if (curveArtifact && face?.face_id) {
+        if (
+          (curveArtifact?.commandType === 'segment' ||
+            curveArtifact?.commandType === 'closeSegment') &&
+          face?.face_id
+        ) {
           artifacts.push({
             commandId: face.face_id,
             artifact: {
               ...curveArtifact,
               commandType: 'extrudeWall',
+              range: curveArtifact.range,
+              pathToNode: curveArtifact.pathToNode,
+              parentId: curveArtifact.parentId,
             },
           })
         }
       })
     }
-  } else if (command) {
-    artifacts.push({
-      commandId: id,
-      artifact: {
-        commandType: command2.type,
-        range,
-        pathToNode,
-      } as ArtifactMapCommand & { extrusions?: string[] },
-    })
   }
   return artifacts
 }

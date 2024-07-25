@@ -1,7 +1,13 @@
 import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
-import { ArtifactMap } from 'lang/std/artifactMap'
+import {
+  ArtifactMap,
+  ArtifactMapCommand,
+  CloseArtifact,
+  SegmentArtifact,
+  StartPathArtifact,
+} from 'lang/std/artifactMap'
 import { isOverlap } from 'lib/utils'
 import { err } from 'lib/trap'
 
@@ -49,24 +55,28 @@ export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections
 ): string | false {
-  const overlapingEntries: [string, ArtifactMap[string]][] = Object.entries(
-    artifactMap
-  ).filter(([id, artifact]: [string, ArtifactMap[string]]) =>
-    selectionRanges.codeBasedSelections.some(
-      (selection) =>
-        Array.isArray(selection?.range) &&
-        Array.isArray(artifact?.range) &&
-        isOverlap(selection.range, artifact.range) &&
-        (artifact.commandType === 'startPath' ||
-          artifact.commandType === 'segment' ||
-          artifact.commandType === 'closeSegment')
-    )
-  )
-  let result =
-    overlapingEntries.length && overlapingEntries[0][1].parentId
-      ? overlapingEntries[0][1].parentId
-      : overlapingEntries.find(
-          ([, artifact]) => artifact.commandType === 'startPath'
-        )?.[0] || false
+  const overlappingEntries = Object.entries(artifactMap).filter(
+    ([id, artifact]: [string, ArtifactMapCommand]) =>
+      selectionRanges.codeBasedSelections.some(
+        (selection) =>
+          Array.isArray(selection?.range) &&
+          Array.isArray(artifact?.range) &&
+          isOverlap(selection.range, artifact.range) &&
+          (artifact.commandType === 'startPath' ||
+            artifact.commandType === 'segment' ||
+            artifact.commandType === 'closeSegment')
+      )
+  ) as [string, StartPathArtifact | SegmentArtifact | CloseArtifact][]
+  const secondEntry = overlappingEntries?.[0]?.[1]
+  const parentId =
+    secondEntry?.commandType === 'segment' ||
+    secondEntry?.commandType === 'closeSegment'
+      ? secondEntry.parentId
+      : false
+  let result = parentId
+    ? parentId
+    : overlappingEntries.find(
+        ([, artifact]) => artifact.commandType === 'startPath'
+      )?.[0] || false
   return result
 }
