@@ -1561,7 +1561,7 @@ export class SceneEntities {
         // we already have it.
         const targetId =
           artifact?.type === 'extrudeWall' || artifact?.type === 'extrudeCap'
-            ? artifact.parentId
+            ? artifact.segmentId
             : ''
 
         // tsc cannot infer that target can have extrusions

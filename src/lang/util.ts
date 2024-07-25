@@ -4,7 +4,6 @@ import { getNodeFromPath } from './queryAst'
 import {
   ArtifactMap,
   ArtifactMapCommand,
-  CloseArtifact,
   SegmentArtifact,
   StartPathArtifact,
 } from 'lang/std/artifactMap'
@@ -62,16 +61,11 @@ export function isCursorInSketchCommandRange(
           Array.isArray(selection?.range) &&
           Array.isArray(artifact?.range) &&
           isOverlap(selection.range, artifact.range) &&
-          (artifact.type === 'startPath' ||
-            artifact.type === 'segment' ||
-            artifact.type === 'closeSegment')
+          (artifact.type === 'startPath' || artifact.type === 'segment')
       )
-  ) as [string, StartPathArtifact | SegmentArtifact | CloseArtifact][]
+  ) as [string, StartPathArtifact | SegmentArtifact][]
   const secondEntry = overlappingEntries?.[0]?.[1]
-  const parentId =
-    secondEntry?.type === 'segment' || secondEntry?.type === 'closeSegment'
-      ? secondEntry.parentId
-      : false
+  const parentId = secondEntry?.type === 'segment' ? secondEntry.pathId : false
   let result = parentId
     ? parentId
     : overlappingEntries.find(
