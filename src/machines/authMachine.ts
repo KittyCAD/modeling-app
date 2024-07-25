@@ -3,7 +3,7 @@ import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isDesktop } from 'lib/isDesktop'
 import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
-import { getUser as getUserTauri } from 'lib/desktop'
+import { getUser as getUserDesktop } from 'lib/desktop'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -146,7 +146,7 @@ async function getUser(context: UserContext) {
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : getUserTauri(context.token, VITE_KC_API_BASE_URL)
+    : getUserDesktop(context.token, VITE_KC_API_BASE_URL)
 
   const user = await userPromise
 

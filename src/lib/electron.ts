@@ -1,19 +1,25 @@
-import { contextBridge } from 'electron'
+import { ipcRenderer, contextBridge } from 'electron'
 import path from 'path'
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
+import packageJson from '../../package.json'
 
-// All these functions call into lib/electron since many require filesystem
-// access, and the second half is the original tauri code also stored app
-// state on the "desktop" side.
+const readFile = (path: string) => fs.readFile(path, 'utf-8')
+const readdir = (path: string) => fs.readdir(path, 'utf-8')
+const exists = (path: string) =>
+  new Promise((resolve, reject) =>
+    fs.stat(path, (err, data) => {
+      if (err) return reject(err.code)
+      return resolve(data)
+    })
+  )
+const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
-const DEFAULT_HOST = "https://api.zoo.dev"
-const SETTINGS_FILE_NAME = "settings.toml"
-const PROJECT_SETTINGS_FILE_NAME = "project.toml"
-const PROJECT_FOLDER = "zoo-modeling-app-projects"
-
-contextBridge.exposeInMainWorld("fs", {
-  readFile(p: string) { return fs.readFile(p, 'utf-8') },
-  readdir(p: string) { return fs.readdir(p, 'utf-8') },
-  join() { return path.join(...arguments) },
-  exists(p: string) { fs.exists(p) },
+contextBridge.exposeInMainWorld('electron', {
+  readFile,
+  readdir,
+  path,
+  exists,
+  mkdir: fs.mkdir,
+  getPath,
+  packageJson,
 })

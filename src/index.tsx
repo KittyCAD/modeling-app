@@ -60,6 +60,9 @@ root.render(
 reportWebVitals()
 
 const runTauriUpdater = async () => {
+  console.log('STUB: @pierre')
+  return
+
   try {
     const update = await check()
     if (update && update.available) {

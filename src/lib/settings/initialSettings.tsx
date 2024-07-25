@@ -192,7 +192,8 @@ export function createSettings() {
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
-        validate: (v) => typeof v === 'string' && (v.length > 0 || !isDesktop()),
+        validate: (v) =>
+          typeof v === 'string' && (v.length > 0 || !isDesktop()),
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (

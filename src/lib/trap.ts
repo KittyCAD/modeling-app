@@ -1,4 +1,12 @@
-import toast from 'react-hot-toast'
+let toast = undefined
+
+try {
+  global
+} catch (e) {
+  import('react-hot-toast').then((_toast) => {
+    toast = _toast
+  })
+}
 
 type ExcludeErr<T> = Exclude<T, Error>
 
