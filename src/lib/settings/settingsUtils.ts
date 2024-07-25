@@ -161,10 +161,8 @@ export async function loadAndValidateSettings(
   const settings = createSettings()
   const onDesktop = isDesktop()
 
-  if (!onDesktop) {
-    // Make sure we have wasm initialized.
-    await initPromise
-  }
+  // Make sure we have wasm initialized.
+  await initPromise
 
   // Load the app settings from the file system or localStorage.
   const appSettings = onDesktop

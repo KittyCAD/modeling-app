@@ -5,43 +5,32 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
-import { isDesktop } from './isDesktop'
 
-// Get the app state from desktop.
-export async function getState(): Promise<ProjectState | undefined> {
-  if (!isDesktop()) {
-    return undefined
-  }
-  return await window.electron.ipcRenderer.invoke('get_state')
-}
-
-// Set the app state in desktop.
-export async function setState(state: ProjectState | undefined): Promise<void> {
-  if (!isDesktop()) {
-    return
-  }
-  return window.electron.ipcRenderer.invoke('set_state', { state })
-}
+export {
+  readAppSettingsFile,
+  writeAppSettingsFile,
+  getState,
+  setState,
+  getUser,
+  login,
+} from 'lang/wasm'
 
 export async function renameProjectDirectory(
   projectPath: string,
   newName: string
 ): Promise<string> {
-  return window.electron.ipcRenderer.invoke<string>('rename_project_directory', { projectPath, newName })
+  return window.electron.ipcRenderer.invoke<string>(
+    'rename_project_directory',
+    { projectPath, newName }
+  )
 }
 
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
-  if (!isDesktop()) {
-    return ''
-  }
-  return invoke<string>('get_initial_default_dir')
+  return window.electron.getInitialDefaultDir()
 }
 
 export async function showInFolder(path: string | undefined): Promise<void> {
-  if (!isDesktop()) {
-    return
-  }
   if (!path) {
     console.error('path is undefined cannot call desktop showInFolder')
     return
@@ -50,14 +39,20 @@ export async function showInFolder(path: string | undefined): Promise<void> {
 }
 
 export async function initializeProjectDirectory(
-  settings: Configuration
+  config: Configuration
 ): Promise<string | undefined> {
-  if (!isDesktop()) {
-    return undefined
+  const projectDir = config.settings.project.directory
+  try {
+    await window.electron.exists(projectDir)
+  } catch (e) {
+    if (e === 'ENOENT') {
+      window.electron.mkdir(projectDir, { recursive: true }, (e) => {
+        console.log(e)
+      })
+    }
   }
-  return window.electron.ipcRenderer.invoke('initialize_project_directory', {
-    configuration: settings,
-  })
+
+  return projectDir
 }
 
 export async function createNewProjectDirectory(
@@ -78,10 +73,13 @@ export async function createNewProjectDirectory(
 export async function listProjects(
   configuration?: Configuration
 ): Promise<Project[]> {
-  if (!configuration) {
-    configuration = await readAppSettingsFile()
+  const projectDir = await initializeProjectDirectory(configuration)
+  const projects = []
+  const entries = await window.electron.readdir(projectDir)
+  for (let entry of entries) {
+    // Ignore directories
+    console.log(entry)
   }
-  return window.electron.ipcRenderer.invoke('list_projects', { configuration })
 }
 
 export async function getProjectInfo(
@@ -97,10 +95,6 @@ export async function getProjectInfo(
   })
 }
 
-export async function login(host: string): Promise<string> {
-  return window.electron.ipcRenderer.invoke('login', { host })
-}
-
 export async function parseProjectRoute(
   configuration: Configuration,
   route: string
@@ -111,38 +105,8 @@ export async function parseProjectRoute(
   })
 }
 
-export async function getUser(
-  token: string | undefined,
-  host: string
-): Promise<Models['User_type'] | Record<'error_code', unknown> | void> {
-  if (!token) {
-    console.error('token is undefined cannot call desktop getUser')
-    return
-  }
-
-  return window.electron.ipcRenderer.invoke>(
-    'get_user',
-    {
-      token: token,
-      hostname: host,
-    }
-  ).catch((err) => console.error('error from Tauri getUser', err))
-}
-
 export async function readDirRecursive(path: string): Promise<FileEntry[]> {
   return window.electron.ipcRenderer.invoke('read_dir_recursive', { path })
-}
-
-// Read the contents of the app settings.
-export async function readAppSettingsFile(): Promise<Configuration> {
-  return window.electron.ipcRenderer.invoke('read_app_settings_file')
-}
-
-// Write the contents of the app settings.
-export async function writeAppSettingsFile(
-  settings: Configuration
-): Promise<void> {
-  return window.electron.ipcRenderer.invoke('write_app_settings_file', { configuration: settings })
 }
 
 // Read project settings file.

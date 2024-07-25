@@ -19,7 +19,7 @@ const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 #[serde(rename_all = "snake_case")]
 pub struct Configuration {
     /// The settings for the modeling app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     #[validate(nested)]
     pub settings: Settings,
 }
@@ -183,23 +183,23 @@ impl Configuration {
 #[serde(rename_all = "snake_case")]
 pub struct Settings {
     /// The settings for the modeling app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     #[validate(nested)]
     pub app: AppSettings,
     /// Settings that affect the behavior while modeling.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     #[validate(nested)]
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default, alias = "textEditor", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "textEditor")]
     #[validate(nested)]
     pub text_editor: TextEditorSettings,
     /// Settings that affect the behavior of project management.
-    #[serde(default, alias = "projects", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "projects")]
     #[validate(nested)]
     pub project: ProjectSettings,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "commandBar", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "commandBar")]
     #[validate(nested)]
     pub command_bar: CommandBarSettings,
 }
@@ -212,11 +212,11 @@ pub struct Settings {
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     #[validate(nested)]
     pub appearance: AppearanceSettings,
     /// The onboarding status of the app.
-    #[serde(default, alias = "onboardingStatus", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "onboardingStatus")]
     pub onboarding_status: OnboardingStatus,
     /// Backwards compatible project directory setting.
     #[serde(default, alias = "projectDirectory", skip_serializing_if = "Option::is_none")]
@@ -232,10 +232,10 @@ pub struct AppSettings {
     pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "dismissWebBanner")]
     pub dismiss_web_banner: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
-    #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "streamIdleMode")]
     stream_idle_mode: bool,
 }
 
@@ -275,10 +275,10 @@ impl From<FloatOrInt> for AppColor {
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
     /// The overall theme of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub theme: AppTheme,
     /// The hue of the primary theme color for the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     #[validate(nested)]
     pub color: AppColor,
 }
@@ -367,23 +367,23 @@ impl From<AppTheme> for kittycad::types::Color {
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "defaultUnit")]
     pub base_unit: UnitLength,
     /// The controls for how to navigate the 3D view.
-    #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "mouseControls")]
     pub mouse_controls: MouseControlType,
     /// Highlight edges of 3D objects?
-    #[serde(default, alias = "highlightEdges", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "highlightEdges")]
     pub highlight_edges: DefaultTrue,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
-    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "showDebugPanel")]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub enable_ssao: DefaultTrue,
     /// Whether or not to show a scale grid in the 3D modeling view
-    #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "showScaleGrid")]
     pub show_scale_grid: bool,
 }
 
@@ -492,10 +492,10 @@ pub enum MouseControlType {
 #[ts(export)]
 pub struct TextEditorSettings {
     /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, alias = "textWrapping", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "textWrapping")]
     pub text_wrapping: DefaultTrue,
     /// Whether to make the cursor blink in the editor.
-    #[serde(default, alias = "blinkingCursor", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "blinkingCursor")]
     pub blinking_cursor: DefaultTrue,
 }
 
@@ -505,10 +505,10 @@ pub struct TextEditorSettings {
 #[ts(export)]
 pub struct ProjectSettings {
     /// The directory to save and load projects from.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default)]
     pub directory: std::path::PathBuf,
     /// The default project name to use when creating a new project.
-    #[serde(default, alias = "defaultProjectName", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "defaultProjectName")]
     pub default_project_name: ProjectNameTemplate,
 }
 
@@ -541,7 +541,7 @@ impl From<String> for ProjectNameTemplate {
 #[ts(export)]
 pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
-    #[serde(default, alias = "includeSettings", skip_serializing_if = "is_default")]
+    #[serde(default, alias = "includeSettings")]
     pub include_settings: DefaultTrue,
 }
 

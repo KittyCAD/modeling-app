@@ -6,8 +6,9 @@ use std::{
 };
 
 use futures::stream::TryStreamExt;
-use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings};
+use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings, lint::checks};
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -54,14 +55,13 @@ pub async fn execute_wasm(
     };
 
     let memory = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
+
+    serde_wasm_bindgen::to_value(&memory).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn kcl_lint(program_str: &str) -> Result<JsValue, String> {
+pub async fn kcl_lint(program_str: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
@@ -70,7 +70,7 @@ pub async fn kcl_lint(program_str: &str) -> Result<JsValue, String> {
         findings.push(discovered_finding);
     }
 
-    Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
+    Ok(serde_wasm_bindgen::to_value(&findings)?)
 }
 
 // wasm_bindgen wrapper for creating default planes
@@ -89,9 +89,7 @@ pub async fn make_default_planes(
         .await
         .map_err(String::from)?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&default_planes).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for modifying the grid
@@ -143,9 +141,7 @@ pub async fn modify_ast_for_sketch_wasm(
     .await
     .map_err(String::from)?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&program).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&program).map_err(|e| e.to_string())
 }
 
 #[wasm_bindgen]
@@ -161,7 +157,7 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
     }
 
     if let Some(kittycad::types::OkWebSocketResponseData::Export { files }) = ws_resp.resp {
-        return Ok(JsValue::from_serde(&files)?);
+        return Ok(serde_wasm_bindgen::to_value(&files)?);
     }
 
     Err(JsError::new(&format!("Invalid response type, got: {:?}", ws_resp)))
@@ -174,7 +170,7 @@ pub fn lexer_wasm(js: &str) -> Result<JsValue, JsError> {
     console_error_panic_hook::set_once();
 
     let tokens = kcl_lib::token::lexer(js).map_err(JsError::from)?;
-    Ok(JsValue::from_serde(&tokens)?)
+    Ok(serde_wasm_bindgen::to_value(&tokens)?)
 }
 
 #[wasm_bindgen]
@@ -184,9 +180,7 @@ pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
     let tokens = kcl_lib::token::lexer(js).map_err(String::from)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().map_err(String::from)?;
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&program).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&program).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for recast
@@ -200,7 +194,7 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 
     // Use the default options until we integrate into the UI the ability to change them.
     let result = program.recast(&Default::default(), 0);
-    Ok(JsValue::from_serde(&result)?)
+    Ok(serde_wasm_bindgen::to_value(&result)?)
 }
 
 #[wasm_bindgen]
@@ -481,9 +475,7 @@ pub fn program_memory_init() -> Result<JsValue, String> {
 
     let memory = kcl_lib::executor::ProgramMemory::default();
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&memory).map_err(|e| e.to_string())
 }
 
 /// Get a coredump.
@@ -494,9 +486,7 @@ pub async fn coredump(core_dump_manager: kcl_lib::coredump::wasm::CoreDumpManage
     let core_dumper = kcl_lib::coredump::wasm::CoreDumper::new(core_dump_manager);
     let dump = core_dumper.dump().await.map_err(|e| e.to_string())?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&dump).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&dump).map_err(|e| e.to_string())
 }
 
 /// Get the default app settings.
@@ -505,10 +495,9 @@ pub fn default_app_settings() -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let settings = kcl_lib::settings::types::Configuration::default();
+    web_sys::console::log(&js_sys::Array::of1(&JsValue::from_str(&format!("{:?}", settings))));
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&settings).map_err(|e| e.to_string())
 }
 
 /// Parse the app settings.
@@ -519,9 +508,7 @@ pub fn parse_app_settings(toml_str: &str) -> Result<JsValue, String> {
     let settings = kcl_lib::settings::types::Configuration::backwards_compatible_toml_parse(&toml_str)
         .map_err(|e| e.to_string())?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&settings).map_err(|e| e.to_string())
 }
 
 /// Get the default project settings.
@@ -531,12 +518,10 @@ pub fn default_project_settings() -> Result<JsValue, String> {
 
     let settings = kcl_lib::settings::types::project::ProjectConfiguration::default();
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&settings).map_err(|e| e.to_string())
 }
 
-/// Parse the project settings.
+/// Parse (deserialize) the project settings.
 #[wasm_bindgen]
 pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
@@ -544,9 +529,17 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     let settings = kcl_lib::settings::types::project::ProjectConfiguration::backwards_compatible_toml_parse(&toml_str)
         .map_err(|e| e.to_string())?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&settings).map_err(|e| e.to_string())
+}
+
+/// Serialize the project settings.
+#[wasm_bindgen]
+pub fn serialize_project_settings(val: JsValue) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let config: kcl_lib::settings::types::Configuration = serde_wasm_bindgen::from_value(val).map_err(|e| e.to_string())?;
+    let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
+    serde_wasm_bindgen::to_value(&toml_str).map_err(|e| e.to_string())
 }
 
 /// Parse the project route.
@@ -560,7 +553,5 @@ pub fn parse_project_route(configuration: &str, route: &str) -> Result<JsValue, 
     let route =
         kcl_lib::settings::types::file::ProjectRoute::from_route(&configuration, route).map_err(|e| e.to_string())?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&route).map_err(|e| e.to_string())
+    serde_wasm_bindgen::to_value(&route).map_err(|e| e.to_string())
 }

@@ -15,14 +15,16 @@ class FileSystemManager {
   }
 
   async join(dir: string, path: string): Promise<string> {
-    return window.electron.ipcRenderer.invoke('join', [dir, path]);
+    return window.electron.ipcRenderer.invoke('join', [dir, path])
   }
 
   async readFile(path: string): Promise<Uint8Array | void> {
     // Using local file system only works from desktop.
     if (!isDesktop()) {
       return Promise.reject(
-        new Error('This function can only be called from the desktop application')
+        new Error(
+          'This function can only be called from the desktop application'
+        )
       )
     }
 
@@ -39,7 +41,9 @@ class FileSystemManager {
     // Using local file system only works from desktop.
     if (!isDesktop()) {
       return Promise.reject(
-        new Error('This function can only be called from the desktop application')
+        new Error(
+          'This function can only be called from the desktop application'
+        )
       )
     }
 
@@ -56,7 +60,9 @@ class FileSystemManager {
     // Using local file system only works from desktop.
     if (!isDesktop()) {
       return Promise.reject(
-        new Error('This function can only be called from the desktop application')
+        new Error(
+          'This function can only be called from the desktop application'
+        )
       )
     }
 
@@ -65,7 +71,8 @@ class FileSystemManager {
         return Promise.reject(new Error(`Error joining dir: ${error}`))
       })
       .then((filepath) => {
-        return window.electron.ipcRenderer.invoke('readdir', [filepath])
+        return window.electron.ipcRenderer
+          .invoke('readdir', [filepath])
           .catch((error) => {
             return Promise.reject(new Error(`Error reading dir: ${error}`))
           })
