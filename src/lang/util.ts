@@ -1,7 +1,12 @@
 import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
-import { ArtifactMap } from './std/engineConnection'
+import {
+  ArtifactMap,
+  ArtifactMapCommand,
+  SegmentArtifact,
+  StartPathArtifact,
+} from 'lang/std/artifactMap'
 import { isOverlap } from 'lib/utils'
 import { err } from 'lib/trap'
 
@@ -49,24 +54,22 @@ export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections
 ): string | false {
-  const overlapingEntries: [string, ArtifactMap[string]][] = Object.entries(
-    artifactMap
-  ).filter(([id, artifact]: [string, ArtifactMap[string]]) =>
-    selectionRanges.codeBasedSelections.some(
-      (selection) =>
-        Array.isArray(selection?.range) &&
-        Array.isArray(artifact?.range) &&
-        isOverlap(selection.range, artifact.range) &&
-        (artifact.commandType === 'start_path' ||
-          artifact.commandType === 'extend_path' ||
-          artifact.commandType === 'close_path')
-    )
-  )
-  let result =
-    overlapingEntries.length && overlapingEntries[0][1].parentId
-      ? overlapingEntries[0][1].parentId
-      : overlapingEntries.find(
-          ([, artifact]) => artifact.commandType === 'start_path'
-        )?.[0] || false
+  const overlappingEntries = Object.entries(artifactMap).filter(
+    ([id, artifact]: [string, ArtifactMapCommand]) =>
+      selectionRanges.codeBasedSelections.some(
+        (selection) =>
+          Array.isArray(selection?.range) &&
+          Array.isArray(artifact?.range) &&
+          isOverlap(selection.range, artifact.range) &&
+          (artifact.type === 'startPath' || artifact.type === 'segment')
+      )
+  ) as [string, StartPathArtifact | SegmentArtifact][]
+  const secondEntry = overlappingEntries?.[0]?.[1]
+  const parentId = secondEntry?.type === 'segment' ? secondEntry.pathId : false
+  let result = parentId
+    ? parentId
+    : overlappingEntries.find(
+        ([, artifact]) => artifact.type === 'startPath'
+      )?.[0] || false
   return result
 }

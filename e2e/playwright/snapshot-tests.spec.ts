@@ -431,7 +431,9 @@ test('Draft segments should look right', async ({ page, context }) => {
   |> line([7.25, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(code)
 
-  await page.getByRole('button', { name: 'Tangential Arc' }).click()
+  await page
+    .getByRole('button', { name: 'Tangential Arc', exact: true })
+    .click()
 
   await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
 
@@ -475,8 +477,10 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   const startXPx = 600
 
   // Equip the rectangle tool
-  await page.getByRole('button', { name: 'Line' }).click()
-  await page.getByRole('button', { name: 'Rectangle' }).click()
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Corner rectangle', exact: true })
+    .click()
 
   // Draw the rectangle
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
@@ -535,7 +539,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> line([7.25, 0], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -545,7 +551,9 @@ test.describe('Client side scene scale should match engine scale', () => {
     await expect(u.codeLocator).toHaveText(code)
 
     // click tangential arc tool again to unequip it
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     // screen shot should show the sketch
@@ -634,7 +642,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> line([184.3, 0], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -643,7 +653,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> tangentialArcTo([551.2, -62.01], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     // screen shot should show the sketch
