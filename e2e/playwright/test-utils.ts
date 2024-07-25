@@ -21,7 +21,7 @@ async function waitForPageLoad(page: Page) {
     timeout: 20_000,
   })
 
-  await expect(page.getByTestId('start-sketch')).toBeEnabled({
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })
 }
@@ -58,8 +58,9 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
 }
 
 async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('KCL Code')
-  const isOpen = (await paneLocator?.getAttribute('aria-pressed')) === 'true'
+  const paneLocator = page.getByTestId('code-pane-button')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
+  const isOpen = ariaSelected === 'true'
 
   if (!isOpen) {
     await paneLocator.click()
@@ -68,8 +69,10 @@ async function openKclCodePanel(page: Page) {
 }
 
 async function closeKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('KCL Code')
-  const isOpen = (await paneLocator?.getAttribute('aria-pressed')) === 'true'
+  const paneLocator = page.getByTestId('code-pane-button')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
+  const isOpen = ariaSelected === 'true'
+
   if (isOpen) {
     await paneLocator.click()
     await expect(paneLocator).not.toHaveAttribute('aria-pressed', 'true')
@@ -77,7 +80,8 @@ async function closeKclCodePanel(page: Page) {
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('Debug')
+  const debugLocator = page.getByTestId('debug-pane-button')
+  await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
@@ -87,7 +91,8 @@ async function openDebugPanel(page: Page) {
 }
 
 async function closeDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('Debug')
+  const debugLocator = page.getByTestId('debug-pane-button')
+  await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
   if (isOpen) {
     await debugLocator.click()

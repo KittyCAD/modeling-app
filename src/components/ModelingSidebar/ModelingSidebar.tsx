@@ -203,7 +203,8 @@ function ModelingPaneButton({
     <button
       className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
       onClick={onClick}
-      data-testid={paneConfig.title}
+      name={paneConfig.title}
+      data-testid={paneConfig.id + '-pane-button'}
       {...props}
     >
       <ActionIcon
@@ -219,14 +220,12 @@ function ModelingPaneButton({
           'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
         }
       />
-      <Tooltip
-        position="right"
-        className="!max-w-none flex gap-4 items-center justify-between"
-        hoverOnly
-        delay={800}
-      >
-        <span className="flex-none">{paneConfig.title}</span>
-        <kbd className="hotkey">{paneConfig.keybinding}</kbd>
+      <span className="sr-only">{paneConfig.title} pane</span>
+      <Tooltip position="right" hoverOnly>
+        <span className="flex-1">{paneConfig.title} pane: </span>
+        <span className="hotkey text-xs capitalize">
+          {paneConfig.keybinding}
+        </span>
       </Tooltip>
     </button>
   )
