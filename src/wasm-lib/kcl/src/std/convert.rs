@@ -5,7 +5,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::MemoryItem,
+    executor::{MemoryItem, SourceRange},
     std::Args,
 };
 
@@ -15,19 +15,25 @@ enum ConversionError {
     TooLarge,
 }
 
+impl ConversionError {
+    pub fn into_kcl_error(self, source_range: SourceRange) -> KclError {
+        match self {
+            ConversionError::Nan => KclError::Semantic(KclErrorDetails {
+                message: "NaN cannot be converted to an integer".to_owned(),
+                source_ranges: vec![source_range],
+            }),
+            ConversionError::TooLarge => KclError::Semantic(KclErrorDetails {
+                message: "Number is too large to convert to integer".to_owned(),
+                source_ranges: vec![source_range],
+            }),
+        }
+    }
+}
+
 /// Converts a number to integer.
 pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
     let num = args.get_number()?;
-    let converted = inner_int(num).map_err(|err| match err {
-        ConversionError::Nan => KclError::Semantic(KclErrorDetails {
-            message: "NaN cannot be converted to an integer".to_owned(),
-            source_ranges: vec![args.source_range],
-        }),
-        ConversionError::TooLarge => KclError::Semantic(KclErrorDetails {
-            message: "Number is too large to convert to integer".to_owned(),
-            source_ranges: vec![args.source_range],
-        }),
-    })?;
+    let converted = inner_int(num).map_err(|err| err.into_kcl_error(args.source_range))?;
 
     args.make_user_val_from_i64(converted)
 }
@@ -58,7 +64,8 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
 fn inner_int(num: f64) -> Result<i64, ConversionError> {
     if num.is_nan() {
         return Err(ConversionError::Nan);
-    } else if num > 2_f64.powi(53) || num < -(2_f64.powi(53)) {
+    }
+    if num > 2_f64.powi(53) || num < -(2_f64.powi(53)) {
         // 2^53 is the largest magnitude integer that can be represented in f64
         // and accurately converted.
         return Err(ConversionError::TooLarge);
