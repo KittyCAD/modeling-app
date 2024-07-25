@@ -58,47 +58,45 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
 }
 
 async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const ariaSelected = await paneLocator?.getAttribute('aria-selected')
+  const paneLocator = page.getByTestId('KCL Code')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
   const isOpen = ariaSelected === 'true'
 
   if (!isOpen) {
     await paneLocator.click()
-    await expect(await paneLocator).toHaveAttribute('aria-selected', 'true')
+    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function closeKclCodePanel(page: Page) {
-  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const ariaSelected = await paneLocator?.getAttribute('aria-selected')
+  const paneLocator = page.getByTestId('KCL Code')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
   const isOpen = ariaSelected === 'true'
 
   if (isOpen) {
     await paneLocator.click()
-    await expect(await paneLocator).not.toHaveAttribute('aria-selected', 'true')
+    await expect(paneLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug' })
+  const debugLocator = page.getByTestId('Debug')
   await expect(debugLocator).toBeVisible()
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
     await debugLocator.click()
-    await debugLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function closeDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug' })
+  const debugLocator = page.getByTestId('Debug')
   await expect(debugLocator).toBeVisible()
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
   if (isOpen) {
     await debugLocator.click()
-    await debugLocator
-      .and(page.locator(':not([aria-selected="true"])'))
-      .waitFor()
+    await expect(debugLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
 }
 
@@ -474,10 +472,11 @@ export const doExport = async (
   page: Page
 ): Promise<Paths> => {
   await page.getByRole('button', { name: APP_NAME }).click()
-  await expect(
-    page.getByRole('button', { name: 'Export', exact: false })
-  ).toBeVisible()
-  await page.getByRole('button', { name: 'Export', exact: false }).click()
+  const exportMenuButton = page.getByRole('button', {
+    name: 'Export current part',
+  })
+  await expect(exportMenuButton).toBeVisible()
+  await exportMenuButton.click()
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar
