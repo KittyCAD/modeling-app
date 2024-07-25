@@ -3,6 +3,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useKclContext } from 'lang/KclProvider'
 import { CommandArgument } from 'lib/commandTypes'
 import {
+  Selection,
   canSubmitSelectionArg,
   getSelectionType,
   getSelectionTypeDisplayText,
@@ -11,13 +12,13 @@ import { modelingMachine } from 'machines/modelingMachine'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
-const semanticEntityNames = {
+const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
   face: ['extrude-wall', 'start-cap', 'end-cap'],
   edge: ['edge', 'line', 'arc'],
   point: ['point', 'line-end', 'line-mid'],
 }
 
-function getSemanticSelectionType(selectionType: string[]) {
+function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
   const semanticSelectionType = new Set()
   selectionType.forEach((type) => {
     Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {

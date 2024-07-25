@@ -33,7 +33,6 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
   canExtrudeSelection,
-  canFilletSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -132,19 +131,30 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
+            // blocks entering a sketch until after exit sketch code has run
+            kclManager.isExecuting = true
+
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
-            const settings: Models['CameraSettings_type'] = (
-              await engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'default_camera_get_settings',
-                },
-              })
-            )?.data?.data?.settings
+            const resp = await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_get_settings',
+              },
+            })
+
+            const settings =
+              resp &&
+              resp.success &&
+              resp.resp.type === 'modeling' &&
+              resp.resp.data.modeling_response.type ===
+                'default_camera_get_settings'
+                ? resp.resp.data.modeling_response.data.settings
+                : ({} as Models['DefaultCameraGetSettings_type']['settings'])
+
             if (settings.up.z !== 1) {
               // workaround for gimbal lock situation
               await engineCommandManager.sendSceneCommand({
@@ -165,8 +175,8 @@ export const ModelingMachineProvider = ({
             }
 
             store.videoElement?.pause()
-            kclManager.executeCode(true).then(() => {
-              if (engineCommandManager.engineConnection?.freezeFrame) return
+            kclManager.executeCode().then(() => {
+              if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play()
             })

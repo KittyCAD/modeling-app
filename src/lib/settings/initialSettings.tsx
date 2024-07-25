@@ -163,6 +163,17 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
+      /**
+       * Stream resource saving behavior toggle
+       */
+      streamIdleMode: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Toggle stream idling, saving bandwidth and battery',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',

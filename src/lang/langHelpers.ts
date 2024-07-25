@@ -79,20 +79,14 @@ export async function executeAst({
       return {
         errors: [e],
         logs: [],
-        programMemory: {
-          root: {},
-          return: null,
-        },
+        programMemory: ProgramMemory.empty(),
       }
     } else {
       console.log(e)
       return {
         logs: [e],
         errors: [],
-        programMemory: {
-          root: {},
-          return: null,
-        },
+        programMemory: ProgramMemory.empty(),
       }
     }
   }

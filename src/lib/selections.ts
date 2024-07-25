@@ -87,16 +87,20 @@ export async function getEventForSelectWithPoint(
     // there's plans to get the faceId back from the solid2d creation
     // https://github.com/KittyCAD/engine/issues/2094
     // at which point we can add it to the artifact map and remove this logic
-    const parentId = (
-      await engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'entity_get_parent_id',
-          entity_id: data.entity_id,
-        },
-        cmd_id: uuidv4(),
-      })
-    )?.data?.data?.entity_id
+    const resp = await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'entity_get_parent_id',
+        entity_id: data.entity_id,
+      },
+      cmd_id: uuidv4(),
+    })
+    const parentId =
+      resp?.success &&
+      resp?.resp?.type === 'modeling' &&
+      resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
+        ? resp?.resp?.data?.modeling_response?.data?.entity_id
+        : ''
     const parentArtifact = engineCommandManager.artifactMap[parentId]
     if (parentArtifact) {
       _artifact = parentArtifact
@@ -576,18 +580,22 @@ export async function sendSelectEventToEngine(
     el,
     ...streamDimensions,
   })
-  const result: Models['SelectWithPoint_type'] = await engineCommandManager
-    .sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_with_point',
-        selected_at_window: { x, y },
-        selection_type: 'add',
-      },
-      cmd_id: uuidv4(),
-    })
-    .then((res) => res.data.data)
-  return result
+  const res = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_with_point',
+      selected_at_window: { x, y },
+      selection_type: 'add',
+    },
+    cmd_id: uuidv4(),
+  })
+  if (
+    res?.success &&
+    res?.resp?.type === 'modeling' &&
+    res?.resp?.data?.modeling_response.type === 'select_with_point'
+  )
+    return res?.resp?.data?.modeling_response?.data
+  return { entity_id: '' }
 }
 
 export function updateSelections(

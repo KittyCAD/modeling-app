@@ -77,7 +77,7 @@ describe('ZMA authorized user flows', () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await click(menuButton)
 
-    const settingsButton = await $('[data-testid="settings-button"]')
+    const settingsButton = await $('[data-testid="user-settings"]')
     await click(settingsButton)
 
     const projectDirInput = await $('[data-testid="project-directory-input"]')

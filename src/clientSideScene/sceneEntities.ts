@@ -47,7 +47,6 @@ import {
   PipeExpression,
   Program,
   ProgramMemory,
-  programMemoryInit,
   recast,
   SketchGroup,
   ExtrudeGroup,
@@ -130,7 +129,7 @@ export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
 export class SceneEntities {
   engineCommandManager: EngineCommandManager
   scene: Scene
-  sceneProgramMemory: ProgramMemory = { root: {}, return: null }
+  sceneProgramMemory: ProgramMemory = ProgramMemory.empty()
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
@@ -550,9 +549,9 @@ export class SceneEntities {
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
 
-    const sg = kclManager.programMemory.root[
+    const sg = kclManager.programMemory.get(
       variableDeclarationName
-    ] as SketchGroup
+    ) as SketchGroup
     const lastSeg = sg.value.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
@@ -768,9 +767,9 @@ export class SceneEntities {
           programMemoryOverride,
         })
         this.sceneProgramMemory = programMemory
-        const sketchGroup = programMemory.root[
+        const sketchGroup = programMemory.get(
           variableDeclarationName
-        ] as SketchGroup
+        ) as SketchGroup
         const sgPaths = sketchGroup.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -820,9 +819,9 @@ export class SceneEntities {
 
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
-          const sketchGroup = programMemory.root[
+          const sketchGroup = programMemory.get(
             variableDeclarationName
-          ] as SketchGroup
+          ) as SketchGroup
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -1081,9 +1080,9 @@ export class SceneEntities {
       })
       this.sceneProgramMemory = programMemory
 
-      const maybeSketchGroup = programMemory.root[variableDeclarationName]
+      const maybeSketchGroup = programMemory.get(variableDeclarationName)
       let sketchGroup = undefined
-      if (maybeSketchGroup.type === 'SketchGroup') {
+      if (maybeSketchGroup?.type === 'SketchGroup') {
         sketchGroup = maybeSketchGroup
       } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
         sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
@@ -1773,7 +1772,7 @@ function prepareTruncatedMemoryAndAst(
   if (err(_node)) return _node
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
   const lastSeg = (
-    programMemory.root[variableDeclarationName] as SketchGroup
+    programMemory.get(variableDeclarationName) as SketchGroup
   ).value.slice(-1)[0]
   if (draftSegment) {
     // truncatedAst needs to setup with another segment at the end
@@ -1824,33 +1823,27 @@ function prepareTruncatedMemoryAndAst(
     ..._ast,
     body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
   }
-  const programMemoryOverride = programMemoryInit()
-  if (err(programMemoryOverride)) return programMemoryOverride
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
   let start = _node.node.start
-  for (const key in programMemory.root) {
-    const value = programMemory.root[key]
-    if (!('__meta' in value)) {
-      continue
-    }
+  const programMemoryOverride = programMemory.filterVariables(true, (value) => {
     if (
+      !('__meta' in value) ||
       value.__meta === undefined ||
       value.__meta.length === 0 ||
       value.__meta[0].sourceRange === undefined
     ) {
-      continue
+      return false
     }
 
     if (value.__meta[0].sourceRange[0] >= start) {
       // We only want things before our start point.
-      continue
+      return false
     }
 
-    if (value.type === 'TagIdentifier') {
-      programMemoryOverride.root[key] = JSON.parse(JSON.stringify(value))
-    }
-  }
+    return value.type === 'TagIdentifier'
+  })
+  if (err(programMemoryOverride)) return programMemoryOverride
 
   for (let i = 0; i < bodyIndex; i++) {
     const node = _ast.body[i]
@@ -1858,12 +1851,15 @@ function prepareTruncatedMemoryAndAst(
       continue
     }
     const name = node.declarations[0].id.name
-    // const memoryItem = kclManager.programMemory.root[name]
-    const memoryItem = programMemory.root[name]
+    const memoryItem = programMemory.get(name)
     if (!memoryItem) {
       continue
     }
-    programMemoryOverride.root[name] = JSON.parse(JSON.stringify(memoryItem))
+    const error = programMemoryOverride.set(
+      name,
+      JSON.parse(JSON.stringify(memoryItem))
+    )
+    if (err(error)) return error
   }
   return {
     truncatedAst,
@@ -1900,7 +1896,7 @@ export function sketchGroupFromPathToNode({
   )
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
-  const result = programMemory.root[varDec?.id?.name || '']
+  const result = programMemory.get(varDec?.id?.name || '')
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }
@@ -2026,13 +2022,17 @@ export async function getFaceDetails(
       entity_id: entityId,
     },
   })
-  const faceInfo: Models['GetSketchModePlane_type'] = (
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'get_sketch_mode_plane' },
-    })
-  )?.data?.data
+  const resp = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'get_sketch_mode_plane' },
+  })
+  const faceInfo =
+    resp?.success &&
+    resp?.resp.type === 'modeling' &&
+    resp?.resp?.data?.modeling_response?.type === 'get_sketch_mode_plane'
+      ? resp?.resp?.data?.modeling_response.data
+      : ({} as Models['GetSketchModePlane_type'])
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),

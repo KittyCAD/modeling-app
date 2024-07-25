@@ -87,7 +87,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
             fn_expr: transform.expr,
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: args.current_program_memory.clone(),
+            memory: *transform.memory,
         },
         extr,
         &args,
@@ -116,7 +116,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %, 'tag1')
+///     |> circle([0, 0], 1, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.

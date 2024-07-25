@@ -16,14 +16,14 @@ export const TEST_COLORS = {
 } as const
 
 async function waitForPageLoad(page: Page) {
-  // wait for 'Loading stream...' spinner
-  await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
-  await page
-    .getByTestId('loading')
-    .waitFor({ state: 'detached', timeout: 20_000 })
+  await expect(page.getByTestId('loading')).not.toBeAttached({
+    timeout: 20_000,
+  })
 
-  await page.getByTestId('start-sketch').waitFor()
+  await expect(page.getByTestId('start-sketch')).toBeEnabled({
+    timeout: 20_000,
+  })
 }
 
 async function removeCurrentCode(page: Page) {
@@ -471,8 +471,10 @@ export const doExport = async (
   page: Page
 ): Promise<Paths> => {
   await page.getByRole('button', { name: APP_NAME }).click()
-  await expect(page.getByRole('button', { name: 'Export Part' })).toBeVisible()
-  await page.getByRole('button', { name: 'Export Part' }).click()
+  await expect(
+    page.getByRole('button', { name: 'Export', exact: false })
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Export', exact: false }).click()
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar

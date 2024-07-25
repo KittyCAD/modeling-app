@@ -1636,8 +1636,8 @@ export function transformAstSketchLines({
     })
 
     const varName = varDec.node.id.name
-    let sketchGroup = programMemory.root?.[varName]
-    if (sketchGroup.type === 'ExtrudeGroup') {
+    let sketchGroup = programMemory.get(varName)
+    if (sketchGroup?.type === 'ExtrudeGroup') {
       sketchGroup = sketchGroup.sketchGroup
     }
     if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
