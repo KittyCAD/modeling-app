@@ -58,7 +58,7 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
 }
 
 async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('KCL Code')
+  const paneLocator = page.getByTestId('code-pane-button')
   const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
   const isOpen = ariaSelected === 'true'
 
@@ -69,7 +69,7 @@ async function openKclCodePanel(page: Page) {
 }
 
 async function closeKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('KCL Code')
+  const paneLocator = page.getByTestId('code-pane-button')
   const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
   const isOpen = ariaSelected === 'true'
 
@@ -80,7 +80,7 @@ async function closeKclCodePanel(page: Page) {
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('Debug')
+  const debugLocator = page.getByTestId('debug-pane-button')
   await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
 
@@ -91,7 +91,7 @@ async function openDebugPanel(page: Page) {
 }
 
 async function closeDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('Debug')
+  const debugLocator = page.getByTestId('debug-pane-button')
   await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
   if (isOpen) {
