@@ -96,7 +96,6 @@ import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { ArtifactMapCommand } from 'lang/std/artifactMap'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,

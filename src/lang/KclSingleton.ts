@@ -5,7 +5,6 @@ import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
 
-import { deferExecution } from 'lib/utils'
 import {
   CallExpression,
   initPromise,
