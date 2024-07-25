@@ -119,6 +119,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                 paneConfig={pane}
                 paneIsOpen={context.store?.openPanes.includes(pane.id)}
                 onClick={() => togglePane(pane.id)}
+                aria-pressed={context.store?.openPanes.includes(pane.id)}
               />
             ))}
           </ul>
@@ -174,7 +175,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 }
 
-interface ModelingPaneButtonProps {
+interface ModelingPaneButtonProps
+  extends React.HTMLAttributes<HTMLButtonElement> {
   paneConfig: {
     id: string
     title: string
@@ -191,6 +193,7 @@ function ModelingPaneButton({
   paneConfig,
   onClick,
   paneIsOpen,
+  ...props
 }: ModelingPaneButtonProps) {
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
@@ -201,6 +204,7 @@ function ModelingPaneButton({
       className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
       onClick={onClick}
       data-testid={paneConfig.title}
+      {...props}
     >
       <ActionIcon
         icon={paneConfig.icon}

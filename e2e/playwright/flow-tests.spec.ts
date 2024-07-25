@@ -3864,10 +3864,7 @@ test.describe('Regression tests', () => {
     await u.waitForAuthSkipAppStart()
 
     // expand variables section
-    const variablesTabButton = page.getByRole('tab', {
-      name: 'Variables',
-      exact: false,
-    })
+    const variablesTabButton = page.getByTestId('Variables')
     await variablesTabButton.click()
 
     // can find sketch001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
@@ -3892,10 +3889,7 @@ test.describe('Regression tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
-    const variablesTabButton = page.getByRole('tab', {
-      name: 'Variables',
-      exact: false,
-    })
+    const variablesTabButton = page.getByTestId('Variables')
     await variablesTabButton.click()
     // expect to see "myVar:5"
     await expect(
@@ -7777,7 +7771,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await u.closeDebugPanel()
 
   const codePane = page.getByRole('textbox').locator('div')
-  const codePaneButton = page.getByRole('tab', { name: 'KCL Code' })
+  const codePaneButton = page.getByTestId('KCL Code')
   const lineButton = page.getByRole('button', { name: 'Line' })
   const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
