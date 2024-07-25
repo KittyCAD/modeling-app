@@ -95,10 +95,7 @@ import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
-import {
-  ArtifactMapCommand,
-  EngineCommandManager,
-} from 'lang/std/engineConnection'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
@@ -1562,25 +1559,24 @@ export class SceneEntities {
         // to get the sketch profile's face ID. If we clicked on an endcap,
         // we already have it.
         const targetId =
-          'additionalData' in artifact &&
-          artifact.additionalData?.type === 'cap'
-            ? _entity_id
-            : artifact.parentId
+          artifact?.type === 'extrudeWall' || artifact?.type === 'extrudeCap'
+            ? artifact.segmentId
+            : ''
 
         // tsc cannot infer that target can have extrusions
         // from the commandType (why?) so we need to cast it
-        const target = this.engineCommandManager.artifactMap?.[
-          targetId || ''
-        ] as ArtifactMapCommand & { extrusions?: string[] }
+        const target = this.engineCommandManager.artifactMap?.[targetId || '']
+        const extrusionId =
+          target?.type === 'startPath' ? target.extrusions[0] : ''
 
         // TODO: We get the first extrusion command ID,
         // which is fine while backend systems only support one extrusion.
         // but we need to more robustly handle resolving to the correct extrusion
         // if there are multiple.
-        const extrusions =
-          this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
+        const extrusions = this.engineCommandManager.artifactMap?.[extrusionId]
 
-        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
+        if (artifact?.type !== 'extrudeCap' && artifact?.type !== 'extrudeWall')
+          return
 
         const faceInfo = await getFaceDetails(_entity_id)
         if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
@@ -1606,7 +1602,7 @@ export class SceneEntities {
             sketchPathToNode,
             extrudePathToNode,
             cap:
-              artifact?.additionalData?.type === 'cap'
+              artifact.type === 'extrudeCap'
                 ? artifact.additionalData.info
                 : 'none',
             faceId: _entity_id,
