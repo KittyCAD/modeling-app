@@ -223,7 +223,9 @@ function ModelingPaneButton({
       <span className="sr-only">{paneConfig.title} pane</span>
       <Tooltip position="right" hoverOnly>
         <span className="flex-1">{paneConfig.title} pane: </span>
-        <span className="hotkey text-xs capitalize">{paneConfig.keybinding}</span>
+        <span className="hotkey text-xs capitalize">
+          {paneConfig.keybinding}
+        </span>
       </Tooltip>
     </button>
   )
