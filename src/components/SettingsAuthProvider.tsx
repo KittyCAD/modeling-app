@@ -177,7 +177,7 @@ export const SettingsAuthProviderBase = ({
         },
         'Execute AST': () => {
           kclManager.isFirstRender = true
-          kclManager.executeCode(true, true).then(() => {
+          kclManager.executeCode(true).then(() => {
             kclManager.isFirstRender = false
           })
         },

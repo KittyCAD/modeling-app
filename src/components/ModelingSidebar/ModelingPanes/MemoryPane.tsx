@@ -82,8 +82,7 @@ export const MemoryPane = () => {
 
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
-  Object.keys(programMemory?.root || {}).forEach((key) => {
-    const val = programMemory.root[key]
+  for (const [key, val] of programMemory?.visibleEntries()) {
     if (typeof val.value !== 'function') {
       if (val.type === 'SketchGroup') {
         processedMemory[key] = val.value.map(({ __geoMeta, ...rest }: Path) => {
@@ -103,6 +102,6 @@ export const processMemory = (programMemory: ProgramMemory) => {
     } else if (key !== 'log') {
       processedMemory[key] = '__function__'
     }
-  })
+  }
   return processedMemory
 }

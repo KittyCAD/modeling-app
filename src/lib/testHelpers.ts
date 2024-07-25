@@ -75,7 +75,7 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Program | Error,
-  pm: ProgramMemory | Error = { root: {}, return: null }
+  pm: ProgramMemory | Error = ProgramMemory.empty()
 ): Promise<ProgramMemory> {
   if (err(ast)) return Promise.reject(ast)
   if (err(pm)) return Promise.reject(pm)
@@ -93,7 +93,7 @@ export async function enginelessExecutor(
 
 export async function executor(
   ast: Program,
-  pm: ProgramMemory = { root: {}, return: null }
+  pm: ProgramMemory = ProgramMemory.empty()
 ): Promise<ProgramMemory> {
   const engineCommandManager = new EngineCommandManager()
   engineCommandManager.start({

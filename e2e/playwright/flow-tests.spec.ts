@@ -1512,7 +1512,9 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 })
 
-test.skip('Copilot ghost text', () => {
+test.describe('Copilot ghost text', () => {
+  test.skip(true, 'Needs to get covered again')
+
   test('completes code in empty file', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio

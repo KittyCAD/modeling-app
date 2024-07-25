@@ -14,9 +14,7 @@ import {
   Program,
   ProgramMemory,
   recast,
-  SketchGroup,
   SourceRange,
-  ExtrudeGroup,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -33,32 +31,13 @@ export class KclManager {
     },
     digest: null,
   }
-  private _programMemory: ProgramMemory = {
-    root: {},
-    return: null,
-  }
+  private _programMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
   private _wasmInitFailed = true
 
   engineCommandManager: EngineCommandManager
-  private _defferer = deferExecution((code: string) => {
-    const ast = this.safeParse(code)
-    if (!ast) {
-      this.clearAst()
-      return
-    }
-    try {
-      const fmtAndStringify = (ast: Program) =>
-        JSON.stringify(parse(recast(ast)))
-      const isAstTheSame = fmtAndStringify(ast) === fmtAndStringify(this._ast)
-      if (isAstTheSame) return
-    } catch (e) {
-      console.error(e)
-    }
-    this.executeAst(ast)
-  }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Program) => void = () => {}
@@ -211,11 +190,6 @@ export class KclManager {
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
-    // here we're going to clear diagnostics since we're the first
-    // one in. We're the only location where diagnostics are cleared;
-    // everything from here on out should be *appending*.
-    editorManager.clearDiagnostics()
-
     this.isExecuting = true
     await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({
@@ -293,11 +267,6 @@ export class KclManager {
     await this?.engineCommandManager?.waitForReady
     this._ast = { ...newAst }
 
-    // here we're going to clear diagnostics since we're the first
-    // one in. We're the only location where diagnostics are cleared;
-    // everything from here on out should be *appending*.
-    editorManager.clearDiagnostics()
-
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
@@ -336,10 +305,8 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(force?: boolean, zoomToFit?: boolean): Promise<void> {
-    // If we want to force it we don't want to defer it.
-    if (!force) return this._defferer(codeManager.code)
-
+  async executeCode(zoomToFit?: boolean): Promise<void> {
+    console.log('[kcl/KclSingleton] executeCode')
     const ast = this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
@@ -505,10 +472,7 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
-  const firstSketchOrExtrudeGroup = Object.values(programMemory.root).find(
-    (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
-  ) as SketchGroup | ExtrudeGroup
-  firstSketchOrExtrudeGroup &&
+  programMemory.hasSketchOrExtrudeGroup() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

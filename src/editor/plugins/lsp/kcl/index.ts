@@ -117,11 +117,7 @@ export class KclPlugin implements PluginValue {
     }
 
     if (!this.client.ready) return
-    try {
-      kclManager.executeCode()
-    } catch (e) {
-      console.error(e)
-    }
+    kclManager.executeCode()
   }
 
   ensureDocUpdated() {
