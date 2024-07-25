@@ -62,21 +62,20 @@ export function isCursorInSketchCommandRange(
           Array.isArray(selection?.range) &&
           Array.isArray(artifact?.range) &&
           isOverlap(selection.range, artifact.range) &&
-          (artifact.commandType === 'startPath' ||
-            artifact.commandType === 'segment' ||
-            artifact.commandType === 'closeSegment')
+          (artifact.type === 'startPath' ||
+            artifact.type === 'segment' ||
+            artifact.type === 'closeSegment')
       )
   ) as [string, StartPathArtifact | SegmentArtifact | CloseArtifact][]
   const secondEntry = overlappingEntries?.[0]?.[1]
   const parentId =
-    secondEntry?.commandType === 'segment' ||
-    secondEntry?.commandType === 'closeSegment'
+    secondEntry?.type === 'segment' || secondEntry?.type === 'closeSegment'
       ? secondEntry.parentId
       : false
   let result = parentId
     ? parentId
     : overlappingEntries.find(
-        ([, artifact]) => artifact.commandType === 'startPath'
+        ([, artifact]) => artifact.type === 'startPath'
       )?.[0] || false
   return result
 }

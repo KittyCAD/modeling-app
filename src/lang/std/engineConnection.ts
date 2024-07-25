@@ -805,7 +805,7 @@ class EngineConnection extends EventTarget {
               this.engineCommandManager.artifactMap[message.request_id]
             console.error(
               `Error in response to request ${message.request_id}:\n${errorsString}
-  failed cmd type was ${artifactThatFailed?.commandType}`
+  failed cmd type was ${artifactThatFailed?.type}`
             )
           } else {
             console.error(`Error from server:\n${errorsString}`)
@@ -1857,7 +1857,7 @@ export class EngineCommandManager extends EventTarget {
       // // of these can be right...
       if (
         (data.range[0] === range[0] || data.range[1] === range[1]) &&
-        data.commandType === commandTypeToTarget
+        data.type === commandTypeToTarget
       )
         return id
     }

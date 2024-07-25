@@ -1560,8 +1560,7 @@ export class SceneEntities {
         // to get the sketch profile's face ID. If we clicked on an endcap,
         // we already have it.
         const targetId =
-          artifact?.commandType === 'extrudeWall' ||
-          artifact?.commandType === 'extrudeCap'
+          artifact?.type === 'extrudeWall' || artifact?.type === 'extrudeCap'
             ? artifact.parentId
             : ''
 
@@ -1569,7 +1568,7 @@ export class SceneEntities {
         // from the commandType (why?) so we need to cast it
         const target = this.engineCommandManager.artifactMap?.[targetId || '']
         const extrusionId =
-          target?.commandType === 'startPath' ? target.extrusions[0] : ''
+          target?.type === 'startPath' ? target.extrusions[0] : ''
 
         // TODO: We get the first extrusion command ID,
         // which is fine while backend systems only support one extrusion.
@@ -1577,10 +1576,7 @@ export class SceneEntities {
         // if there are multiple.
         const extrusions = this.engineCommandManager.artifactMap?.[extrusionId]
 
-        if (
-          artifact?.commandType !== 'extrudeCap' &&
-          artifact?.commandType !== 'extrudeWall'
-        )
+        if (artifact?.type !== 'extrudeCap' && artifact?.type !== 'extrudeWall')
           return
 
         const faceInfo = await getFaceDetails(_entity_id)
@@ -1607,7 +1603,7 @@ export class SceneEntities {
             sketchPathToNode,
             extrudePathToNode,
             cap:
-              artifact.commandType === 'extrudeCap'
+              artifact.type === 'extrudeCap'
                 ? artifact.additionalData.info
                 : 'none',
             faceId: _entity_id,
