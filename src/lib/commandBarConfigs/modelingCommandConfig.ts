@@ -96,7 +96,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: 'gltf',
         required: true,
         options: [
-          { name: 'gLTF', isCurrent: true, value: 'gltf' },
+          { name: 'glTF', isCurrent: true, value: 'gltf' },
           { name: 'OBJ', isCurrent: false, value: 'obj' },
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },

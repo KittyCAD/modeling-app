@@ -31,7 +31,7 @@ export default function Export() {
             >
               our open-source extension proposal
             </a>{' '}
-            for the gLTF file format.{' '}
+            for the glTF file format.{' '}
             <a
               href="https://zoo.dev/docs/api/convert-cad-file"
               rel="noopener noreferrer"
