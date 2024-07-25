@@ -175,7 +175,7 @@ export const ModelingMachineProvider = ({
             }
 
             store.videoElement?.pause()
-            kclManager.executeCode(true).then(() => {
+            kclManager.executeCode().then(() => {
               if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play()
