@@ -48,8 +48,6 @@ const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-  // num1: 9.64,
-  // num2: 19.19,
 }
 
 test.afterEach(async ({ context, page }, testInfo) => {
@@ -141,8 +139,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(500)
@@ -152,8 +151,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
@@ -162,8 +162,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
