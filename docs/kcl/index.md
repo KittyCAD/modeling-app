@@ -38,6 +38,7 @@ layout: manual
 * [`helix`](kcl/helix)
 * [`hole`](kcl/hole)
 * [`import`](kcl/import)
+* [`int`](kcl/int)
 * [`lastSegX`](kcl/lastSegX)
 * [`lastSegY`](kcl/lastSegY)
 * [`legAngX`](kcl/legAngX)
