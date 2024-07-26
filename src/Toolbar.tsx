@@ -329,9 +329,6 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
-                    onClickCapture={(e) =>
-                      e.nativeEvent.stopImmediatePropagation()
-                    }
                   >
                     <span className="flex-1">Open {link.label}</span>
                     <CustomIcon name="link" className="w-4 h-4" />
