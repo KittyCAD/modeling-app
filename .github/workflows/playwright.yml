@@ -157,7 +157,7 @@ jobs:
       id: retry
       if: always()
       run: |
-        yarn playwright test --project="Google Chrome"  --workers=1  --grep=@focus --repeat-each=10
+        yarn playwright test --project="Google Chrome"  --workers=1  --grep=@focus --repeat-each=100
         # if [[ ! -f "test-results/.last-run.json" ]]; then
         #     # if no last run artifact, than run plawright normally
         #     echo "run playwright normally"
