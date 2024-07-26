@@ -95,10 +95,7 @@ import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
-import {
-  ArtifactMapCommand,
-  EngineCommandManager,
-} from 'lang/std/engineConnection'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
@@ -538,7 +535,7 @@ export class SceneEntities {
     segmentName: 'line' | 'tangentialArcTo' = 'line',
     shouldTearDown = true
   ) => {
-    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    const _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -697,7 +694,7 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     rectangleOrigin: [x: number, y: number]
   ) => {
-    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    let _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -728,7 +725,9 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    _ast = parse(recast(_ast))
+    let _recastAst = parse(recast(_ast))
+    if (trap(_recastAst)) return Promise.reject(_recastAst)
+    _ast = _recastAst
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -742,7 +741,7 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
-        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        const pathToNodeTwo = structuredClone(sketchPathToNode)
         pathToNodeTwo[1][0] = 0
 
         const _node = getNodeFromPath<VariableDeclaration>(
@@ -804,7 +803,9 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
-          _ast = parse(recast(_ast))
+          let _recastAst = parse(recast(_ast))
+          if (trap(_recastAst)) return Promise.reject(_recastAst)
+          _ast = _recastAst
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1008,10 +1009,14 @@ export class SceneEntities {
       PROFILE_START,
     ])
     if (!group) return
-    const pathToNode: PathToNode = JSON.parse(
-      JSON.stringify(group.userData.pathToNode)
-    )
-    const varDecIndex = JSON.parse(JSON.stringify(pathToNode[1][0]))
+    const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
+    const varDecIndex = pathToNode[1][0]
+    if (typeof varDecIndex !== 'number') {
+      console.error(
+        `Expected varDecIndex to be a number, but found: ${typeof varDecIndex} ${varDecIndex}`
+      )
+      return
+    }
     if (draftInfo) {
       pathToNode[1][0] = 0
     }
@@ -1561,26 +1566,25 @@ export class SceneEntities {
         // If we clicked on an extrude wall, we climb up the parent Id
         // to get the sketch profile's face ID. If we clicked on an endcap,
         // we already have it.
-        const targetId =
-          'additionalData' in artifact &&
-          artifact.additionalData?.type === 'cap'
-            ? _entity_id
-            : artifact.parentId
+        const pathId =
+          artifact?.type === 'extrudeWall' || artifact?.type === 'extrudeCap'
+            ? artifact.pathId
+            : ''
 
         // tsc cannot infer that target can have extrusions
         // from the commandType (why?) so we need to cast it
-        const target = this.engineCommandManager.artifactMap?.[
-          targetId || ''
-        ] as ArtifactMapCommand & { extrusions?: string[] }
+        const path = this.engineCommandManager.artifactMap?.[pathId || '']
+        const extrusionId =
+          path?.type === 'startPath' ? path.extrusionIds[0] : ''
 
         // TODO: We get the first extrusion command ID,
         // which is fine while backend systems only support one extrusion.
         // but we need to more robustly handle resolving to the correct extrusion
         // if there are multiple.
-        const extrusions =
-          this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
+        const extrusions = this.engineCommandManager.artifactMap?.[extrusionId]
 
-        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
+        if (artifact?.type !== 'extrudeCap' && artifact?.type !== 'extrudeWall')
+          return
 
         const faceInfo = await getFaceDetails(_entity_id)
         if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
@@ -1605,10 +1609,7 @@ export class SceneEntities {
             ) as [number, number, number],
             sketchPathToNode,
             extrudePathToNode,
-            cap:
-              artifact?.additionalData?.type === 'cap'
-                ? artifact.additionalData.info
-                : 'none',
+            cap: artifact.type === 'extrudeCap' ? artifact.cap : 'none',
             faceId: _entity_id,
           },
         })
@@ -1762,7 +1763,7 @@ function prepareTruncatedMemoryAndAst(
     }
   | Error {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
-  const _ast = JSON.parse(JSON.stringify(ast))
+  const _ast = structuredClone(ast)
 
   const _node = getNodeFromPath<VariableDeclaration>(
     _ast,
@@ -1821,7 +1822,7 @@ function prepareTruncatedMemoryAndAst(
   }
   const truncatedAst: Program = {
     ..._ast,
-    body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
+    body: [structuredClone(_ast.body[bodyIndex])],
   }
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
@@ -1855,10 +1856,7 @@ function prepareTruncatedMemoryAndAst(
     if (!memoryItem) {
       continue
     }
-    const error = programMemoryOverride.set(
-      name,
-      JSON.parse(JSON.stringify(memoryItem))
-    )
+    const error = programMemoryOverride.set(name, structuredClone(memoryItem))
     if (err(error)) return error
   }
   return {
@@ -2022,13 +2020,17 @@ export async function getFaceDetails(
       entity_id: entityId,
     },
   })
-  const faceInfo: Models['GetSketchModePlane_type'] = (
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'get_sketch_mode_plane' },
-    })
-  )?.data?.data
+  const resp = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'get_sketch_mode_plane' },
+  })
+  const faceInfo =
+    resp?.success &&
+    resp?.resp.type === 'modeling' &&
+    resp?.resp?.data?.modeling_response?.type === 'get_sketch_mode_plane'
+      ? resp?.resp?.data?.modeling_response.data
+      : ({} as Models['GetSketchModePlane_type'])
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),

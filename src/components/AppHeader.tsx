@@ -30,7 +30,7 @@ export const AppHeader = ({
       className={
         'w-full grid ' +
         styles.header +
-        ' overlaid-panes sticky top-0 z-20 px-2 items-center ' +
+        ' overlaid-panes sticky top-0 z-20 px-2 items-start ' +
         className
       }
     >
