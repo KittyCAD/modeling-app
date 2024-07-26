@@ -3956,14 +3956,17 @@ test.describe('Regression tests', () => {
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `const exampleSketch = startSketchOn("XZ")
+  test(
+    'Position _ Is Out Of Range... regression test',
+    { tag: '@focus' },
+    async ({ page }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -3972,50 +3975,50 @@ test.describe('Regression tests', () => {
   
   const example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-      )
-    })
+        )
+      })
 
-    await page.goto('/')
-    await u.waitForPageLoad()
+      await page.goto('/')
+      await u.waitForPageLoad()
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    await page.waitForTimeout(200)
-    // expect it still to be there (sometimes it just clears for a bit?)
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-      timeout: 10_000,
-    })
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+      await page.waitForTimeout(200)
+      // expect it still to be there (sometimes it just clears for a bit?)
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 10_000,
+      })
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
-    // Okay execution finished, let's start editing text below the error.
-    await u.codeLocator.click()
-    // Go to the end of the editor
-    // This bug happens when there is a diagnostic in the editor and you try to
-    // edit text below it.
-    // Or delete a huge chunk of text and then try to edit below it.
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('End')
-    await page.keyboard.up('Shift')
-    await page.keyboard.press('Backspace')
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // Okay execution finished, let's start editing text below the error.
+      await u.codeLocator.click()
+      // Go to the end of the editor
+      // This bug happens when there is a diagnostic in the editor and you try to
+      // edit text below it.
+      // Or delete a huge chunk of text and then try to edit below it.
+      await page.keyboard.press('End')
+      await page.keyboard.down('Shift')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('End')
+      await page.keyboard.up('Shift')
+      await page.keyboard.press('Backspace')
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('thing: "blah"', { delay: 100 })
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('ArrowLeft')
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('thing: "blah"', { delay: 100 })
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('ArrowLeft')
 
-    await expect(page.locator('.cm-content'))
-      .toContainText(`const exampleSketch = startSketchOn("XZ")
+      await expect(page.locator('.cm-content'))
+        .toContainText(`const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -4023,8 +4026,9 @@ test.describe('Regression tests', () => {
 
     thing: "blah"`)
 
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-  })
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    }
+  )
 })
 
 test.describe('Sketch tests', () => {
@@ -4115,57 +4119,55 @@ test.describe('Sketch tests', () => {
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
   })
-  test(
-    'Can delete most of a sketch and the line tool will still work',
-    { tag: '@focus' },
-    async ({ page }) => {
-      const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `const sketch001 = startSketchOn('XZ')
+  test('Can delete most of a sketch and the line tool will still work', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -5.38], %)`
-        )
-      })
+      )
+    })
 
-      await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setViewportSize({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
-      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await u.waitForAuthSkipAppStart()
+    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
 
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeEnabled()
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeEnabled()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
-      await page.waitForTimeout(600) // wait for animation
+    await page.waitForTimeout(600) // wait for animation
 
-      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
-      await page.keyboard.press('End')
-      await page.keyboard.down('Shift')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('Home')
-      await page.keyboard.up('Shift')
-      await page.keyboard.press('Backspace')
-      await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
-      await u.openAndClearDebugPanel()
+    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await u.openAndClearDebugPanel()
 
-      await page.waitForTimeout(100)
+    await page.waitForTimeout(100)
 
-      await page.getByRole('button', { name: 'Line', exact: true }).click()
-      await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.waitForTimeout(100)
 
-      await page.mouse.click(700, 200)
+    await page.mouse.click(700, 200)
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('XZ')
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([0.31, 16.47], %)`
-      )
-    }
-  )
+    )
+  })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
