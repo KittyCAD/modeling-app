@@ -343,6 +343,7 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                     return Ok((Primitive::Uuid.to_string(), false));
                 } else if format == "double"
                     || format == "uint"
+                    || format == "int32"
                     || format == "int64"
                     || format == "uint8"
                     || format == "uint32"

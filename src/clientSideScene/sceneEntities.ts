@@ -535,7 +535,7 @@ export class SceneEntities {
     segmentName: 'line' | 'tangentialArcTo' = 'line',
     shouldTearDown = true
   ) => {
-    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    const _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -694,7 +694,7 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     rectangleOrigin: [x: number, y: number]
   ) => {
-    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    let _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -725,7 +725,9 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    _ast = parse(recast(_ast))
+    let _recastAst = parse(recast(_ast))
+    if (trap(_recastAst)) return Promise.reject(_recastAst)
+    _ast = _recastAst
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -739,7 +741,7 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
-        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        const pathToNodeTwo = structuredClone(sketchPathToNode)
         pathToNodeTwo[1][0] = 0
 
         const _node = getNodeFromPath<VariableDeclaration>(
@@ -801,7 +803,9 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
-          _ast = parse(recast(_ast))
+          let _recastAst = parse(recast(_ast))
+          if (trap(_recastAst)) return Promise.reject(_recastAst)
+          _ast = _recastAst
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1005,10 +1009,14 @@ export class SceneEntities {
       PROFILE_START,
     ])
     if (!group) return
-    const pathToNode: PathToNode = JSON.parse(
-      JSON.stringify(group.userData.pathToNode)
-    )
-    const varDecIndex = JSON.parse(JSON.stringify(pathToNode[1][0]))
+    const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
+    const varDecIndex = pathToNode[1][0]
+    if (typeof varDecIndex !== 'number') {
+      console.error(
+        `Expected varDecIndex to be a number, but found: ${typeof varDecIndex} ${varDecIndex}`
+      )
+      return
+    }
     if (draftInfo) {
       pathToNode[1][0] = 0
     }
@@ -1755,7 +1763,7 @@ function prepareTruncatedMemoryAndAst(
     }
   | Error {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
-  const _ast = JSON.parse(JSON.stringify(ast))
+  const _ast = structuredClone(ast)
 
   const _node = getNodeFromPath<VariableDeclaration>(
     _ast,
@@ -1814,7 +1822,7 @@ function prepareTruncatedMemoryAndAst(
   }
   const truncatedAst: Program = {
     ..._ast,
-    body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
+    body: [structuredClone(_ast.body[bodyIndex])],
   }
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
@@ -1848,10 +1856,7 @@ function prepareTruncatedMemoryAndAst(
     if (!memoryItem) {
       continue
     }
-    const error = programMemoryOverride.set(
-      name,
-      JSON.parse(JSON.stringify(memoryItem))
-    )
+    const error = programMemoryOverride.set(name, structuredClone(memoryItem))
     if (err(error)) return error
   }
   return {

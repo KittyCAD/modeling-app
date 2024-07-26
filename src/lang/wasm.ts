@@ -197,7 +197,7 @@ export class ProgramMemory {
    * Returns a deep copy.
    */
   clone(): ProgramMemory {
-    return ProgramMemory.fromRaw(JSON.parse(JSON.stringify(this.toRaw())))
+    return ProgramMemory.fromRaw(structuredClone(this.toRaw()))
   }
 
   has(name: string): boolean {
@@ -268,7 +268,7 @@ export class ProgramMemory {
           continue
         }
         // Deep copy.
-        bindings[name] = JSON.parse(JSON.stringify(value))
+        bindings[name] = structuredClone(value)
       }
       environments.push({ bindings, parent: env.parent })
     }

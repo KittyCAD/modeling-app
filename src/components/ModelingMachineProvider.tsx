@@ -68,11 +68,11 @@ import { EditorSelection, Transaction } from '@codemirror/state'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -133,46 +133,11 @@ export const ModelingMachineProvider = ({
           ;(async () => {
             // blocks entering a sketch until after exit sketch code has run
             kclManager.isExecuting = true
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
-
-            const resp = await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_get_settings',
-              },
-            })
-
-            const settings =
-              resp &&
-              resp.success &&
-              resp.resp.type === 'modeling' &&
-              resp.resp.data.modeling_response.type ===
-                'default_camera_get_settings'
-                ? resp.resp.data.modeling_response.data.settings
-                : ({} as Models['DefaultCameraGetSettings_type']['settings'])
-
-            if (settings.up.z !== 1) {
-              // workaround for gimbal lock situation
-              await engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'default_camera_look_at',
-                  center: settings.center,
-                  vantage: {
-                    ...settings.pos,
-                    y:
-                      settings.pos.y +
-                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
-                  },
-                  up: { x: 0, y: 0, z: 1 },
-                },
-              })
-            }
 
             store.videoElement?.pause()
             kclManager.executeCode().then(() => {
@@ -495,7 +460,7 @@ export const ModelingMachineProvider = ({
           if (kclManager.ast.body.length) {
             // this assumes no changes have been made to the sketch besides what we did when entering the sketch
             // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
-            const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+            const newAst = structuredClone(kclManager.ast)
             const varDecIndex = sketchDetails.sketchPathToNode[1][0]
             // remove body item at varDecIndex
             newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
