@@ -17,11 +17,11 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from './sceneInfra'
 import {
-  EngineCommand,
   Subscription,
   EngineCommandManager,
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
