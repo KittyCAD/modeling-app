@@ -11,12 +11,11 @@ import {
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { sep } from '@tauri-apps/api/path'
-import { readTextFile } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
   getProjectInfo,
-  initializeProjectDirectory,
+  ensureProjectDirectoryExists,
   listProjects,
 } from './desktop'
 import { createSettings } from './settings/initialSettings'
@@ -90,14 +89,14 @@ export const fileLoader: LoaderFunction = async ({
     if (!current_file_name || !current_file_path || !project_name) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${isDesktop() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
+          `${params.id}${isDesktop() ? window.electron.path.sep : '/'}${PROJECT_ENTRYPOINT}`
         )}`
       )
     }
 
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
-    const code = await readTextFile(current_file_path)
+    const code = await window.electron.readFile(current_file_path)
 
     // Update both the state and the editor's code.
     // We explicitly do not write to the file here since we are loading from
@@ -161,7 +160,7 @@ export const homeLoader: LoaderFunction = async (): Promise<
   }
   const { configuration } = await loadAndValidateSettings()
 
-  const projectDir = await initializeProjectDirectory(configuration)
+  const projectDir = await ensureProjectDirectoryExists(configuration)
 
   if (projectDir) {
     const projects = await listProjects(configuration)

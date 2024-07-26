@@ -171,7 +171,7 @@ const FileTreeItem = ({
       // Import non-kcl files
       // We want to update both the state and editor here.
       codeManager.updateCodeStateEditor(
-        `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
+        `import("${fileOrDir.path.replace(project.file.path, '.')}")\n` +
           codeManager.code
       )
       codeManager.writeToFile()

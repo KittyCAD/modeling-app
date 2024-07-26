@@ -1,12 +1,4 @@
-let toast = undefined
-
-try {
-  global
-} catch (e) {
-  import('react-hot-toast').then((_toast) => {
-    toast = _toast
-  })
-}
+import toast from 'react-hot-toast'
 
 type ExcludeErr<T> = Exclude<T, Error>
 
@@ -16,6 +8,7 @@ export function err<T>(value: ExcludeErr<T> | Error): value is Error {
     return false
   }
 
+  console.error(value)
   return true
 }
 

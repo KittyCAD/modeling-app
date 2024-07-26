@@ -495,7 +495,6 @@ pub fn default_app_settings() -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let settings = kcl_lib::settings::types::Configuration::default();
-    web_sys::console::log(&js_sys::Array::of1(&JsValue::from_str(&format!("{:?}", settings))));
 
     serde_wasm_bindgen::to_value(&settings).map_err(|e| e.to_string())
 }

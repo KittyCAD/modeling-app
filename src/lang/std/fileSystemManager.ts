@@ -15,7 +15,7 @@ class FileSystemManager {
   }
 
   async join(dir: string, path: string): Promise<string> {
-    return window.electron.ipcRenderer.invoke('join', [dir, path])
+    return Promise.resolve(window.electron.path.join(dir, path))
   }
 
   async readFile(path: string): Promise<Uint8Array | void> {
@@ -33,7 +33,7 @@ class FileSystemManager {
         return Promise.reject(new Error(`Error reading file: ${error}`))
       })
       .then((file) => {
-        return window.electron.ipcRenderer.invoke('readFile', [filepath])
+        return window.electron.readFile(filepath)
       })
   }
 
@@ -51,8 +51,14 @@ class FileSystemManager {
       .catch((error) => {
         return Promise.reject(new Error(`Error checking file exists: ${error}`))
       })
-      .then((file) => {
-        return window.electron.ipcRenderer.invoke('exists', [file])
+      .then(async (file) => {
+        try { await window.electron.stat(file) }
+        catch (e) {
+          if (e === 'ENOENT') {
+            return false
+          }
+        }
+        return true
       })
   }
 
@@ -71,8 +77,7 @@ class FileSystemManager {
         return Promise.reject(new Error(`Error joining dir: ${error}`))
       })
       .then((filepath) => {
-        return window.electron.ipcRenderer
-          .invoke('readdir', [filepath])
+        return window.electron.readdir(filepath)
           .catch((error) => {
             return Promise.reject(new Error(`Error reading dir: ${error}`))
           })

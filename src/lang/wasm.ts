@@ -19,6 +19,11 @@ import init, {
   parse_project_route,
   serialize_project_settings,
 } from '../wasm-lib/pkg/wasm_lib'
+import {
+  configurationToSettingsPayload,
+  projectConfigurationToSettingsPayload,
+  SaveSettingsPayload,
+} from 'lib/settings/settingsUtils'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
@@ -559,22 +564,26 @@ export function tomlStringify(toml: any): string | Error {
   return toml_stringify(JSON.stringify(toml))
 }
 
-export function defaultAppSettings(): Configuration {
-  return default_app_settings()
+export function defaultAppSettings(): Partial<SaveSettingsPayload> {
+  // Immediately go from Configuration -> Partial<SaveSettingsPayload>
+  // The returned Rust type is Configuration but it's a lie. Every
+  // property in that returned object is optional. The Partial<T> essentially
+  // brings that type in-line with that definition.
+  return configurationToSettingsPayload(default_app_settings())
 }
 
-export function parseAppSettings(toml: string): Configuration | Error {
-  return parse_app_settings(toml)
+export function parseAppSettings(toml: string): Partial<SaveSettingsPayload> {
+  return configurationToSettingsPayload(parse_app_settings(toml))
 }
 
-export function defaultProjectSettings(): ProjectConfiguration | Error {
-  return default_project_settings()
+export function defaultProjectSettings(): Partial<SaveSettingsPayload> {
+  return projectConfigurationToSettingsPayload(default_project_settings())
 }
 
 export function parseProjectSettings(
   toml: string
-): ProjectConfiguration | Error {
-  return parse_project_settings(toml)
+): Partial<SaveSettingsPayload> {
+  return projectConfigurationToSettingsPayload(parse_project_settings(toml))
 }
 
 export function parseProjectRoute(
@@ -582,80 +591,4 @@ export function parseProjectRoute(
   route_str: string
 ): ProjectRoute | Error {
   return parse_project_route(JSON.stringify(configuration), route_str)
-}
-
-const DEFAULT_HOST = 'https://api.zoo.dev'
-const SETTINGS_FILE_NAME = 'settings.toml'
-const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
-const PROJECT_FOLDER = 'zoo-modeling-app-projects'
-
-const getAppSettingsFilePath = async () => {
-  const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(
-    appConfig,
-    window.electron.packageJson.name
-  )
-  try {
-    await window.electron.exists(fullPath)
-  } catch (e) {
-    // File/path doesn't exist
-    if (e.code === 'ENOENT') {
-      window.electron.mkdir(fullPath, { recursive: true })
-    }
-  }
-  return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
-}
-
-const getInitialDefaultDir = async () => {
-  const dir = await window.electron.getPath('documents')
-  return window.electron.path.join(dir, PROJECT_FOLDER)
-}
-
-export const readAppSettingsFile = async () => {
-  let settingsPath = await getAppSettingsFilePath()
-  try {
-    await window.electron.exists(settingsPath)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      const config = defaultAppSettings()
-      config.settings.project.directory = await getInitialDefaultDir()
-      console.log(config)
-      return config
-    }
-  }
-  const configToml = await window.electron.readFile(settingsPath)
-  const configObj = parseProjectSettings(configStr)
-  return configObj
-}
-
-export const writeAppSettingsFile = async () => {
-  debugger
-  console.log("STUB")
-}
-
-let appStateStore = undefined
-
-export const getState = async (): Promise<ProjectState | undefined> => {
-  return Promise.resolve(appStateStore)
-}
-
-export const setState = async (
-  state: ProjectState | undefined
-): Promise<void> => {
-  appStateStore = state
-}
-
-const initializeProjectDirectory = () => {
-  debugger
-  console.log('STUB')
-}
-
-export const login = () => {
-  debugger
-  console.log('STUB')
-}
-
-export const getUser = (token: string, host: string) => {
-  debugger
-  console.log("STUB")
 }
