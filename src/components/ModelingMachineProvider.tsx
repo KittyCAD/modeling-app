@@ -72,6 +72,7 @@ import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -132,7 +133,8 @@ export const ModelingMachineProvider = ({
           ;(async () => {
             // blocks entering a sketch until after exit sketch code has run
             kclManager.isExecuting = true
-
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+            
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'

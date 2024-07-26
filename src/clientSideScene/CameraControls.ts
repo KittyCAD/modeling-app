@@ -585,10 +585,6 @@ export class CameraControls {
       .add(direction.multiplyScalar(-distanceAfter))
     this.camera.position.copy(newPosition)
 
-    const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
-    this.camera.near = z_near
-    this.camera.far = z_far
-
     if (splitEngineCalls) {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -1253,7 +1249,7 @@ export async function letEngineAnimateAndSyncCamAfter(
       type: 'enable_sketch_mode',
       adjust_camera: true,
       animated: !isReducedMotion(),
-      ortho: false,
+      ortho: true,
       entity_id: entityId,
     },
   })
