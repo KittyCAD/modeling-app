@@ -38,7 +38,7 @@ pub async fn assert(args: Args) -> Result<MemoryItem, KclError> {
     name = "assert",
 }]
 async fn inner_assert(data: bool, message: &str, args: &Args) -> Result<f64, KclError> {
-    _assert(data, message, &args).await?;
+    _assert(data, message, args).await?;
     Ok(0.0)
 }
 
@@ -57,7 +57,7 @@ pub async fn assert_lt(args: Args) -> Result<MemoryItem, KclError> {
     name = "assertLessThan",
 }]
 async fn inner_assert_lt(left: f64, right: f64, message: &str, args: &Args) -> Result<f64, KclError> {
-    _assert(left < right, message, &args).await?;
+    _assert(left < right, message, args).await?;
     Ok(0.0)
 }
 
@@ -76,7 +76,7 @@ pub async fn assert_gt(args: Args) -> Result<MemoryItem, KclError> {
     name = "assertGreaterThan",
 }]
 async fn inner_assert_gt(left: f64, right: f64, message: &str, args: &Args) -> Result<f64, KclError> {
-    _assert(left > right, message, &args).await?;
+    _assert(left > right, message, args).await?;
     Ok(0.0)
 }
 
@@ -96,7 +96,7 @@ pub async fn assert_lte(args: Args) -> Result<MemoryItem, KclError> {
     name = "assertLessThanOrEq",
 }]
 async fn inner_assert_lte(left: f64, right: f64, message: &str, args: &Args) -> Result<f64, KclError> {
-    _assert(left <= right, message, &args).await?;
+    _assert(left <= right, message, args).await?;
     Ok(0.0)
 }
 
@@ -116,6 +116,6 @@ pub async fn assert_gte(args: Args) -> Result<MemoryItem, KclError> {
     name = "assertGreaterThanOrEq",
 }]
 async fn inner_assert_gte(left: f64, right: f64, message: &str, args: &Args) -> Result<f64, KclError> {
-    _assert(left >= right, message, &args).await?;
+    _assert(left >= right, message, args).await?;
     Ok(0.0)
 }
