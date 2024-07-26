@@ -38,8 +38,8 @@ export function addFillet(
   radius = createLiteral(5) as Value
   // shouldPipe = false, // TODO: Implement this feature
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
-  // close ast to make mutations safe
-  let _node: Program = JSON.parse(JSON.stringify(node))
+  // clone ast to make mutations safe
+  let _node = structuredClone(node)
 
   /**
    * Add Tag to the Segment Expression

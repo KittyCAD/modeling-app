@@ -1696,7 +1696,7 @@ export function addNewSketchLn({
       pathToNode: PathToNode
     }
   | Error {
-  const node = JSON.parse(JSON.stringify(_node))
+  const node = structuredClone(_node)
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
   if (!add || !updateArgs) {
     return new Error('not a sketch line helper')
