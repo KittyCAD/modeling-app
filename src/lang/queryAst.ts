@@ -545,8 +545,14 @@ export function isNodeSafeToReplacePath(
   const replaceNodeWithIdentifier: ReplacerFn = (_ast, varName) => {
     const identifier = createIdentifier(varName)
     const last = finPath[finPath.length - 1]
-    const pathToReplaced = JSON.parse(JSON.stringify(finPath))
-    pathToReplaced[1][0] = pathToReplaced[1][0] + 1
+    const pathToReplaced = structuredClone(finPath)
+    const index = pathToReplaced[1][0]
+    if (typeof index !== 'number') {
+      return new Error(
+        `Expected number index, but found: ${typeof index} ${index}`
+      )
+    }
+    pathToReplaced[1][0] = index + 1
     const startPath = finPath.slice(0, -1)
     const _nodeToReplace = getNodeFromPath(_ast, startPath)
     if (err(_nodeToReplace)) return _nodeToReplace

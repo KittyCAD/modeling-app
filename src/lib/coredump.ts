@@ -1,4 +1,4 @@
-import { EngineCommandManager } from 'lang/std/engineConnection'
+import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
 import { isTauri } from 'lib/isTauri'
@@ -142,16 +142,6 @@ export class CoreDumpManager {
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
     /**
-     * Deep clone a JavaScript Object
-     * - NOTE: this function throws on parse errors from things like circular references
-     * - It is also synchronous and could be more performant
-     * - There is a whole rabbit hole to explore here if you like.
-     * - This works for our use case.
-     * @param {object} obj - The object to clone.
-     */
-    const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
-
-    /**
      * Check if a function is private method
      */
     const isPrivateMethod = (key: string) => {
@@ -173,7 +163,7 @@ export class CoreDumpManager {
       // singletons
       engine_command_manager: {
         artifact_map: {},
-        command_logs: [],
+        command_logs: [] as CommandLog[],
         engine_connection: { state: { type: '' } },
         default_planes: {},
         scene_command_artifacts: {},
@@ -208,7 +198,7 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager artifact map',
           this.engineCommandManager.artifactMap
         )
-        clientState.engine_command_manager.artifact_map = deepClone(
+        clientState.engine_command_manager.artifact_map = structuredClone(
           this.engineCommandManager.artifactMap
         )
       }
@@ -219,7 +209,7 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager command logs',
           this.engineCommandManager.commandLogs
         )
-        clientState.engine_command_manager.command_logs = deepClone(
+        clientState.engine_command_manager.command_logs = structuredClone(
           this.engineCommandManager.commandLogs
         )
       }
@@ -230,7 +220,7 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager default planes',
           this.engineCommandManager.defaultPlanes
         )
-        clientState.engine_command_manager.default_planes = deepClone(
+        clientState.engine_command_manager.default_planes = structuredClone(
           this.engineCommandManager.defaultPlanes
         )
       }
@@ -271,9 +261,8 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager scene command artifacts',
           this.engineCommandManager.sceneCommandArtifacts
         )
-        clientState.engine_command_manager.scene_command_artifacts = deepClone(
-          this.engineCommandManager.sceneCommandArtifacts
-        )
+        clientState.engine_command_manager.scene_command_artifacts =
+          structuredClone(this.engineCommandManager.sceneCommandArtifacts)
       }
 
       // KCL Manager - globalThis?.window?.kclManager
@@ -284,13 +273,15 @@ export class CoreDumpManager {
         // KCL Manager AST
         debugLog('CoreDump: KCL Manager AST', kclManager?.ast)
         if (kclManager?.ast) {
-          clientState.kcl_manager.ast = deepClone(kclManager.ast)
+          clientState.kcl_manager.ast = structuredClone(kclManager.ast)
         }
 
         // KCL Errors
         debugLog('CoreDump: KCL Errors', kclManager?.kclErrors)
         if (kclManager?.kclErrors) {
-          clientState.kcl_manager.kcl_errors = deepClone(kclManager.kclErrors)
+          clientState.kcl_manager.kcl_errors = structuredClone(
+            kclManager.kclErrors
+          )
         }
 
         // KCL isExecuting
@@ -302,13 +293,15 @@ export class CoreDumpManager {
         // KCL logs
         debugLog('CoreDump: KCL logs', kclManager?.logs)
         if (kclManager?.logs) {
-          ;(clientState.kcl_manager as any).logs = deepClone(kclManager.logs)
+          ;(clientState.kcl_manager as any).logs = structuredClone(
+            kclManager.logs
+          )
         }
 
         // KCL programMemory
         debugLog('CoreDump: KCL programMemory', kclManager?.programMemory)
         if (kclManager?.programMemory) {
-          ;(clientState.kcl_manager as any).programMemory = deepClone(
+          ;(clientState.kcl_manager as any).programMemory = structuredClone(
             kclManager.programMemory
           )
         }
@@ -363,7 +356,7 @@ export class CoreDumpManager {
         )
         if (sceneEntitiesManager?.activeSegments) {
           ;(clientState.scene_entities_manager as any).activeSegments =
-            deepClone(sceneEntitiesManager.activeSegments)
+            structuredClone(sceneEntitiesManager.activeSegments)
         }
       }
 
@@ -387,7 +380,7 @@ export class CoreDumpManager {
         editorManagerKeys.forEach((key: string) => {
           debugLog('CoreDump: Editor Manager', key, editorManager[key])
           try {
-            ;(clientState.editor_manager as any)[key] = deepClone(
+            ;(clientState.editor_manager as any)[key] = structuredClone(
               editorManager[key]
             )
           } catch (error) {
