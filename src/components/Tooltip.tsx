@@ -29,7 +29,7 @@ export default function Tooltip({
   return (
     <div
       // @ts-ignore while awaiting merge of this PR for support of "inert" https://github.com/DefinitelyTyped/DefinitelyTyped/pull/60822
-      inert={`${inert}`}
+      inert={inert}
       role="tooltip"
       className={`p-3 ${
         position !== 'left' && position !== 'right' ? 'px-0' : ''
