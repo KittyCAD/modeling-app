@@ -4154,8 +4154,8 @@ test.describe('Sketch tests', () => {
       await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
       await page.waitForTimeout(100)
 
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
-    await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Line', exact: true }).click()
+      await page.waitForTimeout(100)
 
       await page.mouse.click(700, 200)
 
