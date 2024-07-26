@@ -4149,9 +4149,9 @@ test.describe('Sketch tests', () => {
       await page.keyboard.press('Home')
       await page.keyboard.up('Shift')
       await page.keyboard.press('Backspace')
+      await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
       await u.openAndClearDebugPanel()
 
-      await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
       await page.waitForTimeout(100)
 
       await page.getByRole('button', { name: 'Line', exact: true }).click()
