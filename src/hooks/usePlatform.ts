@@ -1,13 +1,14 @@
-import { Platform, platform } from '@tauri-apps/plugin-os'
 import { isDesktop } from 'lib/isDesktop'
 import { useEffect, useState } from 'react'
+
+export type Platform = 'macos' | 'windows' | 'linux'
 
 export default function usePlatform() {
   const [platformName, setPlatformName] = useState<Platform | ''>('')
 
   useEffect(() => {
     async function getPlatform() {
-      setPlatformName(await platform())
+      setPlatformName(window.electron.platform)
     }
 
     if (isDesktop()) {

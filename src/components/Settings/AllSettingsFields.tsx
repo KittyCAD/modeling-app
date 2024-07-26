@@ -46,7 +46,7 @@ export const AllSettingsFields = forwardRef(
             location.pathname
               .replace(paths.FILE + '/', '')
               .replace(paths.SETTINGS, '')
-              .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
+              .slice(0, decodeURI(location.pathname).lastIndexOf(window.electron.path.sep))
           )
         : undefined
 

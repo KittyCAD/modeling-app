@@ -27,7 +27,7 @@ import { BROWSER_PROJECT_NAME } from 'lib/constants'
  * We do this because the JS settings type has all the fancy shit
  * for hiding and showing settings.
  **/
-function configurationToSettingsPayload(
+export function configurationToSettingsPayload(
   configuration: Configuration
 ): Partial<SaveSettingsPayload> {
   return {
@@ -65,7 +65,7 @@ function configurationToSettingsPayload(
   }
 }
 
-function projectConfigurationToSettingsPayload(
+export function projectConfigurationToSettingsPayload(
   configuration: ProjectConfiguration
 ): Partial<SaveSettingsPayload> {
   return {
@@ -165,14 +165,12 @@ export async function loadAndValidateSettings(
   await initPromise
 
   // Load the app settings from the file system or localStorage.
-  const appSettings = onDesktop
+  const appSettingsPayload = onDesktop
     ? await readAppSettingsFile()
     : readLocalStorageAppSettingsFile()
 
-  if (err(appSettings)) return Promise.reject(appSettings)
+  if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
-  // Convert the app settings to the JS settings format.
-  const appSettingsPayload = configurationToSettingsPayload(appSettings)
   setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
   // Load the project settings if they exist
@@ -190,7 +188,7 @@ export async function loadAndValidateSettings(
   }
 
   // Return the settings object
-  return { settings, configuration: appSettings }
+  return { settings, configuration: appSettingsPayload }
 }
 
 export async function saveSettings(
@@ -207,7 +205,7 @@ export async function saveSettings(
   if (err(tomlString)) return
 
   // Parse this as a Configuration.
-  const appSettings = parseAppSettings(tomlString)
+  const appSettings = { settings: parseAppSettings(tomlString) }
   if (err(appSettings)) return
 
   const tomlString2 = tomlStringify(appSettings)

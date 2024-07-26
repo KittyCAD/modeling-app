@@ -51,7 +51,7 @@ export const FileMachineProvider = ({
           commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.selectedDirectory + sep() + event.data.name
+              context.selectedDirectory + window.electron.path.sep + event.data.name
             )}`
           )
         } else if (
@@ -87,7 +87,7 @@ export const FileMachineProvider = ({
     services: {
       readFiles: async (context: ContextFrom<typeof fileMachine>) => {
         const newFiles = isDesktop()
-          ? (await getProjectInfo(context.project.path)).children
+          ? (await getProjectInfo(context.project.file.path)).children
           : []
         return {
           ...context.project,
@@ -104,7 +104,7 @@ export const FileMachineProvider = ({
         } else {
           createdPath =
             context.selectedDirectory.path +
-            sep() +
+            window.electron.path.sep +
             createdName +
             (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
           await create(createdPath)
@@ -169,7 +169,7 @@ export const FileMachineProvider = ({
             file?.path.includes(event.data.path)) &&
           project?.path
         ) {
-          navigate(paths.FILE + '/' + encodeURIComponent(project.path))
+          navigate(paths.FILE + '/' + encodeURIComponent(project.file.path))
         }
 
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${

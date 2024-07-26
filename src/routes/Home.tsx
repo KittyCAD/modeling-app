@@ -82,7 +82,7 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          let projectPath = context.defaultDirectory + sep() + event.data.name
+          let projectPath = context.defaultDirectory + window.electron.path.sep + event.data.name
           onProjectOpen(
             {
               name: event.data.name,
@@ -192,15 +192,15 @@ const Home = () => {
       new FormData(e.target as HTMLFormElement)
     )
 
-    if (newProjectName !== project.name) {
+    if (newProjectName !== project.file.name) {
       send('Rename project', {
-        data: { oldName: project.name, newName: newProjectName },
+        data: { oldName: project.file.name, newName: newProjectName },
       })
     }
   }
 
   async function handleDeleteProject(project: Project) {
-    send('Delete project', { data: { name: project.name || '' } })
+    send('Delete project', { data: { name: project.file.name || '' } })
   }
 
   return (
@@ -296,7 +296,7 @@ const Home = () => {
                 <ul className="grid w-full grid-cols-4 gap-4">
                   {searchResults.sort(getSortFunction(sort)).map((project) => (
                     <ProjectCard
-                      key={project.name}
+                      key={project.file.name}
                       project={project}
                       handleRenameProject={handleRenameProject}
                       handleDeleteProject={handleDeleteProject}

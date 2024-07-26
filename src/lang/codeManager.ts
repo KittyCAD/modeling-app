@@ -3,7 +3,6 @@
 // This prevents re-renders of the codemirror editor, when typing.
 import { bracket } from 'lib/exampleKcl'
 import { isDesktop } from 'lib/isDesktop'
-import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
@@ -120,7 +119,7 @@ export default class CodeManager {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
         this._currentFilePath &&
-          writeTextFile(this._currentFilePath, this.code).catch((err) => {
+          window.electron.writeFile(this._currentFilePath, this.code ?? '').catch((err) => {
             // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
             console.error('error saving file', err)
             toast.error('Error saving file, please check file permissions')

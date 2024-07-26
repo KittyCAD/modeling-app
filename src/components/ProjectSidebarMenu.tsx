@@ -5,7 +5,6 @@ import { paths } from 'lib/paths'
 import { isDesktop } from '../lib/isDesktop'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo } from 'react'
-import { sep } from '@tauri-apps/api/path'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -36,7 +35,7 @@ const ProjectSidebarMenu = ({
           className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
-          {project?.name ? project.name : APP_NAME}
+          {project?.name ? project.file.name : APP_NAME}
         </span>
       )}
     </div>
@@ -208,12 +207,12 @@ function ProjectMenuPopover({
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isDesktop() && file?.name
-              ? file.name.slice(file.name.lastIndexOf(sep()) + 1)
+              ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
               : APP_NAME}
           </span>
           {isDesktop() && project?.name && (
             <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
-              {project.name}
+              {project.file.name}
             </span>
           )}
         </div>

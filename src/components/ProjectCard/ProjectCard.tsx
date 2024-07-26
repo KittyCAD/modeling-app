@@ -52,7 +52,7 @@ function ProjectCard({
     }
 
     // async function setupImageUrl() {
-    //   const projectImagePath = await join(project.path, PROJECT_IMAGE_NAME)
+    //   const projectImagePath = await join(project.file.path, PROJECT_IMAGE_NAME)
     //   if (await exists(projectImagePath)) {
     //     const imageData = await readFile(projectImagePath)
     //     const blob = new Blob([imageData], { type: 'image/jpg' })
@@ -103,7 +103,7 @@ function ProjectCard({
             />
           ) : (
             <h3 className="font-sans relative z-0 p-2">
-              {project.name?.replace(FILE_EXT, '')}
+              {project.file.name?.replace(FILE_EXT, '')}
             </h3>
           )}
           <span className="px-2 text-chalkboard-60 text-xs">
@@ -169,11 +169,11 @@ function ProjectCard({
           onDismiss={() => setIsConfirmingDelete(false)}
         >
           <p className="my-4">
-            This will permanently delete "{project.name || 'this file'}
+            This will permanently delete "{project.file.name || 'this file'}
             ".
           </p>
           <p className="my-4">
-            Are you sure you want to delete "{project.name || 'this file'}
+            Are you sure you want to delete "{project.file.name || 'this file'}
             "? This action cannot be undone.
           </p>
         </DeleteConfirmationDialog>
