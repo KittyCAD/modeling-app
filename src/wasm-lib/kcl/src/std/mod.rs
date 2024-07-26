@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod args;
+pub mod assert;
 pub mod chamfer;
 pub mod convert;
 pub mod extrude;
@@ -118,6 +119,11 @@ lazy_static! {
         Box::new(crate::std::math::Ln),
         Box::new(crate::std::math::ToDegrees),
         Box::new(crate::std::math::ToRadians),
+        Box::new(crate::std::assert::Assert),
+        Box::new(crate::std::assert::AssertLessThan),
+        Box::new(crate::std::assert::AssertGreaterThan),
+        Box::new(crate::std::assert::AssertLessThanOrEq),
+        Box::new(crate::std::assert::AssertGreaterThanOrEq),
     ];
 }
 
