@@ -53,6 +53,7 @@ const commonPoints = {
 }
 let log: { index: number; timestamp: number; payload: string | Buffer }[] = []
 test.afterEach(async ({ context, page }, testInfo) => {
+  // attach the websocket logs to the html report
   if (log?.length > 0)
     await testInfo.attach(`WebSocket log`, {
       body: String(
@@ -7158,7 +7159,6 @@ test.describe('Test network and connection issues', () => {
   })
 
   async function waitForWSMessage(
-    page: Page,
     action: Promise<void>,
     waitForCommand:
       | 'select_with_point'
@@ -7167,30 +7167,29 @@ test.describe('Test network and connection issues', () => {
       | 'select_add',
     timeout = 5_000
   ) {
-    const fromPointInTime = new Date().valueOf()
+    const actionTimestamp = new Date().valueOf()
+    const logCuror = log.length
     await action
     const delay = 10
     const attempts = timeout / delay
     for (let i = 0; i < attempts; i += 1) {
-      const cmdFound = findMatchingWsEvent(fromPointInTime, waitForCommand)
+      const cmdFound = findMatchingWsEvent(actionTimestamp, waitForCommand)
       if (cmdFound) {
         // command found, now wait for the success message
         // by waiting on the matching success response corresponding to the request_id
         const cmdId = safeParseJson(String(cmdFound.payload)).cmd_id
-        const successMessage = findSuccessResponse(fromPointInTime, cmdId)
+        const successMessage = findSuccessResponse(actionTimestamp, cmdId)
         if (successMessage) {
-          console.log(`⚠️ "${waitForCommand}" was not found in the websocket logs`)
+          console.log(`✅ "${waitForCommand}" was found in the websocket logs`)
           return true
         }
       }
-      await page.waitForTimeout(delay)
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
-
-    console.log('🚀 ---------------------------------------------------🚀')
-    console.log('🚀 ~ test.describe ~ waitForCommand:', waitForCommand)
-    console.log('🚀 ~ log...', log)
-    console.log('🚀 -----------------------------🚀')
-
+    console.log(`⚠️ "${waitForCommand}" was not found in the websocket logs`)
+    console.log(
+      `\t inspect the websocket logs between (${logCuror})th and (${log.length})th event`
+    )
     return false
 
     function findSuccessResponse(timestamp: number, cmdId: string) {
@@ -7214,7 +7213,8 @@ test.describe('Test network and connection issues', () => {
     }
 
     function findMatchingWsEvent(timestamp: number, cmdType: string) {
-      // filter the logs to only show entries with timestamp greater than the timestamp of the command
+      // filter the logs to only show entries with timestamp greater
+      // than the timestamp of when the playwright action was performed
       const relevantLogEntries = log.filter((wsEvent) => {
         try {
           return wsEvent && wsEvent.timestamp > timestamp
@@ -7266,41 +7266,38 @@ test.describe('Test network and connection issues', () => {
     // click on "Start Sketch" button
     await u.clearCommandLogs()
     // await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await waitForWSMessage(
-      page,
-      page.getByRole('button', { name: 'Start Sketch' }).click(),
+    // await waitForWSMessage(
+    //   page.getByRole('button', { name: 'Start Sketch' }).click(),
+    //   'set_selection_filter'
+    // )
+
+    await u.doAndWaitForCmd(
+      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
       'set_selection_filter'
     )
 
     // select a plane
-    // await page.mouse.click(700, 200)
-    await waitForWSMessage(
-      page,
-      page.mouse.click(700, 200),
+    // await waitForWSMessage(
+    //   page.mouse.click(700, 200),
+    //   'default_camera_set_orthographic'
+    // )
+    await u.doAndWaitForCmd(
+      () => page.mouse.click(700, 200),
       'default_camera_set_orthographic'
     )
-    await page.waitForTimeout(5_000)
-    throw new Error('stop')
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
     )
     await u.closeDebugPanel()
 
     const startXPx = 600
-    // await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await waitForWSMessage(
-      page,
-      page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10),
-      'select_add'
-    )
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)`)
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await page.waitForTimeout(100)
-
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
