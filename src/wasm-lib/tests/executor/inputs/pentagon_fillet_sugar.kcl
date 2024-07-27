@@ -11,27 +11,28 @@ const p = startSketchOn('XY')
   |> angledLine({angle: 300, length: triangleLen}, %, $c)
   |> extrude(triangleHeight, %)
 
-fn circl = (x, face, tag) => {
+fn circl = (x, face) => {
 return startSketchOn(p, face)
   |> startProfileAt([x + radius, triangleHeight/2], %)
-  |> arc(circ, %,  tag)
+  |> arc(circ, %,  $arc_tag)
   |> close(%)
 }
 
+const c1 = circl(-200,c)
 const plumbus1 =
-  circl(-200,c,  $arc_c)
+  c1
   |> extrude(plumbusLen, %)
   |> fillet({
        radius: 5,
-       tags: [arc_c, getOppositeEdge(arc_c, %)]
+       tags: [c1.tags.arc_tag, getOppositeEdge(c1.tags.arc_tag, %)]
      }, %)
-
+const c2 = circl(200, a)
 const plumbus0 =
-  circl(200, a, $arc_a)
+ c2
   |> extrude(plumbusLen, %)
   |> fillet({
        radius: 5,
-       tags: [arc_a, getOppositeEdge(arc_a, %)]
+       tags: [c2.tags.arc_tag, getOppositeEdge(c2.tags.arc_tag, %)]
      }, %)
 
 
