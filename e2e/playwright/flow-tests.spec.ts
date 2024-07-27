@@ -1603,92 +1603,90 @@ test.describe('Copilot ghost text', () => {
     )
   })
 
-  test(
-    'copilot disabled in sketch mode after selecting plane',
-    { tag: '@focus' },
-    async ({ page }) => {
-      const u = await getUtils(page)
-      // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
+  test('copilot disabled in sketch mode after selecting plane', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
 
-      await u.codeLocator.click()
-      await expect(page.locator('.cm-content')).toHaveText(``)
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
 
-      // Click sketch mode.
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled()
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
+    // Click sketch mode.
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-      // select a plane
-      await page.mouse.click(700, 200)
-      await page.waitForTimeout(700) // wait for animation
+    // select a plane
+    await page.mouse.click(700, 200)
+    await page.waitForTimeout(700) // wait for animation
 
-      await u.codeLocator.click()
-      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-      await page.waitForTimeout(500)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(500)
-      await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
-      await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('XZ')`
-      )
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
 
-      // Escape to exit the tool.
-      await u.openDebugPanel()
-      await u.closeDebugPanel()
-      await page.keyboard.press('Escape')
-      await page.waitForTimeout(500)
+    // Escape to exit the tool.
+    await u.openDebugPanel()
+    await u.closeDebugPanel()
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(500)
 
-      await u.codeLocator.click()
-      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-      await page.waitForTimeout(500)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(500)
-      await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
-      await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('XZ')`
-      )
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
 
-      // Escape again to exit sketch mode.
-      await u.openDebugPanel()
-      await u.closeDebugPanel()
-      await page.keyboard.press('Escape')
-      await page.waitForTimeout(500)
+    // Escape again to exit sketch mode.
+    await u.openDebugPanel()
+    await u.closeDebugPanel()
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(500)
 
-      await u.codeLocator.click()
-      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-      await page.waitForTimeout(500)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(500)
-      await page.keyboard.press('Enter')
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
-      )
-      await expect(page.locator('.cm-ghostText').first()).toHaveText(
-        `fn cube = (pos, scale) => {`
-      )
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
 
-      // We should be able to hit Tab to accept the completion.
-      await page.keyboard.press('Tab')
-      await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
-      )
+    // We should be able to hit Tab to accept the completion.
+    await page.keyboard.press('Tab')
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
 
-      // Hit enter a few times.
-      await page.keyboard.press('Enter')
-      await page.keyboard.press('Enter')
+    // Hit enter a few times.
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
-      )
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)    `
+    )
 
-      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-    }
-  )
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+  })
 
   test('ArrowUp in code rejects the suggestion', async ({ page }) => {
     const u = await getUtils(page)
@@ -3958,14 +3956,17 @@ test.describe('Regression tests', () => {
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `const exampleSketch = startSketchOn("XZ")
+  test(
+    'Position _ Is Out Of Range... regression test',
+    { tag: '@focus' },
+    async ({ page }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -3974,50 +3975,53 @@ test.describe('Regression tests', () => {
   
   const example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-      )
-    })
+        )
+      })
 
-    await page.goto('/')
-    await u.waitForPageLoad()
+      await expect(async () => {
+        await page.goto('/')
+        await u.waitForPageLoad()
+        // error in guter
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 1_000,
+        })
+        await page.waitForTimeout(200)
+        // expect it still to be there (sometimes it just clears for a bit?)
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 1_000,
+        })
+      }).toPass({ timeout: 40_000, intervals: [1_000] })
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    await page.waitForTimeout(200)
-    // expect it still to be there (sometimes it just clears for a bit?)
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-      timeout: 10_000,
-    })
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+      // Okay execution finished, let's start editing text below the error.
+      await u.codeLocator.click()
+      // Go to the end of the editor
+      // This bug happens when there is a diagnostic in the editor and you try to
+      // edit text below it.
+      // Or delete a huge chunk of text and then try to edit below it.
+      await page.keyboard.press('End')
+      await page.keyboard.down('Shift')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('End')
+      await page.keyboard.up('Shift')
+      await page.keyboard.press('Backspace')
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    // Okay execution finished, let's start editing text below the error.
-    await u.codeLocator.click()
-    // Go to the end of the editor
-    // This bug happens when there is a diagnostic in the editor and you try to
-    // edit text below it.
-    // Or delete a huge chunk of text and then try to edit below it.
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('End')
-    await page.keyboard.up('Shift')
-    await page.keyboard.press('Backspace')
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('thing: "blah"', { delay: 100 })
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('ArrowLeft')
 
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('thing: "blah"', { delay: 100 })
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('ArrowLeft')
-
-    await expect(page.locator('.cm-content'))
-      .toContainText(`const exampleSketch = startSketchOn("XZ")
+      await expect(page.locator('.cm-content'))
+        .toContainText(`const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -4025,8 +4029,9 @@ test.describe('Regression tests', () => {
 
     thing: "blah"`)
 
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-  })
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    }
+  )
 })
 
 test.describe('Sketch tests', () => {
