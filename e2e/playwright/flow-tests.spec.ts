@@ -1064,7 +1064,7 @@ test.describe('Editor tests', () => {
       await page.keyboard.type('const sketch001 = start')
 
       // expect there to be six auto complete options
-      await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
+      await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
       // this makes sure we can accept a completion with click
       await page.getByText('startSketchOn').click()
       await page.keyboard.type("'XZ'")
