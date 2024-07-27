@@ -1,11 +1,108 @@
 import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { err } from 'lib/trap'
 
 interface CommonCommandProperties {
   range: SourceRange
   pathToNode: PathToNode
 }
+
+export interface _PlaneArtifact {
+  type: 'plane'
+  pathIds: Array<string>
+  codeRef: CommonCommandProperties
+}
+export interface PlaneArtifact {
+  type: 'plane'
+  paths: Array<_PathArtifact>
+  codeRef: CommonCommandProperties
+}
+
+export interface _PathArtifact {
+  type: 'path'
+  planeId: string
+  segIds: Array<string>
+  extrusionId: string
+  codeRef: CommonCommandProperties
+}
+export interface PathArtifact {
+  type: 'path'
+  plane: _PlaneArtifact
+  segs: Array<_SegmentArtifact>
+  extrusion: _ExtrusionArtifact
+  codeRef: CommonCommandProperties
+}
+
+interface _SegmentArtifact {
+  type: 'segment'
+  pathId: string
+  surfIds: Array<string>
+  edgeIds: Array<string>
+  codeRef: CommonCommandProperties
+}
+
+interface _ExtrusionArtifact {
+  type: 'extrusion'
+  pathId: string
+  surfIds: Array<string>
+  edgeIds: Array<string>
+  codeRef: CommonCommandProperties
+}
+interface ExtrusionArtifact {
+  type: 'extrusion'
+  pathId: string
+  surfs: Array<_WallArtifact | _CapArtifact>
+  edges: Array<string>
+  codeRef: CommonCommandProperties
+}
+
+interface _WallArtifact {
+  type: 'wall'
+  segId: string
+  blendEdgeIds: Array<string>
+  extrusionId: string
+}
+interface _CapArtifact {
+  type: 'cap'
+  subType: 'start' | 'end'
+  blendEdgeIds: Array<string>
+  extrusionId: string
+}
+
+interface ExtrudeEdge {
+  type: 'extrudeEdge'
+  segId: string
+  extrusionId: string
+  blendId: string
+}
+
+/** A blend is a fillet or chamfer */
+interface Blend {
+  type: 'blend'
+  SubType: 'fillet' | 'chamfer'
+  consumedEdgeId: string
+  edgeIds: Array<string>
+  surfId: string
+  codeRef: CommonCommandProperties
+}
+
+interface BlendEdge {
+  type: 'blendEdge'
+  blendId: string
+  surfId: string
+}
+
+export type ArtifactMapV2 =
+  | _PlaneArtifact
+  | _PathArtifact
+  | _SegmentArtifact
+  | _ExtrusionArtifact
+  | _WallArtifact
+  | _CapArtifact
+  | ExtrudeEdge
+  | Blend
+  | BlendEdge
 
 interface ExtrudeArtifact extends CommonCommandProperties {
   type: 'extrude'
@@ -269,4 +366,225 @@ function handleIndividualResponse({
     }
   }
   return artifacts
+}
+
+export function createLinker({
+  orderedCommands,
+  responseMap,
+  ast,
+}: {
+  orderedCommands: Array<OrderedCommand>
+  responseMap: ResponseMap
+  ast: Program
+}) {
+  const myMap = new Map<string, ArtifactMapV2>()
+  let currentPlaneId = ''
+  orderedCommands.forEach(({ command, range }) => {
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+
+    // expect all to be `modeling_cmd_req` as batch commands have
+    // already been expanded before being added to orderedCommands
+    if (command.type !== 'modeling_cmd_req') return
+    const id = command.cmd_id
+    const response = responseMap[id]
+    const cmd = command.cmd
+    if (cmd.type === 'enable_sketch_mode') {
+      currentPlaneId = cmd.entity_id
+      const plane = myMap.get(currentPlaneId)
+      const pathIds = plane?.type === 'plane' ? plane?.pathIds : []
+      const codeRef =
+        plane?.type === 'plane' ? plane?.codeRef : { range, pathToNode }
+      myMap.set(currentPlaneId, {
+        type: 'plane',
+        pathIds,
+        codeRef,
+      })
+    } else if (cmd.type === 'sketch_mode_disable') {
+      currentPlaneId = ''
+    } else if (cmd.type === 'start_path') {
+      myMap.set(id, {
+        type: 'path',
+        segIds: [],
+        planeId: currentPlaneId,
+        extrusionId: '',
+        codeRef: { range, pathToNode },
+      })
+      const plane = myMap.get(currentPlaneId)
+      const codeRef =
+        plane?.type === 'plane' ? plane?.codeRef : { range, pathToNode }
+      if (plane?.type === 'plane')
+        myMap.set(currentPlaneId, {
+          type: 'plane',
+          pathIds: [...plane.pathIds, id],
+          codeRef,
+        })
+    } else if (cmd.type === 'extend_path') {
+      myMap.set(id, {
+        type: 'segment',
+        pathId: cmd.path,
+        surfIds: [],
+        edgeIds: [],
+        codeRef: { range, pathToNode },
+      })
+      const path = myMap.get(cmd.path)
+      if (path?.type === 'path')
+        myMap.set(cmd.path, {
+          ...path,
+          segIds: [...path.segIds, id],
+        })
+    } else if (cmd.type === 'extrude') {
+      myMap.set(id, {
+        type: 'extrusion',
+        pathId: cmd.target,
+        surfIds: [],
+        edgeIds: [],
+        codeRef: { range, pathToNode },
+      })
+      const path = myMap.get(cmd.target)
+      if (path?.type === 'path')
+        myMap.set(cmd.target, {
+          ...path,
+          extrusionId: id,
+        })
+    } else if (
+      cmd.type === 'solid3d_get_extrusion_face_info' &&
+      response.type === 'modeling' &&
+      response.data.modeling_response.type === 'solid3d_get_extrusion_face_info'
+    ) {
+      response.data.modeling_response.data.faces.forEach(
+        ({ curve_id, cap, face_id }) => {
+          if (cap === 'none' && curve_id && face_id) {
+            const path = myMap.get(cmd.object_id)
+            const seg = myMap.get(curve_id)
+            if (path?.type === 'path' && seg?.type === 'segment') {
+              myMap.set(face_id, {
+                type: 'wall',
+                segId: curve_id,
+                blendEdgeIds: [],
+                extrusionId: path.extrusionId,
+              })
+              myMap.set(curve_id, {
+                ...seg,
+                surfIds: [...seg.surfIds, face_id],
+              })
+              const extrusion = myMap.get(path.extrusionId)
+              if (extrusion?.type === 'extrusion') {
+                myMap.set(path.extrusionId, {
+                  ...extrusion,
+                  surfIds: [...extrusion.surfIds, face_id],
+                })
+              }
+            }
+          } else if (
+            (cap === 'top' || cap === 'bottom') &&
+            curve_id &&
+            face_id
+          ) {
+            const path = myMap.get(cmd.object_id)
+            if (path?.type === 'path')
+              myMap.set(face_id, {
+                type: 'cap',
+                subType: cap === 'bottom' ? 'start' : 'end',
+                blendEdgeIds: [],
+                extrusionId: path.extrusionId,
+              })
+          }
+        }
+      )
+    } else if (cmd.type === 'solid3d_fillet_edge') {
+      myMap.set(id, {
+        type: 'blend',
+        SubType: cmd.cut_type,
+        consumedEdgeId: cmd.edge_id,
+        edgeIds: [],
+        surfId: '',
+        codeRef: { range, pathToNode },
+      })
+    }
+  })
+  return myMap
+}
+
+/** filter map items of a specific type */
+export function filterArtifacts<T extends ArtifactMapV2['type'][]>(
+  map: Map<string, ArtifactMapV2>,
+  types: T
+) {
+  return new Map(
+    Array.from(map).filter(([_, value]) => types.includes(value.type))
+  ) as Map<string, Extract<ArtifactMapV2, { type: T[number] }>>
+}
+
+function getArtifactsOfType<T extends ArtifactMapV2['type'][]>(
+  keys: string[],
+  map: Map<string, ArtifactMapV2>,
+  types: T
+): Map<string, Extract<ArtifactMapV2, { type: T[number] }>> {
+  return new Map(
+    [...map].filter(
+      ([key, value]) => keys.includes(key) && types.includes(value.type)
+    )
+  ) as Map<string, Extract<ArtifactMapV2, { type: T[number] }>>
+}
+
+function getArtifactOfType<T extends ArtifactMapV2['type']>(
+  key: string,
+  map: Map<string, ArtifactMapV2>,
+  type: T
+): Extract<ArtifactMapV2, { type: T }> | Error {
+  const yo = map.get(key)
+  if (yo?.type !== type)
+    return new Error(`Expected ${type} but got ${yo?.type}`)
+  return yo as Extract<ArtifactMapV2, { type: T }>
+}
+
+export function expandPlane(
+  plane: _PlaneArtifact,
+  artifactMap: Map<string, ArtifactMapV2>
+): PlaneArtifact {
+  const paths = getArtifactsOfType(plane.pathIds, artifactMap, ['path'])
+  return {
+    type: 'plane',
+    paths: Array.from(paths.values()),
+    codeRef: plane.codeRef,
+  }
+}
+
+export function expandPath(
+  path: _PathArtifact,
+  artifactMap: Map<string, ArtifactMapV2>
+): PathArtifact | Error {
+  const segs = getArtifactsOfType(path.segIds, artifactMap, ['segment'])
+  const extrusion = getArtifactOfType(
+    path.extrusionId,
+    artifactMap,
+    'extrusion'
+  )
+  const plane = getArtifactOfType(path.planeId, artifactMap, 'plane')
+  if (err(extrusion)) return extrusion
+  if (err(plane)) return plane
+  return {
+    type: 'path',
+    segs: Array.from(segs.values()),
+    extrusion,
+    plane,
+    codeRef: path.codeRef,
+  }
+}
+
+export function expandExtrusion(
+  extrusion: _ExtrusionArtifact,
+  artifactMap: Map<string, ArtifactMapV2>
+): ExtrusionArtifact | Error {
+  const surfs = getArtifactsOfType(extrusion.surfIds, artifactMap, [
+    'wall',
+    'cap',
+  ])
+  return {
+    type: 'extrusion',
+    surfs: Array.from(surfs.values()),
+    edges: extrusion.edgeIds,
+    pathId: extrusion.pathId,
+    codeRef: extrusion.codeRef,
+  }
 }

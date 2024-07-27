@@ -757,6 +757,12 @@ class EngineConnection extends EventTarget {
         // Send an initial ping
         this.send({ type: 'ping' })
         this.pingPongSpan.ping = new Date()
+        if (this.engineCommandManager.disableWebRTC) {
+          console.log('resolve ready')
+          this.engineCommandManager
+            .initPlanes()
+            .then(() => this.engineCommandManager.resolveReady())
+        }
       }
       this.websocket.addEventListener('open', this.onWebSocketOpen)
 
@@ -848,11 +854,6 @@ class EngineConnection extends EventTarget {
             // to start initializing the RTCPeerConnection. RTCPeerConnection
             // will begin the ICE process.
             createPeerConnection()
-
-            if (this.engineCommandManager.disableWebRTC)
-              this.engineCommandManager
-                .initPlanes()
-                .then(() => this.engineCommandManager.resolveReady())
 
             this.state = {
               type: EngineConnectionStateType.Connecting,

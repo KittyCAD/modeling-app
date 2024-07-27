@@ -48,6 +48,7 @@ e2e/playwright/export-snapshots/*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/src/lang/std/artifactMapCache
 
 
 ## generated files
