@@ -45,19 +45,19 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
-///   |> lineTo([width/2, -length/2], %, 'edge1')
-///   |> lineTo([width/2, length/2], %, 'edge2')
-///   |> lineTo([-width/2, length/2], %, 'edge3')
-///   |> close(%, 'edge4')
+///   |> lineTo([width/2, -length/2], %, $edge1)
+///   |> lineTo([width/2, length/2], %, $edge2)
+///   |> lineTo([-width/2, length/2], %, $edge3)
+///   |> close(%, $edge4)
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> chamfer({
 ///     length: chamferLength,
 ///     tags: [
-///       getNextAdjacentEdge('edge1', %),
-///       getNextAdjacentEdge('edge2', %),
-///       getNextAdjacentEdge('edge3', %),
-///       getNextAdjacentEdge('edge4', %)
+///       getNextAdjacentEdge(edge1, %),
+///       getNextAdjacentEdge(edge2, %),
+///       getNextAdjacentEdge(edge3, %),
+///       getNextAdjacentEdge(edge4, %)
 ///     ],
 ///   }, %)
 /// ```

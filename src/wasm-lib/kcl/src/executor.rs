@@ -742,21 +742,10 @@ impl MemoryItem {
         })
     }
 
-    /// Backwards compatibility for getting a tag from a memory item.
+    /// Get a tag identifier from a memory item.
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
-            MemoryItem::UserVal(u) => {
-                if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
-                    Ok(identifier)
-                } else {
-                    let name: String = self.get_json()?;
-                    Ok(TagIdentifier {
-                        value: name,
-                        meta: u.meta.clone(),
-                    })
-                }
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag identifier: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -764,19 +753,10 @@ impl MemoryItem {
         }
     }
 
-    /// Backwards compatibility for getting a tag from a memory item.
+    /// Get a tag declarator from a memory item.
     pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
         match self {
             MemoryItem::TagDeclarator(t) => Ok(*t.clone()),
-            MemoryItem::UserVal(u) => {
-                let name: String = self.get_json()?;
-                Ok(TagDeclarator {
-                    name,
-                    start: u.meta[0].source_range.start(),
-                    end: u.meta[0].source_range.end(),
-                    digest: None,
-                })
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -784,22 +764,10 @@ impl MemoryItem {
         }
     }
 
-    /// Backwards compatibility for getting an optional tag from a memory item.
+    /// Get an optional tag from a memory item.
     pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
         match self {
             MemoryItem::TagDeclarator(t) => Ok(Some(*t.clone())),
-            MemoryItem::UserVal(u) => {
-                if let Some(name) = self.get_json_opt::<String>()? {
-                    Ok(Some(TagDeclarator {
-                        name,
-                        start: u.meta[0].source_range.start(),
-                        end: u.meta[0].source_range.end(),
-                        digest: None,
-                    }))
-                } else {
-                    Ok(None)
-                }
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),

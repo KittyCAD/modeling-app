@@ -711,11 +711,11 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([5, 10], %)
-///   |> lineTo([-10, 10], %, "lineToIntersect")
+///   |> lineTo([-10, 10], %, $lineToIntersect)
 ///   |> lineTo([0, 20], %)
 ///   |> angledLineThatIntersects({
 ///        angle: 80,
-///        intersectTag: 'lineToIntersect',
+///        intersectTag: lineToIntersect,
 ///        offset: 10
 ///      }, %)
 ///   |> close(%)
@@ -973,22 +973,22 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 /// const exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
-///   |> line([0, 10], %, 'sketchingFace')
+///   |> line([0, 10], %, $sketchingFace)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
 /// const example = extrude(10, exampleSketch)
 ///
-/// const exampleSketch002 = startSketchOn(example, 'sketchingFace')
+/// const exampleSketch002 = startSketchOn(example, sketchingFace)
 ///   |> startProfileAt([1, 1], %)
 ///   |> line([8, 0], %)
 ///   |> line([0, 8], %)
 ///   |> line([-8, 0], %)
-///   |> close(%, 'sketchingFace002')
+///   |> close(%, $sketchingFace002)
 ///
 /// const example002 = extrude(10, exampleSketch002)
 ///
-/// const exampleSketch003 = startSketchOn(example002, 'sketchingFace002')
+/// const exampleSketch003 = startSketchOn(example002, sketchingFace002)
 ///   |> startProfileAt([-8, 12], %)
 ///   |> line([0, 6], %)
 ///   |> line([6, 0], %)
@@ -1301,8 +1301,8 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: 120, length: 50 }, %, 'seg01')
-///  |> angledLine({ angle: segAng('seg01', %) + 120, length: 50 }, %)
+///  |> angledLine({ angle: 120, length: 50 }, %, seg01)
+///  |> angledLine({ angle: segAng(seg01, %) + 120, length: 50 }, %)
 ///  |> lineTo(profileStart(%), %)
 ///  |> close(%)
 ///  |> extrude(20, %)
