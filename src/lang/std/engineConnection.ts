@@ -450,9 +450,11 @@ class EngineConnection extends EventTarget {
     }
 
     const createPeerConnection = () => {
-      this.pc = new RTCPeerConnection({
-        bundlePolicy: 'max-bundle',
-      })
+      if (!this.engineCommandManager.disableWebRTC) {
+        this.pc = new RTCPeerConnection({
+          bundlePolicy: 'max-bundle',
+        })
+      }
 
       // Other parts of the application expect pc to be initialized when firing.
       this.dispatchEvent(
@@ -464,7 +466,7 @@ class EngineConnection extends EventTarget {
       // Data channels MUST BE specified before SDP offers because requesting
       // them affects what our needs are!
       const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
-      this.pc.createDataChannel(DATACHANNEL_NAME_UMC)
+      this.pc?.createDataChannel?.(DATACHANNEL_NAME_UMC)
 
       this.state = {
         type: EngineConnectionStateType.Connecting,
@@ -497,7 +499,7 @@ class EngineConnection extends EventTarget {
           },
         })
       }
-      this.pc.addEventListener('icecandidate', this.onIceCandidate)
+      this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
 
       this.onIceCandidateError = (_event: Event) => {
         const event = _event as RTCPeerConnectionIceErrorEvent
@@ -505,7 +507,7 @@ class EngineConnection extends EventTarget {
           `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
         )
       }
-      this.pc.addEventListener('icecandidateerror', this.onIceCandidateError)
+      this.pc?.addEventListener?.('icecandidateerror', this.onIceCandidateError)
 
       // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
       // Event type: generic Event type...
@@ -539,7 +541,7 @@ class EngineConnection extends EventTarget {
             break
         }
       }
-      this.pc.addEventListener(
+      this.pc?.addEventListener?.(
         'connectionstatechange',
         this.onConnectionStateChange
       )
@@ -629,7 +631,7 @@ class EngineConnection extends EventTarget {
 
         this.mediaStream = mediaStream
       }
-      this.pc.addEventListener('track', this.onTrack)
+      this.pc?.addEventListener?.('track', this.onTrack)
 
       this.onDataChannel = (event) => {
         this.unreliableDataChannel = event.channel
@@ -720,7 +722,7 @@ class EngineConnection extends EventTarget {
           this.onDataChannelMessage
         )
       }
-      this.pc.addEventListener('datachannel', this.onDataChannel)
+      this.pc?.addEventListener?.('datachannel', this.onDataChannel)
     }
 
     const createWebSocketConnection = () => {
@@ -846,6 +848,11 @@ class EngineConnection extends EventTarget {
             // to start initializing the RTCPeerConnection. RTCPeerConnection
             // will begin the ICE process.
             createPeerConnection()
+
+            if (this.engineCommandManager.disableWebRTC)
+              this.engineCommandManager
+                .initPlanes()
+                .then(() => this.engineCommandManager.resolveReady())
 
             this.state = {
               type: EngineConnectionStateType.Connecting,
@@ -1157,7 +1164,7 @@ export class EngineCommandManager extends EventTarget {
     reject: (reason: any) => void
   }
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
-  private resolveReady = () => {}
+  resolveReady = () => {}
   /** Folks should realize that wait for ready does not get called _everytime_
    *  the connection resets and restarts, it only gets called the first time.
    *
@@ -1204,9 +1211,10 @@ export class EngineCommandManager extends EventTarget {
   private onEngineConnectionNewTrack = ({
     detail,
   }: CustomEvent<NewTrackArgs>) => {}
+  disableWebRTC = false
 
   start({
-    restart,
+    disableWebRTC = false,
     setMediaStream,
     setIsStreamReady,
     width,
@@ -1222,7 +1230,7 @@ export class EngineCommandManager extends EventTarget {
       showScaleGrid: false,
     },
   }: {
-    restart?: boolean
+    disableWebRTC?: boolean
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
@@ -1239,6 +1247,7 @@ export class EngineCommandManager extends EventTarget {
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
+    this.disableWebRTC = disableWebRTC
     this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
@@ -1718,15 +1727,11 @@ export class EngineCommandManager extends EventTarget {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
-    if (!this.engineConnection?.isReady()) {
+    if (!this.engineConnection?.isReady() && !this.disableWebRTC)
       return Promise.resolve()
-    }
-    if (id === undefined) {
-      return Promise.reject(new Error('id is undefined'))
-    }
-    if (rangeStr === undefined) {
+    if (id === undefined) return Promise.reject(new Error('id is undefined'))
+    if (rangeStr === undefined)
       return Promise.reject(new Error('rangeStr is undefined'))
-    }
     if (commandStr === undefined) {
       return Promise.reject(new Error('commandStr is undefined'))
     }
@@ -1796,7 +1801,7 @@ export class EngineCommandManager extends EventTarget {
       ast: this.getAst(),
     })
   }
-  private async initPlanes() {
+  async initPlanes() {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()
     this.defaultPlanes = planes
