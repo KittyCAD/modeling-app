@@ -2507,7 +2507,7 @@ test.describe('Onboarding tests', () => {
 
 test.describe('Testing selections', () => {
   test.setTimeout(90_000)
-  test.only('Selections work on fresh and edited sketch', async ({ page }) => {
+  test('Selections work on fresh and edited sketch', async ({ page }) => {
     // tests mapping works on fresh sketch and edited sketch
     // tests using hovers which is the same as selections, because if
     // source ranges are wrong, hovers won't work
@@ -4857,7 +4857,7 @@ const sketch002 = startSketchOn(extrude001, 'END')
     )
   })
 })
-
+// flaky suite
 test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page }) => {
     await page.addInitScript(async () => {
