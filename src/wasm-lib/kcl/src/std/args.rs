@@ -388,8 +388,9 @@ where
         let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Argument at index {i} was supposed to be type {} but wasn't",
-                    type_name::<T>()
+                    "Argument at index {i} was supposed to be type {} but wasn't {:?}",
+                    type_name::<T>(),
+                    arg
                 ),
                 source_ranges: vec![args.source_range],
             }));

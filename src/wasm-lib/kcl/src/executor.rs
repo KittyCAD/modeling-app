@@ -746,6 +746,16 @@ impl MemoryItem {
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
+            MemoryItem::UserVal(_) => {
+                if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
+                    Ok(identifier)
+                } else {
+                    Err(KclError::Semantic(KclErrorDetails {
+                        message: format!("Not a tag identifier: {:?}", self),
+                        source_ranges: self.clone().into(),
+                    }))
+                }
+            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag identifier: {:?}", self),
                 source_ranges: self.clone().into(),
