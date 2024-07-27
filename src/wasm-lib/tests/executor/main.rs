@@ -112,7 +112,7 @@ async fn serial_test_pipe_as_arg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // We need to figure out why this broke even using scoped tags isnt working.
+#[ignore] // We need to figure out why this broke even using scoped tags isn't working.
 async fn serial_test_pentagon_fillet_sugar() {
     let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
     let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
@@ -1784,7 +1784,7 @@ const part002 = startSketchOn(part001, 'end')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // We need to figure out why this broke even using scoped tags isnt working.
+#[ignore] // We need to figure out why this broke even using scoped tags isn't working.
 async fn serial_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
   const sg = startSketchOn(ext, face)
