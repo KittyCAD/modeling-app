@@ -3238,9 +3238,9 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"const mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, 'myPath')
+        |> lineTo([0, 1], %, $myPath)
         |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, 'rightPath')
+        |> lineTo([1, 0], %, $rightPath)
         |> close(%)"#
     );
     snapshot_test!(
