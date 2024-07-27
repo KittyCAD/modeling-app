@@ -398,6 +398,14 @@ layout: manual
                             fn_name = fn_name.replace("last_seg_", "last_segment_");
                         } else if fn_name.contains("_2_d") {
                             fn_name = fn_name.replace("_2_d", "_2d");
+                        } else if fn_name.contains("_greater_than_or_eq") {
+                            fn_name = fn_name.replace("_greater_than_or_eq", "_gte");
+                        } else if fn_name.contains("_less_than_or_eq") {
+                            fn_name = fn_name.replace("_less_than_or_eq", "_lte");
+                        } else if fn_name.contains("_greater_than") {
+                            fn_name = fn_name.replace("_greater_than", "_gt");
+                        } else if fn_name.contains("_less_than") {
+                            fn_name = fn_name.replace("_less_than", "_lt");
                         } else if fn_name.contains("_3_d") {
                             fn_name = fn_name.replace("_3_d", "_3d");
                         } else if fn_name == "seg_ang" {
