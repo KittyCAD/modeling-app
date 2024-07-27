@@ -1238,7 +1238,7 @@ const part001 = cube([0, 0], 20)
   |> close(%)
   |> extrude(20, %)
 
-const part002 = startSketchOn(part001, part001.tags.here)
+const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([5, 5], %)
@@ -1252,7 +1252,7 @@ const part002 = startSketchOn(part001, part001.tags.here)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Tag `here` is a non-planar surface" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([280, 333])], message: "Tag `here` is a non-planar surface" }"#
     );
 }
 
