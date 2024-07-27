@@ -22,7 +22,7 @@ const exampleSketch = startSketchOn('XZ')
   |> lineTo([0, 20], %)
   |> angledLineThatIntersects({
        angle: 80,
-       intersectTag: 'lineToIntersect',
+       intersectTag: lineToIntersect,
        offset: 10
      }, %)
   |> close(%)
