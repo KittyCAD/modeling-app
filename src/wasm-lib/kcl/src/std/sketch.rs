@@ -516,10 +516,10 @@ pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError>
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineOfXLength({ angle: 45, length: 10 }, %, "edge1")
-///   |> angledLineOfXLength({ angle: -15, length: 20 }, %, "edge2")
+///   |> angledLineOfXLength({ angle: 45, length: 10 }, %, $edge1)
+///   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
 ///   |> line([0, -5], %)
-///   |> close(%, "edge3")
+///   |> close(%, $edge3)
 ///
 /// const extrusion = extrude(10, sketch001)
 /// ```
@@ -1301,7 +1301,7 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: 120, length: 50 }, %, seg01)
+///  |> angledLine({ angle: 120, length: 50 }, %, $seg01)
 ///  |> angledLine({ angle: segAng(seg01, %) + 120, length: 50 }, %)
 ///  |> lineTo(profileStart(%), %)
 ///  |> close(%)
