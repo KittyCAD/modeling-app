@@ -274,7 +274,7 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
     |> line([0, 10], %, $thing)
     |> line([10, 0], %)
     |> line([0, -10], %, $thing2)
-    |> close(%, "thing3")
+    |> close(%, $thing3)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3, %)]}, %)
 
@@ -292,12 +292,12 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
 async fn serial_test_basic_fillet_cube_next_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line([0, 10], %, "thing")
-    |> line([10, 0], %, "thing1")
-    |> line([0, -10], %, "thing2")
-    |> close(%, "thing3")
+    |> line([0, 10], %, $thing)
+    |> line([10, 0], %, $thing1)
+    |> line([0, -10], %, $thing2)
+    |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing3", %)]}, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3, %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -312,12 +312,12 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
 async fn serial_test_basic_fillet_cube_previous_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line([0, 10], %, "thing")
-    |> line([10, 0], %, "thing1")
-    |> line([0, -10], %, "thing2")
-    |> close(%, "thing3")
+    |> line([0, 10], %, $thing)
+    |> line([10, 0], %, $thing1)
+    |> line([0, -10], %, $thing2)
+    |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing3", %)]}, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3, %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -1415,9 +1415,9 @@ const part = rectShape([0, 0], 20, 20)
 async fn serial_test_big_number_angle_to_match_length_x() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, 'seg01')
+  |> line([1, 3.82], %, $seg01)
   |> angledLineToX([
-       -angleToMatchLengthX('seg01', 3, %),
+       -angleToMatchLengthX(seg01, 3, %),
        3
      ], %)
   |> close(%)
@@ -1436,9 +1436,9 @@ async fn serial_test_big_number_angle_to_match_length_x() {
 async fn serial_test_big_number_angle_to_match_length_y() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, 'seg01')
+  |> line([1, 3.82], %, $seg01)
   |> angledLineToX([
-       -angleToMatchLengthY('seg01', 3, %),
+       -angleToMatchLengthY(seg01, 3, %),
        3
      ], %)
   |> close(%)
@@ -1913,20 +1913,20 @@ const filletR = 0.25
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, 'outerEdge')
+  |> line([0, wallMountL], %, $outerEdge)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
+  |> line([shelfMountL - thickness, 0], %, $innerEdge)
   |> line([0, -wallMountL + thickness], %)
   |> close(%)
   |> extrude(width, %)
   |> fillet({
        radius: filletR,
-       tags: [getNextAdjacentEdge('innerEdge', %)]
+       tags: [getNextAdjacentEdge(innerEdge, %)]
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getNextAdjacentEdge('outerEdge', %)]
+       tags: [getNextAdjacentEdge(outerEdge, %)]
      }, %)
 "#;
 
@@ -1934,7 +1934,7 @@ const bracket = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1336, 1442])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1332, 1436])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
     );
 }
 
@@ -2287,27 +2287,27 @@ const holeDia = 0.5
 
 const sketch001 = startSketchOn("XZ")
   |> startProfileAt([-foot1Length, 0], %)
-  |> line([0, thickness], %, 'cornerChamfer1')
+  |> line([0, thickness], %, $cornerChamfer1)
   |> line([foot1Length, 0], %)
-  |> line([0, height], %, 'chamfer1')
+  |> line([0, height], %, $chamfer1)
   |> line([foot2Length, 0], %)
-  |> line([0, -thickness], %, 'cornerChamfer2')
+  |> line([0, -thickness], %, $cornerChamfer2)
   |> line([-foot2Length+thickness, 0], %)
-  |> line([0, -height], %, 'chamfer2')
+  |> line([0, -height], %, $chamfer2)
   |> close(%)
 
 const baseExtrusion = extrude(width, sketch001)
   |> chamfer({
     length: cornerChamferRad,
-    tags: ["cornerChamfer1", "cornerChamfer2", getOppositeEdge("cornerChamfer1", %), getOppositeEdge("cornerChamfer2", %)],
+    tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1, %), getOppositeEdge(cornerChamfer2, %)],
   }, %)
   |> chamfer({
     length: chamferRad,
-    tags: [getPreviousAdjacentEdge("chamfer1", %), getPreviousAdjacentEdge("chamfer2", %)]
+    tags: [getPreviousAdjacentEdge(chamfer1, %), getPreviousAdjacentEdge(chamfer2, %)]
   }, %)
   |> chamfer({
    length: chamferRad + thickness,
-   tags: [getNextAdjacentEdge("chamfer1", %), getNextAdjacentEdge("chamfer2", %)],
+   tags: [getNextAdjacentEdge(chamfer1, %), getNextAdjacentEdge(chamfer2, %)],
  }, %)
 "#;
 
@@ -2421,11 +2421,11 @@ async fn serial_test_circular_pattern3d_chamfered_sketch() {
   return sg
 }
 const part001 = cube([0,0], 20)
-    |> close(%, 'line1')
+    |> close(%, $line1)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [getOppositeEdge('line1',%)]
+    tags: [getOppositeEdge(line1,%)]
   }, %)
 
 const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 

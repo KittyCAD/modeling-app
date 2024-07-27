@@ -1950,14 +1950,14 @@ const newVar = myVar + 1"#;
             format!(
                 r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([2, 2], %, "yo")
+  |> lineTo([2, 2], %, $yo)
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({{
   angle: 180,
-  intersectTag: 'yo',
+  intersectTag: yo,
   offset: {},
-}}, %, 'yo2')
-const intersect = segEndX('yo2', part001)"#,
+}}, %, $yo2)
+const intersect = segEndX(yo2, part001)"#,
                 offset
             )
         };
@@ -2021,10 +2021,10 @@ const yo2 = hmm([identifierGuy + 5])"#;
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([3, 4], %, 'seg01')
+  |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen('seg01', %), myVar),
-  -legLen(segLen('seg01', %), myVar)
+  min(segLen(seg01, %), myVar),
+  -legLen(segLen(seg01, %), myVar)
 ], %)
 "#;
 
@@ -2036,10 +2036,10 @@ const part001 = startSketchOn('XY')
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([3, 4], %, 'seg01')
+  |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen('seg01', %), myVar),
-  legLen(segLen('seg01', %), myVar)
+  min(segLen(seg01, %), myVar),
+  legLen(segLen(seg01, %), myVar)
 ], %)
 "#;
 
@@ -2334,7 +2334,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, 'tag1')
+    |> circle([0, 0], 1, %, $tag1)
     |> extrude(10, %)
 }
 
@@ -2462,7 +2462,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, 'tag1')
+    |> circle([0, 0], 1, %, $tag1)
     |> extrude(10, %)
 }
 
