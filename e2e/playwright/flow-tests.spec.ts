@@ -3956,17 +3956,14 @@ test.describe('Regression tests', () => {
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test(
-    'Position _ Is Out Of Range... regression test',
-    { tag: '@focus' },
-    async ({ page }) => {
-      const u = await getUtils(page)
-      // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `const exampleSketch = startSketchOn("XZ")
+  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -3975,53 +3972,53 @@ test.describe('Regression tests', () => {
   
   const example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-        )
+      )
+    })
+
+    await expect(async () => {
+      await page.goto('/')
+      await u.waitForPageLoad()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
       })
+      await page.waitForTimeout(200)
+      // expect it still to be there (sometimes it just clears for a bit?)
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
 
-      await expect(async () => {
-        await page.goto('/')
-        await u.waitForPageLoad()
-        // error in guter
-        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-          timeout: 1_000,
-        })
-        await page.waitForTimeout(200)
-        // expect it still to be there (sometimes it just clears for a bit?)
-        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-          timeout: 1_000,
-        })
-      }).toPass({ timeout: 40_000, intervals: [1_000] })
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
 
-      // error text on hover
-      await page.hover('.cm-lint-marker-error')
-      await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    // Okay execution finished, let's start editing text below the error.
+    await u.codeLocator.click()
+    // Go to the end of the editor
+    // This bug happens when there is a diagnostic in the editor and you try to
+    // edit text below it.
+    // Or delete a huge chunk of text and then try to edit below it.
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('End')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      // Okay execution finished, let's start editing text below the error.
-      await u.codeLocator.click()
-      // Go to the end of the editor
-      // This bug happens when there is a diagnostic in the editor and you try to
-      // edit text below it.
-      // Or delete a huge chunk of text and then try to edit below it.
-      await page.keyboard.press('End')
-      await page.keyboard.down('Shift')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('ArrowUp')
-      await page.keyboard.press('End')
-      await page.keyboard.up('Shift')
-      await page.keyboard.press('Backspace')
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('thing: "blah"', { delay: 100 })
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('ArrowLeft')
 
-      await page.keyboard.press('Enter')
-      await page.keyboard.press('Enter')
-      await page.keyboard.type('thing: "blah"', { delay: 100 })
-      await page.keyboard.press('Enter')
-      await page.keyboard.press('ArrowLeft')
-
-      await expect(page.locator('.cm-content'))
-        .toContainText(`const exampleSketch = startSketchOn("XZ")
+    await expect(page.locator('.cm-content'))
+      .toContainText(`const exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -4029,9 +4026,8 @@ test.describe('Regression tests', () => {
 
     thing: "blah"`)
 
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    }
-  )
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  })
 })
 
 test.describe('Sketch tests', () => {
@@ -5952,13 +5948,14 @@ test.describe('Testing segment overlays', () => {
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
       }
     test.setTimeout(120000)
-    test('for segments [line, angledLine, lineTo, xLineTo]', async ({
-      page,
-    }, testInfo) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `const part001 = startSketchOn('XZ')
+    test(
+      'for segments [line, angledLine, lineTo, xLineTo]',
+      { tag: '@focus' },
+      async ({ page }, testInfo) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const part001 = startSketchOn('XZ')
     |> startProfileAt([5 + 0, 20 + 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -5978,143 +5975,145 @@ test.describe('Testing segment overlays', () => {
         }, %)
     |> tangentialArcTo([5 + 3.14 + 13, 20 + 3.14], %)
         `
-        )
-      })
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
+        await u.waitForAuthSkipAppStart()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+        // wait for execution done
+        await u.openDebugPanel()
+        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await u.closeDebugPanel()
 
-      await page.getByText('xLineTo(5 + 9 - 5, %)').click()
-      await page.waitForTimeout(100)
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(500)
+        await page.getByText('xLineTo(5 + 9 - 5, %)').click()
+        await page.waitForTimeout(100)
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+        await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
 
-      const clickUnconstrained = _clickUnconstrained(page)
-      const clickConstrained = _clickConstrained(page, testInfo)
+        const clickUnconstrained = _clickUnconstrained(page)
+        const clickConstrained = _clickConstrained(page, testInfo)
 
-      await u.openAndClearDebugPanel()
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          vantage: { x: 80, y: -1350, z: 510 },
-          center: { x: 80, y: 0, z: 510 },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      })
-      await page.waitForTimeout(100)
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      })
-      await page.waitForTimeout(100)
-      await u.closeDebugPanel()
+        await u.openAndClearDebugPanel()
+        await u.sendCustomCmd({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_look_at',
+            vantage: { x: 80, y: -1350, z: 510 },
+            center: { x: 80, y: 0, z: 510 },
+            up: { x: 0, y: 0, z: 1 },
+          },
+        })
+        await page.waitForTimeout(100)
+        await u.sendCustomCmd({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
+        await page.waitForTimeout(100)
+        await u.closeDebugPanel()
 
-      let ang = 0
+        let ang = 0
 
-      const line = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
-      ang = await u.getAngle(`[data-overlay-index="${0}"]`)
-      console.log('line1', line, ang)
-      await clickConstrained({
-        hoverPos: { x: line.x, y: line.y },
-        constraintType: 'yRelative',
-        expectBeforeUnconstrained: '|> line([0.5, -14 + 0], %)',
-        expectAfterUnconstrained: '|> line([0.5, -14], %)',
-        expectFinal: '|> line([0.5, yRel001], %)',
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="0"]',
-      })
-      console.log('line2')
-      await clickUnconstrained({
-        hoverPos: { x: line.x, y: line.y },
-        constraintType: 'xRelative',
-        expectBeforeUnconstrained: '|> line([0.5, yRel001], %)',
-        expectAfterUnconstrained: 'line([xRel001, yRel001], %)',
-        expectFinal: '|> line([0.5, yRel001], %)',
-        ang: ang + 180,
-        locator: '[data-overlay-index="0"]',
-      })
+        const line = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+        ang = await u.getAngle(`[data-overlay-index="${0}"]`)
+        console.log('line1', line, ang)
+        await clickConstrained({
+          hoverPos: { x: line.x, y: line.y },
+          constraintType: 'yRelative',
+          expectBeforeUnconstrained: '|> line([0.5, -14 + 0], %)',
+          expectAfterUnconstrained: '|> line([0.5, -14], %)',
+          expectFinal: '|> line([0.5, yRel001], %)',
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="0"]',
+        })
+        console.log('line2')
+        await clickUnconstrained({
+          hoverPos: { x: line.x, y: line.y },
+          constraintType: 'xRelative',
+          expectBeforeUnconstrained: '|> line([0.5, yRel001], %)',
+          expectAfterUnconstrained: 'line([xRel001, yRel001], %)',
+          expectFinal: '|> line([0.5, yRel001], %)',
+          ang: ang + 180,
+          locator: '[data-overlay-index="0"]',
+        })
 
-      const angledLine = await u.getBoundingBox(`[data-overlay-index="1"]`)
-      ang = await u.getAngle(`[data-overlay-index="1"]`)
-      console.log('angledLine1')
-      await clickConstrained({
-        hoverPos: { x: angledLine.x, y: angledLine.y },
-        constraintType: 'angle',
-        expectBeforeUnconstrained:
-          'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
-        expectAfterUnconstrained: 'angledLine({ angle: 3, length: 32 + 0 }, %)',
-        expectFinal: 'angledLine({ angle: angle001, length: 32 + 0 }, %)',
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="1"]',
-      })
-      console.log('angledLine2')
-      await clickConstrained({
-        hoverPos: { x: angledLine.x, y: angledLine.y },
-        constraintType: 'length',
-        expectBeforeUnconstrained:
-          'angledLine({ angle: angle001, length: 32 + 0 }, %)',
-        expectAfterUnconstrained:
-          'angledLine({ angle: angle001, length: 32 }, %)',
-        expectFinal: 'angledLine({ angle: angle001, length: len001 }, %)',
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="1"]',
-      })
+        const angledLine = await u.getBoundingBox(`[data-overlay-index="1"]`)
+        ang = await u.getAngle(`[data-overlay-index="1"]`)
+        console.log('angledLine1')
+        await clickConstrained({
+          hoverPos: { x: angledLine.x, y: angledLine.y },
+          constraintType: 'angle',
+          expectBeforeUnconstrained:
+            'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
+          expectAfterUnconstrained:
+            'angledLine({ angle: 3, length: 32 + 0 }, %)',
+          expectFinal: 'angledLine({ angle: angle001, length: 32 + 0 }, %)',
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="1"]',
+        })
+        console.log('angledLine2')
+        await clickConstrained({
+          hoverPos: { x: angledLine.x, y: angledLine.y },
+          constraintType: 'length',
+          expectBeforeUnconstrained:
+            'angledLine({ angle: angle001, length: 32 + 0 }, %)',
+          expectAfterUnconstrained:
+            'angledLine({ angle: angle001, length: 32 }, %)',
+          expectFinal: 'angledLine({ angle: angle001, length: len001 }, %)',
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="1"]',
+        })
 
-      await page.mouse.move(700, 250)
-      await page.waitForTimeout(100)
+        await page.mouse.move(700, 250)
+        await page.waitForTimeout(100)
 
-      let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
-      ang = await u.getAngle(`[data-overlay-index="2"]`)
-      console.log('lineTo1')
-      await clickConstrained({
-        hoverPos: { x: lineTo.x, y: lineTo.y },
-        constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'lineTo([5 + 33, 20 + 11.5 + 0], %)',
-        expectAfterUnconstrained: 'lineTo([5 + 33, 31.5], %)',
-        expectFinal: 'lineTo([5 + 33, yAbs001], %)',
-        steps: 8,
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="2"]',
-      })
-      console.log('lineTo2')
-      await clickConstrained({
-        hoverPos: { x: lineTo.x, y: lineTo.y },
-        constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'lineTo([5 + 33, yAbs001], %)',
-        expectAfterUnconstrained: 'lineTo([38, yAbs001], %)',
-        expectFinal: 'lineTo([xAbs001, yAbs001], %)',
-        steps: 8,
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="2"]',
-      })
+        let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
+        ang = await u.getAngle(`[data-overlay-index="2"]`)
+        console.log('lineTo1')
+        await clickConstrained({
+          hoverPos: { x: lineTo.x, y: lineTo.y },
+          constraintType: 'yAbsolute',
+          expectBeforeUnconstrained: 'lineTo([5 + 33, 20 + 11.5 + 0], %)',
+          expectAfterUnconstrained: 'lineTo([5 + 33, 31.5], %)',
+          expectFinal: 'lineTo([5 + 33, yAbs001], %)',
+          steps: 8,
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="2"]',
+        })
+        console.log('lineTo2')
+        await clickConstrained({
+          hoverPos: { x: lineTo.x, y: lineTo.y },
+          constraintType: 'xAbsolute',
+          expectBeforeUnconstrained: 'lineTo([5 + 33, yAbs001], %)',
+          expectAfterUnconstrained: 'lineTo([38, yAbs001], %)',
+          expectFinal: 'lineTo([xAbs001, yAbs001], %)',
+          steps: 8,
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="2"]',
+        })
 
-      const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
-      ang = await u.getAngle(`[data-overlay-index="3"]`)
-      console.log('xlineTo1')
-      await clickConstrained({
-        hoverPos: { x: xLineTo.x, y: xLineTo.y },
-        constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'xLineTo(5 + 9 - 5, %)',
-        expectAfterUnconstrained: 'xLineTo(9, %)',
-        expectFinal: 'xLineTo(xAbs002, %)',
-        ang: ang + 180,
-        steps: 8,
-        locator: '[data-overlay-toolbar-index="3"]',
-      })
-    })
+        const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
+        ang = await u.getAngle(`[data-overlay-index="3"]`)
+        console.log('xlineTo1')
+        await clickConstrained({
+          hoverPos: { x: xLineTo.x, y: xLineTo.y },
+          constraintType: 'xAbsolute',
+          expectBeforeUnconstrained: 'xLineTo(5 + 9 - 5, %)',
+          expectAfterUnconstrained: 'xLineTo(9, %)',
+          expectFinal: 'xLineTo(xAbs002, %)',
+          ang: ang + 180,
+          steps: 8,
+          locator: '[data-overlay-toolbar-index="3"]',
+        })
+      }
+    )
     test('for segments [yLineTo, xLine]', async ({ page }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -6589,7 +6588,7 @@ const part001 = startSketchOn('XZ')
           codeToBeDeleted
         )
       }
-    test('all segment types', { tag: '@focus' }, async ({ page }) => {
+    test('all segment types', async ({ page }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
