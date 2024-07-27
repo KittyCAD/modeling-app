@@ -6589,7 +6589,7 @@ const part001 = startSketchOn('XZ')
           codeToBeDeleted
         )
       }
-    test('all segment types', async ({ page }) => {
+    test('all segment types', { tag: '@focus' }, async ({ page }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
