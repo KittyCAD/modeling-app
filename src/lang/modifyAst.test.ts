@@ -460,12 +460,12 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const code = `const part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %)
-  |> line([306.21, 198.85], %, 'a')
+  |> line([306.21, 198.85], %, $a)
   |> line([306.21, 198.87], %)`
     const ast = parse(code)
     if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
-    const lineOfInterest = "line([306.21, 198.85], %, 'a')"
+    const lineOfInterest = 'line([306.21, 198.85], %, $a)'
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
