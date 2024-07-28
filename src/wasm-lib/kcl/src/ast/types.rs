@@ -206,6 +206,19 @@ impl Program {
         Ok(x.clone())
     }
 
+    pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
+        let rules = vec![
+            crate::lint::checks::lint_variables,
+            crate::lint::checks::lint_call_expressions,
+        ];
+
+        let mut findings = vec![];
+        for rule in rules {
+            findings.append(&mut self.lint(rule)?);
+        }
+        Ok(findings)
+    }
+
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
