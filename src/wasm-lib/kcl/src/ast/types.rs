@@ -1322,6 +1322,8 @@ impl CallExpression {
 
                 // If the return result is a sketch group or extrude group, we want to update the
                 // memory for the tags of the group.
+                // TODO: This could probably be done in a better way, but as of now this was my only idea
+                // and it works.
                 match result {
                     MemoryItem::SketchGroup(ref sketch_group) => {
                         for (_, tag) in sketch_group.tags.iter() {
@@ -1332,9 +1334,9 @@ impl CallExpression {
                         for value in &extrude_group.value {
                             if let Some(tag) = value.get_tag() {
                                 // Get the past tag and update it.
-                                let MemoryItem::TagIdentifier(ref t) = memory.get(&tag.name, (&tag).into())? else {
+                                let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) else {
                                     return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("Tag {} is not a tag identifier", tag.name),
+                                        message: format!("Tag {} is not on sketch group", tag.name),
                                         source_ranges: vec![tag.into()],
                                     }));
                                 };
@@ -1351,7 +1353,7 @@ impl CallExpression {
                                 info.surface = Some(value.clone());
                                 t.info = Some(info);
 
-                                memory.update_tag(&tag.name, *t)?;
+                                memory.update_tag(&tag.name, t)?;
                             }
                         }
                     }

@@ -1651,7 +1651,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
   |> line([2, 0], %)
   |> line([0, 10], %)
   |> close(%)
-  |> revolve({ axis: getEdge(revolveAxis, box), angle: 90 }, %)
+  |> revolve({ axis: revolveAxis, angle: 90 }, %)
 
 "#;
 
@@ -1660,7 +1660,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 404])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 390])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
     );
 }
 
