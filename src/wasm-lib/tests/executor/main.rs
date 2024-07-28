@@ -2543,6 +2543,17 @@ async fn serial_test_global_tags() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_extrude_inside_fn_with_tags() {
+    let code = include_str!("inputs/global-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/extrude-inside-fn-with-tags.png",
+        &result,
+        MIN_DIFF,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pattern_vase() {
     let code = include_str!("inputs/pattern_vase.kcl");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
