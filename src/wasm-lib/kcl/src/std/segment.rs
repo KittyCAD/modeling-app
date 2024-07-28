@@ -177,7 +177,7 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 ///   }, %)
 ///   |> angledLine({
 ///     angle: -60,
-///     length: segLen(thing, %),
+///     length: segLen(thing),
 ///   }, %)
 ///   |> close(%)
 ///
@@ -210,9 +210,9 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> line([10, 0], %)
 ///   |> line([5, 10], %, $seg01)
 ///   |> line([-10, 0], %)
-///   |> angledLine([segAng(seg01, %), 10], %)
+///   |> angledLine([segAng(seg01), 10], %)
 ///   |> line([-10, 0], %)
-///   |> angledLine([segAng(seg01, %), -15], %)
+///   |> angledLine([segAng(seg01), -15], %)
 ///   |> close(%)
 ///
 /// const example = extrude(4, exampleSketch)
