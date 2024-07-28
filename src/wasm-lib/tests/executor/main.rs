@@ -317,7 +317,7 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
     |> line([0, -10], %, $thing2)
     |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3, %)]}, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -2147,13 +2147,13 @@ const bracket = startSketchOn('XY')
   |> fillet({
        radius: filletR,
        tags: [
-         getPreviousAdjacentEdge(innerEdge, %)
+         getPreviousAdjacentEdge(innerEdge)
        ]
      }, %)
   |> fillet({
        radius: filletR + thickness,
        tags: [
-         getPreviousAdjacentEdge(outerEdge, %)
+         getPreviousAdjacentEdge(outerEdge)
        ]
      }, %)
 
