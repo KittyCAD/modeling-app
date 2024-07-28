@@ -2601,3 +2601,29 @@ async fn serial_test_extrude_custom_plane() {
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/extrude-custom-plane.png", &result, MIN_DIFF);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_arc_error_same_start_end() {
+    let code = r#"startSketchOn('XY')
+  |> startProfileAt([10, 0], %)
+  |> arc({
+       angle_start: 180,
+       angle_end: 180,
+       radius: 1.5
+     }, %)
+  |> close(%)
+  |> patternCircular2d({
+       arcDegrees: 360,
+       center: [0, 0],
+       repetitions: 5,
+       rotateDuplicates: true
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 140])], message: "Arc start and end angles must be different" }"#
+    );
+}
