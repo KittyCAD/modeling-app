@@ -1328,7 +1328,33 @@ impl CallExpression {
                             memory.update_tag(&tag.value, tag.clone())?;
                         }
                     }
-                    MemoryItem::ExtrudeGroup(ref extrude_group) => {}
+                    MemoryItem::ExtrudeGroup(ref extrude_group) => {
+                        for value in &extrude_group.value {
+                            if let Some(tag) = value.get_tag() {
+                                // Get the past tag and update it.
+                                let MemoryItem::TagIdentifier(ref t) = memory.get(&tag.name, (&tag).into())? else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("Tag {} is not a tag identifier", tag.name),
+                                        source_ranges: vec![tag.into()],
+                                    }));
+                                };
+
+                                let Some(ref info) = t.info else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("Tag {} does not have path info", tag.name),
+                                        source_ranges: vec![tag.into()],
+                                    }));
+                                };
+
+                                let mut t = t.clone();
+                                let mut info = info.clone();
+                                info.surface = Some(value.clone());
+                                t.info = Some(info);
+
+                                memory.update_tag(&tag.name, *t)?;
+                            }
+                        }
+                    }
                     _ => {}
                 }
                 Ok(result)
