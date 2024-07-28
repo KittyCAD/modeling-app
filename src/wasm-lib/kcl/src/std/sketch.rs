@@ -1478,6 +1478,13 @@ pub(crate) async fn inner_arc(
         }
     };
 
+    if angle_start == angle_end {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Arc start and end angles must be different".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let id = uuid::Uuid::new_v4();
 
     args.batch_modeling_cmd(
