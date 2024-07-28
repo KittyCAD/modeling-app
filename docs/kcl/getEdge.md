@@ -23,7 +23,7 @@ const box = startSketchOn('XZ')
   |> close(%)
   |> extrude(10, %)
 
-const revolution = startSketchOn(box, "revolveAxis")
+const revolution = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, 10], %)
   |> line([2, 0], %)

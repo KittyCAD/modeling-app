@@ -34,7 +34,7 @@ pub enum FaceTag {
     StartOrEnd(StartOrEnd),
     /// A tag for the face.
     #[display("{0}")]
-    Tag(#[serde(deserialize_with = "crate::std::string_or_struct::string_or_struct")] TagIdentifier),
+    Tag(TagIdentifier),
 }
 
 impl FaceTag {
@@ -516,10 +516,10 @@ pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError>
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineOfXLength({ angle: 45, length: 10 }, %, "edge1")
-///   |> angledLineOfXLength({ angle: -15, length: 20 }, %, "edge2")
+///   |> angledLineOfXLength({ angle: 45, length: 10 }, %, $edge1)
+///   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
 ///   |> line([0, -5], %)
-///   |> close(%, "edge3")
+///   |> close(%, $edge3)
 ///
 /// const extrusion = extrude(10, sketch001)
 /// ```
@@ -691,7 +691,6 @@ pub struct AngledLineThatIntersectsData {
     /// The angle of the line.
     pub angle: f64,
     /// The tag of the line to intersect with.
-    #[serde(deserialize_with = "crate::std::string_or_struct::string_or_struct")]
     pub intersect_tag: TagIdentifier,
     /// The offset from the intersecting line.
     pub offset: Option<f64>,
@@ -711,11 +710,11 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([5, 10], %)
-///   |> lineTo([-10, 10], %, "lineToIntersect")
+///   |> lineTo([-10, 10], %, $lineToIntersect)
 ///   |> lineTo([0, 20], %)
 ///   |> angledLineThatIntersects({
 ///        angle: 80,
-///        intersectTag: 'lineToIntersect',
+///        intersectTag: lineToIntersect,
 ///        offset: 10
 ///      }, %)
 ///   |> close(%)
@@ -973,22 +972,22 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 /// const exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
-///   |> line([0, 10], %, 'sketchingFace')
+///   |> line([0, 10], %, $sketchingFace)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
 /// const example = extrude(10, exampleSketch)
 ///
-/// const exampleSketch002 = startSketchOn(example, 'sketchingFace')
+/// const exampleSketch002 = startSketchOn(example, sketchingFace)
 ///   |> startProfileAt([1, 1], %)
 ///   |> line([8, 0], %)
 ///   |> line([0, 8], %)
 ///   |> line([-8, 0], %)
-///   |> close(%, 'sketchingFace002')
+///   |> close(%, $sketchingFace002)
 ///
 /// const example002 = extrude(10, exampleSketch002)
 ///
-/// const exampleSketch003 = startSketchOn(example002, 'sketchingFace002')
+/// const exampleSketch003 = startSketchOn(example002, sketchingFace002)
 ///   |> startProfileAt([-8, 12], %)
 ///   |> line([0, 6], %)
 ///   |> line([6, 0], %)
@@ -1301,8 +1300,8 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: 120, length: 50 }, %, 'seg01')
-///  |> angledLine({ angle: segAng('seg01', %) + 120, length: 50 }, %)
+///  |> angledLine({ angle: 120, length: 50 }, %, $seg01)
+///  |> angledLine({ angle: segAng(seg01, %) + 120, length: 50 }, %)
 ///  |> lineTo(profileStart(%), %)
 ///  |> close(%)
 ///  |> extrude(20, %)
@@ -1940,7 +1939,11 @@ mod tests {
             crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
         );
 
-        str_json = "\"thing\"".to_string();
+        str_json = serde_json::to_string(&TagIdentifier {
+            value: "thing".to_string(),
+            meta: Default::default(),
+        })
+        .unwrap();
         let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,

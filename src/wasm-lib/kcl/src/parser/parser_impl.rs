@@ -1502,7 +1502,7 @@ fn binding_name(i: TokenSlice) -> PResult<Identifier> {
 fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let fn_name = identifier(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
-    let mut args = arguments(i)?;
+    let args = arguments(i)?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         // Type check the arguments.
         for (i, spec_arg) in std_fn.args().iter().enumerate() {
@@ -1511,89 +1511,38 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
                 continue;
             };
             match spec_arg.type_.as_ref() {
-                "TagDeclarator" => {
-                    match &arg {
-                        Value::Identifier(_) => {
-                            // These are fine since we want someone to be able to map a variable to a tag declarator.
-                        }
-                        Value::TagDeclarator(tag) => {
-                            tag.clone()
-                                .into_valid_binding_name()
-                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
-                        }
-                        Value::Literal(literal) => {
-                            let LiteralValue::String(name) = &literal.value else {
-                                return Err(ErrMode::Cut(
-                                    KclError::Syntax(KclErrorDetails {
-                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
-                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
-                                    })
-                                    .into(),
-                                ));
-                            };
-
-                            // Convert this to a TagDeclarator.
-                            let tag = TagDeclarator {
-                                start: literal.start,
-                                end: literal.end,
-                                name: name.to_string(),
-                                digest: None,
-                            };
-                            let tag = tag
-                                .into_valid_binding_name()
-                                .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
-
-                            // Replace the literal with the tag.
-                            args[i] = Value::TagDeclarator(Box::new(tag));
-                        }
-                        e => {
-                            return Err(ErrMode::Cut(
-                                KclError::Syntax(KclErrorDetails {
-                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
-                                    message: format!("Expected a tag declarator like `$name`, found {:?}", e),
-                                })
-                                .into(),
-                            ));
-                        }
+                "TagDeclarator" => match &arg {
+                    Value::Identifier(_) => {
+                        // These are fine since we want someone to be able to map a variable to a tag declarator.
                     }
-                }
-                "TagIdentifier" => {
-                    match &arg {
-                        Value::Identifier(_) => {}
-                        Value::Literal(literal) => {
-                            let LiteralValue::String(name) = &literal.value else {
-                                return Err(ErrMode::Cut(
-                                    KclError::Syntax(KclErrorDetails {
-                                        source_ranges: vec![SourceRange([arg.start(), arg.end()])],
-                                        message: format!("Expected a tag declarator like `$name`, found {:?}", literal),
-                                    })
-                                    .into(),
-                                ));
-                            };
-
-                            // Convert this to a TagDeclarator.
-                            let tag = Identifier {
-                                start: literal.start,
-                                end: literal.end,
-                                name: name.to_string(),
-                                digest: None,
-                            };
-
-                            // Replace the literal with the tag.
-                            args[i] = Value::Identifier(Box::new(tag));
-                        }
-                        Value::MemberExpression(_) => {}
-                        e => {
-                            return Err(ErrMode::Cut(
-                                KclError::Syntax(KclErrorDetails {
-                                    source_ranges: vec![SourceRange([arg.start(), arg.end()])],
-                                    message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
-                                })
-                                .into(),
-                            ));
-                        }
+                    Value::TagDeclarator(tag) => {
+                        tag.clone()
+                            .into_valid_binding_name()
+                            .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
                     }
-                }
+                    e => {
+                        return Err(ErrMode::Cut(
+                            KclError::Syntax(KclErrorDetails {
+                                source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                            })
+                            .into(),
+                        ));
+                    }
+                },
+                "TagIdentifier" => match &arg {
+                    Value::Identifier(_) => {}
+                    Value::MemberExpression(_) => {}
+                    e => {
+                        return Err(ErrMode::Cut(
+                            KclError::Syntax(KclErrorDetails {
+                                source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                            })
+                            .into(),
+                        ));
+                    }
+                },
                 _ => {}
             }
         }
@@ -3289,9 +3238,9 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"const mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, 'myPath')
+        |> lineTo([0, 1], %, $myPath)
         |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, 'rightPath')
+        |> lineTo([1, 0], %, $rightPath)
         |> close(%)"#
     );
     snapshot_test!(
