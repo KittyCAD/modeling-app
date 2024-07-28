@@ -42,8 +42,8 @@ function registerServerCapability(
   serverCapabilities: ServerCapabilities,
   registration: Registration
 ): ServerCapabilities | Error {
-  const serverCapabilitiesCopy = JSON.parse(
-    JSON.stringify(serverCapabilities)
+  const serverCapabilitiesCopy = structuredClone(
+    serverCapabilities
   ) as IFlexibleServerCapabilities
   const { method, registerOptions } = registration
   const providerName = ServerCapabilitiesProviders[method]
@@ -54,7 +54,7 @@ function registerServerCapability(
     } else {
       serverCapabilitiesCopy[providerName] = Object.assign(
         {},
-        JSON.parse(JSON.stringify(registerOptions))
+        structuredClone(registerOptions)
       )
     }
   } else {
@@ -68,8 +68,8 @@ function unregisterServerCapability(
   serverCapabilities: ServerCapabilities,
   unregistration: Unregistration
 ): ServerCapabilities {
-  const serverCapabilitiesCopy = JSON.parse(
-    JSON.stringify(serverCapabilities)
+  const serverCapabilitiesCopy = structuredClone(
+    serverCapabilities
   ) as IFlexibleServerCapabilities
   const { method } = unregistration
   const providerName = ServerCapabilitiesProviders[method]

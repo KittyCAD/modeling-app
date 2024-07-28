@@ -1143,11 +1143,10 @@ export const modelingMachine = createMachine(
         if (sketchGroup?.type !== 'SketchGroup') return
         const idArtifact = engineCommandManager.artifactMap[sketchGroup.id]
         if (idArtifact.type !== 'startPath') return
-        const extrusionArtifactId = (idArtifact as any)?.extrusions?.[0]
+        const extrusionArtifactId = idArtifact?.extrusionIds?.[0]
         if (typeof extrusionArtifactId !== 'string') return
-        const extrusionArtifact = (engineCommandManager.artifactMap as any)[
-          extrusionArtifactId
-        ]
+        const extrusionArtifact =
+          engineCommandManager.artifactMap[extrusionArtifactId]
         if (!extrusionArtifact) return
         const pathToExtrudeNode = getNodePathFromSourceRange(
           ast,

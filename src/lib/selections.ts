@@ -115,10 +115,7 @@ export async function getEventForSelectWithPoint(
           selectionType: 'singleCodeCursor',
           selection: {
             range: sourceRange,
-            type:
-              _artifact?.additionalData.info === 'end'
-                ? 'end-cap'
-                : 'start-cap',
+            type: _artifact?.cap === 'end' ? 'end-cap' : 'start-cap',
           },
         },
       }
@@ -525,7 +522,7 @@ function codeToIdSelections(
         if (
           type === 'start-cap' &&
           entry.artifact.type === 'extrudeCap' &&
-          entry?.artifact?.additionalData?.info === 'start'
+          entry?.artifact?.cap === 'start'
         ) {
           bestCandidate = entry
           return
@@ -533,7 +530,7 @@ function codeToIdSelections(
         if (
           type === 'end-cap' &&
           entry.artifact.type === 'extrudeCap' &&
-          entry?.artifact?.additionalData?.info === 'end'
+          entry?.artifact?.cap === 'end'
         ) {
           bestCandidate = entry
           return
