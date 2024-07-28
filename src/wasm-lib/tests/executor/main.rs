@@ -2544,7 +2544,7 @@ async fn serial_test_global_tags() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_extrude_inside_fn_with_tags() {
-    let code = include_str!("inputs/global-tags.kcl");
+    let code = include_str!("inputs/extrude-inside-fn-with-tags.kcl");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/extrude-inside-fn-with-tags.png",

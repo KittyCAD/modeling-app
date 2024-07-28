@@ -1318,7 +1318,7 @@ impl CallExpression {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
-                let result = func.std_lib_fn()(args).await?;
+                let mut result = func.std_lib_fn()(args).await?;
 
                 // If the return result is a sketch group or extrude group, we want to update the
                 // memory for the tags of the group.
@@ -1330,7 +1330,7 @@ impl CallExpression {
                             memory.update_tag(&tag.value, tag.clone())?;
                         }
                     }
-                    MemoryItem::ExtrudeGroup(ref extrude_group) => {
+                    MemoryItem::ExtrudeGroup(ref mut extrude_group) => {
                         for value in &extrude_group.value {
                             if let Some(tag) = value.get_tag() {
                                 // Get the past tag and update it.
@@ -1353,7 +1353,10 @@ impl CallExpression {
                                 info.surface = Some(value.clone());
                                 t.info = Some(info);
 
-                                memory.update_tag(&tag.name, t)?;
+                                memory.update_tag(&tag.name, t.clone())?;
+
+                                // update the sketch group tags.
+                                extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
                             }
                         }
                     }
