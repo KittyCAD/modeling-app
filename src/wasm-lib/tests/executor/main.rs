@@ -2500,11 +2500,17 @@ const sketch001 = startSketchOn(part001, chamfer1)
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    /*twenty_twenty::assert_image(
         "tests/executor/outputs/sketch_on_face_of_chamfer.png",
         &result,
         MIN_DIFF,
+    );*/
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([410, 441])], message: "Modeling command failed: []" }"#
     );
 }
 

@@ -103,6 +103,38 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 },
 },
 	value: string,
@@ -121,6 +153,12 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -189,6 +227,12 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -245,6 +289,38 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.
@@ -418,6 +494,38 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 }
 ```
@@ -445,6 +553,12 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -513,6 +627,12 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -569,6 +689,38 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.
@@ -742,6 +894,38 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 }
 ```
