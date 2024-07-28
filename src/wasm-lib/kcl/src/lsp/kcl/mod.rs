@@ -42,7 +42,6 @@ use tower_lsp::{
 use crate::{
     ast::types::{Value, VariableKind},
     executor::SourceRange,
-    lint::checks,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -273,11 +272,7 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
 
-            let discovered_findings = ast
-                .lint(checks::lint_variables)
-                .into_iter()
-                .flatten()
-                .collect::<Vec<_>>();
+            let discovered_findings = ast.lint_all().into_iter().flatten().collect::<Vec<_>>();
             self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
 

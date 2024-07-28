@@ -16,7 +16,6 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
-pub mod string_or_struct;
 pub mod types;
 pub mod utils;
 
@@ -95,7 +94,6 @@ lazy_static! {
         Box::new(crate::std::helix::Helix),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::revolve::Revolve),
-        Box::new(crate::std::revolve::GetEdge),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),

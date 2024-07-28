@@ -1713,23 +1713,16 @@ export function transformAstSketchLines({
 }
 
 function createSegLen(referenceSegName: string): Value {
-  return createCallExpression('segLen', [
-    createIdentifier(referenceSegName),
-    createPipeSubstitution(),
-  ])
+  return createCallExpression('segLen', [createIdentifier(referenceSegName)])
 }
 
 function createSegAngle(referenceSegName: string): Value {
-  return createCallExpression('segAng', [
-    createIdentifier(referenceSegName),
-    createPipeSubstitution(),
-  ])
+  return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
-    createPipeSubstitution(),
   ])
 }
 

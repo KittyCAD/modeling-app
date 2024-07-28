@@ -272,10 +272,10 @@ describe('testing doesPipeHave', () => {
   it('finds close', () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, 'seg01')
+  |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen('seg01', %)], %)
+  |> angledLine([-175, segLen(seg01)], %)
   |> close(%)
 `
     const ast = parse(exampleCode)
@@ -291,10 +291,10 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('finds extrude', () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, 'seg01')
+  |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen('seg01', %)], %)
+  |> angledLine([-175, segLen(seg01)], %)
   |> close(%)
   |> extrude(1, %)
 `
@@ -311,10 +311,10 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('does NOT find close', () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, 'seg01')
+  |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen('seg01', %)], %)
+  |> angledLine([-175, segLen(seg01)], %)
 `
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
@@ -344,10 +344,10 @@ describe('testing hasExtrudeSketchGroup', () => {
   it('find sketch group', async () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, 'seg01')
+  |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen('seg01', %)], %)`
+  |> angledLine([-175, segLen(seg01)], %)`
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
@@ -362,10 +362,10 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('find extrude group', async () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, 'seg01')
+  |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen('seg01', %)], %)
+  |> angledLine([-175, segLen(seg01)], %)
   |> extrude(1, %)`
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
@@ -398,9 +398,9 @@ describe('Testing findUsesOfTagInPipe', () => {
 |> startProfileAt([68.12, 156.65], %)
 |> line([306.21, 198.82], %)
 |> line([306.21, 198.85], %, $seg01)
-|> angledLine([-65, segLen(seg01, %)], %)
+|> angledLine([-65, segLen(seg01)], %)
 |> line([306.21, 198.87], %)
-|> angledLine([65, segLen(seg01, %)], %)`
+|> angledLine([65, segLen(seg01)], %)`
   it('finds the current segment', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
