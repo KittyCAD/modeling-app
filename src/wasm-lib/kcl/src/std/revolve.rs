@@ -189,7 +189,7 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
-///     |> line([0, -20], %, 'revolveAxis')
+///     |> line([0, -20], %, $revolveAxis)
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
@@ -197,7 +197,7 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> circle([10,10], 4, %)
 ///     |> revolve({
 ///         angle: 90,
-///         axis: getOppositeEdge('revolveAxis', box)
+///         axis: getOppositeEdge(revolveAxis, box)
 ///     }, %)
 /// ```
 ///
@@ -309,20 +309,20 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const box = startSketchOn('XZ')
 ///     |> startProfileAt([0, 0], %)
-///     |> line([0, 10], %, 'revolveAxis')
+///     |> line([0, 10], %, $revolveAxis)
 ///     |> line([10, 0], %)
 ///     |> line([0, -10], %)
 ///     |> close(%)
 ///     |> extrude(10, %)
 ///
-/// const revolution = startSketchOn(box, "revolveAxis")
+/// const revolution = startSketchOn(box, revolveAxis)
 ///     |> startProfileAt([5, 10], %)
 ///     |> line([0, 10], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -10], %)
 ///     |> close(%)
 ///     |> revolve({
-///         axis: getEdge('revolveAxis', box),
+///         axis: getEdge(revolveAxis, box),
 ///         angle: 90
 ///     }, %)
 /// ```

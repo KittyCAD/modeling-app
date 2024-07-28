@@ -45,9 +45,9 @@ const newVar = myVar + 1`
   it('sketch declaration', async () => {
     let code = `const mySketch = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> lineTo([0,2], %, "myPath")
+  |> lineTo([0,2], %, $myPath)
   |> lineTo([2,3], %)
-  |> lineTo([5,-1], %, "rightPath")
+  |> lineTo([5,-1], %, $rightPath)
   // |> close(%)
 `
     const mem = await exe(code)
@@ -59,11 +59,11 @@ const newVar = myVar + 1`
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 98],
+          sourceRange: [72, 97],
           id: expect.any(String),
         },
         tag: {
-          end: 97,
+          end: 96,
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
@@ -76,7 +76,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         tag: null,
         __geoMeta: {
-          sourceRange: [104, 120],
+          sourceRange: [103, 119],
           id: expect.any(String),
         },
       },
@@ -85,12 +85,12 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [126, 156],
+          sourceRange: [125, 154],
           id: expect.any(String),
         },
         tag: {
-          end: 155,
-          start: 144,
+          end: 153,
+          start: 143,
           type: 'TagDeclarator',
           value: 'rightPath',
           digest: null,
@@ -140,7 +140,7 @@ const newVar = myVar + 1`
       "const mySk1 = startSketchOn('XY')",
       '  |> startProfileAt([0,0], %)',
       '  |> lineTo([1,1], %)',
-      '  |> lineTo([0, 1], %, "myPath")',
+      '  |> lineTo([0, 1], %, $myPath)',
       '  |> lineTo([1,1], %)',
       // '  |> rx(90, %)',
     ].join('\n')
@@ -161,7 +161,7 @@ const newVar = myVar + 1`
         myPath: {
           __meta: [
             {
-              sourceRange: [109, 117],
+              sourceRange: [109, 116],
             },
           ],
           type: 'TagIdentifier',
@@ -184,11 +184,11 @@ const newVar = myVar + 1`
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
-            sourceRange: [91, 118],
+            sourceRange: [91, 117],
             id: expect.any(String),
           },
           tag: {
-            end: 117,
+            end: 116,
             start: 109,
             type: 'TagDeclarator',
             value: 'myPath',
@@ -201,7 +201,7 @@ const newVar = myVar + 1`
           from: [0, 1],
           tag: null,
           __geoMeta: {
-            sourceRange: [124, 140],
+            sourceRange: [123, 139],
             id: expect.any(String),
           },
         },
@@ -367,10 +367,10 @@ describe('testing math operators', () => {
       `const myVar = 3`,
       `const part001 = startSketchOn('XY')`,
       `  |> startProfileAt([0, 0], %)`,
-      `  |> line([3, 4], %, 'seg01')`,
+      `  |> line([3, 4], %, $seg01)`,
       `  |> line([`,
-      `  min(segLen('seg01', %), myVar),`,
-      `  -legLen(segLen('seg01', %), myVar)`,
+      `  min(segLen(seg01, %), myVar),`,
+      `  -legLen(segLen(seg01, %), myVar)`,
       `], %)`,
       ``,
     ].join('\n')
@@ -380,8 +380,8 @@ describe('testing math operators', () => {
     expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
     expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
-      `-legLen(segLen('seg01', %), myVar)`,
-      `legLen(segLen('seg01', %), myVar)`
+      `-legLen(segLen(seg01, %), myVar)`,
+      `legLen(segLen(seg01, %), myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
     const removedUnaryExpMemSketch = removedUnaryExpMem.get('part001')
