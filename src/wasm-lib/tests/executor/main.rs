@@ -2531,7 +2531,7 @@ let p = triangle(200)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313]), SourceRange([326, 339])], message: "Cannot redefine `a`" }"#
     );
 }
 
