@@ -117,8 +117,18 @@ afterAll(() => {
 
 describe('testing createLinker', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
-    const { orderedCommands, responseMap, ast } = getCommands('exampleCode1')
-    const theMap = createLinker({ orderedCommands, responseMap, ast })
+    let ast: Program
+    let theMap: ReturnType<typeof createLinker>
+    it('setup', () => {
+      // putting this logic in here because describe blocks runs before beforeAll has finished
+      const {
+        orderedCommands,
+        responseMap,
+        ast: _ast,
+      } = getCommands('exampleCode1')
+      ast = _ast
+      theMap = createLinker({ orderedCommands, responseMap, ast })
+    })
 
     it('there should be two planes for the extrusion and the sketch on face', () => {
       const planes = [...filterArtifacts(theMap, ['plane'])].map((plane) =>
