@@ -1728,7 +1728,6 @@ function createSegAngle(referenceSegName: string): Value {
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
-    createPipeSubstitution(),
   ])
 }
 

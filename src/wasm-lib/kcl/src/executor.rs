@@ -1967,7 +1967,7 @@ const newVar = myVar + 1"#;
   intersectTag: yo,
   offset: {},
 }}, %, $yo2)
-const intersect = segEndX(yo2, part001)"#,
+const intersect = segEndX(yo2)"#,
                 offset
             )
         };

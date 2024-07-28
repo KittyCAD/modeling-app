@@ -5052,22 +5052,22 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         constraint: 'horizontal distance',
-        value: 'segEndX(seg01, %) + xDis001, 61.34',
+        value: 'segEndX(seg01) + xDis001, 61.34',
       },
       {
         testName: 'No variable',
         constraint: 'horizontal distance',
-        value: 'segEndX(seg01, %) + 88.08, 61.34',
+        value: 'segEndX(seg01) + 88.08, 61.34',
       },
       {
         testName: 'Add variable',
         constraint: 'vertical distance',
-        value: '154.9, segEndY(seg01, %) - yDis001',
+        value: '154.9, segEndY(seg01) - yDis001',
       },
       {
         testName: 'No variable',
         constraint: 'vertical distance',
-        value: '154.9, segEndY(seg01, %) - 42.32',
+        value: '154.9, segEndY(seg01) - 42.32',
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
@@ -5558,11 +5558,11 @@ const part002 = startSketchOn('XZ')
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> lineTo([segEndX(seg01, %), 61.34], %)`,
+        codeAfter: `|> lineTo([segEndX(seg01), 61.34], %)`,
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> lineTo([154.9, segEndY(seg01, %)], %)`,
+        codeAfter: `|> lineTo([154.9, segEndY(seg01)], %)`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -7566,7 +7566,7 @@ const part001 = startSketchOn('-XZ')
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
       }, %, $seg02)
-  |> xLineTo(segEndX(seg03, %) + 0, %)
+  |> xLineTo(segEndX(seg03) + 0, %)
   |> yLine(-segLen(seg01, %), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,

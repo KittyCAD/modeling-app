@@ -64,27 +64,27 @@ const part001 = startSketchOn('-XZ')
   |> angledLineToY({
         angle: topAng,
         to: totalHeightHalf,
-      }, %, 'seg04')
-  |> xLineTo(totalLen, %, 'seg03')
-  |> yLine(-armThick, %, 'seg01')
+      }, %, $seg04)
+  |> xLineTo(totalLen, %, $seg03')
+  |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg04'
+        intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng('seg04') + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
-      }, %, 'seg02')
-  |> xLineTo(segEndX('seg03', %) + 0, %)
-  |> yLine(-segLen('seg01', %), %)
+      }, %, $seg02)
+  |> xLineTo(segEndX(seg03) + 0, %)
+  |> yLine(-segLen(seg01), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg02'
+        intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng('seg02') + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`

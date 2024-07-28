@@ -1968,7 +1968,7 @@ describe('testing nested call expressions', () => {
 })
 
 describe('should recognise callExpresions in binaryExpressions', () => {
-  const code = 'xLineTo(segEndX(seg02, %) + 1, %)'
+  const code = 'xLineTo(segEndX(seg02) + 1, %)'
   it('should recognise the callExp', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
