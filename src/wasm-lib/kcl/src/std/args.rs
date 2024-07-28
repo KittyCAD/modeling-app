@@ -65,14 +65,10 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
-    pub(crate) fn get_tag_engine_info<'a>(
+    fn get_tag_info_from_memory<'a>(
         &'a self,
         tag: &'a TagIdentifier,
     ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
-        /* if let Some(info) = &tag.info {
-            return Ok(info);
-        }*/
-
         if let MemoryItem::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
@@ -86,6 +82,30 @@ impl Args {
                 source_ranges: vec![self.source_range],
             }))
         }
+    }
+
+    pub(crate) fn get_tag_engine_info<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let Some(info) = &tag.info {
+            return Ok(info);
+        }
+
+        self.get_tag_info_from_memory(tag)
+    }
+
+    fn get_tag_engine_info_check_surface<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let Some(info) = &tag.info {
+            if info.surface.is_some() {
+                return Ok(info);
+            }
+        }
+
+        self.get_tag_info_from_memory(tag)
     }
 
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
@@ -318,7 +338,7 @@ impl Args {
             }));
         }
 
-        let engine_info = self.get_tag_engine_info(tag)?;
+        let engine_info = self.get_tag_engine_info_check_surface(tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
