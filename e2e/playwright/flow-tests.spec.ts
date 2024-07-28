@@ -217,7 +217,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', async ({ page }) => {
+  test('code pane open at start', { tag: '@focus' }, async ({ page }) => {
     await doBasicSketch(page, ['code'])
   })
 
