@@ -739,10 +739,16 @@ async fn inner_angled_line_that_intersects(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let intersect_path = args.get_tag_engine_info(&data.intersect_tag)?;
+    let path = intersect_path.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
 
     let from = sketch_group.current_pen_position()?;
     let to = intersection_with_parallel_line(
-        &[intersect_path.path.from.into(), intersect_path.path.to.into()],
+        &[path.from.into(), path.to.into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from,
@@ -1233,7 +1239,7 @@ pub(crate) async fn inner_start_profile_at(
             tag_identifier.info = Some(TagEngineInfo {
                 id: current_path.geo_meta.id,
                 sketch_group: path_id,
-                path: current_path.clone(),
+                path: Some(current_path.clone()),
                 surface: None,
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])

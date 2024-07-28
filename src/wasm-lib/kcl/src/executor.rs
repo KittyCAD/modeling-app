@@ -841,7 +841,7 @@ pub struct TagEngineInfo {
     /// The sketch group the tag is on.
     pub sketch_group: uuid::Uuid,
     /// The path the tag is on.
-    pub path: BasePath,
+    pub path: Option<BasePath>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
@@ -916,7 +916,7 @@ impl SketchGroup {
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
             sketch_group: self.id,
-            path: base.clone(),
+            path: Some(base.clone()),
             surface: None,
         });
 
@@ -1009,6 +1009,7 @@ pub enum FilletOrChamfer {
         radius: f64,
         /// The engine id of the edge to fillet.
         edge_id: uuid::Uuid,
+        tag: Box<Option<TagDeclarator>>,
     },
     /// A chamfer.
     Chamfer {
@@ -1038,7 +1039,7 @@ impl FilletOrChamfer {
 
     pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
-            FilletOrChamfer::Fillet { .. } => None,
+            FilletOrChamfer::Fillet { tag, .. } => *tag.clone(),
             FilletOrChamfer::Chamfer { tag, .. } => *tag.clone(),
         }
     }
@@ -1326,6 +1327,36 @@ pub enum ExtrudeSurface {
     /// An extrude plane.
     ExtrudePlane(ExtrudePlane),
     ExtrudeArc(ExtrudeArc),
+    Chamfer(ChamferSurface),
+    Fillet(FilletSurface),
+}
+
+// Chamfer surface.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ChamferSurface {
+    /// The id for the chamfer surface.
+    pub face_id: uuid::Uuid,
+    /// The tag.
+    pub tag: Option<TagDeclarator>,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
+}
+
+// Fillet surface.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct FilletSurface {
+    /// The id for the fillet surface.
+    pub face_id: uuid::Uuid,
+    /// The tag.
+    pub tag: Option<TagDeclarator>,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
 }
 
 /// An extruded plane.
@@ -1361,6 +1392,8 @@ impl ExtrudeSurface {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
             ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id,
+            ExtrudeSurface::Fillet(f) => f.geo_meta.id,
+            ExtrudeSurface::Chamfer(c) => c.geo_meta.id,
         }
     }
 
@@ -1368,6 +1401,8 @@ impl ExtrudeSurface {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
+            ExtrudeSurface::Fillet(f) => f.tag.clone(),
+            ExtrudeSurface::Chamfer(c) => c.tag.clone(),
         }
     }
 }
