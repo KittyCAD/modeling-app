@@ -1027,7 +1027,7 @@ test.describe('Editor tests', () => {
   |> line([0, -10], %)
   |> close(%)
   |> revolve({
-  axis: getEdge(revolveAxis, box),
+  axis: revolveAxis,
   angle: 90
   }, %)
       `
