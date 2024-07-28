@@ -389,7 +389,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but wasn't",
-                    type_name::<T>()
+                    type_name::<T>(),
                 ),
                 source_ranges: vec![args.source_range],
             }));
