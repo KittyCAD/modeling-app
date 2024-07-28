@@ -66,11 +66,16 @@ impl Args {
     }
 
     pub(crate) fn get_tag_engine_info(&self, tag: &TagIdentifier) -> Result<&crate::executor::TagEngineInfo, KclError> {
-        if let MemoryItem::TagEngineInfo(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
-            Ok(t)
+        if let MemoryItem::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+            Ok(t.info.as_ref().ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Tag `{}` does not have engine info", tag.value),
+                    source_ranges: vec![self.source_range],
+                })
+            })?)
         } else {
             Err(KclError::Type(KclErrorDetails {
-                message: format!("Tag `{}` does not have engine info", tag.value),
+                message: format!("Tag `{}` does not exist", tag.value),
                 source_ranges: vec![self.source_range],
             }))
         }

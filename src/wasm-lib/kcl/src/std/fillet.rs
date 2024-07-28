@@ -34,7 +34,7 @@ pub enum EdgeReference {
     /// A uuid of an edge.
     Uuid(uuid::Uuid),
     /// A tag of an edge.
-    Tag(TagIdentifier),
+    Tag(Box<TagIdentifier>),
 }
 
 /// Create fillets on tagged paths.

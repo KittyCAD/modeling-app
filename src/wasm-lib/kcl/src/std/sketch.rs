@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier, UserVal,
+        SketchGroupSet, SketchSurface, SourceRange, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -26,15 +26,23 @@ use crate::{
 };
 
 /// A tag for a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case", untagged)]
-#[display("{0}")]
 pub enum FaceTag {
     StartOrEnd(StartOrEnd),
     /// A tag for the face.
-    #[display("{0}")]
-    Tag(TagIdentifier),
+    Tag(Box<TagIdentifier>),
+}
+
+impl std::fmt::Display for FaceTag {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FaceTag::Tag(t) => write!(f, "{}", t),
+            FaceTag::StartOrEnd(StartOrEnd::Start) => write!(f, "start"),
+            FaceTag::StartOrEnd(StartOrEnd::End) => write!(f, "end"),
+        }
+    }
 }
 
 impl FaceTag {
@@ -129,22 +137,30 @@ async fn inner_line_to(
     )
     .await?;
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
 
@@ -297,22 +313,30 @@ async fn inner_line(
     )
     .await?;
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
 
@@ -481,22 +505,30 @@ async fn inner_angled_line(
     )
     .await?;
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
     Ok(new_sketch_group)
@@ -1359,21 +1391,32 @@ pub(crate) async fn inner_close(
             .await?;
     }
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(ref tag) = tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-    new_sketch_group.value.push(Path::ToPoint {
+    let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to: to.into(),
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
-    });
+    };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
+
+    new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
 }
@@ -1471,22 +1514,30 @@ pub(crate) async fn inner_arc(
     )
     .await?;
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to: end.into(),
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
 
@@ -1581,22 +1632,30 @@ async fn inner_tangential_arc(
 
     let to = [from.x + to[0], from.y + to[1]];
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::TangentialArc {
         base: BasePath {
             from: from.into(),
             to,
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
 
@@ -1689,16 +1748,11 @@ async fn inner_tangential_arc_to(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
             to,
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1707,6 +1761,19 @@ async fn inner_tangential_arc_to(
         center: result.center,
         ccw: result.ccw > 0,
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
 
@@ -1794,22 +1861,30 @@ async fn inner_bezier_curve(
     )
     .await?;
 
-    let mut new_sketch_group = sketch_group.clone();
-    if let Some(tag) = &tag {
-        new_sketch_group.tags.insert(tag.name.to_string(), tag.into());
-    }
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
             to,
-            tag,
+            tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
     };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        tag_identifier.info = Some(TagEngineInfo {
+            id,
+            sketch_group: sketch_group.id,
+            path: current_path.get_base().clone(),
+            surface: None,
+        });
+
+        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+    }
 
     new_sketch_group.value.push(current_path);
 
@@ -1930,16 +2005,18 @@ mod tests {
 
         str_json = serde_json::to_string(&TagIdentifier {
             value: "thing".to_string(),
+            info: None,
             meta: Default::default(),
         })
         .unwrap();
         let data: crate::std::sketch::FaceTag = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            crate::std::sketch::FaceTag::Tag(TagIdentifier {
+            crate::std::sketch::FaceTag::Tag(Box::new(TagIdentifier {
                 value: "thing".to_string(),
+                info: None,
                 meta: Default::default()
-            })
+            }))
         );
 
         str_json = "\"END\"".to_string();

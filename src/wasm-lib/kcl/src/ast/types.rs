@@ -24,7 +24,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
-        TagEngineInfo, TagIdentifier, UserVal,
+        TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -1325,22 +1325,7 @@ impl CallExpression {
                 match result {
                     MemoryItem::SketchGroup(ref sketch_group) => {
                         for (_, tag) in sketch_group.tags.iter() {
-                            let path = sketch_group.get_base_by_tag_or_start(tag).ok_or_else(|| {
-                                KclError::Semantic(KclErrorDetails {
-                                    message: format!("Tag {} not found in sketch group", tag.value),
-                                    source_ranges: tag.meta.iter().map(|m| m.source_range).collect(),
-                                })
-                            })?;
-                            memory.update_tag(
-                                &tag.value,
-                                TagEngineInfo {
-                                    id: path.geo_meta.id,
-                                    sketch_group: sketch_group.id,
-                                    surface: None,
-                                    path: path.clone(),
-                                    meta: Default::default(),
-                                },
-                            )?;
+                            memory.update_tag(&tag.value, tag.clone())?;
                         }
                     }
                     MemoryItem::ExtrudeGroup(ref extrude_group) => {}
@@ -2004,6 +1989,7 @@ impl From<&TagDeclarator> for TagIdentifier {
     fn from(tag: &TagDeclarator) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
+            info: None,
             meta: vec![Metadata {
                 source_range: tag.into(),
             }],
@@ -2075,6 +2061,7 @@ impl TagDeclarator {
     pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
         let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
+            info: None,
             meta: vec![Metadata {
                 source_range: self.into(),
             }],

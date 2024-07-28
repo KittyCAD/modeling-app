@@ -59,8 +59,8 @@ impl ProgramMemory {
         Ok(())
     }
 
-    pub fn update_tag(&mut self, tag: &str, value: TagEngineInfo) -> Result<(), KclError> {
-        self.environments[self.current_env.index()].insert(tag.to_string(), MemoryItem::TagEngineInfo(Box::new(value)));
+    pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
+        self.environments[self.current_env.index()].insert(tag.to_string(), MemoryItem::TagIdentifier(Box::new(value)));
 
         Ok(())
     }
@@ -252,7 +252,6 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
-    TagEngineInfo(Box<TagEngineInfo>),
 }
 
 impl MemoryItem {
@@ -570,14 +569,17 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
     pub value: String,
+    pub info: Option<TagEngineInfo>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
+
+impl Eq for TagIdentifier {}
 
 impl std::fmt::Display for TagIdentifier {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -591,6 +593,7 @@ impl std::str::FromStr for TagIdentifier {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self {
             value: s.to_string(),
+            info: None,
             meta: Default::default(),
         })
     }
@@ -657,7 +660,6 @@ impl From<MemoryItem> for Vec<SourceRange> {
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::TagEngineInfo(t) => t.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
@@ -842,9 +844,6 @@ pub struct TagEngineInfo {
     pub path: BasePath,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
-    /// Metadata.
-    #[serde(rename = "__meta")]
-    pub meta: Vec<Metadata>,
 }
 
 /// A sketch group is a collection of paths.
