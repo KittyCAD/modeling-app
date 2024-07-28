@@ -1016,18 +1016,18 @@ test.describe('Editor tests', () => {
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
-  |> line([0, -10], %, 'revolveAxis')
+  |> line([0, -10], %, $revolveAxis)
   |> close(%)
   |> extrude(10, %)
   
-  const sketch001 = startSketchOn(box, "revolveAxis")
+  const sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
   |> line([0, -10], %)
   |> close(%)
   |> revolve({
-  axis: getEdge('revolveAxis', box),
+  axis: getEdge(revolveAxis, box),
   angle: 90
   }, %)
       `

@@ -742,19 +742,18 @@ impl MemoryItem {
         })
     }
 
-    /// Backwards compatibility for getting a tag from a memory item.
+    /// Get a tag identifier from a memory item.
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
-            MemoryItem::UserVal(u) => {
+            MemoryItem::UserVal(_) => {
                 if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
                     Ok(identifier)
                 } else {
-                    let name: String = self.get_json()?;
-                    Ok(TagIdentifier {
-                        value: name,
-                        meta: u.meta.clone(),
-                    })
+                    Err(KclError::Semantic(KclErrorDetails {
+                        message: format!("Not a tag identifier: {:?}", self),
+                        source_ranges: self.clone().into(),
+                    }))
                 }
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -764,19 +763,10 @@ impl MemoryItem {
         }
     }
 
-    /// Backwards compatibility for getting a tag from a memory item.
+    /// Get a tag declarator from a memory item.
     pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
         match self {
             MemoryItem::TagDeclarator(t) => Ok(*t.clone()),
-            MemoryItem::UserVal(u) => {
-                let name: String = self.get_json()?;
-                Ok(TagDeclarator {
-                    name,
-                    start: u.meta[0].source_range.start(),
-                    end: u.meta[0].source_range.end(),
-                    digest: None,
-                })
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -784,22 +774,10 @@ impl MemoryItem {
         }
     }
 
-    /// Backwards compatibility for getting an optional tag from a memory item.
+    /// Get an optional tag from a memory item.
     pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
         match self {
             MemoryItem::TagDeclarator(t) => Ok(Some(*t.clone())),
-            MemoryItem::UserVal(u) => {
-                if let Some(name) = self.get_json_opt::<String>()? {
-                    Ok(Some(TagDeclarator {
-                        name,
-                        start: u.meta[0].source_range.start(),
-                        end: u.meta[0].source_range.end(),
-                        digest: None,
-                    }))
-                } else {
-                    Ok(None)
-                }
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -1982,14 +1960,14 @@ const newVar = myVar + 1"#;
             format!(
                 r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([2, 2], %, "yo")
+  |> lineTo([2, 2], %, $yo)
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({{
   angle: 180,
-  intersectTag: 'yo',
+  intersectTag: yo,
   offset: {},
-}}, %, 'yo2')
-const intersect = segEndX('yo2', part001)"#,
+}}, %, $yo2)
+const intersect = segEndX(yo2, part001)"#,
                 offset
             )
         };
@@ -2053,10 +2031,10 @@ const yo2 = hmm([identifierGuy + 5])"#;
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([3, 4], %, 'seg01')
+  |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen('seg01', %), myVar),
-  -legLen(segLen('seg01', %), myVar)
+  min(segLen(seg01, %), myVar),
+  -legLen(segLen(seg01, %), myVar)
 ], %)
 "#;
 
@@ -2068,10 +2046,10 @@ const part001 = startSketchOn('XY')
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([3, 4], %, 'seg01')
+  |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen('seg01', %), myVar),
-  legLen(segLen('seg01', %), myVar)
+  min(segLen(seg01, %), myVar),
+  legLen(segLen(seg01, %), myVar)
 ], %)
 "#;
 
@@ -2366,7 +2344,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, 'tag1')
+    |> circle([0, 0], 1, %, $tag1)
     |> extrude(10, %)
 }
 
@@ -2494,7 +2472,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, 'tag1')
+    |> circle([0, 0], 1, %, $tag1)
     |> extrude(10, %)
 }
 

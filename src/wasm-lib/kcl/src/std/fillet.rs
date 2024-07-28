@@ -34,7 +34,7 @@ pub enum EdgeReference {
     /// A uuid of an edge.
     Uuid(uuid::Uuid),
     /// A tag of an edge.
-    Tag(#[serde(deserialize_with = "crate::std::string_or_struct::string_or_struct")] TagIdentifier),
+    Tag(TagIdentifier),
 }
 
 /// Create fillets on tagged paths.
@@ -55,19 +55,19 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
-///   |> lineTo([width/2, -length/2], %, 'edge1')
-///   |> lineTo([width/2, length/2], %, 'edge2')
-///   |> lineTo([-width/2, length/2], %, 'edge3')
-///   |> close(%, 'edge4')
+///   |> lineTo([width/2, -length/2], %, $edge1)
+///   |> lineTo([width/2, length/2], %, $edge2)
+///   |> lineTo([-width/2, length/2], %, $edge3)
+///   |> close(%, $edge4)
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
 ///     radius: filletRadius,
 ///     tags: [
-///       getNextAdjacentEdge('edge1', %),
-///       getNextAdjacentEdge('edge2', %),
-///       getNextAdjacentEdge('edge3', %),
-///       getNextAdjacentEdge('edge4', %)
+///       getNextAdjacentEdge(edge1, %),
+///       getNextAdjacentEdge(edge2, %),
+///       getNextAdjacentEdge(edge3, %),
+///       getNextAdjacentEdge(edge4, %)
 ///     ],
 ///   }, %)
 /// ```
@@ -170,13 +170,13 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> angledLine({
 ///     angle: 240,
 ///     length: 10,
-///   }, %, 'referenceEdge')
+///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getOppositeEdge("referenceEdge", %)],
+///     tags: [getOppositeEdge(referenceEdge, %)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -260,13 +260,13 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
 ///   |> angledLine({
 ///     angle: 240,
 ///     length: 10,
-///   }, %, 'referenceEdge')
+///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getNextAdjacentEdge("referenceEdge", %)],
+///     tags: [getNextAdjacentEdge(referenceEdge, %)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -355,13 +355,13 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
 ///   |> angledLine({
 ///     angle: 240,
 ///     length: 10,
-///   }, %, 'referenceEdge')
+///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getPreviousAdjacentEdge("referenceEdge", %)],
+///     tags: [getPreviousAdjacentEdge(referenceEdge, %)],
 ///   }, %)
 /// ```
 #[stdlib {
