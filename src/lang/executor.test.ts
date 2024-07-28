@@ -166,6 +166,7 @@ const newVar = myVar + 1`
           ],
           type: 'TagIdentifier',
           value: 'myPath',
+          info: expect.any(Object),
         },
       },
       value: [

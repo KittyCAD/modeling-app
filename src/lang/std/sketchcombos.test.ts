@@ -197,7 +197,7 @@ const part001 = startSketchOn('XY')
      ], %) // ln-angledLineOfYLength-yRelative use legAngY
   |> angledLineOfXLength([
        270 + legAngY(segLen(seg01), myVar),
-       min(segLen(seg01, %), myVar)
+       min(segLen(seg01), myVar)
      ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
   |> xLine(segLen(seg01), %) // ln-xLine-free should sub in segLen
   |> yLine(segLen(seg01), %) // ln-yLine-free should sub in segLen
