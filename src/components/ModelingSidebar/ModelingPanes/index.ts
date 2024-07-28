@@ -35,13 +35,13 @@ export type SidebarPane = {
   hideOnPlatform?: 'desktop' | 'web'
 }
 
-export const topPanes: SidebarPane[] = [
+export const sidebarPanes: SidebarPane[] = [
   {
     id: 'code',
     title: 'KCL Code',
     icon: faCode,
     Content: KclEditorPane,
-    keybinding: 'shift + c',
+    keybinding: 'Shift + C',
     Menu: KclEditorMenu,
   },
   {
@@ -49,40 +49,37 @@ export const topPanes: SidebarPane[] = [
     title: 'Project Files',
     icon: 'folder',
     Content: FileTreeInner,
-    keybinding: 'shift + f',
+    keybinding: 'Shift + F',
     Menu: FileTreeMenu,
     hideOnPlatform: 'web',
   },
-]
-
-export const bottomPanes: SidebarPane[] = [
   {
     id: 'variables',
     title: 'Variables',
     icon: faSquareRootVariable,
     Content: MemoryPane,
     Menu: MemoryPaneMenu,
-    keybinding: 'shift + v',
+    keybinding: 'Shift + V',
   },
   {
     id: 'logs',
     title: 'Logs',
     icon: faCodeCommit,
     Content: LogsPane,
-    keybinding: 'shift + l',
+    keybinding: 'Shift + L',
   },
   {
     id: 'kclErrors',
     title: 'KCL Errors',
     icon: faExclamationCircle,
     Content: KclErrorsPane,
-    keybinding: 'shift + e',
+    keybinding: 'Shift + E',
   },
   {
     id: 'debug',
     title: 'Debug',
     icon: faBugSlash,
     Content: DebugPane,
-    keybinding: 'shift + d',
+    keybinding: 'Shift + D',
   },
 ]

@@ -38,6 +38,7 @@ function configurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
+      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
@@ -75,6 +76,7 @@ function projectConfigurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
+      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
     modeling: {

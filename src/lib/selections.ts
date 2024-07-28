@@ -87,16 +87,20 @@ export async function getEventForSelectWithPoint(
     // there's plans to get the faceId back from the solid2d creation
     // https://github.com/KittyCAD/engine/issues/2094
     // at which point we can add it to the artifact map and remove this logic
-    const parentId = (
-      await engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'entity_get_parent_id',
-          entity_id: data.entity_id,
-        },
-        cmd_id: uuidv4(),
-      })
-    )?.data?.data?.entity_id
+    const resp = await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'entity_get_parent_id',
+        entity_id: data.entity_id,
+      },
+      cmd_id: uuidv4(),
+    })
+    const parentId =
+      resp?.success &&
+      resp?.resp?.type === 'modeling' &&
+      resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
+        ? resp?.resp?.data?.modeling_response?.data?.entity_id
+        : ''
     const parentArtifact = engineCommandManager.artifactMap[parentId]
     if (parentArtifact) {
       _artifact = parentArtifact
@@ -104,21 +108,18 @@ export async function getEventForSelectWithPoint(
   }
   const sourceRange = _artifact?.range
   if (_artifact) {
-    if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
-      if (_artifact?.additionalData)
-        return {
-          type: 'Set selection',
-          data: {
-            selectionType: 'singleCodeCursor',
-            selection: {
-              range: sourceRange,
-              type:
-                _artifact?.additionalData.info === 'end'
-                  ? 'end-cap'
-                  : 'start-cap',
-            },
+    if (_artifact.type === 'extrudeCap')
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            range: sourceRange,
+            type: _artifact?.cap === 'end' ? 'end-cap' : 'start-cap',
           },
-        }
+        },
+      }
+    if (_artifact.type === 'extrudeWall')
       return {
         type: 'Set selection',
         data: {
@@ -126,7 +127,6 @@ export async function getEventForSelectWithPoint(
           selection: { range: sourceRange, type: 'extrude-wall' },
         },
       }
-    }
     return {
       type: 'Set selection',
       data: {
@@ -406,6 +406,17 @@ export function canExtrudeSelection(selection: Selections) {
   )
 }
 
+export function canFilletSelection(selection: Selections) {
+  const commonNodes = selection.codeBasedSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  ) // TODO FILLET DUMMY PLACEHOLDER
+  return (
+    !!isSketchPipe(selection) &&
+    commonNodes.every((n) => nodeHasClose(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
 function canExtrudeSelectionItem(selection: Selections, i: number) {
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
@@ -504,33 +515,27 @@ function codeToIdSelections(
       let bestCandidate
       entriesWithOverlap.forEach((entry) => {
         if (!entry) return
-        if (
-          type === 'default' &&
-          entry.artifact.commandType === 'extend_path'
-        ) {
+        if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
         if (
           type === 'start-cap' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
-          entry?.artifact?.additionalData?.info === 'start'
+          entry.artifact.type === 'extrudeCap' &&
+          entry?.artifact?.cap === 'start'
         ) {
           bestCandidate = entry
           return
         }
         if (
           type === 'end-cap' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
-          entry?.artifact?.additionalData?.info === 'end'
+          entry.artifact.type === 'extrudeCap' &&
+          entry?.artifact?.cap === 'end'
         ) {
           bestCandidate = entry
           return
         }
-        if (
-          type === 'extrude-wall' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
-        ) {
+        if (type === 'extrude-wall' && entry.artifact.type === 'extrudeWall') {
           bestCandidate = entry
           return
         }
@@ -565,18 +570,22 @@ export async function sendSelectEventToEngine(
     el,
     ...streamDimensions,
   })
-  const result: Models['SelectWithPoint_type'] = await engineCommandManager
-    .sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_with_point',
-        selected_at_window: { x, y },
-        selection_type: 'add',
-      },
-      cmd_id: uuidv4(),
-    })
-    .then((res) => res.data.data)
-  return result
+  const res = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_with_point',
+      selected_at_window: { x, y },
+      selection_type: 'add',
+    },
+    cmd_id: uuidv4(),
+  })
+  if (
+    res?.success &&
+    res?.resp?.type === 'modeling' &&
+    res?.resp?.data?.modeling_response.type === 'select_with_point'
+  )
+    return res?.resp?.data?.modeling_response?.data
+  return { entity_id: '' }
 }
 
 export function updateSelections(

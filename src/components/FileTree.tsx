@@ -177,7 +177,7 @@ const FileTreeItem = ({
       codeManager.writeToFile()
 
       kclManager.isFirstRender = true
-      kclManager.executeCode(true, true).then(() => {
+      kclManager.executeCode(true).then(() => {
         kclManager.isFirstRender = false
       })
     } else {

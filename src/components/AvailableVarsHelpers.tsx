@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Value } from '../lang/wasm'
+import { parse, BinaryPart, Value, ProgramMemory } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -120,8 +120,7 @@ export function useCalc({
   }, [])
 
   useEffect(() => {
-    const allVarNames = Object.keys(programMemory.root)
-    if (allVarNames.includes(newVariableName)) {
+    if (programMemory.has(newVariableName)) {
       setIsNewVariableNameUnique(false)
     } else {
       setIsNewVariableNameUnique(true)
@@ -143,17 +142,20 @@ export function useCalc({
       const code = `const __result__ = ${value}`
       const ast = parse(code)
       if (trap(ast)) return
-      const _programMem: any = { root: {}, return: null }
-      availableVarInfo.variables.forEach(({ key, value }) => {
-        _programMem.root[key] = { type: 'userVal', value, __meta: [] }
-      })
+      const _programMem: ProgramMemory = ProgramMemory.empty()
+      for (const { key, value } of availableVarInfo.variables) {
+        const error = _programMem.set(key, {
+          type: 'UserVal',
+          value,
+          __meta: [],
+        })
+        if (trap(error)) return
+      }
       executeAst({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
-        programMemoryOverride: JSON.parse(
-          JSON.stringify(kclManager.programMemory)
-        ),
+        programMemoryOverride: kclManager.programMemory.clone(),
       }).then(({ programMemory }) => {
         const resultDeclaration = ast.body.find(
           (a) =>
@@ -163,7 +165,7 @@ export function useCalc({
         const init =
           resultDeclaration?.type === 'VariableDeclaration' &&
           resultDeclaration?.declarations?.[0]?.init
-        const result = programMemory?.root?.__result__?.value
+        const result = programMemory?.get('__result__')?.value
         setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
         init && setValueNode(init)
       })

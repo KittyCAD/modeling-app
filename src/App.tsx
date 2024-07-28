@@ -2,7 +2,7 @@ import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import { EngineCommand } from './lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -44,7 +44,7 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const { context } = useModelingContext()
+  const { context, state } = useModelingContext()
 
   const { auth, settings } = useSettingsAuthContext()
   const token = auth?.context?.token
@@ -57,7 +57,6 @@ export function App() {
   const {
     app: { onboardingStatus },
   } = settings.context
-  const { state } = useModelingContext()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()

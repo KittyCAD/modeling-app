@@ -114,6 +114,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     >
                       {argName}
                     </span>
+                    <span className="sr-only">:&nbsp;</span>
                     {argValue ? (
                       arg.inputType === 'selection' ? (
                         getSelectionTypeDisplayText(argValue as Selections)

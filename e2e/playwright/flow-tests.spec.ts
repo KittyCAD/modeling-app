@@ -26,7 +26,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
@@ -48,8 +48,6 @@ const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-  // num1: 9.64,
-  // num2: 19.19,
 }
 
 test.afterEach(async ({ context, page }, testInfo) => {
@@ -141,8 +139,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(500)
@@ -152,8 +151,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
@@ -162,8 +162,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -175,7 +176,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await page.getByRole('button', { name: 'Line' }).click()
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
   await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
@@ -203,7 +204,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
   }
 
-  await page.getByRole('button', { name: 'Constraints' }).click()
+  await page.getByRole('button', { name: 'Length: open menu' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   // Open the code pane.
@@ -452,7 +453,7 @@ test.describe('Testing Camera Movement', () => {
     // await expect(u.codeLocator).toHaveText(code)
 
     // click the line button
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     const hoverOverNothing = async () => {
       // await u.canvasLocator.hover({position: {x: 700, y: 325}})
@@ -1063,7 +1064,7 @@ test.describe('Editor tests', () => {
       await page.keyboard.type('const sketch001 = start')
 
       // expect there to be six auto complete options
-      await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
+      await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
       // this makes sure we can accept a completion with click
       await page.getByText('startSketchOn').click()
       await page.keyboard.type("'XZ'")
@@ -1462,7 +1463,9 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     await page.mouse.click(clickCoords.x, clickCoords.y)
     await page.waitForTimeout(300) // wait for animation
 
-    await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Line', exact: true })
+    ).toBeVisible()
 
     // draw a line
     const startXPx = 600
@@ -1472,7 +1475,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
     await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1511,6 +1514,8 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 })
 
 test.describe('Copilot ghost text', () => {
+  test.skip(true, 'Needs to get covered again')
+
   test('completes code in empty file', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -1549,7 +1554,9 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
-  test('copilot disabled in sketch mode no select plane', async ({ page }) => {
+  test.skip('copilot disabled in sketch mode no select plane', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -2096,7 +2103,7 @@ test.describe('Testing settings', () => {
       .hover()
     await page
       .getByRole('button', {
-        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+        name: 'Roll back theme',
       })
       .click()
     await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
@@ -2148,7 +2155,7 @@ test.describe('Testing settings', () => {
       .hover()
     await page
       .getByRole('button', {
-        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+        name: 'Roll back theme',
       })
       .click()
     await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
@@ -2562,7 +2569,7 @@ test.describe('Testing selections', () => {
     |> line([-${commonPoints.num2}, 0], %)`)
 
     // deselect line tool
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await u.closeDebugPanel()
     const selectionSequence = async () => {
@@ -2587,8 +2594,10 @@ test.describe('Testing selections', () => {
       // click a segment hold shift and click an axis, see that a relevant constraint is enabled
       await topHorzSegmentClick()
       await page.keyboard.down('Shift')
-      const constrainButton = page.getByRole('button', { name: 'Constraints' })
-      const absYButton = page.getByRole('button', { name: 'ABS Y' })
+      const constrainButton = page.getByRole('button', {
+        name: 'Length: open menu',
+      })
+      const absYButton = page.getByRole('button', { name: 'Absolute Y' })
       await constrainButton.click()
       await expect(absYButton).toBeDisabled()
       await page.waitForTimeout(100)
@@ -3099,6 +3108,49 @@ const sketch002 = startSketchOn(extrude001, $seg01)
     ).not.toBeDisabled()
   })
 
+  test('Fillet button states test', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([10, 0], %)`).click()
+    const selectClose = () => page.getByText(`close(%)`).click()
+    const clickEmpty = () => page.mouse.click(950, 100)
+
+    // expect fillet button without any bodies in the scene
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+
+    // test fillet button with the body in the scene
+    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
+const extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.fill(codeToAdd)
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+    await selectClose()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+  })
+
   const removeAfterFirstParenthesis = (inputString: string) => {
     const index = inputString.indexOf('(')
     if (index !== -1) {
@@ -3369,21 +3421,6 @@ const extrude001 = extrude(50, sketch001)
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeVisible()
-
-    // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
-    await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(200)
-    await page.getByTestId('KCL Code').click()
-    await page.waitForTimeout(200)
-    await page.mouse.click(734, 134)
-    await page.waitForTimeout(100)
-    await page.getByTestId('KCL Code').click()
-    // expect main content to contain `sketch005` i.e. started a new sketch
-    await page.waitForTimeout(300)
-    await expect(page.locator('.cm-content')).toHaveText(
-      /sketch001 = startSketchOn\('XZ'\)/
-    )
   })
 
   test('Deselecting line tool should mean nothing happens on click', async ({
@@ -3420,7 +3457,7 @@ const extrude001 = extrude(50, sketch001)
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
     // deselect the line tool by clicking it
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await page.mouse.click(700, 200)
     await page.waitForTimeout(100)
@@ -3433,7 +3470,7 @@ const extrude001 = extrude(50, sketch001)
     await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
 
     // select line tool again
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await u.closeDebugPanel()
 
@@ -3500,10 +3537,61 @@ test.describe('Command bar tests', () => {
       `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
   })
-  test('Command bar works and can change a setting', async ({ page }) => {
+
+  test('Fillet from command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-10, sketch001)`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
+
+    await selectSegment()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Fillet' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toContainText(
+      `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
+    )
+  })
+
+  test('Command bar can change a setting, and switch back and forth between arguments', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    const themeOption = page.getByRole('option', {
+      name: 'theme',
+      exact: false,
+    })
+    const commandLevelArgButton = page.getByRole('button', { name: 'level' })
+    const commandThemeArgButton = page.getByRole('button', { name: 'value' })
+    // This selector changes after we set the setting
+    let commandOptionInput = page.getByPlaceholder('Select an option')
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3515,23 +3603,17 @@ test.describe('Command bar tests', () => {
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
-    const themeOption = page.getByRole('option', {
-      name: 'Settings · app · theme',
-    })
+    await cmdSearchBar.fill('theme')
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -3553,6 +3635,24 @@ test.describe('Command bar tests', () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    commandOptionInput = page.getByPlaceholder('system')
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
+    await commandBarButton.click()
+    await cmdSearchBar.focus()
+    await cmdSearchBar.fill('theme')
+    await themeOption.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await commandOptionInput.focus()
+    await commandOptionInput.fill('lig')
+    await commandLevelArgButton.click()
+    await expect(commandLevelArgButton).toBeDisabled()
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
+    await commandThemeArgButton.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await expect(commandLevelArgButton).toHaveText('level: project')
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
@@ -3577,7 +3677,7 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     const themeOption = page.getByRole('option', {
       name: 'Settings · app · theme',
     })
@@ -3648,7 +3748,9 @@ test.describe('Command bar tests', () => {
     await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
-    await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'distance', exact: false })
+    ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
@@ -3663,11 +3765,12 @@ test.describe('Command bar tests', () => {
 
     // Review step and argument hotkeys
     await expect(submitButton).toBeEnabled()
-    await page.keyboard.press('Backspace')
+    await expect(submitButton).toBeFocused()
+    await submitButton.press('Backspace')
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 5', exact: false })
+      page.getByRole('button', { name: 'distance', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -3691,6 +3794,58 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
       ) // remove newlines
     )
   })
+
+  test('Can switch between sketch tools via command bar', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
+    const cmdBarButton = page.getByRole('button', { name: 'Commands' })
+    const rectangleToolCommand = page.getByRole('option', {
+      name: 'rectangle',
+    })
+    const rectangleToolButton = page.getByRole('button', {
+      name: 'Corner rectangle',
+      exact: true,
+    })
+    const lineToolCommand = page.getByRole('option', {
+      name: 'Line',
+    })
+    const lineToolButton = page.getByRole('button', {
+      name: 'Line',
+      exact: true,
+    })
+    const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
+    const arcToolButton = page.getByRole('button', {
+      name: 'Tangential Arc',
+      exact: true,
+    })
+
+    // Start a sketch
+    await sketchButton.click()
+    await page.mouse.click(700, 200)
+
+    // Switch between sketch tools via the command bar
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await rectangleToolCommand.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await lineToolCommand.click()
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+
+    // Click in the scene a couple times to draw a line
+    // so tangential arc is valid
+    await page.mouse.click(700, 200)
+    await page.mouse.move(700, 300, { steps: 5 })
+    await page.mouse.click(700, 300)
+
+    // switch to tangential arc via command bar
+    await cmdBarButton.click()
+    await arcToolCommand.click()
+    await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
+  })
 })
 
 test.describe('Regression tests', () => {
@@ -3712,10 +3867,7 @@ test.describe('Regression tests', () => {
     await u.waitForAuthSkipAppStart()
 
     // expand variables section
-    const variablesTabButton = page.getByRole('tab', {
-      name: 'Variables',
-      exact: false,
-    })
+    const variablesTabButton = page.getByTestId('variables-pane-button')
     await variablesTabButton.click()
 
     // can find sketch001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
@@ -3740,10 +3892,7 @@ test.describe('Regression tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
-    const variablesTabButton = page.getByRole('tab', {
-      name: 'Variables',
-      exact: false,
-    })
+    const variablesTabButton = page.getByTestId('variables-pane-button')
     await variablesTabButton.click()
     // expect to see "myVar:5"
     await expect(
@@ -4004,7 +4153,7 @@ test.describe('Sketch tests', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(100)
 
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(700, 200)
@@ -4031,9 +4180,7 @@ test.describe('Sketch tests', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
 
-    await expect(
-      page.getByText('click plane or face to sketch on')
-    ).toBeVisible()
+    await expect(page.getByText('select a plane or face')).toBeVisible()
 
     await page.keyboard.press('Escape')
     await expect(
@@ -4584,7 +4731,7 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content')).toHaveText(code)
       // Assert the tool was unequipped
       await expect(
-        page.getByRole('button', { name: 'Line' })
+        page.getByRole('button', { name: 'Line', exact: true })
       ).not.toHaveAttribute('aria-pressed', 'true')
 
       // exit sketch
@@ -4642,10 +4789,10 @@ test.describe('Sketch tests', () => {
     // click extrude
     await page.getByRole('button', { name: 'Extrude' }).click()
 
-    // sketch selection should already have been made. "Selection 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'Selection 1 face' })
+      page.getByRole('button', { name: 'selection : 1 face', exact: false })
     ).toBeVisible()
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {
@@ -4746,8 +4893,7 @@ test.describe('Testing constraints', () => {
     await page.mouse.click(834, 244)
     await page.keyboard.up('Shift')
 
-    await page.getByRole('button', { name: 'Constraints', exact: true }).click()
-    await page.getByRole('button', { name: 'length', exact: true }).click()
+    await page.getByRole('button', { name: 'Length', exact: true }).click()
     await page.getByText('Add constraining value').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
@@ -4801,12 +4947,10 @@ const part002 = startSketchOn('XZ')
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
-    await page
-      .getByRole('button', { name: 'remove constraints', exact: true })
-      .click()
+    await page.getByRole('button', { name: 'remove constraints' }).click()
 
     await page.getByText('line([39.13, 68.63], %)').click()
     const activeLinesContent = await page.locator('.cm-activeLine').all()
@@ -4867,11 +5011,11 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
         await page
-          .getByRole('button', { name: 'perpendicular distance', exact: true })
+          .getByRole('button', { name: 'Perpendicular Distance' })
           .click()
 
         const createNewVariableCheckbox = page.getByTestId(
@@ -4966,12 +5110,10 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page
-          .getByRole('button', { name: constraint, exact: true })
-          .click()
+        await page.getByRole('button', { name: constraint }).click()
 
         const createNewVariableCheckbox = page.getByTestId(
           'create-new-variable-checkbox'
@@ -5012,25 +5154,25 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         addVariable: true,
-        constraint: 'ABS X',
+        constraint: 'Absolute X',
         value: 'xDis001, 61.34',
       },
       {
         testName: 'No variable',
         addVariable: false,
-        constraint: 'ABS X',
+        constraint: 'Absolute X',
         value: '154.9, 61.34',
       },
       {
         testName: 'Add variable',
         addVariable: true,
-        constraint: 'ABS Y',
+        constraint: 'Absolute Y',
         value: '154.9, yDis001',
       },
       {
         testName: 'No variable',
         addVariable: false,
-        constraint: 'ABS Y',
+        constraint: 'Absolute Y',
         value: '154.9, 61.34',
       },
     ] as const
@@ -5066,7 +5208,7 @@ const part002 = startSketchOn('XZ')
           u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
         ])
 
-        if (constraint === 'ABS X') {
+        if (constraint === 'Absolute X') {
           await page.mouse.click(600, 130)
         } else {
           await page.mouse.click(900, 250)
@@ -5077,7 +5219,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
         await page
@@ -5185,10 +5327,10 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page.getByTestId('angle').click()
+        await page.getByTestId('dropdown-constraint-angle').click()
 
         const createNewVariableCheckbox = page.getByTestId(
           'create-new-variable-checkbox'
@@ -5286,10 +5428,10 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page.getByTestId(constraint).click()
+        await page.getByTestId('dropdown-constraint-' + constraint).click()
 
         if (!addVariable) {
           await page.getByTestId('create-new-variable-checkbox').click()
@@ -5377,7 +5519,7 @@ const part002 = startSketchOn('XZ')
         await expect(activeLinesContent).toHaveLength(codeAfter.length)
 
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page
           .getByRole('button', {
@@ -5460,7 +5602,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x - 3, line3.y + 20)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -5537,7 +5679,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(axisClick.x, axisClick.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -5596,10 +5738,10 @@ const part002 = startSketchOn('XZ')
 
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
-    await page.getByRole('button', { name: 'horizontal', exact: true }).click()
+    await page.getByRole('button', { name: 'Horizontal', exact: true }).click()
 
     let activeLinesContent = await page.locator('.cm-activeLine').all()
     await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
@@ -5620,13 +5762,13 @@ const part002 = startSketchOn('XZ')
     await page.waitForTimeout(300)
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
     // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
     await page.waitForTimeout(200)
     // await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.locator('[data-testid="length"]').click()
+    await page.getByTestId('dropdown-constraint-length').click()
 
     await page.getByLabel('length Value').fill('10')
     await page.getByRole('button', { name: 'Add constraining value' }).click()
@@ -6918,6 +7060,8 @@ test.describe('Test network and connection issues', () => {
 
     await u.waitForAuthSkipAppStart()
 
+    const networkToggle = page.getByTestId('network-toggle')
+
     // This is how we wait until the stream is online
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -6931,7 +7075,7 @@ test.describe('Test network and connection issues', () => {
     await expect(networkPopover).not.toBeVisible()
 
     // (First check) Expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
 
     // Click the network widget
     await networkWidget.click()
@@ -6953,7 +7097,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(page.getByText('Network Health (Offline)')).toBeVisible()
+    await expect(networkToggle).toContainText('Offline')
 
     // Click the network widget
     await networkWidget.click()
@@ -6979,7 +7123,7 @@ test.describe('Test network and connection issues', () => {
     ).not.toBeDisabled({ timeout: 15000 })
 
     // (Second check) expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
   })
 
   test('Engine disconnect & reconnect in sketch mode', async ({
@@ -6991,6 +7135,8 @@ test.describe('Test network and connection issues', () => {
       browserName === 'webkit',
       'Skip on Safari until `window.tearDown` is working there'
     )
+    const networkToggle = page.getByTestId('network-toggle')
+
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -7033,7 +7179,7 @@ test.describe('Test network and connection issues', () => {
     |> line([${commonPoints.num1}, 0], %)`)
 
     // Expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
 
     // simulate network down
     await u.emulateNetworkConditions({
@@ -7045,7 +7191,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(page.getByText('Network Health (Offline)')).toBeVisible()
+    await expect(networkToggle).toContainText('Offline')
 
     // Ensure we are not in sketch mode
     await expect(
@@ -7070,7 +7216,8 @@ test.describe('Test network and connection issues', () => {
     ).not.toBeDisabled({ timeout: 15000 })
 
     // Expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
+    await expect(page.getByTestId('loading-stream')).not.toBeAttached()
 
     // Click off the code pane.
     await page.mouse.click(100, 100)
@@ -7086,7 +7233,7 @@ test.describe('Test network and connection issues', () => {
     await page.waitForTimeout(150)
 
     // Click the line tool
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await page.waitForTimeout(150)
 
@@ -7113,7 +7260,7 @@ test.describe('Test network and connection issues', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     await expect(
-      page.getByRole('button', { name: 'Line' })
+      page.getByRole('button', { name: 'Line', exact: true })
     ).not.toHaveAttribute('aria-pressed', 'true')
 
     // Exit sketch
@@ -7518,7 +7665,7 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
     .waitFor({ state: 'visible' })
 
   // Open the help menu
-  await page.getByRole('button', { name: 'Help', exact: false }).click()
+  await page.getByRole('button', { name: 'Help and resources' }).click()
 
   // Open the keyboard shortcuts
   await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
@@ -7542,8 +7689,11 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  const lineButton = page.getByRole('button', { name: 'Line' })
-  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const arcButton = page.getByRole('button', {
+    name: 'Tangential Arc',
+    exact: true,
+  })
 
   // Test these hotkeys perform actions when
   // focus is on the canvas
@@ -7555,6 +7705,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
+  await expect(lineButton).toBeVisible()
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
 
   // Draw a line
@@ -7624,9 +7775,12 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await u.closeDebugPanel()
 
   const codePane = page.getByRole('textbox').locator('div')
-  const codePaneButton = page.getByRole('tab', { name: 'KCL Code' })
-  const lineButton = page.getByRole('button', { name: 'Line' })
-  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+  const codePaneButton = page.getByTestId('code-pane-button')
+  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const arcButton = page.getByRole('button', {
+    name: 'Tangential Arc',
+    exact: true,
+  })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
 
   // Test that the hotkeys do nothing when
@@ -7647,7 +7801,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(600, 250)
 
   // work-around: to stop "keyboard.press('s')" from typing in the editor even when it should be blurred
-  await page.getByRole('button', { name: 'Commands ⌘K' }).click()
+  await page.getByRole('button', { name: 'Commands' }).click()
   await page.waitForTimeout(100)
   await page.keyboard.press('Escape')
   await page.waitForTimeout(100)

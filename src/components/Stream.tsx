@@ -9,6 +9,11 @@ import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { useAppStream } from 'AppState'
+import {
+  EngineConnectionStateType,
+  DisconnectingType,
+} from 'lang/std/engineConnection'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -17,12 +22,28 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
-  const { overallState } = useNetworkContext()
+  const { mediaStream } = useAppStream()
+  const { overallState, immediateState } = useNetworkContext()
   const [isFreezeFrame, setIsFreezeFrame] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const IDLE = settings.context.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  useEffect(() => {
+    if (
+      immediateState.type === EngineConnectionStateType.Disconnecting &&
+      immediateState.value.type === DisconnectingType.Pause
+    ) {
+      setIsPaused(true)
+    }
+    if (immediateState.type === EngineConnectionStateType.Connecting) {
+      setIsPaused(false)
+    }
+  }, [immediateState])
 
   // Linux has a default behavior to paste text on middle mouse up
   // This adds a listener to block that pasting if the click target
@@ -51,7 +72,7 @@ export const Stream = () => {
       capture: true,
     })
 
-    const IDLE_TIME_MS = 1000 * 20
+    const IDLE_TIME_MS = 1000 * 60 * 2
     let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
 
     const teardown = () => {
@@ -60,61 +81,83 @@ export const Stream = () => {
       sceneInfra.modelingSend({ type: 'Cancel' })
       // Give video time to pause
       window.requestAnimationFrame(() => {
-        engineCommandManager.engineConnection?.tearDown({ freeze: true })
+        engineCommandManager.tearDown({ idleMode: true })
       })
     }
 
-    // Teardown everything if we go hidden or reconnect
-    if (globalThis?.window?.document) {
-      globalThis.window.document.onvisibilitychange = () => {
-        if (globalThis.window.document.visibilityState === 'hidden') {
-          clearTimeout(timeoutIdIdleA)
-          timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
-        } else if (!engineCommandManager.engineConnection?.isReady()) {
-          clearTimeout(timeoutIdIdleA)
-          engineCommandManager.engineConnection?.connect(true)
-        }
+    const onVisibilityChange = () => {
+      if (globalThis.window.document.visibilityState === 'hidden') {
+        clearTimeout(timeoutIdIdleA)
+        timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
+      } else if (!engineCommandManager.engineConnection?.isReady()) {
+        clearTimeout(timeoutIdIdleA)
+        engineCommandManager.engineConnection?.connect(true)
       }
+    }
+
+    // Teardown everything if we go hidden or reconnect
+    if (IDLE) {
+      globalThis?.window?.document?.addEventListener(
+        'visibilitychange',
+        onVisibilityChange
+      )
     }
 
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
     const onAnyInput = () => {
-      if (!engineCommandManager.engineConnection?.isReady()) {
-        engineCommandManager.engineConnection?.connect(true)
-      }
       // Clear both timers
       clearTimeout(timeoutIdIdleA)
       clearTimeout(timeoutIdIdleB)
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
-    globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
-    globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
-    globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
-    globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
-    globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    if (IDLE) {
+      globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
+      globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    }
 
-    timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    if (IDLE) {
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    }
 
     return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
-      globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('mousemove', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('mousedown', onAnyInput)
-      globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
-      globalThis?.window?.document?.removeEventListener(
-        'touchstart',
-        onAnyInput
-      )
+      if (IDLE) {
+        clearTimeout(timeoutIdIdleA)
+        clearTimeout(timeoutIdIdleB)
+
+        globalThis?.window?.document?.removeEventListener(
+          'visibilitychange',
+          onVisibilityChange
+        )
+        globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'mousemove',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener(
+          'mousedown',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'touchstart',
+          onAnyInput
+        )
+      }
     }
-  }, [])
+  }, [IDLE])
 
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
     if (!kclManager.isFirstRender) videoRef.current?.play()
+    setIsFreezeFrame(!kclManager.isFirstRender)
   }, [kclManager.isFirstRender])
 
   useEffect(() => {
@@ -124,10 +167,10 @@ export const Stream = () => {
     )
       return
     if (!videoRef.current) return
-    if (!context.store?.mediaStream) return
+    if (!mediaStream) return
 
     // Do not immediately play the stream!
-    videoRef.current.srcObject = context.store.mediaStream
+    videoRef.current.srcObject = mediaStream
     videoRef.current.pause()
 
     send({
@@ -136,7 +179,9 @@ export const Stream = () => {
         videoElement: videoRef.current,
       },
     })
-  }, [context.store?.mediaStream])
+
+    setIsLoading(false)
+  }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
@@ -233,6 +278,32 @@ export const Stream = () => {
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
+      {isPaused && (
+        <div className="text-center absolute inset-0">
+          <div
+            className="flex flex-col items-center justify-center h-screen"
+            data-testid="paused"
+          >
+            <div className="border-primary border p-2 rounded-sm">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M2 12V0H0V12H2ZM8 12V0H6V12H8Z"
+                  fill="var(--primary)"
+                />
+              </svg>
+            </div>
+            <p className="text-base mt-2 text-primary bold">Paused</p>
+          </div>
+        </div>
+      )}
       {(!isNetworkOkay || isLoading || isFirstRender) && !isFreezeFrame && (
         <div className="text-center absolute inset-0">
           <Loading>

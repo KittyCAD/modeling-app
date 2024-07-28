@@ -42,7 +42,7 @@ import {
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -68,10 +68,11 @@ import { EditorSelection, Transaction } from '@codemirror/state'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
+import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -130,41 +131,17 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
+            // blocks entering a sketch until after exit sketch code has run
+            kclManager.isExecuting = true
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
-            const settings: Models['CameraSettings_type'] = (
-              await engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'default_camera_get_settings',
-                },
-              })
-            )?.data?.data?.settings
-            if (settings.up.z !== 1) {
-              // workaround for gimbal lock situation
-              await engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'default_camera_look_at',
-                  center: settings.center,
-                  vantage: {
-                    ...settings.pos,
-                    y:
-                      settings.pos.y +
-                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
-                  },
-                  up: { x: 0, y: 0, z: 1 },
-                },
-              })
-            }
-
             store.videoElement?.pause()
-            kclManager.executeCode(true).then(() => {
-              if (engineCommandManager.engineConnection?.freezeFrame) return
+            kclManager.executeCode().then(() => {
+              if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play()
             })
@@ -444,6 +421,12 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
         },
+        'has valid fillet selection': ({ selectionRanges }) =>
+          hasValidFilletSelection({
+            selectionRanges,
+            ast: kclManager.ast,
+            code: codeManager.code,
+          }),
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -477,7 +460,7 @@ export const ModelingMachineProvider = ({
           if (kclManager.ast.body.length) {
             // this assumes no changes have been made to the sketch besides what we did when entering the sketch
             // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
-            const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+            const newAst = structuredClone(kclManager.ast)
             const varDecIndex = sketchDetails.sketchPathToNode[1][0]
             // remove body item at varDecIndex
             newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
@@ -494,7 +477,6 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               data.sketchPathToNode,
               data.extrudePathToNode,
-              kclManager.programMemory,
               data.cap
             )
             if (trap(sketched)) return Promise.reject(sketched)
@@ -920,7 +902,7 @@ export const ModelingMachineProvider = ({
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
-    commandBarConfig: modelingMachineConfig,
+    commandBarConfig: modelingMachineCommandConfig,
     allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically

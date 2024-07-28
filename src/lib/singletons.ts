@@ -37,4 +37,7 @@ if (typeof window !== 'undefined') {
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
     )
+  ;(window as any).enableFillet = () => {
+    ;(window as any)._enableFillet = true
+  }
 }

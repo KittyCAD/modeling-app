@@ -349,7 +349,6 @@ export function sketchOnExtrudedFace(
   node: Program,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  programMemory: ProgramMemory,
   cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -388,7 +387,6 @@ export function sketchOnExtrudedFace(
   if (cap === 'none') {
     const __tag = addTagForSketchOnFace(
       {
-        previousProgramMemory: programMemory,
         pathToNode: sketchPathToNode,
         node: _node,
       },
@@ -727,7 +725,7 @@ export function moveValueIntoNewVariablePath(
     programMemory,
     pathToNode
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = structuredClone(ast)
   const boop = replacer(_node, variableName)
   if (trap(boop)) return { modifiedAst: ast }
 
@@ -759,7 +757,7 @@ export function moveValueIntoNewVariable(
     programMemory,
     sourceRange
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
 
@@ -784,7 +782,7 @@ export function deleteSegmentFromPipeExpression(
   code: string,
   pathToNode: PathToNode
 ): Program | Error {
-  let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
+  let _modifiedAst = structuredClone(modifiedAst)
 
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
@@ -901,7 +899,7 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Program | Error> {
-  const astClone = JSON.parse(JSON.stringify(ast))
+  const astClone = structuredClone(ast)
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
@@ -985,7 +983,7 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.root[sketchName] as SketchGroup
+          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict

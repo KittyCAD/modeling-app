@@ -1,6 +1,6 @@
 import { processMemory } from './MemoryPane'
 import { enginelessExecutor } from '../../../lib/testHelpers'
-import { initPromise, parse } from '../../../lang/wasm'
+import { initPromise, parse, ProgramMemory } from '../../../lang/wasm'
 
 beforeAll(async () => {
   await initPromise
@@ -29,10 +29,7 @@ describe('processMemory', () => {
     |> lineTo([2.15, 4.32], %)
     // |> rx(90, %)`
     const ast = parse(code)
-    const programMemory = await enginelessExecutor(ast, {
-      root: {},
-      return: null,
-    })
+    const programMemory = await enginelessExecutor(ast, ProgramMemory.empty())
     const output = processMemory(programMemory)
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
