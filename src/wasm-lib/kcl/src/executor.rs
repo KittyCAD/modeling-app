@@ -910,24 +910,17 @@ pub struct GetTangentialInfoFromPathsResult {
 }
 
 impl SketchGroup {
-    fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&Path> {
-        self.value.iter().find(|p| {
-            if let Some(ntag) = p.get_tag() {
-                ntag.name == tag.value
-            } else {
-                false
-            }
-        })
-    }
+    pub(crate) fn add_tag(&mut self, tag: &TagDeclarator, current_path: &Path) {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        let base = current_path.get_base();
+        tag_identifier.info = Some(TagEngineInfo {
+            id: base.geo_meta.id,
+            sketch_group: self.id,
+            path: base.clone(),
+            surface: None,
+        });
 
-    pub fn get_base_by_tag_or_start(&self, tag: &TagIdentifier) -> Option<&BasePath> {
-        if let Some(ntag) = &self.start.tag {
-            if ntag.name == tag.value {
-                return Some(&self.start);
-            }
-        }
-
-        self.get_path_by_tag(tag).map(|p| p.get_base())
+        self.tags.insert(tag.name.to_string(), tag_identifier);
     }
 
     /// Get the path most recently sketched.

@@ -151,15 +151,7 @@ async fn inner_line_to(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -327,15 +319,7 @@ async fn inner_line(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -519,15 +503,7 @@ async fn inner_angled_line(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -1251,13 +1227,20 @@ pub(crate) async fn inner_start_profile_at(
         id: path_id,
         on: sketch_surface.clone(),
         value: vec![],
-        start: current_path,
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
-            HashMap::from([(tag.name.to_string(), tag.into())])
+            let mut tag_identifier: TagIdentifier = tag.into();
+            tag_identifier.info = Some(TagEngineInfo {
+                id: current_path.geo_meta.id,
+                sketch_group: path_id,
+                path: current_path.clone(),
+                surface: None,
+            });
+            HashMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
         },
+        start: current_path,
     };
     Ok(Box::new(sketch_group))
 }
@@ -1405,15 +1388,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -1528,15 +1503,7 @@ pub(crate) async fn inner_arc(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -1646,15 +1613,7 @@ async fn inner_tangential_arc(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -1764,15 +1723,7 @@ async fn inner_tangential_arc_to(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
@@ -1875,15 +1826,7 @@ async fn inner_bezier_curve(
 
     let mut new_sketch_group = sketch_group.clone();
     if let Some(tag) = &tag {
-        let mut tag_identifier: TagIdentifier = tag.into();
-        tag_identifier.info = Some(TagEngineInfo {
-            id,
-            sketch_group: sketch_group.id,
-            path: current_path.get_base().clone(),
-            surface: None,
-        });
-
-        new_sketch_group.tags.insert(tag.name.to_string(), tag_identifier);
+        new_sketch_group.add_tag(tag, &current_path);
     }
 
     new_sketch_group.value.push(current_path);
