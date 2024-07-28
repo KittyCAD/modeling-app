@@ -15,9 +15,9 @@ import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn('XY')
  *  |> startProfileAt([0, 0], %)
- *  |> angledLine([0, 0], %, 'a')
- *  |> angledLine([segAng(a) - 90, 0], %, 'b')
- *  |> angledLine([segAng(a), -segLen('a', %)], %, 'c')
+ *  |> angledLine([0, 0], %, $a)
+ *  |> angledLine([segAng(a) - 90, 0], %, $b)
+ *  |> angledLine([segAng(a), -segLen(a)], %, $c)
  *  |> close(%)
  */
 export const getRectangleCallExpressions = (
@@ -61,7 +61,6 @@ export const getRectangleCallExpressions = (
       createUnaryExpression(
         createCallExpressionStdLib('segLen', [
           createIdentifier(tags[0]),
-          createPipeSubstitution(),
         ]),
         '-'
       ), // negative height

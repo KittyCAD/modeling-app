@@ -2325,7 +2325,7 @@ async fn serial_test_engine_error_source_range_on_last_command() {
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
-  |> xLine(-segLen(seg01, %), %)
+  |> xLine(-segLen(seg01), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
   |> extrude(40.14, %)

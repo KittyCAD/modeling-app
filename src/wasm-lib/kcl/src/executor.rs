@@ -2033,8 +2033,8 @@ const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen(seg01, %), myVar),
-  -legLen(segLen(seg01, %), myVar)
+  min(segLen(seg01), myVar),
+  -legLen(segLen(seg01), myVar)
 ], %)
 "#;
 
@@ -2048,8 +2048,8 @@ const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen(seg01, %), myVar),
-  legLen(segLen(seg01, %), myVar)
+  min(segLen(seg01), myVar),
+  legLen(segLen(seg01), myVar)
 ], %)
 "#;
 

@@ -213,7 +213,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, $seg01)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> angledLine([180, segLen(seg01, %)], %)`)
+  |> angledLine([180, segLen(seg01)], %)`)
 }
 
 test.describe('Basic sketch', () => {
@@ -4929,7 +4929,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
       )
     })
@@ -4987,7 +4987,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5086,7 +5086,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5192,7 +5192,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5299,7 +5299,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5409,7 +5409,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5485,7 +5485,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5550,7 +5550,7 @@ const part002 = startSketchOn('XZ')
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine([83, segLen(seg01, %)], %)`,
+        codeAfter: `|> angledLine([83, segLen(seg01)], %)`,
         constraintName: 'Equal Length',
       },
       {
@@ -5581,7 +5581,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5658,7 +5658,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -6826,8 +6826,8 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen(seg01, %)], %)        
-${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
+  |> angledLine([-176, segLen(seg01)], %)        
+${extraLine ? 'const myVar = segLen(seg01)' : ''}`
               )
             },
             {
@@ -6986,7 +6986,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen(seg01, %)], %)`
+  |> angledLine([-176, segLen(seg01)], %)`
             )
           },
           {
@@ -7567,7 +7567,7 @@ const part001 = startSketchOn('-XZ')
         to: -totalHeightHalf - armThick,
       }, %, $seg02)
   |> xLineTo(segEndX(seg03) + 0, %)
-  |> yLine(-segLen(seg01, %), %)
+  |> yLine(-segLen(seg01), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,

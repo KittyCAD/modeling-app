@@ -369,19 +369,19 @@ describe('testing math operators', () => {
       `  |> startProfileAt([0, 0], %)`,
       `  |> line([3, 4], %, $seg01)`,
       `  |> line([`,
-      `  min(segLen(seg01, %), myVar),`,
-      `  -legLen(segLen(seg01, %), myVar)`,
+      `  min(segLen(seg01), myVar),`,
+      `  -legLen(segLen(seg01), myVar)`,
       `], %)`,
       ``,
     ].join('\n')
     const mem = await exe(code)
     const sketch = mem.get('part001')
-    // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
+    // expect -legLen(segLen('seg01'), myVar) to equal -4 setting the y value back to 0
     expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
     expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
-      `-legLen(segLen(seg01, %), myVar)`,
-      `legLen(segLen(seg01, %), myVar)`
+      `-legLen(segLen(seg01), myVar)`,
+      `legLen(segLen(seg01), myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
     const removedUnaryExpMemSketch = removedUnaryExpMem.get('part001')
