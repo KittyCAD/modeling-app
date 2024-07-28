@@ -46,7 +46,7 @@ impl FaceTag {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(extrude_group, t, must_be_planar).await,
+            FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(t, must_be_planar).await,
             FaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: "Expected a start face".to_string(),

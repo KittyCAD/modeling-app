@@ -296,7 +296,6 @@ impl Args {
 
     pub async fn get_adjacent_face_to_tag(
         &self,
-        extrude_group: &ExtrudeGroup,
         tag: &TagIdentifier,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
@@ -307,44 +306,50 @@ impl Args {
             }));
         }
 
-        if let Some(face_from_surface) = extrude_group
-            .value
-            .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) => {
-                    if let Some(plane_tag) = &extrude_plane.tag {
-                        if plane_tag.name == tag.value {
-                            Some(Ok(extrude_plane.face_id))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                }
-                // The must be planar check must be called before the arc check.
-                ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                    message: format!("Tag `{}` is a non-planar surface", tag.value),
-                    source_ranges: vec![self.source_range],
-                }))),
-                ExtrudeSurface::ExtrudeArc(extrude_arc) => {
-                    if let Some(arc_tag) = &extrude_arc.tag {
-                        if arc_tag.name == tag.value {
-                            Some(Ok(extrude_arc.face_id))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                }
+        let engine_info = self.get_tag_engine_info(tag)?;
+
+        let surface = engine_info.surface.as_ref().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` does not have a surface", tag.value),
+                source_ranges: vec![self.source_range],
             })
-        {
+        })?;
+
+        if let Some(face_from_surface) = match surface {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) => {
+                if let Some(plane_tag) = &extrude_plane.tag {
+                    if plane_tag.name == tag.value {
+                        Some(Ok(extrude_plane.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+            // The must be planar check must be called before the arc check.
+            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` is a non-planar surface", tag.value),
+                source_ranges: vec![self.source_range],
+            }))),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) => {
+                if let Some(arc_tag) = &extrude_arc.tag {
+                    if arc_tag.name == tag.value {
+                        Some(Ok(extrude_arc.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+        } {
             return face_from_surface;
         }
 
         // A face could also be the result of a chamfer or fillet.
-        if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
+        // TODO: come back to this.
+        /* if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
             if let Some(ntag) = &fc.tag() {
                 if ntag.name == tag.value {
                     Some(Ok(fc.id()))
@@ -359,7 +364,7 @@ impl Args {
             self.flush_batch_for_extrude_group_set(extrude_group.into()).await?;
 
             return face_from_chamfer_fillet;
-        }
+        }*/
 
         // If we still haven't found the face, return an error.
         Err(KclError::Type(KclErrorDetails {

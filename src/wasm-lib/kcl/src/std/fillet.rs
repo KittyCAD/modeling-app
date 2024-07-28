@@ -125,9 +125,9 @@ async fn inner_fillet(
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_opposite_edge(tag, extrude_group, args.clone()).await?;
+    let edge = inner_get_opposite_edge(tag, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -163,23 +163,19 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getOppositeEdge(referenceEdge, %)],
+///     tags: [getOppositeEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
     name = "getOppositeEdge",
 }]
-async fn inner_get_opposite_edge(
-    tag: TagIdentifier,
-    extrude_group: Box<ExtrudeGroup>,
-    args: Args,
-) -> Result<Uuid, KclError> {
+async fn inner_get_opposite_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = args.get_tag_engine_info(&tag)?;
 
-    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
@@ -206,9 +202,9 @@ async fn inner_get_opposite_edge(
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_next_adjacent_edge(tag, extrude_group, args.clone()).await?;
+    let edge = inner_get_next_adjacent_edge(tag, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -244,23 +240,19 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getNextAdjacentEdge(referenceEdge, %)],
+///     tags: [getNextAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
 }]
-async fn inner_get_next_adjacent_edge(
-    tag: TagIdentifier,
-    extrude_group: Box<ExtrudeGroup>,
-    args: Args,
-) -> Result<Uuid, KclError> {
+async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = args.get_tag_engine_info(&tag)?;
 
-    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
@@ -292,9 +284,9 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_previous_adjacent_edge(tag, extrude_group, args.clone()).await?;
+    let edge = inner_get_previous_adjacent_edge(tag, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -330,23 +322,19 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getPreviousAdjacentEdge(referenceEdge, %)],
+///     tags: [getPreviousAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
 }]
-async fn inner_get_previous_adjacent_edge(
-    tag: TagIdentifier,
-    extrude_group: Box<ExtrudeGroup>,
-    args: Args,
-) -> Result<Uuid, KclError> {
+async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = args.get_tag_engine_info(&tag)?;
 
-    let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(

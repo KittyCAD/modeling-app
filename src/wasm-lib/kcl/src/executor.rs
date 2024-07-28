@@ -834,6 +834,8 @@ pub struct TagEngineInfo {
     pub sketch_group: uuid::Uuid,
     /// The path the tag is on.
     pub path: BasePath,
+    /// The surface information for the tag.
+    pub surface: Option<ExtrudeSurface>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
