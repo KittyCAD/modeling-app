@@ -5,11 +5,10 @@ use derive_docs::stdlib;
 use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup, TagIdentifier, UserVal},
+    executor::{ExtrudeGroup, MemoryItem, SketchGroup},
     std::{
         extrude::do_post_extrude,
         fillet::{EdgeReference, DEFAULT_TOLERANCE},
@@ -258,19 +257,7 @@ async fn inner_revolve(
         RevolveAxis::Edge(edge) => {
             let edge_id = match edge {
                 EdgeReference::Uuid(uuid) => uuid,
-                EdgeReference::Tag(tag) => {
-                    sketch_group
-                        .get_path_by_tag(&tag)
-                        .ok_or_else(|| {
-                            KclError::Type(KclErrorDetails {
-                                message: format!("No edge found with tag: `{}`", tag.value),
-                                source_ranges: vec![args.source_range],
-                            })
-                        })?
-                        .get_base()
-                        .geo_meta
-                        .id
-                }
+                EdgeReference::Tag(tag) => args.get_tag_engine_info(&tag)?.id,
             };
             args.batch_modeling_cmd(
                 id,

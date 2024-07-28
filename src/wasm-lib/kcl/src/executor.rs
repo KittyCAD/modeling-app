@@ -903,26 +903,6 @@ pub struct GetTangentialInfoFromPathsResult {
 }
 
 impl SketchGroup {
-    pub(crate) fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&Path> {
-        self.value.iter().find(|p| {
-            if let Some(ntag) = p.get_tag() {
-                ntag.name == tag.value
-            } else {
-                false
-            }
-        })
-    }
-
-    pub(crate) fn get_base_by_tag_or_start(&self, tag: &TagIdentifier) -> Option<&BasePath> {
-        if let Some(ntag) = &self.start.tag {
-            if ntag.name == tag.value {
-                return Some(&self.start);
-            }
-        }
-
-        self.get_path_by_tag(tag).map(|p| p.get_base())
-    }
-
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
         self.value.last()

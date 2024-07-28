@@ -12,8 +12,8 @@ use crate::{
 
 /// Returns the segment end of x.
 pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, sketch_group) = args.get_tag_sketch_group()?;
-    let result = inner_segment_end_x(&tag, sketch_group, args.clone())?;
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_end_x(&tag, args.clone())?;
 
     args.make_user_val_from_f64(result)
 }
@@ -25,7 +25,7 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %, $thing)
 ///   |> line([0, 5], %)
-///   |> line([segEndX(thing, %), 0], %)
+///   |> line([segEndX(thing), 0], %)
 ///   |> line([-20, 10], %)
 ///   |> close(%)
 ///  
@@ -34,7 +34,7 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndX",
 }]
-fn inner_segment_end_x(tag: &TagIdentifier, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_end_x(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(tag)?;
 
     Ok(line.path.to[0])
@@ -42,8 +42,8 @@ fn inner_segment_end_x(tag: &TagIdentifier, sketch_group: Box<SketchGroup>, args
 
 /// Returns the segment end of y.
 pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, sketch_group) = args.get_tag_sketch_group()?;
-    let result = inner_segment_end_y(&tag, sketch_group, args.clone())?;
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_end_y(&tag, args.clone())?;
 
     args.make_user_val_from_f64(result)
 }
@@ -56,7 +56,7 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> line([20, 0], %)
 ///   |> line([0, 3], %, $thing)
 ///   |> line([-10, 0], %)
-///   |> line([0, segEndY(thing, %)], %)
+///   |> line([0, segEndY(thing)], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///  
@@ -65,7 +65,7 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndY",
 }]
-fn inner_segment_end_y(tag: &TagIdentifier, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_end_y(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(tag)?;
 
     Ok(line.path.to[1])
@@ -157,8 +157,8 @@ fn inner_last_segment_y(sketch_group: Box<SketchGroup>, args: Args) -> Result<f6
 
 /// Returns the length of the segment.
 pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, sketch_group) = args.get_tag_sketch_group()?;
-    let result = inner_segment_length(&tag, sketch_group, args.clone())?;
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_length(&tag, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -186,7 +186,7 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segLen",
 }]
-fn inner_segment_length(tag: &TagIdentifier, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_length(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(tag)?;
 
     let result = ((line.path.from[1] - line.path.to[1]).powi(2) + (line.path.from[0] - line.path.to[0]).powi(2)).sqrt();
@@ -196,9 +196,9 @@ fn inner_segment_length(tag: &TagIdentifier, sketch_group: Box<SketchGroup>, arg
 
 /// Returns the angle of the segment.
 pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, sketch_group) = args.get_tag_sketch_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let result = inner_segment_angle(&tag, sketch_group, args.clone())?;
+    let result = inner_segment_angle(&tag, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -220,7 +220,7 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(tag: &TagIdentifier, sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_segment_angle(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(tag)?;
 
     let result = between(line.path.from.into(), line.path.to.into());

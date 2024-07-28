@@ -730,22 +730,11 @@ async fn inner_angled_line_that_intersects(
     tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let intersect_path = sketch_group
-        .get_path_by_tag(&data.intersect_tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a line to exist in the given SketchGroup with tag `{}`",
-                    data.intersect_tag.value
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let intersect_path = args.get_tag_engine_info(&data.intersect_tag)?;
 
     let from = sketch_group.current_pen_position()?;
     let to = intersection_with_parallel_line(
-        &[intersect_path.from.into(), intersect_path.to.into()],
+        &[intersect_path.path.from.into(), intersect_path.path.to.into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from,

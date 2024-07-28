@@ -199,10 +199,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_tag_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
