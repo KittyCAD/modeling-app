@@ -4408,10 +4408,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-  getEdge(edge2, %),
-  getEdge(edge4, %),
-  getOppositeEdge(edge2, %),
-  getOppositeEdge(edge4, %)
+  edge2,
+  edge4,
+  getOppositeEdge(edge2),
+  getOppositeEdge(edge4)
 ]
      }, %)
   // build the bracket sketch around the body
@@ -4441,10 +4441,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-  getNextAdjacentEdge(edge7, %),
-  getNextAdjacentEdge(edge2, %),
-  getNextAdjacentEdge(edge3, %),
-  getNextAdjacentEdge(edge6, %)
+  getNextAdjacentEdge(edge7),
+  getNextAdjacentEdge(edge2),
+  getNextAdjacentEdge(edge3),
+  getNextAdjacentEdge(edge6)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
@@ -4528,10 +4528,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-         getEdge(edge2, %),
-         getEdge(edge4, %),
-         getOppositeEdge(edge2, %),
-         getOppositeEdge(edge4, %)
+         edge2,
+         edge4,
+         getOppositeEdge(edge2),
+         getOppositeEdge(edge4)
        ]
      }, %)
 // build the bracket sketch around the body
@@ -4561,10 +4561,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge(edge7, %),
-         getNextAdjacentEdge(edge2, %),
-         getNextAdjacentEdge(edge3, %),
-         getNextAdjacentEdge(edge6, %)
+         getNextAdjacentEdge(edge7),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge6)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)

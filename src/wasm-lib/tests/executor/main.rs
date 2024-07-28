@@ -259,7 +259,7 @@ async fn serial_test_basic_fillet_cube_end() {
     |> line([0, -10], %, $thing2)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing, getOppositeEdge(thing, %)]}, %)
+    |> fillet({radius: 2, tags: [thing, getOppositeEdge(thing)]}, %)
 
 "#;
 
@@ -276,7 +276,7 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
     |> line([0, -10], %, $thing2)
     |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3, %)]}, %)
+    |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3)]}, %)
 
 "#;
 
@@ -297,7 +297,7 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
     |> line([0, -10], %, $thing2)
     |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3, %)]}, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -1395,10 +1395,10 @@ const part = rectShape([0, 0], 20, 20)
   |> fillet({
        radius: 4,
        tags: [
-          getNextAdjacentEdge(edge1, %),
-          getNextAdjacentEdge(edge2, %),
-          getNextAdjacentEdge(edge3, %),
-          getNextAdjacentEdge(edge4, %)
+          getNextAdjacentEdge(edge1),
+          getNextAdjacentEdge(edge2),
+          getNextAdjacentEdge(edge3),
+          getNextAdjacentEdge(edge4)
        ]
      }, %)
 "#;
@@ -1627,7 +1627,7 @@ const sketch001 = startSketchOn(box, "end")
   |> line([2, 0], %)
   |> line([0, 10], %)
   |> close(%)
-  |> revolve({ axis: getOppositeEdge(revolveAxis, box), angle: 90 }, %)
+  |> revolve({ axis: getOppositeEdge(revolveAxis), angle: 90 }, %)
 
 "#;
 
@@ -1678,7 +1678,7 @@ const sketch001 = startSketchOn(box, "END")
   |> circle([10,10], 4, %)
   |> revolve({
     angle: 90, 
-    axis: getOppositeEdge(revolveAxis, box) 
+    axis: getOppositeEdge(revolveAxis) 
     }, %)
 "#;
 
@@ -1831,7 +1831,7 @@ const plumbus0 = circle0
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
-       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1, %)]
+       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
      }, %)
 
 const circle1 = make_circle(p, p.sketchGroup.tags.b, [0, 0], 2.5)
@@ -1839,7 +1839,7 @@ const plumbus1 = circle1
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
-        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1, %)]
+        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1)]
       }, %)
 "#;
 
@@ -1922,11 +1922,11 @@ const bracket = startSketchOn('XY')
   |> extrude(width, %)
   |> fillet({
        radius: filletR,
-       tags: [getNextAdjacentEdge(innerEdge, %)]
+       tags: [getNextAdjacentEdge(innerEdge)]
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getNextAdjacentEdge(outerEdge, %)]
+       tags: [getNextAdjacentEdge(outerEdge)]
      }, %)
 "#;
 
@@ -2247,15 +2247,15 @@ const sketch001 = startSketchOn("XZ")
 const baseExtrusion = extrude(width, sketch001)
   |> fillet({
     radius: cornerFilletRad,
-    tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1, %), getOppositeEdge(cornerFillet2, %)],
+    tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
   }, %)
   |> fillet({
     radius: filletRad,
-    tags: [getPreviousAdjacentEdge(fillet1, %), getPreviousAdjacentEdge(fillet2, %)]
+    tags: [getPreviousAdjacentEdge(fillet1), getPreviousAdjacentEdge(fillet2)]
   }, %)
   |> fillet({
    radius: filletRad + thickness,
-   tags: [getNextAdjacentEdge(fillet1, %), getNextAdjacentEdge(fillet2, %)],
+   tags: [getNextAdjacentEdge(fillet1), getNextAdjacentEdge(fillet2)],
  }, %)
 "#;
 
@@ -2299,15 +2299,15 @@ const sketch001 = startSketchOn("XZ")
 const baseExtrusion = extrude(width, sketch001)
   |> chamfer({
     length: cornerChamferRad,
-    tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1, %), getOppositeEdge(cornerChamfer2, %)],
+    tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
   }, %)
   |> chamfer({
     length: chamferRad,
-    tags: [getPreviousAdjacentEdge(chamfer1, %), getPreviousAdjacentEdge(chamfer2, %)]
+    tags: [getPreviousAdjacentEdge(chamfer1), getPreviousAdjacentEdge(chamfer2)]
   }, %)
   |> chamfer({
    length: chamferRad + thickness,
-   tags: [getNextAdjacentEdge(chamfer1, %), getNextAdjacentEdge(chamfer2, %)],
+   tags: [getNextAdjacentEdge(chamfer1), getNextAdjacentEdge(chamfer2)],
  }, %)
 "#;
 
@@ -2359,7 +2359,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> fillet({
     radius: 10,
-    tags: [getOppositeEdge(line1,%)]
+    tags: [getOppositeEdge(line1)]
   }, %)
 
 const pattn1 = patternLinear3d({
@@ -2394,7 +2394,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> fillet({
     radius: 10,
-    tags: [getOppositeEdge(line1,%)]
+    tags: [getOppositeEdge(line1)]
   }, %)
 
 const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
@@ -2425,7 +2425,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [getOppositeEdge(line1,%)]
+    tags: [getOppositeEdge(line1)]
   }, %)
 
 const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
@@ -2456,7 +2456,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [line1, getOppositeEdge(line1,%)]
+    tags: [line1, getOppositeEdge(line1)]
   }, %, $chamfer1)
 
 
@@ -2483,12 +2483,12 @@ async fn serial_test_sketch_on_face_of_chamfer() {
   return sg
 }
 const part001 = cube([0,0], 20)
-    |> close(%, 'line1')
+    |> close(%, $line1)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [getOppositeEdge('line1',%)]
-  }, %, 'chamfer1')
+    tags: [getOppositeEdge(line1)]
+  }, %, $chamfer1)
 
 const sketch001 = startSketchOn(part001, 'chamfer1')
     |> startProfileAt([4.28, 3.83], %)

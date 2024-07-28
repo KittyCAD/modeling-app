@@ -196,7 +196,7 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> circle([10,10], 4, %)
 ///     |> revolve({
 ///         angle: 90,
-///         axis: getOppositeEdge(revolveAxis, box)
+///         axis: getOppositeEdge(revolveAxis)
 ///     }, %)
 /// ```
 ///

@@ -64,10 +64,10 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> fillet({
 ///     radius: filletRadius,
 ///     tags: [
-///       getNextAdjacentEdge(edge1, %),
-///       getNextAdjacentEdge(edge2, %),
-///       getNextAdjacentEdge(edge3, %),
-///       getNextAdjacentEdge(edge4, %)
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
 ///     ],
 ///   }, %)
 /// ```
