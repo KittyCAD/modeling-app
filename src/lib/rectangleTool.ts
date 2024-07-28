@@ -16,8 +16,8 @@ import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
  * const yo = startSketchOn('XY')
  *  |> startProfileAt([0, 0], %)
  *  |> angledLine([0, 0], %, 'a')
- *  |> angledLine([segAng('a', %) - 90, 0], %, 'b')
- *  |> angledLine([segAng('a', %), -segLen('a', %)], %, 'c')
+ *  |> angledLine([segAng(a) - 90, 0], %, 'b')
+ *  |> angledLine([segAng(a), -segLen('a', %)], %, 'c')
  *  |> close(%)
  */
 export const getRectangleCallExpressions = (
@@ -44,7 +44,6 @@ export const getRectangleCallExpressions = (
       createBinaryExpression([
         createCallExpressionStdLib('segAng', [
           createIdentifier(tags[0]),
-          createPipeSubstitution(),
         ]),
         '+',
         createLiteral(90),
@@ -58,7 +57,6 @@ export const getRectangleCallExpressions = (
     createArrayExpression([
       createCallExpressionStdLib('segAng', [
         createIdentifier(tags[0]),
-        createPipeSubstitution(),
       ]), // same angle as the first line
       createUnaryExpression(
         createCallExpressionStdLib('segLen', [
@@ -104,7 +102,6 @@ export function updateRectangleSketch(
     createBinaryExpression([
       createCallExpressionStdLib('segAng', [
         createIdentifier(tag),
-        createPipeSubstitution(),
       ]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),

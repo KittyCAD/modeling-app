@@ -380,7 +380,7 @@ async fn serial_test_execute_with_angled_line() {
   |> line([15.1, 2.48], %)
   |> line([3.15, -9.85], %, $seg01)
   |> line([-15.17, -4.1], %)
-  |> angledLine([segAng(seg01, %), 12.35], %)
+  |> angledLine([segAng(seg01), 12.35], %)
   |> line([-13.02, 10.03], %)
   |> close(%)
   |> extrude(4, %)
@@ -1804,19 +1804,19 @@ fn pentagon = (len) => {
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
-       angle: segAng(a, %) + 180 - 108,
+       angle: segAng(a) + 180 - 108,
        length: len
      }, %, $b)
   |> angledLine({
-       angle: segAng(b, %) + 180 - 108,
+       angle: segAng(b) + 180 - 108,
        length: len
      }, %, $c)
   |> angledLine({
-       angle: segAng(c, %) + 180 - 108,
+       angle: segAng(c) + 180 - 108,
        length: len
      }, %, $d)
   |> angledLine({
-       angle: segAng(d, %) + 180 - 108,
+       angle: segAng(d) + 180 - 108,
        length: len
      }, %)
 
@@ -2515,11 +2515,11 @@ async fn serial_test_duplicate_tags_should_error() {
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
-       angle: segAng(a, %) + 120,
+       angle: segAng(a) + 120,
        length: len
      }, %, $b)
   |> angledLine({
-       angle: segAng(b, %) + 120,
+       angle: segAng(b) + 120,
        length: len
      }, %, $a)
 }

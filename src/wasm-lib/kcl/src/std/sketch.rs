@@ -1305,7 +1305,7 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine({ angle: 120, length: 50 }, %, $seg01)
-///  |> angledLine({ angle: segAng(seg01, %) + 120, length: 50 }, %)
+///  |> angledLine({ angle: segAng(seg01) + 120, length: 50 }, %)
 ///  |> lineTo(profileStart(%), %)
 ///  |> close(%)
 ///  |> extrude(20, %)

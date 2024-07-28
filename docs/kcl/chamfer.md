@@ -31,10 +31,10 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
   |> chamfer({
        length: chamferLength,
        tags: [
-         getNextAdjacentEdge(edge1, %),
-         getNextAdjacentEdge(edge2, %),
-         getNextAdjacentEdge(edge3, %),
-         getNextAdjacentEdge(edge4, %)
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
        ]
      }, %)
 ```

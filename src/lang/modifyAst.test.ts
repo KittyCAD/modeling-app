@@ -495,10 +495,10 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %, $b)
 ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
-      !replace1 ? 'segLen(a, %)' : replace1
+      !replace1 ? 'segLen(a)' : replace1
     }], %)
   |> line([306.21, 198.87], %)
-  |> angledLine([65, ${!replace2 ? 'segAng(a, %)' : replace2}], %)
+  |> angledLine([65, ${!replace2 ? 'segAng(a)' : replace2}], %)
   |> line([-963.39, -154.67], %)
 `
     test.each([

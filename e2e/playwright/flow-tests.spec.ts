@@ -3169,7 +3169,7 @@ const extrude001 = extrude(10, sketch001)`
       },
       {
         pos: [816, 244],
-        expectedCode: 'angledLine([segAng(seg01, %), yo], %)',
+        expectedCode: 'angledLine([segAng(seg01), yo], %)',
       },
       {
         pos: [1107, 161],
@@ -4923,7 +4923,7 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng(seg01, %), yo], %)
+  |> angledLine([segAng(seg01), yo], %)
   |> line([41.19, 28.97 + 5], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
@@ -4981,7 +4981,7 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng(seg01, %), 78.33], %)
+  |> angledLine([segAng(seg01), 78.33], %)
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
@@ -5262,13 +5262,13 @@ const part002 = startSketchOn('XZ')
         testName: 'Add variable',
         addVariable: true,
         axisSelect: false,
-        value: 'segAng(seg01, %) + angle001',
+        value: 'segAng(seg01) + angle001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         axisSelect: false,
-        value: 'segAng(seg01, %) + 22.69',
+        value: 'segAng(seg01) + 22.69',
       },
       {
         testName: 'Add variable, selecting axis',
@@ -5554,7 +5554,7 @@ const part002 = startSketchOn('XZ')
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine([segAng(seg01, %), 78.33], %)`,
+        codeAfter: `|> angledLine([segAng(seg01), 78.33], %)`,
         constraintName: 'Parallel',
       },
       {
@@ -7561,7 +7561,7 @@ const part001 = startSketchOn('-XZ')
         offset: -armThick,
         intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
@@ -7573,7 +7573,7 @@ const part001 = startSketchOn('-XZ')
         offset: -armThick,
         intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`

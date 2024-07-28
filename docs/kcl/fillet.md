@@ -31,10 +31,10 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
   |> fillet({
        radius: filletRadius,
        tags: [
-         getNextAdjacentEdge(edge1, %),
-         getNextAdjacentEdge(edge2, %),
-         getNextAdjacentEdge(edge3, %),
-         getNextAdjacentEdge(edge4, %)
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
        ]
      }, %)
 ```

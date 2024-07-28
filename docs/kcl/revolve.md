@@ -107,7 +107,7 @@ const sketch001 = startSketchOn(box, "END")
   |> circle([10, 10], 4, %)
   |> revolve({
        angle: 90,
-       axis: getOppositeEdge(revolveAxis, box)
+       axis: getOppositeEdge(revolveAxis)
      }, %)
 ```
 

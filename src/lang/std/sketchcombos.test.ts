@@ -516,7 +516,7 @@ const part001 = startSketchOn('XY')
   |> xLine(4.4, %) // partial
   |> yLine(-1, %) // partial
   |> xLine(-4.2 + 0, %) // full
-  |> angledLine([segAng(seg01bing, %) + 180, 1.79], %) // partial
+  |> angledLine([segAng(seg01bing) + 180, 1.79], %) // partial
   |> line([1.44, -0.74], %) // free
   |> xLine(3.36, %) // partial
   |> line([-1.49, 1.06], %) // free
