@@ -1,7 +1,9 @@
 //! Functions implemented for language execution.
 
 pub mod args;
+pub mod assert;
 pub mod chamfer;
+pub mod convert;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -45,6 +47,7 @@ lazy_static! {
         Box::new(LegLen),
         Box::new(LegAngX),
         Box::new(LegAngY),
+        Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
@@ -116,6 +119,11 @@ lazy_static! {
         Box::new(crate::std::math::Ln),
         Box::new(crate::std::math::ToDegrees),
         Box::new(crate::std::math::ToRadians),
+        Box::new(crate::std::assert::Assert),
+        Box::new(crate::std::assert::AssertLessThan),
+        Box::new(crate::std::assert::AssertGreaterThan),
+        Box::new(crate::std::assert::AssertLessThanOrEq),
+        Box::new(crate::std::assert::AssertGreaterThanOrEq),
     ];
 }
 
@@ -390,6 +398,14 @@ layout: manual
                             fn_name = fn_name.replace("last_seg_", "last_segment_");
                         } else if fn_name.contains("_2_d") {
                             fn_name = fn_name.replace("_2_d", "_2d");
+                        } else if fn_name.contains("_greater_than_or_eq") {
+                            fn_name = fn_name.replace("_greater_than_or_eq", "_gte");
+                        } else if fn_name.contains("_less_than_or_eq") {
+                            fn_name = fn_name.replace("_less_than_or_eq", "_lte");
+                        } else if fn_name.contains("_greater_than") {
+                            fn_name = fn_name.replace("_greater_than", "_gt");
+                        } else if fn_name.contains("_less_than") {
+                            fn_name = fn_name.replace("_less_than", "_lt");
                         } else if fn_name.contains("_3_d") {
                             fn_name = fn_name.replace("_3_d", "_3d");
                         } else if fn_name == "seg_ang" {
