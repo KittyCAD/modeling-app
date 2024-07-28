@@ -217,7 +217,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', { tag: '@focus' }, async ({ page }) => {
+  test('code pane open at start', async ({ page }) => {
     await doBasicSketch(page, ['code'])
   })
 
@@ -1005,7 +1005,7 @@ test.describe('Editor tests', () => {
     // Make sure there are two diagnostics
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
   })
-  test('if your kcl gets an error from the engine it is inlined', async ({
+  test('if your kcl gets an error from the engine it is inlined', { tag: '@focus' }, async ({
     page,
   }) => {
     const u = await getUtils(page)
