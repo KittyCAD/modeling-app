@@ -288,65 +288,6 @@ async fn inner_revolve(
     do_post_extrude(sketch_group, 0.0, id, args).await
 }
 
-/// Get an edge on a 3D solid.
-pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group) = args.get_tag_and_extrude_group()?;
-
-    let edge = inner_get_edge(tag, extrude_group, args.clone()).await?;
-    Ok(MemoryItem::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
-        meta: vec![args.source_range.into()],
-    }))
-}
-
-/// Get an edge on a 3D solid.
-///
-/// ```no_run
-/// const box = startSketchOn('XZ')
-///     |> startProfileAt([0, 0], %)
-///     |> line([0, 10], %, $revolveAxis)
-///     |> line([10, 0], %)
-///     |> line([0, -10], %)
-///     |> close(%)
-///     |> extrude(10, %)
-///
-/// const revolution = startSketchOn(box, revolveAxis)
-///     |> startProfileAt([5, 10], %)
-///     |> line([0, 10], %)
-///     |> line([2, 0], %)
-///     |> line([0, -10], %)
-///     |> close(%)
-///     |> revolve({
-///         axis: getEdge(revolveAxis, box),
-///         angle: 90
-///     }, %)
-/// ```
-#[stdlib {
-    name = "getEdge",
-}]
-async fn inner_get_edge(tag: TagIdentifier, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
-        return Ok(Uuid::new_v4());
-    }
-    let tagged_path = extrude_group
-        .sketch_group
-        .get_path_by_tag(&tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag.value),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
-
-    Ok(tagged_path.geo_meta.id)
-}
-
 #[cfg(test)]
 mod tests {
 

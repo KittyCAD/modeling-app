@@ -65,6 +65,17 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
+    pub(crate) fn get_tag_engine_info(&self, tag: &TagIdentifier) -> Result<&crate::executor::TagEngineInfo, KclError> {
+        if let MemoryItem::TagEngineInfo(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+            Ok(t)
+        } else {
+            Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` does not have engine info", tag.value),
+                source_ranges: vec![self.source_range],
+            }))
+        }
+    }
+
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
     pub async fn flush_batch_for_extrude_group_set(
         &self,
@@ -188,7 +199,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_segment_name_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
+    pub fn get_tag_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -279,7 +290,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_segment_name_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
+    pub fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
 

@@ -94,20 +94,7 @@ async fn inner_fillet(
     for tag in data.tags {
         let edge_id = match tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => {
-                extrude_group
-                    .sketch_group
-                    .get_path_by_tag(&edge_tag)
-                    .ok_or_else(|| {
-                        KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", edge_tag.value),
-                            source_ranges: vec![args.source_range],
-                        })
-                    })?
-                    .get_base()
-                    .geo_meta
-                    .id
-            }
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
         };
 
         let id = uuid::Uuid::new_v4();
@@ -190,16 +177,7 @@ async fn inner_get_opposite_edge(
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = extrude_group
-        .sketch_group
-        .get_path_by_tag(&tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag.value),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let tagged_path = args.get_tag_engine_info(&tag)?;
 
     let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
 
@@ -207,8 +185,8 @@ async fn inner_get_opposite_edge(
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DGetOppositeEdge {
-                edge_id: tagged_path.geo_meta.id,
-                object_id: extrude_group.id,
+                edge_id: tagged_path.id,
+                object_id: tagged_path.sketch_group,
                 face_id,
             },
         )
@@ -280,16 +258,7 @@ async fn inner_get_next_adjacent_edge(
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = extrude_group
-        .sketch_group
-        .get_path_by_tag(&tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag.value),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let tagged_path = args.get_tag_engine_info(&tag)?;
 
     let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
 
@@ -297,8 +266,8 @@ async fn inner_get_next_adjacent_edge(
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                edge_id: tagged_path.geo_meta.id,
-                object_id: extrude_group.id,
+                edge_id: tagged_path.id,
+                object_id: tagged_path.sketch_group,
                 face_id,
             },
         )
@@ -375,16 +344,7 @@ async fn inner_get_previous_adjacent_edge(
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = extrude_group
-        .sketch_group
-        .get_path_by_tag(&tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag.value),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let tagged_path = args.get_tag_engine_info(&tag)?;
 
     let face_id = args.get_adjacent_face_to_tag(&extrude_group, &tag, false).await?;
 
@@ -392,8 +352,8 @@ async fn inner_get_previous_adjacent_edge(
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DGetNextAdjacentEdge {
-                edge_id: tagged_path.geo_meta.id,
-                object_id: extrude_group.id,
+                edge_id: tagged_path.id,
+                object_id: tagged_path.sketch_group,
                 face_id,
             },
         )
