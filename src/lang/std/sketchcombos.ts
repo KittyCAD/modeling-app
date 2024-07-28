@@ -1720,9 +1720,7 @@ function createSegLen(referenceSegName: string): Value {
 }
 
 function createSegAngle(referenceSegName: string): Value {
-  return createCallExpression('segAng', [
-    createIdentifier(referenceSegName),
-  ])
+  return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {

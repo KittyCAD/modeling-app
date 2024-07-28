@@ -42,9 +42,7 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [
-          createIdentifier(tags[0]),
-        ]),
+        createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
@@ -55,13 +53,9 @@ export const getRectangleCallExpressions = (
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
-      createCallExpressionStdLib('segAng', [
-        createIdentifier(tags[0]),
-      ]), // same angle as the first line
+      createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [
-          createIdentifier(tags[0]),
-        ]),
+        createCallExpressionStdLib('segLen', [createIdentifier(tags[0])]),
         '-'
       ), // negative height
     ]),
@@ -99,9 +93,7 @@ export function updateRectangleSketch(
   ;((pipeExpression.body[3] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [
-        createIdentifier(tag),
-      ]),
+      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ]), // 90 offset from the previous line
