@@ -36,7 +36,6 @@ layout: manual
 * [`extrude`](kcl/extrude)
 * [`fillet`](kcl/fillet)
 * [`floor`](kcl/floor)
-* [`getEdge`](kcl/getEdge)
 * [`getNextAdjacentEdge`](kcl/getNextAdjacentEdge)
 * [`getOppositeEdge`](kcl/getOppositeEdge)
 * [`getPreviousAdjacentEdge`](kcl/getPreviousAdjacentEdge)

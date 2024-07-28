@@ -59,6 +59,12 @@ impl ProgramMemory {
         Ok(())
     }
 
+    pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
+        self.environments[self.current_env.index()].insert(tag.to_string(), MemoryItem::TagIdentifier(Box::new(value)));
+
+        Ok(())
+    }
+
     /// Get a value from the program memory.
     /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
@@ -249,7 +255,7 @@ pub enum MemoryItem {
 }
 
 impl MemoryItem {
-    pub fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
+    pub(crate) fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
         match self {
             MemoryItem::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
             MemoryItem::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
@@ -262,7 +268,7 @@ impl MemoryItem {
         }
     }
 
-    pub fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+    pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
         match self {
             MemoryItem::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
             MemoryItem::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
@@ -563,14 +569,17 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
     pub value: String,
+    pub info: Option<TagEngineInfo>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
+
+impl Eq for TagIdentifier {}
 
 impl std::fmt::Display for TagIdentifier {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -584,6 +593,7 @@ impl std::str::FromStr for TagIdentifier {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self {
             value: s.to_string(),
+            info: None,
             meta: Default::default(),
         })
     }
@@ -821,6 +831,21 @@ impl MemoryItem {
     }
 }
 
+/// Engine information for a tag.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct TagEngineInfo {
+    /// The id of the tagged object.
+    pub id: uuid::Uuid,
+    /// The sketch group the tag is on.
+    pub sketch_group: uuid::Uuid,
+    /// The path the tag is on.
+    pub path: BasePath,
+    /// The surface information for the tag.
+    pub surface: Option<ExtrudeSurface>,
+}
+
 /// A sketch group is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -852,25 +877,25 @@ pub enum SketchSurface {
 }
 
 impl SketchSurface {
-    pub fn id(&self) -> uuid::Uuid {
+    pub(crate) fn id(&self) -> uuid::Uuid {
         match self {
             SketchSurface::Plane(plane) => plane.id,
             SketchSurface::Face(face) => face.id,
         }
     }
-    pub fn x_axis(&self) -> Point3d {
+    pub(crate) fn x_axis(&self) -> Point3d {
         match self {
             SketchSurface::Plane(plane) => plane.x_axis.clone(),
             SketchSurface::Face(face) => face.x_axis.clone(),
         }
     }
-    pub fn y_axis(&self) -> Point3d {
+    pub(crate) fn y_axis(&self) -> Point3d {
         match self {
             SketchSurface::Plane(plane) => plane.y_axis.clone(),
             SketchSurface::Face(face) => face.y_axis.clone(),
         }
     }
-    pub fn z_axis(&self) -> Point3d {
+    pub(crate) fn z_axis(&self) -> Point3d {
         match self {
             SketchSurface::Plane(plane) => plane.z_axis.clone(),
             SketchSurface::Face(face) => face.z_axis.clone(),
@@ -885,39 +910,28 @@ pub struct GetTangentialInfoFromPathsResult {
 }
 
 impl SketchGroup {
-    pub fn get_path_by_id(&self, id: &uuid::Uuid) -> Option<&Path> {
-        self.value.iter().find(|p| p.get_id() == *id)
-    }
+    pub(crate) fn add_tag(&mut self, tag: &TagDeclarator, current_path: &Path) {
+        let mut tag_identifier: TagIdentifier = tag.into();
+        let base = current_path.get_base();
+        tag_identifier.info = Some(TagEngineInfo {
+            id: base.geo_meta.id,
+            sketch_group: self.id,
+            path: base.clone(),
+            surface: None,
+        });
 
-    pub fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&Path> {
-        self.value.iter().find(|p| {
-            if let Some(ntag) = p.get_tag() {
-                ntag.name == tag.value
-            } else {
-                false
-            }
-        })
-    }
-
-    pub fn get_base_by_tag_or_start(&self, tag: &TagIdentifier) -> Option<&BasePath> {
-        if let Some(ntag) = &self.start.tag {
-            if ntag.name == tag.value {
-                return Some(&self.start);
-            }
-        }
-
-        self.get_path_by_tag(tag).map(|p| p.get_base())
+        self.tags.insert(tag.name.to_string(), tag_identifier);
     }
 
     /// Get the path most recently sketched.
-    pub fn latest_path(&self) -> Option<&Path> {
+    pub(crate) fn latest_path(&self) -> Option<&Path> {
         self.value.last()
     }
 
     /// The "pen" is an imaginary pen drawing the path.
     /// This gets the current point the pen is hovering over, i.e. the point
     /// where the last path segment ends, and the next path segment will begin.
-    pub fn current_pen_position(&self) -> Result<Point2d, KclError> {
+    pub(crate) fn current_pen_position(&self) -> Result<Point2d, KclError> {
         let Some(path) = self.latest_path() else {
             return Ok(self.start.to.into());
         };
@@ -926,7 +940,7 @@ impl SketchGroup {
         Ok(base.to.into())
     }
 
-    pub fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
+    pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
         let Some(path) = self.latest_path() else {
             return GetTangentialInfoFromPathsResult {
                 center_or_tangent_point: self.start.to,
@@ -978,21 +992,7 @@ pub struct ExtrudeGroup {
 }
 
 impl ExtrudeGroup {
-    pub fn get_path_by_id(&self, id: &uuid::Uuid) -> Option<&ExtrudeSurface> {
-        self.value.iter().find(|p| p.get_id() == *id)
-    }
-
-    pub fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&ExtrudeSurface> {
-        self.value.iter().find(|p| {
-            if let Some(ntag) = p.get_tag() {
-                ntag.name == tag.value
-            } else {
-                false
-            }
-        })
-    }
-
-    pub fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
+    pub(crate) fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
         self.fillet_or_chamfers.iter().map(|foc| foc.id()).collect()
     }
 }
@@ -1967,7 +1967,7 @@ const newVar = myVar + 1"#;
   intersectTag: yo,
   offset: {},
 }}, %, $yo2)
-const intersect = segEndX(yo2, part001)"#,
+const intersect = segEndX(yo2)"#,
                 offset
             )
         };
@@ -2033,8 +2033,8 @@ const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen(seg01, %), myVar),
-  -legLen(segLen(seg01, %), myVar)
+  min(segLen(seg01), myVar),
+  -legLen(segLen(seg01), myVar)
 ], %)
 "#;
 
@@ -2048,8 +2048,8 @@ const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([3, 4], %, $seg01)
   |> line([
-  min(segLen(seg01, %), myVar),
-  legLen(segLen(seg01, %), myVar)
+  min(segLen(seg01), myVar),
+  legLen(segLen(seg01), myVar)
 ], %)
 "#;
 

@@ -206,6 +206,19 @@ impl Program {
         Ok(x.clone())
     }
 
+    pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
+        let rules = vec![
+            crate::lint::checks::lint_variables,
+            crate::lint::checks::lint_call_expressions,
+        ];
+
+        let mut findings = vec![];
+        for rule in rules {
+            findings.append(&mut self.lint(rule)?);
+        }
+        Ok(findings)
+    }
+
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
@@ -1318,7 +1331,50 @@ impl CallExpression {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
-                let result = func.std_lib_fn()(args).await?;
+                let mut result = func.std_lib_fn()(args).await?;
+
+                // If the return result is a sketch group or extrude group, we want to update the
+                // memory for the tags of the group.
+                // TODO: This could probably be done in a better way, but as of now this was my only idea
+                // and it works.
+                match result {
+                    MemoryItem::SketchGroup(ref sketch_group) => {
+                        for (_, tag) in sketch_group.tags.iter() {
+                            memory.update_tag(&tag.value, tag.clone())?;
+                        }
+                    }
+                    MemoryItem::ExtrudeGroup(ref mut extrude_group) => {
+                        for value in &extrude_group.value {
+                            if let Some(tag) = value.get_tag() {
+                                // Get the past tag and update it.
+                                let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("Tag {} is not on sketch group", tag.name),
+                                        source_ranges: vec![tag.into()],
+                                    }));
+                                };
+
+                                let Some(ref info) = t.info else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("Tag {} does not have path info", tag.name),
+                                        source_ranges: vec![tag.into()],
+                                    }));
+                                };
+
+                                let mut t = t.clone();
+                                let mut info = info.clone();
+                                info.surface = Some(value.clone());
+                                t.info = Some(info);
+
+                                memory.update_tag(&tag.name, t.clone())?;
+
+                                // update the sketch group tags.
+                                extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
+                            }
+                        }
+                    }
+                    _ => {}
+                }
                 Ok(result)
             }
             FunctionKind::Std(func) => {
@@ -1977,6 +2033,7 @@ impl From<&TagDeclarator> for TagIdentifier {
     fn from(tag: &TagDeclarator) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
+            info: None,
             meta: vec![Metadata {
                 source_range: tag.into(),
             }],
@@ -2048,6 +2105,7 @@ impl TagDeclarator {
     pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
         let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
+            info: None,
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
@@ -4363,10 +4421,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-  getEdge(edge2, %),
-  getEdge(edge4, %),
-  getOppositeEdge(edge2, %),
-  getOppositeEdge(edge4, %)
+  edge2,
+  edge4,
+  getOppositeEdge(edge2),
+  getOppositeEdge(edge4)
 ]
      }, %)
   // build the bracket sketch around the body
@@ -4396,10 +4454,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-  getNextAdjacentEdge(edge7, %),
-  getNextAdjacentEdge(edge2, %),
-  getNextAdjacentEdge(edge3, %),
-  getNextAdjacentEdge(edge6, %)
+  getNextAdjacentEdge(edge7),
+  getNextAdjacentEdge(edge2),
+  getNextAdjacentEdge(edge3),
+  getNextAdjacentEdge(edge6)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
@@ -4483,10 +4541,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-         getEdge(edge2, %),
-         getEdge(edge4, %),
-         getOppositeEdge(edge2, %),
-         getOppositeEdge(edge4, %)
+         edge2,
+         edge4,
+         getOppositeEdge(edge2),
+         getOppositeEdge(edge4)
        ]
      }, %)
 // build the bracket sketch around the body
@@ -4516,10 +4574,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge(edge7, %),
-         getNextAdjacentEdge(edge2, %),
-         getNextAdjacentEdge(edge3, %),
-         getNextAdjacentEdge(edge6, %)
+         getNextAdjacentEdge(edge7),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge6)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)

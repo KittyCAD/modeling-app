@@ -259,7 +259,7 @@ async fn serial_test_basic_fillet_cube_end() {
     |> line([0, -10], %, $thing2)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing, getOppositeEdge(thing, %)]}, %)
+    |> fillet({radius: 2, tags: [thing, getOppositeEdge(thing)]}, %)
 
 "#;
 
@@ -276,7 +276,7 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
     |> line([0, -10], %, $thing2)
     |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3, %)]}, %)
+    |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3)]}, %)
 
 "#;
 
@@ -297,7 +297,7 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
     |> line([0, -10], %, $thing2)
     |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3, %)]}, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -317,7 +317,7 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
     |> line([0, -10], %, $thing2)
     |> close(%, $thing3)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3, %)]}, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -380,7 +380,7 @@ async fn serial_test_execute_with_angled_line() {
   |> line([15.1, 2.48], %)
   |> line([3.15, -9.85], %, $seg01)
   |> line([-15.17, -4.1], %)
-  |> angledLine([segAng(seg01, %), 12.35], %)
+  |> angledLine([segAng(seg01), 12.35], %)
   |> line([-13.02, 10.03], %)
   |> close(%)
   |> extrude(4, %)
@@ -1395,10 +1395,10 @@ const part = rectShape([0, 0], 20, 20)
   |> fillet({
        radius: 4,
        tags: [
-          getNextAdjacentEdge(edge1, %),
-          getNextAdjacentEdge(edge2, %),
-          getNextAdjacentEdge(edge3, %),
-          getNextAdjacentEdge(edge4, %)
+          getNextAdjacentEdge(edge1),
+          getNextAdjacentEdge(edge2),
+          getNextAdjacentEdge(edge3),
+          getNextAdjacentEdge(edge4)
        ]
      }, %)
 "#;
@@ -1627,7 +1627,7 @@ const sketch001 = startSketchOn(box, "end")
   |> line([2, 0], %)
   |> line([0, 10], %)
   |> close(%)
-  |> revolve({ axis: getOppositeEdge(revolveAxis, box), angle: 90 }, %)
+  |> revolve({ axis: getOppositeEdge(revolveAxis), angle: 90 }, %)
 
 "#;
 
@@ -1651,7 +1651,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
   |> line([2, 0], %)
   |> line([0, 10], %)
   |> close(%)
-  |> revolve({ axis: getEdge(revolveAxis, box), angle: 90 }, %)
+  |> revolve({ axis: revolveAxis, angle: 90 }, %)
 
 "#;
 
@@ -1660,7 +1660,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 404])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 390])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
     );
 }
 
@@ -1678,7 +1678,7 @@ const sketch001 = startSketchOn(box, "END")
   |> circle([10,10], 4, %)
   |> revolve({
     angle: 90, 
-    axis: getOppositeEdge(revolveAxis, box) 
+    axis: getOppositeEdge(revolveAxis) 
     }, %)
 "#;
 
@@ -1804,19 +1804,19 @@ fn pentagon = (len) => {
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
-       angle: segAng(a, %) + 180 - 108,
+       angle: segAng(a) + 180 - 108,
        length: len
      }, %, $b)
   |> angledLine({
-       angle: segAng(b, %) + 180 - 108,
+       angle: segAng(b) + 180 - 108,
        length: len
      }, %, $c)
   |> angledLine({
-       angle: segAng(c, %) + 180 - 108,
+       angle: segAng(c) + 180 - 108,
        length: len
      }, %, $d)
   |> angledLine({
-       angle: segAng(d, %) + 180 - 108,
+       angle: segAng(d) + 180 - 108,
        length: len
      }, %)
 
@@ -1831,7 +1831,7 @@ const plumbus0 = circle0
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
-       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1, %)]
+       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
      }, %)
 
 const circle1 = make_circle(p, p.sketchGroup.tags.b, [0, 0], 2.5)
@@ -1839,7 +1839,7 @@ const plumbus1 = circle1
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
-        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1, %)]
+        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1)]
       }, %)
 "#;
 
@@ -1922,11 +1922,11 @@ const bracket = startSketchOn('XY')
   |> extrude(width, %)
   |> fillet({
        radius: filletR,
-       tags: [getNextAdjacentEdge(innerEdge, %)]
+       tags: [getNextAdjacentEdge(innerEdge)]
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getNextAdjacentEdge(outerEdge, %)]
+       tags: [getNextAdjacentEdge(outerEdge)]
      }, %)
 "#;
 
@@ -1934,7 +1934,7 @@ const bracket = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1332, 1436])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1329, 1430])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
     );
 }
 
@@ -2147,13 +2147,13 @@ const bracket = startSketchOn('XY')
   |> fillet({
        radius: filletR,
        tags: [
-         getPreviousAdjacentEdge(innerEdge, %)
+         getPreviousAdjacentEdge(innerEdge)
        ]
      }, %)
   |> fillet({
        radius: filletR + thickness,
        tags: [
-         getPreviousAdjacentEdge(outerEdge, %)
+         getPreviousAdjacentEdge(outerEdge)
        ]
      }, %)
 
@@ -2247,15 +2247,15 @@ const sketch001 = startSketchOn("XZ")
 const baseExtrusion = extrude(width, sketch001)
   |> fillet({
     radius: cornerFilletRad,
-    tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1, %), getOppositeEdge(cornerFillet2, %)],
+    tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
   }, %)
   |> fillet({
     radius: filletRad,
-    tags: [getPreviousAdjacentEdge(fillet1, %), getPreviousAdjacentEdge(fillet2, %)]
+    tags: [getPreviousAdjacentEdge(fillet1), getPreviousAdjacentEdge(fillet2)]
   }, %)
   |> fillet({
    radius: filletRad + thickness,
-   tags: [getNextAdjacentEdge(fillet1, %), getNextAdjacentEdge(fillet2, %)],
+   tags: [getNextAdjacentEdge(fillet1), getNextAdjacentEdge(fillet2)],
  }, %)
 "#;
 
@@ -2299,15 +2299,15 @@ const sketch001 = startSketchOn("XZ")
 const baseExtrusion = extrude(width, sketch001)
   |> chamfer({
     length: cornerChamferRad,
-    tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1, %), getOppositeEdge(cornerChamfer2, %)],
+    tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
   }, %)
   |> chamfer({
     length: chamferRad,
-    tags: [getPreviousAdjacentEdge(chamfer1, %), getPreviousAdjacentEdge(chamfer2, %)]
+    tags: [getPreviousAdjacentEdge(chamfer1), getPreviousAdjacentEdge(chamfer2)]
   }, %)
   |> chamfer({
    length: chamferRad + thickness,
-   tags: [getNextAdjacentEdge(chamfer1, %), getNextAdjacentEdge(chamfer2, %)],
+   tags: [getNextAdjacentEdge(chamfer1), getNextAdjacentEdge(chamfer2)],
  }, %)
 "#;
 
@@ -2325,7 +2325,7 @@ async fn serial_test_engine_error_source_range_on_last_command() {
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
-  |> xLine(-segLen(seg01, %), %)
+  |> xLine(-segLen(seg01), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
   |> extrude(40.14, %)
@@ -2339,7 +2339,7 @@ async fn serial_test_engine_error_source_range_on_last_command() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([259, 315])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([256, 312])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
     );
 }
 
@@ -2359,7 +2359,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> fillet({
     radius: 10,
-    tags: [getOppositeEdge(line1,%)]
+    tags: [getOppositeEdge(line1)]
   }, %)
 
 const pattn1 = patternLinear3d({
@@ -2394,7 +2394,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> fillet({
     radius: 10,
-    tags: [getOppositeEdge(line1,%)]
+    tags: [getOppositeEdge(line1)]
   }, %)
 
 const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
@@ -2425,7 +2425,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [getOppositeEdge(line1,%)]
+    tags: [getOppositeEdge(line1)]
   }, %)
 
 const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
@@ -2456,7 +2456,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [line1, getOppositeEdge(line1,%)]
+    tags: [line1, getOppositeEdge(line1)]
   }, %, $chamfer1)
 
 
@@ -2466,7 +2466,7 @@ const part001 = cube([0,0], 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([271, 359])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([271, 357])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
     );
 }
 
@@ -2483,12 +2483,12 @@ async fn serial_test_sketch_on_face_of_chamfer() {
   return sg
 }
 const part001 = cube([0,0], 20)
-    |> close(%, 'line1')
+    |> close(%, $line1)
     |> extrude(20, %)
   |> chamfer({
     length: 10,
-    tags: [getOppositeEdge('line1',%)]
-  }, %, 'chamfer1')
+    tags: [getOppositeEdge(line1)]
+  }, %, $chamfer1)
 
 const sketch001 = startSketchOn(part001, 'chamfer1')
     |> startProfileAt([4.28, 3.83], %)
@@ -2515,11 +2515,11 @@ async fn serial_test_duplicate_tags_should_error() {
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
-       angle: segAng(a, %) + 120,
+       angle: segAng(a) + 120,
        length: len
      }, %, $b)
   |> angledLine({
-       angle: segAng(b, %) + 120,
+       angle: segAng(b) + 120,
        length: len
      }, %, $a)
 }
@@ -2531,7 +2531,7 @@ let p = triangle(200)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313]), SourceRange([326, 339])], message: "Cannot redefine `a`" }"#
     );
 }
 
@@ -2540,6 +2540,17 @@ async fn serial_test_global_tags() {
     let code = include_str!("inputs/global-tags.kcl");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, MIN_DIFF);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_extrude_inside_fn_with_tags() {
+    let code = include_str!("inputs/extrude-inside-fn-with-tags.kcl");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/extrude-inside-fn-with-tags.png",
+        &result,
+        MIN_DIFF,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

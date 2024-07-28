@@ -65,6 +65,49 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
+    fn get_tag_info_from_memory<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let MemoryItem::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+            Ok(t.info.as_ref().ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Tag `{}` does not have engine info", tag.value),
+                    source_ranges: vec![self.source_range],
+                })
+            })?)
+        } else {
+            Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` does not exist", tag.value),
+                source_ranges: vec![self.source_range],
+            }))
+        }
+    }
+
+    pub(crate) fn get_tag_engine_info<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let Some(info) = &tag.info {
+            return Ok(info);
+        }
+
+        self.get_tag_info_from_memory(tag)
+    }
+
+    fn get_tag_engine_info_check_surface<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let Some(info) = &tag.info {
+            if info.surface.is_some() {
+                return Ok(info);
+            }
+        }
+
+        self.get_tag_info_from_memory(tag)
+    }
+
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
     pub async fn flush_batch_for_extrude_group_set(
         &self,
@@ -188,10 +231,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_segment_name_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -279,7 +318,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_segment_name_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
+    pub fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -289,7 +328,6 @@ impl Args {
 
     pub async fn get_adjacent_face_to_tag(
         &self,
-        extrude_group: &ExtrudeGroup,
         tag: &TagIdentifier,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
@@ -300,44 +338,50 @@ impl Args {
             }));
         }
 
-        if let Some(face_from_surface) = extrude_group
-            .value
-            .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) => {
-                    if let Some(plane_tag) = &extrude_plane.tag {
-                        if plane_tag.name == tag.value {
-                            Some(Ok(extrude_plane.face_id))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                }
-                // The must be planar check must be called before the arc check.
-                ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                    message: format!("Tag `{}` is a non-planar surface", tag.value),
-                    source_ranges: vec![self.source_range],
-                }))),
-                ExtrudeSurface::ExtrudeArc(extrude_arc) => {
-                    if let Some(arc_tag) = &extrude_arc.tag {
-                        if arc_tag.name == tag.value {
-                            Some(Ok(extrude_arc.face_id))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                }
+        let engine_info = self.get_tag_engine_info_check_surface(tag)?;
+
+        let surface = engine_info.surface.as_ref().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` does not have a surface", tag.value),
+                source_ranges: vec![self.source_range],
             })
-        {
+        })?;
+
+        if let Some(face_from_surface) = match surface {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) => {
+                if let Some(plane_tag) = &extrude_plane.tag {
+                    if plane_tag.name == tag.value {
+                        Some(Ok(extrude_plane.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+            // The must be planar check must be called before the arc check.
+            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` is a non-planar surface", tag.value),
+                source_ranges: vec![self.source_range],
+            }))),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) => {
+                if let Some(arc_tag) = &extrude_arc.tag {
+                    if arc_tag.name == tag.value {
+                        Some(Ok(extrude_arc.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+        } {
             return face_from_surface;
         }
 
         // A face could also be the result of a chamfer or fillet.
-        if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
+        // TODO: come back to this.
+        /* if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
             if let Some(ntag) = &fc.tag() {
                 if ntag.name == tag.value {
                     Some(Ok(fc.id()))
@@ -352,7 +396,7 @@ impl Args {
             self.flush_batch_for_extrude_group_set(extrude_group.into()).await?;
 
             return face_from_chamfer_fillet;
-        }
+        }*/
 
         // If we still haven't found the face, return an error.
         Err(KclError::Type(KclErrorDetails {

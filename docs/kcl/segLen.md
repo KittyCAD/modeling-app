@@ -9,7 +9,7 @@ Returns the length of the segment.
 
 
 ```js
-segLen(segment_name: TagIdentifier, sketch_group: SketchGroup) -> number
+segLen(tag: TagIdentifier) -> number
 ```
 
 ### Examples
@@ -19,7 +19,7 @@ const exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 60, length: 10 }, %, $thing)
   |> tangentialArc({ offset: -120, radius: 5 }, %)
-  |> angledLine({ angle: -60, length: segLen(thing, %) }, %)
+  |> angledLine({ angle: -60, length: segLen(thing) }, %)
   |> close(%)
 
 const example = extrude(5, exampleSketch)
@@ -29,89 +29,15 @@ const example = extrude(5, exampleSketch)
 
 ### Arguments
 
-* `segment_name`: `TagIdentifier` (REQUIRED)
+* `tag`: `TagIdentifier` (REQUIRED)
 ```js
 {
-	value: string,
-}
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```js
-{
-	// The id of the sketch group.
+	// Engine information for a tag.
+	info: {
+	// The id of the tagged object.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The extrude group the face is on.
-	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
-	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
-	// The engine id of the edge to fillet.
-	edge_id: uuid,
-	// The id of the engine command that called this fillet.
-	id: uuid,
-	radius: number,
-	type: "fillet",
-} |
-{
-	// The engine id of the edge to chamfer.
-	edge_id: uuid,
-	// The id of the engine command that called this chamfer.
-	id: uuid,
-	length: number,
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	type: "chamfer",
-}],
-	// The height of the extrude group.
-	height: number,
-	// The id of the extrude group.
-	id: uuid,
-	// The sketch group.
-	sketchGroup: {
-	// The id of the sketch group.
-	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: SketchSurface,
-	// The starting path.
-	start: {
+	// The path the tag is on.
+	path: {
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -124,109 +50,10 @@ const example = extrude(5, exampleSketch)
 	// The to point.
 	to: [number, number],
 },
-	// Tag identifiers that have been declared in this sketch group.
-	tags: {
-},
-	// The paths in the sketch group.
-	value: [{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "ToPoint",
-} |
-{
-	// arc's direction
-	ccw: string,
-	// the arc's center
-	center: [number, number],
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "TangentialArcTo",
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "TangentialArc",
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "Horizontal",
-	// The x coordinate.
-	x: number,
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "AngledLineTo",
-	// The x coordinate.
-	x: number,
-	// The y coordinate.
-	y: number,
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "Base",
-}],
-},
-	// The id of the extrusion start cap
-	startCapId: uuid,
-	// The extrude surfaces.
-	value: [{
+	// The sketch group the tag is on.
+	sketchGroup: uuid,
+	// The surface information for the tag.
+	surface: {
 	// The face id for the extrude plane.
 	faceId: uuid,
 	// The id of the geometry.
@@ -257,144 +84,9 @@ const example = extrude(5, exampleSketch)
 	value: string,
 },
 	type: "extrudeArc",
-}],
 },
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
+},
 	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
-	// The starting path.
-	start: {
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-},
-	// Tag identifiers that have been declared in this sketch group.
-	tags: {
-},
-	// The paths in the sketch group.
-	value: [{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "ToPoint",
-} |
-{
-	// arc's direction
-	ccw: string,
-	// the arc's center
-	center: [number, number],
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "TangentialArcTo",
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "TangentialArc",
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "Horizontal",
-	// The x coordinate.
-	x: number,
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "AngledLineTo",
-	// The x coordinate.
-	x: number,
-	// The y coordinate.
-	y: number,
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The tag of the path.
-	tag: {
-	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
-	end: number,
-	start: number,
-	value: string,
-},
-	// The to point.
-	to: [number, number],
-	type: "Base",
-}],
 }
 ```
 
