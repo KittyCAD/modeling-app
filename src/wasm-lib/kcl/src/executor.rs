@@ -59,6 +59,12 @@ impl ProgramMemory {
         Ok(())
     }
 
+    pub fn update_tag(&mut self, tag: &str, value: TagEngineInfo) -> Result<(), KclError> {
+        self.environments[self.current_env.index()].insert(tag.to_string(), MemoryItem::TagEngineInfo(Box::new(value)));
+
+        Ok(())
+    }
+
     /// Get a value from the program memory.
     /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
@@ -905,6 +911,26 @@ pub struct GetTangentialInfoFromPathsResult {
 }
 
 impl SketchGroup {
+    fn get_path_by_tag(&self, tag: &TagIdentifier) -> Option<&Path> {
+        self.value.iter().find(|p| {
+            if let Some(ntag) = p.get_tag() {
+                ntag.name == tag.value
+            } else {
+                false
+            }
+        })
+    }
+
+    pub fn get_base_by_tag_or_start(&self, tag: &TagIdentifier) -> Option<&BasePath> {
+        if let Some(ntag) = &self.start.tag {
+            if ntag.name == tag.value {
+                return Some(&self.start);
+            }
+        }
+
+        self.get_path_by_tag(tag).map(|p| p.get_base())
+    }
+
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
         self.value.last()

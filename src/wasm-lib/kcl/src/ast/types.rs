@@ -24,7 +24,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
-        TagIdentifier, UserVal,
+        TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -1319,6 +1319,33 @@ impl CallExpression {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
                 let result = func.std_lib_fn()(args).await?;
+
+                // If the return result is a sketch group or extrude group, we want to update the
+                // memory for the tags of the group.
+                match result {
+                    MemoryItem::SketchGroup(ref sketch_group) => {
+                        for (_, tag) in sketch_group.tags.iter() {
+                            let path = sketch_group.get_base_by_tag_or_start(tag).ok_or_else(|| {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!("Tag {} not found in sketch group", tag.value),
+                                    source_ranges: tag.meta.iter().map(|m| m.source_range).collect(),
+                                })
+                            })?;
+                            memory.update_tag(
+                                &tag.value,
+                                TagEngineInfo {
+                                    id: path.geo_meta.id,
+                                    sketch_group: sketch_group.id,
+                                    surface: None,
+                                    path: path.clone(),
+                                    meta: Default::default(),
+                                },
+                            )?;
+                        }
+                    }
+                    MemoryItem::ExtrudeGroup(ref extrude_group) => {}
+                    _ => {}
+                }
                 Ok(result)
             }
             FunctionKind::Std(func) => {
