@@ -1934,7 +1934,7 @@ const bracket = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1332, 1436])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1329, 1430])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
     );
 }
 
@@ -2339,7 +2339,7 @@ async fn serial_test_engine_error_source_range_on_last_command() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([259, 315])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([256, 312])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
     );
 }
 
@@ -2531,7 +2531,7 @@ let p = triangle(200)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([317, 319]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313]), SourceRange([332, 345])], message: "Cannot redefine `a`" }"#
     );
 }
 
