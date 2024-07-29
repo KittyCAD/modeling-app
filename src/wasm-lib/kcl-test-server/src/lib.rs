@@ -28,16 +28,26 @@ pub struct ServerArgs {
     pub listen_on: SocketAddr,
     /// How many connections to establish with the engine.
     pub num_engine_conns: u8,
+    /// Where to find the engine.
+    /// If none, uses the prod engine.
+    /// This is useful for testing a local engine instance.
+    /// Overridden by the $LOCAL_ENGINE_ADDR environment variable.
+    pub engine_address: Option<String>,
 }
 
 impl ServerArgs {
     pub fn parse(mut pargs: pico_args::Arguments) -> Result<Self, pico_args::Error> {
-        let args = ServerArgs {
+        let mut args = ServerArgs {
             listen_on: pargs
                 .opt_value_from_str("--listen-on")?
                 .unwrap_or("0.0.0.0:3333".parse().unwrap()),
             num_engine_conns: pargs.opt_value_from_str("--num-engine-conns")?.unwrap_or(1),
+            engine_address: pargs.opt_value_from_str("--engine-address")?,
         };
+        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+            println!("Overriding engine address via $LOCAL_ENGINE_ADDR");
+            args.engine_address = Some(addr);
+        }
         println!("Config is {args:?}");
         Ok(args)
     }
@@ -54,12 +64,14 @@ struct WorkerReq {
 /// Each worker has a connection to the engine, and accepts
 /// KCL programs. When it receives one (over the mpsc channel)
 /// it executes it and returns the result via a oneshot channel.
-fn start_worker(i: u8) -> mpsc::Sender<WorkerReq> {
+fn start_worker(i: u8, engine_addr: Option<String>) -> mpsc::Sender<WorkerReq> {
     println!("Starting worker {i}");
     // Make a work queue for this worker.
     let (tx, mut rx) = mpsc::channel(1);
     tokio::task::spawn(async move {
-        let state = ExecutorContext::new_for_unit_test(UnitLength::Mm).await.unwrap();
+        let state = ExecutorContext::new_for_unit_test(UnitLength::Mm, engine_addr)
+            .await
+            .unwrap();
         println!("Worker {i} ready");
         while let Some(req) = rx.recv().await {
             let req: WorkerReq = req;
@@ -82,8 +94,11 @@ pub async fn start_server(args: ServerArgs) -> anyhow::Result<()> {
     let ServerArgs {
         listen_on,
         num_engine_conns,
+        engine_address,
     } = args;
-    let workers: Vec<_> = (0..num_engine_conns).map(start_worker).collect();
+    let workers: Vec<_> = (0..num_engine_conns)
+        .map(|i| start_worker(i, engine_address.clone()))
+        .collect();
     let state = Arc::new(ServerState {
         workers,
         req_num: 0.into(),
