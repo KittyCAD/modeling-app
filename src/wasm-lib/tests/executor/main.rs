@@ -2644,7 +2644,7 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 117])], message: "Cannot have an x contrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 117])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -2664,7 +2664,7 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have an x contrained angle of 270 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have an x constrained angle of 270 degrees" }"#
     );
 }
 
@@ -2684,7 +2684,7 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 116])], message: "Cannot have a y contrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 116])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -2704,7 +2704,7 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have a y contrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -2724,7 +2724,7 @@ const extrusion = extrude(10, sketch001)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x contrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -2744,7 +2744,7 @@ const extrusion = extrude(10, sketch001)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x contrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -2766,7 +2766,7 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 148])], message: "Cannot have a y contrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 148])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -2788,7 +2788,7 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 150])], message: "Cannot have a y contrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 150])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -2810,6 +2810,6 @@ const example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 151])], message: "Cannot have a y contrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 151])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }

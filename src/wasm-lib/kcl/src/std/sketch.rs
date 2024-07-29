@@ -547,14 +547,14 @@ async fn inner_angled_line_of_x_length(
 
     if angle.abs() == 270.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have an x contrained angle of 270 degrees".to_string(),
+            message: "Cannot have an x constrained angle of 270 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     if angle.abs() == 90.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have an x contrained angle of 90 degrees".to_string(),
+            message: "Cannot have an x constrained angle of 90 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
@@ -612,14 +612,14 @@ async fn inner_angled_line_to_x(
 
     if angle.abs() == 270.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have an x contrained angle of 270 degrees".to_string(),
+            message: "Cannot have an x constrained angle of 270 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     if angle.abs() == 90.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have an x contrained angle of 90 degrees".to_string(),
+            message: "Cannot have an x constrained angle of 90 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
@@ -672,14 +672,14 @@ async fn inner_angled_line_of_y_length(
 
     if angle.abs() == 0.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have a y contrained angle of 0 degrees".to_string(),
+            message: "Cannot have a y constrained angle of 0 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     if angle.abs() == 180.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have a y contrained angle of 180 degrees".to_string(),
+            message: "Cannot have a y constrained angle of 180 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
@@ -726,14 +726,14 @@ async fn inner_angled_line_to_y(
 
     if angle.abs() == 0.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have a y contrained angle of 0 degrees".to_string(),
+            message: "Cannot have a y constrained angle of 0 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     if angle.abs() == 180.0 {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Cannot have a y contrained angle of 180 degrees".to_string(),
+            message: "Cannot have a y constrained angle of 180 degrees".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
