@@ -29,6 +29,12 @@ import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
+import {
+  getArtifactOfTypes,
+  getArtifactsOfType,
+  getCapCodeRef,
+  getWallCodeRef,
+} from 'lang/std/artifactMap'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -79,7 +85,7 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  let _artifact = engineCommandManager.artifactMap[data.entity_id]
+  let _artifact = engineCommandManager.artifactMap.get(data.entity_id)
   if (!_artifact) {
     // This logic for getting the parent id is for solid2ds as in edit mode it return the face id
     // but we don't recognise that in the artifact map because we store the path id when the path is
@@ -101,38 +107,57 @@ export async function getEventForSelectWithPoint(
       resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
         ? resp?.resp?.data?.modeling_response?.data?.entity_id
         : ''
-    const parentArtifact = engineCommandManager.artifactMap[parentId]
+    const parentArtifact = engineCommandManager.artifactMap.get(parentId)
     if (parentArtifact) {
       _artifact = parentArtifact
     }
   }
-  const sourceRange = _artifact?.range
   if (_artifact) {
-    if (_artifact.type === 'extrudeCap')
+    if (_artifact.type === 'cap') {
+      const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactMap)
+      if (err(codeRef)) return null
       return {
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
           selection: {
-            range: sourceRange,
-            type: _artifact?.cap === 'end' ? 'end-cap' : 'start-cap',
+            range: codeRef.range,
+            type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
           },
         },
       }
-    if (_artifact.type === 'extrudeWall')
+    }
+    if (_artifact.type === 'wall') {
+      const codeRef = getWallCodeRef(
+        _artifact,
+        engineCommandManager.artifactMap
+      )
+      if (err(codeRef)) return null
       return {
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
-          selection: { range: sourceRange, type: 'extrude-wall' },
+          selection: { range: codeRef.range, type: 'extrude-wall' },
         },
       }
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: sourceRange, type: 'default' },
-      },
+    }
+    if (_artifact.type === 'segment') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: _artifact.codeRef.range, type: 'default' },
+        },
+      }
+    }
+    if (_artifact.type === 'path') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: _artifact.codeRef.range, type: 'default' },
+        },
+      }
     }
   } else {
     // if we don't recognise the entity, select nothing
@@ -141,6 +166,7 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
+  return null
 }
 
 export function getEventForSegmentSelection(
@@ -499,11 +525,10 @@ function codeToIdSelections(
   return codeBasedSelections
     .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
-      const entriesWithOverlap = Object.entries(
-        engineCommandManager.artifactMap || {}
-      )
+      const overlappingEntries = Array.from(engineCommandManager.artifactMap)
         .map(([id, artifact]) => {
-          return artifact.range && isOverlap(artifact.range, range)
+          if (!('codeRef' in artifact)) return false
+          return isOverlap(artifact.codeRef.range, range)
             ? {
                 artifact,
                 selection: { type, range, ...rest },
@@ -513,30 +538,48 @@ function codeToIdSelections(
         })
         .filter(Boolean)
       let bestCandidate
-      entriesWithOverlap.forEach((entry) => {
+      overlappingEntries.forEach((entry) => {
         if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
-        if (
-          type === 'start-cap' &&
-          entry.artifact.type === 'extrudeCap' &&
-          entry?.artifact?.cap === 'start'
-        ) {
-          bestCandidate = entry
+        if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
+          const wall = engineCommandManager.artifactMap.get(
+            entry.artifact.surfId
+          )
+          if (wall?.type !== 'wall') return
+          bestCandidate = {
+            artifact: wall,
+            selection: { type, range, ...rest },
+            id: entry.artifact.surfId,
+          }
           return
         }
         if (
-          type === 'end-cap' &&
-          entry.artifact.type === 'extrudeCap' &&
-          entry?.artifact?.cap === 'end'
+          (type === 'end-cap' || type === 'start-cap') &&
+          entry.artifact.type === 'path'
         ) {
-          bestCandidate = entry
-          return
-        }
-        if (type === 'extrude-wall' && entry.artifact.type === 'extrudeWall') {
-          bestCandidate = entry
+          const extrusion = getArtifactOfTypes(
+            entry.artifact.extrusionId,
+            engineCommandManager.artifactMap,
+            ['extrusion']
+          )
+          if (err(extrusion)) return
+          const caps = getArtifactsOfType(
+            extrusion.surfIds,
+            engineCommandManager.artifactMap,
+            ['cap']
+          )
+          const cap = [...caps].find(
+            ([_, cap]) => cap.subType === (type === 'end-cap' ? 'end' : 'start')
+          )
+          if (!cap) return
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection: { type, range, ...rest },
+            id: cap[0],
+          }
           return
         }
       })

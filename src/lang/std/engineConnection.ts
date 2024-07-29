@@ -7,10 +7,11 @@ import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
   ArtifactMap,
+  ArtifactMapV2,
   EngineCommand,
   OrderedCommand,
   ResponseMap,
-  createArtifactMap,
+  createLinker,
 } from 'lang/std/artifactMap'
 
 // TODO(paultag): This ought to be tweakable.
@@ -810,7 +811,7 @@ class EngineConnection extends EventTarget {
             .join('\n')
           if (message.request_id) {
             const artifactThatFailed =
-              this.engineCommandManager.artifactMap[message.request_id]
+              this.engineCommandManager.artifactMap.get(message.request_id)
             console.error(
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.type}`
@@ -1120,7 +1121,7 @@ export class EngineCommandManager extends EventTarget {
    * so that we can map to and from KCL code. Each artifact maintains a source range to the part
    * of the KCL code that generated it.
    */
-  artifactMap: ArtifactMap = {}
+  artifactMap: Map<string, ArtifactMapV2> = new Map()
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -1559,7 +1560,6 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.artifactMap = {}
     this.orderedCommands = []
     this.responseMap = {}
     await this.initPlanes()
@@ -1796,7 +1796,7 @@ export class EngineCommandManager extends EventTarget {
    */
   async waitForAllCommands() {
     await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    this.artifactMap = createArtifactMap({
+    this.artifactMap = createLinker({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
       ast: this.getAst(),

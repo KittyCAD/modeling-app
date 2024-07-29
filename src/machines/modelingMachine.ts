@@ -64,6 +64,7 @@ import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
+import { getExtrusionFromSuspectedPath } from 'lang/std/artifactMap'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1088,7 +1089,7 @@ export const modelingMachine = createMachine(
           editorManager.selectRange(updatedAst?.selections)
         }
       },
-      'AST delete selection': async ({ sketchDetails, selectionRanges }) => {
+      'AST delete selection': async ({ selectionRanges }) => {
         let ast = kclManager.ast
 
         const modifiedAst = await deleteFromSelection(
@@ -1141,17 +1142,13 @@ export const modelingMachine = createMachine(
         const sketchVar = varDecNode.node.declarations[0].id.name
         const sketchGroup = kclManager.programMemory.get(sketchVar)
         if (sketchGroup?.type !== 'SketchGroup') return
-        const idArtifact = engineCommandManager.artifactMap[sketchGroup.id]
-        if (idArtifact.type !== 'startPath') return
-        const extrusionArtifactId = idArtifact?.extrusionIds?.[0]
-        if (typeof extrusionArtifactId !== 'string') return
-        const extrusionArtifact =
-          engineCommandManager.artifactMap[extrusionArtifactId]
-        if (!extrusionArtifact) return
-        const pathToExtrudeNode = getNodePathFromSourceRange(
-          ast,
-          extrusionArtifact.range
+        const extrusion = getExtrusionFromSuspectedPath(
+          sketchGroup.id,
+          engineCommandManager.artifactMap
         )
+        const pathToExtrudeNode = err(extrusion)
+          ? []
+          : getNodePathFromSourceRange(ast, extrusion.codeRef.range)
 
         // we assume that there is only one body related to the sketch
         // and apply the fillet to it

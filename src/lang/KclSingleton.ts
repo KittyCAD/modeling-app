@@ -17,6 +17,7 @@ import {
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
+import { ArtifactMapV2 } from './std/artifactMap'
 
 export class KclManager {
   private _ast: Program = {
@@ -278,24 +279,30 @@ export class KclManager {
     this._kclErrors = errors
     this._programMemory = programMemory
     if (updates !== 'artifactRanges') return
+
+    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
+    // problem this solves, but either way we should strive to remove it.
     Object.entries(this.engineCommandManager.artifactMap).forEach(
-      ([commandId, artifact]) => {
-        if (!artifact.pathToNode) return
+      ([commandId, artifact]: [string, ArtifactMapV2]) => {
+        if (!('codeRef' in artifact)) return
         const _node1 = getNodeFromPath<CallExpression>(
           this.ast,
-          artifact.pathToNode,
+          artifact.codeRef.pathToNode,
           'CallExpression'
         )
         if (err(_node1)) return
         const { node } = _node1
         if (node.type !== 'CallExpression') return
-        const [oldStart, oldEnd] = artifact.range
+        const [oldStart, oldEnd] = artifact.codeRef.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactMap[commandId].range = [
-          node.start,
-          node.end,
-        ]
+        this.engineCommandManager.artifactMap.set(commandId, {
+          ...artifact,
+          codeRef: {
+            ...artifact.codeRef,
+            range: [node.start, node.end],
+          },
+        })
       }
     )
   }
@@ -305,7 +312,6 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    console.log('[kcl/KclSingleton] executeCode')
     const ast = this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()

@@ -28,7 +28,7 @@ export interface _PathArtifact {
 }
 export interface PathArtifact {
   type: 'path'
-  plane: _PlaneArtifact
+  plane: _PlaneArtifact | _WallArtifact
   segs: Array<_SegmentArtifact>
   extrusion: _ExtrusionArtifact
   codeRef: CommonCommandProperties
@@ -37,7 +37,7 @@ export interface PathArtifact {
 interface _SegmentArtifact {
   type: 'segment'
   pathId: string
-  surfIds: Array<string>
+  surfId: string
   edgeIds: Array<string>
   codeRef: CommonCommandProperties
 }
@@ -62,6 +62,7 @@ interface _WallArtifact {
   segId: string
   blendEdgeIds: Array<string>
   extrusionId: string
+  pathIds: Array<string>
 }
 interface _CapArtifact {
   type: 'cap'
@@ -394,11 +395,22 @@ export function createLinker({
       const pathIds = plane?.type === 'plane' ? plane?.pathIds : []
       const codeRef =
         plane?.type === 'plane' ? plane?.codeRef : { range, pathToNode }
-      myMap.set(currentPlaneId, {
-        type: 'plane',
-        pathIds,
-        codeRef,
-      })
+      const existingPlane = myMap.get(currentPlaneId)
+      if (existingPlane?.type === 'wall') {
+        myMap.set(currentPlaneId, {
+          type: 'wall',
+          segId: existingPlane.segId,
+          blendEdgeIds: existingPlane.blendEdgeIds,
+          extrusionId: existingPlane.extrusionId,
+          pathIds: [...existingPlane.pathIds, id],
+        })
+      } else {
+        myMap.set(currentPlaneId, {
+          type: 'plane',
+          pathIds,
+          codeRef,
+        })
+      }
     } else if (cmd.type === 'sketch_mode_disable') {
       currentPlaneId = ''
     } else if (cmd.type === 'start_path') {
@@ -412,26 +424,38 @@ export function createLinker({
       const plane = myMap.get(currentPlaneId)
       const codeRef =
         plane?.type === 'plane' ? plane?.codeRef : { range, pathToNode }
-      if (plane?.type === 'plane')
+      if (plane?.type === 'plane') {
         myMap.set(currentPlaneId, {
           type: 'plane',
           pathIds: [...plane.pathIds, id],
           codeRef,
         })
-    } else if (cmd.type === 'extend_path') {
+      }
+    } else if (cmd.type === 'extend_path' || cmd.type === 'close_path') {
+      const pathId = cmd.type === 'extend_path' ? cmd.path : cmd.path_id
       myMap.set(id, {
         type: 'segment',
-        pathId: cmd.path,
-        surfIds: [],
+        pathId,
+        surfId: '',
         edgeIds: [],
         codeRef: { range, pathToNode },
       })
-      const path = myMap.get(cmd.path)
+      const path = myMap.get(pathId)
       if (path?.type === 'path')
-        myMap.set(cmd.path, {
+        myMap.set(pathId, {
           ...path,
           segIds: [...path.segIds, id],
         })
+      // if (
+      //   response.type === 'modeling' &&
+      //   response.data.modeling_response.type === 'close_path'
+      // ) {
+      //   // TODO: the face_id should be the solid2d face, which should be added to the artifactMap
+      //   console.log(
+      //     'close face_id should be solid2d',
+      //     response.data.modeling_response.data.face_id
+      //   )
+      // }
     } else if (cmd.type === 'extrude') {
       myMap.set(id, {
         type: 'extrusion',
@@ -462,10 +486,11 @@ export function createLinker({
                 segId: curve_id,
                 blendEdgeIds: [],
                 extrusionId: path.extrusionId,
+                pathIds: [],
               })
               myMap.set(curve_id, {
                 ...seg,
-                surfIds: [...seg.surfIds, face_id],
+                surfId: face_id,
               })
               const extrusion = myMap.get(path.extrusionId)
               if (extrusion?.type === 'extrusion') {
@@ -475,19 +500,22 @@ export function createLinker({
                 })
               }
             }
-          } else if (
-            (cap === 'top' || cap === 'bottom') &&
-            curve_id &&
-            face_id
-          ) {
+          } else if ((cap === 'top' || cap === 'bottom') && face_id) {
             const path = myMap.get(cmd.object_id)
-            if (path?.type === 'path')
+            if (path?.type === 'path') {
               myMap.set(face_id, {
                 type: 'cap',
                 subType: cap === 'bottom' ? 'start' : 'end',
                 blendEdgeIds: [],
                 extrusionId: path.extrusionId,
               })
+              const extrusion = myMap.get(path.extrusionId)
+              if (extrusion?.type !== 'extrusion') return
+              myMap.set(path.extrusionId, {
+                ...extrusion,
+                surfIds: [...extrusion.surfIds, face_id],
+              })
+            }
           }
         }
       )
@@ -508,21 +536,32 @@ export function createLinker({
 /** filter map items of a specific type */
 export function filterArtifacts<T extends ArtifactMapV2['type'][]>(
   map: Map<string, ArtifactMapV2>,
-  types: T
+  types: T,
+  predicate?: (value: Extract<ArtifactMapV2, { type: T[number] }>) => boolean
 ) {
   return new Map(
-    Array.from(map).filter(([_, value]) => types.includes(value.type))
+    Array.from(map).filter(
+      ([_, value]) =>
+        types.includes(value.type) &&
+        (!predicate ||
+          predicate(value as Extract<ArtifactMapV2, { type: T[number] }>))
+    )
   ) as Map<string, Extract<ArtifactMapV2, { type: T[number] }>>
 }
 
-function getArtifactsOfType<T extends ArtifactMapV2['type'][]>(
+export function getArtifactsOfType<T extends ArtifactMapV2['type'][]>(
   keys: string[],
   map: Map<string, ArtifactMapV2>,
-  types: T
+  types: T,
+  predicate?: (value: Extract<ArtifactMapV2, { type: T[number] }>) => boolean
 ): Map<string, Extract<ArtifactMapV2, { type: T[number] }>> {
   return new Map(
     [...map].filter(
-      ([key, value]) => keys.includes(key) && types.includes(value.type)
+      ([key, value]) =>
+        keys.includes(key) &&
+        types.includes(value.type) &&
+        (!predicate ||
+          predicate(value as Extract<ArtifactMapV2, { type: T[number] }>))
     )
   ) as Map<string, Extract<ArtifactMapV2, { type: T[number] }>>
 }
@@ -532,10 +571,22 @@ function getArtifactOfType<T extends ArtifactMapV2['type']>(
   map: Map<string, ArtifactMapV2>,
   type: T
 ): Extract<ArtifactMapV2, { type: T }> | Error {
-  const yo = map.get(key)
-  if (yo?.type !== type)
-    return new Error(`Expected ${type} but got ${yo?.type}`)
-  return yo as Extract<ArtifactMapV2, { type: T }>
+  const artifact = map.get(key)
+  if (artifact?.type !== type)
+    return new Error(`Expected ${type} but got ${artifact?.type}`)
+  return artifact as Extract<ArtifactMapV2, { type: T }>
+}
+
+export function getArtifactOfTypes<T extends ArtifactMapV2['type'][]>(
+  key: string,
+  map: Map<string, ArtifactMapV2>,
+  types: T
+): Extract<ArtifactMapV2, { type: T[number] }> | Error {
+  const artifact = map.get(key)
+  if (!artifact) return new Error(`No artifact found with key ${key}`)
+  if (!types.includes(artifact?.type))
+    return new Error(`Expected ${types} but got ${artifact?.type}`)
+  return artifact as Extract<ArtifactMapV2, { type: T[number] }>
 }
 
 export function expandPlane(
@@ -560,7 +611,7 @@ export function expandPath(
     artifactMap,
     'extrusion'
   )
-  const plane = getArtifactOfType(path.planeId, artifactMap, 'plane')
+  const plane = getArtifactOfTypes(path.planeId, artifactMap, ['plane', 'wall'])
   if (err(extrusion)) return extrusion
   if (err(plane)) return plane
   return {
@@ -587,4 +638,42 @@ export function expandExtrusion(
     pathId: extrusion.pathId,
     codeRef: extrusion.codeRef,
   }
+}
+
+export function getCapCodeRef(
+  cap: _CapArtifact,
+  artifactMap: Map<string, ArtifactMapV2>
+): CommonCommandProperties | Error {
+  const extrusion = getArtifactOfType(cap.extrusionId, artifactMap, 'extrusion')
+  if (err(extrusion)) return extrusion
+  const path = getArtifactOfType(extrusion.pathId, artifactMap, 'path')
+  if (err(path)) return path
+  return path.codeRef
+}
+
+export function getWallCodeRef(
+  wall: _WallArtifact,
+  artifactMap: Map<string, ArtifactMapV2>
+): CommonCommandProperties | Error {
+  const seg = getArtifactOfType(wall.segId, artifactMap, 'segment')
+  if (err(seg)) return seg
+  return seg.codeRef
+}
+
+export function getExtrusionFromSuspectedExtrudeSurface(
+  id: string,
+  artifactMap: Map<string, ArtifactMapV2>
+): _ExtrusionArtifact | Error {
+  const artifact = getArtifactOfTypes(id, artifactMap, ['wall', 'cap'])
+  if (err(artifact)) return artifact
+  return getArtifactOfTypes(artifact.extrusionId, artifactMap, ['extrusion'])
+}
+
+export function getExtrusionFromSuspectedPath(
+  id: string,
+  artifactMap: Map<string, ArtifactMapV2>
+): _ExtrusionArtifact | Error {
+  const path = getArtifactOfTypes(id, artifactMap, ['path'])
+  if (err(path)) return path
+  return getArtifactOfTypes(path.extrusionId, artifactMap, ['extrusion'])
 }

@@ -134,7 +134,7 @@ describe('testing createLinker', () => {
       const planes = [...filterArtifacts(theMap, ['plane'])].map((plane) =>
         expandPlane(plane[1], theMap)
       )
-      expect(planes).toHaveLength(2)
+      expect(planes).toHaveLength(1)
       planes.forEach((path) => {
         expect(path.type).toBe('plane')
       })
@@ -158,7 +158,7 @@ describe('testing createLinker', () => {
       extrusions.forEach((extrusion, index) => {
         if (err(extrusion)) throw extrusion
         expect(extrusion.type).toBe('extrusion')
-        expect(extrusion.surfs.length).toBe(!index ? 6 : 0)
+        expect(extrusion.surfs.length).toBe(!index ? 11 : 0)
       })
     })
   })

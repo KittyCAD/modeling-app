@@ -103,6 +103,11 @@ import {
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import {
+  getCapCodeRef,
+  getExtrusionFromSuspectedExtrudeSurface,
+  getWallCodeRef,
+} from 'lang/std/artifactMap'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1562,40 +1567,29 @@ export class SceneEntities {
           })
           return
         }
-        const artifact = this.engineCommandManager.artifactMap[_entity_id]
-        // If we clicked on an extrude wall, we climb up the parent Id
-        // to get the sketch profile's face ID. If we clicked on an endcap,
-        // we already have it.
-        const pathId =
-          artifact?.type === 'extrudeWall' || artifact?.type === 'extrudeCap'
-            ? artifact.pathId
-            : ''
+        const artifact = this.engineCommandManager.artifactMap.get(_entity_id)
+        const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+          _entity_id,
+          this.engineCommandManager.artifactMap
+        )
 
-        // tsc cannot infer that target can have extrusions
-        // from the commandType (why?) so we need to cast it
-        const path = this.engineCommandManager.artifactMap?.[pathId || '']
-        const extrusionId =
-          path?.type === 'startPath' ? path.extrusionIds[0] : ''
+        if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
 
-        // TODO: We get the first extrusion command ID,
-        // which is fine while backend systems only support one extrusion.
-        // but we need to more robustly handle resolving to the correct extrusion
-        // if there are multiple.
-        const extrusions = this.engineCommandManager.artifactMap?.[extrusionId]
-
-        if (artifact?.type !== 'extrudeCap' && artifact?.type !== 'extrudeWall')
-          return
+        const codeRef =
+          artifact.type === 'cap'
+            ? getCapCodeRef(artifact, this.engineCommandManager.artifactMap)
+            : getWallCodeRef(artifact, this.engineCommandManager.artifactMap)
 
         const faceInfo = await getFaceDetails(_entity_id)
         if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
         const { z_axis, y_axis, origin } = faceInfo
         const sketchPathToNode = getNodePathFromSourceRange(
           kclManager.ast,
-          artifact.range
+          err(codeRef) ? [0, 0] : codeRef.range
         )
 
-        const extrudePathToNode = extrusions?.range
-          ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+        const extrudePathToNode = !err(extrusion)
+          ? getNodePathFromSourceRange(kclManager.ast, extrusion.codeRef.range)
           : []
 
         sceneInfra.modelingSend({
@@ -1609,7 +1603,7 @@ export class SceneEntities {
             ) as [number, number, number],
             sketchPathToNode,
             extrudePathToNode,
-            cap: artifact.type === 'extrudeCap' ? artifact.cap : 'none',
+            cap: artifact.type === 'cap' ? artifact.subType : 'none',
             faceId: _entity_id,
           },
         })

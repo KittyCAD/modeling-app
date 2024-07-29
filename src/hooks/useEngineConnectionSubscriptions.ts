@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { editorManager, engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
+import { getCapCodeRef, getWallCodeRef } from 'lang/std/artifactMap'
+import { err } from 'lib/trap'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context } = useModelingContext()
@@ -14,9 +16,26 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const sourceRange = engineCommandManager.artifactMap?.[data.entity_id]
-            ?.range || [0, 0]
-          editorManager.setHighlightRange(sourceRange)
+          const artifact = engineCommandManager.artifactMap.get(data.entity_id)
+          if (artifact?.type === 'cap') {
+            const codeRef = getCapCodeRef(
+              artifact,
+              engineCommandManager.artifactMap
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange(codeRef.range)
+          } else if (artifact?.type === 'wall') {
+            const codeRef = getWallCodeRef(
+              artifact,
+              engineCommandManager.artifactMap
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange(codeRef.range)
+          } else if (artifact?.type === 'segment') {
+            editorManager.setHighlightRange(artifact?.codeRef?.range || [0, 0])
+          } else {
+            editorManager.setHighlightRange([0, 0])
+          }
         } else if (
           !editorManager.highlightRange ||
           (editorManager.highlightRange[0] !== 0 &&

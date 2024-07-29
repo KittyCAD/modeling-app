@@ -1,12 +1,7 @@
 import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
-import {
-  ArtifactMap,
-  ArtifactMapCommand,
-  SegmentArtifact,
-  StartPathArtifact,
-} from 'lang/std/artifactMap'
+import { ArtifactMapV2, filterArtifacts } from 'lang/std/artifactMap'
 import { isOverlap } from 'lib/utils'
 import { err } from 'lib/trap'
 
@@ -51,25 +46,27 @@ export function updatePathToNodeFromMap(
 }
 
 export function isCursorInSketchCommandRange(
-  artifactMap: ArtifactMap,
+  artifactMap: Map<string, ArtifactMapV2>,
   selectionRanges: Selections
 ): string | false {
-  const overlappingEntries = Object.entries(artifactMap).filter(
-    ([id, artifact]: [string, ArtifactMapCommand]) =>
-      selectionRanges.codeBasedSelections.some(
+  const overlappingEntries = filterArtifacts(
+    artifactMap,
+    ['segment', 'path'],
+    (artifact) => {
+      return selectionRanges.codeBasedSelections.some(
         (selection) =>
           Array.isArray(selection?.range) &&
-          Array.isArray(artifact?.range) &&
-          isOverlap(selection.range, artifact.range) &&
-          (artifact.type === 'startPath' || artifact.type === 'segment')
+          Array.isArray(artifact?.codeRef?.range) &&
+          isOverlap(selection.range, artifact.codeRef.range)
       )
-  ) as [string, StartPathArtifact | SegmentArtifact][]
-  const secondEntry = overlappingEntries?.[0]?.[1]
-  const parentId = secondEntry?.type === 'segment' ? secondEntry.pathId : false
-  let result = parentId
+    }
+  )
+  const firstEntry = [...overlappingEntries.values()]?.[0]
+  const parentId = firstEntry?.type === 'segment' ? firstEntry.pathId : false
+
+  return parentId
     ? parentId
-    : overlappingEntries.find(
-        ([, artifact]) => artifact.type === 'startPath'
+    : [...overlappingEntries].find(
+        ([, artifact]) => artifact.type === 'path'
       )?.[0] || false
-  return result
 }
