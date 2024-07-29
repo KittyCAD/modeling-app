@@ -21,9 +21,10 @@ export default function FutureWork() {
       <div className="max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold">Future Work</h1>
         <p className="my-4">
-          We have curves, cuts, and many more CAD features coming soon. We want
-          your feedback on this user interface, and we want to know what
-          features you want to see next. Please message us in{' '}
+          We have curves, cuts, multi-profile sketch mode, and many more CAD
+          features coming soon. We want your feedback on this user interface,
+          and we want to know what features you want to see next. Please message
+          us in{' '}
           <a
             href="https://discord.gg/JQEpHR7Nt2"
             target="_blank"
