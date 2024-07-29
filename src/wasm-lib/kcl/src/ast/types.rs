@@ -4247,6 +4247,30 @@ const myNestedVar = [callExp(bing.yo)]
     }
 
     #[test]
+    fn test_recast_space_in_fn_call() {
+        let some_program_string = r#"fn thing = (x) => {
+    return x + 1
+}
+
+thing ( 1 )
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"fn thing = (x) => {
+  return x + 1
+}
+
+thing(1)
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_object_fn_in_array_weird_bracket() {
         let some_program_string = r#"const bing = { yo: 55 }
 const myNestedVar = [
