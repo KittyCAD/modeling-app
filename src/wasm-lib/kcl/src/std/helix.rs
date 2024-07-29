@@ -19,6 +19,7 @@ pub struct HelixData {
     /// Number of revolutions.
     pub revolutions: f64,
     /// Start angle (in degrees).
+    #[serde(rename = "angleStart", alias = "angle_start")]
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     /// The default is `false`.
@@ -44,10 +45,9 @@ pub async fn helix(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> circle([5, 5], 10, %)
 ///   |> extrude(10, %)
 ///   |> helix({
-///     angle_start: 0,
+///     angleStart: 0,
 ///     ccw: true,
 ///     revolutions: 16,
-///     angle_start: 0
 ///  }, %)
 /// ```
 #[stdlib {

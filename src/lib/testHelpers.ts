@@ -1,8 +1,6 @@
 import { Program, ProgramMemory, _executor, SourceRange } from '../lang/wasm'
-import {
-  EngineCommandManager,
-  EngineCommand,
-} from '../lang/std/engineConnection'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'

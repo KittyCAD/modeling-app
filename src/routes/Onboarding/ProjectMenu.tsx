@@ -20,8 +20,9 @@ export default function ProjectMenu() {
         <section className="flex-1">
           <h2 className="text-2xl font-bold">Project Menu</h2>
           <p className="my-4">
-            Click on your part's name in the upper left to open the project
-            menu.
+            Click on {tauri ? `your part's name` : `the app name`} in the upper
+            left to open the project menu, where you can open the project
+            settings and export your current part.
             {tauri && (
               <> You can click the Zoo logo to quickly navigate home.</>
             )}
@@ -43,8 +44,8 @@ export default function ProjectMenu() {
           ) : (
             <>
               <p className="my-4">
-                From here you can export your part. You can't manage separate
-                files and separate projects from the browser; you have to{' '}
+                You can't manage separate files and separate projects from the
+                browser; you have to{' '}
                 <a
                   href="https://zoo.dev/modeling-app/download"
                   target="_blank"

@@ -1,52 +1,20 @@
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
+import { Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import {
+  ArtifactMap,
+  EngineCommand,
+  OrderedCommand,
+  ResponseMap,
+  createArtifactMap,
+} from 'lang/std/artifactMap'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
-
-type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
-
-type CommandInfo =
-  | {
-      commandType: 'extrude'
-      // commandType: CommandTypes
-      range: SourceRange
-      pathToNode: PathToNode
-      /// uuid of the entity to extrude
-      target: string
-      parentId?: string
-    }
-  | {
-      commandType: 'start_path'
-      // commandType: CommandTypes
-      range: SourceRange
-      pathToNode: PathToNode
-      /// uuid of the entity that have been extruded
-      extrusions: string[]
-      parentId?: string
-    }
-  | {
-      commandType: CommandTypes
-      range: SourceRange
-      pathToNode: PathToNode
-      parentId?: string
-      additionalData?:
-        | {
-            type: 'cap'
-            info: 'start' | 'end'
-          }
-        | {
-            type: 'batch-ids'
-            ids: string[]
-            info?: null
-          }
-    }
 
 function isHighlightSetEntity_type(
   data: any
@@ -54,47 +22,7 @@ function isHighlightSetEntity_type(
   return data.entity_id && data.sequence
 }
 
-type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
-
-type ResultCommand = CommandInfo & {
-  type: 'result'
-  data: any
-  raw: WebSocketResponse
-  headVertexId?: string
-}
-type FailedCommand = CommandInfo & {
-  type: 'failed'
-  errors: Models['FailureWebSocketResponse_type']['errors']
-}
-interface ResolveCommand {
-  id: string
-  commandType: CommandTypes
-  range: SourceRange
-  // We ALWAYS need the raw response because we pass it back to the rust side.
-  raw: WebSocketResponse
-  data?: Models['OkModelingCmdResponse_type']
-  errors?: Models['FailureWebSocketResponse_type']['errors']
-}
-type PendingCommand = CommandInfo & {
-  type: 'pending'
-  promise: Promise<any>
-  resolve: (val: ResolveCommand) => void
-}
-
-export type ArtifactMapCommand = ResultCommand | PendingCommand | FailedCommand
-
-/**
- * The ArtifactMap is a client-side representation of the artifacts that
- * have been sent to the server-side engine. It is used to keep track of
- * the state of each command, and to resolve the promise that was returned.
- * It is also used to keep track of what entities are in the engine scene,
- * so that we can associate IDs returned from the engine with the
- * lines of KCL code that generated them.
- */
-export interface ArtifactMap {
-  [commandId: string]: ArtifactMapCommand
-}
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -877,7 +805,7 @@ class EngineConnection extends EventTarget {
               this.engineCommandManager.artifactMap[message.request_id]
             console.error(
               `Error in response to request ${message.request_id}:\n${errorsString}
-  failed cmd type was ${artifactThatFailed?.commandType}`
+  failed cmd type was ${artifactThatFailed?.type}`
             )
           } else {
             console.error(`Error from server:\n${errorsString}`)
@@ -1109,7 +1037,6 @@ class EngineConnection extends EventTarget {
   }
 }
 
-export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
 type UnreliableResponses = Extract<
@@ -1196,15 +1123,12 @@ export class EngineCommandManager extends EventTarget {
    * The orderedCommands array of all the the commands sent to the engine, un-folded from batches, and made into one long
    * list of the individual commands, this is used to process all the commands into the artifactMap
    */
-  orderedCommands: {
-    command: EngineCommand
-    range: SourceRange
-  }[] = []
+  orderedCommands: Array<OrderedCommand> = []
   /**
    * A map of the responses to the @this.orderedCommands, when processing the commands into the artifactMap, this response map allow
    * us to look up the response by command id
    */
-  responseMap: { [commandId: string]: OkWebSocketResponseData } = {}
+  responseMap: ResponseMap = {}
   /**
    * The client-side representation of the scene command artifacts that have been sent to the server;
    * that is, the *non-modeling* commands and corresponding artifacts.
@@ -1515,9 +1439,9 @@ export class EngineCommandManager extends EventTarget {
             }
           })
           Object.entries(message.resp.data.responses).forEach(
-            ([key, response]) => {
+            ([commandId, response]) => {
               if (!('response' in response)) return
-              const command = individualPendingResponses[key]
+              const command = individualPendingResponses[commandId]
               if (!command) return
               if (command.type === 'modeling_cmd_req')
                 this.addCommandLog({
@@ -1528,11 +1452,11 @@ export class EngineCommandManager extends EventTarget {
                       modeling_response: response.response,
                     },
                   },
-                  id: key,
+                  id: commandId,
                   cmd_type: command?.cmd?.type,
                 })
 
-              this.responseMap[key] = {
+              this.responseMap[commandId] = {
                 type: 'modeling',
                 data: {
                   modeling_response: response.response,
@@ -1568,106 +1492,6 @@ export class EngineCommandManager extends EventTarget {
       EngineConnectionEvents.ConnectionStarted,
       this.onEngineConnectionStarted
     )
-  }
-  handleIndividualResponse({
-    id,
-    pendingMsg,
-    response,
-  }: {
-    id: string
-    pendingMsg: {
-      command: EngineCommand
-      range: SourceRange
-    }
-    response: OkWebSocketResponseData
-  }) {
-    const command = pendingMsg
-    if (command?.command?.type !== 'modeling_cmd_req') return
-    if (response?.type !== 'modeling') return
-    const command2 = command.command.cmd
-
-    const range = command.range
-    const pathToNode = getNodePathFromSourceRange(this.getAst(), range)
-    const getParentId = (): string | undefined => {
-      if (command2.type === 'extend_path') return command2.path
-      if (command2.type === 'solid3d_get_extrusion_face_info') {
-        const edgeArtifact = this.artifactMap[command2.edge_id]
-        // edges's parent id is to the original "start_path" artifact
-        if (edgeArtifact && edgeArtifact.parentId) {
-          return edgeArtifact.parentId
-        }
-      }
-      if (command2.type === 'close_path') return command2.path_id
-      if (command2.type === 'extrude') return command2.target
-      // handle other commands that have a parent here
-    }
-    const modelingResponse = response.data.modeling_response
-
-    if (command) {
-      const parentId = getParentId()
-      const artifact = {
-        type: 'result',
-        range: range,
-        pathToNode,
-        commandType: command.command.cmd.type,
-        parentId: parentId,
-      } as ArtifactMapCommand & { extrusions?: string[] }
-      this.artifactMap[id] = artifact
-      if (command2.type === 'extrude') {
-        ;(artifact as any).target = command2.target
-        if (this.artifactMap[command2.target]?.commandType === 'start_path') {
-          if ((this.artifactMap[command2.target] as any)?.extrusions?.length) {
-            ;(this.artifactMap[command2.target] as any).extrusions.push(id)
-          } else {
-            ;(this.artifactMap[command2.target] as any).extrusions = [id]
-          }
-        }
-      }
-      this.artifactMap[id] = artifact
-      if (
-        (command2.type === 'entity_linear_pattern' &&
-          modelingResponse.type === 'entity_linear_pattern') ||
-        (command2.type === 'entity_circular_pattern' &&
-          modelingResponse.type === 'entity_circular_pattern')
-      ) {
-        const entities = modelingResponse.data.entity_ids
-        entities?.forEach((entity: string) => {
-          this.artifactMap[entity] = artifact
-        })
-      }
-      if (
-        command2.type === 'solid3d_get_extrusion_face_info' &&
-        modelingResponse.type === 'solid3d_get_extrusion_face_info'
-      ) {
-        const parent = this.artifactMap[parentId || '']
-        modelingResponse.data.faces.forEach((face) => {
-          if (face.cap !== 'none' && face.face_id && parent) {
-            this.artifactMap[face.face_id] = {
-              ...parent,
-              commandType: 'solid3d_get_extrusion_face_info',
-              additionalData: {
-                type: 'cap',
-                info: face.cap === 'bottom' ? 'start' : 'end',
-              },
-            }
-          }
-          const curveArtifact = this.artifactMap[face?.curve_id || '']
-          if (curveArtifact && face?.face_id) {
-            this.artifactMap[face.face_id] = {
-              ...curveArtifact,
-              commandType: 'solid3d_get_extrusion_face_info',
-            }
-          }
-        })
-      }
-    } else if (command) {
-      this.artifactMap[id] = {
-        type: 'result',
-        commandType: command2.type,
-        range,
-        pathToNode,
-      } as ArtifactMapCommand & { extrusions?: string[] }
-    }
   }
 
   handleResize({
@@ -1965,29 +1789,11 @@ export class EngineCommandManager extends EventTarget {
    * When this is done when we build the artifact map synchronously.
    */
   async waitForAllCommands() {
-    const pendingCommands = Object.values(this.artifactMap).filter(
-      ({ type }) => type === 'pending'
-    ) as PendingCommand[]
-    const proms = pendingCommands.map(({ promise }) => promise)
-
-    const otherPending = Object.values(this.pendingCommands).map(
-      (a) => a.promise
-    )
-    await Promise.all([...proms, otherPending])
-    this.orderedCommands.forEach(({ command, range }) => {
-      // expect all to be `modeling_cmd_req` as batch commands have
-      // already been expanded before being added to orderedCommands
-      if (command.type !== 'modeling_cmd_req') return
-      const id = command.cmd_id
-      const response = this.responseMap[id]
-      this.handleIndividualResponse({
-        id,
-        pendingMsg: {
-          command,
-          range,
-        },
-        response,
-      })
+    await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
+    this.artifactMap = createArtifactMap({
+      orderedCommands: this.orderedCommands,
+      responseMap: this.responseMap,
+      ast: this.getAst(),
     })
   }
   private async initPlanes() {
@@ -2047,13 +1853,11 @@ export class EngineCommandManager extends EventTarget {
   ): string | undefined {
     const values = Object.entries(this.artifactMap)
     for (const [id, data] of values) {
-      if (data.type !== 'result') continue
-
-      // Our range selection seems to just select the cursor position, so either
-      // of these can be right...
+      // // Our range selection seems to just select the cursor position, so either
+      // // of these can be right...
       if (
         (data.range[0] === range[0] || data.range[1] === range[1]) &&
-        data.commandType === commandTypeToTarget
+        data.type === commandTypeToTarget
       )
         return id
     }

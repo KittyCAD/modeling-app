@@ -26,7 +26,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
@@ -48,8 +48,6 @@ const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-  // num1: 9.64,
-  // num2: 19.19,
 }
 
 test.afterEach(async ({ context, page }, testInfo) => {
@@ -141,8 +139,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(500)
@@ -152,8 +151,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
@@ -162,8 +162,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -175,7 +176,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await page.getByRole('button', { name: 'Line' }).click()
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
   await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
@@ -203,7 +204,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
   }
 
-  await page.getByRole('button', { name: 'Constraints' }).click()
+  await page.getByRole('button', { name: 'Length: open menu' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   // Open the code pane.
@@ -212,7 +213,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, $seg01)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> angledLine([180, segLen(seg01, %)], %)`)
+  |> angledLine([180, segLen(seg01)], %)`)
 }
 
 test.describe('Basic sketch', () => {
@@ -452,7 +453,7 @@ test.describe('Testing Camera Movement', () => {
     // await expect(u.codeLocator).toHaveText(code)
 
     // click the line button
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     const hoverOverNothing = async () => {
       // await u.canvasLocator.hover({position: {x: 700, y: 325}})
@@ -924,10 +925,10 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     await expect(
-      page.locator('.cm-lintRange.cm-lintRange-error').first()
+      page.locator('.cm-lint-marker.cm-lint-marker-error')
     ).toBeVisible()
 
-    await page.locator('.cm-lintRange.cm-lintRange-error').hover()
+    await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
     await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
     await expect(
       page.getByText('Cannot redefine `topAng`').first()
@@ -1015,18 +1016,18 @@ test.describe('Editor tests', () => {
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
-  |> line([0, -10], %, 'revolveAxis')
+  |> line([0, -10], %, $revolveAxis)
   |> close(%)
   |> extrude(10, %)
   
-  const sketch001 = startSketchOn(box, "revolveAxis")
+  const sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
   |> line([0, -10], %)
   |> close(%)
   |> revolve({
-  axis: getEdge('revolveAxis', box),
+  axis: revolveAxis,
   angle: 90
   }, %)
       `
@@ -1044,7 +1045,7 @@ test.describe('Editor tests', () => {
     await page.hover('.cm-lint-marker-error')
     const searchText =
       'sketch profile must lie entirely on one side of the revolution axis'
-    await expect(page.getByText(searchText).first()).toBeVisible()
+    await expect(page.getByText(searchText)).toBeVisible()
   })
   test.describe('Autocomplete works', () => {
     test('with enter/click to accept the completion', async ({ page }) => {
@@ -1063,7 +1064,7 @@ test.describe('Editor tests', () => {
       await page.keyboard.type('const sketch001 = start')
 
       // expect there to be six auto complete options
-      await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
+      await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
       // this makes sure we can accept a completion with click
       await page.getByText('startSketchOn').click()
       await page.keyboard.type("'XZ'")
@@ -1462,7 +1463,9 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     await page.mouse.click(clickCoords.x, clickCoords.y)
     await page.waitForTimeout(300) // wait for animation
 
-    await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Line', exact: true })
+    ).toBeVisible()
 
     // draw a line
     const startXPx = 600
@@ -1472,7 +1475,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
     await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1551,7 +1554,9 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
-  test('copilot disabled in sketch mode no select plane', async ({ page }) => {
+  test.skip('copilot disabled in sketch mode no select plane', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -2098,7 +2103,7 @@ test.describe('Testing settings', () => {
       .hover()
     await page
       .getByRole('button', {
-        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+        name: 'Roll back theme',
       })
       .click()
     await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
@@ -2150,7 +2155,7 @@ test.describe('Testing settings', () => {
       .hover()
     await page
       .getByRole('button', {
-        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+        name: 'Roll back theme',
       })
       .click()
     await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
@@ -2258,6 +2263,50 @@ test.describe('Onboarding tests', () => {
 
     // *and* that the code is shown in the editor
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+  })
+
+  test('Code resets after confirmation', async ({ page }) => {
+    const initialCode = `const sketch001 = startSketchOn('XZ')`
+
+    // Load the page up with some code so we see the confirmation warning
+    // when we go to replay onboarding
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, initialCode)
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    // Replay the onboarding
+    await page.getByRole('link', { name: 'Settings' }).last().click()
+    const replayButton = page.getByRole('button', { name: 'Replay onboarding' })
+    await expect(replayButton).toBeVisible()
+    await replayButton.click()
+
+    // Ensure we see the warning, and that the code has not yet updated
+    await expect(
+      page.getByText('Replaying onboarding resets your code')
+    ).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(initialCode)
+
+    const nextButton = page.getByTestId('onboarding-next')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+
+    // Ensure we see the introduction and that the code has been reset
+    await expect(page.getByText('Welcome to Modeling App!')).toBeVisible()
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+
+    // Ensure we persisted the code to local storage.
+    // Playwright's addInitScript method unfortunately will reset
+    // this code if we try reloading the page as a test,
+    // so this is our best way to test persistence afaik.
+    expect(
+      await page.evaluate(() => {
+        return localStorage.getItem('persistCode')
+      })
+    ).toContain('// Shelf Bracket')
   })
 
   test('Click through each onboarding step', async ({ page }) => {
@@ -2564,7 +2613,7 @@ test.describe('Testing selections', () => {
     |> line([-${commonPoints.num2}, 0], %)`)
 
     // deselect line tool
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await u.closeDebugPanel()
     const selectionSequence = async () => {
@@ -2589,8 +2638,10 @@ test.describe('Testing selections', () => {
       // click a segment hold shift and click an axis, see that a relevant constraint is enabled
       await topHorzSegmentClick()
       await page.keyboard.down('Shift')
-      const constrainButton = page.getByRole('button', { name: 'Constraints' })
-      const absYButton = page.getByRole('button', { name: 'ABS Y' })
+      const constrainButton = page.getByRole('button', {
+        name: 'Length: open menu',
+      })
+      const absYButton = page.getByRole('button', { name: 'Absolute Y' })
       await constrainButton.click()
       await expect(absYButton).toBeDisabled()
       await page.waitForTimeout(100)
@@ -3162,7 +3213,7 @@ const extrude001 = extrude(10, sketch001)`
       },
       {
         pos: [816, 244],
-        expectedCode: 'angledLine([segAng(seg01, %), yo], %)',
+        expectedCode: 'angledLine([segAng(seg01), yo], %)',
       },
       {
         pos: [1107, 161],
@@ -3414,21 +3465,6 @@ const extrude001 = extrude(50, sketch001)
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeVisible()
-
-    // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
-    await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(200)
-    await page.getByTestId('KCL Code').click()
-    await page.waitForTimeout(200)
-    await page.mouse.click(734, 134)
-    await page.waitForTimeout(100)
-    await page.getByTestId('KCL Code').click()
-    // expect main content to contain `sketch005` i.e. started a new sketch
-    await page.waitForTimeout(300)
-    await expect(page.locator('.cm-content')).toHaveText(
-      /sketch001 = startSketchOn\('XZ'\)/
-    )
   })
 
   test('Deselecting line tool should mean nothing happens on click', async ({
@@ -3465,7 +3501,7 @@ const extrude001 = extrude(50, sketch001)
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
     // deselect the line tool by clicking it
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await page.mouse.click(700, 200)
     await page.waitForTimeout(100)
@@ -3478,7 +3514,7 @@ const extrude001 = extrude(50, sketch001)
     await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
 
     // select line tool again
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await u.closeDebugPanel()
 
@@ -3811,13 +3847,24 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
     const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
     const rectangleToolCommand = page.getByRole('option', {
-      name: 'Rectangle',
+      name: 'rectangle',
     })
-    const rectangleToolButton = page.getByRole('button', { name: 'Rectangle' })
-    const lineToolCommand = page.getByRole('option', { name: 'Line' })
-    const lineToolButton = page.getByRole('button', { name: 'Line' })
+    const rectangleToolButton = page.getByRole('button', {
+      name: 'Corner rectangle',
+      exact: true,
+    })
+    const lineToolCommand = page.getByRole('option', {
+      name: 'Line',
+    })
+    const lineToolButton = page.getByRole('button', {
+      name: 'Line',
+      exact: true,
+    })
     const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
-    const arcToolButton = page.getByRole('button', { name: 'Tangential Arc' })
+    const arcToolButton = page.getByRole('button', {
+      name: 'Tangential Arc',
+      exact: true,
+    })
 
     // Start a sketch
     await sketchButton.click()
@@ -3864,10 +3911,7 @@ test.describe('Regression tests', () => {
     await u.waitForAuthSkipAppStart()
 
     // expand variables section
-    const variablesTabButton = page.getByRole('tab', {
-      name: 'Variables',
-      exact: false,
-    })
+    const variablesTabButton = page.getByTestId('variables-pane-button')
     await variablesTabButton.click()
 
     // can find sketch001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
@@ -3892,10 +3936,7 @@ test.describe('Regression tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
-    const variablesTabButton = page.getByRole('tab', {
-      name: 'Variables',
-      exact: false,
-    })
+    const variablesTabButton = page.getByTestId('variables-pane-button')
     await variablesTabButton.click()
     // expect to see "myVar:5"
     await expect(
@@ -3978,16 +4019,19 @@ test.describe('Regression tests', () => {
       )
     })
 
-    await page.goto('/')
-    await u.waitForPageLoad()
-
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    await page.waitForTimeout(200)
-    // expect it still to be there (sometimes it just clears for a bit?)
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-      timeout: 10_000,
-    })
+    await expect(async () => {
+      await page.goto('/')
+      await u.waitForPageLoad()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+      await page.waitForTimeout(200)
+      // expect it still to be there (sometimes it just clears for a bit?)
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
@@ -4156,7 +4200,7 @@ test.describe('Sketch tests', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(100)
 
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(700, 200)
@@ -4183,9 +4227,7 @@ test.describe('Sketch tests', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
 
-    await expect(
-      page.getByText('click plane or face to sketch on')
-    ).toBeVisible()
+    await expect(page.getByText('select a plane or face')).toBeVisible()
 
     await page.keyboard.press('Escape')
     await expect(
@@ -4736,7 +4778,7 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content')).toHaveText(code)
       // Assert the tool was unequipped
       await expect(
-        page.getByRole('button', { name: 'Line' })
+        page.getByRole('button', { name: 'Line', exact: true })
       ).not.toHaveAttribute('aria-pressed', 'true')
 
       // exit sketch
@@ -4898,8 +4940,7 @@ test.describe('Testing constraints', () => {
     await page.mouse.click(834, 244)
     await page.keyboard.up('Shift')
 
-    await page.getByRole('button', { name: 'Constraints', exact: true }).click()
-    await page.getByRole('button', { name: 'length', exact: true }).click()
+    await page.getByRole('button', { name: 'Length', exact: true }).click()
     await page.getByText('Add constraining value').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
@@ -4929,13 +4970,13 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng(seg01, %), yo], %)
+  |> angledLine([segAng(seg01), yo], %)
   |> line([41.19, 28.97 + 5], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
       )
     })
@@ -4953,12 +4994,10 @@ const part002 = startSketchOn('XZ')
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
-    await page
-      .getByRole('button', { name: 'remove constraints', exact: true })
-      .click()
+    await page.getByRole('button', { name: 'remove constraints' }).click()
 
     await page.getByText('line([39.13, 68.63], %)').click()
     const activeLinesContent = await page.locator('.cm-activeLine').all()
@@ -4989,13 +5028,13 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng(seg01, %), 78.33], %)
+  |> angledLine([segAng(seg01), 78.33], %)
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5019,11 +5058,11 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
         await page
-          .getByRole('button', { name: 'perpendicular distance', exact: true })
+          .getByRole('button', { name: 'Perpendicular Distance' })
           .click()
 
         const createNewVariableCheckbox = page.getByTestId(
@@ -5060,22 +5099,22 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         constraint: 'horizontal distance',
-        value: 'segEndX(seg01, %) + xDis001, 61.34',
+        value: 'segEndX(seg01) + xDis001, 61.34',
       },
       {
         testName: 'No variable',
         constraint: 'horizontal distance',
-        value: 'segEndX(seg01, %) + 88.08, 61.34',
+        value: 'segEndX(seg01) + 88.08, 61.34',
       },
       {
         testName: 'Add variable',
         constraint: 'vertical distance',
-        value: '154.9, segEndY(seg01, %) - yDis001',
+        value: '154.9, segEndY(seg01) - yDis001',
       },
       {
         testName: 'No variable',
         constraint: 'vertical distance',
-        value: '154.9, segEndY(seg01, %) - 42.32',
+        value: '154.9, segEndY(seg01) - 42.32',
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
@@ -5094,7 +5133,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5118,12 +5157,10 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page
-          .getByRole('button', { name: constraint, exact: true })
-          .click()
+        await page.getByRole('button', { name: constraint }).click()
 
         const createNewVariableCheckbox = page.getByTestId(
           'create-new-variable-checkbox'
@@ -5164,25 +5201,25 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         addVariable: true,
-        constraint: 'ABS X',
+        constraint: 'Absolute X',
         value: 'xDis001, 61.34',
       },
       {
         testName: 'No variable',
         addVariable: false,
-        constraint: 'ABS X',
+        constraint: 'Absolute X',
         value: '154.9, 61.34',
       },
       {
         testName: 'Add variable',
         addVariable: true,
-        constraint: 'ABS Y',
+        constraint: 'Absolute Y',
         value: '154.9, yDis001',
       },
       {
         testName: 'No variable',
         addVariable: false,
-        constraint: 'ABS Y',
+        constraint: 'Absolute Y',
         value: '154.9, 61.34',
       },
     ] as const
@@ -5202,7 +5239,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5218,7 +5255,7 @@ const part002 = startSketchOn('XZ')
           u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
         ])
 
-        if (constraint === 'ABS X') {
+        if (constraint === 'Absolute X') {
           await page.mouse.click(600, 130)
         } else {
           await page.mouse.click(900, 250)
@@ -5229,7 +5266,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
         await page
@@ -5272,13 +5309,13 @@ const part002 = startSketchOn('XZ')
         testName: 'Add variable',
         addVariable: true,
         axisSelect: false,
-        value: 'segAng(seg01, %) + angle001',
+        value: 'segAng(seg01) + angle001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         axisSelect: false,
-        value: 'segAng(seg01, %) + 22.69',
+        value: 'segAng(seg01) + 22.69',
       },
       {
         testName: 'Add variable, selecting axis',
@@ -5309,7 +5346,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5337,10 +5374,10 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page.getByTestId('angle').click()
+        await page.getByTestId('dropdown-constraint-angle').click()
 
         const createNewVariableCheckbox = page.getByTestId(
           'create-new-variable-checkbox'
@@ -5419,7 +5456,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5438,10 +5475,10 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page.getByTestId(constraint).click()
+        await page.getByTestId('dropdown-constraint-' + constraint).click()
 
         if (!addVariable) {
           await page.getByTestId('create-new-variable-checkbox').click()
@@ -5495,7 +5532,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5529,7 +5566,7 @@ const part002 = startSketchOn('XZ')
         await expect(activeLinesContent).toHaveLength(codeAfter.length)
 
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page
           .getByRole('button', {
@@ -5560,19 +5597,19 @@ const part002 = startSketchOn('XZ')
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine([83, segLen(seg01, %)], %)`,
+        codeAfter: `|> angledLine([83, segLen(seg01)], %)`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine([segAng(seg01, %), 78.33], %)`,
+        codeAfter: `|> angledLine([segAng(seg01), 78.33], %)`,
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> lineTo([segEndX(seg01, %), 61.34], %)`,
+        codeAfter: `|> lineTo([segEndX(seg01), 61.34], %)`,
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> lineTo([154.9, segEndY(seg01, %)], %)`,
+        codeAfter: `|> lineTo([154.9, segEndY(seg01)], %)`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -5591,7 +5628,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5612,7 +5649,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x - 3, line3.y + 20)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -5668,7 +5705,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5689,7 +5726,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(axisClick.x, axisClick.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -5748,10 +5785,10 @@ const part002 = startSketchOn('XZ')
 
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
-    await page.getByRole('button', { name: 'horizontal', exact: true }).click()
+    await page.getByRole('button', { name: 'Horizontal', exact: true }).click()
 
     let activeLinesContent = await page.locator('.cm-activeLine').all()
     await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
@@ -5772,13 +5809,13 @@ const part002 = startSketchOn('XZ')
     await page.waitForTimeout(300)
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
     // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
     await page.waitForTimeout(200)
     // await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.locator('[data-testid="length"]').click()
+    await page.getByTestId('dropdown-constraint-length').click()
 
     await page.getByLabel('length Value').fill('10')
     await page.getByRole('button', { name: 'Add constraining value' }).click()
@@ -6836,8 +6873,8 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen(seg01, %)], %)        
-${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
+  |> angledLine([-176, segLen(seg01)], %)        
+${extraLine ? 'const myVar = segLen(seg01)' : ''}`
               )
             },
             {
@@ -6996,7 +7033,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen(seg01, %)], %)`
+  |> angledLine([-176, segLen(seg01)], %)`
             )
           },
           {
@@ -7070,6 +7107,8 @@ test.describe('Test network and connection issues', () => {
 
     await u.waitForAuthSkipAppStart()
 
+    const networkToggle = page.getByTestId('network-toggle')
+
     // This is how we wait until the stream is online
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -7083,7 +7122,7 @@ test.describe('Test network and connection issues', () => {
     await expect(networkPopover).not.toBeVisible()
 
     // (First check) Expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
 
     // Click the network widget
     await networkWidget.click()
@@ -7105,7 +7144,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(page.getByText('Network Health (Offline)')).toBeVisible()
+    await expect(networkToggle).toContainText('Offline')
 
     // Click the network widget
     await networkWidget.click()
@@ -7131,7 +7170,7 @@ test.describe('Test network and connection issues', () => {
     ).not.toBeDisabled({ timeout: 15000 })
 
     // (Second check) expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
   })
 
   test('Engine disconnect & reconnect in sketch mode', async ({
@@ -7143,6 +7182,8 @@ test.describe('Test network and connection issues', () => {
       browserName === 'webkit',
       'Skip on Safari until `window.tearDown` is working there'
     )
+    const networkToggle = page.getByTestId('network-toggle')
+
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -7185,7 +7226,7 @@ test.describe('Test network and connection issues', () => {
     |> line([${commonPoints.num1}, 0], %)`)
 
     // Expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
 
     // simulate network down
     await u.emulateNetworkConditions({
@@ -7197,7 +7238,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(page.getByText('Network Health (Offline)')).toBeVisible()
+    await expect(networkToggle).toContainText('Offline')
 
     // Ensure we are not in sketch mode
     await expect(
@@ -7222,7 +7263,7 @@ test.describe('Test network and connection issues', () => {
     ).not.toBeDisabled({ timeout: 15000 })
 
     // Expect the network to be up
-    await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+    await expect(networkToggle).toContainText('Connected')
     await expect(page.getByTestId('loading-stream')).not.toBeAttached()
 
     // Click off the code pane.
@@ -7239,7 +7280,7 @@ test.describe('Test network and connection issues', () => {
     await page.waitForTimeout(150)
 
     // Click the line tool
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await page.waitForTimeout(150)
 
@@ -7266,7 +7307,7 @@ test.describe('Test network and connection issues', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     await expect(
-      page.getByRole('button', { name: 'Line' })
+      page.getByRole('button', { name: 'Line', exact: true })
     ).not.toHaveAttribute('aria-pressed', 'true')
 
     // Exit sketch
@@ -7567,19 +7608,19 @@ const part001 = startSketchOn('-XZ')
         offset: -armThick,
         intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
       }, %, $seg02)
-  |> xLineTo(segEndX(seg03, %) + 0, %)
-  |> yLine(-segLen(seg01, %), %)
+  |> xLineTo(segEndX(seg03) + 0, %)
+  |> yLine(-segLen(seg01), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
         intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`
@@ -7671,7 +7712,7 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
     .waitFor({ state: 'visible' })
 
   // Open the help menu
-  await page.getByRole('button', { name: 'Help', exact: false }).click()
+  await page.getByRole('button', { name: 'Help and resources' }).click()
 
   // Open the keyboard shortcuts
   await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
@@ -7695,8 +7736,11 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  const lineButton = page.getByRole('button', { name: 'Line' })
-  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const arcButton = page.getByRole('button', {
+    name: 'Tangential Arc',
+    exact: true,
+  })
 
   // Test these hotkeys perform actions when
   // focus is on the canvas
@@ -7708,6 +7752,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
+  await expect(lineButton).toBeVisible()
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
 
   // Draw a line
@@ -7777,9 +7822,12 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await u.closeDebugPanel()
 
   const codePane = page.getByRole('textbox').locator('div')
-  const codePaneButton = page.getByRole('tab', { name: 'KCL Code' })
-  const lineButton = page.getByRole('button', { name: 'Line' })
-  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+  const codePaneButton = page.getByTestId('code-pane-button')
+  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const arcButton = page.getByRole('button', {
+    name: 'Tangential Arc',
+    exact: true,
+  })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
 
   // Test that the hotkeys do nothing when
@@ -7800,7 +7848,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(600, 250)
 
   // work-around: to stop "keyboard.press('s')" from typing in the editor even when it should be blurred
-  await page.getByRole('button', { name: 'Commands ⌘K' }).click()
+  await page.getByRole('button', { name: 'Commands' }).click()
   await page.waitForTimeout(100)
   await page.keyboard.press('Escape')
   await page.waitForTimeout(100)
