@@ -18,11 +18,45 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { createNewProjectDirectory, listProjects } from 'lib/tauri'
+import { useState } from 'react'
 
-function OnboardingWithNewFile() {
+/**
+ * Show either a welcome screen or a warning screen
+ * depending on if the user has code in the editor.
+ */
+export default function OnboardingIntroduction() {
+  const [shouldShowWarning, setShouldShowWarning] = useState(
+    codeManager.code !== '' && codeManager.code !== bracket
+  )
+
+  return shouldShowWarning ? (
+    <OnboardingResetWarning setShouldShowWarning={setShouldShowWarning} />
+  ) : (
+    <OnboardingIntroductionInner />
+  )
+}
+
+interface OnboardingResetWarningProps {
+  setShouldShowWarning: (arg: boolean) => void
+}
+
+function OnboardingResetWarning(props: OnboardingResetWarningProps) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
+      <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+        {!isTauri() ? (
+          <OnboardingWarningWeb {...props} />
+        ) : (
+          <OnboardingWarningDesktop />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function OnboardingWarningDesktop() {
   const navigate = useNavigate()
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.INDEX)
 
   async function createAndOpenNewProject() {
     const projects = await listProjects()
@@ -38,60 +72,68 @@ function OnboardingWithNewFile() {
       )}${paths.ONBOARDING.INDEX}`
     )
   }
+
   return (
-    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
-      <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        {!isTauri() ? (
-          <>
-            <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
-              Replaying onboarding resets your code
-            </h1>
-            <p className="my-4">
-              We see you have some of your own code written in this project.
-              Please save it somewhere else before continuing the onboarding.
-            </p>
-            <OnboardingButtons
-              className="mt-6"
-              dismiss={dismiss}
-              next={() => {
-                // We do want to update both the state and editor here.
-                codeManager.updateCodeEditor(bracket)
-                kclManager.executeCode(true)
-                next()
-              }}
-              nextText="Overwrite code and continue"
-            />
-          </>
-        ) : (
-          <>
-            <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
-              Would you like to create a new project?
-            </h1>
-            <section className="my-12">
-              <p className="my-4">
-                You have some content in this project that we don't want to
-                overwrite. If you would like to create a new project, please
-                click the button below.
-              </p>
-            </section>
-            <OnboardingButtons
-              className="mt-6"
-              dismiss={dismiss}
-              next={() => {
-                void createAndOpenNewProject()
-                codeManager.updateCodeEditor(bracket)
-                dismiss()
-              }}
-              nextText="Make a new project"
-            />
-          </>
-        )}
-      </div>
-    </div>
+    <>
+      <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
+        Would you like to create a new project?
+      </h1>
+      <section className="my-12">
+        <p className="my-4">
+          You have some content in this project that we don't want to overwrite.
+          If you would like to create a new project, please click the button
+          below.
+        </p>
+      </section>
+      <OnboardingButtons
+        className="mt-6"
+        dismiss={dismiss}
+        next={() => {
+          void createAndOpenNewProject()
+          codeManager.updateCodeEditor(bracket)
+          dismiss()
+        }}
+        nextText="Make a new project"
+      />
+    </>
   )
 }
 
-export default function OnboardingIntroduction() {
+function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
+  const dismiss = useDismiss()
+
+  return (
+    <>
+      <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
+        Replaying onboarding resets your code
+      </h1>
+      <p className="my-4">
+        We see you have some of your own code written in this project. Please
+        save it somewhere else before continuing the onboarding.
+      </p>
+      <OnboardingButtons
+        className="mt-6"
+        dismiss={dismiss}
+        next={async () => {
+          // We do want to update both the state and editor here.
+          codeManager.updateCodeStateEditor(bracket)
+
+          kclManager.isFirstRender = true
+          await kclManager.executeCode(true).then(() => {
+            kclManager.isFirstRender = false
+          })
+          props.setShouldShowWarning(false)
+        }}
+        nextText="Overwrite code and continue"
+      />
+    </>
+  )
+}
+
+function OnboardingIntroductionInner() {
+  // Reset the code to the bracket code
+  useDemoCode()
+
   const {
     settings: {
       state: {
@@ -108,12 +150,8 @@ export default function OnboardingIntroduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const currentCode = codeManager.code
-  const isStarterCode = currentCode === '' || currentCode === bracket
 
-  useDemoCode()
-
-  return isStarterCode ? (
+  return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
@@ -172,7 +210,5 @@ export default function OnboardingIntroduction() {
         />
       </div>
     </div>
-  ) : (
-    <OnboardingWithNewFile />
   )
 }
