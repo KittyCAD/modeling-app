@@ -925,10 +925,10 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     await expect(
-      page.locator('.cm-lintRange.cm-lintRange-error').first()
+      page.locator('.cm-lint-marker.cm-lint-marker-error')
     ).toBeVisible()
 
-    await page.locator('.cm-lintRange.cm-lintRange-error').hover()
+    await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
     await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
     await expect(
       page.getByText('Cannot redefine `topAng`').first()
@@ -1045,7 +1045,7 @@ test.describe('Editor tests', () => {
     await page.hover('.cm-lint-marker-error')
     const searchText =
       'sketch profile must lie entirely on one side of the revolution axis'
-    await expect(page.getByText(searchText).first()).toBeVisible()
+    await expect(page.getByText(searchText)).toBeVisible()
   })
   test.describe('Autocomplete works', () => {
     test('with enter/click to accept the completion', async ({ page }) => {
