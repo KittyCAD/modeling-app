@@ -1968,7 +1968,7 @@ describe('testing nested call expressions', () => {
 })
 
 describe('should recognise callExpresions in binaryExpressions', () => {
-  const code = 'xLineTo(segEndX(seg02, %) + 1, %)'
+  const code = 'xLineTo(segEndX(seg02) + 1, %)'
   it('should recognise the callExp', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
@@ -1979,12 +1979,12 @@ describe('should recognise callExpresions in binaryExpressions', () => {
         type: 'BinaryExpression',
         operator: '+',
         start: 8,
-        end: 29,
+        end: 26,
         digest: null,
         left: {
           type: 'CallExpression',
           start: 8,
-          end: 25,
+          end: 22,
           digest: null,
           callee: {
             type: 'Identifier',
@@ -2001,7 +2001,6 @@ describe('should recognise callExpresions in binaryExpressions', () => {
               name: 'seg02',
               digest: null,
             },
-            { type: 'PipeSubstitution', start: 23, end: 24, digest: null },
           ],
           optional: false,
         },
@@ -2009,12 +2008,12 @@ describe('should recognise callExpresions in binaryExpressions', () => {
           type: 'Literal',
           value: 1,
           raw: '1',
-          start: 28,
-          end: 29,
+          start: 25,
+          end: 26,
           digest: null,
         },
       },
-      { type: 'PipeSubstitution', start: 31, end: 32, digest: null },
+      { type: 'PipeSubstitution', start: 28, end: 29, digest: null },
     ])
   })
 })

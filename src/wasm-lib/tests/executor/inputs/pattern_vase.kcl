@@ -18,7 +18,7 @@ fn layer = () => {
     |> extrude(h, %)
     // |> fillet({
     //        radius: h / 2.01,
-    //        tags: ["tag1", getOppositeEdge(tag1, %)]
+    //        tags: [tag1, getOppositeEdge(tag1)]
     //    }, %)
 }
 // The vase is 100 layers tall.
