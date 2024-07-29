@@ -1087,9 +1087,9 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 /// const a1 = startSketchOn({
 ///       plane: {
 ///         origin: { x: 0, y: 0, z: 0 },
-///         x_axis: { x: 1, y: 0, z: 0 },
-///         y_axis: { x: 0, y: 1, z: 0 },
-///         z_axis: { x: 0, y: 0, z: 1 }
+///         xAxis: { x: 1, y: 0, z: 0 },
+///         yAxis: { x: 0, y: 1, z: 0 },
+///         zAxis: { x: 0, y: 0, z: 1 }
 ///       }
 ///     })
 ///  |> startProfileAt([0, 0], %)
