@@ -2265,15 +2265,14 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
   })
 
-  test('Code resets after confirmation', async ({ context }) => {
+  test('Code resets after confirmation', async ({ page }) => {
     const initialCode = `const sketch001 = startSketchOn('XZ')`
 
     // Load the page up with some code so we see the confirmation warning
     // when we go to replay onboarding
-    await context.addInitScript((code) => {
+    await page.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, initialCode)
-    const page = await context.newPage()
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
