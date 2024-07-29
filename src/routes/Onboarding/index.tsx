@@ -86,7 +86,7 @@ export function useDemoCode() {
       await kclManager.executeCode(true).then(() => {
         kclManager.isFirstRender = false
       })
-      codeManager.writeToFile()
+      await codeManager.writeToFile()
     })
   }, [editorManager.editorView])
 }

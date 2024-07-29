@@ -2265,6 +2265,50 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
   })
 
+  test('Code resets after confirmation', async ({ page }) => {
+    const initialCode = `const sketch001 = startSketchOn('XZ')`
+
+    // Load the page up with some code so we see the confirmation warning
+    // when we go to replay onboarding
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, initialCode)
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    // Replay the onboarding
+    await page.getByRole('link', { name: 'Settings' }).last().click()
+    const replayButton = page.getByRole('button', { name: 'Replay onboarding' })
+    await expect(replayButton).toBeVisible()
+    await replayButton.click()
+
+    // Ensure we see the warning, and that the code has not yet updated
+    await expect(
+      page.getByText('Replaying onboarding resets your code')
+    ).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(initialCode)
+
+    const nextButton = page.getByTestId('onboarding-next')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+
+    // Ensure we see the introduction and that the code has been reset
+    await expect(page.getByText('Welcome to Modeling App!')).toBeVisible()
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+
+    // Ensure we persisted the code to local storage.
+    // Playwright's addInitScript method unfortunately will reset
+    // this code if we try reloading the page as a test,
+    // so this is our best way to test persistence afaik.
+    expect(
+      await page.evaluate(() => {
+        return localStorage.getItem('persistCode')
+      })
+    ).toContain('// Shelf Bracket')
+  })
+
   test('Click through each onboarding step', async ({ page }) => {
     const u = await getUtils(page)
 
