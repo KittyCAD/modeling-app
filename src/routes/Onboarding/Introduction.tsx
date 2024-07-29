@@ -117,6 +117,7 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
         next={async () => {
           // We do want to update both the state and editor here.
           codeManager.updateCodeStateEditor(bracket)
+          await codeManager.writeToFile()
 
           kclManager.isFirstRender = true
           await kclManager.executeCode(true).then(() => {
