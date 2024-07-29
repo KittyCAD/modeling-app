@@ -2813,3 +2813,41 @@ const example = extrude(10, exampleSketch)
         r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 151])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_inside_fn_also_has_source_range_of_call_site() {
+    let code = r#"fn someFunction = (something) => {
+  startSketchOn(something)
+}
+
+someFunction('INVALID')
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
+    let code = r#"fn someFunction = (something) => {
+    fn someNestedFunction = (something2) => {
+        startSketchOn(something2)
+    }
+
+    someNestedFunction(something)
+}
+
+someFunction('INVALID')
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+    );
+}
