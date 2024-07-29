@@ -545,6 +545,20 @@ async fn inner_angled_line_of_x_length(
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
+    if angle.abs() == 270.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x contrained angle of 270 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 90.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x contrained angle of 90 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let to = get_y_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(to.into(), sketch_group, tag, args).await?;
@@ -596,6 +610,20 @@ async fn inner_angled_line_to_x(
     let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: x_to } = data;
 
+    if angle.abs() == 270.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x contrained angle of 270 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 90.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x contrained angle of 90 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let x_component = x_to - from.x;
     let y_component = x_component * f64::tan(angle.to_radians());
     let y_to = from.y + y_component;
@@ -642,6 +670,20 @@ async fn inner_angled_line_of_y_length(
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
+    if angle.abs() == 0.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y contrained angle of 0 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 180.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y contrained angle of 180 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let to = get_x_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(to.into(), sketch_group, tag, args).await?;
@@ -681,6 +723,20 @@ async fn inner_angled_line_to_y(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: y_to } = data;
+
+    if angle.abs() == 0.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y contrained angle of 0 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 180.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y contrained angle of 180 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
 
     let y_component = y_to - from.y;
     let x_component = y_component / f64::tan(angle.to_radians());
