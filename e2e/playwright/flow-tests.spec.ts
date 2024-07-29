@@ -2441,69 +2441,74 @@ test.describe('Onboarding tests', () => {
     await expect(u.codeLocator).toHaveText(bracketNoNewLines)
   })
 
-  test('Avatar text updates depending on image load success', async ({
-    page,
-  }) => {
-    // Override beforeEach test setup
-    await page.addInitScript(
-      async ({ settingsKey, settings }) => {
-        localStorage.setItem(settingsKey, settings)
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: TOML.stringify({
-          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
-        }),
-      }
-    )
+  test(
+    'Avatar text updates depending on image load success',
+    { tag: '@focus' },
+    async ({ page }) => {
+      // Override beforeEach test setup
+      await page.addInitScript(
+        async ({ settingsKey, settings }) => {
+          localStorage.setItem(settingsKey, settings)
+        },
+        {
+          settingsKey: TEST_SETTINGS_KEY,
+          settings: TOML.stringify({
+            settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+          }),
+        }
+      )
 
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
 
-    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
-    // Test that the text in this step is correct
-    const avatarLocator = await page
-      .getByTestId('user-sidebar-toggle')
-      .locator('img')
-    const onboardingOverlayLocator = await page
-      .getByTestId('onboarding-content')
-      .locator('div')
-      .nth(1)
+      // Test that the text in this step is correct
+      const avatarLocator = await page
+        .getByTestId('user-sidebar-toggle')
+        .locator('img')
+      const onboardingOverlayLocator = await page
+        .getByTestId('onboarding-content')
+        .locator('div')
+        .nth(1)
 
-    // Expect the avatar to be visible and for the text to reference it
-    await expect(avatarLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toContainText('your avatar')
+      // Expect the avatar to be visible and for the text to reference it
+      await expect(avatarLocator).toBeVisible()
+      await expect(onboardingOverlayLocator).toBeVisible()
+      await expect(onboardingOverlayLocator).toContainText('your avatar')
 
-    // This is to force the avatar to 404.
-    // For our test image (only triggers locally. on CI, it's Kurt's /
-    // gravatar image )
-    await page.route('/cat.jpg', async (route) => {
-      await route.fulfill({
-        status: 404,
-        contentType: 'text/plain',
-        body: 'Not Found!',
+      // This is to force the avatar to 404.
+      // For our test image (only triggers locally. on CI, it's Kurt's /
+      // gravatar image )
+      await page.route('/cat.jpg', async (route) => {
+        await route.fulfill({
+          status: 404,
+          contentType: 'text/plain',
+          body: 'Not Found!',
+        })
       })
-    })
 
-    // 404 the CI avatar image
-    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
-      await route.fulfill({
-        status: 404,
-        contentType: 'text/plain',
-        body: 'Not Found!',
-      })
-    })
+      // 404 the CI avatar image
+      await page.route(
+        'https://lh3.googleusercontent.com/**',
+        async (route) => {
+          await route.fulfill({
+            status: 404,
+            contentType: 'text/plain',
+            body: 'Not Found!',
+          })
+        }
+      )
 
-    await page.reload({ waitUntil: 'domcontentloaded' })
+      await page.reload({ waitUntil: 'domcontentloaded' })
 
-    // Now expect the text to be different
-    await expect(avatarLocator).not.toBeVisible()
-    await expect(onboardingOverlayLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toContainText('the menu button')
-  })
+      // Now expect the text to be different
+      await expect(avatarLocator).not.toBeVisible()
+      await expect(onboardingOverlayLocator).toBeVisible()
+      await expect(onboardingOverlayLocator).toContainText('the menu button')
+    }
+  )
 
   test("Avatar text doesn't mention avatar when no avatar", async ({
     page,
@@ -5739,92 +5744,88 @@ const part002 = startSketchOn('XZ')
     }
   })
 
-  test(
-    'Horizontally constrained line remains selected after applying constraint',
-    { tag: '@focus' },
-    async ({ page }) => {
-      test.setTimeout(70_000)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `const sketch001 = startSketchOn('XY')
+  test('Horizontally constrained line remains selected after applying constraint', async ({
+    page,
+  }) => {
+    test.setTimeout(70_000)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-1.05, -1.07], %)
   |> line([3.79, 2.68], %, $seg01)
   |> line([3.13, -2.4], %)`
-        )
+      )
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText('line([3.79, 2.68], %, $seg01)').click()
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
+      { timeout: 10_000 }
+    )
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+    await page.waitForTimeout(100)
+    const lineBefore = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
+    ).toBeLessThan(3)
+    await page.mouse.move(lineBefore.x, lineBefore.y)
+    await page.waitForTimeout(50)
+    await page.mouse.click(lineBefore.x, lineBefore.y)
+    expect(
+      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
+
+    await page
+      .getByRole('button', {
+        name: 'Length: open menu',
       })
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      .click()
+    await page.getByRole('button', { name: 'Horizontal', exact: true }).click()
 
-      await u.waitForAuthSkipAppStart()
+    let activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
 
-      await page.getByText('line([3.79, 2.68], %, $seg01)').click()
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeEnabled({ timeout: 10_000 })
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    // If the overlay-angle is updated the THREE.js scene is in a good state
+    await expect(
+      await page.locator('[data-overlay-index="1"]')
+    ).toHaveAttribute('data-overlay-angle', '0')
 
-      await page.waitForTimeout(100)
-      const lineBefore = await u.getSegmentBodyCoords(
-        `[data-overlay-index="1"]`,
-        0
-      )
-      expect(
-        await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
-      ).toBeLessThan(3)
-      await page.mouse.move(lineBefore.x, lineBefore.y)
-      await page.waitForTimeout(50)
-      await page.mouse.click(lineBefore.x, lineBefore.y)
-      expect(
-        await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
-      ).toBeLessThan(3)
+    const lineAfter = await u.getSegmentBodyCoords(
+      `[data-overlay-index="1"]`,
+      0
+    )
+    expect(
+      await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
 
-      await page
-        .getByRole('button', {
-          name: 'Length: open menu',
-        })
-        .click()
-      await page
-        .getByRole('button', { name: 'Horizontal', exact: true })
-        .click()
+    await page.waitForTimeout(300)
+    await page
+      .getByRole('button', {
+        name: 'Length: open menu',
+      })
+      .click()
+    // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
+    await page.waitForTimeout(200)
+    // await page.getByRole('button', { name: 'length', exact: true }).click()
+    await page.getByTestId('dropdown-constraint-length').click()
 
-      let activeLinesContent = await page.locator('.cm-activeLine').all()
-      await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+    await page.getByLabel('length Value').fill('10')
+    await page.getByRole('button', { name: 'Add constraining value' }).click()
 
-      // If the overlay-angle is updated the THREE.js scene is in a good state
-      await expect(
-        await page.locator('[data-overlay-index="1"]')
-      ).toHaveAttribute('data-overlay-angle', '0')
+    activeLinesContent = await page.locator('.cm-activeLine').all()
+    await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
 
-      const lineAfter = await u.getSegmentBodyCoords(
-        `[data-overlay-index="1"]`,
-        0
-      )
-      expect(
-        await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
-      ).toBeLessThan(3)
-
-      await page.waitForTimeout(300)
-      await page
-        .getByRole('button', {
-          name: 'Length: open menu',
-        })
-        .click()
-      // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
-      await page.waitForTimeout(200)
-      // await page.getByRole('button', { name: 'length', exact: true }).click()
-      await page.getByTestId('dropdown-constraint-length').click()
-
-      await page.getByLabel('length Value').fill('10')
-      await page.getByRole('button', { name: 'Add constraining value' }).click()
-
-      activeLinesContent = await page.locator('.cm-activeLine').all()
-      await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
-
-      // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
-    }
-  )
+    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+  })
 })
 
 test.describe('Testing segment overlays', () => {
