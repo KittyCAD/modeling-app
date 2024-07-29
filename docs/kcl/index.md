@@ -62,6 +62,7 @@ layout: manual
 * [`patternLinear3d`](kcl/patternLinear3d)
 * [`patternTransform`](kcl/patternTransform)
 * [`pi`](kcl/pi)
+* [`polarCoords`](kcl/polarCoords)
 * [`pow`](kcl/pow)
 * [`profileStart`](kcl/profileStart)
 * [`profileStartX`](kcl/profileStartX)

@@ -32,7 +32,7 @@ const extrusion = extrude(10, sketch001)
 * `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
 ```js
 {
-	// The angle of the line.
+	// The angle of the line (in degrees).
 	angle: number,
 	// The length of the line.
 	length: number,
