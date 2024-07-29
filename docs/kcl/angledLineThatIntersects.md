@@ -22,7 +22,7 @@ const exampleSketch = startSketchOn('XZ')
   |> lineTo([0, 20], %)
   |> angledLineThatIntersects({
        angle: 80,
-       intersectTag: 'lineToIntersect',
+       intersectTag: lineToIntersect,
        offset: 10
      }, %)
   |> close(%)
@@ -41,6 +41,92 @@ const example = extrude(10, exampleSketch)
 	angle: number,
 	// The tag of the line to intersect with.
 	intersectTag: {
+	// Engine information for a tag.
+	info: {
+	// The id of the tagged object.
+	id: uuid,
+	// The path the tag is on.
+	path: {
+	// The from point.
+	from: [number, number],
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+},
+	// The sketch group the tag is on.
+	sketchGroup: uuid,
+	// The surface information for the tag.
+	surface: {
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
+},
+},
 	value: string,
 },
 	// The offset from the intersecting line.
@@ -96,6 +182,12 @@ const example = extrude(10, exampleSketch)
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -269,6 +361,38 @@ const example = extrude(10, exampleSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.
@@ -470,6 +594,12 @@ const example = extrude(10, exampleSketch)
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -643,6 +773,38 @@ const example = extrude(10, exampleSketch)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.

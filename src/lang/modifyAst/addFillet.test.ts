@@ -254,9 +254,9 @@ const extrude001 = extrude(-5, sketch001)
   |> fillet({
        radius: 1.11,
        tags: [
-         getOppositeEdge(seg01, %),
+         getOppositeEdge(seg01),
          seg01,
-         getPreviousAdjacentEdge(seg02, %)
+         getPreviousAdjacentEdge(seg02)
        ]
      }, %)
 `

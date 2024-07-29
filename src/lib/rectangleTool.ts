@@ -15,9 +15,9 @@ import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn('XY')
  *  |> startProfileAt([0, 0], %)
- *  |> angledLine([0, 0], %, 'a')
- *  |> angledLine([segAng('a', %) - 90, 0], %, 'b')
- *  |> angledLine([segAng('a', %), -segLen('a', %)], %, 'c')
+ *  |> angledLine([0, 0], %, $a)
+ *  |> angledLine([segAng(a) - 90, 0], %, $b)
+ *  |> angledLine([segAng(a), -segLen(a)], %, $c)
  *  |> close(%)
  */
 export const getRectangleCallExpressions = (
@@ -42,10 +42,7 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [
-          createIdentifier(tags[0]),
-          createPipeSubstitution(),
-        ]),
+        createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
@@ -56,15 +53,9 @@ export const getRectangleCallExpressions = (
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
-      createCallExpressionStdLib('segAng', [
-        createIdentifier(tags[0]),
-        createPipeSubstitution(),
-      ]), // same angle as the first line
+      createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [
-          createIdentifier(tags[0]),
-          createPipeSubstitution(),
-        ]),
+        createCallExpressionStdLib('segLen', [createIdentifier(tags[0])]),
         '-'
       ), // negative height
     ]),
@@ -102,10 +93,7 @@ export function updateRectangleSketch(
   ;((pipeExpression.body[3] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [
-        createIdentifier(tag),
-        createPipeSubstitution(),
-      ]),
+      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ]), // 90 offset from the previous line

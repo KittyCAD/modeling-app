@@ -19,7 +19,7 @@ const sketch001 = startSketchOn('XY')
   |> startProfileAt([5, 2], %)
   |> angledLine({ angle: 120, length: 50 }, %, $seg01)
   |> angledLine({
-       angle: segAng(seg01, %) + 120,
+       angle: segAng(seg01) + 120,
        length: 50
      }, %)
   |> lineTo(profileStart(%), %)
@@ -80,6 +80,12 @@ const sketch001 = startSketchOn('XY')
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
@@ -253,6 +259,38 @@ const sketch001 = startSketchOn('XY')
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.

@@ -11,12 +11,12 @@ pub mod import;
 pub mod kcl_stdlib;
 pub mod math;
 pub mod patterns;
+pub mod polar;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
-pub mod string_or_struct;
 pub mod types;
 pub mod utils;
 
@@ -95,7 +95,6 @@ lazy_static! {
         Box::new(crate::std::helix::Helix),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::revolve::Revolve),
-        Box::new(crate::std::revolve::GetEdge),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -119,6 +118,7 @@ lazy_static! {
         Box::new(crate::std::math::Ln),
         Box::new(crate::std::math::ToDegrees),
         Box::new(crate::std::math::ToRadians),
+        Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
         Box::new(crate::std::assert::AssertLessThan),
         Box::new(crate::std::assert::AssertGreaterThan),
@@ -398,6 +398,14 @@ layout: manual
                             fn_name = fn_name.replace("last_seg_", "last_segment_");
                         } else if fn_name.contains("_2_d") {
                             fn_name = fn_name.replace("_2_d", "_2d");
+                        } else if fn_name.contains("_greater_than_or_eq") {
+                            fn_name = fn_name.replace("_greater_than_or_eq", "_gte");
+                        } else if fn_name.contains("_less_than_or_eq") {
+                            fn_name = fn_name.replace("_less_than_or_eq", "_lte");
+                        } else if fn_name.contains("_greater_than") {
+                            fn_name = fn_name.replace("_greater_than", "_gt");
+                        } else if fn_name.contains("_less_than") {
+                            fn_name = fn_name.replace("_less_than", "_lt");
                         } else if fn_name.contains("_3_d") {
                             fn_name = fn_name.replace("_3_d", "_3d");
                         } else if fn_name == "seg_ang" {

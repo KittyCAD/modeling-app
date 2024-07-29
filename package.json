@@ -109,7 +109,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-env": "^7.25.0",
     "@iarna/toml": "^2.2.5",
     "@lezer/generator": "^1.7.1",
     "@playwright/test": "^1.45.1",
