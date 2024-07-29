@@ -1206,7 +1206,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.20"
+version = "0.1.21"
 dependencies = [
  "Inflector",
  "convert_case 0.6.0",

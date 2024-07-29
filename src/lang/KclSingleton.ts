@@ -212,6 +212,7 @@ export class KclManager {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
+    this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({
       ast,
