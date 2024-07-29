@@ -188,6 +188,21 @@ impl Args {
         )?))
     }
 
+    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<MemoryItem, KclError> {
+        let mut arr = Vec::new();
+        for n in f {
+            arr.push(serde_json::Value::Number(serde_json::Number::from_f64(n).ok_or_else(
+                || {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Failed to convert `{}` to a number", n),
+                        source_ranges: vec![self.source_range],
+                    })
+                },
+            )?));
+        }
+        self.make_user_val_from_json(serde_json::Value::Array(arr))
+    }
+
     pub(crate) fn get_number(&self) -> Result<f64, KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -586,6 +601,7 @@ impl_from_arg_via_json!(super::fillet::FilletData);
 impl_from_arg_via_json!(super::revolve::RevolveData);
 impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
+impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);

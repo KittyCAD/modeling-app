@@ -16,7 +16,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     settings::types::UnitLength,
-    std::{FnAsArg, FunctionKind, StdLib},
+    std::{FnAsArg, StdLib},
 };
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1638,38 +1638,7 @@ impl ExecutorContext {
                     if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
                         pipe_expr.get_result(memory, &pipe_info, self).await?;
                     } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
-                        let fn_name = call_expr.callee.name.to_string();
-                        let mut args: Vec<MemoryItem> = Vec::new();
-                        for arg in &call_expr.arguments {
-                            let metadata = Metadata {
-                                source_range: SourceRange([arg.start(), arg.end()]),
-                            };
-                            let mem_item = self
-                                .arg_into_mem_item(arg, memory, &pipe_info, &metadata, StatementKind::Expression)
-                                .await?;
-                            args.push(mem_item);
-                        }
-                        match self.stdlib.get_either(&call_expr.callee.name) {
-                            FunctionKind::Core(func) => {
-                                let args = crate::std::Args::new(args, call_expr.into(), self.clone(), memory.clone());
-                                let result = func.std_lib_fn()(args).await?;
-                                memory.return_ = Some(ProgramReturn::Value(result));
-                            }
-                            FunctionKind::Std(func) => {
-                                let mut newmem = memory.clone();
-                                let result = self.inner_execute(func.program(), &mut newmem, BodyType::Block).await?;
-                                memory.return_ = result.return_;
-                            }
-                            FunctionKind::UserDefined => {
-                                // TODO: Why do we change the source range to
-                                // the call expression instead of keeping the
-                                // range of the callee?
-                                let func = memory.get(&fn_name, call_expr.into())?;
-                                let result = func.call_fn(args.clone(), self.clone()).await?;
-
-                                memory.return_ = result;
-                            }
-                        }
+                        call_expr.execute(memory, &pipe_info, self).await?;
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
@@ -2682,6 +2651,17 @@ const bracket = startSketchOn('XY')
   |> line([0, -1 * leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_fn_as_operand() {
+        let ast = r#"fn f = () => { return 1 }
+let x = f()
+let y = x + 1
+let z = f() + 1
+let w = f() + f()
 "#;
         parse_execute(ast).await.unwrap();
     }
