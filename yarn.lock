@@ -1917,10 +1917,15 @@
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.5.1.tgz#f519149bce9156d0e7954b9531df15f446f2fc12"
   integrity sha512-046+AUSiDru/V9pajE1du8WayvBKeCvJ2NmKPy/mR8/SbKKrqmSbj7LJBfXE+nSq4f5TBXvnCzu0kcYebI9WdQ==
 
-"@tauri-apps/api@2.0.0-beta.14", "@tauri-apps/api@^2.0.0-beta.14":
+"@tauri-apps/api@2.0.0-beta.14":
   version "2.0.0-beta.14"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.0.0-beta.14.tgz#8c1c65c07559cd29c5103a99e0abe5331cc2246f"
   integrity sha512-YLYgHqdwWswr4Y70+hRzaLD6kLIUgHhE3shLXNquPiTaQ9+cX3Q2dB0AFfqsua6NXYFNe7LfkmMzaqEzqv3yQg==
+
+"@tauri-apps/api@2.0.0-beta.15", "@tauri-apps/api@^2.0.0-beta.14":
+  version "2.0.0-beta.15"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.0.0-beta.15.tgz#41d5fbeaccf3926b6f9f3f9fb5137ba2e272e5c1"
+  integrity sha512-H9w6iISmR+NvH4XuyCZB4zDN10tf9RFt6i/9JHEjaRhAowdAaJ+oiXq/3kedizNClHMtbTQ5j0oqDVPkZDAI8g==
 
 "@tauri-apps/cli-darwin-arm64@2.0.0-beta.13":
   version "2.0.0-beta.13"
@@ -1988,12 +1993,12 @@
     "@tauri-apps/cli-win32-ia32-msvc" "2.0.0-beta.13"
     "@tauri-apps/cli-win32-x64-msvc" "2.0.0-beta.13"
 
-"@tauri-apps/plugin-dialog@^2.0.0-beta.6":
-  version "2.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-dialog/-/plugin-dialog-2.0.0-beta.6.tgz#e42b80278d914318992cfc0534bc3c6977ed52ac"
-  integrity sha512-Rw8C8t/0y3QExEinp+cAOZi/BDt0c9jifv0bS3WDCwQt9ANdmfCWKamsIhqwemt3MjepkU2RV8bvphzoWlbOGw==
+"@tauri-apps/plugin-dialog@^2.0.0-beta.7":
+  version "2.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-dialog/-/plugin-dialog-2.0.0-beta.7.tgz#84fee36b6e8ba031ff20f1572dde05c65df15422"
+  integrity sha512-myywwpsKbquDDzl5zaOmmLLv5O8EJ/GgHDAoVSPwO97R4iWzkDvj3HFF91tNh7i25Tu/bP6jYPAdZA1NCRxxtg==
   dependencies:
-    "@tauri-apps/api" "2.0.0-beta.14"
+    "@tauri-apps/api" "2.0.0-beta.15"
 
 "@tauri-apps/plugin-fs@^2.0.0-beta.6":
   version "2.0.0-beta.6"
