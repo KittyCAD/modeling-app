@@ -106,9 +106,9 @@ const example002 = extrude(5, exampleSketch002)
 const a1 = startSketchOn({
        plane: {
          origin: { x: 0, y: 0, z: 0 },
-         x_axis: { x: 1, y: 0, z: 0 },
-         y_axis: { x: 0, y: 1, z: 0 },
-         z_axis: { x: 0, y: 0, z: 1 }
+         xAxis: { x: 1, y: 0, z: 0 },
+         yAxis: { x: 0, y: 1, z: 0 },
+         zAxis: { x: 0, y: 0, z: 1 }
        }
      })
   |> startProfileAt([0, 0], %)
@@ -141,19 +141,19 @@ const a1 = startSketchOn({
 	z: number,
 },
 	// What should the plane’s X axis be?
-	x_axis: {
+	xAxis: {
 	x: number,
 	y: number,
 	z: number,
 },
 	// What should the plane’s Y axis be?
-	y_axis: {
+	yAxis: {
 	x: number,
 	y: number,
 	z: number,
 },
 	// The z-axis (normal).
-	z_axis: {
+	zAxis: {
 	x: number,
 	y: number,
 	z: number,
@@ -166,7 +166,7 @@ const a1 = startSketchOn({
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -180,7 +180,7 @@ const a1 = startSketchOn({
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -578,7 +578,7 @@ const a1 = startSketchOn({
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -592,7 +592,7 @@ const a1 = startSketchOn({
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,

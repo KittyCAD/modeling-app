@@ -869,6 +869,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   )
   if (err(_varDec)) return false
   const varDec = _varDec.node
+  if (varDec.type !== 'VariableDeclarator') return false
   let extruded = false
   traverse(ast as any, {
     enter(node) {

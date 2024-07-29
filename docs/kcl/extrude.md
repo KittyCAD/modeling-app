@@ -19,8 +19,8 @@ const example = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> arc({
-       angle_end: 0,
-       angle_start: 120,
+       angleStart: 120,
+       angleEnd: 0,
        radius: 5
      }, %)
   |> line([5, 0], %)
@@ -41,8 +41,8 @@ const example = startSketchOn('XZ')
 const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([-10, 0], %)
   |> arc({
-       angle_end: -60,
-       angle_start: 120,
+       angleStart: 120,
+       angleEnd: -60,
        radius: 5
      }, %)
   |> line([10, 0], %)
@@ -109,7 +109,7 @@ const example = extrude(10, exampleSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -123,7 +123,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -479,7 +479,7 @@ const example = extrude(10, exampleSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -493,7 +493,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -553,7 +553,7 @@ const example = extrude(10, exampleSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -567,7 +567,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,

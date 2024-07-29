@@ -902,10 +902,13 @@ pub enum PlaneData {
         /// Origin of the plane.
         origin: Box<Point3d>,
         /// What should the plane’s X axis be?
+        #[serde(rename = "xAxis", alias = "x_axis")]
         x_axis: Box<Point3d>,
         /// What should the plane’s Y axis be?
+        #[serde(rename = "yAxis", alias = "y_axis")]
         y_axis: Box<Point3d>,
         /// The z-axis (normal).
+        #[serde(rename = "zAxis", alias = "z_axis")]
         z_axis: Box<Point3d>,
     },
 }
@@ -1084,9 +1087,9 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 /// const a1 = startSketchOn({
 ///       plane: {
 ///         origin: { x: 0, y: 0, z: 0 },
-///         x_axis: { x: 1, y: 0, z: 0 },
-///         y_axis: { x: 0, y: 1, z: 0 },
-///         z_axis: { x: 0, y: 0, z: 1 }
+///         xAxis: { x: 1, y: 0, z: 0 },
+///         yAxis: { x: 0, y: 1, z: 0 },
+///         zAxis: { x: 0, y: 0, z: 1 }
 ///       }
 ///     })
 ///  |> startProfileAt([0, 0], %)
@@ -1466,8 +1469,10 @@ pub enum ArcData {
     /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
+        #[serde(rename = "angleStart", alias = "angle_start")]
         angle_start: f64,
         /// The end angle.
+        #[serde(rename = "angleEnd", alias = "angle_end")]
         angle_end: f64,
         /// The radius.
         radius: f64,
@@ -1499,8 +1504,8 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
-///        angle_start: 0,
-///        angle_end: 280,
+///        angleStart: 0,
+///        angleEnd: 280,
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)

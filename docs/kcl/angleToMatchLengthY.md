@@ -170,7 +170,7 @@ const extrusion = extrude(5, sketch001)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -184,7 +184,7 @@ const extrusion = extrude(5, sketch001)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,

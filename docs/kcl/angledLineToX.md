@@ -83,7 +83,7 @@ const example = extrude(10, exampleSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -97,7 +97,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -495,7 +495,7 @@ const example = extrude(10, exampleSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -509,7 +509,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,

@@ -209,6 +209,7 @@ impl Program {
     pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
         let rules = vec![
             crate::lint::checks::lint_variables,
+            crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_call_expressions,
         ];
 

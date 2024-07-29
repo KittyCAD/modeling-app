@@ -137,7 +137,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -151,7 +151,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -211,7 +211,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -225,7 +225,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -528,7 +528,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -542,7 +542,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -602,7 +602,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -616,7 +616,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
