@@ -1,5 +1,9 @@
 use std::any::type_name;
 
+use kittycad::types::OkWebSocketResponseData;
+use serde::de::DeserializeOwned;
+
+use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
 use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
@@ -8,10 +12,6 @@ use crate::{
         SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
 };
-use kittycad::types::OkWebSocketResponseData;
-use serde::de::DeserializeOwned;
-
-use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
 
 #[derive(Debug, Clone)]
 pub struct Args {

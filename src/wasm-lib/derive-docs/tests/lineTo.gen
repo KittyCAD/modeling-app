@@ -48,6 +48,11 @@ mod test_examples_line_to {
             .await
             .unwrap();
         ctx.run(&program, None).await.unwrap();
+        let results = program.lint_all().unwrap();
+        if !results.is_empty() {
+            panic!("Linting failed: {:?}", results);
+        }
+
         ctx.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
@@ -138,6 +143,11 @@ mod test_examples_line_to {
             .await
             .unwrap();
         ctx.run(&program, None).await.unwrap();
+        let results = program.lint_all().unwrap();
+        if !results.is_empty() {
+            panic!("Linting failed: {:?}", results);
+        }
+
         ctx.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),

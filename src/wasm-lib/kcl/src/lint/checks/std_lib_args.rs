@@ -21,6 +21,26 @@ Previously, we have not been failing when too many arguments are passed to a std
 fn lint_too_many_args_std_lib_function(f: Box<dyn StdLibFn>, exp: &CallExpression) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
 
+    if f.name() == "pow" {
+        if exp.arguments.len() != 2 {
+            findings.push(Z0002.at(
+                format!("expected 2 arguments, found {}", exp.arguments.len()),
+                SourceRange::new(exp.start, exp.end),
+            ));
+        }
+        return Ok(findings);
+    }
+
+    if f.name() == "max" || f.name() == "min" {
+        if exp.arguments.len() < 2 {
+            findings.push(Z0002.at(
+                format!("expected at least 2 arguments, found {}", exp.arguments.len()),
+                SourceRange::new(exp.start, exp.end),
+            ));
+        }
+        return Ok(findings);
+    }
+
     if exp.arguments.len() > f.args().len() {
         findings.push(Z0002.at(
             format!("expected {} arguments, found {}", f.args().len(), exp.arguments.len()),

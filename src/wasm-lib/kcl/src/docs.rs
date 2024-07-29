@@ -3,6 +3,7 @@
 use std::path::Path;
 
 use anyhow::Result;
+use convert_case::Casing;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -56,7 +57,10 @@ pub struct StdLibFnArg {
 impl StdLibFnArg {
     #[allow(dead_code)]
     pub fn get_type_string(&self) -> Result<(String, bool)> {
-        get_type_string_from_schema(&self.schema.clone())
+        match get_type_string_from_schema(&self.schema.clone()) {
+            Ok(r) => Ok(r),
+            Err(e) => anyhow::bail!("error getting type string for {}: {:#?}", self.type_, e),
+        }
     }
 
     pub fn get_autocomplete_string(&self) -> Result<String> {
@@ -362,6 +366,13 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
                         continue;
+                    }
+
+                    // Make sure none of the object properties are in snake case.
+                    // We want the language to be consistent.
+                    // This will fail in the docs generation and not at runtime.
+                    if !prop_name.is_case(convert_case::Case::Camel) {
+                        anyhow::bail!("expected camel case: {:#?}", prop_name);
                     }
 
                     if let Some(description) = get_description_string_from_schema(prop) {

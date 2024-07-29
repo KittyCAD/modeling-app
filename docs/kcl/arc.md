@@ -19,8 +19,8 @@ const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> arc({
-       angle_start: 0,
-       angle_end: 280,
+       angleStart: 0,
+       angleEnd: 280,
        radius: 16
      }, %)
   |> close(%)
@@ -34,9 +34,9 @@ const exampleSketch = startSketchOn('XZ')
 ```js
 {
 	// The end angle.
-	angle_end: number,
+	angleEnd: number,
 	// The start angle.
-	angle_start: number,
+	angleStart: number,
 	// The radius.
 	radius: number,
 } |
@@ -94,7 +94,7 @@ const exampleSketch = startSketchOn('XZ')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -108,7 +108,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -506,7 +506,7 @@ const exampleSketch = startSketchOn('XZ')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -520,7 +520,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,

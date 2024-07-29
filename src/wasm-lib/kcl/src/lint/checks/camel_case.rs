@@ -1,7 +1,8 @@
 use anyhow::Result;
+use convert_case::Casing;
 
 use crate::{
-    ast::types::VariableDeclarator,
+    ast::types::{ObjectProperty, VariableDeclarator},
     executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
     walk::Node,
@@ -22,17 +23,25 @@ https://en.wikipedia.org/wiki/Camel_case
 "
 );
 
-fn lint_lower_camel_case(decl: &VariableDeclarator) -> Result<Vec<Discovered>> {
+fn lint_lower_camel_case_var(decl: &VariableDeclarator) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
     let ident = &decl.id;
     let name = &ident.name;
 
-    if !name.chars().next().unwrap().is_lowercase() {
+    if !name.is_case(convert_case::Case::Camel) {
         findings.push(Z0001.at(format!("found '{}'", name), SourceRange::new(ident.start, ident.end)));
         return Ok(findings);
     }
 
-    if name.contains('-') || name.contains('_') {
+    Ok(findings)
+}
+
+fn lint_lower_camel_case_property(decl: &ObjectProperty) -> Result<Vec<Discovered>> {
+    let mut findings = vec![];
+    let ident = &decl.key;
+    let name = &ident.name;
+
+    if !name.is_case(convert_case::Case::Camel) {
         findings.push(Z0001.at(format!("found '{}'", name), SourceRange::new(ident.start, ident.end)));
         return Ok(findings);
     }
@@ -48,13 +57,25 @@ pub fn lint_variables(decl: Node) -> Result<Vec<Discovered>> {
     Ok(decl
         .declarations
         .iter()
-        .flat_map(|v| lint_lower_camel_case(v).unwrap_or_default())
+        .flat_map(|v| lint_lower_camel_case_var(v).unwrap_or_default())
+        .collect())
+}
+
+pub fn lint_object_properties(decl: Node) -> Result<Vec<Discovered>> {
+    let Node::ObjectExpression(decl) = decl else {
+        return Ok(vec![]);
+    };
+
+    Ok(decl
+        .properties
+        .iter()
+        .flat_map(|v| lint_lower_camel_case_property(v).unwrap_or_default())
         .collect())
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{lint_variables, Z0001};
+    use super::{lint_object_properties, lint_variables, Z0001};
     use crate::lint::rule::{assert_finding, test_finding, test_no_finding};
 
     #[test]
@@ -134,6 +155,15 @@ const part001 = startSketchOn('XY')
   |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)
+"
+    );
+
+    test_finding!(
+        z0001_full_bad_object,
+        lint_object_properties,
+        Z0001,
+        "\
+let circ = {angle_start: 0, angle_end: 360, radius: radius}
 "
     );
 }
