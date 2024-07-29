@@ -19,8 +19,9 @@ export default function Export() {
         <section className="flex-1">
           <h2 className="text-2xl font-bold">Export</h2>
           <p className="my-4">
-            Try opening the project menu and clicking the "Export Part" at the
-            bottom of the pane.
+            In addition to the "Export current part" button in the project menu,
+            you can also click the Export button icon at the bottom of the left
+            sidebar. Try clicking it now.
           </p>
           <p className="my-4">
             {APP_NAME} uses{' '}
