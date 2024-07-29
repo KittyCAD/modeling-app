@@ -136,7 +136,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                   iconClassName: action.iconClassName,
                   iconSize: 'md',
                 }}
-                paneIsOpen={false}
                 onClick={action.action}
               />
             ))}
@@ -186,7 +185,7 @@ interface ModelingPaneButtonProps
     iconSize?: 'sm' | 'md' | 'lg'
   }
   onClick: () => void
-  paneIsOpen: boolean
+  paneIsOpen?: boolean
 }
 
 function ModelingPaneButton({
@@ -220,12 +219,20 @@ function ModelingPaneButton({
           'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
         }
       />
-      <span className="sr-only">{paneConfig.title} pane</span>
-      <Tooltip position="right" hoverOnly>
-        <span className="flex-1">{paneConfig.title} pane: </span>
-        <span className="hotkey text-xs capitalize">
-          {paneConfig.keybinding}
+      <span className="sr-only">
+        {paneConfig.title}
+        {paneIsOpen !== undefined ? ` pane` : ''}
+      </span>
+      <Tooltip
+        position="right"
+        contentClassName="max-w-none flex items-center gap-4"
+        hoverOnly
+      >
+        <span className="flex-1">
+          {paneConfig.title}
+          {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
+        <kbd className="hotkey text-xs capitalize">{paneConfig.keybinding}</kbd>
       </Tooltip>
     </button>
   )
