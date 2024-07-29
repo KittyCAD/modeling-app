@@ -902,10 +902,13 @@ pub enum PlaneData {
         /// Origin of the plane.
         origin: Box<Point3d>,
         /// What should the plane’s X axis be?
+        #[serde(rename = "xAxis", alias = "x_axis")]
         x_axis: Box<Point3d>,
         /// What should the plane’s Y axis be?
+        #[serde(rename = "yAxis", alias = "y_axis")]
         y_axis: Box<Point3d>,
         /// The z-axis (normal).
+        #[serde(rename = "zAxis", alias = "z_axis")]
         z_axis: Box<Point3d>,
     },
 }
@@ -1466,8 +1469,10 @@ pub enum ArcData {
     /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
+        #[serde(rename = "angleStart", alias = "angle_start")]
         angle_start: f64,
         /// The end angle.
+        #[serde(rename = "angleEnd", alias = "angle_end")]
         angle_end: f64,
         /// The radius.
         radius: f64,

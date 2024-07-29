@@ -34,7 +34,7 @@ const part001 = startSketchOn('XY')
 ```js
 {
 	// Start angle (in degrees).
-	angle_start: number,
+	angleStart: number,
 	// Is the helix rotation counter clockwise? The default is `false`.
 	ccw: string,
 	// Length of the helix. If this argument is not provided, the height of the extrude group is used.
@@ -51,7 +51,7 @@ const part001 = startSketchOn('XY')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -65,7 +65,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -125,7 +125,7 @@ const part001 = startSketchOn('XY')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -139,7 +139,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -442,7 +442,7 @@ const part001 = startSketchOn('XY')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -456,7 +456,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -516,7 +516,7 @@ const part001 = startSketchOn('XY')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
@@ -530,7 +530,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,

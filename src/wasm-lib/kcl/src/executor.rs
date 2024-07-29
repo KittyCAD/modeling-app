@@ -1008,6 +1008,7 @@ pub enum FilletOrChamfer {
         id: uuid::Uuid,
         radius: f64,
         /// The engine id of the edge to fillet.
+        #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
         tag: Box<Option<TagDeclarator>>,
     },
@@ -1017,6 +1018,7 @@ pub enum FilletOrChamfer {
         id: uuid::Uuid,
         length: f64,
         /// The engine id of the edge to chamfer.
+        #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
         tag: Box<Option<TagDeclarator>>,
     },

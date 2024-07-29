@@ -19,6 +19,7 @@ pub struct HelixData {
     /// Number of revolutions.
     pub revolutions: f64,
     /// Start angle (in degrees).
+    #[serde(rename = "angleStart", alias = "angle_start")]
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     /// The default is `false`.

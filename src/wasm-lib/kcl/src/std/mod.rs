@@ -23,6 +23,7 @@ pub mod utils;
 use std::collections::HashMap;
 
 use anyhow::Result;
+pub use args::Args;
 use derive_docs::stdlib;
 use lazy_static::lazy_static;
 use parse_display::{Display, FromStr};
@@ -36,7 +37,6 @@ use crate::{
     executor::{MemoryItem, ProgramMemory, SketchGroup, SketchSurface},
     std::kcl_stdlib::KclStdLibFn,
 };
-pub use args::Args;
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + Send>>;
 
