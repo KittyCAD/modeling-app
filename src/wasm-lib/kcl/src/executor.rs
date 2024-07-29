@@ -2655,6 +2655,17 @@ const bracket = startSketchOn('XY')
         parse_execute(ast).await.unwrap();
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_fn_as_operand() {
+        let ast = r#"fn f = () => { return 1 }
+let x = f()
+let y = x + 1
+let z = f() + 1
+let w = f() + f()
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
     #[test]
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
