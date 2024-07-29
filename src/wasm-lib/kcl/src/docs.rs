@@ -489,13 +489,10 @@ pub fn get_autocomplete_snippet_from_schema(
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
-                } else if format == "double"
-                    || format == "uint"
-                    || format == "int64"
-                    || format == "uint32"
-                    || format == "uint64"
-                {
+                } else if format == "double" {
                     return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
+                } else if format == "uint" || format == "int64" || format == "uint32" || format == "uint64" {
+                    return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
                 }
@@ -872,6 +869,7 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_pattern_circular_3d() {
+        // We test this one specifically because it has ints and floats and strings.
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternCircular3D);
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
@@ -880,7 +878,7 @@ mod tests {
 	arcDegrees: ${0:3.14},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
-	repetitions: ${3:3.14},
+	repetitions: ${3:10},
 	rotateDuplicates: ${4:"string"},
 }, ${5:%})${}"#
         );
