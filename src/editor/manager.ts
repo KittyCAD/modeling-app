@@ -6,11 +6,7 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
-import {
-  forEachDiagnostic,
-  Diagnostic,
-  setDiagnosticsEffect,
-} from '@codemirror/lint'
+import { Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -114,12 +110,20 @@ export default class EditorManager {
     }
   }
 
-  clearDiagnostics(): void {
-    this.setDiagnostics([])
-  }
-
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
+    // Clear out any existing diagnostics that are the same.
+    for (const diagnostic of diagnostics) {
+      for (const otherDiagnostic of diagnostics) {
+        if (diagnosticIsEqual(diagnostic, otherDiagnostic)) {
+          diagnostics = diagnostics.filter(
+            (d) => !diagnosticIsEqual(d, diagnostic)
+          )
+          diagnostics.push(diagnostic)
+          break
+        }
+      }
+    }
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
@@ -129,26 +133,6 @@ export default class EditorManager {
         Transaction.addToHistory.of(false),
       ],
     })
-  }
-
-  addDiagnostics(diagnostics: Diagnostic[]): void {
-    if (!this._editorView) return
-
-    forEachDiagnostic(this._editorView.state, function (diag) {
-      diagnostics.push(diag)
-    })
-
-    const uniqueDiagnostics = new Set<Diagnostic>()
-    diagnostics.forEach((diagnostic) => {
-      for (const knownDiagnostic of uniqueDiagnostics.values()) {
-        if (diagnosticIsEqual(diagnostic, knownDiagnostic)) {
-          return
-        }
-      }
-      uniqueDiagnostics.add(diagnostic)
-    })
-
-    this.setDiagnostics([...uniqueDiagnostics])
   }
 
   undo() {
