@@ -1,4 +1,4 @@
-import { isDesktop } from 'lib/isDesktop'
+import { isDesktop } from '../../lib/isDesktop'
 
 /// FileSystemManager is a class that provides a way to read files from the local file system.
 /// It assumes that you are in a project since it is solely used by the std lib
