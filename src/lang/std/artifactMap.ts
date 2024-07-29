@@ -94,7 +94,7 @@ interface BlendEdge {
   surfId: string
 }
 
-export type ArtifactMapV2 =
+export type Artifact =
   | _PlaneArtifact
   | _PathArtifact
   | _SegmentArtifact
@@ -105,59 +105,11 @@ export type ArtifactMapV2 =
   | Blend
   | BlendEdge
 
-interface ExtrudeArtifact extends CommonCommandProperties {
-  type: 'extrude'
-  pathId: string
-}
-
-export interface StartPathArtifact extends CommonCommandProperties {
-  type: 'startPath'
-  extrusionIds: string[]
-}
-
-export interface SegmentArtifact extends CommonCommandProperties {
-  type: 'segment'
-  subType: 'segment' | 'closeSegment'
-  pathId: string
-}
-
-interface ExtrudeCapArtifact extends CommonCommandProperties {
-  type: 'extrudeCap'
-  cap: 'start' | 'end'
-  pathId: string
-}
-interface ExtrudeWallArtifact extends CommonCommandProperties {
-  type: 'extrudeWall'
-  pathId: string
-}
-
-interface PatternInstance extends CommonCommandProperties {
-  type: 'patternInstance'
-}
-
-export type ArtifactMapCommand =
-  | ExtrudeArtifact
-  | StartPathArtifact
-  | ExtrudeCapArtifact
-  | ExtrudeWallArtifact
-  | SegmentArtifact
-  | PatternInstance
+export type ArtifactMap = Map<string, Artifact>
 
 export type EngineCommand = Models['WebSocketRequest_type']
 
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
-
-/**
- * The ArtifactMap is a client-side representation of the artifacts that
- * have been sent to the server-side engine. It is used to keep track of
- * the state of each command, and to resolve the promise that was returned.
- * It is also used to keep track of what entities are in the engine scene,
- * so that we can associate IDs returned from the engine with the
- * lines of KCL code that generated them.
- */
-export interface ArtifactMap {
-  [commandId: string]: ArtifactMapCommand
-}
 
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData
@@ -175,210 +127,8 @@ export function createArtifactMap({
   orderedCommands: Array<OrderedCommand>
   responseMap: ResponseMap
   ast: Program
-}): ArtifactMap {
-  const artifactMap: ArtifactMap = {}
-  orderedCommands.forEach(({ command, range }) => {
-    // expect all to be `modeling_cmd_req` as batch commands have
-    // already been expanded before being added to orderedCommands
-    if (command.type !== 'modeling_cmd_req') return
-    const id = command.cmd_id
-    const response = responseMap[id]
-    const artifacts = handleIndividualResponse({
-      id,
-      pendingMsg: {
-        command,
-        range,
-      },
-      response,
-      ast,
-      prevArtifactMap: artifactMap,
-    })
-    artifacts.forEach(({ commandId, artifact }) => {
-      artifactMap[commandId] = artifact
-    })
-  })
-  return artifactMap
-}
-
-function handleIndividualResponse({
-  id,
-  pendingMsg,
-  response,
-  ast,
-  prevArtifactMap,
-}: {
-  id: string
-  pendingMsg: {
-    command: EngineCommand
-    range: SourceRange
-  }
-  response: OkWebSocketResponseData
-  ast: Program
-  prevArtifactMap: ArtifactMap
-}): Array<{
-  commandId: string
-  artifact: ArtifactMapCommand
-}> {
-  const command = pendingMsg
-  if (command?.command?.type !== 'modeling_cmd_req') return []
-  if (response?.type !== 'modeling') return []
-  const command2 = command.command.cmd
-
-  const range = command.range
-  const pathToNode = getNodePathFromSourceRange(ast, range)
-  const modelingResponse = response.data.modeling_response
-
-  const artifacts: Array<{
-    commandId: string
-    artifact: ArtifactMapCommand
-  }> = []
-
-  if (command) {
-    if (
-      command2.type !== 'extrude' &&
-      command2.type !== 'extend_path' &&
-      command2.type !== 'solid3d_get_extrusion_face_info' &&
-      command2.type !== 'start_path' &&
-      command2.type !== 'close_path'
-    ) {
-    }
-    if (command2.type === 'extrude') {
-      artifacts.push({
-        commandId: id,
-        artifact: {
-          type: 'extrude',
-          range,
-          pathToNode,
-          pathId: command2.target,
-        },
-      })
-
-      const targetArtifact = { ...prevArtifactMap[command2.target] }
-      if (targetArtifact?.type === 'startPath') {
-        artifacts.push({
-          commandId: command2.target,
-          artifact: {
-            ...targetArtifact,
-            type: 'startPath',
-            range: targetArtifact.range,
-            pathToNode: targetArtifact.pathToNode,
-            extrusionIds: targetArtifact?.extrusionIds
-              ? [...targetArtifact?.extrusionIds, id]
-              : [id],
-          },
-        })
-      }
-    }
-    if (command2.type === 'extend_path') {
-      artifacts.push({
-        commandId: id,
-        artifact: {
-          type: 'segment',
-          subType: 'segment',
-          range,
-          pathToNode,
-          pathId: command2.path,
-        },
-      })
-    }
-    if (command2.type === 'close_path')
-      artifacts.push({
-        commandId: id,
-        artifact: {
-          type: 'segment',
-          subType: 'closeSegment',
-          range,
-          pathToNode,
-          pathId: command2.path_id,
-        },
-      })
-    if (command2.type === 'start_path') {
-      artifacts.push({
-        commandId: id,
-        artifact: {
-          type: 'startPath',
-          range,
-          pathToNode,
-          extrusionIds: [],
-        },
-      })
-    }
-    if (
-      (command2.type === 'entity_linear_pattern' &&
-        modelingResponse.type === 'entity_linear_pattern') ||
-      (command2.type === 'entity_circular_pattern' &&
-        modelingResponse.type === 'entity_circular_pattern')
-    ) {
-      // TODO this is not working perfectly, maybe it's like a selection filter issue
-      // but when clicking on a instance it does put the cursor somewhat relevant but
-      // edges and what not do not highlight the correct segment.
-      const entities = modelingResponse.data.entity_ids
-      entities?.forEach((entity: string) => {
-        artifacts.push({
-          commandId: entity,
-          artifact: {
-            range: range,
-            pathToNode,
-            type: 'patternInstance',
-          },
-        })
-      })
-    }
-    if (
-      command2.type === 'solid3d_get_extrusion_face_info' &&
-      modelingResponse.type === 'solid3d_get_extrusion_face_info'
-    ) {
-      const edgeArtifact = prevArtifactMap[command2.edge_id]
-      const parent =
-        edgeArtifact?.type === 'segment'
-          ? prevArtifactMap[edgeArtifact.pathId]
-          : null
-      modelingResponse.data.faces.forEach((face) => {
-        if (
-          face.cap !== 'none' &&
-          face.face_id &&
-          parent?.type === 'startPath'
-        ) {
-          artifacts.push({
-            commandId: face.face_id,
-            artifact: {
-              type: 'extrudeCap',
-              cap: face.cap === 'bottom' ? 'start' : 'end',
-              range: parent.range,
-              pathToNode: parent.pathToNode,
-              pathId:
-                edgeArtifact?.type === 'segment' ? edgeArtifact.pathId : '',
-            },
-          })
-        }
-        const curveArtifact = prevArtifactMap[face?.curve_id || '']
-        if (curveArtifact?.type === 'segment' && face?.face_id) {
-          artifacts.push({
-            commandId: face.face_id,
-            artifact: {
-              type: 'extrudeWall',
-              range: curveArtifact.range,
-              pathToNode: curveArtifact.pathToNode,
-              pathId: curveArtifact.pathId,
-            },
-          })
-        }
-      })
-    }
-  }
-  return artifacts
-}
-
-export function createLinker({
-  orderedCommands,
-  responseMap,
-  ast,
-}: {
-  orderedCommands: Array<OrderedCommand>
-  responseMap: ResponseMap
-  ast: Program
 }) {
-  const myMap = new Map<string, ArtifactMapV2>()
+  const myMap = new Map<string, Artifact>()
   let currentPlaneId = ''
   orderedCommands.forEach(({ command, range }) => {
     const pathToNode = getNodePathFromSourceRange(ast, range)
@@ -534,64 +284,64 @@ export function createLinker({
 }
 
 /** filter map items of a specific type */
-export function filterArtifacts<T extends ArtifactMapV2['type'][]>(
-  map: Map<string, ArtifactMapV2>,
+export function filterArtifacts<T extends Artifact['type'][]>(
+  map: ArtifactMap,
   types: T,
-  predicate?: (value: Extract<ArtifactMapV2, { type: T[number] }>) => boolean
+  predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
 ) {
   return new Map(
     Array.from(map).filter(
       ([_, value]) =>
         types.includes(value.type) &&
         (!predicate ||
-          predicate(value as Extract<ArtifactMapV2, { type: T[number] }>))
+          predicate(value as Extract<Artifact, { type: T[number] }>))
     )
-  ) as Map<string, Extract<ArtifactMapV2, { type: T[number] }>>
+  ) as Map<string, Extract<Artifact, { type: T[number] }>>
 }
 
-export function getArtifactsOfType<T extends ArtifactMapV2['type'][]>(
+export function getArtifactsOfType<T extends Artifact['type'][]>(
   keys: string[],
-  map: Map<string, ArtifactMapV2>,
+  map: ArtifactMap,
   types: T,
-  predicate?: (value: Extract<ArtifactMapV2, { type: T[number] }>) => boolean
-): Map<string, Extract<ArtifactMapV2, { type: T[number] }>> {
+  predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
+): Map<string, Extract<Artifact, { type: T[number] }>> {
   return new Map(
     [...map].filter(
       ([key, value]) =>
         keys.includes(key) &&
         types.includes(value.type) &&
         (!predicate ||
-          predicate(value as Extract<ArtifactMapV2, { type: T[number] }>))
+          predicate(value as Extract<Artifact, { type: T[number] }>))
     )
-  ) as Map<string, Extract<ArtifactMapV2, { type: T[number] }>>
+  ) as Map<string, Extract<Artifact, { type: T[number] }>>
 }
 
-function getArtifactOfType<T extends ArtifactMapV2['type']>(
+function getArtifactOfType<T extends Artifact['type']>(
   key: string,
-  map: Map<string, ArtifactMapV2>,
+  map: ArtifactMap,
   type: T
-): Extract<ArtifactMapV2, { type: T }> | Error {
+): Extract<Artifact, { type: T }> | Error {
   const artifact = map.get(key)
   if (artifact?.type !== type)
     return new Error(`Expected ${type} but got ${artifact?.type}`)
-  return artifact as Extract<ArtifactMapV2, { type: T }>
+  return artifact as Extract<Artifact, { type: T }>
 }
 
-export function getArtifactOfTypes<T extends ArtifactMapV2['type'][]>(
+export function getArtifactOfTypes<T extends Artifact['type'][]>(
   key: string,
-  map: Map<string, ArtifactMapV2>,
+  map: ArtifactMap,
   types: T
-): Extract<ArtifactMapV2, { type: T[number] }> | Error {
+): Extract<Artifact, { type: T[number] }> | Error {
   const artifact = map.get(key)
   if (!artifact) return new Error(`No artifact found with key ${key}`)
   if (!types.includes(artifact?.type))
     return new Error(`Expected ${types} but got ${artifact?.type}`)
-  return artifact as Extract<ArtifactMapV2, { type: T[number] }>
+  return artifact as Extract<Artifact, { type: T[number] }>
 }
 
 export function expandPlane(
   plane: _PlaneArtifact,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): PlaneArtifact {
   const paths = getArtifactsOfType(plane.pathIds, artifactMap, ['path'])
   return {
@@ -603,7 +353,7 @@ export function expandPlane(
 
 export function expandPath(
   path: _PathArtifact,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): PathArtifact | Error {
   const segs = getArtifactsOfType(path.segIds, artifactMap, ['segment'])
   const extrusion = getArtifactOfType(
@@ -625,7 +375,7 @@ export function expandPath(
 
 export function expandExtrusion(
   extrusion: _ExtrusionArtifact,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): ExtrusionArtifact | Error {
   const surfs = getArtifactsOfType(extrusion.surfIds, artifactMap, [
     'wall',
@@ -642,7 +392,7 @@ export function expandExtrusion(
 
 export function getCapCodeRef(
   cap: _CapArtifact,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): CommonCommandProperties | Error {
   const extrusion = getArtifactOfType(cap.extrusionId, artifactMap, 'extrusion')
   if (err(extrusion)) return extrusion
@@ -653,7 +403,7 @@ export function getCapCodeRef(
 
 export function getWallCodeRef(
   wall: _WallArtifact,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): CommonCommandProperties | Error {
   const seg = getArtifactOfType(wall.segId, artifactMap, 'segment')
   if (err(seg)) return seg
@@ -662,7 +412,7 @@ export function getWallCodeRef(
 
 export function getExtrusionFromSuspectedExtrudeSurface(
   id: string,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): _ExtrusionArtifact | Error {
   const artifact = getArtifactOfTypes(id, artifactMap, ['wall', 'cap'])
   if (err(artifact)) return artifact
@@ -671,7 +421,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
 
 export function getExtrusionFromSuspectedPath(
   id: string,
-  artifactMap: Map<string, ArtifactMapV2>
+  artifactMap: ArtifactMap
 ): _ExtrusionArtifact | Error {
   const path = getArtifactOfTypes(id, artifactMap, ['path'])
   if (err(path)) return path

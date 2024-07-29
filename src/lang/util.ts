@@ -1,7 +1,7 @@
 import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
-import { ArtifactMapV2, filterArtifacts } from 'lang/std/artifactMap'
+import { ArtifactMap, filterArtifacts } from 'lang/std/artifactMap'
 import { isOverlap } from 'lib/utils'
 import { err } from 'lib/trap'
 
@@ -46,7 +46,7 @@ export function updatePathToNodeFromMap(
 }
 
 export function isCursorInSketchCommandRange(
-  artifactMap: Map<string, ArtifactMapV2>,
+  artifactMap: ArtifactMap,
   selectionRanges: Selections
 ): string | false {
   const overlappingEntries = filterArtifacts(

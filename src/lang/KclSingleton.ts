@@ -17,7 +17,6 @@ import {
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
-import { ArtifactMapV2 } from './std/artifactMap'
 
 export class KclManager {
   private _ast: Program = {
@@ -282,8 +281,8 @@ export class KclManager {
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
     // problem this solves, but either way we should strive to remove it.
-    Object.entries(this.engineCommandManager.artifactMap).forEach(
-      ([commandId, artifact]: [string, ArtifactMapV2]) => {
+    Array.from(this.engineCommandManager.artifactMap).forEach(
+      ([commandId, artifact]) => {
         if (!('codeRef' in artifact)) return
         const _node1 = getNodeFromPath<CallExpression>(
           this.ast,

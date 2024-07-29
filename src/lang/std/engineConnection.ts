@@ -7,11 +7,10 @@ import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
   ArtifactMap,
-  ArtifactMapV2,
   EngineCommand,
   OrderedCommand,
   ResponseMap,
-  createLinker,
+  createArtifactMap,
 } from 'lang/std/artifactMap'
 
 // TODO(paultag): This ought to be tweakable.
@@ -286,8 +285,6 @@ class EngineConnection extends EventTarget {
     )
   }
 
-  private failedConnTimeout: IsomorphicTimeout | null
-
   readonly url: string
   private readonly token?: string
 
@@ -312,7 +309,6 @@ class EngineConnection extends EventTarget {
     this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
-    this.failedConnTimeout = null
 
     this.pingPongSpan = { ping: undefined, pong: undefined }
 
@@ -1121,7 +1117,7 @@ export class EngineCommandManager extends EventTarget {
    * so that we can map to and from KCL code. Each artifact maintains a source range to the part
    * of the KCL code that generated it.
    */
-  artifactMap: Map<string, ArtifactMapV2> = new Map()
+  artifactMap: ArtifactMap = new Map()
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -1138,13 +1134,6 @@ export class EngineCommandManager extends EventTarget {
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
-  /**
-   * The client-side representation of the scene command artifacts that have been sent to the server;
-   * that is, the *non-modeling* commands and corresponding artifacts.
-   *
-   * For modeling commands, see {@link artifactMap}.
-   */
-  sceneCommandArtifacts: ArtifactMap = {}
   /**
    * A counter that is incremented with each command sent over the *unreliable* channel to the engine.
    * This is compared to the latest received {@link inSequence} number to determine if we should ignore
@@ -1796,7 +1785,7 @@ export class EngineCommandManager extends EventTarget {
    */
   async waitForAllCommands() {
     await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    this.artifactMap = createLinker({
+    this.artifactMap = createArtifactMap({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
       ast: this.getAst(),

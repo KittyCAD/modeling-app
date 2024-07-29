@@ -255,16 +255,6 @@ export class CoreDumpManager {
           this.engineCommandManager.outSequence
       }
 
-      // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
-      if (this.engineCommandManager?.sceneCommandArtifacts) {
-        debugLog(
-          'CoreDump: Engine Command Manager scene command artifacts',
-          this.engineCommandManager.sceneCommandArtifacts
-        )
-        clientState.engine_command_manager.scene_command_artifacts =
-          structuredClone(this.engineCommandManager.sceneCommandArtifacts)
-      }
-
       // KCL Manager - globalThis?.window?.kclManager
       const kclManager = (globalThis?.window as any)?.kclManager
       debugLog('CoreDump: kclManager', kclManager)

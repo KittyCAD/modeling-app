@@ -2,7 +2,7 @@ import { makeDefaultPlanes, parse, initPromise, Program } from 'lang/wasm'
 import {
   OrderedCommand,
   ResponseMap,
-  createLinker,
+  createArtifactMap,
   filterArtifacts,
   expandPlane,
   expandPath,
@@ -118,7 +118,7 @@ afterAll(() => {
 describe('testing createLinker', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
     let ast: Program
-    let theMap: ReturnType<typeof createLinker>
+    let theMap: ReturnType<typeof createArtifactMap>
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
@@ -127,7 +127,7 @@ describe('testing createLinker', () => {
         ast: _ast,
       } = getCommands('exampleCode1')
       ast = _ast
-      theMap = createLinker({ orderedCommands, responseMap, ast })
+      theMap = createArtifactMap({ orderedCommands, responseMap, ast })
     })
 
     it('there should be two planes for the extrusion and the sketch on face', () => {
