@@ -19,8 +19,8 @@ const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> arc({
-       angle_start: 0,
-       angle_end: 280,
+       angleStart: 0,
+       angleEnd: 280,
        radius: 16
      }, %)
   |> close(%)
