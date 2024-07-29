@@ -143,7 +143,6 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     }
   }
 
-
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
@@ -155,8 +154,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
   const startXPx = 600
   // await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await clickAndWaitForCanvas(page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10))
-
+  await clickAndWaitForCanvas(
+    page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  )
 
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -166,11 +166,12 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await page.waitForTimeout(500)
   }
 
-  await clickAndWaitForCanvas(page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10))
+  await clickAndWaitForCanvas(
+    page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  )
 
   // await page.waitForTimeout(500)
   // await page.waitForTimeout(1_000)
-
 
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -181,7 +182,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await page.waitForTimeout(500)
   }
 
-  await clickAndWaitForCanvas(page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20))
+  await clickAndWaitForCanvas(
+    page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  )
 
   // await page.waitForTimeout(1_000)
 
@@ -197,7 +200,6 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
   await clickAndWaitForCanvas(page.mouse.click(startXPx, 500 - PUR * 20))
 
-
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
@@ -208,7 +210,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await clickAndWaitForCanvas(page.getByRole('button', { name: 'Line', exact: true }).click())
+  await clickAndWaitForCanvas(
+    page.getByRole('button', { name: 'Line', exact: true }).click()
+  )
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
   if (openPanes.includes('code')) {
@@ -218,8 +222,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     ).toBeLessThan(3)
   }
   // click between first two clicks to get center of the line
-  await clickAndWaitForCanvas(page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10))
-
+  await clickAndWaitForCanvas(
+    page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
+  )
 
   if (openPanes.includes('code')) {
     expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
@@ -229,8 +234,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   // hold down shift
   await page.keyboard.down('Shift')
   // click between the latest two clicks to get center of the line
-  await clickAndWaitForCanvas(page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20))
-
+  await clickAndWaitForCanvas(
+    page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
+  )
 
   // selected two lines therefore there should be two cursors
   if (openPanes.includes('code')) {
@@ -2540,7 +2546,7 @@ test.describe('Onboarding tests', () => {
 
 test.describe('Testing selections', () => {
   test.setTimeout(90_000)
-  test('Selections work on fresh and edited sketch', { tag: '@focus' }, async ({ page }) => {
+  test('Selections work on fresh and edited sketch', async ({ page }) => {
     // tests mapping works on fresh sketch and edited sketch
     // tests using hovers which is the same as selections, because if
     // source ranges are wrong, hovers won't work
@@ -5733,88 +5739,92 @@ const part002 = startSketchOn('XZ')
     }
   })
 
-  test('Horizontally constrained line remains selected after applying constraint', async ({
-    page,
-  }) => {
-    test.setTimeout(70_000)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `const sketch001 = startSketchOn('XY')
+  test(
+    'Horizontally constrained line remains selected after applying constraint',
+    { tag: '@focus' },
+    async ({ page }) => {
+      test.setTimeout(70_000)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-1.05, -1.07], %)
   |> line([3.79, 2.68], %, $seg01)
   |> line([3.13, -2.4], %)`
+        )
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+
+      await page.getByText('line([3.79, 2.68], %, $seg01)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeEnabled({ timeout: 10_000 })
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+      await page.waitForTimeout(100)
+      const lineBefore = await u.getSegmentBodyCoords(
+        `[data-overlay-index="1"]`,
+        0
       )
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+      expect(
+        await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
+      ).toBeLessThan(3)
+      await page.mouse.move(lineBefore.x, lineBefore.y)
+      await page.waitForTimeout(50)
+      await page.mouse.click(lineBefore.x, lineBefore.y)
+      expect(
+        await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
+      ).toBeLessThan(3)
 
-    await u.waitForAuthSkipAppStart()
+      await page
+        .getByRole('button', {
+          name: 'Length: open menu',
+        })
+        .click()
+      await page
+        .getByRole('button', { name: 'Horizontal', exact: true })
+        .click()
 
-    await page.getByText('line([3.79, 2.68], %, $seg01)').click()
-    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
-      { timeout: 10_000 }
-    )
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      let activeLinesContent = await page.locator('.cm-activeLine').all()
+      await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
 
-    await page.waitForTimeout(100)
-    const lineBefore = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
-      0
-    )
-    expect(
-      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
-    ).toBeLessThan(3)
-    await page.mouse.move(lineBefore.x, lineBefore.y)
-    await page.waitForTimeout(50)
-    await page.mouse.click(lineBefore.x, lineBefore.y)
-    expect(
-      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
-    ).toBeLessThan(3)
+      // If the overlay-angle is updated the THREE.js scene is in a good state
+      await expect(
+        await page.locator('[data-overlay-index="1"]')
+      ).toHaveAttribute('data-overlay-angle', '0')
 
-    await page
-      .getByRole('button', {
-        name: 'Length: open menu',
-      })
-      .click()
-    await page.getByRole('button', { name: 'Horizontal', exact: true }).click()
+      const lineAfter = await u.getSegmentBodyCoords(
+        `[data-overlay-index="1"]`,
+        0
+      )
+      expect(
+        await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
+      ).toBeLessThan(3)
 
-    let activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+      await page.waitForTimeout(300)
+      await page
+        .getByRole('button', {
+          name: 'Length: open menu',
+        })
+        .click()
+      // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
+      await page.waitForTimeout(200)
+      // await page.getByRole('button', { name: 'length', exact: true }).click()
+      await page.getByTestId('dropdown-constraint-length').click()
 
-    // If the overlay-angle is updated the THREE.js scene is in a good state
-    await expect(
-      await page.locator('[data-overlay-index="1"]')
-    ).toHaveAttribute('data-overlay-angle', '0')
+      await page.getByLabel('length Value').fill('10')
+      await page.getByRole('button', { name: 'Add constraining value' }).click()
 
-    const lineAfter = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
-      0
-    )
-    expect(
-      await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
-    ).toBeLessThan(3)
+      activeLinesContent = await page.locator('.cm-activeLine').all()
+      await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
 
-    await page.waitForTimeout(300)
-    await page
-      .getByRole('button', {
-        name: 'Length: open menu',
-      })
-      .click()
-    // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
-    await page.waitForTimeout(200)
-    // await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.getByTestId('dropdown-constraint-length').click()
-
-    await page.getByLabel('length Value').fill('10')
-    await page.getByRole('button', { name: 'Add constraining value' }).click()
-
-    activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
-
-    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
-  })
+      // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    }
+  )
 })
 
 test.describe('Testing segment overlays', () => {
