@@ -11,6 +11,7 @@ pub mod import;
 pub mod kcl_stdlib;
 pub mod math;
 pub mod patterns;
+pub mod polar;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
@@ -117,6 +118,7 @@ lazy_static! {
         Box::new(crate::std::math::Ln),
         Box::new(crate::std::math::ToDegrees),
         Box::new(crate::std::math::ToRadians),
+        Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
         Box::new(crate::std::assert::AssertLessThan),
         Box::new(crate::std::assert::AssertGreaterThan),

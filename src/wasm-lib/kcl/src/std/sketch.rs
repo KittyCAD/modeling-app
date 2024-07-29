@@ -413,7 +413,7 @@ async fn inner_y_line(
 pub enum AngledLineData {
     /// An angle and length with explicitly named parameters
     AngleAndLengthNamed {
-        /// The angle of the line.
+        /// The angle of the line (in degrees).
         angle: f64,
         /// The length of the line.
         length: f64,
