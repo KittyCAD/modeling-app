@@ -1544,8 +1544,8 @@ impl ExecutorContext {
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(units: UnitLength) -> Result<Self> {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
+        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
             // For file conversions we need this to be long.
@@ -1566,6 +1566,9 @@ impl ExecutorContext {
         let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
         // Set a local engine address if it's set.
         if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+            client.set_base_url(addr);
+        }
+        if let Some(addr) = engine_addr {
             client.set_base_url(addr);
         }
 
