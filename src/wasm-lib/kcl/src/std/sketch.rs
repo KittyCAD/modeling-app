@@ -413,7 +413,7 @@ async fn inner_y_line(
 pub enum AngledLineData {
     /// An angle and length with explicitly named parameters
     AngleAndLengthNamed {
-        /// The angle of the line.
+        /// The angle of the line (in degrees).
         angle: f64,
         /// The length of the line.
         length: f64,
@@ -545,6 +545,20 @@ async fn inner_angled_line_of_x_length(
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
+    if angle.abs() == 270.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x constrained angle of 270 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 90.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x constrained angle of 90 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let to = get_y_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(to.into(), sketch_group, tag, args).await?;
@@ -596,6 +610,20 @@ async fn inner_angled_line_to_x(
     let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: x_to } = data;
 
+    if angle.abs() == 270.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x constrained angle of 270 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 90.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have an x constrained angle of 90 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let x_component = x_to - from.x;
     let y_component = x_component * f64::tan(angle.to_radians());
     let y_to = from.y + y_component;
@@ -642,6 +670,20 @@ async fn inner_angled_line_of_y_length(
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
+    if angle.abs() == 0.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y constrained angle of 0 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 180.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y constrained angle of 180 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     let to = get_x_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(to.into(), sketch_group, tag, args).await?;
@@ -681,6 +723,20 @@ async fn inner_angled_line_to_y(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: y_to } = data;
+
+    if angle.abs() == 0.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y constrained angle of 0 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if angle.abs() == 180.0 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Cannot have a y constrained angle of 180 degrees".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
 
     let y_component = y_to - from.y;
     let x_component = y_component / f64::tan(angle.to_radians());
@@ -739,10 +795,16 @@ async fn inner_angled_line_that_intersects(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let intersect_path = args.get_tag_engine_info(&data.intersect_tag)?;
+    let path = intersect_path.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
 
     let from = sketch_group.current_pen_position()?;
     let to = intersection_with_parallel_line(
-        &[intersect_path.path.from.into(), intersect_path.path.to.into()],
+        &[path.from.into(), path.to.into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from,
@@ -1233,7 +1295,7 @@ pub(crate) async fn inner_start_profile_at(
             tag_identifier.info = Some(TagEngineInfo {
                 id: current_path.geo_meta.id,
                 sketch_group: path_id,
-                path: current_path.clone(),
+                path: Some(current_path.clone()),
                 surface: None,
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])
@@ -1471,6 +1533,13 @@ pub(crate) async fn inner_arc(
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
     };
+
+    if angle_start == angle_end {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Arc start and end angles must be different".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
 
     let id = uuid::Uuid::new_v4();
 

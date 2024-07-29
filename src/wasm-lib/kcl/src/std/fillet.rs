@@ -8,8 +8,11 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem, TagIdentifier, UserVal},
+    executor::{
+        ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, FilletSurface, GeoMeta, MemoryItem, TagIdentifier, UserVal,
+    },
     std::Args,
 };
 
@@ -39,9 +42,10 @@ pub enum EdgeReference {
 
 /// Create fillets on tagged paths.
 pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (FilletData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
+        args.get_data_and_extrude_group_and_tag()?;
 
-    let extrude_group = inner_fillet(data, extrude_group, args).await?;
+    let extrude_group = inner_fillet(data, extrude_group, tag, args).await?;
     Ok(MemoryItem::ExtrudeGroup(extrude_group))
 }
 
@@ -77,6 +81,7 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_fillet(
     data: FilletData,
     extrude_group: Box<ExtrudeGroup>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -90,9 +95,10 @@ async fn inner_fillet(
         }));
     }
 
+    let mut extrude_group = extrude_group.clone();
     let mut fillet_or_chamfers = Vec::new();
-    for tag in data.tags {
-        let edge_id = match tag {
+    for edge_tag in data.tags {
+        let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
             EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
         };
@@ -114,10 +120,21 @@ async fn inner_fillet(
             id,
             edge_id,
             radius: data.radius,
+            tag: Box::new(tag.clone()),
         });
+
+        if let Some(ref tag) = tag {
+            extrude_group.value.push(ExtrudeSurface::Fillet(FilletSurface {
+                face_id: edge_id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    let mut extrude_group = extrude_group.clone();
     extrude_group.fillet_or_chamfers = fillet_or_chamfers;
 
     Ok(extrude_group)

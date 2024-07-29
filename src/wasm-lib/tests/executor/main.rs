@@ -2471,7 +2471,7 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // Ignore until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
+// Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
 async fn serial_test_sketch_on_face_of_chamfer() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
@@ -2490,7 +2490,7 @@ const part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %, $chamfer1)
 
-const sketch001 = startSketchOn(part001, 'chamfer1')
+const sketch001 = startSketchOn(part001, chamfer1)
     |> startProfileAt([4.28, 3.83], %)
     |> line([2.17, -0.03], %)
     |> line([-0.07, -1.8], %)
@@ -2500,11 +2500,17 @@ const sketch001 = startSketchOn(part001, 'chamfer1')
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    /*twenty_twenty::assert_image(
         "tests/executor/outputs/sketch_on_face_of_chamfer.png",
         &result,
         MIN_DIFF,
+    );*/
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([410, 441])], message: "Modeling command failed: []" }"#
     );
 }
 
@@ -2594,4 +2600,254 @@ async fn serial_test_extrude_custom_plane() {
     let code = include_str!("inputs/extrude-custom-plane.kcl");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/extrude-custom-plane.png", &result, MIN_DIFF);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_arc_error_same_start_end() {
+    let code = r#"startSketchOn('XY')
+  |> startProfileAt([10, 0], %)
+  |> arc({
+       angle_start: 180,
+       angle_end: 180,
+       radius: 1.5
+     }, %)
+  |> close(%)
+  |> patternCircular2d({
+       arcDegrees: 360,
+       center: [0, 0],
+       repetitions: 5,
+       rotateDuplicates: true
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 140])], message: "Arc start and end angles must be different" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_to_x_90() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToX({ angle: 90, to: 10 }, %)
+  |> line([0, 10], %)
+  |> line([-10, 0], %)
+  |> close(%)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 117])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_to_x_270() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToX({ angle: 270, to: 10 }, %)
+  |> line([0, 10], %)
+  |> line([-10, 0], %)
+  |> close(%)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have an x constrained angle of 270 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_to_y_0() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToY({ angle: 0, to: 20 }, %)
+  |> line([-20, 0], %)
+  |> angledLineToY({ angle: 70, to: 10 }, %)
+  |> close(%)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 116])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_to_y_180() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToY({ angle: 180, to: 20 }, %)
+  |> line([-20, 0], %)
+  |> angledLineToY({ angle: 70, to: 10 }, %)
+  |> close(%)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_of_x_length_90() {
+    let code = r#"const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
+  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+  |> line([0, -5], %)
+  |> close(%, $edge3)
+
+const extrusion = extrude(10, sketch001)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_of_x_length_270() {
+    let code = r#"const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
+  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+  |> line([0, -5], %)
+  |> close(%, $edge3)
+
+const extrusion = extrude(10, sketch001)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_of_y_length_0() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 0], %)
+  |> angledLineOfYLength({ angle: 0, length: 10 }, %)
+  |> line([0, 10], %)
+  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> line([-10, 0], %)
+  |> line([0, -30], %)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 148])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_of_y_length_180() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 0], %)
+  |> angledLineOfYLength({ angle: 180, length: 10 }, %)
+  |> line([0, 10], %)
+  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> line([-10, 0], %)
+  |> line([0, -30], %)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 150])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_angled_line_of_y_length_negative_180() {
+    let code = r#"const exampleSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 0], %)
+  |> angledLineOfYLength({ angle: -180, length: 10 }, %)
+  |> line([0, 10], %)
+  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> line([-10, 0], %)
+  |> line([0, -30], %)
+
+const example = extrude(10, exampleSketch)
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 151])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_inside_fn_also_has_source_range_of_call_site() {
+    let code = r#"fn someFunction = (something) => {
+  startSketchOn(something)
+}
+
+someFunction('INVALID')
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
+    let code = r#"fn someFunction = (something) => {
+    fn someNestedFunction = (something2) => {
+        startSketchOn(something2)
+    }
+
+    someNestedFunction(something)
+}
+
+someFunction('INVALID')
+"#;
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+    );
 }

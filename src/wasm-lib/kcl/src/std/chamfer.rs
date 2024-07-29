@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem},
+    executor::{ChamferSurface, ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, GeoMeta, MemoryItem},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -90,6 +90,7 @@ async fn inner_chamfer(
         }));
     }
 
+    let mut extrude_group = extrude_group.clone();
     let mut fillet_or_chamfers = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
@@ -116,9 +117,19 @@ async fn inner_chamfer(
             length: data.length,
             tag: Box::new(tag.clone()),
         });
+
+        if let Some(ref tag) = tag {
+            extrude_group.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                face_id: edge_id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    let mut extrude_group = extrude_group.clone();
     extrude_group.fillet_or_chamfers = fillet_or_chamfers;
 
     Ok(extrude_group)

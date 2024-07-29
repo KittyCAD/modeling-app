@@ -24,7 +24,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
-        TagIdentifier, UserVal,
+        TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -1347,11 +1347,23 @@ impl CallExpression {
                         for value in &extrude_group.value {
                             if let Some(tag) = value.get_tag() {
                                 // Get the past tag and update it.
-                                let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) else {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("Tag {} is not on sketch group", tag.name),
-                                        source_ranges: vec![tag.into()],
-                                    }));
+                                let mut t = if let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) {
+                                    t.clone()
+                                } else {
+                                    // It's probably a fillet or a chamfer.
+                                    // Initialize it.
+                                    TagIdentifier {
+                                        value: tag.name.clone(),
+                                        info: Some(TagEngineInfo {
+                                            id: value.get_id(),
+                                            surface: Some(value.clone()),
+                                            path: None,
+                                            sketch_group: extrude_group.id,
+                                        }),
+                                        meta: vec![Metadata {
+                                            source_range: tag.clone().into(),
+                                        }],
+                                    }
                                 };
 
                                 let Some(ref info) = t.info else {
@@ -1361,7 +1373,6 @@ impl CallExpression {
                                     }));
                                 };
 
-                                let mut t = t.clone();
                                 let mut info = info.clone();
                                 info.surface = Some(value.clone());
                                 t.info = Some(info);
@@ -4233,6 +4244,30 @@ const myNestedVar = [callExp(bing.yo)]
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_space_in_fn_call() {
+        let some_program_string = r#"fn thing = (x) => {
+    return x + 1
+}
+
+thing ( 1 )
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"fn thing = (x) => {
+  return x + 1
+}
+
+thing(1)
+"#
+        );
     }
 
     #[test]
