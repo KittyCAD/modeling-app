@@ -129,27 +129,7 @@ async fn serial_test_sketch_on_face_end() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face_end_negative_extrude() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
-
-const part002 = startSketchOn(part001, "END")
-  |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %)
-  |> close(%)
-  |> extrude(-5, %)
-"#;
+    let code = include_str!("inputs/sketch_on_face_end_negative_extrude.kcl");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
@@ -161,15 +141,7 @@ const part002 = startSketchOn(part001, "END")
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_fillet_duplicate_tags() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%)
-    |> extrude(10, %)
-    |> fillet({radius: 0.5, tags: [thing, thing]}, %)
-"#;
+    let code = include_str!("inputs/fillet_duplicate_tags.kcl");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
