@@ -7168,7 +7168,7 @@ test.describe('Test network and connection issues', () => {
     timeout = 5_000
   ) {
     const actionTimestamp = new Date().valueOf()
-    const logCuror = log.length
+    const logCursor = log.length
     await action
     const delay = 10
     const attempts = timeout / delay
@@ -7188,7 +7188,7 @@ test.describe('Test network and connection issues', () => {
     }
     console.log(`⚠️ "${waitForCommand}" was not found in the websocket logs`)
     console.log(
-      `\t inspect the websocket logs between (${logCuror})th and (${log.length})th event`
+      `\t inspect the websocket logs between (${logCursor})th and (${log.length})th event`
     )
     return false
 
@@ -7265,26 +7265,26 @@ test.describe('Test network and connection issues', () => {
 
     // click on "Start Sketch" button
     await u.clearCommandLogs()
-    // await page.getByRole('button', { name: 'Start Sketch' }).click()
-    // await waitForWSMessage(
-    //   page.getByRole('button', { name: 'Start Sketch' }).click(),
+    await waitForWSMessage(
+      page.getByRole('button', { name: 'Start Sketch' }).click(),
+      'set_selection_filter'
+    )
+    // ^ this is similar to ⤵️
+    // await u.doAndWaitForCmd(
+    //   () => page.getByRole('button', { name: 'Start Sketch' }).click(),
     //   'set_selection_filter'
     // )
 
-    await u.doAndWaitForCmd(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      'set_selection_filter'
-    )
-
     // select a plane
-    // await waitForWSMessage(
-    //   page.mouse.click(700, 200),
-    //   'default_camera_set_orthographic'
-    // )
-    await u.doAndWaitForCmd(
-      () => page.mouse.click(700, 200),
+    await waitForWSMessage(
+      page.mouse.click(700, 200),
       'default_camera_set_orthographic'
     )
+    // ^ this is similar to ⤵️
+    // await u.doAndWaitForCmd(
+    //   () => page.mouse.click(700, 200),
+    //   'default_camera_set_orthographic'
+    // )
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
     )
