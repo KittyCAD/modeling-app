@@ -791,11 +791,6 @@ export class SceneEntities {
           programMemoryOverride,
         })
         this.sceneProgramMemory = programMemory
-        console.log('from within onMove', {
-          programMemory,
-          programMemoryOverride,
-          truncatedAst,
-        })
         const sketchGroup = programMemory.get(
           variableDeclarationName
         ) as SketchGroup
