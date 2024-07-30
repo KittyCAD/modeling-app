@@ -1635,7 +1635,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([node.start, node.end])
+          editorManager.setHighlightRange([[node.start, node.end]])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -1671,10 +1671,10 @@ export class SceneEntities {
           }
           return
         }
-        editorManager.setHighlightRange([0, 0])
+        editorManager.setHighlightRange([[0, 0]])
       },
       onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
-        editorManager.setHighlightRange([0, 0])
+        editorManager.setHighlightRange([[0, 0]])
         const parent = getParentGroup(selected, [
           STRAIGHT_SEGMENT,
           TANGENTIAL_ARC_TO_SEGMENT,

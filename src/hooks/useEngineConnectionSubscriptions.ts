@@ -2,7 +2,11 @@ import { useEffect } from 'react'
 import { editorManager, engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
-import { getCapCodeRef, getWallCodeRef } from 'lang/std/artifactMap'
+import {
+  getCapCodeRef,
+  getExtrusionFromSuspectedExtrudeSurface,
+  getWallCodeRef,
+} from 'lang/std/artifactMap'
 import { err } from 'lib/trap'
 
 export function useEngineConnectionSubscriptions() {
@@ -23,25 +27,35 @@ export function useEngineConnectionSubscriptions() {
               engineCommandManager.artifactMap
             )
             if (err(codeRef)) return
-            editorManager.setHighlightRange(codeRef.range)
+            editorManager.setHighlightRange([codeRef.range])
           } else if (artifact?.type === 'wall') {
+            const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+              data.entity_id,
+              engineCommandManager.artifactMap
+            )
             const codeRef = getWallCodeRef(
               artifact,
               engineCommandManager.artifactMap
             )
             if (err(codeRef)) return
-            editorManager.setHighlightRange(codeRef.range)
+            editorManager.setHighlightRange(
+              err(extrusion)
+                ? [codeRef.range]
+                : [codeRef.range, extrusion.codeRef.range]
+            )
           } else if (artifact?.type === 'segment') {
-            editorManager.setHighlightRange(artifact?.codeRef?.range || [0, 0])
+            editorManager.setHighlightRange([
+              artifact?.codeRef?.range || [0, 0],
+            ])
           } else {
-            editorManager.setHighlightRange([0, 0])
+            editorManager.setHighlightRange([[0, 0]])
           }
         } else if (
           !editorManager.highlightRange ||
-          (editorManager.highlightRange[0] !== 0 &&
-            editorManager.highlightRange[1] !== 0)
+          (editorManager.highlightRange[0][0] !== 0 &&
+            editorManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([0, 0])
+          editorManager.setHighlightRange([[0, 0]])
         }
       },
     })
