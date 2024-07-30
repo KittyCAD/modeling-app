@@ -12,10 +12,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
-import { getInitialDefaultDir, showInFolder } from 'lib/desktop'
+import { getInitialDefaultDir } from 'lib/desktop'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
-import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
 import { paths } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { sep } from '@tauri-apps/api/path'
@@ -190,7 +190,7 @@ export const AllSettingsFields = forwardRef(
                     const paths = await getSettingsFolderPaths(
                       projectPath ? decodeURIComponent(projectPath) : undefined
                     )
-                    showInFolder(paths[searchParamTab])
+                    window.electron.showInFolder(paths[searchParamTab])
                   }}
                   iconStart={{
                     icon: 'folder',

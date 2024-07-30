@@ -14,7 +14,6 @@ import {
 } from 'lib/cameraControls'
 import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
-import { open } from '@tauri-apps/plugin-dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 
@@ -209,22 +208,20 @@ export function createSettings() {
                 onClick={async () => {
                   // In Tauri end-to-end tests we can't control the file picker,
                   // so we seed the new directory value in the element's dataset
-                  const newValue =
-                    inputRef.current && inputRef.current.dataset.testValue
-                      ? inputRef.current.dataset.testValue
-                      : await open({
-                          directory: true,
-                          recursive: true,
-                          defaultPath: value,
-                          title: 'Choose a new project directory',
-                        })
-                  if (
-                    newValue &&
-                    newValue !== null &&
-                    newValue !== value &&
-                    !Array.isArray(newValue)
-                  ) {
-                    updateValue(newValue)
+                  const inputRefVal = inputRef.current?.dataset.testValue
+                  if (inputRef.current && inputRefVal && !Array.isArray(inputRefVal)) {
+                    updateValue(inputRefVal)
+                  } else {
+                    const newPath = await window.electron.open({
+                      properties: [
+                        'openDirectory',
+                        'createDirectory',
+                      ],
+                      defaultPath: value,
+                      title: 'Choose a new project directory',
+                    })
+                    if (newPath.canceled) return
+                    updateValue(newPath.filePaths[0])
                   }
                 }}
                 className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"

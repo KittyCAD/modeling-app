@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import styles from './FileTree.module.css'
-import { sortProject } from 'lib/tauriFS'
+import { sortProject } from 'lib/desktopFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
@@ -171,7 +171,7 @@ const FileTreeItem = ({
       // Import non-kcl files
       // We want to update both the state and editor here.
       codeManager.updateCodeStateEditor(
-        `import("${fileOrDir.path.replace(project.file.path, '.')}")\n` +
+        `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           codeManager.code
       )
       codeManager.writeToFile()

@@ -1,4 +1,3 @@
-import { appConfigDir } from '@tauri-apps/api/path'
 import { isDesktop } from './isDesktop'
 import type { FileEntry } from 'lib/types'
 import {
@@ -64,9 +63,9 @@ function interpolateProjectName(projectName: string) {
 }
 
 // Returns the next available index for a project name
-export function getNextProjectIndex(projectName: string, files: FileEntry[]) {
+export function getNextProjectIndex(projectName: string, projects: FileEntry[]) {
   const regex = interpolateProjectName(projectName)
-  const matches = files.map((file) => file.name?.match(regex))
+  const matches = projects.map((project) => project.name?.match(regex))
   const indices = matches
     .filter(Boolean)
     .map((match) => match![1])
@@ -108,7 +107,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = isDesktop() ? await appConfigDir() : '/'
+  const user = isDesktop() ? await window.electron.getPath('appData') : '/'
   const project = projectPath !== undefined ? projectPath : undefined
 
   return {

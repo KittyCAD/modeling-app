@@ -2,7 +2,7 @@
 // template that ElectronJS provides.
 
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -12,6 +12,7 @@ if (require('electron-squirrel-startup')) {
 
 const createWindow = () => {
   let mainWindow = new BrowserWindow({
+    autoHideMenuBar: true,
     width: 800,
     height: 600,
     webPreferences: {
@@ -51,4 +52,12 @@ app.on('ready', createWindow)
 
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
+})
+
+ipcMain.handle('dialog', (event, data) => {
+  return dialog.showOpenDialog(data)
+})
+
+ipcMain.handle('shell.showItemInFolder', (event, data) => {
+  return shell.showItemInFolder(data)
 })

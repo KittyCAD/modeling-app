@@ -1,10 +1,9 @@
 import { FormEvent, useEffect, useRef } from 'react'
-import { remove } from '@tauri-apps/plugin-fs'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-} from 'lib/tauriFS'
+} from 'lib/desktopFS'
 import { ActionButton } from 'components/ActionButton'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from 'components/AppHeader'
@@ -131,7 +130,7 @@ const Home = () => {
         }
 
         await renameProjectDirectory(
-          await join(context.defaultDirectory, oldName),
+          window.electron.path.join(context.defaultDirectory, oldName),
           name
         )
         return `Successfully renamed "${oldName}" to "${name}"`
@@ -140,7 +139,7 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await remove(await join(context.defaultDirectory, event.data.name), {
+        await window.electron.rm(window.electron.path.join(context.defaultDirectory, event.data.name), {
           recursive: true,
         })
         return `Successfully deleted "${event.data.name}"`
@@ -192,15 +191,15 @@ const Home = () => {
       new FormData(e.target as HTMLFormElement)
     )
 
-    if (newProjectName !== project.file.name) {
+    if (newProjectName !== project.name) {
       send('Rename project', {
-        data: { oldName: project.file.name, newName: newProjectName },
+        data: { oldName: project.name, newName: newProjectName },
       })
     }
   }
 
   async function handleDeleteProject(project: Project) {
-    send('Delete project', { data: { name: project.file.name || '' } })
+    send('Delete project', { data: { name: project.name || '' } })
   }
 
   return (
@@ -296,7 +295,7 @@ const Home = () => {
                 <ul className="grid w-full grid-cols-4 gap-4">
                   {searchResults.sort(getSortFunction(sort)).map((project) => (
                     <ProjectCard
-                      key={project.file.name}
+                      key={project.name}
                       project={project}
                       handleRenameProject={handleRenameProject}
                       handleDeleteProject={handleDeleteProject}

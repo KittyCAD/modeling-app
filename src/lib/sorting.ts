@@ -36,9 +36,9 @@ export function getSortFunction(sortBy: string) {
   }
 
   const sortByModified = (a: Project, b: Project) => {
-    if (a.metadata?.modified && b.metadata?.modified) {
-      const aDate = new Date(a.metadata.modified)
-      const bDate = new Date(b.metadata.modified)
+    if (a.metadata?.mtimeMs && b.metadata?.mtimeMs) {
+      const aDate = new Date(a.metadata.mtimeMs)
+      const bDate = new Date(b.metadata.mtimeMs)
       return !sortBy || sortBy.includes('desc')
         ? bDate.getTime() - aDate.getTime()
         : aDate.getTime() - bDate.getTime()

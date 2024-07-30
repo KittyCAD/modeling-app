@@ -24,7 +24,7 @@ export const ProjectCardRenameForm = forwardRef(
           required
           autoCorrect="off"
           autoCapitalize="off"
-          defaultValue={project.file.name}
+          defaultValue={project.name}
           ref={ref}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

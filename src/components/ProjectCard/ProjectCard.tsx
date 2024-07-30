@@ -36,8 +36,8 @@ function ProjectCard({
     void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
-  function getDisplayedTime(dateStr: string) {
-    const date = new Date(dateStr)
+  function getDisplayedTime(dateTimeMs: number) {
+    const date = new Date(dateTimeMs)
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     return date.getTime() < startOfToday.getTime()
@@ -103,7 +103,7 @@ function ProjectCard({
             />
           ) : (
             <h3 className="font-sans relative z-0 p-2">
-              {project.file.name?.replace(FILE_EXT, '')}
+              {project.name?.replace(FILE_EXT, '')}
             </h3>
           )}
           <span className="px-2 text-chalkboard-60 text-xs">
@@ -113,8 +113,8 @@ function ProjectCard({
           </span>
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
-            {project.metadata && project.metadata?.modified
-              ? getDisplayedTime(project.metadata.modified)
+            {project.metadata && project.metadata.mtimeMs
+              ? getDisplayedTime(project.metadata.mtimeMs)
               : 'never'}
           </span>
         </div>
@@ -169,11 +169,11 @@ function ProjectCard({
           onDismiss={() => setIsConfirmingDelete(false)}
         >
           <p className="my-4">
-            This will permanently delete "{project.file.name || 'this file'}
+            This will permanently delete "{project.name || 'this file'}
             ".
           </p>
           <p className="my-4">
-            Are you sure you want to delete "{project.file.name || 'this file'}
+            Are you sure you want to delete "{project.name || 'this file'}
             "? This action cannot be undone.
           </p>
         </DeleteConfirmationDialog>
