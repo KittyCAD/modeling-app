@@ -1,0 +1,381 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`testing createArtifactMap > code with an extrusion, fillet and sketch of face: > snapshot of the artifactMap 1`] = `
+Map {
+  "e8706df4-a979-4b2f-b36c-502e3291f437" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        43,
+        70,
+      ],
+    },
+    "pathIds": [
+      "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    ],
+    "type": "plane",
+  },
+  "f74eb16c-f998-4dc1-b43f-ea0a92b588b8" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        43,
+        70,
+      ],
+    },
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "planeId": "e8706df4-a979-4b2f-b36c-502e3291f437",
+    "segIds": [
+      "efa59110-a4a3-4a61-b255-99f6b056ae40",
+      "75495f31-bda9-4f16-a45d-a71d31e4bb76",
+      "a4626a0a-a84f-4be8-a778-0d8f132144a6",
+      "d7b5a3bb-0f3a-4bd1-9a88-269276deac37",
+      "4c144cfd-f325-47e1-a885-08d57c2570fc",
+    ],
+    "type": "path",
+  },
+  "efa59110-a4a3-4a61-b255-99f6b056ae40" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        76,
+        92,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "surfId": "8b1c67e1-5834-4a11-bd62-318042433282",
+    "type": "segment",
+  },
+  "75495f31-bda9-4f16-a45d-a71d31e4bb76" => {
+    "blendId": "43b8b695-2c22-44b9-ab8b-c3c95dac66ce",
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        98,
+        125,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "surfId": "70650cc6-cb53-4721-b8aa-43113aa5f989",
+    "type": "segment",
+  },
+  "a4626a0a-a84f-4be8-a778-0d8f132144a6" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        131,
+        156,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "surfId": "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57",
+    "type": "segment",
+  },
+  "d7b5a3bb-0f3a-4bd1-9a88-269276deac37" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        162,
+        209,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "surfId": "246f4bfa-91c9-4f18-b8b6-e0fd1fa826f5",
+    "type": "segment",
+  },
+  "4c144cfd-f325-47e1-a885-08d57c2570fc" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        215,
+        223,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "surfId": "",
+    "type": "segment",
+  },
+  "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        243,
+        266,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "surfIds": [
+      "246f4bfa-91c9-4f18-b8b6-e0fd1fa826f5",
+      "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57",
+      "70650cc6-cb53-4721-b8aa-43113aa5f989",
+      "8b1c67e1-5834-4a11-bd62-318042433282",
+      "b8880b20-b7ec-47b3-9310-d9becc0980ec",
+      "eac34d9a-ed17-4e22-9027-7809f63727f9",
+    ],
+    "type": "extrusion",
+  },
+  "246f4bfa-91c9-4f18-b8b6-e0fd1fa826f5" => {
+    "blendEdgeIds": [],
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "pathIds": [],
+    "segId": "d7b5a3bb-0f3a-4bd1-9a88-269276deac37",
+    "type": "wall",
+  },
+  "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57" => {
+    "blendEdgeIds": [],
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "pathIds": [
+      "a36005c6-2841-43ba-b0e8-5529b176b569",
+    ],
+    "segId": "a4626a0a-a84f-4be8-a778-0d8f132144a6",
+    "type": "wall",
+  },
+  "70650cc6-cb53-4721-b8aa-43113aa5f989" => {
+    "blendEdgeIds": [],
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "pathIds": [],
+    "segId": "75495f31-bda9-4f16-a45d-a71d31e4bb76",
+    "type": "wall",
+  },
+  "8b1c67e1-5834-4a11-bd62-318042433282" => {
+    "blendEdgeIds": [],
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "pathIds": [],
+    "segId": "efa59110-a4a3-4a61-b255-99f6b056ae40",
+    "type": "wall",
+  },
+  "b8880b20-b7ec-47b3-9310-d9becc0980ec" => {
+    "blendEdgeIds": [],
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "pathIds": [],
+    "subType": "start",
+    "type": "cap",
+  },
+  "eac34d9a-ed17-4e22-9027-7809f63727f9" => {
+    "blendEdgeIds": [],
+    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "pathIds": [],
+    "subType": "end",
+    "type": "cap",
+  },
+  "43b8b695-2c22-44b9-ab8b-c3c95dac66ce" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        272,
+        311,
+      ],
+    },
+    "consumedEdgeId": "75495f31-bda9-4f16-a45d-a71d31e4bb76",
+    "edgeIds": [],
+    "subType": "fillet",
+    "surfId": "",
+    "type": "blend",
+  },
+  "a36005c6-2841-43ba-b0e8-5529b176b569" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        368,
+        395,
+      ],
+    },
+    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "planeId": "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57",
+    "segIds": [
+      "31d5042c-ef91-4cd0-a47b-fc7cbee6771a",
+      "80026569-493b-4a5b-b790-c4ea01d1a4c7",
+      "6cf6080a-f31a-4945-be81-20270a74c157",
+      "64271131-7c33-47a4-86b1-0cd7727a9675",
+    ],
+    "type": "path",
+  },
+  "31d5042c-ef91-4cd0-a47b-fc7cbee6771a" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        401,
+        416,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+    "surfId": "15c92b98-556f-461c-bed5-a11c3bc362bb",
+    "type": "segment",
+  },
+  "80026569-493b-4a5b-b790-c4ea01d1a4c7" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        422,
+        438,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+    "surfId": "e774d346-992a-4b0d-99d1-6c1ea8bb7911",
+    "type": "segment",
+  },
+  "6cf6080a-f31a-4945-be81-20270a74c157" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        444,
+        491,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+    "surfId": "a0504790-6e5a-4293-bba4-472b744439fc",
+    "type": "segment",
+  },
+  "64271131-7c33-47a4-86b1-0cd7727a9675" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        497,
+        505,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+    "surfId": "",
+    "type": "segment",
+  },
+  "da43de22-cf4c-43bb-85c1-481443fd373c" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        525,
+        546,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+    "surfIds": [
+      "a0504790-6e5a-4293-bba4-472b744439fc",
+      "e774d346-992a-4b0d-99d1-6c1ea8bb7911",
+      "15c92b98-556f-461c-bed5-a11c3bc362bb",
+      "476bdf22-4da3-4f44-94c7-9be195ef5439",
+      "aa2981d9-6a30-4a1a-9b2e-ef5bcfa54557",
+    ],
+    "type": "extrusion",
+  },
+  "a0504790-6e5a-4293-bba4-472b744439fc" => {
+    "blendEdgeIds": [],
+    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "pathIds": [],
+    "segId": "6cf6080a-f31a-4945-be81-20270a74c157",
+    "type": "wall",
+  },
+  "e774d346-992a-4b0d-99d1-6c1ea8bb7911" => {
+    "blendEdgeIds": [],
+    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "pathIds": [],
+    "segId": "80026569-493b-4a5b-b790-c4ea01d1a4c7",
+    "type": "wall",
+  },
+  "15c92b98-556f-461c-bed5-a11c3bc362bb" => {
+    "blendEdgeIds": [],
+    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "pathIds": [],
+    "segId": "31d5042c-ef91-4cd0-a47b-fc7cbee6771a",
+    "type": "wall",
+  },
+  "476bdf22-4da3-4f44-94c7-9be195ef5439" => {
+    "blendEdgeIds": [],
+    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "pathIds": [],
+    "subType": "start",
+    "type": "cap",
+  },
+  "aa2981d9-6a30-4a1a-9b2e-ef5bcfa54557" => {
+    "blendEdgeIds": [],
+    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "pathIds": [],
+    "subType": "end",
+    "type": "cap",
+  },
+}
+`;

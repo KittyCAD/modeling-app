@@ -17,6 +17,9 @@ import fsp from 'fs/promises'
 import fs from 'fs'
 import { chromium } from 'playwright'
 import * as d3 from 'd3-force'
+import path from 'path'
+import pixelmatch from 'pixelmatch'
+import { PNG } from 'pngjs'
 
 /*
 Note this is an integration test, these tests connect to our real dev server and make websocket commands.
@@ -208,7 +211,10 @@ describe('testing createArtifactMap', () => {
         (segment) => expandSegment(segment[1], theMap)
       )
       expect(segments).toHaveLength(9)
-      console.log(segments)
+    })
+
+    it('snapshot of the artifactMap', () => {
+      expect(theMap).toMatchSnapshot()
     })
 
     it('screenshot graph', async () => {
@@ -428,14 +434,38 @@ async function GraphArtifactMap(
   `)
   await page.waitForSelector('#plotly-graph')
   const element = await page.$('#plotly-graph')
+
   // @ts-ignore
   await element.screenshot({
-    path: `src/lang/std/artifactMapGraphs/${imageName}`,
+    path: `./e2e/playwright/temp3.png`,
   })
+
   await browser.close()
 
-  // Check if the PNG file was created
-  expect(fs.existsSync(`src/lang/std/artifactMapGraphs/${imageName}`)).toBe(
-    true
+  const img1Path = path.resolve(`./src/lang/std/artifactMapGraphs/${imageName}`)
+  const img2Path = path.resolve('./e2e/playwright/temp3.png')
+
+  const img1 = PNG.sync.read(fs.readFileSync(img1Path))
+  const img2 = PNG.sync.read(fs.readFileSync(img2Path))
+
+  const { width, height } = img1
+  const diff = new PNG({ width, height })
+
+  const numDiffPixels = pixelmatch(
+    img1.data,
+    img2.data,
+    diff.data,
+    width,
+    height,
+    { threshold: 0.1 }
   )
+
+  if (numDiffPixels > 10) {
+    console.warn('numDiffPixels', numDiffPixels)
+    // write file out to final place
+    fs.writeFileSync(
+      `src/lang/std/artifactMapGraphs/${imageName}`,
+      PNG.sync.write(img2)
+    )
+  }
 }
