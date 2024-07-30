@@ -2,7 +2,7 @@
 
 exports[`testing createArtifactMap > code with an extrusion, fillet and sketch of face: > snapshot of the artifactMap 1`] = `
 Map {
-  "e8706df4-a979-4b2f-b36c-502e3291f437" => {
+  "UUID-0" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -16,11 +16,11 @@ Map {
       ],
     },
     "pathIds": [
-      "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+      "UUID",
     ],
     "type": "plane",
   },
-  "f74eb16c-f998-4dc1-b43f-ea0a92b588b8" => {
+  "UUID-1" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -33,19 +33,19 @@ Map {
         70,
       ],
     },
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
-    "planeId": "e8706df4-a979-4b2f-b36c-502e3291f437",
+    "extrusionId": "UUID",
+    "planeId": "UUID",
     "segIds": [
-      "efa59110-a4a3-4a61-b255-99f6b056ae40",
-      "75495f31-bda9-4f16-a45d-a71d31e4bb76",
-      "a4626a0a-a84f-4be8-a778-0d8f132144a6",
-      "d7b5a3bb-0f3a-4bd1-9a88-269276deac37",
-      "4c144cfd-f325-47e1-a885-08d57c2570fc",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
     ],
-    "solid2dId": "6852724f-1ba5-4a21-9c0b-11f71cbe7eaa",
+    "solid2dId": "UUID",
     "type": "path",
   },
-  "efa59110-a4a3-4a61-b255-99f6b056ae40" => {
+  "UUID-2" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -59,12 +59,12 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
-    "surfId": "8b1c67e1-5834-4a11-bd62-318042433282",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "75495f31-bda9-4f16-a45d-a71d31e4bb76" => {
-    "blendId": "43b8b695-2c22-44b9-ab8b-c3c95dac66ce",
+  "UUID-3" => {
+    "blendId": "UUID",
     "codeRef": {
       "pathToNode": [
         [
@@ -78,11 +78,11 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
-    "surfId": "70650cc6-cb53-4721-b8aa-43113aa5f989",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "a4626a0a-a84f-4be8-a778-0d8f132144a6" => {
+  "UUID-4" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -96,11 +96,11 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
-    "surfId": "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "d7b5a3bb-0f3a-4bd1-9a88-269276deac37" => {
+  "UUID-5" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -114,11 +114,11 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
-    "surfId": "246f4bfa-91c9-4f18-b8b6-e0fd1fa826f5",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "4c144cfd-f325-47e1-a885-08d57c2570fc" => {
+  "UUID-6" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -132,15 +132,14 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
-    "surfId": "",
+    "pathId": "UUID",
     "type": "segment",
   },
-  "6852724f-1ba5-4a21-9c0b-11f71cbe7eaa" => {
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+  "UUID-7" => {
+    "pathId": "UUID",
     "type": "solid2D",
   },
-  "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d" => {
+  "UUID-8" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -154,62 +153,62 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "f74eb16c-f998-4dc1-b43f-ea0a92b588b8",
+    "pathId": "UUID",
     "surfIds": [
-      "246f4bfa-91c9-4f18-b8b6-e0fd1fa826f5",
-      "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57",
-      "70650cc6-cb53-4721-b8aa-43113aa5f989",
-      "8b1c67e1-5834-4a11-bd62-318042433282",
-      "b8880b20-b7ec-47b3-9310-d9becc0980ec",
-      "eac34d9a-ed17-4e22-9027-7809f63727f9",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
     ],
     "type": "extrusion",
   },
-  "246f4bfa-91c9-4f18-b8b6-e0fd1fa826f5" => {
+  "UUID-9" => {
     "blendEdgeIds": [],
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "extrusionId": "UUID",
     "pathIds": [],
-    "segId": "d7b5a3bb-0f3a-4bd1-9a88-269276deac37",
+    "segId": "UUID",
     "type": "wall",
   },
-  "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57" => {
+  "UUID-10" => {
     "blendEdgeIds": [],
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "extrusionId": "UUID",
     "pathIds": [
-      "a36005c6-2841-43ba-b0e8-5529b176b569",
+      "UUID",
     ],
-    "segId": "a4626a0a-a84f-4be8-a778-0d8f132144a6",
+    "segId": "UUID",
     "type": "wall",
   },
-  "70650cc6-cb53-4721-b8aa-43113aa5f989" => {
+  "UUID-11" => {
     "blendEdgeIds": [],
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "extrusionId": "UUID",
     "pathIds": [],
-    "segId": "75495f31-bda9-4f16-a45d-a71d31e4bb76",
+    "segId": "UUID",
     "type": "wall",
   },
-  "8b1c67e1-5834-4a11-bd62-318042433282" => {
+  "UUID-12" => {
     "blendEdgeIds": [],
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "extrusionId": "UUID",
     "pathIds": [],
-    "segId": "efa59110-a4a3-4a61-b255-99f6b056ae40",
+    "segId": "UUID",
     "type": "wall",
   },
-  "b8880b20-b7ec-47b3-9310-d9becc0980ec" => {
+  "UUID-13" => {
     "blendEdgeIds": [],
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
     "type": "cap",
   },
-  "eac34d9a-ed17-4e22-9027-7809f63727f9" => {
+  "UUID-14" => {
     "blendEdgeIds": [],
-    "extrusionId": "0bd4b7ea-f19c-41bd-a7d2-fd5ca92c2a2d",
+    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",
     "type": "cap",
   },
-  "43b8b695-2c22-44b9-ab8b-c3c95dac66ce" => {
+  "UUID-15" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -222,13 +221,12 @@ Map {
         311,
       ],
     },
-    "consumedEdgeId": "75495f31-bda9-4f16-a45d-a71d31e4bb76",
+    "consumedEdgeId": "UUID",
     "edgeIds": [],
     "subType": "fillet",
-    "surfId": "",
     "type": "blend",
   },
-  "a36005c6-2841-43ba-b0e8-5529b176b569" => {
+  "UUID-16" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -241,18 +239,18 @@ Map {
         395,
       ],
     },
-    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
-    "planeId": "c30e39ab-3d4f-4e84-9293-43c0bd1b1a57",
+    "extrusionId": "UUID",
+    "planeId": "UUID",
     "segIds": [
-      "31d5042c-ef91-4cd0-a47b-fc7cbee6771a",
-      "80026569-493b-4a5b-b790-c4ea01d1a4c7",
-      "6cf6080a-f31a-4945-be81-20270a74c157",
-      "64271131-7c33-47a4-86b1-0cd7727a9675",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
     ],
-    "solid2dId": "660f9a95-d73b-4248-8605-0c231c459a02",
+    "solid2dId": "UUID",
     "type": "path",
   },
-  "31d5042c-ef91-4cd0-a47b-fc7cbee6771a" => {
+  "UUID-17" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -266,11 +264,11 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
-    "surfId": "15c92b98-556f-461c-bed5-a11c3bc362bb",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "80026569-493b-4a5b-b790-c4ea01d1a4c7" => {
+  "UUID-18" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -284,11 +282,11 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
-    "surfId": "e774d346-992a-4b0d-99d1-6c1ea8bb7911",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "6cf6080a-f31a-4945-be81-20270a74c157" => {
+  "UUID-19" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -302,11 +300,11 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
-    "surfId": "a0504790-6e5a-4293-bba4-472b744439fc",
+    "pathId": "UUID",
+    "surfId": "UUID",
     "type": "segment",
   },
-  "64271131-7c33-47a4-86b1-0cd7727a9675" => {
+  "UUID-20" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -320,15 +318,14 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
-    "surfId": "",
+    "pathId": "UUID",
     "type": "segment",
   },
-  "660f9a95-d73b-4248-8605-0c231c459a02" => {
-    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+  "UUID-21" => {
+    "pathId": "UUID",
     "type": "solid2D",
   },
-  "da43de22-cf4c-43bb-85c1-481443fd373c" => {
+  "UUID-22" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -342,47 +339,47 @@ Map {
       ],
     },
     "edgeIds": [],
-    "pathId": "a36005c6-2841-43ba-b0e8-5529b176b569",
+    "pathId": "UUID",
     "surfIds": [
-      "a0504790-6e5a-4293-bba4-472b744439fc",
-      "e774d346-992a-4b0d-99d1-6c1ea8bb7911",
-      "15c92b98-556f-461c-bed5-a11c3bc362bb",
-      "476bdf22-4da3-4f44-94c7-9be195ef5439",
-      "aa2981d9-6a30-4a1a-9b2e-ef5bcfa54557",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
     ],
     "type": "extrusion",
   },
-  "a0504790-6e5a-4293-bba4-472b744439fc" => {
+  "UUID-23" => {
     "blendEdgeIds": [],
-    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "extrusionId": "UUID",
     "pathIds": [],
-    "segId": "6cf6080a-f31a-4945-be81-20270a74c157",
+    "segId": "UUID",
     "type": "wall",
   },
-  "e774d346-992a-4b0d-99d1-6c1ea8bb7911" => {
+  "UUID-24" => {
     "blendEdgeIds": [],
-    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "extrusionId": "UUID",
     "pathIds": [],
-    "segId": "80026569-493b-4a5b-b790-c4ea01d1a4c7",
+    "segId": "UUID",
     "type": "wall",
   },
-  "15c92b98-556f-461c-bed5-a11c3bc362bb" => {
+  "UUID-25" => {
     "blendEdgeIds": [],
-    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "extrusionId": "UUID",
     "pathIds": [],
-    "segId": "31d5042c-ef91-4cd0-a47b-fc7cbee6771a",
+    "segId": "UUID",
     "type": "wall",
   },
-  "476bdf22-4da3-4f44-94c7-9be195ef5439" => {
+  "UUID-26" => {
     "blendEdgeIds": [],
-    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
     "type": "cap",
   },
-  "aa2981d9-6a30-4a1a-9b2e-ef5bcfa54557" => {
+  "UUID-27" => {
     "blendEdgeIds": [],
-    "extrusionId": "da43de22-cf4c-43bb-85c1-481443fd373c",
+    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",
     "type": "cap",

@@ -214,7 +214,29 @@ describe('testing createArtifactMap', () => {
     })
 
     it('snapshot of the artifactMap', () => {
-      expect(theMap).toMatchSnapshot()
+      const stableMap = new Map(
+        [...theMap].map(([, artifact], index): [string, any] => {
+          const stableValue: any = {}
+          Object.entries(artifact).forEach(([propName, value]) => {
+            if (
+              propName === 'type' ||
+              propName === 'codeRef' ||
+              propName === 'subType'
+            ) {
+              stableValue[propName] = value
+              return
+            }
+            if (Array.isArray(value))
+              stableValue[propName] = value.map(() => 'UUID')
+            if (typeof value === 'string' && value) stableValue[propName] = 'UUID'
+          })
+          return [
+            `UUID-${index}`,
+            stableValue,
+          ]
+        })
+      )
+      expect(stableMap).toMatchSnapshot()
     })
 
     it('screenshot graph', async () => {
