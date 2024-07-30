@@ -212,6 +212,7 @@ export class KclManager {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
+    // Make sure we clear before starting again. End session will do this.
     this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({
