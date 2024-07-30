@@ -10,6 +10,12 @@ const MIN_DIFF: f64 = 0.99;
 
 // mod server;
 
+macro_rules! kcl_input {
+    ($file:literal) => {
+        include_str!(concat!("inputs/", $file, ".kcl"))
+    };
+}
+
 async fn new_context(units: UnitLength) -> Result<ExecutorContext> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
@@ -69,7 +75,7 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face() {
-    let code = include_str!("inputs/sketch_on_face.kcl");
+    let code = kcl_input!("sketch_on_face");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, MIN_DIFF);
@@ -77,35 +83,35 @@ async fn serial_test_sketch_on_face() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_riddle_small() {
-    let code = include_str!("inputs/riddle_small.kcl");
+    let code = kcl_input!("riddle_small");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/riddle_small.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_lego() {
-    let code = include_str!("inputs/lego.kcl");
+    let code = kcl_input!("lego");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/lego.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pipe_as_arg() {
-    let code = include_str!("inputs/pipe_as_arg.kcl");
+    let code = kcl_input!("pipe_as_arg");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipe_as_arg.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_sugar() {
-    let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
+    let code = kcl_input!("pentagon_fillet_sugar");
     let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_sugar.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face_start() {
-    let code = include_str!("inputs/sketch_on_face_start.kcl");
+    let code = kcl_input!("sketch_on_face_start");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_start.png", &result, MIN_DIFF);
@@ -113,14 +119,14 @@ async fn serial_test_sketch_on_face_start() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_mike_stress_lines() {
-    let code = include_str!("inputs/mike_stress_test.kcl");
+    let code = kcl_input!("mike_stress_test");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/mike_stress_test.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face_end() {
-    let code = include_str!("inputs/sketch_on_face_end.kcl");
+    let code = kcl_input!("sketch_on_face_end");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_end.png", &result, MIN_DIFF);
@@ -128,7 +134,7 @@ async fn serial_test_sketch_on_face_end() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face_end_negative_extrude() {
-    let code = include_str!("inputs/sketch_on_face_end_negative_extrude.kcl");
+    let code = kcl_input!("sketch_on_face_end_negative_extrude");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
@@ -140,7 +146,7 @@ async fn serial_test_sketch_on_face_end_negative_extrude() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_fillet_duplicate_tags() {
-    let code = include_str!("inputs/fillet_duplicate_tags.kcl");
+    let code = kcl_input!("fillet_duplicate_tags");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
@@ -388,7 +394,7 @@ async fn serial_test_execute_engine_error_return() {
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_i_shape() {
     // This is some code from lee that starts a pipe expression with a variable.
-    let code = include_str!("inputs/i_shape.kcl");
+    let code = kcl_input!("i_shape");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/i_shape.png", &result, MIN_DIFF);
@@ -397,7 +403,7 @@ async fn serial_test_execute_i_shape() {
 #[tokio::test(flavor = "multi_thread")]
 #[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
 async fn serial_test_execute_pipes_on_pipes() {
-    let code = include_str!("inputs/pipes_on_pipes.kcl");
+    let code = kcl_input!("pipes_on_pipes");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, MIN_DIFF);
@@ -405,7 +411,7 @@ async fn serial_test_execute_pipes_on_pipes() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_cylinder() {
-    let code = include_str!("inputs/cylinder.kcl");
+    let code = kcl_input!("cylinder");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cylinder.png", &result, MIN_DIFF);
@@ -413,7 +419,7 @@ async fn serial_test_execute_cylinder() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_kittycad_svg() {
-    let code = include_str!("inputs/kittycad_svg.kcl");
+    let code = kcl_input!("kittycad_svg");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, MIN_DIFF);
@@ -2458,14 +2464,14 @@ let p = triangle(200)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_global_tags() {
-    let code = include_str!("inputs/global-tags.kcl");
+    let code = kcl_input!("global-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_extrude_inside_fn_with_tags() {
-    let code = include_str!("inputs/extrude-inside-fn-with-tags.kcl");
+    let code = kcl_input!("extrude-inside-fn-with-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/extrude-inside-fn-with-tags.png",
@@ -2476,21 +2482,21 @@ async fn serial_test_extrude_inside_fn_with_tags() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pattern_vase() {
-    let code = include_str!("inputs/pattern_vase.kcl");
+    let code = kcl_input!("pattern_vase");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pattern_vase.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_scoped_tags() {
-    let code = include_str!("inputs/scoped-tags.kcl");
+    let code = kcl_input!("scoped-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/scoped_tags.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_order_sketch_extrude_in_order() {
-    let code = include_str!("inputs/order-sketch-extrude-in-order.kcl");
+    let code = kcl_input!("order-sketch-extrude-in-order");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/order-sketch-extrude-in-order.png",
@@ -2501,7 +2507,7 @@ async fn serial_test_order_sketch_extrude_in_order() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_order_sketch_extrude_out_of_order() {
-    let code = include_str!("inputs/order-sketch-extrude-out-of-order.kcl");
+    let code = kcl_input!("order-sketch-extrude-out-of-order");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/order-sketch-extrude-out-of-order.png",
@@ -2512,7 +2518,7 @@ async fn serial_test_order_sketch_extrude_out_of_order() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_extrude_custom_plane() {
-    let code = include_str!("inputs/extrude-custom-plane.kcl");
+    let code = kcl_input!("extrude-custom-plane");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/extrude-custom-plane.png", &result, MIN_DIFF);
 }
