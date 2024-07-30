@@ -424,14 +424,21 @@ export function expandExtrusion(
   }
 }
 
-export function expandSegment(segment: _SegmentArtifact, artifactMap: ArtifactMap): SegmentArtifact | Error {
+export function expandSegment(
+  segment: _SegmentArtifact,
+  artifactMap: ArtifactMap
+): SegmentArtifact | Error {
   const path = getArtifactOfTypes(segment.pathId, artifactMap, ['path'])
   const surf = getArtifactOfTypes(segment.surfId, artifactMap, ['wall'])
-  const edges = getArtifactsOfType(segment.edgeIds, artifactMap, ['extrudeEdge'])
-  const blend = segment.blendId ? getArtifactOfType(segment.blendId, artifactMap, 'blend') : undefined
-  if(err(path) ) return path
-  if(err(surf)) return surf
-  if(err(blend)) return blend
+  const edges = getArtifactsOfType(segment.edgeIds, artifactMap, [
+    'extrudeEdge',
+  ])
+  const blend = segment.blendId
+    ? getArtifactOfType(segment.blendId, artifactMap, 'blend')
+    : undefined
+  if (err(path)) return path
+  if (err(surf)) return surf
+  if (err(blend)) return blend
 
   return {
     type: 'segment',
@@ -439,7 +446,7 @@ export function expandSegment(segment: _SegmentArtifact, artifactMap: ArtifactMa
     surf,
     edges: Array.from(edges.values()),
     blend,
-    codeRef: segment.codeRef
+    codeRef: segment.codeRef,
   }
 }
 

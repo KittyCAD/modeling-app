@@ -196,7 +196,9 @@ describe('testing createArtifactMap', () => {
         const firstExtrusionIsACubeIE6Sides = 6
         const secondExtrusionIsATriangularPrismIE5Sides = 5
         expect(extrusion.surfs.length).toBe(
-          !index ? firstExtrusionIsACubeIE6Sides : secondExtrusionIsATriangularPrismIE5Sides
+          !index
+            ? firstExtrusionIsACubeIE6Sides
+            : secondExtrusionIsATriangularPrismIE5Sides
         )
       })
     })
@@ -241,9 +243,7 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
       // by checking the arrow heads going both ways, on the graph.
       await GraphArtifactMap(theMap, 2500, 2500, 'sketchOnFaceOnFaceEtc.png')
     }, 20000)
-
   })
-
 })
 
 function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
