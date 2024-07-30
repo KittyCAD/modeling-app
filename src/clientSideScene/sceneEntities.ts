@@ -27,6 +27,7 @@ import {
   defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
+  OnClickCallbackArgs,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   SEGMENT_LENGTH_LABEL,
@@ -78,6 +79,7 @@ import {
 } from 'lang/std/sketch'
 import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
+  addStartProfileAt,
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
@@ -294,6 +296,51 @@ export class SceneEntities {
   removeIntersectionPlane() {
     const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
     if (intersectionPlane) this.scene.remove(intersectionPlane)
+  }
+
+  setupNoPointsListener({
+    sketchDetails,
+    afterClick,
+  }: {
+    sketchDetails: SketchDetails
+    afterClick: (args: OnClickCallbackArgs) => void
+  }) {
+    // Create a THREEjs plane to raycast clicks onto
+    this.createIntersectionPlane()
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(...sketchDetails.yAxis),
+      new Vector3(...sketchDetails.zAxis)
+    )
+
+    // Position the click raycast plane
+    if (this.intersectionPlane) {
+      this.intersectionPlane.setRotationFromQuaternion(quaternion)
+      this.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+    }
+    sceneInfra.setCallbacks({
+      onClick: async (args) => {
+        if (!args) return
+        if (args.mouseEvent.which !== 1) return
+        const { intersectionPoint } = args
+        if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
+        const addStartProfileAtRes = addStartProfileAt(
+          kclManager.ast,
+          sketchDetails.sketchPathToNode,
+          [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
+        )
+
+        if (trap(addStartProfileAtRes)) return
+        const { modifiedAst } = addStartProfileAtRes
+
+        await kclManager.updateAst(modifiedAst, false)
+        this.removeIntersectionPlane()
+
+        // Now perform the caller-specified action
+        afterClick(args)
+      },
+    })
   }
 
   async setupSketch({
@@ -672,21 +719,6 @@ export class SceneEntities {
       ...this.mouseEnterLeaveCallbacks(),
     })
   }
-  setupRectangleOriginListener = () => {
-    sceneInfra.setCallbacks({
-      onClick: (args) => {
-        const twoD = args.intersectionPoint?.twoD
-        if (!twoD) {
-          console.warn(`This click didn't have a 2D intersection`, args)
-          return
-        }
-        sceneInfra.modelingSend({
-          type: 'Add rectangle origin',
-          data: [twoD.x, twoD.y],
-        })
-      },
-    })
-  }
   setupDraftRectangle = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
@@ -704,6 +736,8 @@ export class SceneEntities {
     if (trap(_node1)) return Promise.reject(_node1)
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
+    const startSketchOn = _node1.node?.declarations
+    const startSketchOnInit = startSketchOn?.[0]?.init
 
     const tags: [string, string, string] = [
       findUniqueName(_ast, 'rectangleSegmentA'),
@@ -711,15 +745,6 @@ export class SceneEntities {
       findUniqueName(_ast, 'rectangleSegmentC'),
     ]
 
-    const _node2 = getNodeFromPath<VariableDeclaration>(
-      _ast,
-      sketchPathToNode || [],
-      'VariableDeclaration'
-    )
-    if (trap(_node2)) return Promise.reject(_node2)
-    const startSketchOn = _node2.node?.declarations
-
-    const startSketchOnInit = startSketchOn?.[0]?.init
     startSketchOn[0].init = createPipeExpression([
       startSketchOnInit,
       ...getRectangleCallExpressions(rectangleOrigin, tags),
@@ -766,6 +791,11 @@ export class SceneEntities {
           programMemoryOverride,
         })
         this.sceneProgramMemory = programMemory
+        console.log('from within onMove', {
+          programMemory,
+          programMemoryOverride,
+          truncatedAst,
+        })
         const sketchGroup = programMemory.get(
           variableDeclarationName
         ) as SketchGroup
