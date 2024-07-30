@@ -116,7 +116,7 @@ jobs:
           echo ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
           # TODO when webkit works on ubuntu remove the os part of the commit message
-          git commit -am "Look at this (photo)Graph *in the voice of Nicklback*" || true
+          git commit -am "Look at this (photo)Graph *in the voice of Nickelback*" || true
           git push
           git push origin ${{ github.head_ref }}
         
