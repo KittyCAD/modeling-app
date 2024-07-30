@@ -5,6 +5,7 @@ import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
   getExtrusionFromSuspectedExtrudeSurface,
+  getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactMap'
 import { err } from 'lib/trap'
@@ -21,7 +22,14 @@ export function useEngineConnectionSubscriptions() {
       callback: ({ data }) => {
         if (data?.entity_id) {
           const artifact = engineCommandManager.artifactMap.get(data.entity_id)
-          if (artifact?.type === 'cap') {
+          if (artifact?.type === 'solid2D') {
+            const codeRef = getSolid2dCodeRef(
+              artifact,
+              engineCommandManager.artifactMap
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange([codeRef.range])
+          } else if (artifact?.type === 'cap') {
             const codeRef = getCapCodeRef(
               artifact,
               engineCommandManager.artifactMap

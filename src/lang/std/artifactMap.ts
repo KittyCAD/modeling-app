@@ -24,7 +24,13 @@ export interface _PathArtifact {
   planeId: string
   segIds: Array<string>
   extrusionId: string
+  solid2dId?: string
   codeRef: CommonCommandProperties
+}
+
+interface _solid2D {
+  type: 'solid2D'
+  pathId: string
 }
 export interface PathArtifact {
   type: 'path'
@@ -114,6 +120,7 @@ export type Artifact =
   | _ExtrudeEdge
   | _Blend
   | BlendEdge
+  | _solid2D
 
 export type ArtifactMap = Map<string, Artifact>
 
@@ -215,16 +222,21 @@ export function createArtifactMap({
           ...path,
           segIds: [...path.segIds, id],
         })
-      // if (
-      //   response.type === 'modeling' &&
-      //   response.data.modeling_response.type === 'close_path'
-      // ) {
-      //   // TODO: the face_id should be the solid2d face, which should be added to the artifactMap
-      //   console.log(
-      //     'close face_id should be solid2d',
-      //     response.data.modeling_response.data.face_id
-      //   )
-      // }
+      if (
+        response.type === 'modeling' &&
+        response.data.modeling_response.type === 'close_path'
+      ) {
+        myMap.set(response.data.modeling_response.data.face_id, {
+          type: 'solid2D',
+          pathId: pathId,
+        })
+        const path = myMap.get(pathId)
+        if (path?.type === 'path')
+          myMap.set(pathId, {
+            ...path,
+            solid2dId: response.data.modeling_response.data.face_id,
+          })
+      }
     } else if (cmd.type === 'extrude') {
       myMap.set(id, {
         type: 'extrusion',
@@ -457,6 +469,15 @@ export function getCapCodeRef(
   const extrusion = getArtifactOfType(cap.extrusionId, artifactMap, 'extrusion')
   if (err(extrusion)) return extrusion
   const path = getArtifactOfType(extrusion.pathId, artifactMap, 'path')
+  if (err(path)) return path
+  return path.codeRef
+}
+
+export function getSolid2dCodeRef(
+  solid2D: _solid2D,
+  artifactMap: ArtifactMap
+): CommonCommandProperties | Error {
+  const path = getArtifactOfType(solid2D.pathId, artifactMap, 'path')
   if (err(path)) return path
   return path.codeRef
 }

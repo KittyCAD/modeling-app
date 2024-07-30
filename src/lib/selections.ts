@@ -33,6 +33,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfType,
   getCapCodeRef,
+  getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactMap'
 
@@ -47,6 +48,7 @@ export type Selection = {
     | 'line-end'
     | 'line-mid'
     | 'extrude-wall'
+    | 'solid2D'
     | 'start-cap'
     | 'end-cap'
     | 'point'
@@ -113,6 +115,20 @@ export async function getEventForSelectWithPoint(
     }
   }
   if (_artifact) {
+    if (_artifact.type === 'solid2D') {
+      const codeRef = getSolid2dCodeRef(
+        _artifact,
+        engineCommandManager.artifactMap
+      )
+      if (err(codeRef)) return null
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: codeRef.range, type: 'solid2D' },
+        },
+      }
+    }
     if (_artifact.type === 'cap') {
       const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactMap)
       if (err(codeRef)) return null
@@ -543,6 +559,17 @@ function codeToIdSelections(
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
+        }
+        if (type === 'solid2D' && entry.artifact.type === 'path') {
+          const solid = engineCommandManager.artifactMap.get(
+            entry.artifact.solid2dId || ''
+          )
+          if (solid?.type !== 'solid2D') return
+          bestCandidate = {
+            artifact: solid,
+            selection: { type, range, ...rest },
+            id: entry.artifact.solid2dId,
+          }
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
           const wall = engineCommandManager.artifactMap.get(
