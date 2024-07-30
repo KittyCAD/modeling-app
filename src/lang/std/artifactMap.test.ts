@@ -192,7 +192,12 @@ function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
   }
 }
 
-async function GraphArtifactMap(theMap: ArtifactMap, sizeX: number, sizeY: number, imageName: string) {
+async function GraphArtifactMap(
+  theMap: ArtifactMap,
+  sizeX: number,
+  sizeY: number,
+  imageName: string
+) {
   const nodes: Array<{ id: string; label: string }> = []
   const edges: Array<{ source: string; target: string; label: string }> = []
   for (const [commandId, artifact] of Array.from(theMap).reverse()) {
@@ -256,8 +261,12 @@ async function GraphArtifactMap(theMap: ArtifactMap, sizeX: number, sizeY: numbe
   const annotations: any[] = []
 
   edges.forEach((edge) => {
-    const sourceNode = nodes.find((node: any) => node.id === (edge as any).source.id)
-    const targetNode = nodes.find((node: any) => node.id === (edge as any).target.id)
+    const sourceNode = nodes.find(
+      (node: any) => node.id === (edge as any).source.id
+    )
+    const targetNode = nodes.find(
+      (node: any) => node.id === (edge as any).target.id
+    )
 
     // Check if nodes are found
     if (!sourceNode || !targetNode) {
@@ -271,14 +280,14 @@ async function GraphArtifactMap(theMap: ArtifactMap, sizeX: number, sizeY: numbe
     edgeTrace.x.push(sourceNode.x, targetNode.x, null)
     // @ts-ignore
     edgeTrace.y.push(sourceNode.y, targetNode.y, null)
-    
+
     // Calculate offset for arrowhead
     const offsetFactor = 0.9 // Adjust this factor to control the offset distance
     // @ts-ignore
     const offsetX = (targetNode.x - sourceNode.x) * offsetFactor
     // @ts-ignore
     const offsetY = (targetNode.y - sourceNode.y) * offsetFactor
-    
+
     // Add arrowhead annotation with offset
     annotations.push({
       // @ts-ignore
@@ -299,7 +308,7 @@ async function GraphArtifactMap(theMap: ArtifactMap, sizeX: number, sizeY: numbe
       arrowwidth: 2,
       arrowcolor: 'darkgray', // Arrowheads in dark gray
     })
-    
+
     // Add edge label annotation closer to the edge tail (25% of the length)
     // @ts-ignore
     const labelX = sourceNode.x * 0.75 + targetNode.x * 0.25
@@ -348,9 +357,13 @@ async function GraphArtifactMap(theMap: ArtifactMap, sizeX: number, sizeY: numbe
   await page.waitForSelector('#plotly-graph')
   const element = await page.$('#plotly-graph')
   // @ts-ignore
-  await element.screenshot({ path: `src/lang/std/artifactMapGraphs/${imageName}` })
+  await element.screenshot({
+    path: `src/lang/std/artifactMapGraphs/${imageName}`,
+  })
   await browser.close()
 
   // Check if the PNG file was created
-  expect(fs.existsSync(`src/lang/std/artifactMapGraphs/${imageName}`)).toBe(true)
+  expect(fs.existsSync(`src/lang/std/artifactMapGraphs/${imageName}`)).toBe(
+    true
+  )
 }

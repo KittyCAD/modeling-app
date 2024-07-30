@@ -267,29 +267,27 @@ export function createArtifactMap({
           }
         }
       )
-      response.data.modeling_response.data.faces.forEach(
-        ({ cap, face_id }) => {
-          if ((cap === 'top' || cap === 'bottom') && face_id) {
-            // const path = myMap.get(cmd.object_id)
-            const path = lastPath
-            if (path?.type === 'path') {
-              myMap.set(face_id, {
-                type: 'cap',
-                subType: cap === 'bottom' ? 'start' : 'end',
-                blendEdgeIds: [],
-                extrusionId: path.extrusionId,
-                pathIds: [],
-              })
-              const extrusion = myMap.get(path.extrusionId)
-              if (extrusion?.type !== 'extrusion') return
-              myMap.set(path.extrusionId, {
-                ...extrusion,
-                surfIds: [...extrusion.surfIds, face_id],
-              })
-            }
+      response.data.modeling_response.data.faces.forEach(({ cap, face_id }) => {
+        if ((cap === 'top' || cap === 'bottom') && face_id) {
+          // const path = myMap.get(cmd.object_id)
+          const path = lastPath
+          if (path?.type === 'path') {
+            myMap.set(face_id, {
+              type: 'cap',
+              subType: cap === 'bottom' ? 'start' : 'end',
+              blendEdgeIds: [],
+              extrusionId: path.extrusionId,
+              pathIds: [],
+            })
+            const extrusion = myMap.get(path.extrusionId)
+            if (extrusion?.type !== 'extrusion') return
+            myMap.set(path.extrusionId, {
+              ...extrusion,
+              surfIds: [...extrusion.surfIds, face_id],
+            })
           }
         }
-      )
+      })
     } else if (cmd.type === 'solid3d_fillet_edge') {
       myMap.set(id, {
         type: 'blend',
