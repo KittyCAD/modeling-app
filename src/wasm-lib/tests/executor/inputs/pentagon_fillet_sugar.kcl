@@ -24,7 +24,7 @@ const plumbus1 =
   |> extrude(plumbusLen, %)
   |> fillet({
        radius: 5,
-       tags: [c1.tags.arc_tag, getOppositeEdge(c1.tags.arc_tag)]
+       tags: [c1.tags.arc_tag]
      }, %)
 const c2 = circl(200, a)
 const plumbus0 =
@@ -32,7 +32,7 @@ const plumbus0 =
   |> extrude(plumbusLen, %)
   |> fillet({
        radius: 5,
-       tags: [c2.tags.arc_tag, getOppositeEdge(c2.tags.arc_tag)]
+       tags: [c2.tags.arc_tag]
      }, %)
 
 

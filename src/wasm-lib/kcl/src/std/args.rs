@@ -8,8 +8,8 @@ use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata, ProgramMemory,
-        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
+        DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata,
+        ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
 };
 
@@ -19,6 +19,7 @@ pub struct Args {
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
     pub current_program_memory: ProgramMemory,
+    pub dynamic_state: DynamicState,
 }
 
 impl Args {
@@ -27,12 +28,14 @@ impl Args {
         source_range: SourceRange,
         ctx: ExecutorContext,
         current_program_memory: ProgramMemory,
+        dynamic_state: DynamicState,
     ) -> Self {
         Self {
             args,
             source_range,
             ctx,
             current_program_memory,
+            dynamic_state,
         }
     }
 
@@ -129,6 +132,10 @@ impl Args {
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                );
+                ids.extend(
+                    self.dynamic_state
+                        .fillet_or_chamfer_ids_on_sketch_group(sketch_group_id),
                 );
                 traversed_sketch_groups.push(sketch_group_id);
             }
