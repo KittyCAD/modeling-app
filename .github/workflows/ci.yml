@@ -85,6 +85,9 @@ jobs:
 
       - run: yarn simpleserver:ci
 
+      - name: Install Chromium Browser
+        run: yarn playwright install chromium --with-deps
+
       - name: run unit tests
         run: yarn test:nowatch
         env:
