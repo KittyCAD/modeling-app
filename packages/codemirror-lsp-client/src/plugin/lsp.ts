@@ -35,7 +35,6 @@ import lspAutocompleteExt from './autocomplete'
 import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
-import lspLintExt from './lint'
 import lspSemanticTokensExt from './semantic-tokens'
 import { Diagnostic } from '@codemirror/lint'
 
@@ -66,6 +65,8 @@ export interface LanguageServerOptions {
   documentUri: string
   allowHTMLContent: boolean
   client: LanguageServerClient
+
+  diagnosticsFn?: () => Diagnostic[]
 
   processLspNotification?: (
     plugin: LanguageServerPlugin,
@@ -574,7 +575,6 @@ export class LanguageServerPluginSpec
       lspFormatExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),
-      lspLintExt(),
       lspSemanticTokensExt(),
     ]
   }
