@@ -8,6 +8,7 @@ import {
   expandPath,
   expandExtrusion,
   ArtifactMap,
+  expandSegment,
 } from './artifactMap'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
@@ -43,9 +44,40 @@ const sketch002 = startSketchOn(extrude001, seg02)
 const extrude002 = extrude(5, sketch002)
 `
 
+const sketchOnFaceOnFaceEtc = `const sketch001 = startSketchOn('XZ')
+|> startProfileAt([0, 0], %)
+|> line([4, 8], %)
+|> line([5, -8], %, $seg01)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+const extrude001 = extrude(6, sketch001)
+const sketch002 = startSketchOn(extrude001, seg01)
+|> startProfileAt([-0.5, 0.5], %)
+|> line([2, 5], %)
+|> line([2, -5], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+const extrude002 = extrude(5, sketch002)
+const sketch003 = startSketchOn(extrude002, 'END')
+|> startProfileAt([1, 1.5], %)
+|> line([0.5, 2], %, $seg02)
+|> line([1, -2], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+const extrude003 = extrude(4, sketch003)
+const sketch004 = startSketchOn(extrude003, seg02)
+|> startProfileAt([-3, 14], %)
+|> line([0.5, 1], %)
+|> line([0.5, -2], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+const extrude004 = extrude(3, sketch004)
+`
+
 // add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
 const codeToWriteCacheFor = {
   exampleCode1,
+  sketchOnFaceOnFaceEtc,
 } as const
 
 type CodeKey = keyof typeof codeToWriteCacheFor
@@ -118,7 +150,7 @@ afterAll(() => {
   engineCommandManager.tearDown()
 })
 
-describe('testing createLinker', () => {
+describe('testing createArtifactMap', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
     let ast: Program
     let theMap: ReturnType<typeof createArtifactMap>
@@ -162,16 +194,56 @@ describe('testing createLinker', () => {
         if (err(extrusion)) throw extrusion
         expect(extrusion.type).toBe('extrusion')
         const firstExtrusionIsACubeIE6Sides = 6
+        const secondExtrusionIsATriangularPrismIE5Sides = 5
         expect(extrusion.surfs.length).toBe(
-          !index ? firstExtrusionIsACubeIE6Sides : 5
+          !index ? firstExtrusionIsACubeIE6Sides : secondExtrusionIsATriangularPrismIE5Sides
         )
       })
     })
 
+    it('there should be 5 + 4 segments,  4 (+close) from the first extrusion and 3 (+close) from the second', () => {
+      const segments = [...filterArtifacts(theMap, ['segment'])].map(
+        (segment) => expandSegment(segment[1], theMap)
+      )
+      expect(segments).toHaveLength(9)
+      console.log(segments)
+    })
+
     it('screenshot graph', async () => {
+      // Ostensibly this takes a screen shot of the graph of the artifactMap
+      // but it's it also tests that all of the id links are correct because if one
+      // of the edges refers to a non-existent node, the graph will throw.
+      // further more we can check that each edge is bi-directional, if it's not
+      // by checking the arrow heads going both ways, on the graph.
       await GraphArtifactMap(theMap, 1400, 1400, 'exampleCode1.png')
     }, 20000)
   })
+})
+
+describe('capture graph of sketchOnFaceOnFace...', () => {
+  describe('code with an extrusion, fillet and sketch of face:', () => {
+    let ast: Program
+    let theMap: ReturnType<typeof createArtifactMap>
+    it('setup', async () => {
+      // putting this logic in here because describe blocks runs before beforeAll has finished
+      const {
+        orderedCommands,
+        responseMap,
+        ast: _ast,
+      } = getCommands('sketchOnFaceOnFaceEtc')
+      ast = _ast
+      theMap = createArtifactMap({ orderedCommands, responseMap, ast })
+
+      // Ostensibly this takes a screen shot of the graph of the artifactMap
+      // but it's it also tests that all of the id links are correct because if one
+      // of the edges refers to a non-existent node, the graph will throw.
+      // further more we can check that each edge is bi-directional, if it's not
+      // by checking the arrow heads going both ways, on the graph.
+      await GraphArtifactMap(theMap, 2500, 2500, 'sketchOnFaceOnFaceEtc.png')
+    }, 20000)
+
+  })
+
 })
 
 function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
@@ -183,8 +255,8 @@ function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
   const file = fs.readFileSync(fullPath, 'utf-8')
   const parsed: CacheShape = JSON.parse(file)
   // these either already exist from the last run, or were created in
-  const orderedCommands = parsed.exampleCode1.orderedCommands
-  const responseMap = parsed.exampleCode1.responseMap
+  const orderedCommands = parsed[codeKey].orderedCommands
+  const responseMap = parsed[codeKey].responseMap
   return {
     orderedCommands,
     responseMap,
@@ -200,7 +272,7 @@ async function GraphArtifactMap(
 ) {
   const nodes: Array<{ id: string; label: string }> = []
   const edges: Array<{ source: string; target: string; label: string }> = []
-  for (const [commandId, artifact] of Array.from(theMap).reverse()) {
+  for (const [commandId, artifact] of theMap) {
     nodes.push({
       id: commandId,
       label: `${artifact.type}-${commandId.slice(0, 6)}`,

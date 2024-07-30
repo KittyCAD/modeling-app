@@ -42,6 +42,14 @@ interface _SegmentArtifact {
   blendId?: string
   codeRef: CommonCommandProperties
 }
+interface SegmentArtifact {
+  type: 'segment'
+  path: _PathArtifact
+  surf: _WallArtifact
+  edges: Array<_ExtrudeEdge>
+  blend?: _Blend
+  codeRef: CommonCommandProperties
+}
 
 interface _ExtrusionArtifact {
   type: 'extrusion'
@@ -73,7 +81,7 @@ interface _CapArtifact {
   pathIds: Array<string>
 }
 
-interface ExtrudeEdge {
+interface _ExtrudeEdge {
   type: 'extrudeEdge'
   segId: string
   extrusionId: string
@@ -81,7 +89,7 @@ interface ExtrudeEdge {
 }
 
 /** A blend is a fillet or chamfer */
-interface Blend {
+interface _Blend {
   type: 'blend'
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: string
@@ -103,8 +111,8 @@ export type Artifact =
   | _ExtrusionArtifact
   | _WallArtifact
   | _CapArtifact
-  | ExtrudeEdge
-  | Blend
+  | _ExtrudeEdge
+  | _Blend
   | BlendEdge
 
 export type ArtifactMap = Map<string, Artifact>
@@ -413,6 +421,25 @@ export function expandExtrusion(
     edges: extrusion.edgeIds,
     pathId: extrusion.pathId,
     codeRef: extrusion.codeRef,
+  }
+}
+
+export function expandSegment(segment: _SegmentArtifact, artifactMap: ArtifactMap): SegmentArtifact | Error {
+  const path = getArtifactOfTypes(segment.pathId, artifactMap, ['path'])
+  const surf = getArtifactOfTypes(segment.surfId, artifactMap, ['wall'])
+  const edges = getArtifactsOfType(segment.edgeIds, artifactMap, ['extrudeEdge'])
+  const blend = segment.blendId ? getArtifactOfType(segment.blendId, artifactMap, 'blend') : undefined
+  if(err(path) ) return path
+  if(err(surf)) return surf
+  if(err(blend)) return blend
+
+  return {
+    type: 'segment',
+    path,
+    surf,
+    edges: Array.from(edges.values()),
+    blend,
+    codeRef: segment.codeRef
   }
 }
 
