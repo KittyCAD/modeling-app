@@ -44,7 +44,7 @@ const example = extrude(1, exampleSketch)
 * `sketch_group_set`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -118,7 +118,7 @@ const example = extrude(1, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

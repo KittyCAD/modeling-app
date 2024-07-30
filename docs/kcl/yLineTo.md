@@ -32,7 +32,7 @@ const example = extrude(5, exampleSketch)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -106,7 +106,7 @@ const example = extrude(5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -444,7 +444,7 @@ const example = extrude(5, exampleSketch)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -518,7 +518,7 @@ const example = extrude(5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

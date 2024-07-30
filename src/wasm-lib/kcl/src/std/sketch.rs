@@ -1290,6 +1290,7 @@ pub(crate) async fn inner_start_profile_at(
 
     let sketch_group = SketchGroup {
         id: path_id,
+        original_id: path_id,
         on: sketch_surface.clone(),
         value: vec![],
         meta: vec![args.source_range.into()],
