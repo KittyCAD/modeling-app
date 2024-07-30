@@ -158,49 +158,21 @@ async fn serial_test_fillet_duplicate_tags() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_fillet_cube_start() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing, thing2]}, %)
-"#;
-
+    let code = kcl_input!("basic_fillet_cube_start");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_start.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_fillet_cube_end() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing, getOppositeEdge(thing)]}, %)
-
-"#;
-
+    let code = kcl_input!("basic_fillet_cube_end");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_end.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_fillet_cube_close_opposite() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%, $thing3)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3)]}, %)
-
-"#;
+    let code = kcl_input!("basic_fillet_cube_close_opposite");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
@@ -212,15 +184,7 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_fillet_cube_next_adjacent() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %, $thing1)
-    |> line([0, -10], %, $thing2)
-    |> close(%, $thing3)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3)]}, %)
-"#;
+    let code = kcl_input!("basic_fillet_cube_next_adjacent");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
@@ -232,15 +196,7 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_fillet_cube_previous_adjacent() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %, $thing1)
-    |> line([0, -10], %, $thing2)
-    |> close(%, $thing3)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3)]}, %)
-"#;
+    let code = kcl_input!("basic_fillet_cube_previous_adjacent");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
@@ -252,40 +208,14 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
-    let code = r#"fn box = (h, l, w) => {
- const myBox = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
-
-  return myBox
-}
-
-const fnBox = box(3, 6, 10)
-"#;
-
+    let code = kcl_input!("function_sketch");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch_with_position() {
-    let code = r#"fn box = (p, h, l, w) => {
- const myBox = startSketchOn('XY')
-    |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
-
-  return myBox
-}
-
-const thing = box([0,0], 3, 6, 10)"#;
+    let code = kcl_input!("function_sketch_with_position");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     twenty_twenty::assert_image(
