@@ -20,6 +20,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
 jobs:
   check-format:
     runs-on: 'ubuntu-latest'
@@ -104,7 +109,6 @@ jobs:
       - name: Commit changes, if any
         if: steps.git-check.outputs.modified == 'true'
         run: |
-          git add .
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
