@@ -6,7 +6,11 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
-import { Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import {
+  Diagnostic,
+  setDiagnostics,
+  setDiagnosticsEffect,
+} from '@codemirror/lint'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -53,6 +57,12 @@ export default class EditorManager {
   }
 
   setEditorView(editorView: EditorView) {
+    if (!this._editorView) {
+      // Initialize lint.
+      // This will initialize all the styles etc.
+      // We only want to do this once.
+      editorView.dispatch(setDiagnostics(editorView.state, []))
+    }
     this._editorView = editorView
   }
 

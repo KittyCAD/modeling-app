@@ -166,7 +166,9 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
     eprintln!("Executing {test_name}");
-    if let Err(e) = state.reset_scene().await {
+    // This is a shitty source range, I don't know what else to use for it though.
+    // There's no actual KCL associated with this reset_scene call.
+    if let Err(e) = state.reset_scene(kcl_lib::executor::SourceRange::default()).await {
         return kcl_err(e);
     }
     // Let users know if the test is taking a long time.

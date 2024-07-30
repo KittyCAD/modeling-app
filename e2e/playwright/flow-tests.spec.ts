@@ -4019,16 +4019,19 @@ test.describe('Regression tests', () => {
       )
     })
 
-    await page.goto('/')
-    await u.waitForPageLoad()
-
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    await page.waitForTimeout(200)
-    // expect it still to be there (sometimes it just clears for a bit?)
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-      timeout: 10_000,
-    })
+    await expect(async () => {
+      await page.goto('/')
+      await u.waitForPageLoad()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+      await page.waitForTimeout(200)
+      // expect it still to be there (sometimes it just clears for a bit?)
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
