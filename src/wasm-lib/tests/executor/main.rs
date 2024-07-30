@@ -78,7 +78,7 @@ async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::Dy
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face() {
+async fn kcl_test_sketch_on_face() {
     let code = kcl_input!("sketch_on_face");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -86,35 +86,35 @@ async fn serial_test_sketch_on_face() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_riddle_small() {
+async fn kcl_test_riddle_small() {
     let code = kcl_input!("riddle_small");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("riddle_small", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_lego() {
+async fn kcl_test_lego() {
     let code = kcl_input!("lego");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("lego", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pipe_as_arg() {
+async fn kcl_test_pipe_as_arg() {
     let code = kcl_input!("pipe_as_arg");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("pipe_as_arg", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pentagon_fillet_sugar() {
+async fn kcl_test_pentagon_fillet_sugar() {
     let code = kcl_input!("pentagon_fillet_sugar");
     let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
     assert_out("pentagon_fillet_sugar", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_start() {
+async fn kcl_test_sketch_on_face_start() {
     let code = kcl_input!("sketch_on_face_start");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -122,14 +122,14 @@ async fn serial_test_sketch_on_face_start() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_mike_stress_lines() {
+async fn kcl_test_mike_stress_lines() {
     let code = kcl_input!("mike_stress_test");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("mike_stress_test", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_end() {
+async fn kcl_test_sketch_on_face_end() {
     let code = kcl_input!("sketch_on_face_end");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -137,7 +137,7 @@ async fn serial_test_sketch_on_face_end() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_end_negative_extrude() {
+async fn kcl_test_sketch_on_face_end_negative_extrude() {
     let code = kcl_input!("sketch_on_face_end_negative_extrude");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -145,7 +145,7 @@ async fn serial_test_sketch_on_face_end_negative_extrude() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_fillet_duplicate_tags() {
+async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -157,21 +157,21 @@ async fn serial_test_fillet_duplicate_tags() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_start() {
+async fn kcl_test_basic_fillet_cube_start() {
     let code = kcl_input!("basic_fillet_cube_start");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("basic_fillet_cube_start", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_end() {
+async fn kcl_test_basic_fillet_cube_end() {
     let code = kcl_input!("basic_fillet_cube_end");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("basic_fillet_cube_end", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_close_opposite() {
+async fn kcl_test_basic_fillet_cube_close_opposite() {
     let code = kcl_input!("basic_fillet_cube_close_opposite");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -179,7 +179,7 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_next_adjacent() {
+async fn kcl_test_basic_fillet_cube_next_adjacent() {
     let code = kcl_input!("basic_fillet_cube_next_adjacent");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -187,7 +187,7 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_previous_adjacent() {
+async fn kcl_test_basic_fillet_cube_previous_adjacent() {
     let code = kcl_input!("basic_fillet_cube_previous_adjacent");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -195,14 +195,14 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_with_function_sketch() {
+async fn kcl_test_execute_with_function_sketch() {
     let code = kcl_input!("function_sketch");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("function_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_with_function_sketch_with_position() {
+async fn kcl_test_execute_with_function_sketch_with_position() {
     let code = kcl_input!("function_sketch_with_position");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -210,7 +210,7 @@ async fn serial_test_execute_with_function_sketch_with_position() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_with_angled_line() {
+async fn kcl_test_execute_with_angled_line() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)
@@ -227,7 +227,7 @@ async fn serial_test_execute_with_angled_line() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_parametric_example() {
+async fn kcl_test_execute_parametric_example() {
     let code = r#"const sigmaAllow = 35000 // psi
 const width = 9 // inch
 const p = 150 // Force on shelf - lbs
@@ -253,7 +253,7 @@ const bracket = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_parametric_with_tan_arc_example() {
+async fn kcl_test_execute_parametric_with_tan_arc_example() {
     let code = r#"const sigmaAllow = 15000 // psi
 const width = 11 // inch
 const p = 150 // Force on shelf - lbs
@@ -287,7 +287,7 @@ const bracket = startSketchAt([0, 0])
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_engine_error_return() {
+async fn kcl_test_execute_engine_error_return() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
   |> line([10.50433, -1.19122], %)
@@ -306,7 +306,7 @@ async fn serial_test_execute_engine_error_return() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_i_shape() {
+async fn kcl_test_execute_i_shape() {
     // This is some code from lee that starts a pipe expression with a variable.
     let code = kcl_input!("i_shape");
 
@@ -316,7 +316,7 @@ async fn serial_test_execute_i_shape() {
 
 #[tokio::test(flavor = "multi_thread")]
 #[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
-async fn serial_test_execute_pipes_on_pipes() {
+async fn kcl_test_execute_pipes_on_pipes() {
     let code = kcl_input!("pipes_on_pipes");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -324,7 +324,7 @@ async fn serial_test_execute_pipes_on_pipes() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_cylinder() {
+async fn kcl_test_execute_cylinder() {
     let code = kcl_input!("cylinder");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -332,7 +332,7 @@ async fn serial_test_execute_cylinder() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_kittycad_svg() {
+async fn kcl_test_execute_kittycad_svg() {
     let code = kcl_input!("kittycad_svg");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -340,7 +340,7 @@ async fn serial_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_member_expression_sketch_group() {
+async fn kcl_test_member_expression_sketch_group() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -365,7 +365,7 @@ const pt2 = b2.value[0]
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_defaults() {
+async fn kcl_test_helix_defaults() {
     let code = r#"const part001 = startSketchOn('XY')
      |> circle([5, 5], 10, %)
      |> extrude(10, %)
@@ -377,7 +377,7 @@ async fn serial_test_helix_defaults() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_defaults_negative_extrude() {
+async fn kcl_test_helix_defaults_negative_extrude() {
     let code = r#"const part001 = startSketchOn('XY')
      |> circle([5, 5], 10, %)
      |> extrude(-10, %)
@@ -389,7 +389,7 @@ async fn serial_test_helix_defaults_negative_extrude() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_ccw() {
+async fn kcl_test_helix_ccw() {
     let code = r#"const part001 = startSketchOn('XY')
      |> circle([5, 5], 10, %)
      |> extrude(10, %)
@@ -401,7 +401,7 @@ async fn serial_test_helix_ccw() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_with_length() {
+async fn kcl_test_helix_with_length() {
     let code = r#"const part001 = startSketchOn('XY')
      |> circle([5, 5], 10, %)
      |> extrude(10, %)
@@ -413,7 +413,7 @@ async fn serial_test_helix_with_length() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_dimensions_match() {
+async fn kcl_test_dimensions_match() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
@@ -428,7 +428,7 @@ async fn serial_test_dimensions_match() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_close_arc() {
+async fn kcl_test_close_arc() {
     let code = r#"const center = [0,0]
 const radius = 40
 const height = 3
@@ -445,7 +445,7 @@ const body = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_negative_args() {
+async fn kcl_test_negative_args() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -471,7 +471,7 @@ box(-20, -5, 10)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_tangential_arc() {
+async fn kcl_test_basic_tangential_arc() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc({radius: 5, offset: 90}, %)
@@ -484,7 +484,7 @@ async fn serial_test_basic_tangential_arc() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_tangential_arc_with_point() {
+async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
@@ -497,7 +497,7 @@ async fn serial_test_basic_tangential_arc_with_point() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_tangential_arc_to() {
+async fn kcl_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArcTo([-5, 15], %)
@@ -510,7 +510,7 @@ async fn serial_test_basic_tangential_arc_to() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_different_planes_same_drawing() {
+async fn kcl_test_different_planes_same_drawing() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -537,7 +537,7 @@ box(-20, -5, 10, 'xy')"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_lots_of_planes() {
+async fn kcl_test_lots_of_planes() {
     let code = r#"const sigmaAllow = 15000 // psi
 const width = 11 // inch
 const p = 150 // Force on shelf - lbs
@@ -595,7 +595,7 @@ const part004 = startSketchOn('YZ')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_holes() {
+async fn kcl_test_holes() {
     let code = r#"const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -631,7 +631,7 @@ const thing = other_circle([2, 2], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_rounded_with_holes() {
+async fn kcl_test_rounded_with_holes() {
     let code = r#"fn tarc = (to, sketchGroup, tag?) => {
   return tangentialArcTo(to, sketchGroup, tag)
 }
@@ -667,7 +667,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_top_level_expression() {
+async fn kcl_test_top_level_expression() {
     let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -675,7 +675,7 @@ async fn serial_test_top_level_expression() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_with_math() {
+async fn kcl_test_patterns_linear_basic_with_math() {
     let code = r#"const num = 12
 const distance = 5
 const part =  startSketchOn('XY')
@@ -689,7 +689,7 @@ const part =  startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic() {
+async fn kcl_test_patterns_linear_basic() {
     let code = r#"const part =  startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
@@ -701,7 +701,7 @@ async fn serial_test_patterns_linear_basic() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_3d() {
+async fn kcl_test_patterns_linear_basic_3d() {
     let code = r#"const part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
@@ -717,7 +717,7 @@ async fn serial_test_patterns_linear_basic_3d() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_negative_distance() {
+async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
@@ -729,7 +729,7 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_negative_axis() {
+async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
@@ -741,7 +741,7 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_holes() {
+async fn kcl_test_patterns_linear_basic_holes() {
     let code = r#"const circles = startSketchOn('XY')
     |> circle([5, 5], 1, %)
     |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
@@ -762,7 +762,7 @@ const rectangle = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_circular_basic_2d() {
+async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
@@ -774,7 +774,7 @@ async fn serial_test_patterns_circular_basic_2d() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_circular_basic_3d() {
+async fn kcl_test_patterns_circular_basic_3d() {
     let code = r#"const part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
@@ -790,7 +790,7 @@ async fn serial_test_patterns_circular_basic_3d() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_circular_3d_tilted_axis() {
+async fn kcl_test_patterns_circular_3d_tilted_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
@@ -806,7 +806,7 @@ async fn serial_test_patterns_circular_3d_tilted_axis() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_file_doesnt_exist() {
+async fn kcl_test_import_file_doesnt_exist() {
     let code = r#"const model = import("thing.obj")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -818,7 +818,7 @@ async fn serial_test_import_file_doesnt_exist() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_obj_with_mtl() {
+async fn kcl_test_import_obj_with_mtl() {
     let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -826,7 +826,7 @@ async fn serial_test_import_obj_with_mtl() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_obj_with_mtl_units() {
+async fn kcl_test_import_obj_with_mtl_units() {
     let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -834,7 +834,7 @@ async fn serial_test_import_obj_with_mtl_units() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_stl() {
+async fn kcl_test_import_stl() {
     let code = r#"const model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -842,7 +842,7 @@ async fn serial_test_import_stl() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_gltf_with_bin() {
+async fn kcl_test_import_gltf_with_bin() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -850,7 +850,7 @@ async fn serial_test_import_gltf_with_bin() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_gltf_embedded() {
+async fn kcl_test_import_gltf_embedded() {
     let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -858,7 +858,7 @@ async fn serial_test_import_gltf_embedded() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_glb() {
+async fn kcl_test_import_glb() {
     let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -866,7 +866,7 @@ async fn serial_test_import_glb() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_glb_no_assign() {
+async fn kcl_test_import_glb_no_assign() {
     let code = r#"import("tests/executor/inputs/cube.glb")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -874,7 +874,7 @@ async fn serial_test_import_glb_no_assign() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_ext_doesnt_match() {
+async fn kcl_test_import_ext_doesnt_match() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -886,7 +886,7 @@ async fn serial_test_import_ext_doesnt_match() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_mm() {
+async fn kcl_test_cube_mm() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -907,7 +907,7 @@ const myCube = cube([0,0], 10)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_cm() {
+async fn kcl_test_cube_cm() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -928,7 +928,7 @@ const myCube = cube([0,0], 10)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_m() {
+async fn kcl_test_cube_m() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -949,7 +949,7 @@ const myCube = cube([0,0], 10)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_in() {
+async fn kcl_test_cube_in() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -970,7 +970,7 @@ const myCube = cube([0,0], 10)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_ft() {
+async fn kcl_test_cube_ft() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -991,7 +991,7 @@ const myCube = cube([0,0], 10)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_yd() {
+async fn kcl_test_cube_yd() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1012,7 +1012,7 @@ const myCube = cube([0,0], 10)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_sketch_on_arc_face() {
+async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
@@ -1045,7 +1045,7 @@ const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_of_face() {
+async fn kcl_test_sketch_on_face_of_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1081,7 +1081,7 @@ const part003 = startSketchOn(part002, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_stdlib_kcl_error_right_code_path() {
+async fn kcl_test_stdlib_kcl_error_right_code_path() {
     let code = r#"const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1102,7 +1102,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_circle() {
+async fn kcl_test_sketch_on_face_circle() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1126,7 +1126,7 @@ const part002 = startSketchOn(part001, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_circle_tagged() {
+async fn kcl_test_sketch_on_face_circle_tagged() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1150,7 +1150,7 @@ const part002 = startSketchOn(part001, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_stdlib_kcl_error_circle() {
+async fn kcl_test_stdlib_kcl_error_circle() {
     let code = r#"// Mounting Plate
 // A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
 
@@ -1196,7 +1196,7 @@ const part = rectShape([0, 0], 20, 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_big_number_angle_to_match_length_x() {
+async fn kcl_test_big_number_angle_to_match_length_x() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01)
@@ -1213,7 +1213,7 @@ async fn serial_test_big_number_angle_to_match_length_x() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_big_number_angle_to_match_length_y() {
+async fn kcl_test_big_number_angle_to_match_length_y() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01)
@@ -1230,7 +1230,7 @@ async fn serial_test_big_number_angle_to_match_length_y() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve() {
+async fn kcl_test_simple_revolve() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1250,7 +1250,7 @@ async fn serial_test_simple_revolve() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_uppercase() {
+async fn kcl_test_simple_revolve_uppercase() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1270,7 +1270,7 @@ async fn serial_test_simple_revolve_uppercase() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_negative() {
+async fn kcl_test_simple_revolve_negative() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1290,7 +1290,7 @@ async fn serial_test_simple_revolve_negative() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_bad_angle_low() {
+async fn kcl_test_revolve_bad_angle_low() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1315,7 +1315,7 @@ async fn serial_test_revolve_bad_angle_low() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_bad_angle_high() {
+async fn kcl_test_revolve_bad_angle_high() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1340,7 +1340,7 @@ async fn serial_test_revolve_bad_angle_high() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_custom_angle() {
+async fn kcl_test_simple_revolve_custom_angle() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1360,7 +1360,7 @@ async fn serial_test_simple_revolve_custom_angle() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_custom_axis() {
+async fn kcl_test_simple_revolve_custom_axis() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1380,7 +1380,7 @@ async fn serial_test_simple_revolve_custom_axis() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_edge() {
+async fn kcl_test_revolve_on_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1404,7 +1404,7 @@ const sketch001 = startSketchOn(box, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_edge_get_edge() {
+async fn kcl_test_revolve_on_edge_get_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1433,7 +1433,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_face_circle_edge() {
+async fn kcl_test_revolve_on_face_circle_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 20], %)
@@ -1455,7 +1455,7 @@ const sketch001 = startSketchOn(box, "END")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_face_circle() {
+async fn kcl_test_revolve_on_face_circle() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 20], %)
@@ -1477,7 +1477,7 @@ const sketch001 = startSketchOn(box, "END")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_face() {
+async fn kcl_test_revolve_on_face() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1503,7 +1503,7 @@ const sketch001 = startSketchOn(box, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_revolve_circle() {
+async fn kcl_test_basic_revolve_circle() {
     let code = r#"const sketch001 = startSketchOn('XY')
   |> circle([15, 0], 5, %)
   |> revolve({
@@ -1517,7 +1517,7 @@ async fn serial_test_basic_revolve_circle() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_sketch_on_edge() {
+async fn kcl_test_simple_revolve_sketch_on_edge() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1544,7 +1544,7 @@ const part002 = startSketchOn(part001, 'end')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_plumbus_fillets() {
+async fn kcl_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
   const sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
@@ -1607,7 +1607,7 @@ const plumbus1 = circle1
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_empty_file_is_ok() {
+async fn kcl_test_empty_file_is_ok() {
     let code = r#""#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -1615,7 +1615,7 @@ async fn serial_test_empty_file_is_ok() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_member_expression_in_params() {
+async fn kcl_test_member_expression_in_params() {
     let code = r#"fn capScrew = (originStart, length, dia, capDia, capHeadLength) => {
   const screwHead = startSketchOn({
        plane: {
@@ -1645,7 +1645,7 @@ capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
+async fn kcl_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
@@ -1694,7 +1694,7 @@ const bracket = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_empty_start_sketch_on_string() {
+async fn kcl_test_error_empty_start_sketch_on_string() {
     let code = r#"const part001 = startSketchOn('-XZ')
   |> startProfileAt([75.75, 184.25], %)
   |> line([190.03, -118.13], %)
@@ -1718,7 +1718,7 @@ const secondSketch = startSketchOn(part001, '')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_user_function_wrong_args() {
+async fn kcl_test_error_user_function_wrong_args() {
     let code = r#"const length = .750
 const width = 0.500
 const height = 0.500
@@ -1749,7 +1749,7 @@ const extrusion = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_xz_plane() {
+async fn kcl_test_xz_plane() {
     let code = r#"const part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> lineTo([100, 100], %)
@@ -1763,7 +1763,7 @@ async fn serial_test_xz_plane() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_neg_xz_plane() {
+async fn kcl_test_neg_xz_plane() {
     let code = r#"const part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> lineTo([100, 100], %)
@@ -1777,7 +1777,7 @@ async fn serial_test_neg_xz_plane() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_linear_pattern3d_a_pattern() {
+async fn kcl_test_linear_pattern3d_a_pattern() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 2], %)
@@ -1804,7 +1804,7 @@ const pattn2 = patternLinear3d({
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_a_pattern() {
+async fn kcl_test_circular_pattern3d_a_pattern() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 2], %)
@@ -1827,7 +1827,7 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_array_of_sketches() {
+async fn kcl_test_array_of_sketches() {
     let code = r#"const plane001 = startSketchOn('XZ')
 
 const profile001 = plane001
@@ -1856,7 +1856,7 @@ extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_after_fillets_referencing_face() {
+async fn kcl_test_sketch_on_face_after_fillets_referencing_face() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
@@ -1919,7 +1919,7 @@ const sketch001 = startSketchOn(bracket, seg01)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_array_of_extrudes() {
+async fn kcl_test_circular_pattern3d_array_of_extrudes() {
     let code = r#"const plane001 = startSketchOn('XZ')
 
 const sketch001 = plane001
@@ -1955,7 +1955,7 @@ const pattn1 = patternLinear3d({
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_fillets_referencing_other_fillets() {
+async fn kcl_test_fillets_referencing_other_fillets() {
     let code = r#"// Z-Bracket
 
 // Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
@@ -2003,7 +2003,7 @@ const baseExtrusion = extrude(width, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_chamfers_referencing_other_chamfers() {
+async fn kcl_test_chamfers_referencing_other_chamfers() {
     let code = r#"// Z-Bracket
 
 // Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
@@ -2051,7 +2051,7 @@ const baseExtrusion = extrude(width, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_engine_error_source_range_on_last_command() {
+async fn kcl_test_engine_error_source_range_on_last_command() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
@@ -2075,7 +2075,7 @@ async fn serial_test_engine_error_source_range_on_last_command() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_linear_pattern3d_filleted_sketch() {
+async fn kcl_test_linear_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2106,7 +2106,7 @@ const pattn1 = patternLinear3d({
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_filleted_sketch() {
+async fn kcl_test_circular_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2133,7 +2133,7 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_chamfered_sketch() {
+async fn kcl_test_circular_pattern3d_chamfered_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2160,7 +2160,7 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_tag_chamfer_with_more_than_one_edge_should_fail() {
+async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2191,7 +2191,7 @@ const part001 = cube([0,0], 20)
 
 #[tokio::test(flavor = "multi_thread")]
 #[ignore] // Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
-async fn serial_test_sketch_on_face_of_chamfer() {
+async fn kcl_test_sketch_on_face_of_chamfer() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2224,7 +2224,7 @@ const sketch001 = startSketchOn(part001, chamfer1)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_duplicate_tags_should_error() {
+async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle = (len) => {
   return startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
@@ -2251,56 +2251,56 @@ let p = triangle(200)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_global_tags() {
+async fn kcl_test_global_tags() {
     let code = kcl_input!("global-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("global_tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_extrude_inside_fn_with_tags() {
+async fn kcl_test_extrude_inside_fn_with_tags() {
     let code = kcl_input!("extrude-inside-fn-with-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("extrude-inside-fn-with-tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pattern_vase() {
+async fn kcl_test_pattern_vase() {
     let code = kcl_input!("pattern_vase");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("pattern_vase", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_scoped_tags() {
+async fn kcl_test_scoped_tags() {
     let code = kcl_input!("scoped-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("scoped_tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_order_sketch_extrude_in_order() {
+async fn kcl_test_order_sketch_extrude_in_order() {
     let code = kcl_input!("order-sketch-extrude-in-order");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("order-sketch-extrude-in-order", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_order_sketch_extrude_out_of_order() {
+async fn kcl_test_order_sketch_extrude_out_of_order() {
     let code = kcl_input!("order-sketch-extrude-out-of-order");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("order-sketch-extrude-out-of-order", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_extrude_custom_plane() {
+async fn kcl_test_extrude_custom_plane() {
     let code = kcl_input!("extrude-custom-plane");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("extrude-custom-plane", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_arc_error_same_start_end() {
+async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn('XY')
   |> startProfileAt([10, 0], %)
   |> arc({
@@ -2326,7 +2326,7 @@ async fn serial_test_arc_error_same_start_end() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_x_90() {
+async fn kcl_test_angled_line_to_x_90() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 90, to: 10 }, %)
@@ -2346,7 +2346,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_x_270() {
+async fn kcl_test_angled_line_to_x_270() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 270, to: 10 }, %)
@@ -2366,7 +2366,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_y_0() {
+async fn kcl_test_angled_line_to_y_0() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 0, to: 20 }, %)
@@ -2386,7 +2386,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_y_180() {
+async fn kcl_test_angled_line_to_y_180() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 180, to: 20 }, %)
@@ -2406,7 +2406,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_x_length_90() {
+async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
@@ -2426,7 +2426,7 @@ const extrusion = extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_x_length_270() {
+async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
@@ -2446,7 +2446,7 @@ const extrusion = extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_y_length_0() {
+async fn kcl_test_angled_line_of_y_length_0() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
@@ -2468,7 +2468,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_y_length_180() {
+async fn kcl_test_angled_line_of_y_length_180() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
@@ -2490,7 +2490,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_y_length_negative_180() {
+async fn kcl_test_angled_line_of_y_length_negative_180() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
@@ -2512,7 +2512,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_inside_fn_also_has_source_range_of_call_site() {
+async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site() {
     let code = r#"fn someFunction = (something) => {
   startSketchOn(something)
 }
@@ -2529,7 +2529,7 @@ someFunction('INVALID')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
+async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
     let code = r#"fn someFunction = (something) => {
     fn someNestedFunction = (something2) => {
         startSketchOn(something2)
