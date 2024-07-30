@@ -1391,7 +1391,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "anyhow",
  "approx",
@@ -1460,7 +1460,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "hyper",
@@ -1851,7 +1851,7 @@ dependencies = [
  "bincode",
  "either",
  "fnv",
- "itertools 0.12.1",
+ "itertools 0.10.5",
  "lazy_static",
  "nom",
  "quick-xml",

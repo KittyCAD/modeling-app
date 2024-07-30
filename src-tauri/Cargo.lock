@@ -2571,7 +2571,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.2"
+version = "0.2.4"
 dependencies = [
  "anyhow",
  "approx",
@@ -3520,9 +3520,9 @@ dependencies = [
 
 [[package]]
 name = "phonenumber"
-version = "0.3.5+8.13.36"
+version = "0.3.6+8.13.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f174c8db59b620032bd52b655fc97000458850fec0db35fcd4e802b668517ec0"
+checksum = "11756237b57b8cc5e97dc8b1e70ea436324d30e7075de63b14fd15073a8f692a"
 dependencies = [
  "bincode",
  "either",
