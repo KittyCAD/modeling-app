@@ -25,6 +25,7 @@ form_urlencoded = "1.2.1"
 futures = { version = "0.3.30" }
 git_rev = "0.1.0"
 gltf-json = "1.4.1"
+image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, features = ["clap"] }
 lazy_static = "1.5.0"
 mime_guess = "2.0.5"
