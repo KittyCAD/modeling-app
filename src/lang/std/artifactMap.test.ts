@@ -7,12 +7,15 @@ import {
   expandPlane,
   expandPath,
   expandExtrusion,
+  ArtifactMap,
 } from './artifactMap'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { CI, VITE_KC_DEV_TOKEN } from 'env'
 import fsp from 'fs/promises'
 import fs from 'fs'
+import { chromium } from 'playwright'
+import * as d3 from 'd3-force'
 
 /*
 Note this is an integration test, these tests connect to our real dev server and make websocket commands.
@@ -158,9 +161,16 @@ describe('testing createLinker', () => {
       extrusions.forEach((extrusion, index) => {
         if (err(extrusion)) throw extrusion
         expect(extrusion.type).toBe('extrusion')
-        expect(extrusion.surfs.length).toBe(!index ? 11 : 0)
+        const firstExtrusionIsACubeIE6Sides = 6
+        expect(extrusion.surfs.length).toBe(
+          !index ? firstExtrusionIsACubeIE6Sides : 5
+        )
       })
     })
+
+    it('screenshot graph', async () => {
+      await GraphArtifactMap(theMap, 1400, 1400, 'exampleCode1.png')
+    }, 20000)
   })
 })
 
@@ -180,4 +190,167 @@ function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
     responseMap,
     ast,
   }
+}
+
+async function GraphArtifactMap(theMap: ArtifactMap, sizeX: number, sizeY: number, imageName: string) {
+  const nodes: Array<{ id: string; label: string }> = []
+  const edges: Array<{ source: string; target: string; label: string }> = []
+  for (const [commandId, artifact] of Array.from(theMap).reverse()) {
+    nodes.push({
+      id: commandId,
+      label: `${artifact.type}-${commandId.slice(0, 6)}`,
+    })
+    Object.entries(artifact).forEach(([propName, value]) => {
+      if (
+        propName === 'type' ||
+        propName === 'codeRef' ||
+        propName === 'subType'
+      )
+        return
+      if (Array.isArray(value))
+        value.forEach((v) => {
+          edges.push({ source: commandId, target: v, label: propName })
+        })
+      if (typeof value === 'string' && value)
+        edges.push({ source: commandId, target: value, label: propName })
+    })
+  }
+
+  // Create a force simulation to calculate node positions
+  const simulation = d3
+    .forceSimulation(nodes as any)
+    .force(
+      'link',
+      d3
+        .forceLink(edges)
+        .id((d: any) => d.id)
+        .distance(100)
+    )
+    .force('charge', d3.forceManyBody().strength(-300))
+    .force('center', d3.forceCenter(300, 200))
+    .stop()
+
+  // Run the simulation
+  for (let i = 0; i < 300; ++i) simulation.tick()
+
+  // Create traces for Plotly
+  const nodeTrace = {
+    x: nodes.map((node: any) => node.x),
+    y: nodes.map((node: any) => node.y),
+    text: nodes.map((node) => node.label), // Use the custom label
+    mode: 'markers+text',
+    type: 'scatter',
+    marker: { size: 20, color: 'gray' }, // Nodes in gray
+    textfont: { size: 14, color: 'black' }, // Labels in black
+    textposition: 'top center', // Position text on top
+  }
+
+  const edgeTrace = {
+    x: [],
+    y: [],
+    mode: 'lines',
+    type: 'scatter',
+    line: { width: 2, color: 'lightgray' }, // Edges in light gray
+  }
+
+  const annotations: any[] = []
+
+  edges.forEach((edge) => {
+    const sourceNode = nodes.find((node: any) => node.id === (edge as any).source.id)
+    const targetNode = nodes.find((node: any) => node.id === (edge as any).target.id)
+
+    // Check if nodes are found
+    if (!sourceNode || !targetNode) {
+      throw new Error(
+        // @ts-ignore
+        `Node not found: ${!sourceNode ? edge.source.id : edge.target.id}`
+      )
+    }
+
+    // @ts-ignore
+    edgeTrace.x.push(sourceNode.x, targetNode.x, null)
+    // @ts-ignore
+    edgeTrace.y.push(sourceNode.y, targetNode.y, null)
+    
+    // Calculate offset for arrowhead
+    const offsetFactor = 0.9 // Adjust this factor to control the offset distance
+    // @ts-ignore
+    const offsetX = (targetNode.x - sourceNode.x) * offsetFactor
+    // @ts-ignore
+    const offsetY = (targetNode.y - sourceNode.y) * offsetFactor
+    
+    // Add arrowhead annotation with offset
+    annotations.push({
+      // @ts-ignore
+      ax: sourceNode.x,
+      // @ts-ignore
+      ay: sourceNode.y,
+      // @ts-ignore
+      x: targetNode.x - offsetX,
+      // @ts-ignore
+      y: targetNode.y - offsetY,
+      xref: 'x',
+      yref: 'y',
+      axref: 'x',
+      ayref: 'y',
+      showarrow: true,
+      arrowhead: 2,
+      arrowsize: 1,
+      arrowwidth: 2,
+      arrowcolor: 'darkgray', // Arrowheads in dark gray
+    })
+    
+    // Add edge label annotation closer to the edge tail (25% of the length)
+    // @ts-ignore
+    const labelX = sourceNode.x * 0.75 + targetNode.x * 0.25
+    // @ts-ignore
+    const labelY = sourceNode.y * 0.75 + targetNode.y * 0.25
+    annotations.push({
+      x: labelX,
+      y: labelY,
+      xref: 'x',
+      yref: 'y',
+      text: edge.label,
+      showarrow: false,
+      font: { size: 12, color: 'black' }, // Edge labels in black
+      align: 'center',
+    })
+  })
+
+  const data = [edgeTrace, nodeTrace]
+
+  const layout = {
+    // title: 'Force-Directed Graph with Nodes and Edges',
+    xaxis: { showgrid: false, zeroline: false, showticklabels: false },
+    yaxis: { showgrid: false, zeroline: false, showticklabels: false },
+    showlegend: false,
+    annotations: annotations,
+  }
+
+  // Export to PNG using Playwright
+  const browser = await chromium.launch()
+  const page = await browser.newPage()
+  await page.setContent(`
+    <html>
+      <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+      </head>
+      <body>
+        <div id="plotly-graph" style="width:${sizeX}px;height:${sizeY}px;"></div>
+        <script>
+          Plotly.newPlot('plotly-graph', ${JSON.stringify(
+            data
+          )}, ${JSON.stringify(layout)})
+        </script>
+      </body>
+    </html>
+  `)
+  await page.waitForSelector('#plotly-graph')
+  const element = await page.$('#plotly-graph')
+  // @ts-ignore
+  await element.screenshot({ path: `src/lang/std/artifactMapGraphs/${imageName}` })
+  await browser.close()
+
+  // Check if the PNG file was created
+  expect(fs.existsSync(`src/lang/std/artifactMapGraphs/${imageName}`)).toBe(true)
 }

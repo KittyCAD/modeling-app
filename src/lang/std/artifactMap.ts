@@ -39,6 +39,7 @@ interface _SegmentArtifact {
   pathId: string
   surfId: string
   edgeIds: Array<string>
+  blendId?: string
   codeRef: CommonCommandProperties
 }
 
@@ -69,6 +70,7 @@ interface _CapArtifact {
   subType: 'start' | 'end'
   blendEdgeIds: Array<string>
   extrusionId: string
+  pathIds: Array<string>
 }
 
 interface ExtrudeEdge {
@@ -81,7 +83,7 @@ interface ExtrudeEdge {
 /** A blend is a fillet or chamfer */
 interface Blend {
   type: 'blend'
-  SubType: 'fillet' | 'chamfer'
+  subType: 'fillet' | 'chamfer'
   consumedEdgeId: string
   edgeIds: Array<string>
   surfId: string
@@ -152,7 +154,7 @@ export function createArtifactMap({
           segId: existingPlane.segId,
           blendEdgeIds: existingPlane.blendEdgeIds,
           extrusionId: existingPlane.extrusionId,
-          pathIds: [...existingPlane.pathIds, id],
+          pathIds: existingPlane.pathIds,
         })
       } else {
         myMap.set(currentPlaneId, {
@@ -179,6 +181,15 @@ export function createArtifactMap({
           type: 'plane',
           pathIds: [...plane.pathIds, id],
           codeRef,
+        })
+      }
+      if (plane?.type === 'wall') {
+        myMap.set(currentPlaneId, {
+          type: 'wall',
+          segId: plane.segId,
+          blendEdgeIds: plane.blendEdgeIds,
+          extrusionId: plane.extrusionId,
+          pathIds: [...plane.pathIds, id],
         })
       }
     } else if (cmd.type === 'extend_path' || cmd.type === 'close_path') {
@@ -225,12 +236,15 @@ export function createArtifactMap({
       response.type === 'modeling' &&
       response.data.modeling_response.type === 'solid3d_get_extrusion_face_info'
     ) {
+      let lastPath: _PathArtifact
       response.data.modeling_response.data.faces.forEach(
         ({ curve_id, cap, face_id }) => {
           if (cap === 'none' && curve_id && face_id) {
-            const path = myMap.get(cmd.object_id)
             const seg = myMap.get(curve_id)
+            if (seg?.type !== 'segment') return
+            const path = myMap.get(seg.pathId)
             if (path?.type === 'path' && seg?.type === 'segment') {
+              lastPath = path
               myMap.set(face_id, {
                 type: 'wall',
                 segId: curve_id,
@@ -250,14 +264,21 @@ export function createArtifactMap({
                 })
               }
             }
-          } else if ((cap === 'top' || cap === 'bottom') && face_id) {
-            const path = myMap.get(cmd.object_id)
+          }
+        }
+      )
+      response.data.modeling_response.data.faces.forEach(
+        ({ cap, face_id }) => {
+          if ((cap === 'top' || cap === 'bottom') && face_id) {
+            // const path = myMap.get(cmd.object_id)
+            const path = lastPath
             if (path?.type === 'path') {
               myMap.set(face_id, {
                 type: 'cap',
                 subType: cap === 'bottom' ? 'start' : 'end',
                 blendEdgeIds: [],
                 extrusionId: path.extrusionId,
+                pathIds: [],
               })
               const extrusion = myMap.get(path.extrusionId)
               if (extrusion?.type !== 'extrusion') return
@@ -272,12 +293,19 @@ export function createArtifactMap({
     } else if (cmd.type === 'solid3d_fillet_edge') {
       myMap.set(id, {
         type: 'blend',
-        SubType: cmd.cut_type,
+        subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
         surfId: '',
         codeRef: { range, pathToNode },
       })
+      const consumedEdge = myMap.get(cmd.edge_id)
+      if (consumedEdge?.type === 'segment') {
+        myMap.set(cmd.edge_id, {
+          ...consumedEdge,
+          blendId: id,
+        })
+      }
     }
   })
   return myMap
