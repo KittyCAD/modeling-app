@@ -797,6 +797,12 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
 
             ctx.run(&program, None).await.unwrap();
 
+            // Ensure it lints.
+            let results = program.lint_all().unwrap();
+            if !results.is_empty() {
+                panic!("Linting failed: {:?}", results);
+            }
+
             // Zoom to fit.
             ctx.engine
                 .send_modeling_cmd(

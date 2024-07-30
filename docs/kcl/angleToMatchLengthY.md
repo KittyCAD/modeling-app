@@ -9,7 +9,7 @@ Returns the angle to match the given length for y.
 
 
 ```js
-angleToMatchLengthY(segment_name: TagIdentifier, to: number, sketch_group: SketchGroup) -> number
+angleToMatchLengthY(tag: TagIdentifier, to: number, sketch_group: SketchGroup) -> number
 ```
 
 ### Examples
@@ -32,9 +32,95 @@ const extrusion = extrude(5, sketch001)
 
 ### Arguments
 
-* `segment_name`: `TagIdentifier` (REQUIRED)
+* `tag`: `TagIdentifier` (REQUIRED)
 ```js
 {
+	// Engine information for a tag.
+	info: {
+	// The id of the tagged object.
+	id: uuid,
+	// The path the tag is on.
+	path: {
+	// The from point.
+	from: [number, number],
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+},
+	// The sketch group the tag is on.
+	sketchGroup: uuid,
+	// The surface information for the tag.
+	surface: {
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
+},
+},
 	value: string,
 }
 ```
@@ -42,7 +128,7 @@ const extrusion = extrude(5, sketch001)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -84,15 +170,21 @@ const extrusion = extrude(5, sketch001)
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -110,7 +202,7 @@ const extrusion = extrude(5, sketch001)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -261,6 +353,38 @@ const extrusion = extrude(5, sketch001)
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.

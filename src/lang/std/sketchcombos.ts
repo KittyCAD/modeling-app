@@ -1496,7 +1496,7 @@ export function transformSecondarySketchLinesTagFirst({
       }
     }
   | Error {
-  // let node = JSON.parse(JSON.stringify(ast))
+  // let node = structuredClone(ast)
   const primarySelection = selectionRanges.codeBasedSelections[0].range
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
@@ -1565,7 +1565,7 @@ export function transformAstSketchLines({
     }
   | Error {
   // deep clone since we are mutating in a loop, of which any could fail
-  let node = JSON.parse(JSON.stringify(ast))
+  let node = structuredClone(ast)
   let _valueUsedInTransform // TODO should this be an array?
   const pathToNodeMap: PathToNodeMap = {}
 
@@ -1713,23 +1713,16 @@ export function transformAstSketchLines({
 }
 
 function createSegLen(referenceSegName: string): Value {
-  return createCallExpression('segLen', [
-    createIdentifier(referenceSegName),
-    createPipeSubstitution(),
-  ])
+  return createCallExpression('segLen', [createIdentifier(referenceSegName)])
 }
 
 function createSegAngle(referenceSegName: string): Value {
-  return createCallExpression('segAng', [
-    createIdentifier(referenceSegName),
-    createPipeSubstitution(),
-  ])
+  return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
-    createPipeSubstitution(),
   ])
 }
 

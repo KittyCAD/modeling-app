@@ -14,7 +14,9 @@ export default function useHotkeyWrapper(
   callback: () => void,
   additionalOptions?: Options
 ) {
-  useHotkeys(hotkey, callback, additionalOptions)
+  const defaultOptions = { preventDefault: true }
+  const options = { ...defaultOptions, ...additionalOptions }
+  useHotkeys(hotkey, callback, options)
   useEffect(() => {
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)

@@ -218,7 +218,7 @@ async fn parse_project_route(configuration: Configuration, route: &str) -> Resul
 
 #[tauri::command]
 async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
-    kcl_lib::settings::utils::walk_dir(&Path::new(path).to_path_buf())
+    kcl_lib::settings::utils::walk_dir(Path::new(path).to_path_buf())
         .await
         .map_err(InvokeError::from_anyhow)
 }
