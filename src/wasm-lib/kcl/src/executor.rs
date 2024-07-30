@@ -212,10 +212,6 @@ impl DynamicState {
     pub fn merge(&self, memory: &ProgramMemory) -> Self {
         let mut merged = self.clone();
         merged.append(memory);
-        println!(
-            "***************** merged program memory into dynamic state: {:?}",
-            merged
-        );
         merged
     }
 

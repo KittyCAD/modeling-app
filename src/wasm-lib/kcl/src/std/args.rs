@@ -143,8 +143,6 @@ impl Args {
             ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
         }
 
-        println!("*********** flush_batch_for_extrude_group_set *********** ids={ids:?}");
-
         // We can return early if there are no fillets or chamfers.
         if ids.is_empty() {
             return Ok(());
