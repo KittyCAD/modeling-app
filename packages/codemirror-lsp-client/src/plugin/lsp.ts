@@ -17,7 +17,6 @@ import type {
   PluginSpec,
   ViewPlugin,
 } from '@codemirror/view'
-import { setDiagnosticsEffect } from '@codemirror/lint'
 import { EditorView, Tooltip } from '@codemirror/view'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
