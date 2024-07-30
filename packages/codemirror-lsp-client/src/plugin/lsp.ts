@@ -17,6 +17,7 @@ import type {
   PluginSpec,
   ViewPlugin,
 } from '@codemirror/view'
+import { setDiagnosticsEffect } from '@codemirror/lint'
 import { EditorView, Tooltip } from '@codemirror/view'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
@@ -36,7 +37,6 @@ import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
 import lspSemanticTokensExt from './semantic-tokens'
-import { Diagnostic } from '@codemirror/lint'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -65,9 +65,6 @@ export interface LanguageServerOptions {
   documentUri: string
   allowHTMLContent: boolean
   client: LanguageServerClient
-
-  diagnosticsFn?: () => Diagnostic[]
-
   processLspNotification?: (
     plugin: LanguageServerPlugin,
     notification: LSP.NotificationMessage

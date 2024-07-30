@@ -10,7 +10,6 @@ import {
   workspaceFolders,
   LanguageServerOptions,
 } from './plugin/lsp'
-import lspLintExt from './plugin/lint'
 
 export type { LanguageServerClientOptions } from './client'
 export { LanguageServerClient } from './client'
@@ -53,10 +52,6 @@ export function lspPlugin(options: LanguageServerOptions): Extension {
       return range
     }),
   ]
-
-  if (options.diagnosticsFn) {
-    ext.push(lspLintExt(options.diagnosticsFn))
-  }
 
   return ext
 }
