@@ -1,10 +1,10 @@
 import { Extension } from '@codemirror/state'
-import { linter, Diagnostic } from '@codemirror/lint'
+import { linter } from '@codemirror/lint'
 
-export default function lspLintExt(
-  diagnosticsFn: () => Diagnostic[]
-): Extension {
+export default function lspLintExt(): Extension {
   return linter(() => {
-    return diagnosticsFn()
+    // We add diagnostics on the fly so this is fine.
+    // This just ensures they get the right styling.
+    return []
   })
 }

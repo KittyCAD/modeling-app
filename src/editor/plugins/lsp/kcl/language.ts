@@ -17,7 +17,6 @@ import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
 // @ts-ignore: No types available
 import { parser } from './kcl.grammar'
-import { kclManager } from 'lib/singletons'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -63,9 +62,6 @@ export function kcl(options: LanguageOptions) {
       allowHTMLContent: true,
       client: options.client,
       processLspNotification: options.processLspNotification,
-      diagnosticsFn: () => {
-        return kclManager.getDiagnostics()
-      },
     })
   )
 }
