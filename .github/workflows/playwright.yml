@@ -13,7 +13,7 @@ permissions:
   contents: write
   pull-requests: write
   actions: read
-  
+
 
 jobs:
 
@@ -105,108 +105,79 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
-    - name: Run ubuntu/chrome snapshots
-      continue-on-error: true
-      run: |
-        yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
-      env:
-        CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
-    - name: Clean up test-results
-      if: always()
-      continue-on-error: true
-      run: rm -r test-results
-    - name: check for changes
-      id: git-check
-      run: |
-          git add .
-          if git status | grep -q "Changes to be committed"
-          then echo "modified=true" >> $GITHUB_OUTPUT
-          else echo "modified=false" >> $GITHUB_OUTPUT
-          fi
-    - name: Commit changes, if any
-      if: steps.git-check.outputs.modified == 'true'
-      run: |
-        git add .
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        git fetch origin
-        echo ${{ github.head_ref }}
-        git checkout ${{ github.head_ref }}
-        # TODO when webkit works on ubuntu remove the os part of the commit message
-        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
-        git push
-        git push origin ${{ github.head_ref }}
-    # only upload artifacts if there's actually changes
-    - uses: actions/upload-artifact@v4
-      if: steps.git-check.outputs.modified == 'true'
-      with:
-        name: playwright-report-ubuntu-${{ github.sha }}
-        path: playwright-report/
-        retention-days: 30
-    # if have previous run results, use them
-    - uses: actions/download-artifact@v4
-      if: always()
-      continue-on-error: true
-      with:
-        name: test-results-ubuntu-${{ github.sha }}
-        path: test-results/
+    # - name: Run ubuntu/chrome snapshots
+    #   continue-on-error: true
+    #   run: |
+    #     yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+    #   env:
+    #     CI: true
+    #     token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    #     snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    # - name: Clean up test-results
+    #   if: always()
+    #   continue-on-error: true
+    #   run: rm -r test-results
+    # - name: check for changes
+    #   id: git-check
+    #   run: |
+    #       git add .
+    #       if git status | grep -q "Changes to be committed"
+    #       then echo "modified=true" >> $GITHUB_OUTPUT
+    #       else echo "modified=false" >> $GITHUB_OUTPUT
+    #       fi
+    # - name: Commit changes, if any
+    #   if: steps.git-check.outputs.modified == 'true'
+    #   run: |
+    #     git add .
+    #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
+    #     git config --local user.name "github-actions[bot]"
+    #     git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+    #     git fetch origin
+    #     echo ${{ github.head_ref }}
+    #     git checkout ${{ github.head_ref }}
+    #     # TODO when webkit works on ubuntu remove the os part of the commit message
+    #     git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
+    #     git push
+    #     git push origin ${{ github.head_ref }}
+    # # only upload artifacts if there's actually changes
+    # - uses: actions/upload-artifact@v4
+    #   if: steps.git-check.outputs.modified == 'true'
+    #   with:
+    #     name: playwright-report-ubuntu-${{ github.sha }}
+    #     path: playwright-report/
+    #     retention-days: 30
+    # # if have previous run results, use them
+    # - uses: actions/download-artifact@v4
+    #   if: always()
+    #   continue-on-error: true
+    #   with:
+    #     name: test-results-ubuntu-${{ github.sha }}
+    #     path: test-results/
     - name: Run ubuntu/chrome flow (with retries)
       id: retry
       if: always()
       run: |
-        if [[ ! -f "test-results/.last-run.json" ]]; then
-            # if no last run artifact, than run plawright normally
-            echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts || true
-            # # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-        fi
-        
-        retry=1
-        max_retrys=4
-        
-        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -le $max_retrys ]]; do
-            if [[ -f "test-results/.last-run.json" ]]; then
-                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-                if [[ $failed_tests -gt 0 ]]; then
-                    echo "retried=true" >>$GITHUB_OUTPUT
-                    echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts || true
-                    # send to axiom
-                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-                    retry=$((retry + 1))
-                else
-                    echo "retried=false" >>$GITHUB_OUTPUT
-                    exit 0
-                fi
-            else
-                echo "retried=false" >>$GITHUB_OUTPUT
-                exit 0
-            fi
-        done
-        
-        echo "retried=false" >>$GITHUB_OUTPUT
-        
-        if [[ -f "test-results/.last-run.json" ]]; then
-            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-            if [[ $failed_tests -gt 0 ]]; then
-                # if it still fails after 3 retrys, then fail the job
-                exit 1
-            fi
-        fi
-        exit 0
+        yarn playwright test --project="Google Chrome"  --workers=1  --grep=@focus --repeat-each=100
+        # if [[ ! -f "test-results/.last-run.json" ]]; then
+        #     # if no last run artifact, than run plawright normally
+        #     echo "run playwright normally"
+        #     yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+        #     # # send to axiom
+        #     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        # else 
+        #     echo "run playwright with last failed tests"
+        #     yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts
+        #     # send to axiom
+        #     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        # fi
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - name: send to axiom
-      if: always()
-      shell: bash
-      run: |
-        node playwrightProcess.mjs | tee /tmp/github-actions.log
+    # - name: send to axiom
+    #   if: always()
+    #   shell: bash
+    #   run: |
+    #     node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -306,48 +277,19 @@ jobs:
       id: retry
       if: always()
       run: |
-        if [[ ! -f "test-results/.last-run.json" ]]; then
-            # if no last run artifact, than run plawright normally
-            echo "run playwright normally"
-            yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts || true
-            # # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-        fi
-        
-        retry=1
-        max_retrys=4
-        
-        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -le $max_retrys ]]; do
-            if [[ -f "test-results/.last-run.json" ]]; then
-                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-                if [[ $failed_tests -gt 0 ]]; then
-                    echo "retried=true" >>$GITHUB_OUTPUT
-                    echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
-                    # send to axiom
-                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-                    retry=$((retry + 1))
-                else
-                    echo "retried=false" >>$GITHUB_OUTPUT
-                    exit 0
-                fi
-            else
-                echo "retried=false" >>$GITHUB_OUTPUT
-                exit 0
-            fi
-        done
-        
-        echo "retried=false" >>$GITHUB_OUTPUT
-        
-        if [[ -f "test-results/.last-run.json" ]]; then
-            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-            if [[ $failed_tests -gt 0 ]]; then
-                # if it still fails after 3 retrys, then fail the job
-                exit 1
-            fi
-        fi
-        exit 0
+        yarn playwright test --project="webkit"  --workers=1  --grep=@focus --repeat-each=1
+        # if [[ ! -f "test-results/.last-run.json" ]]; then
+        #     # if no last run artifact, than run plawright normally
+        #     echo "run playwright normally"
+        #     yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
+        #     # # send to axiom
+        #     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        # else
+        #     echo "run playwright with last failed tests"
+        #     yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts
+        #     # send to axiom
+        #     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        # fi
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}

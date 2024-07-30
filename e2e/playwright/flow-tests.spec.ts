@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page, TestInfo } from '@playwright/test'
 import {
   makeTemplate,
   getUtils,
@@ -139,22 +139,17 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
-  } else {
-    await page.waitForTimeout(500)
   }
-
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(500)
 
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
-  } else {
-    await page.waitForTimeout(500)
   }
-
+  await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -162,9 +157,8 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
-  } else {
-    await page.waitForTimeout(500)
   }
+  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -178,7 +172,6 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   // deselect line tool
   await page.getByRole('button', { name: 'Line', exact: true }).click()
   await page.waitForTimeout(500)
-
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
   if (openPanes.includes('code')) {
     expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
@@ -217,7 +210,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', async ({ page }) => {
+  test('code pane open at start', { tag: '@focus' }, async ({ page }) => {
     await doBasicSketch(page, ['code'])
   })
 
@@ -4195,9 +4188,9 @@ test.describe('Sketch tests', () => {
     await page.keyboard.press('Home')
     await page.keyboard.up('Shift')
     await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await u.openAndClearDebugPanel()
 
-    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(100)
 
     await page.getByRole('button', { name: 'Line', exact: true }).click()
@@ -4901,7 +4894,7 @@ const sketch002 = startSketchOn(extrude001, 'END')
     )
   })
 })
-
+// flaky suite
 test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page }) => {
     await page.addInitScript(async () => {
@@ -5840,7 +5833,7 @@ test.describe('Testing segment overlays', () => {
      * @param {number} options.steps - The number of steps to perform
      */
     const _clickConstrained =
-      (page: Page) =>
+      (page: Page, testInfo?: TestInfo) =>
       async ({
         hoverPos,
         constraintType,
@@ -5873,7 +5866,7 @@ test.describe('Testing segment overlays', () => {
         x = hoverPos.x + Math.cos(ang * deg) * 32
         y = hoverPos.y - Math.sin(ang * deg) * 32
         await page.mouse.move(x, y)
-        await wiggleMove(page, x, y, 20, 30, ang, 10, 5, locator)
+        await wiggleMove(page, x, y, 20, 30, ang, 10, 5, locator, testInfo)
 
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
@@ -5994,7 +5987,7 @@ test.describe('Testing segment overlays', () => {
     test.setTimeout(120000)
     test('for segments [line, angledLine, lineTo, xLineTo]', async ({
       page,
-    }) => {
+    }, testInfo) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -6038,7 +6031,7 @@ test.describe('Testing segment overlays', () => {
       await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
 
       const clickUnconstrained = _clickUnconstrained(page)
-      const clickConstrained = _clickConstrained(page)
+      const clickConstrained = _clickConstrained(page, testInfo)
 
       await u.openAndClearDebugPanel()
       await u.sendCustomCmd({
