@@ -119,45 +119,23 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   // click on "Start Sketch" button
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  // await page.waitForTimeout(100)
-  await page.waitForTimeout(1_000)
+  await page.waitForTimeout(100)
 
   // select a plane
-  // const r = await page.locator('canvas[style*=display]').screenshot()
-  // console.log('>>>> R',r.length)
-  // await page.mouse.click(700, 200)
-  // const r2 = await page.locator('canvas[style*=display]').screenshot()
-  // console.log('>>>> R',r2.length)
-  // await page.waitForTimeout(1_000)
-  await clickAndWaitForCanvas(page.mouse.click(700, 200))
-
-  async function clickAndWaitForCanvas(action: any) {
-    let og = await page.locator('canvas[style*=display]').screenshot()
-    await action
-    let r = await page.locator('canvas[style*=display]').screenshot()
-
-    while (og.length === r.length) {
-      console.log('>>>> OG and R', og.length, r.length)
-      await page.waitForTimeout(300)
-      r = await page.locator('canvas[style*=display]').screenshot()
-    }
-  }
+  await page.mouse.click(700, 200)
 
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toHaveText(
       `const sketch001 = startSketchOn('XZ')`
     )
   }
-  // await u.closeDebugPanel()
+  await u.closeDebugPanel()
 
-  // await page.waitForTimeout(1000) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(1000) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
-  // await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await clickAndWaitForCanvas(
-    page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  )
-
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  await page.waitForTimeout(500)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
@@ -166,12 +144,8 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await page.waitForTimeout(500)
   }
 
-  await clickAndWaitForCanvas(
-    page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  )
-
-  // await page.waitForTimeout(500)
-  // await page.waitForTimeout(1_000)
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(500)
 
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -182,12 +156,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await page.waitForTimeout(500)
   }
 
-  await clickAndWaitForCanvas(
-    page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  )
-
-  // await page.waitForTimeout(1_000)
-
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
@@ -197,9 +166,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   } else {
     await page.waitForTimeout(500)
   }
-
-  await clickAndWaitForCanvas(page.mouse.click(startXPx, 500 - PUR * 20))
-
+  await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
@@ -210,9 +177,8 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await clickAndWaitForCanvas(
-    page.getByRole('button', { name: 'Line', exact: true }).click()
-  )
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
+  await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
   if (openPanes.includes('code')) {
@@ -222,10 +188,8 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     ).toBeLessThan(3)
   }
   // click between first two clicks to get center of the line
-  await clickAndWaitForCanvas(
-    page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
-  )
-
+  await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
+  await page.waitForTimeout(100)
   if (openPanes.includes('code')) {
     expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
     await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
@@ -234,9 +198,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   // hold down shift
   await page.keyboard.down('Shift')
   // click between the latest two clicks to get center of the line
-  await clickAndWaitForCanvas(
-    page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
-  )
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
 
   // selected two lines therefore there should be two cursors
   if (openPanes.includes('code')) {
@@ -256,7 +218,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', async ({ page }) => {
+  test('code pane open at start', { tag: '@focus' }, async ({ page }) => {
     await doBasicSketch(page, ['code'])
   })
 
@@ -1044,7 +1006,7 @@ test.describe('Editor tests', () => {
     // Make sure there are two diagnostics
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
   })
-  test('if your kcl gets an error from the engine it is inlined', { tag: '@focus' }, async ({
+  test('if your kcl gets an error from the engine it is inlined', async ({
     page,
   }) => {
     const u = await getUtils(page)
@@ -2441,73 +2403,69 @@ test.describe('Onboarding tests', () => {
     await expect(u.codeLocator).toHaveText(bracketNoNewLines)
   })
 
-  test(
-    'Avatar text updates depending on image load success',
-    async ({ page }) => {
-      // Override beforeEach test setup
-      await page.addInitScript(
-        async ({ settingsKey, settings }) => {
-          localStorage.setItem(settingsKey, settings)
-        },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
-            settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
-          }),
-        }
-      )
+  test('Avatar text updates depending on image load success', async ({
+    page,
+  }) => {
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
 
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-      await u.waitForAuthSkipAppStart()
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
 
-      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
-      // Test that the text in this step is correct
-      const avatarLocator = await page
-        .getByTestId('user-sidebar-toggle')
-        .locator('img')
-      const onboardingOverlayLocator = await page
-        .getByTestId('onboarding-content')
-        .locator('div')
-        .nth(1)
+    // Test that the text in this step is correct
+    const avatarLocator = await page
+      .getByTestId('user-sidebar-toggle')
+      .locator('img')
+    const onboardingOverlayLocator = await page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
 
-      // Expect the avatar to be visible and for the text to reference it
-      await expect(avatarLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toContainText('your avatar')
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('your avatar')
 
-      // This is to force the avatar to 404.
-      // For our test image (only triggers locally. on CI, it's Kurt's /
-      // gravatar image )
-      await page.route('/cat.jpg', async (route) => {
-        await route.fulfill({
-          status: 404,
-          contentType: 'text/plain',
-          body: 'Not Found!',
-        })
+    // This is to force the avatar to 404.
+    // For our test image (only triggers locally. on CI, it's Kurt's /
+    // gravatar image )
+    await page.route('/cat.jpg', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
       })
+    })
 
-      // 404 the CI avatar image
-      await page.route(
-        'https://lh3.googleusercontent.com/**',
-        async (route) => {
-          await route.fulfill({
-            status: 404,
-            contentType: 'text/plain',
-            body: 'Not Found!',
-          })
-        }
-      )
+    // 404 the CI avatar image
+    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
+      })
+    })
 
-      await page.reload({ waitUntil: 'domcontentloaded' })
+    await page.reload({ waitUntil: 'domcontentloaded' })
 
-      // Now expect the text to be different
-      await expect(avatarLocator).not.toBeVisible()
-      await expect(onboardingOverlayLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toContainText('the menu button')
-    }
-  )
+    // Now expect the text to be different
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+  })
 
   test("Avatar text doesn't mention avatar when no avatar", async ({
     page,
