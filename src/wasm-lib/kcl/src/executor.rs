@@ -1061,6 +1061,12 @@ pub enum BodyType {
 #[ts(export)]
 pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
+impl From<[usize; 2]> for SourceRange {
+    fn from(value: [usize; 2]) -> Self {
+        Self(value)
+    }
+}
+
 impl SourceRange {
     /// Create a new source range.
     pub fn new(start: usize, end: usize) -> Self {
@@ -1587,15 +1593,8 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
-    /// Clear everything in the scene.
-    pub async fn reset_scene(&self) -> Result<()> {
-        self.engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                kittycad::types::ModelingCmd::SceneClearAll {},
-            )
-            .await?;
+    pub async fn reset_scene(&self, source_range: crate::executor::SourceRange) -> Result<()> {
+        self.engine.clear_scene(source_range).await?;
         Ok(())
     }
 
