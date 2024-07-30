@@ -573,7 +573,7 @@ export class LanguageServerPluginSpec
       lspHoverExt(plugin),
       lspIndentExt(),
       lspSemanticTokensExt(),
-      linter(),
+      linter(null),
     ]
   }
 }
