@@ -7291,6 +7291,7 @@ test.describe('Test network and connection issues', () => {
     await u.closeDebugPanel()
 
     const startXPx = 600
+    // The issue is that these types of interactions do not trigger any WebSocket messages for synchronization. :( ⤵️
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
