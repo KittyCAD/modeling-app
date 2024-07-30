@@ -17,11 +17,11 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from './sceneInfra'
 import {
-  EngineCommand,
   Subscription,
   EngineCommandManager,
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
@@ -585,10 +585,6 @@ export class CameraControls {
       .add(direction.multiplyScalar(-distanceAfter))
     this.camera.position.copy(newPosition)
 
-    const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
-    this.camera.near = z_near
-    this.camera.far = z_far
-
     if (splitEngineCalls) {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -1144,9 +1140,6 @@ function convertThreeCamValuesToEngineCam({
   up: Vector3
   vantage: Vector3
 } {
-  // Something to consider is that the orbit controls have a target,
-  // we're kind of deriving the target/lookAtVector here when it might not be needed
-  // leaving for now since it's working but maybe revisit later
   const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
 
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
@@ -1157,18 +1150,50 @@ function convertThreeCamValuesToEngineCam({
       vantage: position,
     }
   }
-  const lookAtVector = new Vector3(0, 0, -1)
-    .applyEuler(euler)
-    .normalize()
-    .add(position)
-  const fudgeFactor2 = zoom * 0.9979224466814468 - 0.03473692325839295
-  const zoomFactor = (-ZOOM_MAGIC_NUMBER + fudgeFactor2) / zoom
-  const direction = lookAtVector.clone().sub(position).normalize()
-  const newVantage = position.clone().add(direction.multiplyScalar(zoomFactor))
+
+  // re-implementing stuff here, though this is a bunch of Mike's code
+  // if we need to pull him in again, at least it will be familiar to him
+  // and it's all simple functions.
+  interface Coord3d {
+    x: number
+    y: number
+    z: number
+  }
+
+  function buildLookAt(distance: number, center: Coord3d, eye: Coord3d) {
+    const eyeVector = normalized(sub(eye, center))
+    return { center: center, eye: add(center, mult(eyeVector, distance)) }
+  }
+
+  function mult(vecA: Coord3d, sc: number): Coord3d {
+    return { x: vecA.x * sc, y: vecA.y * sc, z: vecA.z * sc }
+  }
+
+  function add(vecA: Coord3d, vecB: Coord3d): Coord3d {
+    return { x: vecA.x + vecB.x, y: vecA.y + vecB.y, z: vecA.z + vecB.z }
+  }
+
+  function sub(vecA: Coord3d, vecB: Coord3d): Coord3d {
+    return { x: vecA.x - vecB.x, y: vecA.y - vecB.y, z: vecA.z - vecB.z }
+  }
+
+  function dot(vecA: Coord3d, vecB: Coord3d) {
+    return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z
+  }
+
+  function length(vecA: Coord3d) {
+    return Math.sqrt(dot(vecA, vecA))
+  }
+
+  function normalized(vecA: Coord3d) {
+    return mult(vecA, 1.0 / length(vecA))
+  }
+
+  const lookAt = buildLookAt(64 / zoom, target, position)
   return {
-    center: lookAtVector,
-    up: upVector,
-    vantage: newVantage,
+    center: new Vector3(lookAt.center.x, lookAt.center.y, lookAt.center.z),
+    up: new Vector3(0, 0, 1),
+    vantage: new Vector3(lookAt.eye.x, lookAt.eye.y, lookAt.eye.z),
   }
 }
 
@@ -1224,7 +1249,7 @@ export async function letEngineAnimateAndSyncCamAfter(
       type: 'enable_sketch_mode',
       adjust_camera: true,
       animated: !isReducedMotion(),
-      ortho: false,
+      ortho: true,
       entity_id: entityId,
     },
   })
@@ -1232,27 +1257,6 @@ export async function letEngineAnimateAndSyncCamAfter(
   await new Promise((resolve) =>
     setTimeout(resolve, isReducedMotion() ? 100 : 600)
   )
-  await engineCommandManager.sendSceneCommand({
-    // CameraControls subscribes to default_camera_get_settings response events
-    // firing this at connection ensure the camera's are synced initially
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'enable_sketch_mode',
-      adjust_camera: true,
-      animated: false,
-      ortho: true,
-      entity_id: entityId,
-    },
-  })
-  await new Promise((resolve) => setTimeout(resolve, 50))
   await engineCommandManager.sendSceneCommand({
     // CameraControls subscribes to default_camera_get_settings response events
     // firing this at connection ensure the camera's are synced initially

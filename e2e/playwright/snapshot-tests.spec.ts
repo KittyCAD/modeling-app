@@ -64,27 +64,27 @@ const part001 = startSketchOn('-XZ')
   |> angledLineToY({
         angle: topAng,
         to: totalHeightHalf,
-      }, %, 'seg04')
-  |> xLineTo(totalLen, %, 'seg03')
-  |> yLine(-armThick, %, 'seg01')
+      }, %, $seg04)
+  |> xLineTo(totalLen, %, $seg03')
+  |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg04'
+        intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
-      }, %, 'seg02')
-  |> xLineTo(segEndX('seg03', %) + 0, %)
-  |> yLine(-segLen('seg01', %), %)
+      }, %, $seg02)
+  |> xLineTo(segEndX(seg03, %) + 0, %)
+  |> yLine(-segLen(seg01, %), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg02'
+        intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`
@@ -431,7 +431,9 @@ test('Draft segments should look right', async ({ page, context }) => {
   |> line([7.25, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(code)
 
-  await page.getByRole('button', { name: 'Tangential Arc' }).click()
+  await page
+    .getByRole('button', { name: 'Tangential Arc', exact: true })
+    .click()
 
   await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
 
@@ -475,8 +477,10 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   const startXPx = 600
 
   // Equip the rectangle tool
-  await page.getByRole('button', { name: 'Line' }).click()
-  await page.getByRole('button', { name: 'Rectangle' }).click()
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Corner rectangle', exact: true })
+    .click()
 
   // Draw the rectangle
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
@@ -535,7 +539,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> line([7.25, 0], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -545,7 +551,9 @@ test.describe('Client side scene scale should match engine scale', () => {
     await expect(u.codeLocator).toHaveText(code)
 
     // click tangential arc tool again to unequip it
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     // screen shot should show the sketch
@@ -634,7 +642,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> line([184.3, 0], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -643,7 +653,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> tangentialArcTo([551.2, -62.01], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     // screen shot should show the sketch

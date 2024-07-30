@@ -127,7 +127,10 @@ function ProjectMenuPopover({
             <>
               <span>Export current part</span>
               {!findCommand(exportCommandInfo) && (
-                <Tooltip position="right" className="!max-w-none min-w-fit">
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
                   Awaiting engine connection
                 </Tooltip>
               )}

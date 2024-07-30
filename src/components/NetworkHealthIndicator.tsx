@@ -95,7 +95,6 @@ export const NetworkHealthIndicator = () => {
         }
         data-testid="network-toggle"
       >
-        <span className="sr-only">Network Health</span>
         <ActionIcon
           icon={overallConnectionStateIcon[overallState]}
           className="p-1"
@@ -104,7 +103,7 @@ export const NetworkHealthIndicator = () => {
             'rounded-sm ' + overallConnectionStateColor[overallState].bg
           }
         />
-        <Tooltip position="top-right" className="ui-open:hidden">
+        <Tooltip position="top-right">
           Network Health ({NETWORK_HEALTH_TEXT[overallState]})
         </Tooltip>
       </Popover.Button>

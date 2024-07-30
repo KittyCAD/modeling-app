@@ -108,21 +108,18 @@ export async function getEventForSelectWithPoint(
   }
   const sourceRange = _artifact?.range
   if (_artifact) {
-    if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
-      if (_artifact?.additionalData)
-        return {
-          type: 'Set selection',
-          data: {
-            selectionType: 'singleCodeCursor',
-            selection: {
-              range: sourceRange,
-              type:
-                _artifact?.additionalData.info === 'end'
-                  ? 'end-cap'
-                  : 'start-cap',
-            },
+    if (_artifact.type === 'extrudeCap')
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            range: sourceRange,
+            type: _artifact?.cap === 'end' ? 'end-cap' : 'start-cap',
           },
-        }
+        },
+      }
+    if (_artifact.type === 'extrudeWall')
       return {
         type: 'Set selection',
         data: {
@@ -130,7 +127,6 @@ export async function getEventForSelectWithPoint(
           selection: { range: sourceRange, type: 'extrude-wall' },
         },
       }
-    }
     return {
       type: 'Set selection',
       data: {
@@ -519,33 +515,27 @@ function codeToIdSelections(
       let bestCandidate
       entriesWithOverlap.forEach((entry) => {
         if (!entry) return
-        if (
-          type === 'default' &&
-          entry.artifact.commandType === 'extend_path'
-        ) {
+        if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
         if (
           type === 'start-cap' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
-          entry?.artifact?.additionalData?.info === 'start'
+          entry.artifact.type === 'extrudeCap' &&
+          entry?.artifact?.cap === 'start'
         ) {
           bestCandidate = entry
           return
         }
         if (
           type === 'end-cap' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
-          entry?.artifact?.additionalData?.info === 'end'
+          entry.artifact.type === 'extrudeCap' &&
+          entry?.artifact?.cap === 'end'
         ) {
           bestCandidate = entry
           return
         }
-        if (
-          type === 'extrude-wall' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
-        ) {
+        if (type === 'extrude-wall' && entry.artifact.type === 'extrudeWall') {
           bestCandidate = entry
           return
         }

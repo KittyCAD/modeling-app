@@ -5,7 +5,6 @@ import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
 
-import { deferExecution } from 'lib/utils'
 import {
   CallExpression,
   initPromise,
@@ -18,6 +17,7 @@ import {
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
+import { Diagnostic } from '@codemirror/lint'
 
 export class KclManager {
   private _ast: Program = {
@@ -33,6 +33,7 @@ export class KclManager {
   }
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
+  private _lints: Diagnostic[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
   private _wasmInitFailed = true
@@ -73,14 +74,34 @@ export class KclManager {
     this._logsCallBack(logs)
   }
 
+  get lints() {
+    return this._lints
+  }
+
+  set lints(lints) {
+    if (lints === this._lints) return
+    this._lints = lints
+    // Run the lints through the diagnostics.
+    this.kclErrors = this._kclErrors
+  }
+
   get kclErrors() {
     return this._kclErrors
   }
   set kclErrors(kclErrors) {
+    if (kclErrors === this._kclErrors && this.lints.length === 0) return
     this._kclErrors = kclErrors
     let diagnostics = kclErrorsToDiagnostics(kclErrors)
-    editorManager.addDiagnostics(diagnostics)
+    if (this.lints.length > 0) {
+      diagnostics = diagnostics.concat(this.lints)
+    }
+    editorManager.setDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
+  }
+
+  addKclErrors(kclErrors: KCLError[]) {
+    if (kclErrors.length === 0) return
+    this.kclErrors = this.kclErrors.concat(kclErrors)
   }
 
   get isExecuting() {
@@ -149,12 +170,12 @@ export class KclManager {
 
   safeParse(code: string): Program | null {
     const ast = parse(code)
+    this.lints = []
     this.kclErrors = []
     if (!err(ast)) return ast
     const kclerror: KCLError = ast as KCLError
 
-    console.error('error parsing code', kclerror)
-    this.kclErrors = [kclerror]
+    this.addKclErrors([kclerror])
     // TODO: re-eval if session should end?
     if (kclerror.msg === 'file is empty')
       this.engineCommandManager?.endSession()
@@ -197,7 +218,7 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
     })
 
-    editorManager.addDiagnostics(await lintAst({ ast: ast }))
+    this.lints = await lintAst({ ast: ast })
 
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
     defaultSelectionFilter(programMemory, this.engineCommandManager)
@@ -229,7 +250,7 @@ export class KclManager {
       return
     }
     this.logs = logs
-    this.kclErrors = errors
+    this.addKclErrors(errors)
     this.programMemory = programMemory
     this.ast = { ...ast }
     this._executeCallback()
@@ -273,8 +294,6 @@ export class KclManager {
       useFakeExecutor: true,
     })
 
-    editorManager.addDiagnostics(await lintAst({ ast: ast }))
-
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
@@ -306,7 +325,6 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    console.log('[kcl/KclSingleton] executeCode')
     const ast = this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()

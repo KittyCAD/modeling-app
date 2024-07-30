@@ -460,12 +460,12 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const code = `const part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %)
-  |> line([306.21, 198.85], %, 'a')
+  |> line([306.21, 198.85], %, $a)
   |> line([306.21, 198.87], %)`
     const ast = parse(code)
     if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
-    const lineOfInterest = "line([306.21, 198.85], %, 'a')"
+    const lineOfInterest = 'line([306.21, 198.85], %, $a)'
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
@@ -495,10 +495,10 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %, $b)
 ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
-      !replace1 ? 'segLen(a, %)' : replace1
+      !replace1 ? 'segLen(a)' : replace1
     }], %)
   |> line([306.21, 198.87], %)
-  |> angledLine([65, ${!replace2 ? 'segAng(a, %)' : replace2}], %)
+  |> angledLine([65, ${!replace2 ? 'segAng(a)' : replace2}], %)
   |> line([-963.39, -154.67], %)
 `
     test.each([
@@ -753,7 +753,7 @@ const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -780,7 +780,7 @@ const sketch002 = startSketchOn({
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -809,7 +809,7 @@ const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -836,7 +836,7 @@ const sketch002 = startSketchOn({
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
