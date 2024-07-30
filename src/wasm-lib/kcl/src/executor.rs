@@ -193,6 +193,22 @@ impl Environment {
     pub fn contains_key(&self, key: &str) -> bool {
         self.bindings.contains_key(key)
     }
+
+    pub fn update_sketch_group_tags(&mut self, sg: &SketchGroup) {
+        if sg.tags.is_empty() {
+            return;
+        }
+
+        for (_, val) in self.bindings.iter_mut() {
+            if let MemoryItem::SketchGroup(ref mut sketch_group) = val {
+                if sketch_group.original_id == sg.original_id {
+                    for tag in sg.tags.iter() {
+                        sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// Dynamic state that depends on the dynamic flow of the program, like the call
@@ -899,7 +915,7 @@ pub struct TagEngineInfo {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct SketchGroup {
-    /// The id of the sketch group.
+    /// The id of the sketch group (this will change when the engine's reference to it changes.
     pub id: uuid::Uuid,
     /// The paths in the sketch group.
     pub value: Vec<Path>,
@@ -910,6 +926,10 @@ pub struct SketchGroup {
     /// Tag identifiers that have been declared in this sketch group.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub tags: HashMap<String, TagIdentifier>,
+    /// The original id of the sketch group. This stays the same even if the sketch group is
+    /// is sketched on face etc.
+    #[serde(skip)]
+    pub original_id: uuid::Uuid,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,

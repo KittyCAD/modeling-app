@@ -1746,7 +1746,7 @@ const plumbus0 = circle0
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
-       tags: [circle0.tags.arc1]
+       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
      }, %)
 
 const circle1 = make_circle(p, p.sketchGroup.tags.b, [0, 0], 2.5)
@@ -1754,7 +1754,7 @@ const plumbus1 = circle1
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
-        tags: [circle1.tags.arc1]
+        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1)]
       }, %)
 "#;
 

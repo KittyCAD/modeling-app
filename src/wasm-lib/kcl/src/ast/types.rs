@@ -1392,6 +1392,7 @@ impl CallExpression {
 
                                 let mut info = info.clone();
                                 info.surface = Some(value.clone());
+                                info.sketch_group = extrude_group.id;
                                 t.info = Some(info);
 
                                 memory.update_tag(&tag.name, t.clone())?;
@@ -1400,9 +1401,15 @@ impl CallExpression {
                                 extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
                             }
                         }
+
+                        // Find the stale sketch group in memory and update it.
+                        if let Some(current_env) = memory.environments.get_mut(memory.current_env.index()) {
+                            current_env.update_sketch_group_tags(&extrude_group.sketch_group);
+                        }
                     }
                     _ => {}
                 }
+
                 Ok(result)
             }
             FunctionKind::Std(func) => {
