@@ -24,13 +24,6 @@ export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],
   tags: [string, string, string]
 ) => [
-  createCallExpressionStdLib('startProfileAt', [
-    createArrayExpression([
-      createLiteral(roundOff(rectangleOrigin[0])),
-      createLiteral(roundOff(rectangleOrigin[1])),
-    ]),
-    createPipeSubstitution(),
-  ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createLiteral(0), // 0 deg

@@ -72,7 +72,7 @@ interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   }
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
-interface OnClickCallbackArgs {
+export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: {
     twoD: Vector2
