@@ -6,7 +6,7 @@ import { bracket } from 'lib/exampleKcl'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
-} from 'lib/tauriFS'
+} from 'lib/desktopFS'
 import { isDesktop } from 'lib/isDesktop'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'

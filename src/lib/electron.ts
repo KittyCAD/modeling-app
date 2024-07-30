@@ -3,7 +3,11 @@ import path from 'path'
 import fs from 'node:fs/promises'
 import packageJson from '../../package.json'
 
+const open = (args: any) => ipcRenderer.invoke('dialog', args)
+const showInFolder = (path: string) => ipcRenderer.invoke('shell.showItemInFolder', path)
+
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
+const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
@@ -27,13 +31,21 @@ const exposeProcessEnv = (varName: string) => {
 
 import('@kittycad/lib').then((kittycad) => {
   contextBridge.exposeInMainWorld('electron', {
+    // Passing fs directly is not recommended since it gives a lot of power
+    // to the browser side / potential malicious code. We restrict what is
+    // exported.
     readFile,
     writeFile,
     readdir,
+    rename,
+    rm: fs.rm,
     path,
     stat,
     statIsDirectory,
     mkdir: fs.mkdir,
+    // opens a dialog
+    open,
+    showInFolder,
     getPath,
     packageJson,
     platform: process.platform,

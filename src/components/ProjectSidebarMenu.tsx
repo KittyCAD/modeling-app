@@ -34,7 +34,7 @@ const ProjectSidebarMenu = ({
           className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
-          {project?.name ? project.file.name : APP_NAME}
+          {project?.name ? project.name : APP_NAME}
         </span>
       )}
     </div>
@@ -183,7 +183,7 @@ function ProjectMenuPopover({
           </span>
           {isDesktop() && project?.name && (
             <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
-              {project.file.name}
+              {project.name}
             </span>
           )}
         </div>

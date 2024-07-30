@@ -125,7 +125,7 @@ export const fileLoader: LoaderFunction = async ({
           },
       file: {
         name: current_file_name,
-        path: current_file_path,
+        path: current_file_path.split('/').slice(0, -1).join('/'),
         children: [],
       },
     }

@@ -4,7 +4,6 @@ import { isDesktop } from './isDesktop'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { parseProjectRoute, readAppSettingsFile } from './desktop'
-import { parseProjectRoute as parseProjectRouteWasm } from 'lang/wasm'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
 
@@ -38,19 +37,17 @@ export async function getProjectMetaByRouteId(
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
-  const inTauri = isDesktop()
+  const onDesktop = isDesktop()
 
   if (configuration === undefined) {
-    configuration = inTauri
+    configuration = onDesktop
       ? await readAppSettingsFile()
       : readLocalStorageAppSettingsFile()
   }
 
   if (err(configuration)) return Promise.reject(configuration)
 
-  const route = inTauri
-    ? await parseProjectRoute(configuration, id)
-    : parseProjectRouteWasm(configuration, id)
+  const route = parseProjectRoute(configuration, id)
 
   if (err(route)) return Promise.reject(route)
 
