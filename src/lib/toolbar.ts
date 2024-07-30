@@ -290,10 +290,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             },
           }),
         icon: 'line',
-        status: 'available',
-        disabled: (state) =>
-          state.matches('Sketch no face') ||
-          state.matches('Sketch.Rectangle tool.Awaiting second corner'),
+        status: 'unavailable',
+        disabled: (state) => true,
         title: 'Line',
         hotkey: (state) =>
           state.matches('Sketch.Line tool') ? ['Esc', 'L'] : 'L',
