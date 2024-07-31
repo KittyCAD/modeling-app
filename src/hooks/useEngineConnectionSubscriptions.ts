@@ -21,29 +21,31 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const artifact = engineCommandManager.artifactMap.get(data.entity_id)
+          const artifact = engineCommandManager.artifactGraph.get(
+            data.entity_id
+          )
           if (artifact?.type === 'solid2D') {
             const codeRef = getSolid2dCodeRef(
               artifact,
-              engineCommandManager.artifactMap
+              engineCommandManager.artifactGraph
             )
             if (err(codeRef)) return
             editorManager.setHighlightRange([codeRef.range])
           } else if (artifact?.type === 'cap') {
             const codeRef = getCapCodeRef(
               artifact,
-              engineCommandManager.artifactMap
+              engineCommandManager.artifactGraph
             )
             if (err(codeRef)) return
             editorManager.setHighlightRange([codeRef.range])
           } else if (artifact?.type === 'wall') {
             const extrusion = getExtrusionFromSuspectedExtrudeSurface(
               data.entity_id,
-              engineCommandManager.artifactMap
+              engineCommandManager.artifactGraph
             )
             const codeRef = getWallCodeRef(
               artifact,
-              engineCommandManager.artifactMap
+              engineCommandManager.artifactGraph
             )
             if (err(codeRef)) return
             editorManager.setHighlightRange(

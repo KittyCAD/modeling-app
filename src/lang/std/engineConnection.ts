@@ -6,7 +6,7 @@ import { uuidv4 } from 'lib/utils'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
-  ArtifactMap,
+  ArtifactGraph,
   EngineCommand,
   OrderedCommand,
   ResponseMap,
@@ -807,7 +807,7 @@ class EngineConnection extends EventTarget {
             .join('\n')
           if (message.request_id) {
             const artifactThatFailed =
-              this.engineCommandManager.artifactMap.get(message.request_id)
+              this.engineCommandManager.artifactGraph.get(message.request_id)
             console.error(
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.type}`
@@ -1117,7 +1117,7 @@ export class EngineCommandManager extends EventTarget {
    * so that we can map to and from KCL code. Each artifact maintains a source range to the part
    * of the KCL code that generated it.
    */
-  artifactMap: ArtifactMap = new Map()
+  artifactGraph: ArtifactGraph = new Map()
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -1785,7 +1785,7 @@ export class EngineCommandManager extends EventTarget {
    */
   async waitForAllCommands() {
     await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    this.artifactMap = createArtifactMap({
+    this.artifactGraph = createArtifactMap({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
       ast: this.getAst(),
@@ -1846,7 +1846,7 @@ export class EngineCommandManager extends EventTarget {
     range: SourceRange,
     commandTypeToTarget: string
   ): string | undefined {
-    const values = Object.entries(this.artifactMap)
+    const values = Object.entries(this.artifactGraph)
     for (const [id, data] of values) {
       // // Our range selection seems to just select the cursor position, so either
       // // of these can be right...

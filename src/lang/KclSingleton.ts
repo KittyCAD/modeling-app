@@ -303,7 +303,7 @@ export class KclManager {
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
     // problem this solves, but either way we should strive to remove it.
-    Array.from(this.engineCommandManager.artifactMap).forEach(
+    Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
         if (!('codeRef' in artifact)) return
         const _node1 = getNodeFromPath<CallExpression>(
@@ -317,7 +317,7 @@ export class KclManager {
         const [oldStart, oldEnd] = artifact.codeRef.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactMap.set(commandId, {
+        this.engineCommandManager.artifactGraph.set(commandId, {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,

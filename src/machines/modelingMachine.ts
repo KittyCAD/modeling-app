@@ -1144,7 +1144,7 @@ export const modelingMachine = createMachine(
         if (sketchGroup?.type !== 'SketchGroup') return
         const extrusion = getExtrusionFromSuspectedPath(
           sketchGroup.id,
-          engineCommandManager.artifactMap
+          engineCommandManager.artifactGraph
         )
         const pathToExtrudeNode = err(extrusion)
           ? []

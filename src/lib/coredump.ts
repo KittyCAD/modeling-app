@@ -193,13 +193,13 @@ export class CoreDumpManager {
       debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
 
       // artifact map - this.engineCommandManager.artifactMap
-      if (this.engineCommandManager?.artifactMap) {
+      if (this.engineCommandManager?.artifactGraph) {
         debugLog(
           'CoreDump: Engine Command Manager artifact map',
-          this.engineCommandManager.artifactMap
+          this.engineCommandManager.artifactGraph
         )
         clientState.engine_command_manager.artifact_map = structuredClone(
-          this.engineCommandManager.artifactMap
+          this.engineCommandManager.artifactGraph
         )
       }
 

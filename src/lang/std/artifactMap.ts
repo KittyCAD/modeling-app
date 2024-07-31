@@ -122,7 +122,7 @@ export type Artifact =
   | EdgeCutEdge
   | _solid2D
 
-export type ArtifactMap = Map<string, Artifact>
+export type ArtifactGraph = Map<string, Artifact>
 
 export type EngineCommand = Models['WebSocketRequest_type']
 
@@ -419,7 +419,7 @@ export function getArtifactsToUpdate({
 
 /** filter map items of a specific type */
 export function filterArtifacts<T extends Artifact['type'][]>(
-  map: ArtifactMap,
+  map: ArtifactGraph,
   types: T,
   predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
 ) {
@@ -435,7 +435,7 @@ export function filterArtifacts<T extends Artifact['type'][]>(
 
 export function getArtifactsOfType<T extends Artifact['type'][]>(
   keys: string[],
-  map: ArtifactMap,
+  map: ArtifactGraph,
   types: T,
   predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
 ): Map<string, Extract<Artifact, { type: T[number] }>> {
@@ -452,7 +452,7 @@ export function getArtifactsOfType<T extends Artifact['type'][]>(
 
 function getArtifactOfType<T extends Artifact['type']>(
   key: string,
-  map: ArtifactMap,
+  map: ArtifactGraph,
   type: T
 ): Extract<Artifact, { type: T }> | Error {
   const artifact = map.get(key)
@@ -463,7 +463,7 @@ function getArtifactOfType<T extends Artifact['type']>(
 
 export function getArtifactOfTypes<T extends Artifact['type'][]>(
   key: string,
-  map: ArtifactMap,
+  map: ArtifactGraph,
   types: T
 ): Extract<Artifact, { type: T[number] }> | Error {
   const artifact = map.get(key)
@@ -475,7 +475,7 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
 
 export function expandPlane(
   plane: _PlaneArtifact,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): PlaneArtifact {
   const paths = getArtifactsOfType(plane.pathIds, artifactMap, ['path'])
   return {
@@ -487,7 +487,7 @@ export function expandPlane(
 
 export function expandPath(
   path: _PathArtifact,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): PathArtifact | Error {
   const segs = getArtifactsOfType(path.segIds, artifactMap, ['segment'])
   const extrusion = getArtifactOfType(
@@ -509,7 +509,7 @@ export function expandPath(
 
 export function expandExtrusion(
   extrusion: _ExtrusionArtifact,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): ExtrusionArtifact | Error {
   const surfs = getArtifactsOfType(extrusion.surfIds, artifactMap, [
     'wall',
@@ -526,7 +526,7 @@ export function expandExtrusion(
 
 export function expandSegment(
   segment: _SegmentArtifact,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): SegmentArtifact | Error {
   const path = getArtifactOfTypes(segment.pathId, artifactMap, ['path'])
   const surf = getArtifactOfTypes(segment.surfId, artifactMap, ['wall'])
@@ -552,7 +552,7 @@ export function expandSegment(
 
 export function getCapCodeRef(
   cap: _CapArtifact,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): CommonCommandProperties | Error {
   const extrusion = getArtifactOfType(cap.extrusionId, artifactMap, 'extrusion')
   if (err(extrusion)) return extrusion
@@ -563,7 +563,7 @@ export function getCapCodeRef(
 
 export function getSolid2dCodeRef(
   solid2D: _solid2D,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): CommonCommandProperties | Error {
   const path = getArtifactOfType(solid2D.pathId, artifactMap, 'path')
   if (err(path)) return path
@@ -572,7 +572,7 @@ export function getSolid2dCodeRef(
 
 export function getWallCodeRef(
   wall: _WallArtifact,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): CommonCommandProperties | Error {
   const seg = getArtifactOfType(wall.segId, artifactMap, 'segment')
   if (err(seg)) return seg
@@ -581,7 +581,7 @@ export function getWallCodeRef(
 
 export function getExtrusionFromSuspectedExtrudeSurface(
   id: string,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): _ExtrusionArtifact | Error {
   const artifact = getArtifactOfTypes(id, artifactMap, ['wall', 'cap'])
   if (err(artifact)) return artifact
@@ -590,7 +590,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
 
 export function getExtrusionFromSuspectedPath(
   id: string,
-  artifactMap: ArtifactMap
+  artifactMap: ArtifactGraph
 ): _ExtrusionArtifact | Error {
   const path = getArtifactOfTypes(id, artifactMap, ['path'])
   if (err(path)) return path

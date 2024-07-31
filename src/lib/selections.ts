@@ -87,7 +87,7 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  let _artifact = engineCommandManager.artifactMap.get(data.entity_id)
+  let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
   if (!_artifact) {
     // This logic for getting the parent id is for solid2ds as in edit mode it return the face id
     // but we don't recognise that in the artifact map because we store the path id when the path is
@@ -109,7 +109,7 @@ export async function getEventForSelectWithPoint(
       resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
         ? resp?.resp?.data?.modeling_response?.data?.entity_id
         : ''
-    const parentArtifact = engineCommandManager.artifactMap.get(parentId)
+    const parentArtifact = engineCommandManager.artifactGraph.get(parentId)
     if (parentArtifact) {
       _artifact = parentArtifact
     }
@@ -118,7 +118,7 @@ export async function getEventForSelectWithPoint(
     if (_artifact.type === 'solid2D') {
       const codeRef = getSolid2dCodeRef(
         _artifact,
-        engineCommandManager.artifactMap
+        engineCommandManager.artifactGraph
       )
       if (err(codeRef)) return null
       return {
@@ -130,7 +130,10 @@ export async function getEventForSelectWithPoint(
       }
     }
     if (_artifact.type === 'cap') {
-      const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactMap)
+      const codeRef = getCapCodeRef(
+        _artifact,
+        engineCommandManager.artifactGraph
+      )
       if (err(codeRef)) return null
       return {
         type: 'Set selection',
@@ -146,7 +149,7 @@ export async function getEventForSelectWithPoint(
     if (_artifact.type === 'wall') {
       const codeRef = getWallCodeRef(
         _artifact,
-        engineCommandManager.artifactMap
+        engineCommandManager.artifactGraph
       )
       if (err(codeRef)) return null
       return {
@@ -389,7 +392,7 @@ function resetAndSetEngineEntitySelectionCmds(
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
-    engineCommandManager.artifactMap,
+    engineCommandManager.artifactGraph,
     selectionRanges
   )
 }
@@ -541,7 +544,7 @@ function codeToIdSelections(
   return codeBasedSelections
     .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
-      const overlappingEntries = Array.from(engineCommandManager.artifactMap)
+      const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
           if (!('codeRef' in artifact)) return false
           return isOverlap(artifact.codeRef.range, range)
@@ -561,7 +564,7 @@ function codeToIdSelections(
           return
         }
         if (type === 'solid2D' && entry.artifact.type === 'path') {
-          const solid = engineCommandManager.artifactMap.get(
+          const solid = engineCommandManager.artifactGraph.get(
             entry.artifact.solid2dId || ''
           )
           if (solid?.type !== 'solid2D') return
@@ -572,7 +575,7 @@ function codeToIdSelections(
           }
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
-          const wall = engineCommandManager.artifactMap.get(
+          const wall = engineCommandManager.artifactGraph.get(
             entry.artifact.surfId
           )
           if (wall?.type !== 'wall') return
@@ -589,13 +592,13 @@ function codeToIdSelections(
         ) {
           const extrusion = getArtifactOfTypes(
             entry.artifact.extrusionId,
-            engineCommandManager.artifactMap,
+            engineCommandManager.artifactGraph,
             ['extrusion']
           )
           if (err(extrusion)) return
           const caps = getArtifactsOfType(
             extrusion.surfIds,
-            engineCommandManager.artifactMap,
+            engineCommandManager.artifactGraph,
             ['cap']
           )
           const cap = [...caps].find(

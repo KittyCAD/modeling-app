@@ -1592,18 +1592,18 @@ export class SceneEntities {
           })
           return
         }
-        const artifact = this.engineCommandManager.artifactMap.get(_entity_id)
+        const artifact = this.engineCommandManager.artifactGraph.get(_entity_id)
         const extrusion = getExtrusionFromSuspectedExtrudeSurface(
           _entity_id,
-          this.engineCommandManager.artifactMap
+          this.engineCommandManager.artifactGraph
         )
 
         if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
 
         const codeRef =
           artifact.type === 'cap'
-            ? getCapCodeRef(artifact, this.engineCommandManager.artifactMap)
-            : getWallCodeRef(artifact, this.engineCommandManager.artifactMap)
+            ? getCapCodeRef(artifact, this.engineCommandManager.artifactGraph)
+            : getWallCodeRef(artifact, this.engineCommandManager.artifactGraph)
 
         const faceInfo = await getFaceDetails(_entity_id)
         if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return

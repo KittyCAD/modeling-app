@@ -8,7 +8,7 @@ import {
   expandPlane,
   expandPath,
   expandExtrusion,
-  ArtifactMap,
+  ArtifactGraph,
   expandSegment,
   getArtifactsToUpdate,
 } from './artifactMap'
@@ -293,7 +293,7 @@ function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
 }
 
 async function GraphArtifactMap(
-  theMap: ArtifactMap,
+  theMap: ArtifactGraph,
   sizeX: number,
   sizeY: number,
   imageName: string
