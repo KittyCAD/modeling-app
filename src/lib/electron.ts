@@ -6,7 +6,8 @@ import packageJson from '../../package.json'
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
-const showInFolder = (path: string) => ipcRenderer.invoke('shell.showItemInFolder', path)
+const showInFolder = (path: string) =>
+  ipcRenderer.invoke('shell.showItemInFolder', path)
 const login = (host: string) => ipcRenderer.invoke('login', host)
 
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
@@ -14,10 +15,12 @@ const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) => fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string) =>
+  fs.stat(path).catch((e) => Promise.reject(e.code))
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-const statIsDirectory = (path: string) => stat(path).then((res) => res.isDirectory())
+const statIsDirectory = (path: string) =>
+  stat(path).then((res) => res.isDirectory())
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const exposeProcessEnv = (varName: string) => {

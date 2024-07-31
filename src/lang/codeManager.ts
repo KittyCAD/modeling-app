@@ -119,11 +119,13 @@ export default class CodeManager {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
         this._currentFilePath &&
-          window.electron.writeFile(this._currentFilePath, this.code ?? '').catch((err) => {
-            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-            console.error('error saving file', err)
-            toast.error('Error saving file, please check file permissions')
-          })
+          window.electron
+            .writeFile(this._currentFilePath, this.code ?? '')
+            .catch((err) => {
+              // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+              console.error('error saving file', err)
+              toast.error('Error saving file, please check file permissions')
+            })
       })
     } else {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)

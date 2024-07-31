@@ -49,7 +49,9 @@ export const FileMachineProvider = ({
           commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.selectedDirectory + window.electron.path.sep + event.data.name
+              context.selectedDirectory +
+                window.electron.path.sep +
+                event.data.name
             )}`
           )
         } else if (
@@ -97,7 +99,10 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = window.electron.path.join(context.selectedDirectory.path, createdName)
+          createdPath = window.electron.path.join(
+            context.selectedDirectory.path,
+            createdName
+          )
           await window.electron.mkdir(createdPath)
         } else {
           createdPath =
@@ -119,8 +124,14 @@ export const FileMachineProvider = ({
       ) => {
         const { oldName, newName, isDir } = event.data
         const name = newName ? newName : DEFAULT_FILE_NAME
-        const oldPath = window.electron.path.join(context.selectedDirectory.path, oldName)
-        const newDirPath = window.electron.path.join(context.selectedDirectory.path, name)
+        const oldPath = window.electron.path.join(
+          context.selectedDirectory.path,
+          oldName
+        )
+        const newDirPath = window.electron.path.join(
+          context.selectedDirectory.path,
+          name
+        )
         const newPath =
           newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
@@ -152,13 +163,15 @@ export const FileMachineProvider = ({
         const isDir = !!event.data.children
 
         if (isDir) {
-          await window.electron.rm(event.data.path, {
-            recursive: true,
-          }).catch((e) => console.error('Error deleting directory', e))
+          await window.electron
+            .rm(event.data.path, {
+              recursive: true,
+            })
+            .catch((e) => console.error('Error deleting directory', e))
         } else {
-          await window.electron.rm(event.data.path).catch((e) =>
-            console.error('Error deleting file', e)
-          )
+          await window.electron
+            .rm(event.data.path)
+            .catch((e) => console.error('Error deleting file', e))
         }
 
         // If we just deleted the current file or one of its parent directories,

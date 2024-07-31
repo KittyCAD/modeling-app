@@ -237,7 +237,10 @@ export async function saveSettings(
 
   // Write the project settings.
   if (onDesktop) {
-    await writeProjectSettingsFile({ projectPath, configuration: { settings: projectSettings }})
+    await writeProjectSettingsFile({
+      projectPath,
+      configuration: { settings: projectSettings },
+    })
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
   }
