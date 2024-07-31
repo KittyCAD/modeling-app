@@ -34,7 +34,7 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
