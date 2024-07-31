@@ -3,9 +3,9 @@
 
 #### What it does
 
-The artifact graph's primary role is to map geometry artifacts in the 3d-scene in the engine, to the code/AST such that when the engine sends the FE an id of some piece of geometry (say because the user click on something) than we know both what it is, and how it relates to the user's code.
+The artifact graph's primary role is to map geometry artifacts in the 3d-scene/engine, to the code/AST such that when the engine sends the FE an id of some piece of geometry (say because the user clicked on something) then we know both what it is, and how it relates to the user's code.
 
-Relating it to a user's code is important because this is how we drive our AST-mods, say a user clicks a segment and wants to constrain it horizontally, because of the artifact map we know that they're selection was in fact a specific `line(...)` callExpression, and now we're able to transform this to `xLine(...)` in order to constrain it.
+Relating it to a user's code is important because this is how we drive our AST-mods, say a user clicks a segment and wants to constrain it horizontally, because of the artifact graph we know that their selection was in fact a specific `line(...)` callExpression, and now we're able to transform this to `xLine(...)` in order to constrain it.
 
 #### How to reason about the graph
 
@@ -13,13 +13,13 @@ Here is what roughly what the artifact graph looks like
 
 ![image of the artifact map](artifactMapGraphs/grokable-graph.png)
 
-The best way to read this is starting with the plane at the bottom and going upwards, as this is roughly the order the commands the graph is based on are sent to the engine.
+The best way to read this is starting with the plane at the bottom and going upwards, as this is roughly the command order (which the graph is based on).
 Here's an explanation:
 - plane is created (kcl:`startSketchOn`, command: `enable_sketch_mode`)
 - path is created, needs to refer to the plane that the sketch is on (kcl:`startProfileAt`, command: `start_path`)
 - each segment that is created (kcl: `line`, command: `extend_path`) must refer back to the path.
 - Once we're read to extrude (kcl: `extrude`, command: `extrude`) it much refer to the path.
-- The extrude created a bunch of faces, edges etc, each of these relates back to the extrude command and the segment call expression, but there's no direct bit of kcl I can put here.
+- The extrude created a bunch of faces, edges etc, each of these relates back to the extrude command and the segment call expression, but there's no direct bit of kcl to refer to.
 
 The above is probably enough to give more examples of how the graph is used.
 
