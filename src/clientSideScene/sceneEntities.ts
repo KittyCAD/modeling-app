@@ -109,7 +109,7 @@ import {
   getCapCodeRef,
   getExtrusionFromSuspectedExtrudeSurface,
   getWallCodeRef,
-} from 'lang/std/artifactMap'
+} from 'lang/std/artifactGraph'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 

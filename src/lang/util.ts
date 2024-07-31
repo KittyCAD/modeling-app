@@ -1,7 +1,7 @@
 import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
-import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactMap'
+import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
 import { err } from 'lib/trap'
 

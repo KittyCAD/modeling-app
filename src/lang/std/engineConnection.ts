@@ -11,7 +11,7 @@ import {
   OrderedCommand,
   ResponseMap,
   createArtifactMap,
-} from 'lang/std/artifactMap'
+} from 'lang/std/artifactGraph'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000

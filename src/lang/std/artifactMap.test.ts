@@ -11,7 +11,7 @@ import {
   ArtifactGraph,
   expandSegment,
   getArtifactsToUpdate,
-} from './artifactMap'
+} from './artifactGraph'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { CI, VITE_KC_DEV_TOKEN } from 'env'

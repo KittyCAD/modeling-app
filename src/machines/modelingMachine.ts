@@ -33,11 +33,7 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import {
-  addStartProfileAt,
-  deleteFromSelection,
-  extrudeSketch,
-} from 'lang/modifyAst'
+import { deleteFromSelection, extrudeSketch } from 'lang/modifyAst'
 import { addFillet } from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
@@ -57,14 +53,12 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, trap } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
-import { Vector3 } from 'three'
-import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
-import { getExtrusionFromSuspectedPath } from 'lang/std/artifactMap'
+import { getExtrusionFromSuspectedPath } from 'lang/std/artifactGraph'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 

@@ -21,7 +21,7 @@ import {
   EngineCommandManager,
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'

@@ -7,7 +7,7 @@ import {
   getExtrusionFromSuspectedExtrudeSurface,
   getSolid2dCodeRef,
   getWallCodeRef,
-} from 'lang/std/artifactMap'
+} from 'lang/std/artifactGraph'
 import { err } from 'lib/trap'
 
 export function useEngineConnectionSubscriptions() {
