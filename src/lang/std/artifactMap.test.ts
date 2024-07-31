@@ -1,4 +1,5 @@
 import { makeDefaultPlanes, parse, initPromise, Program } from 'lang/wasm'
+import { Models } from '@kittycad/lib'
 import {
   OrderedCommand,
   ResponseMap,
@@ -9,6 +10,7 @@ import {
   expandExtrusion,
   ArtifactMap,
   expandSegment,
+  getArtifactsToUpdate,
 } from './artifactMap'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
@@ -490,3 +492,252 @@ async function GraphArtifactMap(
     )
   }
 }
+
+describe('testing getArtifactsToUpdate', () => {
+  it('should return an array of artifacts to update', () => {
+    const { orderedCommands, responseMap, ast } = getCommands('exampleCode1')
+    const map = createArtifactMap({ orderedCommands, responseMap, ast })
+    const getArtifact = (id: string) => map.get(id)
+    const currentPlaneId = 'UUID-1'
+    const getUpdateObjects = (type: Models['ModelingCmd_type']['type']) => {
+      const artifactsToUpdate = getArtifactsToUpdate({
+        orderedCommand: orderedCommands.find(
+          (a) =>
+            a.command.type === 'modeling_cmd_req' && a.command.cmd.type === type
+        )!,
+        responseMap,
+        getArtifact,
+        currentPlaneId,
+        ast,
+      })
+      return artifactsToUpdate.map(({ artifact }) => artifact)
+    }
+    expect(getUpdateObjects('start_path')).toEqual([
+      {
+        type: 'path',
+        segIds: [],
+        planeId: 'UUID-1',
+        extrusionId: '',
+        codeRef: {
+          pathToNode: [['body', '']],
+          range: [43, 70],
+        },
+      },
+    ])
+    expect(getUpdateObjects('extrude')).toEqual([
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: [],
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'path',
+        segIds: expect.any(Array),
+        planeId: expect.any(String),
+        extrusionId: expect.any(String),
+        codeRef: {
+          range: [43, 70],
+          pathToNode: [['body', '']],
+        },
+        solid2dId: expect.any(String),
+      },
+    ])
+    expect(getUpdateObjects('extend_path')).toEqual([
+      {
+        type: 'segment',
+        pathId: expect.any(String),
+        surfId: '',
+        edgeIds: [],
+        codeRef: {
+          range: [76, 92],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'path',
+        segIds: expect.any(Array),
+        planeId: expect.any(String),
+        extrusionId: expect.any(String),
+        codeRef: {
+          range: [43, 70],
+          pathToNode: [['body', '']],
+        },
+        solid2dId: expect.any(String),
+      },
+    ])
+    expect(getUpdateObjects('solid3d_fillet_edge')).toEqual([
+      {
+        type: 'blend',
+        subType: 'fillet',
+        consumedEdgeId: expect.any(String),
+        edgeIds: [],
+        surfId: '',
+        codeRef: {
+          range: [272, 311],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'segment',
+        pathId: expect.any(String),
+        surfId: expect.any(String),
+        edgeIds: [],
+        codeRef: {
+          range: [98, 125],
+          pathToNode: [['body', '']],
+        },
+        blendId: expect.any(String),
+      },
+    ])
+    expect(getUpdateObjects('solid3d_get_extrusion_face_info')).toEqual([
+      {
+        type: 'wall',
+        segId: expect.any(String),
+        blendEdgeIds: [],
+        extrusionId: expect.any(String),
+        pathIds: [],
+      },
+      {
+        type: 'segment',
+        pathId: expect.any(String),
+        surfId: expect.any(String),
+        edgeIds: [],
+        codeRef: {
+          range: [162, 209],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: expect.any(Array),
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'wall',
+        segId: expect.any(String),
+        blendEdgeIds: [],
+        extrusionId: expect.any(String),
+        pathIds: [],
+      },
+      {
+        type: 'segment',
+        pathId: expect.any(String),
+        surfId: expect.any(String),
+        edgeIds: [],
+        codeRef: {
+          range: [131, 156],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: expect.any(Array),
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'wall',
+        segId: expect.any(String),
+        blendEdgeIds: [],
+        extrusionId: expect.any(String),
+        pathIds: [],
+      },
+      {
+        type: 'segment',
+        pathId: expect.any(String),
+        surfId: expect.any(String),
+        edgeIds: [],
+        codeRef: {
+          range: [98, 125],
+          pathToNode: [['body', '']],
+        },
+        blendId: expect.any(String),
+      },
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: expect.any(Array),
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'wall',
+        segId: expect.any(String),
+        blendEdgeIds: [],
+        extrusionId: expect.any(String),
+        pathIds: [],
+      },
+      {
+        type: 'segment',
+        pathId: expect.any(String),
+        surfId: expect.any(String),
+        edgeIds: [],
+        codeRef: {
+          range: [76, 92],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: expect.any(Array),
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'cap',
+        subType: 'start',
+        blendEdgeIds: [],
+        extrusionId: expect.any(String),
+        pathIds: [],
+      },
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: expect.any(Array),
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+      {
+        type: 'cap',
+        subType: 'end',
+        blendEdgeIds: [],
+        extrusionId: expect.any(String),
+        pathIds: [],
+      },
+      {
+        type: 'extrusion',
+        pathId: expect.any(String),
+        surfIds: expect.any(Array),
+        edgeIds: [],
+        codeRef: {
+          range: [243, 266],
+          pathToNode: [['body', '']],
+        },
+      },
+    ])
+  })
+})
