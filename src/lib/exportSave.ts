@@ -1,8 +1,6 @@
 import { isDesktop } from './isDesktop'
 import { deserialize_files } from '../wasm-lib/pkg/wasm_lib'
 import { browserSaveFile } from './browserSaveFile'
-import { save } from '@tauri-apps/plugin-dialog'
-import { writeFile } from '@tauri-apps/plugin-fs'
 
 import JSZip from 'jszip'
 import ModelingAppFile from './modelingAppFile'
@@ -17,7 +15,7 @@ const save_ = async (file: ModelingAppFile) => {
       }
 
       // Open a dialog to save the file.
-      const filePath = await save({
+      const filePath = await window.electron.save({
         defaultPath: file.name,
         filters: [
           {
@@ -34,7 +32,7 @@ const save_ = async (file: ModelingAppFile) => {
       }
 
       // Write the file.
-      await writeFile(filePath, new Uint8Array(file.contents))
+      await window.electron.writeFile(filePath, new Uint8Array(file.contents))
     } else {
       // Download the file to the user's computer.
       // Now we need to download the files to the user's downloads folder.
