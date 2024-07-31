@@ -3,7 +3,7 @@ import { Models } from '@kittycad/lib'
 import {
   OrderedCommand,
   ResponseMap,
-  createArtifactMap,
+  createArtifactGraph,
   filterArtifacts,
   expandPlane,
   expandPath,
@@ -25,7 +25,7 @@ import { PNG } from 'pngjs'
 
 /*
 Note this is an integration test, these tests connect to our real dev server and make websocket commands.
-It's needed for testing the artifactMap, as the artifactMap is tied to the websocket commands.
+It's needed for testing the artifactGraph, as it is tied to the websocket commands.
 */
 
 const pathStart = 'src/lang/std/artifactMapCache'
@@ -108,7 +108,7 @@ beforeAll(async () => {
   if (!CI && parsed) {
     // caching the results of the websocket commands makes testing this locally much faster
     // real calls to the engine are needed to test the artifact map
-    // bust the cache with: `rm -rf src/lang/std/artifactMapCache`
+    // bust the cache with: `rm -rf src/lang/std/artifactGraphCache`
     return
   }
 
@@ -155,10 +155,10 @@ afterAll(() => {
   engineCommandManager.tearDown()
 })
 
-describe('testing createArtifactMap', () => {
+describe('testing createArtifactGraph', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
     let ast: Program
-    let theMap: ReturnType<typeof createArtifactMap>
+    let theMap: ReturnType<typeof createArtifactGraph>
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
@@ -167,7 +167,7 @@ describe('testing createArtifactMap', () => {
         ast: _ast,
       } = getCommands('exampleCode1')
       ast = _ast
-      theMap = createArtifactMap({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
     })
 
     it('there should be two planes for the extrusion and the sketch on face', () => {
@@ -215,7 +215,7 @@ describe('testing createArtifactMap', () => {
       expect(segments).toHaveLength(9)
     })
 
-    it('snapshot of the artifactMap', () => {
+    it('snapshot of the artifactGraph', () => {
       const stableMap = new Map(
         [...theMap].map(([, artifact], index): [string, any] => {
           const stableValue: any = {}
@@ -240,12 +240,12 @@ describe('testing createArtifactMap', () => {
     })
 
     it('screenshot graph', async () => {
-      // Ostensibly this takes a screen shot of the graph of the artifactMap
+      // Ostensibly this takes a screen shot of the graph of the artifactGraph
       // but it's it also tests that all of the id links are correct because if one
       // of the edges refers to a non-existent node, the graph will throw.
       // further more we can check that each edge is bi-directional, if it's not
       // by checking the arrow heads going both ways, on the graph.
-      await GraphArtifactMap(theMap, 1400, 1400, 'exampleCode1.png')
+      await GraphTheGraph(theMap, 1400, 1400, 'exampleCode1.png')
     }, 20000)
   })
 })
@@ -253,7 +253,7 @@ describe('testing createArtifactMap', () => {
 describe('capture graph of sketchOnFaceOnFace...', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
     let ast: Program
-    let theMap: ReturnType<typeof createArtifactMap>
+    let theMap: ReturnType<typeof createArtifactGraph>
     it('setup', async () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
@@ -262,14 +262,14 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
         ast: _ast,
       } = getCommands('sketchOnFaceOnFaceEtc')
       ast = _ast
-      theMap = createArtifactMap({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
 
-      // Ostensibly this takes a screen shot of the graph of the artifactMap
+      // Ostensibly this takes a screen shot of the graph of the artifactGraph
       // but it's it also tests that all of the id links are correct because if one
       // of the edges refers to a non-existent node, the graph will throw.
       // further more we can check that each edge is bi-directional, if it's not
       // by checking the arrow heads going both ways, on the graph.
-      await GraphArtifactMap(theMap, 2500, 2500, 'sketchOnFaceOnFaceEtc.png')
+      await GraphTheGraph(theMap, 2500, 2500, 'sketchOnFaceOnFaceEtc.png')
     }, 20000)
   })
 })
@@ -292,7 +292,7 @@ function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
   }
 }
 
-async function GraphArtifactMap(
+async function GraphTheGraph(
   theMap: ArtifactGraph,
   sizeX: number,
   sizeY: number,
@@ -496,7 +496,7 @@ async function GraphArtifactMap(
 describe('testing getArtifactsToUpdate', () => {
   it('should return an array of artifacts to update', () => {
     const { orderedCommands, responseMap, ast } = getCommands('exampleCode1')
-    const map = createArtifactMap({ orderedCommands, responseMap, ast })
+    const map = createArtifactGraph({ orderedCommands, responseMap, ast })
     const getArtifact = (id: string) => map.get(id)
     const currentPlaneId = 'UUID-1'
     const getUpdateObjects = (type: Models['ModelingCmd_type']['type']) => {

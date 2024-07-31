@@ -46,11 +46,11 @@ export function updatePathToNodeFromMap(
 }
 
 export function isCursorInSketchCommandRange(
-  artifactMap: ArtifactGraph,
+  artifactGraph: ArtifactGraph,
   selectionRanges: Selections
 ): string | false {
   const overlappingEntries = filterArtifacts(
-    artifactMap,
+    artifactGraph,
     ['segment', 'path'],
     (artifact) => {
       return selectionRanges.codeBasedSelections.some(

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`testing createArtifactMap > code with an extrusion, fillet and sketch of face: > snapshot of the artifactMap 1`] = `
+exports[`testing createArtifactGraph > code with an extrusion, fillet and sketch of face: > snapshot of the artifactGraph 1`] = `
 Map {
   "UUID-0" => {
     "codeRef": {

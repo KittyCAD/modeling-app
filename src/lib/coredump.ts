@@ -192,7 +192,7 @@ export class CoreDumpManager {
       // engine_command_manager
       debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
 
-      // artifact map - this.engineCommandManager.artifactMap
+      // artifact map - this.engineCommandManager.artifactGraph
       if (this.engineCommandManager?.artifactGraph) {
         debugLog(
           'CoreDump: Engine Command Manager artifact map',

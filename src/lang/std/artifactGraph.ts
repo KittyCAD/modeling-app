@@ -136,7 +136,7 @@ export interface OrderedCommand {
   range: SourceRange
 }
 
-export function createArtifactMap({
+export function createArtifactGraph({
   orderedCommands,
   responseMap,
   ast,
@@ -475,9 +475,9 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
 
 export function expandPlane(
   plane: _PlaneArtifact,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): PlaneArtifact {
-  const paths = getArtifactsOfType(plane.pathIds, artifactMap, ['path'])
+  const paths = getArtifactsOfType(plane.pathIds, artifactGraph, ['path'])
   return {
     type: 'plane',
     paths: Array.from(paths.values()),
@@ -487,15 +487,18 @@ export function expandPlane(
 
 export function expandPath(
   path: _PathArtifact,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): PathArtifact | Error {
-  const segs = getArtifactsOfType(path.segIds, artifactMap, ['segment'])
+  const segs = getArtifactsOfType(path.segIds, artifactGraph, ['segment'])
   const extrusion = getArtifactOfType(
     path.extrusionId,
-    artifactMap,
+    artifactGraph,
     'extrusion'
   )
-  const plane = getArtifactOfTypes(path.planeId, artifactMap, ['plane', 'wall'])
+  const plane = getArtifactOfTypes(path.planeId, artifactGraph, [
+    'plane',
+    'wall',
+  ])
   if (err(extrusion)) return extrusion
   if (err(plane)) return plane
   return {
@@ -509,9 +512,9 @@ export function expandPath(
 
 export function expandExtrusion(
   extrusion: _ExtrusionArtifact,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
-  const surfs = getArtifactsOfType(extrusion.surfIds, artifactMap, [
+  const surfs = getArtifactsOfType(extrusion.surfIds, artifactGraph, [
     'wall',
     'cap',
   ])
@@ -526,15 +529,15 @@ export function expandExtrusion(
 
 export function expandSegment(
   segment: _SegmentArtifact,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): SegmentArtifact | Error {
-  const path = getArtifactOfTypes(segment.pathId, artifactMap, ['path'])
-  const surf = getArtifactOfTypes(segment.surfId, artifactMap, ['wall'])
-  const edges = getArtifactsOfType(segment.edgeIds, artifactMap, [
+  const path = getArtifactOfTypes(segment.pathId, artifactGraph, ['path'])
+  const surf = getArtifactOfTypes(segment.surfId, artifactGraph, ['wall'])
+  const edges = getArtifactsOfType(segment.edgeIds, artifactGraph, [
     'extrudeEdge',
   ])
   const edgeCut = segment.edgeCutId
-    ? getArtifactOfType(segment.edgeCutId, artifactMap, 'edgeCut')
+    ? getArtifactOfType(segment.edgeCutId, artifactGraph, 'edgeCut')
     : undefined
   if (err(path)) return path
   if (err(surf)) return surf
@@ -552,47 +555,51 @@ export function expandSegment(
 
 export function getCapCodeRef(
   cap: _CapArtifact,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  const extrusion = getArtifactOfType(cap.extrusionId, artifactMap, 'extrusion')
+  const extrusion = getArtifactOfType(
+    cap.extrusionId,
+    artifactGraph,
+    'extrusion'
+  )
   if (err(extrusion)) return extrusion
-  const path = getArtifactOfType(extrusion.pathId, artifactMap, 'path')
+  const path = getArtifactOfType(extrusion.pathId, artifactGraph, 'path')
   if (err(path)) return path
   return path.codeRef
 }
 
 export function getSolid2dCodeRef(
   solid2D: _solid2D,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  const path = getArtifactOfType(solid2D.pathId, artifactMap, 'path')
+  const path = getArtifactOfType(solid2D.pathId, artifactGraph, 'path')
   if (err(path)) return path
   return path.codeRef
 }
 
 export function getWallCodeRef(
   wall: _WallArtifact,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  const seg = getArtifactOfType(wall.segId, artifactMap, 'segment')
+  const seg = getArtifactOfType(wall.segId, artifactGraph, 'segment')
   if (err(seg)) return seg
   return seg.codeRef
 }
 
 export function getExtrusionFromSuspectedExtrudeSurface(
   id: string,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): _ExtrusionArtifact | Error {
-  const artifact = getArtifactOfTypes(id, artifactMap, ['wall', 'cap'])
+  const artifact = getArtifactOfTypes(id, artifactGraph, ['wall', 'cap'])
   if (err(artifact)) return artifact
-  return getArtifactOfTypes(artifact.extrusionId, artifactMap, ['extrusion'])
+  return getArtifactOfTypes(artifact.extrusionId, artifactGraph, ['extrusion'])
 }
 
 export function getExtrusionFromSuspectedPath(
   id: string,
-  artifactMap: ArtifactGraph
+  artifactGraph: ArtifactGraph
 ): _ExtrusionArtifact | Error {
-  const path = getArtifactOfTypes(id, artifactMap, ['path'])
+  const path = getArtifactOfTypes(id, artifactGraph, ['path'])
   if (err(path)) return path
-  return getArtifactOfTypes(path.extrusionId, artifactMap, ['extrusion'])
+  return getArtifactOfTypes(path.extrusionId, artifactGraph, ['extrusion'])
 }
