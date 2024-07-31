@@ -228,12 +228,10 @@ describe('testing createArtifactMap', () => {
             }
             if (Array.isArray(value))
               stableValue[propName] = value.map(() => 'UUID')
-            if (typeof value === 'string' && value) stableValue[propName] = 'UUID'
+            if (typeof value === 'string' && value)
+              stableValue[propName] = 'UUID'
           })
-          return [
-            `UUID-${index}`,
-            stableValue,
-          ]
+          return [`UUID-${index}`, stableValue]
         })
       )
       expect(stableMap).toMatchSnapshot()
@@ -300,10 +298,11 @@ async function GraphArtifactMap(
 ) {
   const nodes: Array<{ id: string; label: string }> = []
   const edges: Array<{ source: string; target: string; label: string }> = []
+  let index = 0
   for (const [commandId, artifact] of theMap) {
     nodes.push({
       id: commandId,
-      label: `${artifact.type}-${commandId.slice(0, 6)}`,
+      label: `${artifact.type}-${index++}`,
     })
     Object.entries(artifact).forEach(([propName, value]) => {
       if (
