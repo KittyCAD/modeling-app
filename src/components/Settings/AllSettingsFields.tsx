@@ -18,7 +18,6 @@ import { APP_VERSION } from 'routes/Settings'
 import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
 import { paths } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { sep } from '@tauri-apps/api/path'
 import { ForwardedRef, forwardRef } from 'react'
 
 interface AllSettingsFieldsProps {

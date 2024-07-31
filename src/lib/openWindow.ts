@@ -9,7 +9,7 @@ export const openExternalBrowserIfDesktop = (to) => function(e) {
   }
 }
 
-// Open a new browser window tauri style or browser style.
+// Open a new browser window desktop style or browser style.
 export default async function openWindow(url: string) {
   if (isDesktop()) {
     await window.electron.openExternal(url)

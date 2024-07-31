@@ -742,7 +742,7 @@ class EngineConnection extends EventTarget {
           },
         }
 
-        // This is required for when KCMA is running stand-alone / within Tauri.
+        // This is required for when KCMA is running stand-alone / within desktop.
         // Otherwise when run in a browser, the token is sent implicitly via
         // the Cookie header.
         if (this.token) {
