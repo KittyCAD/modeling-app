@@ -64,7 +64,6 @@ Map {
     "type": "segment",
   },
   "UUID-3" => {
-    "blendId": "UUID",
     "codeRef": {
       "pathToNode": [
         [
@@ -77,6 +76,7 @@ Map {
         125,
       ],
     },
+    "edgeCutId": "UUID",
     "edgeIds": [],
     "pathId": "UUID",
     "surfId": "UUID",
@@ -165,14 +165,14 @@ Map {
     "type": "extrusion",
   },
   "UUID-9" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
   "UUID-10" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [
       "UUID",
@@ -181,28 +181,28 @@ Map {
     "type": "wall",
   },
   "UUID-11" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
   "UUID-12" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
   "UUID-13" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
     "type": "cap",
   },
   "UUID-14" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",
@@ -224,7 +224,7 @@ Map {
     "consumedEdgeId": "UUID",
     "edgeIds": [],
     "subType": "fillet",
-    "type": "blend",
+    "type": "edgeCut",
   },
   "UUID-16" => {
     "codeRef": {
@@ -350,35 +350,35 @@ Map {
     "type": "extrusion",
   },
   "UUID-23" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
   "UUID-24" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
   "UUID-25" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
   "UUID-26" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
     "type": "cap",
   },
   "UUID-27" => {
-    "blendEdgeIds": [],
+    "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",

@@ -572,7 +572,7 @@ describe('testing getArtifactsToUpdate', () => {
     ])
     expect(getUpdateObjects('solid3d_fillet_edge')).toEqual([
       {
-        type: 'blend',
+        type: 'edgeCut',
         subType: 'fillet',
         consumedEdgeId: expect.any(String),
         edgeIds: [],
@@ -591,14 +591,14 @@ describe('testing getArtifactsToUpdate', () => {
           range: [98, 125],
           pathToNode: [['body', '']],
         },
-        blendId: expect.any(String),
+        edgeCutId: expect.any(String),
       },
     ])
     expect(getUpdateObjects('solid3d_get_extrusion_face_info')).toEqual([
       {
         type: 'wall',
         segId: expect.any(String),
-        blendEdgeIds: [],
+        edgeCutEdgeIds: [],
         extrusionId: expect.any(String),
         pathIds: [],
       },
@@ -625,7 +625,7 @@ describe('testing getArtifactsToUpdate', () => {
       {
         type: 'wall',
         segId: expect.any(String),
-        blendEdgeIds: [],
+        edgeCutEdgeIds: [],
         extrusionId: expect.any(String),
         pathIds: [],
       },
@@ -652,7 +652,7 @@ describe('testing getArtifactsToUpdate', () => {
       {
         type: 'wall',
         segId: expect.any(String),
-        blendEdgeIds: [],
+        edgeCutEdgeIds: [],
         extrusionId: expect.any(String),
         pathIds: [],
       },
@@ -665,7 +665,7 @@ describe('testing getArtifactsToUpdate', () => {
           range: [98, 125],
           pathToNode: [['body', '']],
         },
-        blendId: expect.any(String),
+        edgeCutId: expect.any(String),
       },
       {
         type: 'extrusion',
@@ -680,7 +680,7 @@ describe('testing getArtifactsToUpdate', () => {
       {
         type: 'wall',
         segId: expect.any(String),
-        blendEdgeIds: [],
+        edgeCutEdgeIds: [],
         extrusionId: expect.any(String),
         pathIds: [],
       },
@@ -707,7 +707,7 @@ describe('testing getArtifactsToUpdate', () => {
       {
         type: 'cap',
         subType: 'start',
-        blendEdgeIds: [],
+        edgeCutEdgeIds: [],
         extrusionId: expect.any(String),
         pathIds: [],
       },
@@ -724,7 +724,7 @@ describe('testing getArtifactsToUpdate', () => {
       {
         type: 'cap',
         subType: 'end',
-        blendEdgeIds: [],
+        edgeCutEdgeIds: [],
         extrusionId: expect.any(String),
         pathIds: [],
       },

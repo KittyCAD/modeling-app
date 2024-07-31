@@ -45,7 +45,7 @@ interface _SegmentArtifact {
   pathId: string
   surfId: string
   edgeIds: Array<string>
-  blendId?: string
+  edgeCutId?: string
   codeRef: CommonCommandProperties
 }
 interface SegmentArtifact {
@@ -53,7 +53,7 @@ interface SegmentArtifact {
   path: _PathArtifact
   surf: _WallArtifact
   edges: Array<_ExtrudeEdge>
-  blend?: _Blend
+  edgeCut?: _EdgeCut
   codeRef: CommonCommandProperties
 }
 
@@ -75,14 +75,14 @@ interface ExtrusionArtifact {
 interface _WallArtifact {
   type: 'wall'
   segId: string
-  blendEdgeIds: Array<string>
+  edgeCutEdgeIds: Array<string>
   extrusionId: string
   pathIds: Array<string>
 }
 interface _CapArtifact {
   type: 'cap'
   subType: 'start' | 'end'
-  blendEdgeIds: Array<string>
+  edgeCutEdgeIds: Array<string>
   extrusionId: string
   pathIds: Array<string>
 }
@@ -91,12 +91,12 @@ interface _ExtrudeEdge {
   type: 'extrudeEdge'
   segId: string
   extrusionId: string
-  blendId: string
+  edgeId: string
 }
 
-/** A blend is a fillet or chamfer */
-interface _Blend {
-  type: 'blend'
+/** A edgeCut is a more generic term for both fillet or chamfer */
+interface _EdgeCut {
+  type: 'edgeCut'
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: string
   edgeIds: Array<string>
@@ -104,9 +104,9 @@ interface _Blend {
   codeRef: CommonCommandProperties
 }
 
-interface BlendEdge {
-  type: 'blendEdge'
-  blendId: string
+interface EdgeCutEdge {
+  type: 'edgeCutEdge'
+  edgeCutId: string
   surfId: string
 }
 
@@ -118,8 +118,8 @@ export type Artifact =
   | _WallArtifact
   | _CapArtifact
   | _ExtrudeEdge
-  | _Blend
-  | BlendEdge
+  | _EdgeCut
+  | EdgeCutEdge
   | _solid2D
 
 export type ArtifactMap = Map<string, Artifact>
@@ -225,7 +225,7 @@ export function getArtifactsToUpdate({
           artifact: {
             type: 'wall',
             segId: existingPlane.segId,
-            blendEdgeIds: existingPlane.blendEdgeIds,
+            edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             extrusionId: existingPlane.extrusionId,
             pathIds: existingPlane.pathIds,
           },
@@ -262,7 +262,7 @@ export function getArtifactsToUpdate({
         artifact: {
           type: 'wall',
           segId: plane.segId,
-          blendEdgeIds: plane.blendEdgeIds,
+          edgeCutEdgeIds: plane.edgeCutEdgeIds,
           extrusionId: plane.extrusionId,
           pathIds: [id],
         },
@@ -343,7 +343,7 @@ export function getArtifactsToUpdate({
               artifact: {
                 type: 'wall',
                 segId: curve_id,
-                blendEdgeIds: [],
+                edgeCutEdgeIds: [],
                 extrusionId: path.extrusionId,
                 pathIds: [],
               },
@@ -375,7 +375,7 @@ export function getArtifactsToUpdate({
             artifact: {
               type: 'cap',
               subType: cap === 'bottom' ? 'start' : 'end',
-              blendEdgeIds: [],
+              edgeCutEdgeIds: [],
               extrusionId: path.extrusionId,
               pathIds: [],
             },
@@ -397,7 +397,7 @@ export function getArtifactsToUpdate({
     returnArr.push({
       id,
       artifact: {
-        type: 'blend',
+        type: 'edgeCut',
         subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
@@ -409,7 +409,7 @@ export function getArtifactsToUpdate({
     if (consumedEdge?.type === 'segment') {
       returnArr.push({
         id: cmd.edge_id,
-        artifact: { ...consumedEdge, blendId: id },
+        artifact: { ...consumedEdge, edgeCutId: id },
       })
     }
     return returnArr
@@ -533,19 +533,19 @@ export function expandSegment(
   const edges = getArtifactsOfType(segment.edgeIds, artifactMap, [
     'extrudeEdge',
   ])
-  const blend = segment.blendId
-    ? getArtifactOfType(segment.blendId, artifactMap, 'blend')
+  const edgeCut = segment.edgeCutId
+    ? getArtifactOfType(segment.edgeCutId, artifactMap, 'edgeCut')
     : undefined
   if (err(path)) return path
   if (err(surf)) return surf
-  if (err(blend)) return blend
+  if (err(edgeCut)) return edgeCut
 
   return {
     type: 'segment',
     path,
     surf,
     edges: Array.from(edges.values()),
-    blend,
+    edgeCut: edgeCut,
     codeRef: segment.codeRef,
   }
 }
