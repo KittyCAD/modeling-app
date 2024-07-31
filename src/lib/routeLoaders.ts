@@ -86,7 +86,7 @@ export const fileLoader: LoaderFunction = async (
     const { project_name, project_path, current_file_name, current_file_path } =
       projectPathData
 
-    const urlObj = URL.parse(routerData.request.url)
+    const urlObj = new URL(routerData.request.url)
     let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
@@ -120,7 +120,7 @@ export const fileLoader: LoaderFunction = async (
     const projectData: IndexLoaderData = {
       code,
       project: isDesktop()
-        ? await getProjectInfo(project_path, configuration)
+        ? await getProjectInfo(project_path)
         : {
             name: project_name,
             path: project_path,
@@ -131,8 +131,8 @@ export const fileLoader: LoaderFunction = async (
             default_file: project_path,
           },
       file: {
-        name: current_file_name,
-        path: current_file_path?.split('/').slice(0, -1).join('/'),
+        name: current_file_name || '',
+        path: current_file_path?.split('/').slice(0, -1).join('/') ?? '',
         children: [],
       },
     }

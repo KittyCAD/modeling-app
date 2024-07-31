@@ -47,6 +47,11 @@ export async function getProjectMetaByRouteId(
 
   if (err(configuration)) return Promise.reject(configuration)
 
+  // Should not be possible but I guess logically it could be
+  if (configuration === undefined) {
+    return Promise.reject(new Error('No configuration found'))
+  }
+
   const route = parseProjectRoute(configuration, id)
 
   if (err(route)) return Promise.reject(route)

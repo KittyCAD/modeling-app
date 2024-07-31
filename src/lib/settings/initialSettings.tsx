@@ -62,7 +62,7 @@ export class Setting<T = unknown> {
   get user(): T | undefined {
     return this._user
   }
-  set user(v: T) {
+  set user(v: T | undefined) {
     this._user = this.validate(v) ? v : this._user
     this.current = this.resolve()
   }

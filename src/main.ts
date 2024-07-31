@@ -4,6 +4,7 @@
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
+import fs from 'node:fs/promises'
 import { Issuer } from 'openid-client'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -71,8 +72,9 @@ ipcMain.handle('shell.openExternal', (event, data) => {
 })
 
 ipcMain.handle('login', async (event, host) => {
-  console.log('Logging in...')
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
+  // We quiet ts because we are not using this in the standard way.
+  // @ts-ignore
   const issuer = new Issuer({
     device_authorization_endpoint: `${host}/oauth2/device/auth`,
     token_endpoint: `${host}/oauth2/device/token`,
@@ -103,9 +105,9 @@ ipcMain.handle('login', async (event, host) => {
     if (process.env.TEMP) {
       temp = process.env.TEMP
     }
-    let path = path.join(temp, 'kittycad_user_code')
-    console.log(`Writing to ${path}`)
-    await fs.writeFile(path, handle.user_code)
+    let tmpkcuc = path.join(temp, 'kittycad_user_code')
+    console.log(`Writing to ${tmpkcuc}`)
+    await fs.writeFile(tmpkcuc, handle.user_code)
   } else {
     shell.openExternal(handle.verification_uri_complete)
   }

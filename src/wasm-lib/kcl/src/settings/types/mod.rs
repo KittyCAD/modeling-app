@@ -967,9 +967,9 @@ color = 1567.4"#;
             .await
             .unwrap();
 
-        assert_eq!(project.name, project_name);
+        assert_eq!(project.file.name, project_name);
         assert_eq!(
-            project.path,
+       project.file.path,
             settings
                 .settings
                 .project
@@ -981,7 +981,7 @@ color = 1567.4"#;
         assert_eq!(project.directory_count, 0);
         assert_eq!(
             project.default_file,
-            std::path::Path::new(&project.path)
+            std::path::Path::new(&project.file.path)
                 .join(super::DEFAULT_PROJECT_KCL_FILE)
                 .to_string_lossy()
         );
@@ -1017,9 +1017,9 @@ color = 1567.4"#;
             .await
             .unwrap();
 
-        assert_eq!(project.name, project_name);
+        assert_eq!(project.file.name, project_name);
         assert_eq!(
-            project.path,
+       project.file.path,
             settings
                 .settings
                 .project
@@ -1031,7 +1031,7 @@ color = 1567.4"#;
         assert_eq!(project.directory_count, 0);
         assert_eq!(
             project.default_file,
-            std::path::Path::new(&project.path)
+            std::path::Path::new(&project.file.path)
                 .join(super::DEFAULT_PROJECT_KCL_FILE)
                 .to_string_lossy()
         );
@@ -1057,8 +1057,8 @@ color = 1567.4"#;
 
         let projects = settings.list_projects().await.unwrap();
         assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].name, project_name);
-        assert_eq!(projects[0].path, project.path);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
         assert_eq!(projects[0].kcl_file_count, 1);
         assert_eq!(projects[0].directory_count, 0);
         assert_eq!(projects[0].default_file, project.default_file);
@@ -1084,8 +1084,8 @@ color = 1567.4"#;
 
         let projects = settings.list_projects().await.unwrap();
         assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].name, project_name);
-        assert_eq!(projects[0].path, project.path);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
         assert_eq!(projects[0].kcl_file_count, 1);
         assert_eq!(projects[0].directory_count, 0);
         assert_eq!(projects[0].default_file, project.default_file);
@@ -1111,8 +1111,8 @@ color = 1567.4"#;
 
         let projects = settings.list_projects().await.unwrap();
         assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].name, project_name);
-        assert_eq!(projects[0].path, project.path);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
         assert_eq!(projects[0].kcl_file_count, 1);
         assert_eq!(projects[0].directory_count, 0);
         assert_eq!(projects[0].default_file, project.default_file);
@@ -1138,8 +1138,8 @@ color = 1567.4"#;
 
         let projects = settings.list_projects().await.unwrap();
         assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].name, project_name);
-        assert_eq!(projects[0].path, project.path);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
         assert_eq!(projects[0].kcl_file_count, 1);
         assert_eq!(projects[0].directory_count, 0);
         assert_eq!(projects[0].default_file, project.default_file);

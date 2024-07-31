@@ -913,7 +913,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(state.project.file.name, name);
-        assert_eq!(state.project.path, tmp_project_dir.display().to_string());
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
         assert_eq!(
             state.current_file,
             Some(tmp_project_dir.join("main.kcl").display().to_string())
@@ -938,7 +938,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(state.project.file.name, name);
-        assert_eq!(state.project.path, tmp_project_dir.display().to_string());
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
         assert_eq!(
             state.current_file,
             Some(tmp_project_dir.join("main.kcl").display().to_string())
@@ -963,7 +963,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(state.project.file.name, name);
-        assert_eq!(state.project.path, tmp_project_dir.display().to_string());
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
         assert_eq!(
             state.current_file,
             Some(tmp_project_dir.join("main.kcl").display().to_string())
@@ -988,7 +988,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(state.project.file.name, name);
-        assert_eq!(state.project.path, tmp_project_dir.display().to_string());
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
         assert_eq!(
             state.current_file,
             Some(tmp_project_dir.join("thing.kcl").display().to_string())
@@ -1013,7 +1013,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(state.project.file.name, name);
-        assert_eq!(state.project.path, tmp_project_dir.display().to_string());
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
         assert_eq!(
             state.current_file,
             Some(tmp_project_dir.join("model.obj.kcl").display().to_string())

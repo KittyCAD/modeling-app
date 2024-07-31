@@ -82,9 +82,7 @@ export async function ensureProjectDirectoryExists(
     await window.electron.stat(projectDir)
   } catch (e) {
     if (e === 'ENOENT') {
-      await window.electron.mkdir(projectDir, { recursive: true }, (e) => {
-        console.log(e)
-      })
+      await window.electron.mkdir(projectDir, { recursive: true })
     }
   }
 
@@ -389,7 +387,7 @@ export const getInitialDefaultDir = async () => {
 
 export const readProjectSettingsFile = async (
   projectPath: string
-): ProjectConfiguration => {
+): Promise<ProjectConfiguration> => {
   let settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
@@ -398,7 +396,7 @@ export const readProjectSettingsFile = async (
   } catch (e) {
     if (e === 'ENOENT') {
       // Return the default configuration.
-      return {}
+      return { settings: {} }
     }
   }
 
@@ -446,7 +444,7 @@ export const setState = async (
 export const getUser = async (
   token: string,
   hostname: string
-): Models['User_type'] => {
+): Promise<Models['User_type']> => {
   // Use the host passed in if it's set.
   // Otherwise, use the default host.
   const host = !hostname ? DEFAULT_HOST : hostname

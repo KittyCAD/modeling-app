@@ -7,7 +7,6 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings, lint::checks};
-use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
