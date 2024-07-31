@@ -142,7 +142,9 @@ export const ModelingMachineProvider = ({
             kclManager.executeCode().then(() => {
               if (engineCommandManager.engineConnection?.idleMode) return
 
-              store.videoElement?.play()
+              store.videoElement?.play().catch((e) => {
+                console.warn('Video playing was prevented', e)
+              })
             })
           })()
         },
