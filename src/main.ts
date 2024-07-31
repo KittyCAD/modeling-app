@@ -63,6 +63,10 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
   return shell.showItemInFolder(data)
 })
 
+ipcMain.handle('shell.openExternal', (event, data) => {
+  return shell.openExternal(data)
+})
+
 ipcMain.handle('login', async (event, host) => {
     console.log('Logging in...')
     // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
@@ -104,5 +108,5 @@ ipcMain.handle('login', async (event, host) => {
     // Wait for the user to login.
     const tokenSet = await handle.poll()
 
-    return tokenSet
+    return tokenSet.access_token
 })
