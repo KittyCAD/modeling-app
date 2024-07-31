@@ -31,7 +31,9 @@ pub async fn shell(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::ExtrudeGroup(extrude_group))
 }
 
-/// Shell a solid.
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains, taking volume starting at the provided
+/// face, leaving it open in that direction.
 ///
 /// ```no_run
 /// const firstSketch = startSketchOn('XY')
