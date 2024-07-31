@@ -7,6 +7,7 @@ import { createAndOpenNewProject } from 'lib/desktopFS'
 import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -141,6 +142,7 @@ function HelpMenuItem({
       {as === 'a' ? (
         <a
           {...(props as React.ComponentProps<'a'>)}
+          onClick={openExternalBrowserIfDesktop(props.href)}
           className={`no-underline text-inherit ${baseClassName} ${className}`}
         >
           {children}

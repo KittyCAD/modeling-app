@@ -28,6 +28,7 @@ export function LowerRightControls({
 
   async function reportbug(event: { preventDefault: () => void }) {
     event?.preventDefault()
+    event?.stopPropagation()
 
     if (!coreDumpManager) {
       // open default reporting option

@@ -1,10 +1,18 @@
 import { isDesktop } from 'lib/isDesktop'
-import { open as tauriOpen } from '@tauri-apps/plugin-shell'
+
+export const openExternalBrowserIfDesktop = (to) => function(e) {
+  if (isDesktop()) {
+    window.electron.openExternal(to || e.currentTarget.href)
+    e.preventDefault()
+    e.stopPropagation()
+    return false
+  }
+}
 
 // Open a new browser window tauri style or browser style.
 export default async function openWindow(url: string) {
   if (isDesktop()) {
-    await tauriOpen(url)
+    await window.electron.openExternal(url)
   } else {
     window.open(url, '_blank')
   }

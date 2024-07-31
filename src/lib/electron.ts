@@ -4,6 +4,7 @@ import fs from 'node:fs/promises'
 import packageJson from '../../package.json'
 
 const open = (args: any) => ipcRenderer.invoke('dialog', args)
+const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const showInFolder = (path: string) => ipcRenderer.invoke('shell.showItemInFolder', path)
 const login = (host: string) => ipcRenderer.invoke('login', host)
 
@@ -47,10 +48,14 @@ import('@kittycad/lib').then((kittycad) => {
     mkdir: fs.mkdir,
     // opens a dialog
     open,
+    // opens the URL
+    openExternal,
     showInFolder,
     getPath,
     packageJson,
+    arch: process.arch,
     platform: process.platform,
+    version: process.version,
     process: {
       // Setter/getter has to be created because
       // these are read-only over the boundary.
