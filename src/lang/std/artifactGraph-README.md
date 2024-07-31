@@ -38,7 +38,7 @@ In `src/lang/std/artifactGraph.test.ts` we generate the graph for it
 
 ![demo geometry](artifactMapGraphs/exampleCode1.png)
 
-It's definitely harder to read, if you start at roughly the bottom center of the page and find the node `plane-0` and visually traverse from there you can see it has teh same structure, plane is connected to a path, which is connected to multiple segments and an extrusion etc.
+It's definitely harder to read, if you start at roughly the bottom center of the page and find the node `plane-0` and visually traverse from there you can see it has the same structure, plane is connected to a path, which is connected to multiple segments and an extrusion etc.
 
 Generating the graph here serves a couple of purposes
 

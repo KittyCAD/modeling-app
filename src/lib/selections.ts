@@ -565,7 +565,7 @@ function codeToIdSelections(
        *
        * What we should migrate to is just storing what the user selected by what it matched in the artifactGraph it will simply the below a lot.
        *
-       * In the case of a user moving the cursor them, we will still need to figure out what artifact from teh graph matches best, but we will just need sane defaults
+       * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
        * and most of the time we can expect the user to be clicking in the 3d scene instead.
        */
       let bestCandidate
