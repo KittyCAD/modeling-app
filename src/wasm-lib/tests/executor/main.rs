@@ -317,11 +317,7 @@ async fn kcl_test_helix_ccw() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_helix_with_length() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0, length: 3}, %)
-"#;
+    let code = kcl_input!("helix_with_length");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("helix_with_length", &result);
@@ -329,14 +325,7 @@ async fn kcl_test_helix_with_length() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_dimensions_match() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
+    let code = kcl_input!("dimensions_match");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("dimensions_match", &result);
@@ -344,16 +333,7 @@ async fn kcl_test_dimensions_match() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_close_arc() {
-    let code = r#"const center = [0,0]
-const radius = 40
-const height = 3
-
-const body = startSketchOn('XY')
-      |> startProfileAt([center[0]+radius, center[1]], %)
-      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
-      |> close(%)
-      |> extrude(height, %)
-"#;
+    let code = kcl_input!("close_arc");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("close_arc", &result);
@@ -361,25 +341,7 @@ const body = startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_negative_args() {
-    let code = r#"const width = 5
-const height = 10
-const length = 12
-
-fn box = (sk1, sk2, scale) => {
-  const boxSketch = startSketchOn('XY')
-    |> startProfileAt([sk1, sk2], %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
-  return boxSketch
-}
-
-box(0, 0, 5)
-box(10, 23, 8)
-let thing = box(-12, -15, 10)
-box(-20, -5, 10)"#;
+    let code = kcl_input!("negative_args");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("negative_args", &result);
