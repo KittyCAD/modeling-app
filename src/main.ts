@@ -55,8 +55,11 @@ ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
 
-ipcMain.handle('dialog', (event, data) => {
+ipcMain.handle('dialog.showOpenDialog', (event, data) => {
   return dialog.showOpenDialog(data)
+})
+ipcMain.handle('dialog.showSaveDialog', (event, data) => {
+  return dialog.showSaveDialog(data)
 })
 
 ipcMain.handle('shell.showItemInFolder', (event, data) => {

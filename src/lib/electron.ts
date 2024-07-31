@@ -3,7 +3,8 @@ import path from 'path'
 import fs from 'node:fs/promises'
 import packageJson from '../../package.json'
 
-const open = (args: any) => ipcRenderer.invoke('dialog', args)
+const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
+const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const showInFolder = (path: string) => ipcRenderer.invoke('shell.showItemInFolder', path)
 const login = (host: string) => ipcRenderer.invoke('login', host)
@@ -48,6 +49,7 @@ import('@kittycad/lib').then((kittycad) => {
     mkdir: fs.mkdir,
     // opens a dialog
     open,
+    save,
     // opens the URL
     openExternal,
     showInFolder,
