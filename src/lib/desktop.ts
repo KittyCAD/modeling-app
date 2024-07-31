@@ -415,10 +415,6 @@ export const setState = async (
   appStateStore = state
 }
 
-export const login = () => {
-  console.log('STUB')
-}
-
 export const getUser = async (
   token: string,
   hostname: string
