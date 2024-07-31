@@ -211,77 +211,21 @@ async fn kcl_test_execute_with_function_sketch_with_position() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_with_angled_line() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([4.83, 12.56], %)
-  |> line([15.1, 2.48], %)
-  |> line([3.15, -9.85], %, $seg01)
-  |> line([-15.17, -4.1], %)
-  |> angledLine([segAng(seg01), 12.35], %)
-  |> line([-13.02, 10.03], %)
-  |> close(%)
-  |> extrude(4, %)
-"#;
-
+    let code = kcl_input!("angled_line");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("angled_line", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_parametric_example() {
-    let code = r#"const sigmaAllow = 35000 // psi
-const width = 9 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 6 // inches
-const FOS = 2
-
-const leg1 = 5 // inches
-const leg2 = 8 // inches
-const thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
-const bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, leg1], %)
-  |> line([leg2, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-leg2 + thickness, 0], %)
-  |> line([0, -leg1 + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-"#;
-
+    let code = kcl_input!("parametric");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("parametric", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_parametric_with_tan_arc_example() {
-    let code = r#"const sigmaAllow = 15000 // psi
-const width = 11 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 12 // inches
-const FOS = 2
-const thickness = sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))
-const filletR = thickness * 2
-const shelfMountL = 9
-const wallMountL = 8
-
-const bracket = startSketchAt([0, 0])
-  |> line([0, wallMountL], %)
-  |> tangentialArc({
-    radius: filletR,
-    offset: 90
-  }, %)
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL, 0], %)
-  |> tangentialArc({
-    radius: filletR - thickness,
-    offset: -90
-  }, %)
-  |> line([0, -wallMountL], %)
-  |> close(%)
-  |> extrude(width, %)
-"#;
-
+    let code = kcl_input!("parametric_with_tan_arc");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("parametric_with_tan_arc", &result);
 }
@@ -341,24 +285,7 @@ async fn kcl_test_execute_kittycad_svg() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_member_expression_sketch_group() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-
-  return sg
-}
-
-const b1 = cube([0,0], 10)
-const b2 = cube([3,3], 4)
-    |> extrude(10, %)
-
-const pt1 = b1.value[0]
-const pt2 = b2.value[0]
-"#;
+    let code = kcl_input!("member_expression_sketch_group");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("member_expression_sketch_group", &result);
@@ -366,11 +293,7 @@ const pt2 = b2.value[0]
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_helix_defaults() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0}, %)
-"#;
+    let code = kcl_input!("helix_defaults");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("helix_defaults", &result);
@@ -378,11 +301,7 @@ async fn kcl_test_helix_defaults() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_helix_defaults_negative_extrude() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(-10, %)
-     |> helix({revolutions: 16, angle_start: 0}, %)
-"#;
+    let code = kcl_input!("helix_defaults_negative_extrude");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("helix_defaults_negative_extrude", &result);
@@ -390,11 +309,7 @@ async fn kcl_test_helix_defaults_negative_extrude() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_helix_ccw() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)
-"#;
+    let code = kcl_input!("helix_ccw");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("helix_ccw", &result);
