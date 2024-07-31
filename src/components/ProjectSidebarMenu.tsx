@@ -207,7 +207,9 @@ function ProjectMenuPopover({
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isDesktop() && file?.name
-              ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
+              ? file.name.slice(
+                  file.name.lastIndexOf(window.electron.path.sep) + 1
+                )
               : APP_NAME}
           </span>
           {isDesktop() && project?.name && (

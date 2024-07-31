@@ -52,8 +52,9 @@ class FileSystemManager {
         return Promise.reject(new Error(`Error checking file exists: ${error}`))
       })
       .then(async (file) => {
-        try { await window.electron.stat(file) }
-        catch (e) {
+        try {
+          await window.electron.stat(file)
+        } catch (e) {
           if (e === 'ENOENT') {
             return false
           }
@@ -77,7 +78,8 @@ class FileSystemManager {
         return Promise.reject(new Error(`Error joining dir: ${error}`))
       })
       .then((filepath) => {
-        return window.electron.readdir(filepath)
+        return window.electron
+          .readdir(filepath)
           .catch((error) => {
             return Promise.reject(new Error(`Error reading dir: ${error}`))
           })

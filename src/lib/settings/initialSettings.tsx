@@ -209,14 +209,15 @@ export function createSettings() {
                   // In desktop end-to-end tests we can't control the file picker,
                   // so we seed the new directory value in the element's dataset
                   const inputRefVal = inputRef.current?.dataset.testValue
-                  if (inputRef.current && inputRefVal && !Array.isArray(inputRefVal)) {
+                  if (
+                    inputRef.current &&
+                    inputRefVal &&
+                    !Array.isArray(inputRefVal)
+                  ) {
                     updateValue(inputRefVal)
                   } else {
                     const newPath = await window.electron.open({
-                      properties: [
-                        'openDirectory',
-                        'createDirectory',
-                      ],
+                      properties: ['openDirectory', 'createDirectory'],
                       defaultPath: value,
                       title: 'Choose a new project directory',
                     })

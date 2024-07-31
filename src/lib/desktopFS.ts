@@ -63,7 +63,10 @@ function interpolateProjectName(projectName: string) {
 }
 
 // Returns the next available index for a project name
-export function getNextProjectIndex(projectName: string, projects: FileEntry[]) {
+export function getNextProjectIndex(
+  projectName: string,
+  projects: FileEntry[]
+) {
   const regex = interpolateProjectName(projectName)
   const matches = projects.map((project) => project.name?.match(regex))
   const indices = matches

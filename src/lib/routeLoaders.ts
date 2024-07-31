@@ -70,7 +70,9 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
   return settingsLoader(args)
 }
 
-export const fileLoader: LoaderFunction = async (routerData): Promise<FileLoaderData | Response> => {
+export const fileLoader: LoaderFunction = async (
+  routerData
+): Promise<FileLoaderData | Response> => {
   const { params } = routerData
   let { configuration } = await loadAndValidateSettings()
 
@@ -93,7 +95,9 @@ export const fileLoader: LoaderFunction = async (routerData): Promise<FileLoader
       if (!current_file_name || !current_file_path || !project_name) {
         return redirect(
           `${paths.FILE}/${encodeURIComponent(
-            `${params.id}${isDesktop() ? window.electron.path.sep : '/'}${PROJECT_ENTRYPOINT}`
+            `${params.id}${
+              isDesktop() ? window.electron.path.sep : '/'
+            }${PROJECT_ENTRYPOINT}`
           )}`
         )
       }

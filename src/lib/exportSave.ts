@@ -30,7 +30,10 @@ const save_ = async (file: ModelingAppFile) => {
       if (filePathMeta.canceled) return
 
       // Write the file.
-      await window.electron.writeFile(filePathMeta.filePath, new Uint8Array(file.contents))
+      await window.electron.writeFile(
+        filePathMeta.filePath,
+        new Uint8Array(file.contents)
+      )
     } else {
       // Download the file to the user's computer.
       // Now we need to download the files to the user's downloads folder.

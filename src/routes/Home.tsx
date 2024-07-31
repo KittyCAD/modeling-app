@@ -80,7 +80,10 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          let projectPath = context.defaultDirectory + window.electron.path.sep + event.data.name
+          let projectPath =
+            context.defaultDirectory +
+            window.electron.path.sep +
+            event.data.name
           onProjectOpen(
             {
               name: event.data.name,
@@ -138,9 +141,12 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await window.electron.rm(window.electron.path.join(context.defaultDirectory, event.data.name), {
-          recursive: true,
-        })
+        await window.electron.rm(
+          window.electron.path.join(context.defaultDirectory, event.data.name),
+          {
+            recursive: true,
+          }
+        )
         return `Successfully deleted "${event.data.name}"`
       },
     },
