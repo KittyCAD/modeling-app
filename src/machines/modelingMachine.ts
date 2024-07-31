@@ -1235,7 +1235,20 @@ export const modelingMachine = createMachine(
       },
       'listen for rectangle origin': ({ sketchDetails }) => {
         if (!sketchDetails) return
-        sceneEntitiesManager.setupRectangleOriginListener()
+        sceneEntitiesManager.setupNoPointsListener({
+          sketchDetails,
+          afterClick: (args) => {
+            const twoD = args.intersectionPoint?.twoD
+            if (twoD) {
+              sceneInfra.modelingSend({
+                type: 'Add rectangle origin',
+                data: [twoD.x, twoD.y],
+              })
+            } else {
+              console.error('No intersection point found')
+            }
+          },
+        })
       },
       'set up draft rectangle': ({ sketchDetails }, { data }) => {
         if (!sketchDetails || !data) return
@@ -1265,39 +1278,10 @@ export const modelingMachine = createMachine(
       },
       'setup noPoints onClick listener': ({ sketchDetails }) => {
         if (!sketchDetails) return
-        sceneEntitiesManager.createIntersectionPlane()
-        const quaternion = quaternionFromUpNForward(
-          new Vector3(...sketchDetails.yAxis),
-          new Vector3(...sketchDetails.zAxis)
-        )
-        sceneEntitiesManager.intersectionPlane &&
-          sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
-            quaternion
-          )
-        sceneEntitiesManager.intersectionPlane &&
-          sceneEntitiesManager.intersectionPlane.position.copy(
-            new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-          )
-        sceneInfra.setCallbacks({
-          onClick: async (args) => {
-            if (!args) return
-            if (args.mouseEvent.which !== 1) return
-            const { intersectionPoint } = args
-            if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
-              return
-            const addStartProfileAtRes = addStartProfileAt(
-              kclManager.ast,
-              sketchDetails.sketchPathToNode,
-              [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
-            )
 
-            if (trap(addStartProfileAtRes)) return
-            const { modifiedAst } = addStartProfileAtRes
-
-            await kclManager.updateAst(modifiedAst, false)
-            sceneEntitiesManager.removeIntersectionPlane()
-            sceneInfra.modelingSend('Add start point')
-          },
+        sceneEntitiesManager.setupNoPointsListener({
+          sketchDetails,
+          afterClick: () => sceneInfra.modelingSend('Add start point'),
         })
       },
       'add axis n grid': ({ sketchDetails }) => {
