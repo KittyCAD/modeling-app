@@ -234,12 +234,17 @@ const getDefaultKclFileForDir = async (projectDir, file) => {
                   return getDefaultKclFileForDir(entry.path, entry)
               }
             }
+            // If we didn't find a kcl file, create one.
+            await window.electron.writeFile(defaultFilePath, '')
+            return defaultFilePath
           }
       }
   }
 
-  // If we didn't find a kcl file, create one.
-  await window.electron.writeFile(defaultFilePath, '')
+  if (!file.children) {
+    return file.name
+  }
+
   return defaultFilePath
 }
 
