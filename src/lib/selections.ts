@@ -556,6 +556,18 @@ function codeToIdSelections(
             : false
         })
         .filter(Boolean)
+
+      /** TODO refactor
+       * selections in our app is a sourceRange plus some metadata
+       * The metadata is just a union type string of different types of artifacts or 3d features 'extrude-wall' 'segment' etc
+       * Because the source range is not enough to figure out what the user selected, so here we're using filtering through all the artifacts
+       * to find something that matches both the source range and the metadata.
+       *
+       * What we should migrate to is just storing what the user selected by what it matched in the artifactGraph it will simply the below a lot.
+       *
+       * In the case of a user moving the cursor them, we will still need to figure out what artifact from teh graph matches best, but we will just need sane defaults
+       * and most of the time we can expect the user to be clicking in the 3d scene instead.
+       */
       let bestCandidate
       overlappingEntries.forEach((entry) => {
         if (!entry) return

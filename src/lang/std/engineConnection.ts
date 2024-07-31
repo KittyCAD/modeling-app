@@ -755,7 +755,6 @@ class EngineConnection extends EventTarget {
         this.send({ type: 'ping' })
         this.pingPongSpan.ping = new Date()
         if (this.engineCommandManager.disableWebRTC) {
-          console.log('resolve ready')
           this.engineCommandManager
             .initPlanes()
             .then(() => this.engineCommandManager.resolveReady())
