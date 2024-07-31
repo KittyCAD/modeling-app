@@ -18,9 +18,9 @@ import { APP_VERSION } from 'routes/Settings'
 import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
 import { paths } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { sep } from '@tauri-apps/api/path'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
+import { ForwardedRef, forwardRef, useEffect } from 'react'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel

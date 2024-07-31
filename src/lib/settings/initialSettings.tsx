@@ -206,7 +206,7 @@ export function createSettings() {
               />
               <button
                 onClick={async () => {
-                  // In Tauri end-to-end tests we can't control the file picker,
+                  // In desktop end-to-end tests we can't control the file picker,
                   // so we seed the new directory value in the element's dataset
                   const inputRefVal = inputRef.current?.dataset.testValue
                   if (inputRef.current && inputRefVal && !Array.isArray(inputRefVal)) {

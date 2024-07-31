@@ -10,7 +10,6 @@ import {
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { sep } from '@tauri-apps/api/path'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {

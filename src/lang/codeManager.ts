@@ -27,7 +27,7 @@ export default class CodeManager {
 
     const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
     // TODO #819 remove zustand persistence logic in a few months
-    // short term migration, shouldn't make a difference for tauri app users
+    // short term migration, shouldn't make a difference for desktop app users
     // anyway since that's filesystem based.
     const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
     if (storedCode === null && zustandStore?.state?.code) {

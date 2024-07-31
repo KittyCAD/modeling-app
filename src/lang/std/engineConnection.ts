@@ -932,10 +932,142 @@ class EngineConnection extends EventTarget {
             event.data
           )
 
-          if (!message.success) {
-            const errorsString = message?.errors
-              ?.map((error) => {
-                return `  - ${error.error_code}: ${error.message}`
+    const createWebSocketConnection = () => {
+      this.state = {
+        type: EngineConnectionStateType.Connecting,
+        value: {
+          type: ConnectingType.WebSocketConnecting,
+        },
+      }
+
+      this.websocket = new WebSocket(this.url, [])
+      this.websocket.binaryType = 'arraybuffer'
+
+      this.onWebSocketOpen = (event) => {
+        this.state = {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.WebSocketOpen,
+          },
+        }
+
+        // This is required for when KCMA is running stand-alone / within desktop.
+        // Otherwise when run in a browser, the token is sent implicitly via
+        // the Cookie header.
+        if (this.token) {
+          this.send({
+            type: 'headers',
+            headers: { Authorization: `Bearer ${this.token}` },
+          })
+        }
+
+        // Send an initial ping
+        this.send({ type: 'ping' })
+        this.pingPongSpan.ping = new Date()
+      }
+      this.websocket.addEventListener('open', this.onWebSocketOpen)
+
+      this.onWebSocketClose = (event) => {
+        this.disconnectAll()
+        this.finalizeIfAllConnectionsClosed()
+      }
+      this.websocket.addEventListener('close', this.onWebSocketClose)
+
+      this.onWebSocketError = (event) => {
+        this.disconnectAll()
+
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Error,
+            value: {
+              error: ConnectionError.WebSocketError,
+              context: event,
+            },
+          },
+        }
+      }
+      this.websocket.addEventListener('error', this.onWebSocketError)
+
+      this.onWebSocketMessage = (event) => {
+        // In the EngineConnection, we're looking for messages to/from
+        // the server that relate to the ICE handshake, or WebRTC
+        // negotiation. There may be other messages (including ArrayBuffer
+        // messages) that are intended for the GUI itself, so be careful
+        // when assuming we're the only consumer or that all messages will
+        // be carefully formatted here.
+
+        if (typeof event.data !== 'string') {
+          return
+        }
+
+        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+
+        if (!message.success) {
+          const errorsString = message?.errors
+            ?.map((error) => {
+              return `  - ${error.error_code}: ${error.message}`
+            })
+            .join('\n')
+          if (message.request_id) {
+            const artifactThatFailed =
+              this.engineCommandManager.artifactMap[message.request_id]
+            console.error(
+              `Error in response to request ${message.request_id}:\n${errorsString}
+  failed cmd type was ${artifactThatFailed?.type}`
+            )
+          } else {
+            console.error(`Error from server:\n${errorsString}`)
+          }
+
+          const firstError = message?.errors[0]
+          if (firstError.error_code === 'auth_token_invalid') {
+            this.state = {
+              type: EngineConnectionStateType.Disconnecting,
+              value: {
+                type: DisconnectingType.Error,
+                value: {
+                  error: ConnectionError.BadAuthToken,
+                  context: firstError.message,
+                },
+              },
+            }
+            this.disconnectAll()
+          }
+          return
+        }
+
+        let resp = message.resp
+
+        // If there's no body to the response, we can bail here.
+        if (!resp || !resp.type) {
+          return
+        }
+
+        switch (resp.type) {
+          case 'pong':
+            this.pingPongSpan.pong = new Date()
+            break
+          case 'ice_server_info':
+            let ice_servers = resp.data?.ice_servers
+
+            // Now that we have some ICE servers it makes sense
+            // to start initializing the RTCPeerConnection. RTCPeerConnection
+            // will begin the ICE process.
+            createPeerConnection()
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.PeerConnectionCreated,
+              },
+            }
+
+            // No ICE servers can be valid in a local dev. env.
+            if (ice_servers?.length === 0) {
+              console.warn('No ICE servers')
+              this.pc?.setConfiguration({
+                bundlePolicy: 'max-bundle',
               })
               .join('\n')
             if (message.request_id) {

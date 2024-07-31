@@ -8,7 +8,6 @@ import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { codeManager, kclManager } from 'lib/singletons'
-import { join } from '@tauri-apps/api/path'
 import {
   APP_NAME,
   ONBOARDING_PROJECT_NAME,
