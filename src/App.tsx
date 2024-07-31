@@ -28,8 +28,8 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
-  useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
+  useRefreshSettings(paths.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
