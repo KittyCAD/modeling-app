@@ -1,9 +1,11 @@
 import { isDesktop } from 'lib/isDesktop'
 
-export const openExternalBrowserIfDesktop = (to) =>
-  function (e) {
+export const openExternalBrowserIfDesktop = (to?: string) =>
+  function (e: Event) {
     if (isDesktop()) {
-      window.electron.openExternal(to || e.currentTarget.href)
+      // Ignoring because currentTarget could be a few different things
+      // @ts-ignore
+      window.electron.openExternal(to || e.currentTarget?.href)
       e.preventDefault()
       e.stopPropagation()
       return false

@@ -65,10 +65,10 @@ export class CoreDumpManager {
   getOsInfo(): Promise<string> {
     if (this.isDesktop()) {
       const osinfo: OsInfo = {
-        platform: window.electron.platform,
-        arch: window.electron.arch,
+        platform: window.electron.platform ?? null,
+        arch: window.electron.arch ?? null,
         browser: 'desktop',
-        version: window.electron.version,
+        version: window.electron.version ?? null,
       }
       return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
       // (lf94) I'm not sure if this comment is specific to tauri or just desktop...

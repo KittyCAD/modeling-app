@@ -33,7 +33,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "./*.ts"],
+  "include": ["src", "e2e", "packages", "./*.ts", "package.json"],
   "exclude": ["node_modules", "./*.grammar"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

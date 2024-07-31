@@ -32,8 +32,8 @@ class FileSystemManager {
       .catch((error) => {
         return Promise.reject(new Error(`Error reading file: ${error}`))
       })
-      .then((file) => {
-        return window.electron.readFile(filepath)
+      .then((filePath) => {
+        return window.electron.readFile(filePath)
       })
   }
 

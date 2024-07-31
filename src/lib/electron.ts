@@ -8,11 +8,11 @@ const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const login = (host: string) => ipcRenderer.invoke('login', host)
+const login = (host: string): Promise<string> => ipcRenderer.invoke('login', host)
 
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 const rename = (prev: string, next: string) => fs.rename(prev, next)
-const writeFile = (path: string, data: string) =>
+const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
 const stat = (path: string) =>
