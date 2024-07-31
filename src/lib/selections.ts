@@ -31,7 +31,7 @@ import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
 import {
   getArtifactOfTypes,
-  getArtifactsOfType,
+  getArtifactsOfTypes,
   getCapCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
@@ -603,15 +603,16 @@ function codeToIdSelections(
           entry.artifact.type === 'path'
         ) {
           const extrusion = getArtifactOfTypes(
-            entry.artifact.extrusionId,
-            engineCommandManager.artifactGraph,
-            ['extrusion']
+            {
+              key: entry.artifact.extrusionId,
+              types: ['extrusion'],
+            },
+            engineCommandManager.artifactGraph
           )
           if (err(extrusion)) return
-          const caps = getArtifactsOfType(
-            extrusion.surfIds,
-            engineCommandManager.artifactGraph,
-            ['cap']
+          const caps = getArtifactsOfTypes(
+            { keys: extrusion.surfIds, types: ['cap'] },
+            engineCommandManager.artifactGraph
           )
           const cap = [...caps].find(
             ([_, cap]) => cap.subType === (type === 'end-cap' ? 'end' : 'start')

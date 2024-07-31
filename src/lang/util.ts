@@ -50,16 +50,18 @@ export function isCursorInSketchCommandRange(
   selectionRanges: Selections
 ): string | false {
   const overlappingEntries = filterArtifacts(
-    artifactGraph,
-    ['segment', 'path'],
-    (artifact) => {
-      return selectionRanges.codeBasedSelections.some(
-        (selection) =>
-          Array.isArray(selection?.range) &&
-          Array.isArray(artifact?.codeRef?.range) &&
-          isOverlap(selection.range, artifact.codeRef.range)
-      )
-    }
+    {
+      types: ['segment', 'path'],
+      predicate: (artifact) => {
+        return selectionRanges.codeBasedSelections.some(
+          (selection) =>
+            Array.isArray(selection?.range) &&
+            Array.isArray(artifact?.codeRef?.range) &&
+            isOverlap(selection.range, artifact.codeRef.range)
+        )
+      },
+    },
+    artifactGraph
   )
   const firstEntry = [...overlappingEntries.values()]?.[0]
   const parentId = firstEntry?.type === 'segment' ? firstEntry.pathId : false

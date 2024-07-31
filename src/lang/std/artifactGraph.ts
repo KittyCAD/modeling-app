@@ -419,9 +419,14 @@ export function getArtifactsToUpdate({
 
 /** filter map items of a specific type */
 export function filterArtifacts<T extends Artifact['type'][]>(
-  map: ArtifactGraph,
-  types: T,
-  predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
+  {
+    types,
+    predicate,
+  }: {
+    types: T
+    predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
+  },
+  map: ArtifactGraph
 ) {
   return new Map(
     Array.from(map).filter(
@@ -433,11 +438,17 @@ export function filterArtifacts<T extends Artifact['type'][]>(
   ) as Map<string, Extract<Artifact, { type: T[number] }>>
 }
 
-export function getArtifactsOfType<T extends Artifact['type'][]>(
-  keys: string[],
-  map: ArtifactGraph,
-  types: T,
-  predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
+export function getArtifactsOfTypes<T extends Artifact['type'][]>(
+  {
+    keys,
+    types,
+    predicate,
+  }: {
+    keys: string[]
+    types: T
+    predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
+  },
+  map: ArtifactGraph
 ): Map<string, Extract<Artifact, { type: T[number] }>> {
   return new Map(
     [...map].filter(
@@ -450,21 +461,15 @@ export function getArtifactsOfType<T extends Artifact['type'][]>(
   ) as Map<string, Extract<Artifact, { type: T[number] }>>
 }
 
-function getArtifactOfType<T extends Artifact['type']>(
-  key: string,
-  map: ArtifactGraph,
-  type: T
-): Extract<Artifact, { type: T }> | Error {
-  const artifact = map.get(key)
-  if (artifact?.type !== type)
-    return new Error(`Expected ${type} but got ${artifact?.type}`)
-  return artifact as Extract<Artifact, { type: T }>
-}
-
 export function getArtifactOfTypes<T extends Artifact['type'][]>(
-  key: string,
-  map: ArtifactGraph,
-  types: T
+  {
+    key,
+    types,
+  }: {
+    key: string
+    types: T
+  },
+  map: ArtifactGraph
 ): Extract<Artifact, { type: T[number] }> | Error {
   const artifact = map.get(key)
   if (!artifact) return new Error(`No artifact found with key ${key}`)
@@ -477,7 +482,10 @@ export function expandPlane(
   plane: _PlaneArtifact,
   artifactGraph: ArtifactGraph
 ): PlaneArtifact {
-  const paths = getArtifactsOfType(plane.pathIds, artifactGraph, ['path'])
+  const paths = getArtifactsOfTypes(
+    { keys: plane.pathIds, types: ['path'] },
+    artifactGraph
+  )
   return {
     type: 'plane',
     paths: Array.from(paths.values()),
@@ -489,16 +497,21 @@ export function expandPath(
   path: _PathArtifact,
   artifactGraph: ArtifactGraph
 ): PathArtifact | Error {
-  const segs = getArtifactsOfType(path.segIds, artifactGraph, ['segment'])
-  const extrusion = getArtifactOfType(
-    path.extrusionId,
-    artifactGraph,
-    'extrusion'
+  const segs = getArtifactsOfTypes(
+    { keys: path.segIds, types: ['segment'] },
+    artifactGraph
   )
-  const plane = getArtifactOfTypes(path.planeId, artifactGraph, [
-    'plane',
-    'wall',
-  ])
+  const extrusion = getArtifactOfTypes(
+    {
+      key: path.extrusionId,
+      types: ['extrusion'],
+    },
+    artifactGraph
+  )
+  const plane = getArtifactOfTypes(
+    { key: path.planeId, types: ['plane', 'wall'] },
+    artifactGraph
+  )
   if (err(extrusion)) return extrusion
   if (err(plane)) return plane
   return {
@@ -514,10 +527,10 @@ export function expandExtrusion(
   extrusion: _ExtrusionArtifact,
   artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
-  const surfs = getArtifactsOfType(extrusion.surfIds, artifactGraph, [
-    'wall',
-    'cap',
-  ])
+  const surfs = getArtifactsOfTypes(
+    { keys: extrusion.surfIds, types: ['wall', 'cap'] },
+    artifactGraph
+  )
   return {
     type: 'extrusion',
     surfs: Array.from(surfs.values()),
@@ -531,13 +544,23 @@ export function expandSegment(
   segment: _SegmentArtifact,
   artifactGraph: ArtifactGraph
 ): SegmentArtifact | Error {
-  const path = getArtifactOfTypes(segment.pathId, artifactGraph, ['path'])
-  const surf = getArtifactOfTypes(segment.surfId, artifactGraph, ['wall'])
-  const edges = getArtifactsOfType(segment.edgeIds, artifactGraph, [
-    'extrudeEdge',
-  ])
+  const path = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    artifactGraph
+  )
+  const surf = getArtifactOfTypes(
+    { key: segment.surfId, types: ['wall'] },
+    artifactGraph
+  )
+  const edges = getArtifactsOfTypes(
+    { keys: segment.edgeIds, types: ['extrudeEdge'] },
+    artifactGraph
+  )
   const edgeCut = segment.edgeCutId
-    ? getArtifactOfType(segment.edgeCutId, artifactGraph, 'edgeCut')
+    ? getArtifactOfTypes(
+        { key: segment.edgeCutId, types: ['edgeCut'] },
+        artifactGraph
+      )
     : undefined
   if (err(path)) return path
   if (err(surf)) return surf
@@ -557,13 +580,15 @@ export function getCapCodeRef(
   cap: _CapArtifact,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  const extrusion = getArtifactOfType(
-    cap.extrusionId,
-    artifactGraph,
-    'extrusion'
+  const extrusion = getArtifactOfTypes(
+    { key: cap.extrusionId, types: ['extrusion'] },
+    artifactGraph
   )
   if (err(extrusion)) return extrusion
-  const path = getArtifactOfType(extrusion.pathId, artifactGraph, 'path')
+  const path = getArtifactOfTypes(
+    { key: extrusion.pathId, types: ['path'] },
+    artifactGraph
+  )
   if (err(path)) return path
   return path.codeRef
 }
@@ -572,7 +597,10 @@ export function getSolid2dCodeRef(
   solid2D: _solid2D,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  const path = getArtifactOfType(solid2D.pathId, artifactGraph, 'path')
+  const path = getArtifactOfTypes(
+    { key: solid2D.pathId, types: ['path'] },
+    artifactGraph
+  )
   if (err(path)) return path
   return path.codeRef
 }
@@ -581,7 +609,10 @@ export function getWallCodeRef(
   wall: _WallArtifact,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  const seg = getArtifactOfType(wall.segId, artifactGraph, 'segment')
+  const seg = getArtifactOfTypes(
+    { key: wall.segId, types: ['segment'] },
+    artifactGraph
+  )
   if (err(seg)) return seg
   return seg.codeRef
 }
@@ -590,16 +621,25 @@ export function getExtrusionFromSuspectedExtrudeSurface(
   id: string,
   artifactGraph: ArtifactGraph
 ): _ExtrusionArtifact | Error {
-  const artifact = getArtifactOfTypes(id, artifactGraph, ['wall', 'cap'])
+  const artifact = getArtifactOfTypes(
+    { key: id, types: ['wall', 'cap'] },
+    artifactGraph
+  )
   if (err(artifact)) return artifact
-  return getArtifactOfTypes(artifact.extrusionId, artifactGraph, ['extrusion'])
+  return getArtifactOfTypes(
+    { key: artifact.extrusionId, types: ['extrusion'] },
+    artifactGraph
+  )
 }
 
 export function getExtrusionFromSuspectedPath(
   id: string,
   artifactGraph: ArtifactGraph
 ): _ExtrusionArtifact | Error {
-  const path = getArtifactOfTypes(id, artifactGraph, ['path'])
+  const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
   if (err(path)) return path
-  return getArtifactOfTypes(path.extrusionId, artifactGraph, ['extrusion'])
+  return getArtifactOfTypes(
+    { key: path.extrusionId, types: ['extrusion'] },
+    artifactGraph
+  )
 }

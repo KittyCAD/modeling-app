@@ -171,8 +171,8 @@ describe('testing createArtifactGraph', () => {
     })
 
     it('there should be two planes for the extrusion and the sketch on face', () => {
-      const planes = [...filterArtifacts(theMap, ['plane'])].map((plane) =>
-        expandPlane(plane[1], theMap)
+      const planes = [...filterArtifacts({ types: ['plane'] }, theMap)].map(
+        (plane) => expandPlane(plane[1], theMap)
       )
       expect(planes).toHaveLength(1)
       planes.forEach((path) => {
@@ -180,8 +180,8 @@ describe('testing createArtifactGraph', () => {
       })
     })
     it('there should be two paths for the extrusion and the sketch on face', () => {
-      const paths = [...filterArtifacts(theMap, ['path'])].map((path) =>
-        expandPath(path[1], theMap)
+      const paths = [...filterArtifacts({ types: ['path'] }, theMap)].map(
+        (path) => expandPath(path[1], theMap)
       )
       expect(paths).toHaveLength(2)
       paths.forEach((path) => {
@@ -191,9 +191,9 @@ describe('testing createArtifactGraph', () => {
     })
 
     it('there should be two extrusions, for the original and the sketchOnFace, the first extrusion should have 6 sides of the cube', () => {
-      const extrusions = [...filterArtifacts(theMap, ['extrusion'])].map(
-        (extrusion) => expandExtrusion(extrusion[1], theMap)
-      )
+      const extrusions = [
+        ...filterArtifacts({ types: ['extrusion'] }, theMap),
+      ].map((extrusion) => expandExtrusion(extrusion[1], theMap))
       expect(extrusions).toHaveLength(2)
       extrusions.forEach((extrusion, index) => {
         if (err(extrusion)) throw extrusion
@@ -209,9 +209,12 @@ describe('testing createArtifactGraph', () => {
     })
 
     it('there should be 5 + 4 segments,  4 (+close) from the first extrusion and 3 (+close) from the second', () => {
-      const segments = [...filterArtifacts(theMap, ['segment'])].map(
-        (segment) => expandSegment(segment[1], theMap)
-      )
+      const segments = [
+        ...filterArtifacts(
+          { types: ['segment'] },
+          engineCommandManager.artifactGraph
+        ),
+      ].map((segment) => expandSegment(segment[1], theMap))
       expect(segments).toHaveLength(9)
     })
 
