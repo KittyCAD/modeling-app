@@ -209,11 +209,11 @@ export const SettingsAuthProviderBase = ({
       },
       services: {
         'Persist settings': (context) =>
-          saveSettings(context, loadedProject?.path),
+          saveSettings(context, loadedProject?.project.path),
       },
     }
   )
-  settingsStateRef = settingsState.context
+  settingsStateRef = settingsState.context.settings ?? settingsState.context
 
   // Add settings commands to the command bar
   // They're treated slightly differently than other commands

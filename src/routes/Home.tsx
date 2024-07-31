@@ -24,7 +24,6 @@ import {
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { join, sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
@@ -40,13 +39,13 @@ import {
 } from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 
-// This route only opens in the Tauri desktop context for now,
-// as defined in Router.tsx, so we can use the Tauri APIs and types.
+// This route only opens in the desktop context for now,
+// as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   useRefreshSettings(paths.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
     settings: { context: settings },
   } = useSettingsAuthContext()

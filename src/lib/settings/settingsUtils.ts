@@ -158,11 +158,10 @@ export interface AppSettings {
 export async function loadAndValidateSettings(
   projectPath?: string
 ): Promise<AppSettings> {
-  const settings = createSettings()
-  const onDesktop = isDesktop()
-
   // Make sure we have wasm initialized.
   await initPromise
+
+  const onDesktop = isDesktop()
 
   // Load the app settings from the file system or localStorage.
   const appSettingsPayload = onDesktop
@@ -171,6 +170,7 @@ export async function loadAndValidateSettings(
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
+  const settings = createSettings()
   setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
   // Load the project settings if they exist
@@ -182,8 +182,7 @@ export async function loadAndValidateSettings(
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
 
-    const projectSettingsPayload =
-      projectConfigurationToSettingsPayload(projectSettings)
+    const projectSettingsPayload = projectSettings
     setSettingsAtLevel(settings, 'project', projectSettingsPayload)
   }
 
@@ -238,7 +237,7 @@ export async function saveSettings(
 
   // Write the project settings.
   if (onDesktop) {
-    await writeProjectSettingsFile(projectPath, projectSettings)
+    await writeProjectSettingsFile({ projectPath, configuration: { settings: projectSettings }})
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
   }

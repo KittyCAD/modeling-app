@@ -41,7 +41,7 @@ export const settingsLoader: LoaderFunction = async ({
       const { settings: s } = await loadAndValidateSettings(
         project_path || undefined
       )
-      settings = s
+      return s
     }
   }
 
@@ -71,9 +71,8 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
   return settingsLoader(args)
 }
 
-export const fileLoader: LoaderFunction = async ({
-  params,
-}): Promise<FileLoaderData | Response> => {
+export const fileLoader: LoaderFunction = async (routerData): Promise<FileLoaderData | Response> => {
+  const { params } = routerData
   let { configuration } = await loadAndValidateSettings()
 
   const projectPathData = await getProjectMetaByRouteId(
@@ -86,26 +85,30 @@ export const fileLoader: LoaderFunction = async ({
     const { project_name, project_path, current_file_name, current_file_path } =
       projectPathData
 
-    if (!current_file_name || !current_file_path || !project_name) {
-      return redirect(
-        `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${isDesktop() ? window.electron.path.sep : '/'}${PROJECT_ENTRYPOINT}`
-        )}`
-      )
+    const urlObj = URL.parse(routerData.request.url)
+    let code = ''
+
+    if (!urlObj.pathname.endsWith('/settings')) {
+      // TODO: PROJECT_ENTRYPOINT is hardcoded
+      // until we support setting a project's entrypoint file
+      if (!current_file_name || !current_file_path || !project_name) {
+        return redirect(
+          `${paths.FILE}/${encodeURIComponent(
+            `${params.id}${isDesktop() ? window.electron.path.sep : '/'}${PROJECT_ENTRYPOINT}`
+          )}`
+        )
+      }
+
+      code = await window.electron.readFile(current_file_path)
+
+      // Update both the state and the editor's code.
+      // We explicitly do not write to the file here since we are loading from
+      // the file system and not the editor.
+      codeManager.updateCurrentFilePath(current_file_path)
+      codeManager.updateCodeStateEditor(code)
+      // We don't want to call await on execute code since we don't want to block the UI
+      kclManager.executeCode(true)
     }
-
-    // TODO: PROJECT_ENTRYPOINT is hardcoded
-    // until we support setting a project's entrypoint file
-    const code = await window.electron.readFile(current_file_path)
-
-    // Update both the state and the editor's code.
-    // We explicitly do not write to the file here since we are loading from
-    // the file system and not the editor.
-    codeManager.updateCurrentFilePath(current_file_path)
-    codeManager.updateCodeStateEditor(code)
-
-    // We don't want to call await on execute code since we don't want to block the UI
-    kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
@@ -126,7 +129,7 @@ export const fileLoader: LoaderFunction = async ({
           },
       file: {
         name: current_file_name,
-        path: current_file_path.split('/').slice(0, -1).join('/'),
+        path: current_file_path?.split('/').slice(0, -1).join('/'),
         children: [],
       },
     }
