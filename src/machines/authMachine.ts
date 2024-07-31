@@ -146,10 +146,7 @@ async function getUser(context: UserContext) {
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : getUserDesktop(
-        'f8864550-84a6-4a06-8d3f-68d29bbe5608' /* context.token */,
-        VITE_KC_API_BASE_URL
-      )
+    : getUserDesktop(context.token, VITE_KC_API_BASE_URL )
 
   const user = await userPromise
 

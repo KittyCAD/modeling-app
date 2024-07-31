@@ -5,7 +5,6 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
-import { login } from 'lib/desktop'
 
 const SignIn = () => {
   const {
@@ -25,10 +24,10 @@ const SignIn = () => {
       ? '-dark'
       : ''
 
-  const signInTauri = async () => {
+  const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     try {
-      const token: string = await login(VITE_KC_API_BASE_URL)
+      const token: string = await window.electron.login(VITE_KC_API_BASE_URL)
       send({ type: 'Log in', token })
     } catch (error) {
       console.error('Error with login button', error)
@@ -64,7 +63,7 @@ const SignIn = () => {
         {isDesktop() ? (
           <ActionButton
             Element="button"
-            onClick={signInTauri}
+            onClick={signInDesktop}
             iconStart={{ icon: 'arrowRight' }}
             className="w-fit mt-4"
             data-testid="sign-in-button"

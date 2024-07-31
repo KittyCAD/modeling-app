@@ -5,6 +5,7 @@ import packageJson from '../../package.json'
 
 const open = (args: any) => ipcRenderer.invoke('dialog', args)
 const showInFolder = (path: string) => ipcRenderer.invoke('shell.showItemInFolder', path)
+const login = (host: string) => ipcRenderer.invoke('login', host)
 
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 const rename = (prev: string, next: string) => fs.rename(prev, next)
@@ -31,6 +32,7 @@ const exposeProcessEnv = (varName: string) => {
 
 import('@kittycad/lib').then((kittycad) => {
   contextBridge.exposeInMainWorld('electron', {
+    login,
     // Passing fs directly is not recommended since it gives a lot of power
     // to the browser side / potential malicious code. We restrict what is
     // exported.
