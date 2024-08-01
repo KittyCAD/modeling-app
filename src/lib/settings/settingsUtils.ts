@@ -105,7 +105,9 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile(): Partial<SaveSettingsPayload> | Error {
+export function readLocalStorageAppSettingsFile():
+  | Partial<SaveSettingsPayload>
+  | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -153,7 +155,7 @@ function readLocalStorageProjectSettingsFile():
 }
 
 export interface AppSettings {
-  settings: ReturnType<typeof createSettings>,
+  settings: ReturnType<typeof createSettings>
   configuration: Partial<SaveSettingsPayload>
 }
 
@@ -239,10 +241,7 @@ export async function saveSettings(
 
   // Write the project settings.
   if (onDesktop) {
-    await writeProjectSettingsFile(
-      projectPath,
-      projectSettings,
-    )
+    await writeProjectSettingsFile(projectPath, projectSettings)
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
   }
