@@ -1093,7 +1093,7 @@ export enum EngineCommandManagerEvents {
  * through the {@link EngineConnection} class.
  *
  * As commands are send their state is tracked in {@link pendingCommands} and clear as soon as we receive a response.
- * 
+ *
  * Also all commands that are sent are kept track of in {@link orderedCommands} and their responses are kept in {@link responseMap}
  * Both of these data structures are used to process the {@link artifactGraph}.
  */

@@ -188,10 +188,10 @@ export function createArtifactGraph({
 /**
  * Processes a single command and it's response in order to populate the artifact map
  * It does not mutate the map directly, but returns an array of artifacts to update
- * 
+ *
  * @param currentPlaneId is only needed for `start_path` commands because this command does not have a pathId
  * instead it relies on the id used with the `enable_sketch_mode` command, so this much be kept track of
- * outside of this function. It would be good to update the `start_path` command to include the planeId so we 
+ * outside of this function. It would be good to update the `start_path` command to include the planeId so we
  * can remove this.
  */
 export function getArtifactsToUpdate({

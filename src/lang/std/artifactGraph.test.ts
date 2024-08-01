@@ -315,7 +315,7 @@ async function GraphTheGraph(
         return
       if (Array.isArray(value))
         value.forEach((v) => {
-          edges.push({ source: commandId, target: v, label: propName })
+          v && edges.push({ source: commandId, target: v, label: propName })
         })
       if (typeof value === 'string' && value)
         edges.push({ source: commandId, target: value, label: propName })
