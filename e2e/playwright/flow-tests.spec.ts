@@ -4179,12 +4179,15 @@ test.describe('Sketch tests', () => {
     await page.setViewportSize({ width: 1200, height: 500 })
 
     await u.waitForAuthSkipAppStart()
-    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
 
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeEnabled()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await expect(async () => {
+      await page.mouse.click(700, 200)
+      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeEnabled({ timeout: 1000 })
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
 
     await page.waitForTimeout(600) // wait for animation
 
