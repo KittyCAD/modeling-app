@@ -20,8 +20,8 @@ export default function ProjectMenu() {
         <section className="flex-1">
           <h2 className="text-2xl font-bold">Project Menu</h2>
           <p className="my-4">
-            Click on {onDesktop ? `your part's name` : `the app name`} in the upper
-            left to open the project menu, where you can open the project
+            Click on {onDesktop ? `your part's name` : `the app name`} in the
+            upper left to open the project menu, where you can open the project
             settings and export your current part.
             {onDesktop && (
               <> You can click the Zoo logo to quickly navigate home.</>
