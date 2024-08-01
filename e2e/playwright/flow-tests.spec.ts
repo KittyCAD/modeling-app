@@ -8094,3 +8094,34 @@ test('Sketch on face', async ({ page }) => {
 const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
+
+test('Typing KCL errors induces a badge on the error logs pane button', async ({
+  page,
+}) => {
+  const u = await getUtils(page)
+
+  // Load the app with the working starter code
+  await page.addInitScript((code) => {
+    localStorage.setItem('persistCode', code)
+  }, bracket)
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // Ensure no badge is present
+  const errorLogsButton = page.getByRole('button', { name: 'KCL Errors pane' })
+  await expect(errorLogsButton).not.toContainText('notification')
+
+  // Delete a character to break the KCL
+  await u.openKclCodePanel()
+  await page.getByText('extrude(').click()
+  await page.keyboard.press('Backspace')
+
+  // Ensure that a badge appears on the button
+  await expect(errorLogsButton).toContainText('notification')
+})
