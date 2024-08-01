@@ -28,13 +28,9 @@ class FileSystemManager {
       )
     }
 
-    return this.join(this.dir, path)
-      .catch((error) => {
-        return Promise.reject(new Error(`Error reading file: ${error}`))
-      })
-      .then((filePath) => {
-        return window.electron.readFile(filePath)
-      })
+    return this.join(this.dir, path).then((filePath) => {
+      return window.electron.readFile(filePath)
+    })
   }
 
   async exists(path: string): Promise<boolean | void> {
@@ -47,20 +43,16 @@ class FileSystemManager {
       )
     }
 
-    return this.join(this.dir, path)
-      .catch((error) => {
-        return Promise.reject(new Error(`Error checking file exists: ${error}`))
-      })
-      .then(async (file) => {
-        try {
-          await window.electron.stat(file)
-        } catch (e) {
-          if (e === 'ENOENT') {
-            return false
-          }
+    return this.join(this.dir, path).then(async (file) => {
+      try {
+        await window.electron.stat(file)
+      } catch (e) {
+        if (e === 'ENOENT') {
+          return false
         }
-        return true
-      })
+      }
+      return true
+    })
   }
 
   async getAllFiles(path: string): Promise<string[] | void> {
@@ -73,20 +65,16 @@ class FileSystemManager {
       )
     }
 
-    return this.join(this.dir, path)
-      .catch((error) => {
-        return Promise.reject(new Error(`Error joining dir: ${error}`))
-      })
-      .then((filepath) => {
-        return window.electron
-          .readdir(filepath)
-          .catch((error) => {
-            return Promise.reject(new Error(`Error reading dir: ${error}`))
-          })
-          .then((files) => {
-            return files.map((file) => file.path)
-          })
-      })
+    return this.join(this.dir, path).then((filepath) => {
+      return window.electron
+        .readdir(filepath)
+        .catch((error: Error) => {
+          return Promise.reject(new Error(`Error reading dir: ${error}`))
+        })
+        .then((files: string[]) => {
+          return files.map((filePath) => filePath)
+        })
+    })
   }
 }
 

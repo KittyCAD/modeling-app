@@ -22,8 +22,10 @@ import init, {
 import {
   configurationToSettingsPayload,
   projectConfigurationToSettingsPayload,
-  SaveSettingsPayload,
 } from 'lib/settings/settingsUtils'
+import {
+  SaveSettingsPayload,
+} from 'lib/settings/settingsTypes'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'

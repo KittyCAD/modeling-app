@@ -195,7 +195,9 @@ export const AllSettingsFields = forwardRef(
                     const paths = await getSettingsFolderPaths(
                       projectPath ? decodeURIComponent(projectPath) : undefined
                     )
-                    window.electron.showInFolder(paths[searchParamTab])
+                    const finalPath = paths[searchParamTab]
+                    if (!finalPath) { return new Error('finalPath undefined') }
+                    window.electron.showInFolder(finalPath)
                   }}
                   iconStart={{
                     icon: 'folder',

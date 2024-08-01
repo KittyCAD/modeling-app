@@ -209,7 +209,7 @@ export const SettingsAuthProviderBase = ({
       },
       services: {
         'Persist settings': (context) =>
-          saveSettings(context, loadedProject?.project.path),
+          saveSettings(context, loadedProject?.project?.path),
       },
     }
   )

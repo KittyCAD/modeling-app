@@ -63,7 +63,9 @@ export class Setting<T = unknown> {
     return this._user
   }
   set user(v: T | undefined) {
-    this._user = this.validate(v) ? v : this._user
+    this._user = v !== undefined
+      ? this.validate(v) ? v : this._user
+      : v
     this.current = this.resolve()
   }
   /**
@@ -72,8 +74,10 @@ export class Setting<T = unknown> {
   get project(): T | undefined {
     return this._project
   }
-  set project(v: T) {
-    this._project = this.validate(v) ? v : this._project
+  set project(v: T | undefined) {
+    this._project = v !== undefined
+      ? this.validate(v)  ? v : this._project
+      : v
     this.current = this.resolve()
   }
   /**

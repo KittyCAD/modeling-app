@@ -108,7 +108,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
           ref={ref as ForwardedRef<HTMLAnchorElement>}
           to={to || paths.INDEX}
           className={classNames}
-          onClick={openExternalBrowserIfDesktop(to)}
+          onClick={openExternalBrowserIfDesktop(to as string)}
           {...rest}
           target="_blank"
         >

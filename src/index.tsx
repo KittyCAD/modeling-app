@@ -7,8 +7,6 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
 import { isDesktop } from 'lib/isDesktop'
-import { relaunch } from '@tauri-apps/plugin-process'
-import { check } from '@tauri-apps/plugin-updater'
 import {
   UpdaterRestartModal,
   createUpdaterRestartModal,
@@ -59,32 +57,4 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-const runTauriUpdater = async () => {
-  console.log('STUB: @pierre')
-  return
-
-  try {
-    const update = await check()
-    if (update && update.available) {
-      const { date, version, body } = update
-      const modal = createUpdaterModal(UpdaterModal)
-      const { wantUpdate } = await modal({ date, version, body })
-      if (wantUpdate) {
-        await update.downloadAndInstall()
-        // On macOS and Linux, the restart needs to be manually triggered
-        const isNotWindows = navigator.userAgent.indexOf('Win') === -1
-        if (isNotWindows) {
-          const relaunchModal = createUpdaterRestartModal(UpdaterRestartModal)
-          const { wantRestart } = await relaunchModal({ version })
-          if (wantRestart) {
-            await relaunch()
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-isDesktop() && runTauriUpdater()
+isDesktop()

@@ -1,3 +1,4 @@
+import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
@@ -77,7 +78,8 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: Partial<SaveSettingsPayload>
 ): Promise<string | undefined> {
-  const projectDir = config.app.projectDirectory
+  const projectDir = config.app?.projectDirectory
+  if (!projectDir) { return Promise.reject(new Error('projectDir is falsey')) }
   try {
     await window.electron.stat(projectDir)
   } catch (e) {
@@ -104,6 +106,7 @@ export async function createNewProjectDirectory(
     return Promise.reject('Project name cannot be empty.')
   }
 
+  if (!mainDir) { return Promise.reject(new Error('mainDir is falsey')) }
   const projectDir = window.electron.path.join(mainDir, projectName)
 
   try {
@@ -142,6 +145,8 @@ export async function listProjects(
   }
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
+  if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
+
   const entries = await window.electron.readdir(projectDir)
   for (let entry of entries) {
     const projectPath = window.electron.path.join(projectDir, entry)
@@ -231,7 +236,7 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   return entry
 }
 
-const getDefaultKclFileForDir = async (projectDir, file) => {
+const getDefaultKclFileForDir = async (projectDir: string, file: FileEntry) => {
   // Make sure the dir is a directory.
   const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {
@@ -305,7 +310,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
-        new Error(`Project directory does not exist: ${project_path}`)
+        new Error(`Project directory does not exist: ${projectPath}`)
       )
     }
   }
@@ -314,7 +319,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   const projectPathIsDir = await window.electron.statIsDirectory(projectPath)
   if (!projectPathIsDir) {
     return Promise.reject(
-      new Error(`Project path is not a directory: ${project_path}`)
+      new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
 
@@ -322,9 +327,10 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   let default_file = await getDefaultKclFileForDir(projectPath, walked)
   const metadata = await window.electron.stat(projectPath)
 
-  let project = /* FileEntry */ {
+  let project = {
     ...walked,
-    metadata,
+    // We need to map from node fs.Stats to FileMetadata
+    metadata: metadata.map((data: { mtimeMs: number }) => ({ modified: data.mtimeMs })),
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
@@ -349,6 +355,7 @@ export async function writeProjectSettingsFile({
 }): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   const tomlStr = tomlStringify(configuration)
+  if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(projectSettingsFilePath, tomlStr)
 }
 
@@ -387,7 +394,7 @@ export const getInitialDefaultDir = async () => {
 
 export const readProjectSettingsFile = async (
   projectPath: string
-): Promise<ProjectConfiguration> => {
+): Promise<Partial<SaveSettingsPayload>> => {
   let settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
@@ -426,6 +433,7 @@ export const writeAppSettingsFile = async (
 ) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   const tomlStr = tomlStringify(config)
+  if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
 }
 
