@@ -22,6 +22,7 @@ import {
   ToolbarModeName,
 } from 'lib/toolbar'
 import { useKclContext } from 'lang/KclProvider'
+import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
 
 export function Toolbar({
   className = '',
@@ -29,31 +30,6 @@ export function Toolbar({
 }: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
   const { commandBarSend } = useCommandsContext()
-  useInteractionMap(
-    [
-      {
-        name: 'sketch',
-        title: 'Start Sketch',
-        sequence: 'shift+s',
-        action: () =>
-          send({ type: 'Enter sketch', data: { forceNewSketch: true } }),
-        guard: () => state.can('Enter sketch'),
-      },
-      {
-        name: 'extrude',
-        title: 'Extrude',
-        sequence: 'ctrl+c shift+e',
-        action: () =>
-          commandBarSend({
-            type: 'Find and select command',
-            data: { name: 'Extrude', groupId: 'modeling' },
-          }),
-        guard: () => state.can('Extrude'),
-      },
-    ],
-    [commandBarSend, state],
-    KEYBINDING_CATEGORIES.MODELING
-  )
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
   const bgClassName = '!bg-transparent'
@@ -284,19 +260,34 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
   itemConfig: ToolbarItemResolved
   configCallbackProps: ToolbarItemCallbackProps
 }) {
-  // useHotkeys(
-  //   itemConfig.hotkey || '',
-  //   () => {
-  //     itemConfig.onClick(configCallbackProps)
-  //   },
-  //   {
-  //     enabled:
-  //       itemConfig.status === 'available' &&
-  //       !!itemConfig.hotkey &&
-  //       !itemConfig.disabled &&
-  //       !itemConfig.disableHotkey,
-  //   }
-  // )
+  const { state: interactionMapState } = useInteractionMapContext()
+  const resolvedSequence =
+    interactionMapState.context.overrides[
+      `${KEYBINDING_CATEGORIES.MODELING}.${itemConfig.id}`
+    ] ||
+    (itemConfig.hotkey instanceof Array
+      ? itemConfig.hotkey[0]
+      : itemConfig.hotkey) ||
+    ''
+  useInteractionMap(
+    [
+      {
+        name: itemConfig.id,
+        title: itemConfig.title,
+        sequence: resolvedSequence,
+        action: () => itemConfig.onClick(configCallbackProps),
+        guard: () =>
+          !(
+            itemConfig.status === 'available' &&
+            !!itemConfig.hotkey &&
+            !itemConfig.disabled &&
+            !itemConfig.disableHotkey
+          ),
+      },
+    ],
+    [configCallbackProps.modelingSend, configCallbackProps.commandBarSend],
+    KEYBINDING_CATEGORIES.MODELING
+  )
 
   return (
     <>
@@ -318,8 +309,8 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
           >
             {itemConfig.title}
           </span>
-          {itemConfig.status === 'available' && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+          {itemConfig.status === 'available' && resolvedSequence ? (
+            <kbd className="flex-none hotkey">{resolvedSequence}</kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">

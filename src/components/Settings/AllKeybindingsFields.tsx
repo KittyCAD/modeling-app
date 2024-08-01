@@ -1,4 +1,5 @@
 import { ActionIcon } from 'components/ActionIcon'
+import { CustomIcon } from 'components/CustomIcon'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
 import { resolveInteractionEvent } from 'lib/keyboard'
 import {
@@ -115,20 +116,25 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
   return isEditing ? (
     <form
       key={item.ownerId + '-' + item.name}
-      className="flex gap-2 justify-between items-start"
+      className="flex gap-2 justify-between items-center"
       onSubmit={handleSubmit}
     >
       <h3>{item.title}</h3>
       <InteractionSequence sequence={newSequence} showNoSequence />
       <input type="hidden" value={item.sequence} name="sequence" />
+      <button className="p-0 m-0" onClick={() => setIsEditing(false)}>
+        <CustomIcon name="close" className="w-5 h-5" />
+        <span className="sr-only">Cancel</span>
+      </button>
       <button ref={submitRef} className="p-0 m-0" type="submit">
-        <ActionIcon icon="checkmark" />
+        <CustomIcon name="checkmark" className="w-5 h-5" />
+        <span className="sr-only">Save</span>
       </button>
     </form>
   ) : (
     <div
       key={item.ownerId + '-' + item.name}
-      className="flex gap-2 justify-between items-start"
+      className="flex gap-2 justify-between items-center"
     >
       <h3>{item.title}</h3>
       <InteractionSequence
@@ -142,7 +148,8 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
         className="p-0 m-0"
         onClick={() => setIsEditing(true)}
       >
-        <ActionIcon icon="sketch" />
+        <CustomIcon name="sketch" className="w-5 h-5" />
+        <span className="sr-only">Edit</span>
       </button>
     </div>
   )
@@ -156,7 +163,9 @@ export function InteractionSequence({
 }: HTMLProps<HTMLDivElement> & { sequence: string; showNoSequence?: boolean }) {
   return sequence.length ? (
     <div
-      className={'flex-1 flex flex-wrap justify-end gap-3 ' + className}
+      className={
+        'cursor-default flex-1 flex flex-wrap justify-end gap-3 ' + className
+      }
       {...props}
     >
       {sequence.split(' ').map((chord, i) => (
