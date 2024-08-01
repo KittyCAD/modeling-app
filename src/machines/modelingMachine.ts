@@ -1077,7 +1077,9 @@ export const modelingMachine = createMachine(
           },
         })
         if (!engineCommandManager.engineConnection?.idleMode) {
-          store.videoElement?.play()
+          store.videoElement?.play().catch((e) => {
+            console.warn('Video playing was prevented', e)
+          })
         }
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)

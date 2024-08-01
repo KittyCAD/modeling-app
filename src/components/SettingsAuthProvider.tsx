@@ -175,11 +175,35 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': () => {
-          kclManager.isFirstRender = true
-          kclManager.executeCode(true).then(() => {
-            kclManager.isFirstRender = false
-          })
+        'Execute AST': (context, event) => {
+          try {
+            const allSettingsIncludesUnitChange =
+              event.type === 'Set all settings' &&
+              event.settings?.modeling?.defaultUnit?.current !==
+                context.modeling.defaultUnit.current
+            const resetSettingsIncludesUnitChange =
+              event.type === 'Reset settings' &&
+              context.modeling.defaultUnit.current !==
+                settings?.modeling?.defaultUnit?.default
+
+            if (
+              event.type === 'set.modeling.defaultUnit' ||
+              allSettingsIncludesUnitChange ||
+              resetSettingsIncludesUnitChange
+            ) {
+              kclManager.isFirstRender = true
+              kclManager.executeCode(true).then(() => {
+                kclManager.isFirstRender = false
+              })
+            } else {
+              // For any future logging we'd like to do
+              // console.log(
+              //   'Not re-executing AST because the settings change did not affect the code interpretation'
+              // )
+            }
+          } catch (e) {
+            console.error('Error executing AST after settings change', e)
+          }
         },
       },
       services: {

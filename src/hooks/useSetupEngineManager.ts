@@ -185,6 +185,7 @@ export function useSetupEngineManager(
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
+  const factorOf = 4
   const maxResolution = 2000
   const width = streamWidth ? streamWidth : 0
   const height = streamHeight ? streamHeight : 0
@@ -192,7 +193,7 @@ function getDimensions(streamWidth?: number, streamHeight?: number) {
     Math.min(maxResolution / width, maxResolution / height),
     1.0
   )
-  const quadWidth = Math.round((width * ratio) / 4) * 4
-  const quadHeight = Math.round((height * ratio) / 4) * 4
+  const quadWidth = Math.round((width * ratio) / factorOf) * factorOf
+  const quadHeight = Math.round((height * ratio) / factorOf) * factorOf
   return { width: quadWidth, height: quadHeight }
 }

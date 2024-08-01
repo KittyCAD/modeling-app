@@ -156,7 +156,13 @@ export const Stream = () => {
 
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
-    if (!kclManager.isFirstRender) videoRef.current?.play()
+    if (!kclManager.isFirstRender)
+      setTimeout(() =>
+        // execute in the next event loop
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      )
     setIsFreezeFrame(!kclManager.isFirstRender)
   }, [kclManager.isFirstRender])
 
@@ -170,8 +176,12 @@ export const Stream = () => {
     if (!mediaStream) return
 
     // Do not immediately play the stream!
-    videoRef.current.srcObject = mediaStream
-    videoRef.current.pause()
+    try {
+      videoRef.current.srcObject = mediaStream
+      videoRef.current.pause()
+    } catch (e) {
+      console.warn('Attempted to pause stream while play was still loading', e)
+    }
 
     send({
       type: 'Set context',

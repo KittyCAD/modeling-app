@@ -266,7 +266,7 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox()
+        .boundingBox({ timeout: 5000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
