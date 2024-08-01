@@ -157,7 +157,8 @@ export const Stream = () => {
   useEffect(() => {
     setIsFirstRender(kclManager.isFirstRender)
     if (!kclManager.isFirstRender)
-      setTimeout(() => // execute in the next event loop
+      setTimeout(() =>
+        // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
