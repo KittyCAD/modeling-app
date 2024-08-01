@@ -63,15 +63,12 @@ export type Selections = {
   codeBasedSelections: Selection[]
 }
 
-export async function getEventForSelectWithPoint(
-  {
-    data,
-  }: Extract<
-    Models['OkModelingCmdResponse_type'],
-    { type: 'select_with_point' }
-  >,
-  { sketchEnginePathId }: { sketchEnginePathId?: string }
-): Promise<ModelingMachineEvent | null> {
+export async function getEventForSelectWithPoint({
+  data,
+}: Extract<
+  Models['OkModelingCmdResponse_type'],
+  { type: 'select_with_point' }
+>): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
     return {
       type: 'Set selection',

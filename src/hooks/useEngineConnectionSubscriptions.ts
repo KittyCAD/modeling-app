@@ -72,9 +72,7 @@ export function useEngineConnectionSubscriptions() {
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: async (engineEvent) => {
-        const event = await getEventForSelectWithPoint(engineEvent, {
-          sketchEnginePathId: context.sketchEnginePathId,
-        })
+        const event = await getEventForSelectWithPoint(engineEvent)
         event && send(event)
       },
     })
