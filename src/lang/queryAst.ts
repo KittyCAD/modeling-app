@@ -48,11 +48,11 @@ function isAstNode(
  * node.type matches.
  */
 export function isNodeType<T extends DynamicNode>(
-  node: any,
+  node: unknown,
   syntaxType: SyntaxType | SyntaxType[]
 ): node is T {
   return (
-    node &&
+    !!node &&
     typeof node === 'object' &&
     'type' in node &&
     (isArray(syntaxType)
