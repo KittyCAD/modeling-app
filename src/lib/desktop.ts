@@ -229,7 +229,7 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
         /* FileEntry */ {
           name: e,
           path: ePath,
-          children: undefined,
+          children: null,
         }
       )
     }
@@ -261,7 +261,7 @@ const getDefaultKclFileForDir = async (projectDir: string, file: FileEntry) => {
         for (let entry of file.children) {
           if (entry.name.endsWith('.kcl')) {
             return window.electron.path.join(projectDir, entry.name)
-          } else if (entry.children?.length > 0) {
+          } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
             return getDefaultKclFileForDir(entry.path, entry)
           }
@@ -355,7 +355,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
 // Write project settings file.
 export async function writeProjectSettingsFile(
   projectPath: string,
-  configuration: Partial<SaveSettingsPayload>,
+  configuration: Partial<SaveSettingsPayload>
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   const tomlStr = tomlStringify({ settings: configuration })
@@ -407,7 +407,7 @@ export const readProjectSettingsFile = async (
   } catch (e) {
     if (e === 'ENOENT') {
       // Return the default configuration.
-      return { settings: {} }
+      return {}
     }
   }
 
@@ -423,7 +423,9 @@ export const readAppSettingsFile = async () => {
   } catch (e) {
     if (e === 'ENOENT') {
       const config = defaultAppSettings()
-      if (!config.app) { return Promise.reject(new Error('config.app is falsey')) }
+      if (!config.app) {
+        return Promise.reject(new Error('config.app is falsey'))
+      }
       config.app.projectDirectory = await getInitialDefaultDir()
       return config
     }
@@ -442,7 +444,7 @@ export const writeAppSettingsFile = async (
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
 }
 
-let appStateStore = undefined
+let appStateStore: ProjectState | undefined = undefined
 
 export const getState = async (): Promise<ProjectState | undefined> => {
   return Promise.resolve(appStateStore)

@@ -213,7 +213,7 @@ export const SettingsAuthProviderBase = ({
       },
     }
   )
-  settingsStateRef = settingsState.context.settings ?? settingsState.context
+  settingsStateRef = settingsState.context
 
   // Add settings commands to the command bar
   // They're treated slightly differently than other commands

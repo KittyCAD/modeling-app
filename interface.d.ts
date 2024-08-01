@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'path'
 import { dialog, shell } from 'electron'
+import kittycad from '@kittycad/lib'
 
 export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
@@ -32,6 +33,7 @@ export interface IElectronAPI {
       BASE_URL: (value?: string) => string
     }
   }
+  kittycad
 }
 
 declare global {
