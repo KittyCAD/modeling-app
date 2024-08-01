@@ -7,6 +7,7 @@ import { getUser as getUserDesktop } from 'lib/desktop'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
+
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
   name: 'Test User',

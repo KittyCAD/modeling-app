@@ -129,7 +129,7 @@ export function readLocalStorageAppSettingsFile(): Configuration | Error {
   }
 }
 
-function readLocalStorageProjectSettingsFile(): ProjectConfiguration | Error {
+function readLocalStorageProjectSettingsFile(): Partial<SaveSettingsPayload> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 

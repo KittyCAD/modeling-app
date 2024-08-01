@@ -1,7 +1,8 @@
+import { MouseEventHandler } from 'react'
 import { isDesktop } from 'lib/isDesktop'
 
 export const openExternalBrowserIfDesktop = (to?: string) =>
-  function (e: Event) {
+  function (e) {
     if (isDesktop()) {
       // Ignoring because currentTarget could be a few different things
       // @ts-ignore
@@ -10,7 +11,7 @@ export const openExternalBrowserIfDesktop = (to?: string) =>
       e.stopPropagation()
       return false
     }
-  }
+  } as MouseEventHandler<HTMLAnchorElement>
 
 // Open a new browser window desktop style or browser style.
 export default async function openWindow(url: string) {

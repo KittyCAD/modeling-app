@@ -117,19 +117,21 @@ export const fileLoader: LoaderFunction = async (
     // So that WASM gets an updated path for operations
     fileSystemManager.dir = project_path
 
-    const projectData: IndexLoaderData = {
-      code,
-      project: isDesktop()
-        ? await getProjectInfo(project_path)
-        : {
-            name: project_name,
+    const defaultProjectData = {
+            name: project_name || 'unnamed',
             path: project_path,
             children: [],
             kcl_file_count: 0,
             directory_count: 0,
             metadata: null,
             default_file: project_path,
-          },
+          }
+
+    const projectData: IndexLoaderData = {
+      code,
+      project: isDesktop()
+        ? (await getProjectInfo(project_path)) ?? defaultProjectData
+        : defaultProjectData,
       file: {
         name: current_file_name || '',
         path: current_file_path?.split('/').slice(0, -1).join('/') ?? '',

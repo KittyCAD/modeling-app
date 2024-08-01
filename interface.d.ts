@@ -12,21 +12,24 @@ export interface IElectronAPI {
   arch: typeof process.env.arch
   version: typeof process.env.version
   readFile: (path: string) => ReturnType<fs.readFile>
-  writeFile: (path: string, data: string | Uint8Array) => ReturnType<fs.writeFile>
+  writeFile: (
+    path: string,
+    data: string | Uint8Array
+  ) => ReturnType<fs.writeFile>
   readdir: (path: string) => ReturnType<fs.readdir>
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
   stat: (path: string) => ReturnType<fs.stat>
   statIsDirectory: (path: string) => Promise<boolean>
-  path: typeof path,
-  mkdir: typeof fs.mkdir,
-  rename: (prev: string, next: string) => typeof fs.rename,
+  path: typeof path
+  mkdir: typeof fs.mkdir
+  rename: (prev: string, next: string) => typeof fs.rename
   packageJson: {
-    name: string,
-  },
+    name: string
+  }
   process: {
     env: {
-      BASE_URL: (value?: string) => string,
+      BASE_URL: (value?: string) => string
     }
   }
 }

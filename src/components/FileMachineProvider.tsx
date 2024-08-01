@@ -135,7 +135,9 @@ export const FileMachineProvider = ({
         const newPath =
           newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
-        await window.electron.rename(oldPath, newPath, {})
+        await window.electron.rename(oldPath, newPath)
+
+        if (!file) { return Promise.reject(new Error('file is not defined')) }
 
         const currentFilePath = window.electron.path.join(file.path, file.name)
         if (oldPath === currentFilePath && project?.path) {
