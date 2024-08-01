@@ -2711,6 +2711,100 @@ const bracket = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not() {
+        let ast = r#"
+fn returnTrue = () => { return !false }
+const t = true
+const f = false
+let notTrue = !t
+let notFalse = !f
+let c = !!true
+let d = !returnTrue()
+// Yup, this is null.
+let myNull = 0 / 0
+let notNull = !myNull
+let notZero = !0
+let notEmptyString = !""
+let obj = { a: 1 }
+let notMember = !obj.a
+// TODO: Add these tests back in when we support these types.
+// let notNan = !NaN
+// let notEmptyArray = ![]
+// let notEmptyObject = !{}
+// let notFunction = !() => { return 1 }
+// let notTag = !$myTag
+// let notPipe = !(1 |> 2)
+// fn identity = (x) => { return x }
+// let notPipeSub = 1 |> identity(!%)
+"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(false),
+            memory
+                .get("notTrue", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(true),
+            memory
+                .get("notFalse", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(true),
+            memory
+                .get("c", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(false),
+            memory
+                .get("d", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(true),
+            memory
+                .get("notNull", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(false),
+            memory
+                .get("notZero", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(false),
+            memory
+                .get("notEmptyString", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+        assert_eq!(
+            serde_json::json!(false),
+            memory
+                .get("notMember", SourceRange::default())
+                .unwrap()
+                .get_json_value()
+                .unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const width = 1 // inch

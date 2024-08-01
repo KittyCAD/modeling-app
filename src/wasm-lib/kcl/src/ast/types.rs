@@ -3095,6 +3095,18 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
+/// Convert JSON value to bool.  Everything is true except for null and false.
+pub fn json_to_bool(j: &serde_json::Value) -> bool {
+    match j {
+        JValue::Null => false,
+        JValue::Bool(b) => *b,
+        JValue::Number(_) => true,
+        JValue::String(_) => true,
+        JValue::Array(_) => true,
+        JValue::Object(_) => true,
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -3235,6 +3247,21 @@ impl UnaryExpression {
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
+        if self.operator == UnaryOperator::Not {
+            let value = self
+                .argument
+                .get_result(memory, dynamic_state, pipe_info, ctx)
+                .await?
+                .get_json_value()?;
+            let negated = !json_to_bool(&value);
+            return Ok(MemoryItem::UserVal(UserVal {
+                value: serde_json::Value::Bool(negated),
+                meta: vec![Metadata {
+                    source_range: self.into(),
+                }],
+            }));
+        }
+
         let num = parse_json_number_as_f64(
             &self
                 .argument
