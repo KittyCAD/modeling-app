@@ -88,101 +88,69 @@ export async function getEventForSelectWithPoint(
     }
   }
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
-  if (!_artifact) {
-    // This logic for getting the parent id is for solid2ds as in edit mode it return the face id
-    // but we don't recognise that in the artifact map because we store the path id when the path is
-    // created, the solid2d is implicitly created with the close stdlib function
-    // there's plans to get the faceId back from the solid2d creation
-    // https://github.com/KittyCAD/engine/issues/2094
-    // at which point we can add it to the artifact map and remove this logic
-    const resp = await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'entity_get_parent_id',
-        entity_id: data.entity_id,
-      },
-      cmd_id: uuidv4(),
-    })
-    const parentId =
-      resp?.success &&
-      resp?.resp?.type === 'modeling' &&
-      resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
-        ? resp?.resp?.data?.modeling_response?.data?.entity_id
-        : ''
-    const parentArtifact = engineCommandManager.artifactGraph.get(parentId)
-    if (parentArtifact) {
-      _artifact = parentArtifact
-    }
-  }
-  if (_artifact) {
-    if (_artifact.type === 'solid2D') {
-      const codeRef = getSolid2dCodeRef(
-        _artifact,
-        engineCommandManager.artifactGraph
-      )
-      if (err(codeRef)) return null
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: { range: codeRef.range, type: 'solid2D' },
-        },
-      }
-    }
-    if (_artifact.type === 'cap') {
-      const codeRef = getCapCodeRef(
-        _artifact,
-        engineCommandManager.artifactGraph
-      )
-      if (err(codeRef)) return null
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: {
-            range: codeRef.range,
-            type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
-          },
-        },
-      }
-    }
-    if (_artifact.type === 'wall') {
-      const codeRef = getWallCodeRef(
-        _artifact,
-        engineCommandManager.artifactGraph
-      )
-      if (err(codeRef)) return null
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: { range: codeRef.range, type: 'extrude-wall' },
-        },
-      }
-    }
-    if (_artifact.type === 'segment') {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: { range: _artifact.codeRef.range, type: 'default' },
-        },
-      }
-    }
-    if (_artifact.type === 'path') {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: { range: _artifact.codeRef.range, type: 'default' },
-        },
-      }
-    }
-  } else {
-    // if we don't recognise the entity, select nothing
+  if (!_artifact)
     return {
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },
+    }
+  if (_artifact.type === 'solid2D') {
+    const codeRef = getSolid2dCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'solid2D' },
+      },
+    }
+  }
+  if (_artifact.type === 'cap') {
+    const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          range: codeRef.range,
+          type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+        },
+      },
+    }
+  }
+  if (_artifact.type === 'wall') {
+    const codeRef = getWallCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'extrude-wall' },
+      },
+    }
+  }
+  if (_artifact.type === 'segment') {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: _artifact.codeRef.range, type: 'default' },
+      },
+    }
+  }
+  if (_artifact.type === 'path') {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: _artifact.codeRef.range, type: 'default' },
+      },
     }
   }
   return null
