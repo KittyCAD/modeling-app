@@ -1,6 +1,6 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
 import { engineCommandManager, kclManager } from 'lib/singletons'
-import { deferExecution } from 'lib/utils'
+import { deferExecution, uuidv4 } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
@@ -55,8 +55,31 @@ export function useSetupEngineManager(
         // We only want to execute the code here that we already have set.
         // Nothing else.
         kclManager.isFirstRender = true
-        return kclManager.executeCode(true).then(() => {
+        return kclManager.executeCode(false).then(async () => {
           kclManager.isFirstRender = false
+          console.log('zooming wait 5s before zoom')
+          await new Promise((resolve) => setTimeout(resolve, 5000))
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+            },
+          })
+          console.log('zooming waiting another 5s before zoom')
+          await new Promise((resolve) => setTimeout(resolve, 5000))
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+            },
+          })
+          console.log('both zooms done ')
         })
       },
       token,
