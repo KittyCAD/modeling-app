@@ -1,9 +1,11 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { Program, ProgramMemory, Value } from '../../lang/wasm'
+import { CallExpression, Program, ProgramMemory } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
-  getNodeFromPath,
+  getLastNodeFromPath,
+  DynamicNode,
+  castDynamicNode,
 } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -13,6 +15,7 @@ import {
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { isArray } from 'lib/utils'
 
 export function horzVertInfo(
   selectionRanges: Selections,
@@ -27,17 +30,22 @@ export function horzVertInfo(
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    const tmp = getLastNodeFromPath(kclManager.ast, pathToNode)
     if (err(tmp)) return tmp
+    if (isArray(tmp.node)) {
+      return new Error('Expected value node, but found array')
+    }
     return tmp.node
   })
-  const _err1 = _nodes.find(err)
-  if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes: DynamicNode[] = []
+  for (const node of _nodes) {
+    if (err(node)) return node
+    nodes.push(node)
+  }
 
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      castDynamicNode<CallExpression>(node, 'CallExpression') &&
       toolTips.includes(node.callee.name as any)
   )
 

@@ -27,6 +27,8 @@ import {
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
   traverse,
+  getLastNodeFromPath,
+  expectNodeOnPath,
 } from './queryAst'
 import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
@@ -36,7 +38,7 @@ import {
   transformAstSketchLines,
 } from './std/sketchcombos'
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
-import { isOverlap, roundOff } from 'lib/utils'
+import { isArray, isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { ConstrainInfo } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
@@ -79,16 +81,12 @@ export function addStartProfileAt(
   pathToNode: PathToNode,
   at: [number, number]
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
-  const _node1 = getNodeFromPath<VariableDeclaration>(
+  const variableDeclaration = expectNodeOnPath<VariableDeclaration>(
     node,
     pathToNode,
     'VariableDeclaration'
   )
-  if (err(_node1)) return _node1
-  const variableDeclaration = _node1.node
-  if (variableDeclaration.type !== 'VariableDeclaration') {
-    return new Error('variableDeclaration.init.type !== PipeExpression')
-  }
+  if (err(variableDeclaration)) return variableDeclaration
   const _node = { ...node }
   const init = variableDeclaration.declarations[0].init
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
@@ -263,7 +261,7 @@ export function extrudeSketch(
     }
   | Error {
   const _node = { ...node }
-  const _node1 = getNodeFromPath(_node, pathToNode)
+  const _node1 = getLastNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
   const { node: sketchExpression } = _node1
 
@@ -274,9 +272,9 @@ export function extrudeSketch(
     'PipeExpression'
   )
   if (err(_node2)) return _node2
-  const { node: pipeExpression } = _node2
+  const { stopAtNode: pipeExpression } = _node2
 
-  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
+  const isInPipeExpression = !!pipeExpression
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
     _node,
@@ -284,7 +282,11 @@ export function extrudeSketch(
     'VariableDeclarator'
   )
   if (err(_node3)) return _node3
-  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
+  const { stopAtNode: variableDeclarator, shallowPath: pathToDecleration } =
+    _node3
+  if (!variableDeclarator) {
+    return new Error('VariableDeclarator not found')
+  }
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
     distance,
@@ -356,34 +358,34 @@ export function sketchOnExtrudedFace(
     node,
     KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
   )
-  const _node1 = getNodeFromPath<VariableDeclarator>(
+  const oldSketchNode = expectNodeOnPath<VariableDeclarator>(
     _node,
     sketchPathToNode,
     'VariableDeclarator',
-    true
+    {
+      firstFound: true,
+      message: 'Old sketch node not found',
+    }
   )
-  if (err(_node1)) return _node1
-  const { node: oldSketchNode } = _node1
+  if (err(oldSketchNode)) return oldSketchNode
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpression>(
+  const expression = expectNodeOnPath<CallExpression>(
     _node,
     sketchPathToNode,
     'CallExpression'
   )
-  if (err(_node2)) return _node2
-  const { node: expression } = _node2
+  if (err(expression)) return expression
 
-  const _node3 = getNodeFromPath<VariableDeclarator>(
+  const extrudeVarDec = expectNodeOnPath<VariableDeclarator>(
     _node,
     extrudePathToNode,
     'VariableDeclarator'
   )
-  if (err(_node3)) return _node3
-  const { node: extrudeVarDec } = _node3
-  const extrudeName = extrudeVarDec.id?.name
+  if (err(extrudeVarDec)) return extrudeVarDec
+  const extrudeName = extrudeVarDec.id.name
 
-  let _tag = null
+  let _tag: Identifier | Literal | null = null
   if (cap === 'none') {
     const __tag = addTagForSketchOnFace(
       {
@@ -678,9 +680,12 @@ export function giveSketchFnCallTag(
     }
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
-  const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-  if (err(_node1)) return _node1
-  const { node: primaryCallExp } = _node1
+  const primaryCallExp = expectNodeOnPath<CallExpression>(
+    ast,
+    path,
+    'CallExpression'
+  )
+  if (err(primaryCallExp)) return primaryCallExp
 
   // Tag is always 3rd expression now, using arg index feels brittle
   // but we can come up with a better way to identify tag later.
@@ -784,27 +789,35 @@ export function deleteSegmentFromPipeExpression(
 ): Program | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
-  dependentRanges.forEach((range) => {
+  for (const range of dependentRanges) {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
 
-    const callExp = getNodeFromPath<CallExpression>(
+    const _callExp = getNodeFromPath<CallExpression>(
       _modifiedAst,
       path,
       'CallExpression',
       true
     )
-    if (err(callExp)) return callExp
+    if (err(_callExp)) return _callExp
+    const callExp = _callExp.stopAtNode
+    if (!callExp) {
+      return new Error('Call Expression not found')
+    }
 
-    const constraintInfo = getConstraintInfo(callExp.node, code, path).find(
+    const constraintInfo = getConstraintInfo(callExp, code, path).find(
       ({ sourceRange }) => isOverlap(sourceRange, range)
     )
-    if (!constraintInfo) return
+    if (!constraintInfo) {
+      return new Error('Constraint Info not found')
+    }
 
     const input = makeRemoveSingleConstraintInput(
       constraintInfo.argPosition,
-      callExp.shallowPath
+      _callExp.shallowPath
     )
-    if (!input) return
+    if (!input) {
+      return new Error('Input not found')
+    }
     const transform = removeSingleConstraintInfo(
       {
         ...input,
@@ -812,11 +825,13 @@ export function deleteSegmentFromPipeExpression(
       _modifiedAst,
       programMemory
     )
-    if (!transform) return
+    if (!transform) {
+      return new Error('Transform not found')
+    }
     _modifiedAst = transform.modifiedAst
-  })
+  }
 
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpression = expectNodeOnPath<PipeExpression>(
     _modifiedAst,
     pathToNode,
     'PipeExpression'
@@ -827,7 +842,7 @@ export function deleteSegmentFromPipeExpression(
     ([_, desc]) => desc === 'PipeExpression'
   )
   const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
-  pipeExpression.node.body.splice(segmentIndexInPipe[0] as number, 1)
+  pipeExpression.body.splice(segmentIndexInPipe[0] as number, 1)
 
   // Move up to the next segment.
   segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
@@ -902,19 +917,23 @@ export async function deleteFromSelection(
   const astClone = structuredClone(ast)
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
-  const varDec = getNodeFromPath<VariableDeclarator>(
+  const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     path,
     'VariableDeclarator'
   )
-  if (err(varDec)) return varDec
+  if (err(_varDec)) return _varDec
+  const { stopAtNode: varDec } = _varDec
+  if (!varDec) {
+    return new Error('VariableDeclarator not found')
+  }
   if (
     (selection.type === 'extrude-wall' ||
       selection.type === 'end-cap' ||
       selection.type === 'start-cap') &&
-    varDec.node.init.type === 'PipeExpression'
+    varDec.init.type === 'PipeExpression'
   ) {
-    const varDecName = varDec.node.id.name
+    const varDecName = varDec.id.name
     let pathToNode: PathToNode | null = null
     let extrudeNameToDelete = ''
     traverse(astClone, {
@@ -976,13 +995,16 @@ export async function deleteFromSelection(
           lastKey: number
         }[] = []
         for (const { path, sketchName } of pathsDependingOnExtrude) {
-          const parent = getNodeFromPath<PipeExpression['body']>(
-            astClone,
-            path.slice(0, -1)
-          )
-          if (err(parent)) {
+          const _parent = getLastNodeFromPath(astClone, path.slice(0, -1))
+          if (err(_parent)) {
             return
           }
+          const { node: parent } = _parent
+          if (!isArray(parent)) {
+            console.error(`Parent is not an array: ${parent}`)
+            return
+          }
+          const pipeBodyItems = parent as PipeExpression['body']
           const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
@@ -1000,7 +1022,7 @@ export async function deleteFromSelection(
           }
           const lastKey = Number(path.slice(-1)[0][0])
           modificationDetails.push({
-            parent: parent.node,
+            parent: pipeBodyItems,
             faceDetails,
             lastKey,
           })
@@ -1048,14 +1070,14 @@ export async function deleteFromSelection(
     }
     // await prom
     return astClone
-  } else if (varDec.node.init.type === 'PipeExpression') {
-    const pipeBody = varDec.node.init.body
+  } else if (varDec.init.type === 'PipeExpression') {
+    const pipeBody = varDec.init.body
     if (
       pipeBody[0].type === 'CallExpression' &&
       pipeBody[0].callee.name === 'startSketchOn'
     ) {
       // remove varDec
-      const varDecIndex = varDec.shallowPath[1][0] as number
+      const varDecIndex = _varDec.shallowPath[1][0] as number
       astClone.body.splice(varDecIndex, 1)
       return astClone
     }

@@ -1,7 +1,7 @@
 import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
-import { uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
 
@@ -15,12 +15,13 @@ import {
   recast,
   SourceRange,
 } from 'lang/wasm'
-import { getNodeFromPath } from './queryAst'
+import { expectNodeOnPath, getLastNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 
 export class KclManager {
   private _ast: Program = {
+    type: 'Program',
     body: [],
     start: 0,
     end: 0,
@@ -156,6 +157,7 @@ export class KclManager {
 
   clearAst() {
     this._ast = {
+      type: 'Program',
       body: [],
       start: 0,
       end: 0,
@@ -313,14 +315,12 @@ export class KclManager {
     Object.entries(this.engineCommandManager.artifactMap).forEach(
       ([commandId, artifact]) => {
         if (!artifact.pathToNode) return
-        const _node1 = getNodeFromPath<CallExpression>(
+        const node = expectNodeOnPath<CallExpression>(
           this.ast,
           artifact.pathToNode,
           'CallExpression'
         )
-        if (err(_node1)) return
-        const { node } = _node1
-        if (node.type !== 'CallExpression') return
+        if (err(node)) return
         const [oldStart, oldEnd] = artifact.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
@@ -392,12 +392,15 @@ export class KclManager {
     let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
-      const _node1 = getNodeFromPath<any>(
+      const _node1 = getLastNodeFromPath(
         astWithUpdatedSource,
         optionalParams?.focusPath
       )
       if (err(_node1)) return Promise.reject(_node1)
       const { node } = _node1
+      if (isArray(node)) {
+        return Promise.reject(new Error('Expected node to not be an array'))
+      }
 
       const { start, end } = node
       if (!start || !end)

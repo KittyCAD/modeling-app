@@ -5,7 +5,7 @@ import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
-import { throttle } from 'lib/utils'
+import { isArray, throttle } from 'lib/utils'
 import {
   sceneInfra,
   kclManager,
@@ -20,13 +20,17 @@ import {
   getParentGroup,
 } from './sceneEntities'
 import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
-import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
+import {
+  expectNodeOnPath,
+  findUsesOfTagInPipe,
+  getLastNodeFromPath,
+  getNodeFromPath,
+} from 'lang/queryAst'
 import {
   CallExpression,
   PathToNode,
   Program,
   SourceRange,
-  Value,
   parse,
   recast,
 } from 'lang/wasm'
@@ -186,13 +190,12 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
-  const _node1 = getNodeFromPath<CallExpression>(
+  const callExpression = expectNodeOnPath<CallExpression>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
   )
-  if (err(_node1)) return
-  const callExpression = _node1.node
+  if (err(callExpression)) return
 
   const constraints = getConstraintInfo(
     callExpression,
@@ -549,13 +552,17 @@ const ConstraintSymbol = ({
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Value>(kclManager.ast, pathToNode),
+    () => getLastNodeFromPath(kclManager.ast, pathToNode),
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
   const node = _node.node
+  if (isArray(node)) {
+    console.error('Expected node, but found an array')
+    return
+  }
 
-  const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+  const range: SourceRange = [node.start, node.end]
 
   if (_type === 'intersectionTag') return null
 

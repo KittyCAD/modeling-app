@@ -1,4 +1,4 @@
-import { getNodeFromPath } from 'lang/queryAst'
+import { getLastNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
 import {
   Program,
@@ -8,9 +8,9 @@ import {
   SourceRange,
   Path,
   PathToNode,
-  Value,
 } from '../wasm'
 import { err } from 'lib/trap'
+import { isArray } from 'lib/utils'
 
 export function getSketchSegmentFromPathToNode(
   sketchGroup: SketchGroup,
@@ -25,11 +25,14 @@ export function getSketchSegmentFromPathToNode(
   // TODO: once pathTodNode is stored on program memory as part of execution,
   // we can check if the pathToNode matches the pathToNode of the sketchGroup.
   // For now we fall back to the sourceRange
-  const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+  const nodeMeta = getLastNodeFromPath(ast, pathToNode)
   if (err(nodeMeta)) return nodeMeta
+  const { node } = nodeMeta
+  if (isArray(node)) {
+    return new Error('Value node expected, but found array')
+  }
 
-  const node = nodeMeta.node
-  if (!node || typeof node.start !== 'number' || !node.end)
+  if (typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
   const sourceRange: SourceRange = [node.start, node.end]
   return getSketchSegmentFromSourceRange(sketchGroup, sourceRange)

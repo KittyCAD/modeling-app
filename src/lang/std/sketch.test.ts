@@ -14,7 +14,11 @@ import {
   SourceRange,
   CallExpression,
 } from '../wasm'
-import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
+import {
+  expectNodeOnPath,
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+} from '../queryAst'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
 
@@ -600,13 +604,13 @@ describe('testing getConstraintInfo', () => {
       ]
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<CallExpression>(
+      const callExp = expectNodeOnPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
       )
       if (err(callExp)) return callExp
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result = getConstraintInfo(callExp, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -754,13 +758,13 @@ describe('testing getConstraintInfo', () => {
       ]
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<CallExpression>(
+      const callExp = expectNodeOnPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
       )
       if (err(callExp)) return callExp
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result = getConstraintInfo(callExp, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -1110,14 +1114,14 @@ describe('testing getConstraintInfo', () => {
       ]
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<CallExpression>(
+      const callExp = expectNodeOnPath<CallExpression>(
         ast,
         pathToNode,
         'CallExpression'
       )
       if (err(callExp)) return callExp
 
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result = getConstraintInfo(callExp, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })

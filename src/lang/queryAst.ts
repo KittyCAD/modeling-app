@@ -19,13 +19,47 @@ import {
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
-import { getAngle } from '../lib/utils'
+import { getAngle, isArray } from '../lib/utils'
 import { getFirstArg } from './std/sketch'
 import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
+import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
+
+export interface DynamicNode {
+  type: SyntaxType
+  // Source range of the node.
+  start: number
+  end: number
+  [index: string]: unknown
+}
+
+function isAstNode(
+  node: any
+): node is { type: SyntaxType; start: number; end: number } {
+  // TODO: Should we check for start and end also?
+  return node && typeof node === 'object' && 'type' in node
+}
+
+/**
+ * Given T and its corresponding SyntaxType, narrow the node to type T if
+ * node.type matches.
+ */
+export function castDynamicNode<T extends DynamicNode>(
+  node: any,
+  syntaxType: SyntaxType | SyntaxType[]
+): node is T {
+  return (
+    node &&
+    typeof node === 'object' &&
+    'type' in node &&
+    (isArray(syntaxType)
+      ? syntaxType.includes(node.type as SyntaxType)
+      : node.type === syntaxType)
+  )
+}
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -33,51 +67,64 @@ import { err } from 'lib/trap'
  * and return the node at the end of this path.
  * By default it will return the node of the deepest "stopAt" type encountered, or the node at the end of the path if no "stopAt" type is provided.
  * If the "returnEarly" flag is set to true, the function will return as soon as a node of the specified type is found.
+ *
+ * If stopAt is provided, it must match T's type property.
  */
-export function getNodeFromPath<T>(
+export function getNodeFromPath<T extends DynamicNode>(
   node: Program,
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false
 ):
   | {
-      node: T
+      node: DynamicNode | unknown[]
+      stopAtNode: T | null
       shallowPath: PathToNode
       deepPath: PathToNode
     }
   | Error {
-  let currentNode = node as any
-  let stopAtNode = null
+  let currentNode: DynamicNode | unknown[] = node
+  let stopAtNode: T | null = null
   let successfulPaths: PathToNode = []
   let pathsExplored: PathToNode = []
   for (const pathItem of path) {
-    if (typeof currentNode[pathItem[0]] !== 'object') {
-      if (stopAtNode) {
+    const pathIndex = pathItem[0]
+    let nextNode: unknown
+    if (currentNode && typeof pathIndex === 'number' && isArray(currentNode)) {
+      nextNode = currentNode[pathIndex]
+    }
+    if (
+      currentNode &&
+      typeof pathIndex === 'string' &&
+      typeof currentNode === 'object' &&
+      !isArray(currentNode)
+    ) {
+      nextNode = currentNode[pathIndex]
+    }
+    if (!isArray(nextNode) && !isAstNode(nextNode)) {
+      if (isAstNode(stopAtNode)) {
         return {
           node: stopAtNode,
+          stopAtNode,
           shallowPath: pathsExplored,
           deepPath: successfulPaths,
         }
       }
       return new Error('not an object')
     }
-    currentNode = currentNode?.[pathItem[0]]
+    currentNode = nextNode
     successfulPaths.push(pathItem)
     if (!stopAtNode) {
       pathsExplored.push(pathItem)
     }
-    if (
-      typeof stopAt !== 'undefined' &&
-      (Array.isArray(stopAt)
-        ? stopAt.includes(currentNode.type)
-        : currentNode.type === stopAt)
-    ) {
+    if (stopAt && castDynamicNode<T>(currentNode, stopAt)) {
       // it will match the deepest node of the type
       // instead of returning at the first match
       stopAtNode = currentNode
       if (returnEarly) {
         return {
           node: stopAtNode,
+          stopAtNode,
           shallowPath: pathsExplored,
           deepPath: successfulPaths,
         }
@@ -86,9 +133,76 @@ export function getNodeFromPath<T>(
   }
   return {
     node: stopAtNode || currentNode,
+    stopAtNode,
     shallowPath: pathsExplored,
     deepPath: successfulPaths,
   }
+}
+
+/**
+ * Returns the terminal node in the given path.  Like getNodeFromPath, but no
+ * stopAt parameter.
+ */
+export function getLastNodeFromPath(
+  node: Program,
+  path: PathToNode
+):
+  | {
+      node: DynamicNode | unknown[]
+    }
+  | Error {
+  const _result = getNodeFromPath<DynamicNode>(node, path)
+  if (err(_result)) return _result
+  return {
+    node: _result.node,
+  }
+}
+
+/**
+ * Returns the terminal node in the given path, and asserts that it's the given
+ * type.
+ */
+export function expectLastNodeFromPath<T extends DynamicNode>(
+  node: Program,
+  path: PathToNode,
+  syntaxType: SyntaxType | SyntaxType[]
+): T | Error {
+  const result = getLastNodeFromPath(node, path)
+  if (err(result)) return result
+  if (!castDynamicNode<T>(result.node, syntaxType)) {
+    return new Error(
+      `Expected node of type ${syntaxType}: found ${JSON.stringify(result)}`
+    )
+  }
+
+  return result.node
+}
+
+/**
+ * Returns the node in the path with the given type.  Like getNodeFromPath, but
+ * if no stopAt node is found, an error is returned instead of null.
+ *
+ * @param {boolean} [options.firstFound=false] if true, return the first node of
+ *   the type found.  The default returns the last node found.
+ * @param {boolean} [options.message] the error message to return if the node is
+ *   not found.
+ */
+export function expectNodeOnPath<T extends DynamicNode>(
+  node: Program,
+  path: PathToNode,
+  syntaxType: SyntaxType,
+  options: { firstFound?: boolean; message?: string } = {
+    firstFound: false,
+  }
+): T | Error {
+  const result = getNodeFromPath<T>(node, path, syntaxType, options.firstFound)
+  if (err(result)) return result
+  if (!result.stopAtNode) {
+    return new Error(
+      options.message ?? `Node of type ${syntaxType} not found in path`
+    )
+  }
+  return result.stopAtNode
 }
 
 /**
@@ -97,21 +211,26 @@ export function getNodeFromPath<T>(
 export function getNodeFromPathCurry(
   node: Program,
   path: PathToNode
-): <T>(
-  stopAt?: SyntaxType | SyntaxType[],
+): <T extends DynamicNode>(
+  stopAt: SyntaxType | SyntaxType[],
   returnEarly?: boolean
 ) =>
   | {
-      node: T
+      node: DynamicNode | unknown[]
+      stopAtNode: T | null
       path: PathToNode
     }
   | Error {
-  return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
+  return <T extends DynamicNode>(
+    stopAt: SyntaxType | SyntaxType[],
+    returnEarly = false
+  ) => {
     const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
     if (err(_node1)) return _node1
-    const { node: _node, shallowPath } = _node1
+    const { node: _node, stopAtNode, shallowPath } = _node1
     return {
       node: _node,
+      stopAtNode,
       path: shallowPath,
     }
   }
@@ -459,9 +578,19 @@ export function findAllPreviousVariablesPath(
 
   const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
 
-  const _node2 = getNodeFromPath<Program['body']>(ast, bodyPath)
+  const _node2 = getLastNodeFromPath(ast, bodyPath)
   if (err(_node2)) {
     console.error(_node2)
+    return {
+      variables: [],
+      bodyPath: [],
+      insertIndex: 0,
+    }
+  }
+  if (!isArray(_node2.node)) {
+    console.error(
+      `Expected node of type array, but found: ${JSON.stringify(_node2)}`
+    )
     return {
       variables: [],
       bodyPath: [],
@@ -471,16 +600,17 @@ export function findAllPreviousVariablesPath(
   const { node: bodyItems } = _node2
 
   const variables: PrevVariable<any>[] = []
-  bodyItems?.forEach?.((item) => {
-    if (item.type !== 'VariableDeclaration' || item.end > startRange) return
+  for (const unknownItem of bodyItems) {
+    const item = unknownItem as BodyItem
+    if (item.type !== 'VariableDeclaration' || item.end > startRange) continue
     const varName = item.declarations[0].id.name
     const varValue = programMemory?.get(varName)
-    if (!varValue || typeof varValue?.value !== type) return
+    if (!varValue || typeof varValue?.value !== type) continue
     variables.push({
       key: varName,
       value: varValue.value,
     })
-  })
+  }
 
   return {
     insertIndex,
@@ -554,7 +684,7 @@ export function isNodeSafeToReplacePath(
     }
     pathToReplaced[1][0] = index + 1
     const startPath = finPath.slice(0, -1)
-    const _nodeToReplace = getNodeFromPath(_ast, startPath)
+    const _nodeToReplace = getLastNodeFromPath(_ast, startPath)
     if (err(_nodeToReplace)) return _nodeToReplace
     const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
@@ -656,7 +786,8 @@ export function isLinesParallelAndConstrained(
       'CallExpression'
     )
     if (err(_secondaryNode)) return _secondaryNode
-    const secondaryNode = _secondaryNode.node
+    const secondaryNode = _secondaryNode.stopAtNode
+    if (!secondaryNode) return new Error('no secondary node found')
     const _varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration')
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
@@ -682,7 +813,7 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
-    // is secordary line fully constrain, or has constrain type of 'angle'
+    // is secondary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getFirstArg(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
@@ -747,8 +878,8 @@ export function doesPipeHaveCallExp({
     console.error(pipeExpressionMeta)
     return false
   }
-  const pipeExpression = pipeExpressionMeta.node
-  if (pipeExpression.type !== 'PipeExpression') return false
+  const pipeExpression = pipeExpressionMeta.stopAtNode
+  if (!pipeExpression) return false
   return pipeExpression.body.some(
     (expression) =>
       expression.type === 'CallExpression' &&
@@ -775,8 +906,8 @@ export function hasExtrudeSketchGroup({
     console.error(varDecMeta)
     return false
   }
-  const varDec = varDecMeta.node
-  if (varDec.type !== 'VariableDeclaration') return false
+  const varDec = varDecMeta.stopAtNode
+  if (!varDec) return false
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
@@ -814,8 +945,8 @@ export function findUsesOfTagInPipe(
     console.error(nodeMeta)
     return []
   }
-  const node = nodeMeta.node
-  if (node.type !== 'CallExpression') return []
+  const node = nodeMeta.stopAtNode
+  if (!node) return []
   const tagIndex = node.callee.name === 'close' ? 1 : 2
   const thirdParam = node.arguments[tagIndex]
   if (
@@ -836,9 +967,14 @@ export function findUsesOfTagInPipe(
     console.error(varDec)
     return []
   }
+  const varDecNode = varDec.stopAtNode
+  if (!varDecNode) {
+    console.error('varDecNode not found')
+    return []
+  }
   const dependentRanges: SourceRange[] = []
 
-  traverse(varDec.node, {
+  traverse(varDecNode, {
     enter: (node) => {
       if (
         node.type !== 'CallExpression' ||
@@ -860,16 +996,16 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const path = getNodePathFromSourceRange(ast, selection.range)
   const _node = getNodeFromPath<PipeExpression>(ast, path, 'PipeExpression')
   if (err(_node)) return false
-  const { node: pipeExpression } = _node
-  if (pipeExpression.type !== 'PipeExpression') return false
+  const { stopAtNode: pipeExpression } = _node
+  if (!pipeExpression) return false
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     path,
     'VariableDeclarator'
   )
   if (err(_varDec)) return false
-  const varDec = _varDec.node
-  if (varDec.type !== 'VariableDeclarator') return false
+  const varDec = _varDec.stopAtNode
+  if (!varDec) return false
   let extruded = false
   traverse(ast as any, {
     enter(node) {

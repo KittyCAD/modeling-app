@@ -5,15 +5,16 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Value, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
   doesPipeHaveCallExp,
+  getLastNodeFromPath,
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
@@ -177,7 +178,11 @@ export function getEventForSegmentSelection(
   )
   if (err(nodeMeta)) return null
 
-  const node = nodeMeta.node
+  const node = nodeMeta.stopAtNode
+  if (!node) {
+    console.error('Call expression not found')
+    return null
+  }
   const range: SourceRange = [node.start, node.end]
   return {
     type: 'Set selection',
@@ -300,7 +305,11 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
       'CallExpression'
     )
     if (err(nodeMeta)) return
-    const node = nodeMeta.node
+    const node = nodeMeta.stopAtNode
+    if (!node) {
+      console.error('Call expression not found')
+      return
+    }
     const groupHasCursor = codeBasedSelections.some((selection) => {
       return isOverlap(selection.range, [node.start, node.end])
     })
@@ -597,9 +606,10 @@ export function updateSelections(
 
   const newSelections = Object.entries(pathToNodeMap)
     .map(([index, pathToNode]): Selection | undefined => {
-      const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+      const nodeMeta = getLastNodeFromPath(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
+      if (isArray(node)) return undefined
       return {
         range: [node.start, node.end],
         type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,

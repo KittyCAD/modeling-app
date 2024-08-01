@@ -1,9 +1,17 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
+import {
+  BinaryPart,
+  CallExpression,
+  Program,
+  VariableDeclarator,
+} from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
-  getNodeFromPath,
+  getLastNodeFromPath,
+  DynamicNode,
+  expectNodeOnPath,
+  castDynamicNode,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
@@ -17,6 +25,7 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { isArray } from 'lib/utils'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -35,26 +44,33 @@ export function angleBetweenInfo({
   )
 
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    const tmp = getLastNodeFromPath(kclManager.ast, pathToNode)
     if (err(tmp)) return tmp
+    if (isArray(tmp.node)) {
+      return new Error('Expected value node, but found array')
+    }
     return tmp.node
   })
-  const _err1 = _nodes.find(err)
-  if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes: DynamicNode[] = []
+  for (const node of _nodes) {
+    if (err(node)) return node
+    nodes.push(node)
+  }
 
   const _varDecs = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<VariableDeclarator>(
+    const varDec = expectNodeOnPath<VariableDeclarator>(
       kclManager.ast,
       pathToNode,
       'VariableDeclarator'
     )
-    if (err(tmp)) return tmp
-    return tmp.node
+    if (err(varDec)) return varDec
+    return varDec
   })
-  const _err2 = _varDecs.find(err)
-  if (err(_err2)) return _err2
-  const varDecs = _varDecs as VariableDeclarator[]
+  const varDecs: VariableDeclarator[] = []
+  for (const varDec of _varDecs) {
+    if (err(varDec)) return varDec
+    varDecs.push(varDec)
+  }
 
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
@@ -63,7 +79,7 @@ export function angleBetweenInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      castDynamicNode<CallExpression>(node, 'CallExpression') &&
       toolTips.includes(node.callee.name as any)
   )
 

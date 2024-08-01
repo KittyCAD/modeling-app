@@ -61,7 +61,11 @@ import {
   codeManager,
   editorManager,
 } from 'lib/singletons'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  expectNodeOnPath,
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+} from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
 import {
   createArcGeometry,
@@ -463,13 +467,13 @@ export class SceneEntities {
       )
 
       let seg: Group
-      const _node1 = getNodeFromPath<CallExpression>(
+      const callExp = expectNodeOnPath<CallExpression>(
         maybeModdedAst,
         segPathToNode,
         'CallExpression'
       )
-      if (err(_node1)) return
-      const callExpName = _node1.node?.callee?.name
+      if (err(callExp)) return
+      const callExpName = callExp.callee.name
 
       if (segment.type === 'TangentialArcTo') {
         seg = tangentialArcToSegment({
@@ -591,7 +595,7 @@ export class SceneEntities {
     )
     if (trap(_node1)) return Promise.reject(_node1)
     const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
+      _node1.stopAtNode?.declarations?.[0]?.id?.name || ''
 
     const sg = kclManager.programMemory.get(
       variableDeclarationName
@@ -728,15 +732,14 @@ export class SceneEntities {
   ) => {
     let _ast = structuredClone(kclManager.ast)
 
-    const _node1 = getNodeFromPath<VariableDeclaration>(
+    const varDec = expectNodeOnPath<VariableDeclaration>(
       _ast,
       sketchPathToNode || [],
       'VariableDeclaration'
     )
-    if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
-    const startSketchOn = _node1.node?.declarations
+    if (trap(varDec)) return Promise.reject(varDec)
+    const variableDeclarationName = varDec.declarations?.[0]?.id?.name || ''
+    const startSketchOn = varDec.declarations
     const startSketchOnInit = startSketchOn?.[0]?.init
 
     const tags: [string, string, string] = [
@@ -769,13 +772,13 @@ export class SceneEntities {
         const pathToNodeTwo = structuredClone(sketchPathToNode)
         pathToNodeTwo[1][0] = 0
 
-        const _node = getNodeFromPath<VariableDeclaration>(
+        const _node = expectNodeOnPath<VariableDeclaration>(
           truncatedAst,
           pathToNodeTwo || [],
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.declarations?.[0]?.init
 
         const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
@@ -817,13 +820,13 @@ export class SceneEntities {
         const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
         const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
 
-        const _node = getNodeFromPath<VariableDeclaration>(
+        const _node = expectNodeOnPath<VariableDeclaration>(
           _ast,
           sketchPathToNode || [],
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.declarations?.[0]?.init
 
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
@@ -1053,15 +1056,12 @@ export class SceneEntities {
     const to: [number, number] = [intersection2d.x, intersection2d.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
-    const _node = getNodeFromPath<CallExpression>(
+    const node = expectNodeOnPath<CallExpression>(
       modifiedAst,
       pathToNode,
       'CallExpression'
     )
-    if (trap(_node)) return
-    const node = _node.node
-
-    if (node.type !== 'CallExpression') return
+    if (trap(node)) return
 
     let modded:
       | {
@@ -1659,13 +1659,12 @@ export class SceneEntities {
         if (parent?.userData?.pathToNode) {
           const updatedAst = parse(recast(kclManager.ast))
           if (trap(updatedAst)) return
-          const _node = getNodeFromPath<CallExpression>(
+          const node = expectNodeOnPath<CallExpression>(
             updatedAst,
             parent.userData.pathToNode,
             'CallExpression'
           )
-          if (trap(_node, { suppress: true })) return
-          const node = _node.node
+          if (trap(node, { suppress: true })) return
           editorManager.setHighlightRange([node.start, node.end])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
@@ -1790,13 +1789,13 @@ function prepareTruncatedMemoryAndAst(
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
   const _ast = structuredClone(ast)
 
-  const _node = getNodeFromPath<VariableDeclaration>(
+  const node = expectNodeOnPath<VariableDeclaration>(
     _ast,
     sketchPathToNode || [],
     'VariableDeclaration'
   )
-  if (err(_node)) return _node
-  const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
+  if (err(node)) return node
+  const variableDeclarationName = node.declarations?.[0]?.id?.name || ''
   const lastSeg = (
     programMemory.get(variableDeclarationName) as SketchGroup
   ).value.slice(-1)[0]
@@ -1851,7 +1850,7 @@ function prepareTruncatedMemoryAndAst(
   }
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
-  let start = _node.node.start
+  let start = node.start
   const programMemoryOverride = programMemory.filterVariables(true, (value) => {
     if (
       !('__meta' in value) ||
@@ -1912,13 +1911,12 @@ export function sketchGroupFromPathToNode({
   ast: Program
   programMemory: ProgramMemory
 }): SketchGroup | Error {
-  const _varDec = getNodeFromPath<VariableDeclarator>(
+  const varDec = expectNodeOnPath<VariableDeclarator>(
     kclManager.ast,
     pathToNode,
     'VariableDeclarator'
   )
-  if (err(_varDec)) return _varDec
-  const varDec = _varDec.node
+  if (err(varDec)) return varDec
   const result = programMemory.get(varDec?.id?.name || '')
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup

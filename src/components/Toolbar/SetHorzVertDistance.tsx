@@ -1,8 +1,15 @@
 import { toolTips } from 'lang/langHelpers'
-import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
+import {
+  BinaryPart,
+  CallExpression,
+  Program,
+  VariableDeclarator,
+} from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
-  getNodeFromPath,
+  getLastNodeFromPath,
+  expectNodeOnPath,
+  castDynamicNode,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
@@ -17,6 +24,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
+import { isArray } from 'lib/utils'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -36,27 +44,31 @@ export function horzVertDistanceInfo({
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    const tmp = getLastNodeFromPath(kclManager.ast, pathToNode)
     if (err(tmp)) return tmp
+    if (isArray(tmp.node)) {
+      return new Error('Expected value node, but found array')
+    }
     return tmp.node
   })
-  const [hasErr, , nodesWErrs] = cleanErrs(_nodes)
+  const [hasErr, nodes, nodesWErrs] = cleanErrs(_nodes)
 
   if (hasErr) return nodesWErrs[0]
-  const nodes = _nodes as Value[]
 
   const _varDecs = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<VariableDeclarator>(
+    const varDec = expectNodeOnPath<VariableDeclarator>(
       kclManager.ast,
       pathToNode,
       'VariableDeclarator'
     )
-    if (err(tmp)) return tmp
-    return tmp.node
+    if (err(varDec)) return varDec
+    return varDec
   })
-  const _err2 = _varDecs.find(err)
-  if (err(_err2)) return _err2
-  const varDecs = _varDecs as VariableDeclarator[]
+  const varDecs: VariableDeclarator[] = []
+  for (const varDec of _varDecs) {
+    if (err(varDec)) return varDec
+    varDecs.push(varDec)
+  }
 
   const primaryLine = varDecs[0]
   const secondaryVarDecs = varDecs.slice(1)
@@ -65,7 +77,7 @@ export function horzVertDistanceInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      castDynamicNode<CallExpression>(node, 'CallExpression') &&
       [
         ...toolTips,
         'startSketchAt', // TODO probably a better place for this to live

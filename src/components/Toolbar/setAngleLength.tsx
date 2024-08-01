@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value } from '../../lang/wasm'
+import { BinaryPart, CallExpression, Program } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -43,18 +43,24 @@ export function angleLengthInfo({
     getNodePathFromSourceRange(kclManager.ast, range)
   )
 
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression')
-  )
-  const _err1 = nodes.find(err)
-  if (err(_err1)) return _err1
-
-  const isAllTooltips = nodes.every((meta) => {
-    if (err(meta)) return false
-    return (
-      meta.node?.type === 'CallExpression' &&
-      toolTips.includes(meta.node.callee.name as any)
+  const _nodes = paths.map((pathToNode) => {
+    const tmp = getNodeFromPath<CallExpression>(
+      kclManager.ast,
+      pathToNode,
+      'CallExpression'
     )
+    if (err(tmp)) return tmp
+    return tmp.stopAtNode
+  })
+  const nodes: (CallExpression | null)[] = []
+  for (const node of _nodes) {
+    if (err(node)) return node
+    nodes.push(node)
+  }
+
+  const isAllTooltips = nodes.every((node) => {
+    if (err(node)) return false
+    return node && toolTips.includes(node.callee.name as any)
   })
 
   const transforms = getTransformInfos(

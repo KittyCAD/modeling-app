@@ -2910,6 +2910,7 @@ let w = f() + f()
                     end: 0,
                     body: Vec::new(),
                     non_code_meta: Default::default(),
+                    ts_type: (),
                     digest: None,
                 },
                 return_type: None,

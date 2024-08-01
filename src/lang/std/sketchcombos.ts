@@ -12,6 +12,9 @@ import {
   ProgramMemory,
 } from '../wasm'
 import {
+  castDynamicNode,
+  expectNodeOnPath,
+  getLastNodeFromPath,
   getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
@@ -39,7 +42,7 @@ import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
-import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
+import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -1225,22 +1228,19 @@ export function removeSingleConstraint({
   objectProperty?: string
   ast: Program
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpression>(
+  const callExp = expectNodeOnPath<CallExpression>(
     ast,
     pathToCallExp,
-    'CallExpression'
+    'CallExpression',
+    { message: 'Invalid node type' }
   )
   if (err(callExp)) {
     console.error(callExp)
     return false
   }
-  if (callExp.node.type !== 'CallExpression') {
-    console.error(new Error('Invalid node type'))
-    return false
-  }
 
   const transform: TransformInfo = {
-    tooltip: callExp.node.callee.name as any,
+    tooltip: callExp.callee.name as any,
     createNode:
       ({ tag, referenceSegName, varValues }) =>
       (_, rawValues) => {
@@ -1264,7 +1264,7 @@ export function removeSingleConstraint({
           })
           const objExp = createObjectExpression(expression)
           return createStdlibCallExpression(
-            callExp.node.callee.name as any,
+            callExp.callee.name as any,
             objExp,
             tag
           )
@@ -1289,7 +1289,7 @@ export function removeSingleConstraint({
             return varValue.value
           })
           return createStdlibCallExpression(
-            callExp.node.callee.name as any,
+            callExp.callee.name as any,
             createArrayExpression(values),
             tag
           )
@@ -1298,7 +1298,7 @@ export function removeSingleConstraint({
         // if (typeof arrayIndex !== 'number' || !objectProperty) must be single value input xLine, yLineTo etc
 
         return createCallWrapper(
-          callExp.node.callee.name as any,
+          callExp.callee.name as any,
           rawValues[0].value,
           tag
         )
@@ -1416,7 +1416,7 @@ export function getTransformInfos(
     getNodePathFromSourceRange(ast, range)
   )
   const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(ast, pathToNode, 'CallExpression')
+    getNodeFromPath<CallExpression>(ast, pathToNode, 'CallExpression')
   )
 
   try {
@@ -1426,9 +1426,8 @@ export function getTransformInfos(
         return false
       }
 
-      const node = nodeMeta.node
-      if (node?.type === 'CallExpression')
-        return getTransformInfo(node, constraintType)
+      const node = nodeMeta.stopAtNode
+      if (node) return getTransformInfo(node, constraintType)
 
       return false
     }) as TransformInfo[]
@@ -1448,9 +1447,7 @@ export function getRemoveConstraintsTransforms(
   const paths = selectionRanges.codeBasedSelections.map((selectionRange) =>
     getNodePathFromSourceRange(ast, selectionRange.range)
   )
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(ast, pathToNode)
-  )
+  const nodes = paths.map((pathToNode) => getLastNodeFromPath(ast, pathToNode))
 
   const theTransforms = nodes.map((nodeMeta) => {
     // Typescript is not smart enough to know node will never be Error
@@ -1461,7 +1458,11 @@ export function getRemoveConstraintsTransforms(
     }
 
     const node = nodeMeta.node
-    if (node?.type === 'CallExpression')
+    if (isArray(node)) {
+      console.error('Expected node, but found Array')
+      return false
+    }
+    if (castDynamicNode<CallExpression>(node, 'CallExpression'))
       return getRemoveConstraintsTransform(node, constraintType)
 
     return false
@@ -1579,15 +1580,17 @@ export function transformAstSketchLines({
 
     const callExp = getNode<CallExpression>('CallExpression')
     if (err(callExp)) return callExp
+    if (!callExp.stopAtNode) return new Error('Call expression not found')
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
+    if (!varDec.stopAtNode) return new Error('Variable declaration not found')
 
-    const firstArg = getFirstArg(callExp.node)
+    const firstArg = getFirstArg(callExp.stopAtNode)
     if (err(firstArg)) return firstArg
-    const callBackTag = callExp.node.arguments[2]
+    const callBackTag = callExp.stopAtNode.arguments[2]
     const _referencedSegmentNameVal =
-      callExp.node.arguments[0]?.type === 'ObjectExpression' &&
-      callExp.node.arguments[0].properties?.find(
+      callExp.stopAtNode.arguments[0]?.type === 'ObjectExpression' &&
+      callExp.stopAtNode.arguments[0].properties?.find(
         (prop) => prop.key.name === 'intersectTag'
       )?.value
     const _referencedSegmentName =
@@ -1601,7 +1604,7 @@ export function transformAstSketchLines({
 
     const varValues: VarValues = []
 
-    getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
+    getConstraintInfo(callExp.stopAtNode, '', _pathToNode).forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
         a.type === 'horizontal' ||
@@ -1609,33 +1612,46 @@ export function transformAstSketchLines({
       )
         return
 
-      const nodeMeta = getNodeFromPath<Value>(ast, a.pathToNode)
+      const nodeMeta = getLastNodeFromPath(ast, a.pathToNode)
       if (err(nodeMeta)) return
 
+      // TODO: Assert that the node is a valid value.
       if (a?.argPosition?.type === 'arrayItem') {
+        if (isArray(nodeMeta.node)) {
+          console.log('Expected Value, but found Array')
+          return
+        }
         varValues.push({
           type: 'arrayItem',
           index: a.argPosition.index,
-          value: nodeMeta.node,
+          value: nodeMeta.node as Value,
           argType: a.type,
         })
       } else if (a?.argPosition?.type === 'objectProperty') {
+        if (isArray(nodeMeta.node)) {
+          console.log('Expected Value, but found Array')
+          return
+        }
         varValues.push({
           type: 'objectProperty',
           key: a.argPosition.key,
-          value: nodeMeta.node,
+          value: nodeMeta.node as Value,
           argType: a.type,
         })
       } else if (a?.argPosition?.type === 'singleValue') {
+        if (isArray(nodeMeta.node)) {
+          console.log('Expected Value, but found Array')
+          return
+        }
         varValues.push({
           type: 'singleValue',
           argType: a.type,
-          value: nodeMeta.node,
+          value: nodeMeta.node as Value,
         })
       }
     })
 
-    const varName = varDec.node.id.name
+    const varName = varDec.stopAtNode.id.name
     let sketchGroup = programMemory.get(varName)
     if (sketchGroup?.type === 'ExtrudeGroup') {
       sketchGroup = sketchGroup.sketchGroup
@@ -1669,7 +1685,7 @@ export function transformAstSketchLines({
       programMemory,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (callExp.node.callee.name as ToolTip),
+      fnName: transformTo || (callExp.stopAtNode.callee.name as ToolTip),
       to,
       from,
       createCallback: callBack({
@@ -1743,15 +1759,14 @@ export function getConstraintLevelFromSourceRange(
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
-  const nodeMeta = getNodeFromPath<CallExpression>(
+  const sketchFnExp = expectNodeOnPath<CallExpression>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'
   )
-  if (err(nodeMeta)) return nodeMeta
+  if (err(sketchFnExp)) return sketchFnExp
 
-  const { node: sketchFnExp } = nodeMeta
-  const name = sketchFnExp?.callee?.name as ToolTip
+  const name = sketchFnExp.callee.name as ToolTip
   const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
   if (!toolTips.includes(name)) return { level: 'free', range: range }
 
