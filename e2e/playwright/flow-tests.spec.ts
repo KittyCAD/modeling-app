@@ -7298,7 +7298,7 @@ test.describe('Test network and connection issues', () => {
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
     |> line([-8.84, 8.75], %)
-    |> line([-2.41, 0], %)`)
+    |> line([-5.6, 0], %)`)
 
     // Unequip line tool
     await page.keyboard.press('Escape')
