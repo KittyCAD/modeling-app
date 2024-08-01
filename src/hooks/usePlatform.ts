@@ -1,14 +1,14 @@
 import { isDesktop } from 'lib/isDesktop'
 import { useEffect, useState } from 'react'
 
-export type Platform = 'macos' | 'windows' | 'linux'
+export type Platform = 'macos' | 'windows' | 'linux' | ''
 
 export default function usePlatform() {
-  const [platformName, setPlatformName] = useState<Platform | ''>('')
+  const [platformName, setPlatformName] = useState<Platform>('')
 
   useEffect(() => {
     async function getPlatform() {
-      setPlatformName(window.electron.platform)
+      setPlatformName((window.electron.platform ?? '') as Platform)
     }
 
     if (isDesktop()) {

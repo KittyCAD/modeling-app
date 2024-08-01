@@ -137,7 +137,9 @@ export const FileMachineProvider = ({
 
         await window.electron.rename(oldPath, newPath)
 
-        if (!file) { return Promise.reject(new Error('file is not defined')) }
+        if (!file) {
+          return Promise.reject(new Error('file is not defined'))
+        }
 
         const currentFilePath = window.electron.path.join(file.path, file.name)
         if (oldPath === currentFilePath && project?.path) {

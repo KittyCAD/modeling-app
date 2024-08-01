@@ -118,14 +118,14 @@ export const fileLoader: LoaderFunction = async (
     fileSystemManager.dir = project_path
 
     const defaultProjectData = {
-            name: project_name || 'unnamed',
-            path: project_path,
-            children: [],
-            kcl_file_count: 0,
-            directory_count: 0,
-            metadata: null,
-            default_file: project_path,
-          }
+      name: project_name || 'unnamed',
+      path: project_path,
+      children: [],
+      kcl_file_count: 0,
+      directory_count: 0,
+      metadata: null,
+      default_file: project_path,
+    }
 
     const projectData: IndexLoaderData = {
       code,

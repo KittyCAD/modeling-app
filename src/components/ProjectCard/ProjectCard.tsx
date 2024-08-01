@@ -114,7 +114,7 @@ function ProjectCard({
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
             {project.metadata && project.metadata.modified
-              ? getDisplayedTime(project.metadata.modified.toString())
+              ? getDisplayedTime(parseInt(project.metadata.modified))
               : 'never'}
           </span>
         </div>

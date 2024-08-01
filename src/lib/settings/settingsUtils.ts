@@ -105,7 +105,7 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile(): Configuration | Error {
+export function readLocalStorageAppSettingsFile(): Partial<SaveSettingsPayload> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -129,7 +129,9 @@ export function readLocalStorageAppSettingsFile(): Configuration | Error {
   }
 }
 
-function readLocalStorageProjectSettingsFile(): Partial<SaveSettingsPayload> | Error {
+function readLocalStorageProjectSettingsFile():
+  | Partial<SaveSettingsPayload>
+  | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
@@ -151,8 +153,8 @@ function readLocalStorageProjectSettingsFile(): Partial<SaveSettingsPayload> | E
 }
 
 export interface AppSettings {
-  settings: ReturnType<typeof createSettings>
-  configuration: Configuration
+  settings: ReturnType<typeof createSettings>,
+  configuration: Partial<SaveSettingsPayload>
 }
 
 export async function loadAndValidateSettings(
@@ -204,10 +206,10 @@ export async function saveSettings(
   if (err(tomlString)) return
 
   // Parse this as a Configuration.
-  const appSettings = { settings: parseAppSettings(tomlString) }
+  const appSettings = parseAppSettings(tomlString)
   if (err(appSettings)) return
 
-  const tomlString2 = tomlStringify(appSettings)
+  const tomlString2 = tomlStringify({ settings: appSettings })
   if (err(tomlString2)) return
 
   // Write the app settings.
@@ -237,10 +239,10 @@ export async function saveSettings(
 
   // Write the project settings.
   if (onDesktop) {
-    await writeProjectSettingsFile({
+    await writeProjectSettingsFile(
       projectPath,
-      configuration: { settings: projectSettings },
-    })
+      projectSettings,
+    )
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
   }

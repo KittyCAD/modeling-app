@@ -196,7 +196,9 @@ export const AllSettingsFields = forwardRef(
                       projectPath ? decodeURIComponent(projectPath) : undefined
                     )
                     const finalPath = paths[searchParamTab]
-                    if (!finalPath) { return new Error('finalPath undefined') }
+                    if (!finalPath) {
+                      return new Error('finalPath undefined')
+                    }
                     window.electron.showInFolder(finalPath)
                   }}
                   iconStart={{

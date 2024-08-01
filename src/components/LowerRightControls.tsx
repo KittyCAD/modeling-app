@@ -26,7 +26,10 @@ export function LowerRightControls({
 
   const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
 
-  async function reportbug(event: { preventDefault: () => void, stopPropagation: () => void }) {
+  async function reportbug(event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) {
     event?.preventDefault()
     event?.stopPropagation()
 

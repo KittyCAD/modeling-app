@@ -6,6 +6,7 @@ import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { getUser as getUserDesktop } from 'lib/desktop'
 
 const SKIP_AUTH =
+  // @ts-ignore
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
 
 const LOCAL_USER: Models['User_type'] = {

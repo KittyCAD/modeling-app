@@ -142,7 +142,9 @@ function HelpMenuItem({
       {as === 'a' ? (
         <a
           {...(props as React.ComponentProps<'a'>)}
-          onClick={openExternalBrowserIfDesktop((props as React.ComponentProps<'a'>).href)}
+          onClick={openExternalBrowserIfDesktop(
+            (props as React.ComponentProps<'a'>).href
+          )}
           className={`no-underline text-inherit ${baseClassName} ${className}`}
         >
           {children}
