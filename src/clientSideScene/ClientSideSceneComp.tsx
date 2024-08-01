@@ -557,12 +557,8 @@ const ConstraintSymbol = ({
   )
   if (err(_node)) return
   const node = _node.node
-  if (isArray(node)) {
-    console.error('Expected node, but found an array')
-    return
-  }
 
-  const range: SourceRange = [node.start, node.end]
+  const range: SourceRange = !isArray(node) ? [node.start, node.end] : [0, 0]
 
   if (_type === 'intersectionTag') return null
 

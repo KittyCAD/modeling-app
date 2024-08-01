@@ -62,6 +62,7 @@ import {
   editorManager,
 } from 'lib/singletons'
 import {
+  castDynamicNode,
   expectNodeOnPath,
   getNodeFromPath,
   getNodePathFromSourceRange,
@@ -81,7 +82,13 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
+import {
+  isArray,
+  isOverlap,
+  normaliseAngle,
+  roundOff,
+  throttle,
+} from 'lib/utils'
 import {
   addStartProfileAt,
   createArrayExpression,
@@ -467,13 +474,18 @@ export class SceneEntities {
       )
 
       let seg: Group
-      const callExp = expectNodeOnPath<CallExpression>(
+      const callExp = getNodeFromPath<CallExpression>(
         maybeModdedAst,
         segPathToNode,
         'CallExpression'
       )
       if (err(callExp)) return
-      const callExpName = callExp.callee.name
+      const callExpName = castDynamicNode<CallExpression>(
+        callExp.node,
+        'CallExpression'
+      )
+        ? callExp.node.callee.name
+        : ''
 
       if (segment.type === 'TangentialArcTo') {
         seg = tangentialArcToSegment({
@@ -594,8 +606,12 @@ export class SceneEntities {
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.stopAtNode?.declarations?.[0]?.id?.name || ''
+    const variableDeclarationName = castDynamicNode<VariableDeclaration>(
+      _node1.node,
+      'VariableDeclaration'
+    )
+      ? _node1.node.declarations[0]?.id?.name || ''
+      : ''
 
     const sg = kclManager.programMemory.get(
       variableDeclarationName
@@ -772,18 +788,23 @@ export class SceneEntities {
         const pathToNodeTwo = structuredClone(sketchPathToNode)
         pathToNodeTwo[1][0] = 0
 
-        const _node = expectNodeOnPath<VariableDeclaration>(
+        const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           pathToNodeTwo || [],
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.declarations?.[0]?.init
+        const sketchInit = castDynamicNode<VariableDeclaration>(
+          _node.node,
+          'VariableDeclaration'
+        )
+          ? _node.node.declarations[0]?.init
+          : null
 
         const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
 
-        if (sketchInit.type === 'PipeExpression') {
+        if (sketchInit?.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
         }
 
@@ -820,15 +841,20 @@ export class SceneEntities {
         const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
         const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
 
-        const _node = expectNodeOnPath<VariableDeclaration>(
+        const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           sketchPathToNode || [],
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.declarations?.[0]?.init
+        const sketchInit = castDynamicNode<VariableDeclaration>(
+          _node.node,
+          'VariableDeclaration'
+        )
+          ? _node.node.declarations[0]?.init
+          : null
 
-        if (sketchInit.type === 'PipeExpression') {
+        if (sketchInit?.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
           let _recastAst = parse(recast(_ast))
@@ -1056,12 +1082,15 @@ export class SceneEntities {
     const to: [number, number] = [intersection2d.x, intersection2d.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
-    const node = expectNodeOnPath<CallExpression>(
+    const _node = getNodeFromPath<CallExpression>(
       modifiedAst,
       pathToNode,
       'CallExpression'
     )
-    if (trap(node)) return
+    if (trap(_node)) return
+    const node = _node.node
+
+    if (isArray(node) || node.type !== 'CallExpression') return
 
     let modded:
       | {
@@ -1659,13 +1688,16 @@ export class SceneEntities {
         if (parent?.userData?.pathToNode) {
           const updatedAst = parse(recast(kclManager.ast))
           if (trap(updatedAst)) return
-          const node = expectNodeOnPath<CallExpression>(
+          const _node = getNodeFromPath<CallExpression>(
             updatedAst,
             parent.userData.pathToNode,
             'CallExpression'
           )
-          if (trap(node, { suppress: true })) return
-          editorManager.setHighlightRange([node.start, node.end])
+          if (trap(_node, { suppress: true })) return
+          const node = _node.node
+          editorManager.setHighlightRange(
+            !isArray(node) ? [node.start, node.end] : [0, 0]
+          )
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -1789,13 +1821,20 @@ function prepareTruncatedMemoryAndAst(
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
   const _ast = structuredClone(ast)
 
-  const node = expectNodeOnPath<VariableDeclaration>(
+  const _node = getNodeFromPath<VariableDeclaration>(
     _ast,
     sketchPathToNode || [],
     'VariableDeclaration'
   )
-  if (err(node)) return node
-  const variableDeclarationName = node.declarations?.[0]?.id?.name || ''
+  if (err(_node)) return _node
+  if (isArray(_node.node))
+    return new Error('Expected node to be an object, but found Array')
+  const variableDeclarationName = castDynamicNode<VariableDeclaration>(
+    _node.node,
+    'VariableDeclaration'
+  )
+    ? _node.node.declarations[0]?.id?.name || ''
+    : ''
   const lastSeg = (
     programMemory.get(variableDeclarationName) as SketchGroup
   ).value.slice(-1)[0]
@@ -1850,7 +1889,7 @@ function prepareTruncatedMemoryAndAst(
   }
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
-  let start = node.start
+  let start = _node.node.start
   const programMemoryOverride = programMemory.filterVariables(true, (value) => {
     if (
       !('__meta' in value) ||
@@ -1911,13 +1950,22 @@ export function sketchGroupFromPathToNode({
   ast: Program
   programMemory: ProgramMemory
 }): SketchGroup | Error {
-  const varDec = expectNodeOnPath<VariableDeclarator>(
+  const _varDec = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     pathToNode,
     'VariableDeclarator'
   )
-  if (err(varDec)) return varDec
-  const result = programMemory.get(varDec?.id?.name || '')
+  if (err(_varDec)) return _varDec
+  const varDec = _varDec.node
+  if (isArray(varDec))
+    return new Error('Expected node to be an object, but found Array')
+  const varName = castDynamicNode<VariableDeclarator>(
+    varDec,
+    'VariableDeclarator'
+  )
+    ? varDec.id.name
+    : ''
+  const result = programMemory.get(varName)
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }
