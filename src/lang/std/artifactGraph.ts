@@ -136,6 +136,10 @@ export interface OrderedCommand {
   range: SourceRange
 }
 
+/** Creates a graph of artifacts from a list of ordered commands and their responses
+ * muting the Map should happen entirely this function, other functions called within
+ * should return data on how to update the map, and not do so directly.
+ */
 export function createArtifactGraph({
   orderedCommands,
   responseMap,
@@ -146,6 +150,8 @@ export function createArtifactGraph({
   ast: Program
 }) {
   const myMap = new Map<string, Artifact>()
+
+  /** see docstring for {@link getArtifactsToUpdate} as to why this is needed */
   let currentPlaneId = ''
 
   orderedCommands.forEach((orderedCommand) => {
@@ -157,14 +163,14 @@ export function createArtifactGraph({
         currentPlaneId = ''
       }
     }
-    const modArr = getArtifactsToUpdate({
+    const artifactsToUpdate = getArtifactsToUpdate({
       orderedCommand,
       responseMap,
       getArtifact: (id: string) => myMap.get(id),
       currentPlaneId,
       ast,
     })
-    modArr.forEach(({ id, artifact }) => {
+    artifactsToUpdate.forEach(({ id, artifact }) => {
       const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
       myMap.set(id, mergedArtifact)
     })
@@ -172,26 +178,30 @@ export function createArtifactGraph({
   return myMap
 }
 
-
+/** Merges two artifacts, since our artifacts only contain strings and arrays of string for values we coerce that
+ * but maybe types can be improved here.
+ */
 function mergeArtifacts(
   oldArtifact: Artifact | undefined,
-  newArtifact: Artifact,
+  newArtifact: Artifact
 ): Artifact {
   // only has string and array of strings
-  interface GenericArtifact {[key: string]: string | Array<string>}
+  interface GenericArtifact {
+    [key: string]: string | Array<string>
+  }
   if (!oldArtifact) return newArtifact
   // merging artifacts of different types should never happen, but if it does, just return the new artifact
   if (oldArtifact.type !== newArtifact.type) return newArtifact
   const _oldArtifact = oldArtifact as any as GenericArtifact
   const mergedArtifact = { ...oldArtifact, ...newArtifact } as GenericArtifact
-  Object.entries(newArtifact as any as GenericArtifact).forEach(([propName, value]) => {
-    const otherValue = _oldArtifact[propName]
-    if (Array.isArray(value) && Array.isArray(otherValue)) {
-      mergedArtifact[propName] = [
-        ...new Set([...otherValue, ...value]),
-      ]
+  Object.entries(newArtifact as any as GenericArtifact).forEach(
+    ([propName, value]) => {
+      const otherValue = _oldArtifact[propName]
+      if (Array.isArray(value) && Array.isArray(otherValue)) {
+        mergedArtifact[propName] = [...new Set([...otherValue, ...value])]
+      }
     }
-  })
+  )
   return mergedArtifact as any as Artifact
 }
 
