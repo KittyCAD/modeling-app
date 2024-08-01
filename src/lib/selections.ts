@@ -135,16 +135,7 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  if (_artifact.type === 'segment') {
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: _artifact.codeRef.range, type: 'default' },
-      },
-    }
-  }
-  if (_artifact.type === 'path') {
+  if (_artifact.type === 'segment' || _artifact.type === 'path') {
     return {
       type: 'Set selection',
       data: {
