@@ -19,6 +19,7 @@ pub struct HelixData {
     /// Number of revolutions.
     pub revolutions: f64,
     /// Start angle (in degrees).
+    #[serde(rename = "angleStart", alias = "angle_start")]
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     /// The default is `false`.
@@ -44,10 +45,9 @@ pub async fn helix(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> circle([5, 5], 10, %)
 ///   |> extrude(10, %)
 ///   |> helix({
-///     angle_start: 0,
+///     angleStart: 0,
 ///     ccw: true,
 ///     revolutions: 16,
-///     angle_start: 0
 ///  }, %)
 /// ```
 #[stdlib {
@@ -59,7 +59,7 @@ async fn inner_helix(
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::EntityMakeHelix {
             cylinder_id: extrude_group.id,

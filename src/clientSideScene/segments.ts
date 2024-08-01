@@ -21,6 +21,7 @@ import {
   Vector3,
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -36,8 +37,14 @@ import {
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
-import { ARROWHEAD } from './sceneInfra'
+import {
+  ARROWHEAD,
+  SEGMENT_LENGTH_LABEL,
+  SEGMENT_LENGTH_LABEL_OFFSET_PX,
+  SEGMENT_LENGTH_LABEL_TEXT,
+} from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
+import { roundOff } from 'lib/utils'
 
 export function profileStart({
   from,
@@ -45,18 +52,21 @@ export function profileStart({
   pathToNode,
   scale = 1,
   theme,
+  isSelected,
 }: {
   from: Coords2d
   id: string
   pathToNode: PathToNode
   scale?: number
   theme: Themes
+  isSelected?: boolean
 }) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
   group.add(mesh)
@@ -66,7 +76,8 @@ export function profileStart({
     id,
     from,
     pathToNode,
-    isSelected: false,
+    isSelected,
+    baseColor,
   }
   group.name = PROFILE_START
   group.position.set(from[0], from[1], 0)
@@ -84,6 +95,7 @@ export function straightSegment({
   callExpName,
   texture,
   theme,
+  isSelected = false,
 }: {
   from: Coords2d
   to: Coords2d
@@ -94,8 +106,9 @@ export function straightSegment({
   callExpName: string
   texture: Texture
   theme: Themes
+  isSelected?: boolean
 }): Group {
-  const group = new Group()
+  const segmentGroup = new Group()
 
   const shape = new Shape()
   shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
@@ -119,59 +132,84 @@ export function straightSegment({
 
   const baseColor =
     callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
     : STRAIGHT_SEGMENT_BODY
   mesh.name = STRAIGHT_SEGMENT_BODY
 
-  group.userData = {
+  segmentGroup.userData = {
     type: STRAIGHT_SEGMENT,
     id,
     from,
     to,
     pathToNode,
-    isSelected: false,
+    isSelected,
     callExpName,
     baseColor,
   }
-  group.name = STRAIGHT_SEGMENT
+  segmentGroup.name = STRAIGHT_SEGMENT
+  segmentGroup.add(mesh)
 
   const length = Math.sqrt(
     Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
   )
-  const arrowGroup = createArrowhead(scale, theme)
-  arrowGroup.position.set(to[0], to[1], 0)
-  const dir = new Vector3()
-    .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
-    .normalize()
-  arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
   const pxLength = length / scale
   const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
-  arrowGroup.visible = !shouldHide
 
-  group.add(mesh)
-  if (callExpName !== 'close') group.add(arrowGroup)
-
+  // All segment types get an extra segment handle,
+  // Which is a little plus sign that appears at the origin of the segment
+  // and can be dragged to insert a new segment
   const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
-    .normalize()
-    .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
+  const directionVector = new Vector2(
+    to[0] - from[0],
+    to[1] - from[1]
+  ).normalize()
+  const offsetFromBase = directionVector.multiplyScalar(
+    EXTRA_SEGMENT_OFFSET_PX * scale
+  )
   extraSegmentGroup.position.set(
     from[0] + offsetFromBase.x,
     from[1] + offsetFromBase.y,
     0
   )
   extraSegmentGroup.visible = !shouldHide
-  group.add(extraSegmentGroup)
+  segmentGroup.add(extraSegmentGroup)
 
-  return group
+  // Segment decorators that only apply to non-close segments
+  if (callExpName !== 'close') {
+    // an arrowhead that appears at the end of the segment
+    const arrowGroup = createArrowhead(scale, theme, color)
+    arrowGroup.position.set(to[0], to[1], 0)
+    const dir = new Vector3()
+      .subVectors(
+        new Vector3(to[0], to[1], 0),
+        new Vector3(from[0], from[1], 0)
+      )
+      .normalize()
+    arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+    arrowGroup.visible = !shouldHide
+    segmentGroup.add(arrowGroup)
+
+    // A length indicator that appears at the midpoint of the segment
+    const lengthIndicatorGroup = createLengthIndicator({
+      from,
+      to,
+      scale,
+      length,
+    })
+    segmentGroup.add(lengthIndicatorGroup)
+  }
+
+  return segmentGroup
 }
 
-function createArrowhead(scale = 1, theme: Themes): Group {
+function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
+  const baseColor = getThemeColorForThreeJs(theme)
   const arrowMaterial = new MeshBasicMaterial({
-    color: getThemeColorForThreeJs(theme),
+    color: color || baseColor,
   })
   // specify the size of the geometry in pixels (i.e. cone height = 20px, cone radius = 4.5px)
   // we'll scale the group to the correct size later to match these sizes in screen space
@@ -222,6 +260,46 @@ function createExtraSegmentHandle(
   return extraSegmentGroup
 }
 
+/**
+ * Creates a group containing a CSS2DObject with the length of the segment
+ */
+function createLengthIndicator({
+  from,
+  to,
+  scale,
+  length,
+}: {
+  from: Coords2d
+  to: Coords2d
+  scale: number
+  length: number
+}) {
+  const lengthIndicatorGroup = new Group()
+  lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
+
+  // Make the elements
+  const lengthIndicatorText = document.createElement('p')
+  lengthIndicatorText.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+  lengthIndicatorText.innerText = roundOff(length).toString()
+  const lengthIndicatorWrapper = document.createElement('div')
+
+  // Style the elements
+  lengthIndicatorWrapper.style.position = 'absolute'
+  lengthIndicatorWrapper.appendChild(lengthIndicatorText)
+  const cssObject = new CSS2DObject(lengthIndicatorWrapper)
+  cssObject.name = SEGMENT_LENGTH_LABEL_TEXT
+
+  // Position the elements based on the line's heading
+  const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .rotateAround(new Vector2(0, 0), -Math.PI / 2)
+    .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
+  lengthIndicatorText.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
+  lengthIndicatorText.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
+  lengthIndicatorGroup.add(cssObject)
+  return lengthIndicatorGroup
+}
+
 export function tangentialArcToSegment({
   prevSegment,
   from,
@@ -232,6 +310,7 @@ export function tangentialArcToSegment({
   scale = 1,
   texture,
   theme,
+  isSelected,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -242,6 +321,7 @@ export function tangentialArcToSegment({
   scale?: number
   texture: Texture
   theme: Themes
+  isSelected?: boolean
 }): Group {
   const group = new Group()
 
@@ -273,7 +353,8 @@ export function tangentialArcToSegment({
   })
 
   const baseColor = getThemeColorForThreeJs(theme)
-  const body = new MeshBasicMaterial({ color: baseColor })
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -286,12 +367,12 @@ export function tangentialArcToSegment({
     to,
     prevSegment,
     pathToNode,
-    isSelected: false,
+    isSelected,
     baseColor,
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
 
-  const arrowGroup = createArrowhead(scale, theme)
+  const arrowGroup = createArrowhead(scale, theme, color)
   arrowGroup.position.set(to[0], to[1], 0)
   const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
   arrowGroup.quaternion.setFromUnitVectors(

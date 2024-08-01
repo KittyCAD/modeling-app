@@ -13,6 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
+  CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
 concurrency:
@@ -110,8 +111,14 @@ jobs:
           echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
             '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
+      - name: Set updater test version
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        run: |
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
+            '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+
       - uses: actions/upload-artifact@v3
-        if: github.event_name == 'schedule'
+        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
         with:
           path: |
             package.json
@@ -138,6 +145,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
+        if: github.event_name == 'schedule'
 
       - name: Copy updated .json files
         if: github.event_name == 'schedule'
@@ -180,9 +188,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # TODO: re-enable for Windows builds, see https://github.com/tauri-apps/tauri/issues/9045
       - name: Setup Rust cache
-        if: matrix.os != 'windows-latest'
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
@@ -240,12 +246,8 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        with:
-          includeRelease: false
-          includeDebug: true
-          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build for Mac TestFlight (nightly)
         if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
@@ -338,7 +340,6 @@ jobs:
       # specific and we want to overwrite it with the this new build after and
       # not upload the apple store build to the public bucket
       - name: Build the app (release) and sign
-        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -350,8 +351,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
-        with:
-          args: "${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
@@ -384,7 +384,33 @@ jobs:
           E2E_TAURI_ENABLED: true
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
+      - uses: actions/download-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+
+      - name: Copy updated .json file for updater test
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        run: |
+          ls -l artifact
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+          cat src-tauri/tauri.release.conf.json
+
+      - name: Build the app (release, updater test)
+        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
+        env:
+          TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+          TAURI_BUNDLE_ARGS: "-b ${{ matrix.os == 'windows-latest' && 'msi' || 'dmg' }}"
+        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }} ${{ env.TAURI_ARGS_MACOS }}"
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
+        with:
+          path: "${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg' || 'src-tauri/target/release/bundle/msi/*.msi' }}"
+          name: updater-test
+
+
   publish-apps-release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]

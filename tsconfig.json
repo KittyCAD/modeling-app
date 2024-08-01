@@ -2,6 +2,9 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
+      "@kittycad/codemirror-lsp-client": [
+        "../packages/codemirror-lsp-client/src/index.ts"
+      ],
       "/*": ["src/*"]
     },
     "types": [
@@ -9,7 +12,8 @@
       "@types/wicg-file-system-access",
       "node",
       "@wdio/globals/types",
-      "mocha"
+      "mocha",
+      "@lezer/generator"
     ],
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -23,10 +27,12 @@
     "module": "ES2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "composite": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "./*.ts"],
+  "include": ["src", "e2e", "packages", "./*.ts"],
+  "exclude": ["node_modules", "./*.grammar"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

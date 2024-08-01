@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 
-use super::{Literal, Value};
+use crate::ast::types::{Literal, Value};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -14,6 +14,23 @@ pub enum LiteralValue {
     Fractional(f64),
     String(String),
     Bool(bool),
+}
+
+impl LiteralValue {
+    pub fn digestable_id(&self) -> Vec<u8> {
+        match self {
+            LiteralValue::IInteger(i) => i.to_ne_bytes().into(),
+            LiteralValue::Fractional(frac) => frac.to_ne_bytes().into(),
+            LiteralValue::String(st) => st.as_bytes().into(),
+            LiteralValue::Bool(b) => {
+                if *b {
+                    vec![1]
+                } else {
+                    vec![0]
+                }
+            }
+        }
+    }
 }
 
 impl From<Literal> for Value {

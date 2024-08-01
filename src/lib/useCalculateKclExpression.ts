@@ -3,9 +3,10 @@ import { kclManager, engineCommandManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { Value, parse } from 'lang/wasm'
+import { ProgramMemory, Value, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
+import { err, trap } from 'lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -59,9 +60,8 @@ export function useCalculateKclExpression({
   }, [])
 
   useEffect(() => {
-    const allVarNames = Object.keys(programMemory.root)
     if (
-      allVarNames.includes(newVariableName) ||
+      programMemory.has(newVariableName) ||
       newVariableName === '' ||
       !isValidVariableName(newVariableName)
     ) {
@@ -85,17 +85,23 @@ export function useCalculateKclExpression({
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
       const ast = parse(_code)
-      const _programMem: any = { root: {}, return: null }
-      availableVarInfo.variables.forEach(({ key, value }) => {
-        _programMem.root[key] = { type: 'userVal', value, __meta: [] }
-      })
+      if (err(ast)) return
+      if (trap(ast, { suppress: true })) return
+
+      const _programMem: ProgramMemory = ProgramMemory.empty()
+      for (const { key, value } of availableVarInfo.variables) {
+        const error = _programMem.set(key, {
+          type: 'UserVal',
+          value,
+          __meta: [],
+        })
+        if (trap(error, { suppress: true })) return
+      }
       const { programMemory } = await executeAst({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
-        programMemoryOverride: JSON.parse(
-          JSON.stringify(kclManager.programMemory)
-        ),
+        programMemoryOverride: kclManager.programMemory.clone(),
       })
       const resultDeclaration = ast.body.find(
         (a) =>
@@ -105,7 +111,7 @@ export function useCalculateKclExpression({
       const init =
         resultDeclaration?.type === 'VariableDeclaration' &&
         resultDeclaration?.declarations?.[0]?.init
-      const result = programMemory?.root?.__result__?.value
+      const result = programMemory?.get('__result__')?.value
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }

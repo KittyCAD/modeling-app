@@ -1,24 +1,154 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ActionButton } from './ActionButton'
-import { faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { ActionButton, ActionButtonProps } from './ActionButton'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { paths } from 'lib/paths'
 import { Models } from '@kittycad/lib'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
+import usePlatform from 'hooks/usePlatform'
+import { isTauri } from 'lib/isTauri'
+import { CustomIcon } from './CustomIcon'
 
 type User = Models['User_type']
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const platform = usePlatform()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = useSettingsAuthContext()?.auth?.send
+
+  // We filter this memoized list so that no orphan "break" elements are rendered.
+  const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
+    () =>
+      [
+        {
+          id: 'settings',
+          Element: 'button',
+          children: (
+            <>
+              <span className="flex-1">User settings</span>
+              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
+                isTauri() ? '' : '⬆'
+              },`}</kbd>
+            </>
+          ),
+          'data-testid': 'user-settings',
+          onClick: () => {
+            const targetPath = location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS
+              : paths.HOME + paths.SETTINGS
+            navigate(targetPath + '?tab=user')
+          },
+        },
+        {
+          id: 'keybindings',
+          Element: 'button',
+          children: 'Keyboard shortcuts',
+          onClick: () => {
+            const targetPath = location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS
+              : paths.HOME + paths.SETTINGS
+            navigate(targetPath + '?tab=keybindings')
+          },
+        },
+        {
+          id: 'account',
+          Element: 'externalLink',
+          to: 'https://zoo.dev/account',
+          children: (
+            <>
+              <span className="flex-1">Manage account</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        'break',
+        {
+          id: 'request-feature',
+          Element: 'externalLink',
+          to: 'https://github.com/KittyCAD/modeling-app/discussions',
+          children: (
+            <>
+              <span className="flex-1">Request a feature</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
+          id: 'report-bug',
+          Element: 'externalLink',
+          to: 'https://github.com/KittyCAD/modeling-app/issues/new/choose',
+          children: (
+            <>
+              <span className="flex-1">Report a bug</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
+          id: 'community',
+          Element: 'externalLink',
+          to: 'https://discord.gg/JQEpHR7Nt2',
+          children: (
+            <>
+              <span className="flex-1">Ask the community</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        {
+          id: 'release-notes',
+          Element: 'externalLink',
+          to: 'https://github.com/KittyCAD/modeling-app/releases',
+          children: (
+            <>
+              <span className="flex-1">Release notes</span>
+              <CustomIcon
+                name="link"
+                className="w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          ),
+        },
+        'break',
+        {
+          id: 'sign-out',
+          Element: 'button',
+          'data-testid': 'user-sidebar-sign-out',
+          children: 'Sign out',
+          onClick: () => send('Log out'),
+          className: '', // Just making TS's filter type coercion happy 😠
+        },
+      ].filter(
+        (props) =>
+          props === 'break' ||
+          (typeof props !== 'string' && !props.className?.includes('hidden'))
+      ) as (ActionButtonProps | 'break')[],
+    [platform, location, filePath, navigate, send]
+  )
+
+  // This image host goes down sometimes. We will instead rewrite the
+  // resource to be a local one.
+  if (user?.image === 'https://placekitten.com/200/200') {
+    user.image = '/cat.jpg'
+  }
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
@@ -37,136 +167,90 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
 
   return (
     <Popover className="relative">
-      {user?.image && !imageLoadFailed ? (
-        <Popover.Button
-          className="border-0 rounded-full w-fit min-w-max p-0 group"
-          data-testid="user-sidebar-toggle"
-        >
-          <div className="rounded-full border overflow-hidden">
-            <img
-              src={user?.image || ''}
-              alt={user?.name || ''}
-              className="h-8 w-8 rounded-full"
-              referrerPolicy="no-referrer"
-              onError={() => setImageLoadFailed(true)}
-            />
-          </div>
-        </Popover.Button>
-      ) : (
-        <ActionButton
-          Element={Popover.Button}
-          iconStart={{ icon: 'menu' }}
-          className="border-transparent !px-0"
-          data-testid="user-sidebar-toggle"
-        >
-          <Tooltip position="left" delay={1000}>
-            User menu
-          </Tooltip>
-        </ActionButton>
-      )}
-      <Transition
-        enter="duration-200 ease-out"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="duration-100 ease-in"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-        as={Fragment}
+      <Popover.Button
+        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+        data-testid="user-sidebar-toggle"
       >
-        <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
-      </Transition>
-
+        <div className="flex items-center">
+          <div className="rounded-full border overflow-hidden">
+            {user?.image && !imageLoadFailed ? (
+              <img
+                src={user?.image || ''}
+                alt={user?.name || ''}
+                className="h-7 w-7 rounded-full"
+                referrerPolicy="no-referrer"
+                onError={() => setImageLoadFailed(true)}
+              />
+            ) : (
+              <CustomIcon
+                name="person"
+                className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
+              />
+            )}
+          </div>
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+          />
+        </div>
+        <Tooltip position="bottom-right" delay={1000} hoverOnly>
+          User menu
+        </Tooltip>
+      </Popover.Button>
       <Transition
         enter="duration-100 ease-out"
-        enterFrom="opacity-0 translate-x-1/4"
-        enterTo="opacity-100 translate-x-0"
-        leave="duration-75 ease-in"
-        leaveFrom="opacity-100 translate-x-0"
-        leaveTo="opacity-0 translate-x-4"
+        enterFrom="opacity-0 -translate-y-2"
+        enterTo="opacity-100 translate-y-0"
         as={Fragment}
       >
-        <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-30 dark:border-chalkboard-80 shadow-md rounded-l-md overflow-hidden">
+        <Popover.Panel
+          className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+          border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
+          shadow-lg`}
+        >
           {({ close }) => (
             <>
               {user && (
-                <div className="flex items-center gap-4 px-4 py-3 bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
-                  {user.image && !imageLoadFailed && (
-                    <div className="rounded-full shadow-inner overflow-hidden">
-                      <img
-                        src={user.image}
-                        alt={user.name || ''}
-                        className="h-8 w-8"
-                        referrerPolicy="no-referrer"
-                        onError={() => setImageLoadFailed(true)}
-                      />
-                    </div>
-                  )}
-
-                  <div>
-                    <p className="m-0 text-mono" data-testid="username">
-                      {displayedName || ''}
+                <div className="flex flex-col gap-1 px-2.5 py-3 bg-chalkboard-20 dark:bg-chalkboard-80/50">
+                  <p className="m-0 text-mono text-xs" data-testid="username">
+                    {displayedName || ''}
+                  </p>
+                  {displayedName !== user.email && (
+                    <p
+                      className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                      data-testid="email"
+                    >
+                      {user.email}
                     </p>
-                    {displayedName !== user.email && (
-                      <p
-                        className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
-                        data-testid="email"
-                      >
-                        {user.email}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
               )}
-              <div className="p-4 flex flex-col gap-2">
-                <ActionButton
-                  Element="button"
-                  iconStart={{ icon: 'settings' }}
-                  className="border-transparent dark:border-transparent hover:bg-transparent"
-                  onClick={() => {
-                    // since /settings is a nested route the sidebar doesn't close
-                    // automatically when navigating to it
-                    close()
-                    const targetPath = location.pathname.includes(paths.FILE)
-                      ? filePath + paths.SETTINGS
-                      : paths.HOME + paths.SETTINGS
-                    navigate(targetPath)
-                  }}
-                  data-testid="settings-button"
-                >
-                  Settings
-                </ActionButton>
-                <ActionButton
-                  Element="externalLink"
-                  to="https://github.com/KittyCAD/modeling-app/discussions"
-                  iconStart={{ icon: faGithub, className: 'p-1', size: 'sm' }}
-                  className="border-transparent dark:border-transparent"
-                >
-                  Request a feature
-                </ActionButton>
-                <ActionButton
-                  Element="externalLink"
-                  to="https://github.com/KittyCAD/modeling-app/issues/new/choose"
-                  iconStart={{ icon: faBug, className: 'p-1', size: 'sm' }}
-                  className="border-transparent dark:border-transparent"
-                >
-                  Report a bug
-                </ActionButton>
-                <ActionButton
-                  Element="button"
-                  onClick={() => send('Log out')}
-                  iconStart={{
-                    icon: faSignOutAlt,
-                    className: 'p-1',
-                    bgClassName: '!bg-transparent',
-                    size: 'sm',
-                    iconClassName: '!text-destroy-70',
-                  }}
-                  className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60 hover:bg-destroy-10/20 dark:hover:bg-destroy-80/20"
-                  data-testid="user-sidebar-sign-out"
-                >
-                  Sign out
-                </ActionButton>
-              </div>
+              <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+                {userMenuItems.map((props, index) => {
+                  if (props === 'break') {
+                    return index !== userMenuItems.length - 1 ? (
+                      <li key={`break-${index}`} className="contents">
+                        <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+                      </li>
+                    ) : null
+                  }
+
+                  const { id, children, ...rest } = props
+                  return (
+                    <li key={id} className="contents">
+                      <ActionButton
+                        {...rest}
+                        className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
+                        onMouseUp={() => {
+                          close()
+                        }}
+                      >
+                        {children}
+                      </ActionButton>
+                    </li>
+                  )
+                })}
+              </ul>
             </>
           )}
         </Popover.Panel>

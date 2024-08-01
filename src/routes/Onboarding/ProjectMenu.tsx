@@ -1,12 +1,10 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from '../../useStore'
 import { isTauri } from 'lib/isTauri'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function ProjectMenu() {
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EXPORT)
   const tauri = isTauri()
@@ -16,14 +14,15 @@ export default function ProjectMenu() {
       <div
         className={
           'max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1">
           <h2 className="text-2xl font-bold">Project Menu</h2>
           <p className="my-4">
-            Click on your part's name in the upper left to open the project
-            menu.
+            Click on {tauri ? `your part's name` : `the app name`} in the upper
+            left to open the project menu, where you can open the project
+            settings and export your current part.
             {tauri && (
               <> You can click the Zoo logo to quickly navigate home.</>
             )}
@@ -45,8 +44,8 @@ export default function ProjectMenu() {
           ) : (
             <>
               <p className="my-4">
-                From here you can export your part. You can't manage separate
-                files and separate projects from the browser; you have to{' '}
+                You can't manage separate files and separate projects from the
+                browser; you have to{' '}
                 <a
                   href="https://zoo.dev/modeling-app/download"
                   target="_blank"

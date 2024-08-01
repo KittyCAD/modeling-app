@@ -1,4 +1,4 @@
-import { ToolTip } from 'useStore'
+import { ToolTip } from 'lang/langHelpers'
 import {
   ProgramMemory,
   Path,
@@ -29,6 +29,11 @@ export interface ModifyAstBase {
   node: Program
   // TODO #896: Remove ProgramMemory from this interface
   previousProgramMemory: ProgramMemory
+  pathToNode: PathToNode
+}
+
+export interface AddTagInfo {
+  node: Program
   pathToNode: PathToNode
 }
 
@@ -114,19 +119,26 @@ export interface ConstrainInfo {
 }
 
 export interface SketchLineHelper {
-  add: (a: addCall) => {
-    modifiedAst: Program
-    pathToNode: PathToNode
-    valueUsedInTransform?: number
-  }
-  updateArgs: (a: updateArgs) => {
-    modifiedAst: Program
-    pathToNode: PathToNode
-  }
-  addTag: (a: ModifyAstBase) => {
-    modifiedAst: Program
-    tag: string
-  }
+  add: (a: addCall) =>
+    | {
+        modifiedAst: Program
+        pathToNode: PathToNode
+        valueUsedInTransform?: number
+      }
+    | Error
+  updateArgs: (a: updateArgs) =>
+    | {
+        modifiedAst: Program
+        pathToNode: PathToNode
+      }
+    | Error
+  getTag: (a: CallExpression) => string | Error
+  addTag: (a: AddTagInfo) =>
+    | {
+        modifiedAst: Program
+        tag: string
+      }
+    | Error
   getConstraintInfo: (
     callExp: CallExpression,
     code: string,

@@ -64,9 +64,9 @@ where
         }
 
         if e.file_type().await?.is_dir() {
-            children.push(walk_dir(&e.path()).await?);
+            children.push(walk_dir(e.path()).await?);
         } else {
-            if !is_relevant_file(&e.path())? {
+            if !is_relevant_file(e.path())? {
                 continue;
             }
             children.push(FileEntry {

@@ -3,59 +3,15 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use tokio::sync::RwLock;
+use dashmap::DashMap;
 use tower_lsp::lsp_types::{
-    CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+    CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
     DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticReport, InitializedParams, MessageType,
-    RenameFilesParams, TextDocumentItem, WorkspaceFolder,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
+    TextDocumentItem, WorkspaceFolder,
 };
 
-use crate::{
-    fs::FileSystem,
-    lsp::safemap::SafeMap,
-    thread::{JoinHandle, Thread},
-};
-
-#[derive(Clone)]
-pub struct InnerHandle(Arc<JoinHandle>);
-
-impl InnerHandle {
-    pub fn new(handle: JoinHandle) -> Self {
-        Self(Arc::new(handle))
-    }
-
-    pub fn is_finished(&self) -> bool {
-        self.0.is_finished()
-    }
-
-    pub fn cancel(&self) {
-        self.0.abort();
-    }
-}
-
-#[derive(Clone)]
-pub struct UpdateHandle(Arc<RwLock<Option<InnerHandle>>>);
-
-impl UpdateHandle {
-    pub fn new(handle: InnerHandle) -> Self {
-        Self(Arc::new(RwLock::new(Some(handle))))
-    }
-
-    pub async fn read(&self) -> Option<InnerHandle> {
-        self.0.read().await.clone()
-    }
-
-    pub async fn write(&self, handle: Option<InnerHandle>) {
-        *self.0.write().await = handle;
-    }
-}
-
-impl Default for UpdateHandle {
-    fn default() -> Self {
-        Self(Arc::new(RwLock::new(None)))
-    }
-}
+use crate::fs::FileSystem;
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
@@ -63,17 +19,13 @@ pub trait Backend: Clone + Send + Sync
 where
     Self: 'static,
 {
-    fn client(&self) -> tower_lsp::Client;
+    fn client(&self) -> &tower_lsp::Client;
 
-    fn fs(&self) -> Arc<crate::fs::FileManager>;
+    fn fs(&self) -> &Arc<crate::fs::FileManager>;
 
     async fn is_initialized(&self) -> bool;
 
     async fn set_is_initialized(&self, is_initialized: bool);
-
-    async fn current_handle(&self) -> Option<InnerHandle>;
-
-    async fn set_current_handle(&self, handle: Option<InnerHandle>);
 
     async fn workspace_folders(&self) -> Vec<WorkspaceFolder>;
 
@@ -82,7 +34,7 @@ where
     async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
 
     /// Get the current code map.
-    fn code_map(&self) -> SafeMap<String, Vec<u8>>;
+    fn code_map(&self) -> &DashMap<String, Vec<u8>>;
 
     /// Insert a new code map.
     async fn insert_code_map(&self, uri: String, text: Vec<u8>);
@@ -94,62 +46,33 @@ where
     async fn clear_code_state(&self);
 
     /// Get the current diagnostics map.
-    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport>;
+    fn current_diagnostics_map(&self) -> &DashMap<String, Vec<Diagnostic>>;
 
     /// On change event.
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool);
 
     /// Check if the file has diagnostics.
     async fn has_diagnostics(&self, uri: &str) -> bool {
-        if let Some(tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics)) =
-            self.current_diagnostics_map().get(uri).await
-        {
-            !diagnostics.full_document_diagnostic_report.items.is_empty()
-        } else {
-            false
-        }
+        let Some(diagnostics) = self.current_diagnostics_map().get(uri) else {
+            return false;
+        };
+
+        !diagnostics.is_empty()
     }
 
     async fn on_change(&self, params: TextDocumentItem) {
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if let Some(current_code) = self.code_map().get(&filename).await {
-            if current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
+        if let Some(current_code) = self.code_map().get(&filename) {
+            if *current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
                 return;
             }
         }
 
-        // Check if we already have a handle running.
-        if let Some(current_handle) = self.current_handle().await {
-            self.set_current_handle(None).await;
-            // Drop that handle to cancel it.
-            current_handle.cancel();
-        }
-
-        let cloned = self.clone();
-        let task = JoinHandle::new(async move {
-            cloned
-                .insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
-                .await;
-            cloned.inner_on_change(params, false).await;
-            cloned.set_current_handle(None).await;
-        });
-        let update_handle = InnerHandle::new(task);
-
-        // Set our new handle.
-        self.set_current_handle(Some(update_handle.clone())).await;
-    }
-
-    async fn wait_on_handle(&self) {
-        while let Some(handle) = self.current_handle().await {
-            if !handle.is_finished() {
-                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-            } else {
-                break;
-            }
-        }
-        self.set_current_handle(None).await;
+        self.insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
+            .await;
+        self.inner_on_change(params, false).await;
     }
 
     async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
@@ -211,7 +134,7 @@ where
         self.remove_workspace_folders(params.event.removed).await;
         // Remove the code from the current code map.
         // We do this since it means the user is changing projects so let's refresh the state.
-        if !self.code_map().is_empty().await && should_clear {
+        if !self.code_map().is_empty() && should_clear {
             self.clear_code_state().await;
         }
         for added in params.event.added {

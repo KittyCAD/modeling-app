@@ -1,10 +1,11 @@
+import toast from 'react-hot-toast'
 import ReactJson from 'react-json-view'
 import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import toast from 'react-hot-toast'
+import { trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
@@ -13,12 +14,12 @@ export const MemoryPaneMenu = () => {
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
-      try {
-        navigator.clipboard.writeText(JSON.stringify(programMemory))
-        toast.success('Program memory copied to clipboard')
-      } catch (e) {
-        toast.error('Failed to copy program memory to clipboard')
-      }
+      navigator.clipboard
+        .writeText(JSON.stringify(programMemory))
+        .then(() => toast.success('Program memory copied to clipboard'))
+        .catch((e) =>
+          trap(new Error('Failed to copy program memory to clipboard'))
+        )
     }
   }
 
@@ -81,8 +82,7 @@ export const MemoryPane = () => {
 
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
-  Object.keys(programMemory?.root || {}).forEach((key) => {
-    const val = programMemory.root[key]
+  for (const [key, val] of programMemory?.visibleEntries()) {
     if (typeof val.value !== 'function') {
       if (val.type === 'SketchGroup') {
         processedMemory[key] = val.value.map(({ __geoMeta, ...rest }: Path) => {
@@ -102,6 +102,6 @@ export const processMemory = (programMemory: ProgramMemory) => {
     } else if (key !== 'log') {
       processedMemory[key] = '__function__'
     }
-  })
+  }
   return processedMemory
 }

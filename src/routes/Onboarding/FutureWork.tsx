@@ -1,24 +1,19 @@
-import { OnboardingButtons, useDismiss } from '.'
+import { OnboardingButtons, useDemoCode, useDismiss } from '.'
 import { useEffect } from 'react'
-import { bracket } from 'lib/exampleKcl'
-import { codeManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { APP_NAME } from 'lib/constants'
 import { onboardingPaths } from './paths'
+import { sceneInfra } from 'lib/singletons'
 
 export default function FutureWork() {
   const { send } = useModelingContext()
   const dismiss = useDismiss()
 
+  // Reset the code, the camera, and the modeling state
+  useDemoCode()
   useEffect(() => {
-    // We do want to update both the state and editor here.
-    codeManager.updateCodeEditor(bracket)
-    if (kclManager.engineCommandManager.engineConnection?.isReady()) {
-      // If the engine is ready, promptly execute the loaded code
-      kclManager.executeCode(true, true)
-    }
-
     send({ type: 'Cancel' }) // in case the user hit 'Next' while still in sketch mode
+    sceneInfra.camControls.resetCameraPosition()
   }, [send])
 
   return (
@@ -26,9 +21,10 @@ export default function FutureWork() {
       <div className="max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold">Future Work</h1>
         <p className="my-4">
-          We have curves, cuts, and many more CAD features coming soon. We want
-          your feedback on this user interface, and we want to know what
-          features you want to see next. Please message us in{' '}
+          We have curves, cuts, multi-profile sketch mode, and many more CAD
+          features coming soon. We want your feedback on this user interface,
+          and we want to know what features you want to see next. Please message
+          us in{' '}
           <a
             href="https://discord.gg/JQEpHR7Nt2"
             target="_blank"

@@ -1,8 +1,8 @@
 import { Models } from '@kittycad/lib'
-import { CommandSetConfig, KclCommandValue } from 'lib/commandTypes'
+import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { Selections } from 'lib/selections'
-import { modelingMachine } from 'machines/modelingMachine'
+import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -27,9 +27,17 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Fillet: {
+    // todo
+    selection: Selections
+    radius: KclCommandValue
+  }
+  'change tool': {
+    tool: SketchTool
+  }
 }
 
-export const modelingMachineConfig: CommandSetConfig<
+export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
 > = {
@@ -37,9 +45,50 @@ export const modelingMachineConfig: CommandSetConfig<
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
+  'change tool': [
+    {
+      description: 'Start drawing straight lines.',
+      icon: 'line',
+      displayName: 'Line',
+      args: {
+        tool: {
+          defaultValue: 'line',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+    {
+      description: 'Start drawing an arc tangent to the current segment.',
+      icon: 'arc',
+      displayName: 'Tangential Arc',
+      args: {
+        tool: {
+          defaultValue: 'tangentialArc',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+    {
+      description: 'Start drawing a rectangle.',
+      icon: 'rectangle',
+      displayName: 'Rectangle',
+      args: {
+        tool: {
+          defaultValue: 'rectangle',
+          required: true,
+          skip: true,
+          inputType: 'string',
+        },
+      },
+    },
+  ],
   Export: {
     description: 'Export the current model.',
-    icon: 'exportFile',
+    icon: 'floppyDiskArrow',
     needsReview: true,
     args: {
       type: {
@@ -47,7 +96,7 @@ export const modelingMachineConfig: CommandSetConfig<
         defaultValue: 'gltf',
         required: true,
         options: [
-          { name: 'gLTF', isCurrent: true, value: 'gltf' },
+          { name: 'glTF', isCurrent: true, value: 'gltf' },
           { name: 'OBJ', isCurrent: false, value: 'obj' },
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },
@@ -135,6 +184,38 @@ export const modelingMachineConfig: CommandSetConfig<
       //   })),
       // },
       distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Fillet: {
+    // todo
+    description: 'Fillet edge',
+    icon: 'fillet',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: [
+          'default',
+          'line-end',
+          'line-mid',
+          'extrude-wall', // to fix: accespts only this selection type
+          'start-cap',
+          'end-cap',
+          'point',
+          'edge',
+          'line',
+          'arc',
+          'all',
+        ],
+        multiple: true, // TODO: multiple selection like in extrude command
+        required: true,
+        skip: true,
+      },
+      radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,

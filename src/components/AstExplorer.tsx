@@ -2,6 +2,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { editorManager, kclManager } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
+import { trap } from 'lib/trap'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
@@ -10,8 +11,11 @@ export function AstExplorer() {
     kclManager.ast,
     context.selectionRanges.codeBasedSelections?.[0]?.range
   )
-  const node = getNodeFromPath(kclManager.ast, pathToNode).node
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
+
+  const _node = getNodeFromPath(kclManager.ast, pathToNode)
+  if (trap(_node)) return
+  const node = _node
 
   return (
     <div id="ast-explorer" className="relative">

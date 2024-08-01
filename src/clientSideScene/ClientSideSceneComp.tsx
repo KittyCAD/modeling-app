@@ -37,13 +37,14 @@ import { Dialog, Popover, Transition } from '@headlessui/react'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
-import { executeAst } from 'useStore'
+import { executeAst } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   makeRemoveSingleConstraintInput,
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
+import { err, trap } from 'lib/trap'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -95,6 +96,7 @@ export const ClientSideScene = ({
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
+    canvas.appendChild(sceneInfra.labelRenderer.domElement)
     sceneInfra.animate()
     canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
@@ -136,6 +138,7 @@ export const ClientSideScene = ({
       <div
         ref={canvasRef}
         style={{ cursor: cursor }}
+        data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
           hideClient ? 'opacity-0' : 'opacity-100'
         } ${hideServer ? 'bg-chalkboard-10 dark:bg-chalkboard-100' : ''} ${
@@ -183,11 +186,14 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
-  const callExpression = getNodeFromPath<CallExpression>(
+  const _node1 = getNodeFromPath<CallExpression>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
-  ).node
+  )
+  if (err(_node1)) return
+  const callExpression = _node1.node
+
   const constraints = getConstraintInfo(
     callExpression,
     codeManager.code,
@@ -218,6 +224,7 @@ const Overlay = ({
         data-testid="segment-overlay"
         data-path-to-node={pathToNodeString}
         data-overlay-index={overlayIndex}
+        data-overlay-visible={shouldShow}
         data-overlay-angle={overlay.angle}
         className="pointer-events-auto absolute w-0 h-0"
         style={{
@@ -226,6 +233,7 @@ const Overlay = ({
       ></div>
       {shouldShow && (
         <div
+          data-overlay-toolbar-index={overlayIndex}
           className={`px-0 pointer-events-auto absolute flex gap-1`}
           style={{
             transform: `translate3d(calc(${
@@ -351,7 +359,7 @@ export async function deleteSegment({
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {
-  let modifiedAst: Program = kclManager.ast
+  let modifiedAst: Program | Error = kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -362,6 +370,7 @@ export async function deleteSegment({
     : true
 
   if (!shouldContinueSegDelete) return
+
   modifiedAst = deleteSegmentFromPipeExpression(
     dependentRanges,
     modifiedAst,
@@ -369,9 +378,12 @@ export async function deleteSegment({
     codeManager.code,
     pathToNode
   )
+  if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
   const newCode = recast(modifiedAst)
   modifiedAst = parse(newCode)
+  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+
   const testExecute = await executeAst({
     ast: modifiedAst,
     useFakeExecutor: true,
@@ -383,13 +395,15 @@ export async function deleteSegment({
   }
 
   if (!sketchDetails) return
-  sceneEntitiesManager.updateAstAndRejigSketch(
-    sketchDetails.sketchPathToNode,
+  await sceneEntitiesManager.updateAstAndRejigSketch(
+    pathToNode,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
     sketchDetails.origin
   )
+
+  // Now 'Set sketchDetails' is called with the modified pathToNode
 }
 
 const SegmentMenu = ({
@@ -420,12 +434,16 @@ const SegmentMenu = ({
               verticalPosition === 'top' ? 'bottom-full' : 'top-full'
             } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
           >
-            {/* <button className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap">
-                Remove segment constraints
-              </button> */}
             <button
               className="!border-transparent rounded-sm text-left p-1 text-nowrap"
-              // disabled={dependentSourceRanges.length > 0}
+              onClick={() => {
+                send({ type: 'Constrain remove constraints', data: pathToNode })
+              }}
+            >
+              Remove constraints
+            </button>
+            <button
+              className="!border-transparent rounded-sm text-left p-1 text-nowrap"
               title={
                 dependentSourceRanges.length > 0
                   ? `At least ${dependentSourceRanges.length} segment rely on this segment's tag.`
@@ -530,10 +548,13 @@ const ConstraintSymbol = ({
   const implicitDesc =
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
 
-  const node = useMemo(
-    () => getNodeFromPath<Value>(kclManager.ast, pathToNode).node,
+  const _node = useMemo(
+    () => getNodeFromPath<Value>(kclManager.ast, pathToNode),
     [kclManager.ast, pathToNode]
   )
+  if (err(_node)) return
+  const node = _node.node
+
   const range: SourceRange = node ? [node.start, node.end] : [0, 0]
 
   if (_type === 'intersectionTag') return null
@@ -571,12 +592,17 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const shallowPath = getNodeFromPath<CallExpression>(
-                parse(recast(kclManager.ast)),
+              const parsed = parse(recast(kclManager.ast))
+              if (trap(parsed)) return Promise.reject(parsed)
+              const _node1 = getNodeFromPath<CallExpression>(
+                parsed,
                 pathToNode,
                 'CallExpression',
                 true
-              ).shallowPath
+              )
+              if (trap(_node1)) return Promise.reject(_node1)
+              const shallowPath = _node1.shallowPath
+
               const input = makeRemoveSingleConstraintInput(
                 argPosition,
                 shallowPath
@@ -691,10 +717,19 @@ export const CamDebugSettings = () => {
           if (camSettings.type === 'perspective') {
             sceneInfra.camControls.useOrthographicCamera()
           } else {
-            sceneInfra.camControls.usePerspectiveCamera()
+            sceneInfra.camControls.usePerspectiveCamera(true)
           }
         }}
       />
+      <div>
+        <button
+          onClick={() => {
+            sceneInfra.camControls.resetCameraPosition()
+          }}
+        >
+          Reset Camera Position
+        </button>
+      </div>
       {camSettings.type === 'perspective' && (
         <input
           type="range"
@@ -804,6 +839,71 @@ export const CamDebugSettings = () => {
                   position: [
                     camSettings.position[0],
                     camSettings.position[1],
+                    parseFloat(e.target.value),
+                  ],
+                })
+              }}
+            />
+          </li>
+        </ul>
+      </div>
+      <div>
+        target
+        <ul className="flex">
+          <li>
+            <span className="pl-2 pr-1">x:</span>
+            <input
+              type="number"
+              step={5}
+              data-testid="cam-x-target"
+              value={camSettings.target[0]}
+              className="text-black w-16"
+              onChange={(e) => {
+                sceneInfra.camControls.setCam({
+                  ...camSettings,
+                  target: [
+                    parseFloat(e.target.value),
+                    camSettings.target[1],
+                    camSettings.target[2],
+                  ],
+                })
+              }}
+            />
+          </li>
+          <li>
+            <span className="pl-2 pr-1">y:</span>
+            <input
+              type="number"
+              step={5}
+              data-testid="cam-y-target"
+              value={camSettings.target[1]}
+              className="text-black w-16"
+              onChange={(e) => {
+                sceneInfra.camControls.setCam({
+                  ...camSettings,
+                  target: [
+                    camSettings.target[0],
+                    parseFloat(e.target.value),
+                    camSettings.target[2],
+                  ],
+                })
+              }}
+            />
+          </li>
+          <li>
+            <span className="pl-2 pr-1">z:</span>
+            <input
+              type="number"
+              step={5}
+              data-testid="cam-z-target"
+              value={camSettings.target[2]}
+              className="text-black w-16"
+              onChange={(e) => {
+                sceneInfra.camControls.setCam({
+                  ...camSettings,
+                  target: [
+                    camSettings.target[0],
+                    camSettings.target[1],
                     parseFloat(e.target.value),
                   ],
                 })

@@ -3,6 +3,7 @@ import {
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
 import { editorManager, kclManager } from 'lib/singletons'
+import { trap } from 'lib/trap'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
@@ -22,10 +23,16 @@ export function useConvertToVariable(range?: SourceRange) {
   }, [enable])
 
   useEffect(() => {
-    const { isSafe, value } = isNodeSafeToReplace(
-      parse(recast(ast)),
+    const parsed = parse(recast(ast))
+    if (trap(parsed)) return
+
+    const meta = isNodeSafeToReplace(
+      parsed,
       range || context.selectionRanges.codeBasedSelections?.[0]?.range || []
     )
+    if (trap(meta)) return
+
+    const { isSafe, value } = meta
     const canReplace = isSafe && value.type !== 'Identifier'
     const isOnlyOneSelection =
       !!range || context.selectionRanges.codeBasedSelections.length === 1

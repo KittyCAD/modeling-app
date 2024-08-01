@@ -8,7 +8,6 @@ import {
 } from 'lib/keyboard'
 import { InteractionMapItem } from 'machines/interactionMapMachine'
 import { useEffect, useState } from 'react'
-import { g } from 'vitest/dist/suite-IbNSsUWN'
 
 export function AllKeybindingsFields() {
   const { state } = useInteractionMapContext()

@@ -431,7 +431,7 @@ mod tests {
         );
 
         if let Err(err) = result {
-            assert!(err.to_string().contains( "Point Point2d { x: 0.0, y: 5.0 } is not on the circumference of the circle with center Point2d { x: 10.0, y: -10.0 } and radius 10."));
+            assert!(err.to_string().contains("Point Point2d { x: 0.0, y: 5.0 } is not on the circumference of the circle with center Point2d { x: 10.0, y: -10.0 } and radius 10."));
         } else {
             panic!("Expected error");
         }

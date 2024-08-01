@@ -1,6 +1,5 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useStore } from '../../useStore'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
@@ -8,11 +7,10 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { SettingsSection } from 'components/Settings/SettingsSection'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Units() {
-  const { buttonDownInStream } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.STREAMING)
   const {
@@ -31,7 +29,7 @@ export default function Units() {
       <div
         className={
           'max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (buttonDownInStream ? '' : ' pointer-events-auto')
+          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <SettingsSection

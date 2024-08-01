@@ -567,7 +567,7 @@ mod tests {
                 project_name: Some("assembly".to_string()),
                 project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly".to_string(),
                 current_file_name: None,
-                current_file_path: None,
+                current_file_path: None
             }
         );
     }
@@ -586,7 +586,7 @@ mod tests {
                 project_name: None,
                 project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects".to_string(),
                 current_file_name: None,
-                current_file_path: None,
+                current_file_path: None
             }
         );
     }
@@ -624,7 +624,7 @@ mod tests {
                 project_name: Some("modeling-app".to_string()),
                 project_path: "/Users/macinatormax/kittycad/modeling-app".to_string(),
                 current_file_name: None,
-                current_file_path: None,
+                current_file_path: None
             }
         );
     }
@@ -642,7 +642,7 @@ mod tests {
                 project_name: Some("browser".to_string()),
                 project_path: "/browser".to_string(),
                 current_file_name: Some("main.kcl".to_string()),
-                current_file_path: Some("/browser/main.kcl".to_string()),
+                current_file_path: Some("/browser/main.kcl".to_string())
             }
         );
     }
@@ -660,7 +660,7 @@ mod tests {
                 project_name: Some("browser".to_string()),
                 project_path: "/browser".to_string(),
                 current_file_name: None,
-                current_file_path: None,
+                current_file_path: None
             }
         );
     }
@@ -1046,13 +1046,7 @@ const model = import("model.obj")"#
         let result = super::ProjectState::new_from_path(tmp_project_dir.join("settings.toml")).await;
 
         assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            format!(
-                "File type (toml) cannot be opened with this app: `{}`, try opening one of the following file types: stp, glb, fbxb, fbx, gltf, obj, ply, sldprt, step, stl, kcl",
-                tmp_project_dir.join("settings.toml").display()
-            )
-        );
+        assert_eq!(result.unwrap_err().to_string(), format!("File type (toml) cannot be opened with this app: `{}`, try opening one of the following file types: stp, glb, fbxb, fbx, gltf, obj, ply, sldprt, step, stl, kcl", tmp_project_dir.join("settings.toml").display()));
 
         std::fs::remove_dir_all(tmp_project_dir).unwrap();
     }
@@ -1067,13 +1061,7 @@ const model = import("model.obj")"#
         let result = super::ProjectState::new_from_path(tmp_project_dir.join("settings.docx")).await;
 
         assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            format!(
-                "File type (docx) cannot be opened with this app: `{}`, try opening one of the following file types: stp, glb, fbxb, fbx, gltf, obj, ply, sldprt, step, stl, kcl",
-                tmp_project_dir.join("settings.docx").display()
-            )
-        );
+        assert_eq!(result.unwrap_err().to_string(), format!("File type (docx) cannot be opened with this app: `{}`, try opening one of the following file types: stp, glb, fbxb, fbx, gltf, obj, ply, sldprt, step, stl, kcl", tmp_project_dir.join("settings.docx").display()));
 
         std::fs::remove_dir_all(tmp_project_dir).unwrap();
     }

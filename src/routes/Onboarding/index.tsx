@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import Introduction from './Introduction'
 import Camera from './Camera'
 import Sketching from './Sketching'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import Streaming from './Streaming'
@@ -19,9 +19,11 @@ import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
+import { bracket } from 'lib/exampleKcl'
 
 export const kbdClasses =
-  'p-0.5 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
+  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
 export const onboardingRoutes = [
   {
@@ -75,6 +77,20 @@ export const onboardingRoutes = [
   },
 ]
 
+export function useDemoCode() {
+  useEffect(() => {
+    if (!editorManager.editorView) return
+    setTimeout(async () => {
+      codeManager.updateCodeStateEditor(bracket)
+      kclManager.isFirstRender = true
+      await kclManager.executeCode(true).then(() => {
+        kclManager.isFirstRender = false
+      })
+      await codeManager.writeToFile()
+    })
+  }, [editorManager.editorView])
+}
+
 export function useNextClick(newStatus: string) {
   const filePath = useAbsoluteFilePath()
   const {
@@ -94,17 +110,31 @@ export function useNextClick(newStatus: string) {
 export function useDismiss() {
   const filePath = useAbsoluteFilePath()
   const {
-    settings: { send },
+    settings: { state, send },
   } = useSettingsAuthContext()
   const navigate = useNavigate()
 
-  return useCallback(() => {
+  const settingsCallback = useCallback(() => {
     send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: 'dismissed' },
     })
-    navigate(filePath)
-  }, [send, navigate, filePath])
+  }, [send])
+
+  /**
+   * A "listener" for the XState to return to "idle" state
+   * when the user dismisses the onboarding, using the callback above
+   */
+  useEffect(() => {
+    if (
+      state.context.app.onboardingStatus.user === 'dismissed' &&
+      state.matches('idle')
+    ) {
+      navigate(filePath)
+    }
+  }, [filePath, navigate, state])
+
+  return settingsCallback
 }
 
 // Get the 1-indexed step number of the current onboarding step
@@ -146,8 +176,8 @@ export function OnboardingButtons({
         onClick={dismiss}
         iconStart={{
           icon: 'close',
+          className: 'text-chalkboard-10',
           bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
-          iconClassName: 'text-destroy-20 group-hover:text-destroy-10',
         }}
         className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
       >

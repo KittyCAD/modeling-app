@@ -26,10 +26,11 @@ export const AppHeader = ({
 
   return (
     <header
+      id="app-header"
       className={
         'w-full grid ' +
         styles.header +
-        ' overlaid-panes sticky top-0 z-20 px-2 items-center ' +
+        ' overlaid-panes sticky top-0 z-20 px-2 items-start ' +
         className
       }
     >
@@ -48,9 +49,9 @@ export const AppHeader = ({
           <>
             <CommandBarOpenButton />
             <RefreshButton />
-            <UserSidebarMenu user={user} />
           </>
         )}
+        <UserSidebarMenu user={user} />
       </div>
     </header>
   )

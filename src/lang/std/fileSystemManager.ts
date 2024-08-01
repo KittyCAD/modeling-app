@@ -10,69 +10,64 @@ class FileSystemManager {
   private _dir: string | null = null
 
   get dir() {
-    if (this._dir === null) {
-      throw new Error('current project dir is not set')
-    }
-
-    return this._dir
+    return this._dir ?? ''
   }
 
   set dir(dir: string) {
     this._dir = dir
   }
 
-  readFile(path: string): Promise<Uint8Array | void> {
+  async readFile(path: string): Promise<Uint8Array | void> {
     // Using local file system only works from Tauri.
     if (!isTauri()) {
-      throw new Error(
-        'This function can only be called from a Tauri application'
+      return Promise.reject(
+        new Error('This function can only be called from a Tauri application')
       )
     }
 
     return join(this.dir, path)
       .catch((error) => {
-        throw new Error(`Error reading file: ${error}`)
+        return Promise.reject(new Error(`Error reading file: ${error}`))
       })
       .then((file) => {
         return readFile(file)
       })
   }
 
-  exists(path: string): Promise<boolean | void> {
+  async exists(path: string): Promise<boolean | void> {
     // Using local file system only works from Tauri.
     if (!isTauri()) {
-      throw new Error(
-        'This function can only be called from a Tauri application'
+      return Promise.reject(
+        new Error('This function can only be called from a Tauri application')
       )
     }
 
     return join(this.dir, path)
       .catch((error) => {
-        throw new Error(`Error checking file exists: ${error}`)
+        return Promise.reject(new Error(`Error checking file exists: ${error}`))
       })
       .then((file) => {
         return tauriExists(file)
       })
   }
 
-  getAllFiles(path: string): Promise<string[] | void> {
+  async getAllFiles(path: string): Promise<string[] | void> {
     // Using local file system only works from Tauri.
     if (!isTauri()) {
-      throw new Error(
-        'This function can only be called from a Tauri application'
+      return Promise.reject(
+        new Error('This function can only be called from a Tauri application')
       )
     }
 
     return join(this.dir, path)
       .catch((error) => {
-        throw new Error(`Error joining dir: ${error}`)
+        return Promise.reject(new Error(`Error joining dir: ${error}`))
       })
       .then((p) => {
         readDirRecursive(p)
           .catch((error) => {
-            throw new Error(`Error reading dir: ${error}`)
+            return Promise.reject(new Error(`Error reading dir: ${error}`))
           })
-
           .then((files) => {
             return files.map((file) => file.path)
           })

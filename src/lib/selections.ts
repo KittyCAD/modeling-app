@@ -8,14 +8,14 @@ import {
 import { CallExpression, SourceRange, Value, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { uuidv4 } from 'lib/utils'
-import { EditorSelection } from '@codemirror/state'
-import { SelectionRange } from '@uiw/react-codemirror'
+import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
   doesPipeHaveCallExp,
   getNodeFromPath,
+  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -28,6 +28,7 @@ import {
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
+import { err } from 'lib/trap'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -86,16 +87,20 @@ export async function getEventForSelectWithPoint(
     // there's plans to get the faceId back from the solid2d creation
     // https://github.com/KittyCAD/engine/issues/2094
     // at which point we can add it to the artifact map and remove this logic
-    const parentId = (
-      await engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'entity_get_parent_id',
-          entity_id: data.entity_id,
-        },
-        cmd_id: uuidv4(),
-      })
-    )?.data?.data?.entity_id
+    const resp = await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'entity_get_parent_id',
+        entity_id: data.entity_id,
+      },
+      cmd_id: uuidv4(),
+    })
+    const parentId =
+      resp?.success &&
+      resp?.resp?.type === 'modeling' &&
+      resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
+        ? resp?.resp?.data?.modeling_response?.data?.entity_id
+        : ''
     const parentArtifact = engineCommandManager.artifactMap[parentId]
     if (parentArtifact) {
       _artifact = parentArtifact
@@ -103,21 +108,18 @@ export async function getEventForSelectWithPoint(
   }
   const sourceRange = _artifact?.range
   if (_artifact) {
-    if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
-      if (_artifact?.additionalData)
-        return {
-          type: 'Set selection',
-          data: {
-            selectionType: 'singleCodeCursor',
-            selection: {
-              range: sourceRange,
-              type:
-                _artifact?.additionalData.info === 'end'
-                  ? 'end-cap'
-                  : 'start-cap',
-            },
+    if (_artifact.type === 'extrudeCap')
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            range: sourceRange,
+            type: _artifact?.cap === 'end' ? 'end-cap' : 'start-cap',
           },
-        }
+        },
+      }
+    if (_artifact.type === 'extrudeWall')
       return {
         type: 'Set selection',
         data: {
@@ -125,7 +127,6 @@ export async function getEventForSelectWithPoint(
           selection: { range: sourceRange, type: 'extrude-wall' },
         },
       }
-    }
     return {
       type: 'Set selection',
       data: {
@@ -167,11 +168,16 @@ export function getEventForSegmentSelection(
   // So we want to make sure we have and updated ast with
   // accurate source ranges
   const updatedAst = parse(codeManager.code)
-  const node = getNodeFromPath<CallExpression>(
+  if (err(updatedAst)) return null
+
+  const nodeMeta = getNodeFromPath<CallExpression>(
     updatedAst,
     pathToNode,
     'CallExpression'
-  ).node
+  )
+  if (err(nodeMeta)) return null
+
+  const node = nodeMeta.node
   const range: SourceRange = [node.start, node.end]
   return {
     type: 'Set selection',
@@ -278,13 +284,9 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  let updated: Program
-  try {
-    updated = parse(recast(kclManager.ast))
-  } catch (e) {
-    console.error('error parsing code in processCodeMirrorRanges', e)
-    return
-  }
+  const updated = parse(recast(kclManager.ast))
+  if (err(updated)) return
+
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (
       ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT, PROFILE_START].includes(
@@ -292,14 +294,17 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
       )
     )
       return
-    const node = getNodeFromPath<CallExpression>(
+    const nodeMeta = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,
       'CallExpression'
-    ).node
+    )
+    if (err(nodeMeta)) return
+    const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
       return isOverlap(selection.range, [node.start, node.end])
     })
+
     const color = groupHasCursor
       ? 0x0000ff
       : segmentGroup?.userData?.baseColor || 0xffffff
@@ -318,7 +323,6 @@ function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): Models['WebSocketRequest_type'][] {
   if (!engineCommandManager.engineConnection?.isReady()) {
-    console.log('engine connection is not ready')
     return []
   }
   return [
@@ -356,6 +360,14 @@ export function isSelectionLastLine(
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
+export function isRangeInbetweenCharacters(selectionRanges: Selections) {
+  return (
+    selectionRanges.codeBasedSelections.length === 1 &&
+    selectionRanges.codeBasedSelections[0].range[0] === 0 &&
+    selectionRanges.codeBasedSelections[0].range[1] === 0
+  )
+}
+
 export type CommonASTNode = {
   selection: Selection
   ast: Program
@@ -386,6 +398,18 @@ export function canExtrudeSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
+  return (
+    !!isSketchPipe(selection) &&
+    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
+    commonNodes.every((n) => nodeHasClose(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canFilletSelection(selection: Selections) {
+  const commonNodes = selection.codeBasedSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  ) // TODO FILLET DUMMY PLACEHOLDER
   return (
     !!isSketchPipe(selection) &&
     commonNodes.every((n) => nodeHasClose(n)) &&
@@ -491,33 +515,27 @@ function codeToIdSelections(
       let bestCandidate
       entriesWithOverlap.forEach((entry) => {
         if (!entry) return
-        if (
-          type === 'default' &&
-          entry.artifact.commandType === 'extend_path'
-        ) {
+        if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
         if (
           type === 'start-cap' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
-          entry?.artifact?.additionalData?.info === 'start'
+          entry.artifact.type === 'extrudeCap' &&
+          entry?.artifact?.cap === 'start'
         ) {
           bestCandidate = entry
           return
         }
         if (
           type === 'end-cap' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
-          entry?.artifact?.additionalData?.info === 'end'
+          entry.artifact.type === 'extrudeCap' &&
+          entry?.artifact?.cap === 'end'
         ) {
           bestCandidate = entry
           return
         }
-        if (
-          type === 'extrude-wall' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
-        ) {
+        if (type === 'extrude-wall' && entry.artifact.type === 'extrudeWall') {
           bestCandidate = entry
           return
         }
@@ -541,7 +559,7 @@ function codeToIdSelections(
     .filter(Boolean) as any
 }
 
-export function sendSelectEventToEngine(
+export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
   el: HTMLVideoElement,
   streamDimensions: { streamWidth: number; streamHeight: number }
@@ -552,35 +570,48 @@ export function sendSelectEventToEngine(
     el,
     ...streamDimensions,
   })
-  const result: Promise<Models['SelectWithPoint_type']> = engineCommandManager
-    .sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_with_point',
-        selected_at_window: { x, y },
-        selection_type: 'add',
-      },
-      cmd_id: uuidv4(),
-    })
-    .then((res) => res.data.data)
-  return result
+  const res = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_with_point',
+      selected_at_window: { x, y },
+      selection_type: 'add',
+    },
+    cmd_id: uuidv4(),
+  })
+  if (
+    res?.success &&
+    res?.resp?.type === 'modeling' &&
+    res?.resp?.data?.modeling_response.type === 'select_with_point'
+  )
+    return res?.resp?.data?.modeling_response?.data
+  return { entity_id: '' }
 }
 
 export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
-  ast: Program
-): Selections {
-  return {
-    ...prevSelectionRanges,
-    codeBasedSelections: Object.entries(pathToNodeMap).map(
-      ([index, pathToNode]): Selection => {
-        const node = getNodeFromPath<Value>(ast, pathToNode).node
-        return {
-          range: [node.start, node.end],
-          type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
-        }
+  ast: Program | Error
+): Selections | Error {
+  if (err(ast)) return ast
+
+  const newSelections = Object.entries(pathToNodeMap)
+    .map(([index, pathToNode]): Selection | undefined => {
+      const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+      if (err(nodeMeta)) return undefined
+      const node = nodeMeta.node
+      return {
+        range: [node.start, node.end],
+        type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
       }
-    ),
+    })
+    .filter((x?: Selection) => x !== undefined) as Selection[]
+
+  return {
+    codeBasedSelections:
+      newSelections.length > 0
+        ? newSelections
+        : prevSelectionRanges.codeBasedSelections,
+    otherSelections: prevSelectionRanges.otherSelections,
   }
 }

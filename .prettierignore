@@ -1,5 +1,6 @@
 # Ignore artifacts:
 build
+dist
 coverage
 
 # Ignore Rust projects:
@@ -8,6 +9,7 @@ target
 src/wasm-lib/pkg
 src/wasm-lib/kcl/bindings
 e2e/playwright/export-snapshots
+
 
 # XState generated files
 src/machines/**.typegen.ts

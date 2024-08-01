@@ -163,6 +163,17 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
+      /**
+       * Stream resource saving behavior toggle
+       */
+      streamIdleMode: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Toggle stream idling, saving bandwidth and battery',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',
@@ -319,6 +330,18 @@ export function createSettings() {
       highlightEdges: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to highlight edges of 3D objects',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        hideOnLevel: 'project',
+      }),
+      /**
+       * Whether to show a scale grid in the 3D modeling view
+       */
+      showScaleGrid: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show a scale grid in the 3D modeling view',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

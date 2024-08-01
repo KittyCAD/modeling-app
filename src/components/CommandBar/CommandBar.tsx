@@ -7,6 +7,8 @@ import CommandBarReview from './CommandBarReview'
 import { useLocation } from 'react-router-dom'
 import { useInteractionMap } from 'hooks/useInteractionMap'
 import { KEYBINDING_CATEGORIES } from 'lib/constants'
+import { CustomIcon } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -123,7 +125,7 @@ export const CommandBar = () => {
           leaveTo="opacity-0 scale-95"
         >
           <WrapperComponent.Panel
-            className="relative z-50 pointer-events-auto w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+            className="relative z-50 pointer-events-auto w-full max-w-xl py-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
             data-testid="command-bar"
           >
@@ -136,6 +138,19 @@ export const CommandBar = () => {
                 <CommandBarReview stepBack={stepBack} />
               )
             )}
+            <button
+              onClick={() => commandBarSend({ type: 'Close' })}
+              className="group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent"
+            >
+              <CustomIcon
+                name="close"
+                className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+              />
+              <Tooltip position="bottom" delay={500}>
+                Cancel{' '}
+                <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+              </Tooltip>
+            </button>
           </WrapperComponent.Panel>
         </Transition.Child>
       </WrapperComponent>

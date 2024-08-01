@@ -41,6 +41,7 @@ function CommandArgOptionInput({
   )
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const [shouldSubmitOnChange, setShouldSubmitOnChange] = useState(false)
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
@@ -82,8 +83,10 @@ function CommandArgOptionInput({
     // We deal with the whole option object internally
     setSelectedOption(option)
 
-    // But we only submit the value
-    onSubmit(option.value)
+    // But we only submit the value itself
+    if (shouldSubmitOnChange) {
+      onSubmit(option.value)
+    }
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -94,7 +97,18 @@ function CommandArgOptionInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} ref={formRef}>
+    <form
+      id="arg-form"
+      onSubmit={handleSubmit}
+      ref={formRef}
+      onKeyDownCapture={(e) => {
+        if (e.key === 'Enter') {
+          setShouldSubmitOnChange(true)
+        } else {
+          setShouldSubmitOnChange(false)
+        }
+      }}
+    >
       <Combobox
         value={selectedOption}
         onChange={handleSelectOption}
@@ -116,6 +130,12 @@ function CommandArgOptionInput({
               if (event.key === 'Backspace' && !event.currentTarget.value) {
                 stepBack()
               }
+
+              if (event.key === 'Enter') {
+                setShouldSubmitOnChange(true)
+              } else {
+                setShouldSubmitOnChange(false)
+              }
             }}
             value={query}
             placeholder={
@@ -134,6 +154,9 @@ function CommandArgOptionInput({
         <Combobox.Options
           static
           className="overflow-y-auto max-h-96 cursor-pointer"
+          onMouseDown={() => {
+            setShouldSubmitOnChange(true)
+          }}
         >
           {filteredOptions?.map((option) => (
             <Combobox.Option

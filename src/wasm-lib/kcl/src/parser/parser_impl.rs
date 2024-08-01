@@ -13,8 +13,8 @@ use crate::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
         ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
-        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -87,6 +87,7 @@ fn non_code_node(i: TokenSlice) -> PResult<NonCodeNode> {
                     } else {
                         NonCodeValue::BlockComment { value, style }
                     },
+                    digest: None,
                 }),
                 _ => None,
             })
@@ -124,6 +125,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
                 start: token.start,
                 end: token.end,
                 value,
+                digest: None,
             })
         }
     })
@@ -193,6 +195,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
         end: values.last().unwrap().end().max(max_noncode_end),
         body: values,
         non_code_meta,
+        digest: None,
     })
 }
 
@@ -213,6 +216,7 @@ fn bool_value(i: TokenSlice) -> PResult<Literal> {
         end: token.end,
         value: LiteralValue::Bool(value),
         raw: value.to_string(),
+        digest: None,
     })
 }
 
@@ -242,6 +246,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         end: token.end,
         value,
         raw: token.value.clone(),
+        digest: None,
     })
 }
 
@@ -274,6 +279,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
         end: token.end,
         value,
         raw: token.value.clone(),
+        digest: None,
     })
 }
 
@@ -333,6 +339,15 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                         // Once we have ways to use None values (e.g. by replacing with a default value)
                         // we should suggest one of them here.
                         message: "cannot use a KCL None value as an operand".to_owned(),
+                    }));
+                }
+                Value::TagDeclarator(_) => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        // TODO: Better error message here.
+                        // Once we have ways to use None values (e.g. by replacing with a default value)
+                        // we should suggest one of them here.
+                        message: "cannot use a KCL tag declaration as an operand".to_owned(),
                     }));
                 }
                 Value::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
@@ -422,6 +437,7 @@ fn shebang(i: TokenSlice) -> PResult<NonCodeNode> {
         value: NonCodeValue::Shebang {
             value: format!("#!{}", value),
         },
+        digest: None,
     })
 }
 
@@ -443,7 +459,12 @@ fn array(i: TokenSlice) -> PResult<ArrayExpression> {
         .parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(ArrayExpression { start, end, elements })
+    Ok(ArrayExpression {
+        start,
+        end,
+        elements,
+        digest: None,
+    })
 }
 
 /// Parse n..m into a vec of numbers [n, n+1, ..., m]
@@ -459,17 +480,14 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
                 end: token0.end,
                 value: num.into(),
                 raw: num.to_string(),
+                digest: None,
             }))
         })
         .collect())
 }
 
 fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
-    let key = identifier
-        .context(expected(
-            "the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key",
-        ))
-        .parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     colon
         .context(expected(
             "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
@@ -486,6 +504,7 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
         end: val.end(),
         key,
         value: val,
+        digest: None,
     })
 }
 
@@ -501,7 +520,12 @@ fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
-    Ok(ObjectExpression { start, end, properties })
+    Ok(ObjectExpression {
+        start,
+        end,
+        properties,
+        digest: None,
+    })
 }
 
 /// Parse the % symbol, used to substitute a curried argument from a |> (pipe).
@@ -511,6 +535,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
             Ok(PipeSubstitution {
                 start: token.start,
                 end: token.end,
+                digest: None,
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -550,6 +575,7 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
         params,
         body,
         return_type,
+        digest: None,
     })
 }
 
@@ -579,12 +605,9 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
 fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
-    let id = identifier
-        .context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier"))
-        .parse_next(i)?;
+    let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
     // Now a sequence of members.
-    let member = alt((member_expression_dot, member_expression_subscript))
-        .context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
+    let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
         .context(expected("a sequence of at least one members/properties"))
         .parse_next(i)?;
@@ -600,6 +623,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
         object: MemberObject::Identifier(Box::new(id)),
         computed,
         property,
+        digest: None,
     };
 
     // Each remaining member wraps the current member expression inside another member expression.
@@ -614,6 +638,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
                 object: MemberObject::MemberExpression(Box::new(accumulated)),
                 computed,
                 property,
+                digest: None,
             }
         }))
 }
@@ -679,7 +704,12 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
     Ok(nc)
 }
 
+// the large_enum_variant lint below introduces a LOT of code complexity in a
+// match!() that's super clean that isn't worth it for the marginal space
+// savings. revisit if that's a lie.
+
 #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 enum WithinFunction {
     BodyItem((BodyItem, Option<NonCodeNode>)),
     NonCode(NonCodeNode),
@@ -760,6 +790,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                     start: ws_token.start,
                     end: ws_token.end,
                     value: NonCodeValue::NewLine,
+                    digest: None,
                 }));
             }
         }
@@ -841,6 +872,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         end,
         body,
         non_code_meta,
+        digest: None,
     })
 }
 
@@ -867,6 +899,7 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
         start,
         end: argument.end(),
         argument,
+        digest: None,
     })
 }
 
@@ -903,6 +936,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
     alt((
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Literal),
+        tag.map(Box::new).map(Value::TagDeclarator),
         literal.map(Box::new).map(Value::Literal),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
@@ -1003,8 +1037,10 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             end,
             id,
             init: val,
+            digest: None,
         }],
         kind,
+        digest: None,
     })
 }
 
@@ -1017,6 +1053,7 @@ impl TryFrom<Token> for Identifier {
                 start: token.start,
                 end: token.end,
                 name: token.value,
+                digest: None,
             })
         } else {
             Err(KclError::Syntax(KclErrorDetails {
@@ -1034,6 +1071,48 @@ impl TryFrom<Token> for Identifier {
 fn identifier(i: TokenSlice) -> PResult<Identifier> {
     any.try_map(Identifier::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
+        .parse_next(i)
+}
+
+impl TryFrom<Token> for TagDeclarator {
+    type Error = KclError;
+
+    fn try_from(token: Token) -> Result<Self, Self::Error> {
+        if token.token_type == TokenType::Word {
+            Ok(TagDeclarator {
+                // We subtract 1 from the start because the tag starts with a `$`.
+                start: token.start - 1,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
+            }))
+        }
+    }
+}
+
+impl TagDeclarator {
+    fn into_valid_binding_name(self) -> Result<Self, KclError> {
+        // Make sure they are not assigning a variable to a stdlib function.
+        if crate::std::name_in_stdlib(&self.name) {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange([self.start, self.end])],
+                message: format!("Cannot assign a tag to a reserved keyword: {}", self.name),
+            }));
+        }
+        Ok(self)
+    }
+}
+
+/// Parse a Kcl tag that starts with a `$`.
+fn tag(i: TokenSlice) -> PResult<TagDeclarator> {
+    dollar.parse_next(i)?;
+    any.try_map(TagDeclarator::try_from)
+        .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
 }
 
@@ -1060,19 +1139,9 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
             // TODO: negation. Original parser doesn't support `not` yet.
             TokenType::Operator => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
-                message: format!(
-                    "{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)",
-                    token.value.as_str(),
-                ),
+                message: format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             })),
-            other => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!(
-                    "{EXPECTED} but found {} which is {}",
-                    token.value.as_str(),
-                    other,
-                ),
-            })),
+            other => Err(KclError::Syntax(KclErrorDetails { source_ranges: token.as_source_ranges(), message: format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) })),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
@@ -1082,6 +1151,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
         end: argument.end(),
         operator,
         argument,
+        digest: None,
     })
 }
 
@@ -1159,6 +1229,7 @@ fn expression(i: TokenSlice) -> PResult<ExpressionStatement> {
         start: val.start(),
         end: val.end(),
         expression: val,
+        digest: None,
     })
 }
 
@@ -1252,6 +1323,11 @@ fn hash(i: TokenSlice) -> PResult<()> {
 
 fn bang(i: TokenSlice) -> PResult<()> {
     TokenType::Bang.parse_from(i)?;
+    Ok(())
+}
+
+fn dollar(i: TokenSlice) -> PResult<()> {
+    TokenType::Dollar.parse_from(i)?;
     Ok(())
 }
 
@@ -1371,6 +1447,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
                 identifier,
                 type_,
                 optional,
+                digest: None,
             })
         })
         .collect::<Result<_, _>>()
@@ -1424,8 +1501,53 @@ fn binding_name(i: TokenSlice) -> PResult<Identifier> {
 
 fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let fn_name = identifier(i)?;
+    opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        // Type check the arguments.
+        for (i, spec_arg) in std_fn.args().iter().enumerate() {
+            let Some(arg) = &args.get(i) else {
+                // The executor checks the number of arguments, so we don't need to check it here.
+                continue;
+            };
+            match spec_arg.type_.as_ref() {
+                "TagDeclarator" => match &arg {
+                    Value::Identifier(_) => {
+                        // These are fine since we want someone to be able to map a variable to a tag declarator.
+                    }
+                    Value::TagDeclarator(tag) => {
+                        tag.clone()
+                            .into_valid_binding_name()
+                            .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+                    }
+                    e => {
+                        return Err(ErrMode::Cut(
+                            KclError::Syntax(KclErrorDetails {
+                                source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                            })
+                            .into(),
+                        ));
+                    }
+                },
+                "TagIdentifier" => match &arg {
+                    Value::Identifier(_) => {}
+                    Value::MemberExpression(_) => {}
+                    e => {
+                        return Err(ErrMode::Cut(
+                            KclError::Syntax(KclErrorDetails {
+                                source_ranges: vec![SourceRange([arg.start(), arg.end()])],
+                                message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                            })
+                            .into(),
+                        ));
+                    }
+                },
+                _ => {}
+            }
+        }
+    }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
     Ok(CallExpression {
         start: fn_name.start,
@@ -1433,6 +1555,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
         callee: fn_name,
         arguments: args,
         optional: false,
+        digest: None,
     })
 }
 
@@ -1543,7 +1666,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             start0.value,
             NonCodeValue::BlockComment {
                 value: "comment at start".to_owned(),
-                style: CommentStyle::Block,
+                style: CommentStyle::Block
             }
         );
         assert_eq!(start1.value, NonCodeValue::NewLine);
@@ -1609,18 +1732,24 @@ const mySk1 = startSketchAt([0, 0])"#;
                             end: 33,
                             value: 2u32.into(),
                             raw: "2".to_owned(),
+                            digest: None,
                         })),
+                        digest: None,
                     })],
                     non_code_meta: NonCodeMeta {
                         non_code_nodes: Default::default(),
                         start: vec![NonCodeNode {
                             start: 7,
                             end: 25,
-                            value: NonCodeValue::NewLine
+                            value: NonCodeValue::NewLine,
+                            digest: None
                         }],
+                        digest: None,
                     },
+                    digest: None,
                 },
                 return_type: None,
+                digest: None,
             }
         );
     }
@@ -1642,7 +1771,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             non_code_meta.non_code_nodes.get(&2).unwrap()[0].value,
             NonCodeValue::InlineComment {
                 value: "inline-comment".to_owned(),
-                style: CommentStyle::Line,
+                style: CommentStyle::Line
             }
         );
         assert_eq!(body.len(), 4);
@@ -1667,8 +1796,9 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 20,
                 value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_owned(),
-                    style: CommentStyle::Line,
+                    style: CommentStyle::Line
                 },
+                digest: None,
             }],
             non_code_meta.start,
         );
@@ -1679,13 +1809,15 @@ const mySk1 = startSketchAt([0, 0])"#;
                     end: 82,
                     value: NonCodeValue::InlineComment {
                         value: "block\n  comment".to_owned(),
-                        style: CommentStyle::Block,
+                        style: CommentStyle::Block
                     },
+                    digest: None,
                 },
                 NonCodeNode {
                     start: 82,
                     end: 86,
                     value: NonCodeValue::NewLine,
+                    digest: None,
                 },
             ]),
             non_code_meta.non_code_nodes.get(&0),
@@ -1696,8 +1828,9 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 129,
                 value: NonCodeValue::BlockComment {
                     value: "this is also a comment".to_owned(),
-                    style: CommentStyle::Line,
+                    style: CommentStyle::Line
                 },
+                digest: None,
             }]),
             non_code_meta.non_code_nodes.get(&1),
         );
@@ -1716,7 +1849,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             actual.non_code_meta.non_code_nodes.get(&0).unwrap()[0].value,
             NonCodeValue::InlineComment {
                 value: "block\n  comment".to_owned(),
-                style: CommentStyle::Block,
+                style: CommentStyle::Block
             }
         );
     }
@@ -1765,6 +1898,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 10,
                 value: 3u32.into(),
                 raw: "3".to_owned(),
+                digest: None,
             }))
         );
     }
@@ -1898,6 +2032,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hi".to_owned(),
                         style: CommentStyle::Line,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1909,6 +2044,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1920,6 +2056,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1931,6 +2068,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1943,6 +2081,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1957,6 +2096,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1971,6 +2111,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "hello".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
             (
@@ -1983,6 +2124,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: "block\n                    comment".to_owned(),
                         style: CommentStyle::Block,
                     },
+                    digest: None,
                 },
             ),
         ]
@@ -2126,18 +2268,22 @@ const mySk1 = startSketchAt([0, 0])"#;
                 end: 1,
                 value: 5u32.into(),
                 raw: "5".to_owned(),
+                digest: None,
             })),
             right: BinaryPart::Literal(Box::new(Literal {
                 start: 4,
                 end: 7,
                 value: "a".into(),
                 raw: r#""a""#.to_owned(),
+                digest: None,
             })),
+            digest: None,
         };
         let expected = vec![BodyItem::ExpressionStatement(ExpressionStatement {
             start: 0,
             end: 7,
             expression: Value::BinaryExpression(Box::new(expr)),
+            digest: None,
         })];
         assert_eq!(expected, actual);
     }
@@ -2239,6 +2385,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         end: 1,
                         value: 5u32.into(),
                         raw: "5".to_string(),
+                        digest: None,
                     })),
                     operator: BinaryOperator::Add,
                     right: BinaryPart::Literal(Box::new(Literal {
@@ -2246,10 +2393,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                         end: 4,
                         value: 6u32.into(),
                         raw: "6".to_string(),
+                        digest: None,
                     })),
+                    digest: None,
                 })),
+                digest: None,
             })],
             non_code_meta: NonCodeMeta::default(),
+            digest: None,
         };
 
         assert_eq!(result, expected_result);
@@ -2518,9 +2669,11 @@ e
                         start: 0,
                         end: 0,
                         name: "a".to_owned(),
+                        digest: None,
                     },
                     type_: None,
                     optional: true,
+                    digest: None,
                 }],
                 true,
             ),
@@ -2530,9 +2683,11 @@ e
                         start: 0,
                         end: 0,
                         name: "a".to_owned(),
+                        digest: None,
                     },
                     type_: None,
                     optional: false,
+                    digest: None,
                 }],
                 true,
             ),
@@ -2543,18 +2698,22 @@ e
                             start: 0,
                             end: 0,
                             name: "a".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 0,
                             end: 0,
                             name: "b".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     },
                 ],
                 true,
@@ -2566,18 +2725,22 @@ e
                             start: 0,
                             end: 0,
                             name: "a".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 0,
                             end: 0,
                             name: "b".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     },
                 ],
                 false,
@@ -2609,6 +2772,7 @@ e
                         start: 6,
                         end: 13,
                         name: "myArray".to_string(),
+                        digest: None,
                     },
                     init: Value::ArrayExpression(Box::new(ArrayExpression {
                         start: 16,
@@ -2619,73 +2783,88 @@ e
                                 end: 18,
                                 value: 0u32.into(),
                                 raw: "0".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 1u32.into(),
                                 raw: "1".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 2u32.into(),
                                 raw: "2".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 3u32.into(),
                                 raw: "3".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 4u32.into(),
                                 raw: "4".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 5u32.into(),
                                 raw: "5".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 6u32.into(),
                                 raw: "6".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 7u32.into(),
                                 raw: "7".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 8u32.into(),
                                 raw: "8".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 9u32.into(),
                                 raw: "9".to_string(),
+                                digest: None,
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
                                 value: 10u32.into(),
                                 raw: "10".to_string(),
+                                digest: None,
                             })),
                         ],
+                        digest: None,
                     })),
+                    digest: None,
                 }],
                 kind: VariableKind::Const,
+                digest: None,
             })],
             non_code_meta: NonCodeMeta::default(),
+            digest: None,
         };
 
         assert_eq!(result, expected_result);
@@ -2907,7 +3086,10 @@ let myBox = box([0,0], -3, -16, -10)
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let err = parser.ast().unwrap_err();
-        println!("{err}")
+        assert_eq!(
+            err.to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
+        );
     }
 }
 
@@ -3057,9 +3239,9 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"const mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, 'myPath')
+        |> lineTo([0, 1], %, $myPath)
         |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, 'rightPath')
+        |> lineTo([1, 0], %, $rightPath)
         |> close(%)"#
     );
     snapshot_test!(

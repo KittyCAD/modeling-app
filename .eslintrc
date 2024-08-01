@@ -4,7 +4,8 @@
       "project": "./tsconfig.json"
     },
     "plugins": [
-      "css-modules"
+      "css-modules",
+      "suggest-no-throw",
     ],
     "extends": [
       "react-app",
@@ -17,6 +18,7 @@
         "never"
       ],
       "react-hooks/exhaustive-deps": "off",
+      "suggest-no-throw/suggest-no-throw": "warn",
     },
     "overrides": [
       {
@@ -24,6 +26,12 @@
         "rules": {
           "@typescript-eslint/no-floating-promises": "warn",
           "testing-library/prefer-screen-queries": "off"
+        }
+      },
+      {
+        "files": ["src/**/*.test.ts"],
+        "rules": {
+          "suggest-no-throw/suggest-no-throw": "off",
         }
       }
     ]

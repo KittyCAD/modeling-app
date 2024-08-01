@@ -1,5 +1,6 @@
 import { parse, Program, recast, initPromise } from './wasm'
 import fs from 'node:fs'
+import { err } from 'lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -10,22 +11,27 @@ describe('recast', () => {
     const code = '1 + 2'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('variable declaration', () => {
     const code = 'const myVar = 5'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it("variable declaration that's binary with string", () => {
     const code = "const myVar = 5 + 'yo'"
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
     const codeWithOtherQuotes = 'const myVar = 5 + "yo"'
     const { ast: ast2 } = code2ast(codeWithOtherQuotes)
-    expect(recast(ast2).trim()).toBe(codeWithOtherQuotes)
+    const recastRetVal = recast(ast2)
+    if (err(recastRetVal)) throw recastRetVal
+    expect(recastRetVal.trim()).toBe(codeWithOtherQuotes)
   })
   it('test assigning two variables, the second summing with the first', () => {
     const code = `const myVar = 5
@@ -33,6 +39,7 @@ const newVar = myVar + 1
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('test assigning a var by cont concatenating two strings string', () => {
@@ -42,6 +49,7 @@ const newVar = myVar + 1
     )
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('test with function call', () => {
@@ -50,6 +58,7 @@ log(5, myVar)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('function declaration with call', () => {
@@ -62,29 +71,32 @@ log(5, myVar)
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('recast sketch declaration', () => {
     let code = `const mySketch = startSketchAt([0, 0])
-  |> lineTo([0, 1], %, "myPath")
+  |> lineTo([0, 1], %, $myPath)
   |> lineTo([1, 1], %)
-  |> lineTo([1, 0], %, "rightPath")
+  |> lineTo([1, 0], %, $rightPath)
   |> close(%)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('sketch piped into callExpression', () => {
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo([0, 1], %, "myTag")',
+      '  |> lineTo([0, 1], %, $myTag)',
       '  |> lineTo([1, 1], %)',
       '  |> rx(90, %)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('recast BinaryExpression piped into CallExpression', () => {
@@ -97,36 +109,42 @@ log(5, myVar)
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('recast nested binary expression', () => {
     const code = ['const myVar = 1 + 2 * 5'].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('recast nested binary expression with parans', () => {
     const code = ['const myVar = 1 + (1 + 2) * 5'].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('unnecessary paran wrap will be remove', () => {
     const code = ['const myVar = 1 + (2 * 5)'].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.replace('(', '').replace(')', ''))
   })
   it('complex nested binary expression', () => {
     const code = ['1 * ((2 + 3) / 4 + 5)'].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('multiplied paren expressions', () => {
     const code = ['3 + (1 + 2) * (3 + 4)'].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('recast array declaration', () => {
@@ -135,6 +153,7 @@ log(5, myVar)
     )
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('recast long array declaration', () => {
@@ -150,6 +169,7 @@ log(5, myVar)
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code.trim())
   })
   it('recast long object execution', () => {
@@ -163,6 +183,7 @@ const yo = {
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('recast short object execution', () => {
@@ -170,6 +191,7 @@ const yo = {
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('recast object execution with member expression', () => {
@@ -181,6 +203,7 @@ const myVar2 = yo['a'][key2].c
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
 })
@@ -194,6 +217,7 @@ const key = 'c'
 
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
 
     expect(recasted).toBe(code)
   })
@@ -207,6 +231,7 @@ const yo = 'bing'
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('comments at the start and end', () => {
@@ -218,6 +243,7 @@ const key = 'c'
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('comments in a fn block', () => {
@@ -233,19 +259,21 @@ const key = 'c'
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('comments in a pipe expression', () => {
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo([0, 1], %, "myTag")',
+      '  |> lineTo([0, 1], %, $myTag)',
       '  |> lineTo([1, 1], %)',
       '  // a comment',
       '  |> rx(90, %)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('comments sprinkled in all over the place', () => {
@@ -255,7 +283,7 @@ const key = 'c'
 const mySk1 = startSketchAt([0, 0])
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %) /* and
   here
   */
@@ -272,12 +300,13 @@ one more for good measure
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(`/* comment at start */
 
 const mySk1 = startSketchAt([0, 0])
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %) /* and
   here */
   // a comment between pipe expression statements
@@ -295,18 +324,21 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
     const code = 'const myVar = 2 + min(100, legLen(5, 3))'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('nested callExpression in unaryExpression', () => {
     const code = 'const myVar = -min(100, legLen(5, 3))'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('with unaryExpression in callExpression', () => {
     const code = 'const myVar = min(5, -legLen(5, 4))'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('with unaryExpression in sketch situation', () => {
@@ -316,6 +348,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
 })
@@ -323,28 +356,30 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
 describe('it recasts wrapped object expressions in pipe bodies with correct indentation', () => {
   it('with a single line', () => {
     const code = `const part001 = startSketchAt([-0.01, -0.08])
-  |> line([0.62, 4.15], %, 'seg01')
+  |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,
        offset: -1.35,
-       intersectTag: 'seg01'
+       intersectTag: $seg01
      }, %)
   |> line([-0.42, -1.72], %)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
   it('recasts wrapped object expressions NOT in pipe body correctly', () => {
     const code = `angledLineThatIntersects({
   angle: 201,
   offset: -1.35,
-  intersectTag: 'seg01'
+  intersectTag: $seg01
 }, %)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
+    if (err(recasted)) throw recasted
     expect(recasted).toBe(code)
   })
 })
@@ -362,5 +397,7 @@ describe('it recasts binary expression using brackets where needed', () => {
 
 function code2ast(code: string): { ast: Program } {
   const ast = parse(code)
+  // eslint-ignore-next-line
+  if (err(ast)) throw ast
   return { ast }
 }

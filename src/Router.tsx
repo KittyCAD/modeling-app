@@ -12,6 +12,8 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
+import { NetworkContext } from './hooks/useNetworkContext'
+import { useNetworkStatus } from './hooks/useNetworkStatus'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import DownloadAppBanner from 'components/DownloadAppBanner'
 import { WasmErrBanner } from 'components/WasmErrBanner'
@@ -31,7 +33,15 @@ import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import { getState, setState } from 'lib/tauri'
+import { AppStateProvider } from 'AppState'
 import { InteractionMapMachineProvider } from 'components/InteractionMapMachineProvider'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useMemo } from 'react'
+import { engineCommandManager } from 'lib/singletons'
+import { CoreDumpManager } from 'lib/coredump'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import toast from 'react-hot-toast'
+import { coreDump } from 'lang/wasm'
 
 const router = createBrowserRouter([
   {
@@ -45,7 +55,9 @@ const router = createBrowserRouter([
           <SettingsAuthProvider>
             <LspProvider>
               <KclContextProvider>
-                <Outlet />
+                <AppStateProvider>
+                  <Outlet />
+                </AppStateProvider>
               </KclContextProvider>
             </LspProvider>
           </SettingsAuthProvider>
@@ -88,6 +100,7 @@ const router = createBrowserRouter([
           <Auth>
             <FileMachineProvider>
               <ModelingMachineProvider>
+                <CoreDump />
                 <Outlet />
                 <App />
                 <CommandBar />
@@ -158,5 +171,38 @@ const router = createBrowserRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  return <RouterProvider router={router} />
+  const networkStatus = useNetworkStatus()
+
+  return (
+    <NetworkContext.Provider value={networkStatus}>
+      <RouterProvider router={router} />
+    </NetworkContext.Provider>
+  )
+}
+
+function CoreDump() {
+  const { auth } = useSettingsAuthContext()
+  const token = auth?.context?.token
+  const coreDumpManager = useMemo(
+    () => new CoreDumpManager(engineCommandManager, token),
+    []
+  )
+  useHotkeyWrapper(['meta + shift + .'], () => {
+    toast.promise(
+      coreDump(coreDumpManager, true),
+      {
+        loading: 'Starting core dump...',
+        success: 'Core dump completed successfully',
+        error: 'Error while exporting core dump',
+      },
+      {
+        success: {
+          // Note: this extended duration is especially important for Playwright e2e testing
+          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+          duration: 6000,
+        },
+      }
+    )
+  })
+  return null
 }

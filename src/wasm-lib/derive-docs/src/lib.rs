@@ -96,10 +96,16 @@ fn do_stdlib_inner(
     }
 
     if !ast.sig.generics.params.is_empty() {
-        errors.push(Error::new_spanned(
-            &ast.sig.generics,
-            "generics are not permitted for stdlib functions",
-        ));
+        if ast.sig.generics.params.iter().any(|generic_type| match generic_type {
+            syn::GenericParam::Lifetime(_) => false,
+            syn::GenericParam::Type(_) => true,
+            syn::GenericParam::Const(_) => true,
+        }) {
+            errors.push(Error::new_spanned(
+                &ast.sig.generics,
+                "Stdlib functions may not be generic over types or constants, only lifetimes.",
+            ));
+        }
     }
 
     if ast.sig.variadic.is_some() {
@@ -650,7 +656,12 @@ impl Parse for ItemFnForSignature {
 }
 
 fn clean_ty_string(t: &str) -> (String, proc_macro2::TokenStream) {
-    let mut ty_string = t.replace('&', "").replace("mut", "").replace(' ', "");
+    let mut ty_string = t
+        .replace("& 'a", "")
+        .replace('&', "")
+        .replace("mut", "")
+        .replace("< 'a >", "")
+        .replace(' ', "");
     if ty_string.starts_with("Args") {
         ty_string = "Args".to_string();
     }
@@ -750,84 +761,15 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 is_mock: true,
             };
 
-            ctx.run(program, None).await.unwrap();
+            ctx.run(&program, None).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
         async fn #test_name() {
-            let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-            let http_client = reqwest::Client::builder()
-                .user_agent(user_agent)
-                // For file conversions we need this to be long.
-                .timeout(std::time::Duration::from_secs(600))
-                .connect_timeout(std::time::Duration::from_secs(60));
-            let ws_client = reqwest::Client::builder()
-                .user_agent(user_agent)
-                // For file conversions we need this to be long.
-                .timeout(std::time::Duration::from_secs(600))
-                .connect_timeout(std::time::Duration::from_secs(60))
-                .connection_verbose(true)
-                .tcp_keepalive(std::time::Duration::from_secs(600))
-                .http1_only();
-
-            let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-            // Create the client.
-            let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-            // Set a local engine address if it's set.
-            if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-                client.set_base_url(addr);
-            }
-
-            let tokens = crate::token::lexer(#code_block).unwrap();
-            let parser = crate::parser::Parser::new(tokens);
-            let program = parser.ast().unwrap();
-            let ctx = crate::executor::ExecutorContext::new(&client, Default::default()).await.unwrap();
-
-            ctx.run(program, None).await.unwrap();
-
-            // Zoom to fit.
-            ctx.engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    crate::executor::SourceRange::default(),
-                    kittycad::types::ModelingCmd::ZoomToFit {
-                        object_ids: Default::default(),
-                        padding: 0.1,
-                    },
-                )
-                .await.unwrap();
-
-            // Send a snapshot request to the engine.
-            let resp = ctx
-                .engine
-                .send_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    crate::executor::SourceRange::default(),
-                    kittycad::types::ModelingCmd::TakeSnapshot {
-                        format: kittycad::types::ImageFormat::Png,
-                    },
-                )
-                .await.unwrap();
-
-            // Create a temporary file to write the output to.
-            let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
-
-            if let kittycad::types::OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
-            } = &resp
-            {
-                // Save the snapshot locally.
-                std::fs::write(&output_file, &data.contents.0).unwrap();
-            } else {
-                panic!("Unexpected response from engine: {:?}", resp);
-            }
-
-
-            // Read the output file.
-            let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
-            twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #test_name_str), &actual, 1.0);
-
+            let code = #code_block;
+            // Note, `crate` must be kcl_lib
+            let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm).await.unwrap();
+            twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #test_name_str), &result, 0.99);
         }
     }
 }

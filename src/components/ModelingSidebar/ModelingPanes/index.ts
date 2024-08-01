@@ -14,6 +14,7 @@ import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
+import { useKclContext } from 'lang/KclProvider'
 
 export type SidebarType =
   | 'code'
@@ -27,6 +28,14 @@ export type SidebarType =
 
 const PANE_KEYBINDING_PREFIX = 'alt+p ' as const
 
+/**
+ * This interface can be extended as more context is needed for the panes
+ * to determine if they should show their badges or not.
+ */
+interface PaneCallbackProps {
+  kclContext: ReturnType<typeof useKclContext>
+}
+
 export type SidebarPane = {
   id: SidebarType
   title: string
@@ -35,9 +44,10 @@ export type SidebarPane = {
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
   hideOnPlatform?: 'desktop' | 'web'
+  showBadge?: (props: PaneCallbackProps) => boolean | number
 }
 
-export const topPanes: SidebarPane[] = [
+export const sidebarPanes: SidebarPane[] = [
   {
     id: 'code',
     title: 'KCL Code',
@@ -55,9 +65,6 @@ export const topPanes: SidebarPane[] = [
     Menu: FileTreeMenu,
     hideOnPlatform: 'web',
   },
-]
-
-export const bottomPanes: SidebarPane[] = [
   {
     id: 'variables',
     title: 'Variables',
@@ -79,6 +86,7 @@ export const bottomPanes: SidebarPane[] = [
     icon: faExclamationCircle,
     Content: KclErrorsPane,
     keybinding: PANE_KEYBINDING_PREFIX + 'e',
+    showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
     id: 'debug',

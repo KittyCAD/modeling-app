@@ -166,8 +166,11 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       scrollCallback: () => true,
     },
     rotate: {
-      description: 'Middle click + drag',
-      callback: (e) => buttonName(e).middle && noModifiersPressed(e),
+      description: 'Middle (or Left + Right) click + Ctrl + drag',
+      callback: (e) => {
+        const b = buttonName(e)
+        return (b.middle || (b.left && b.right)) && e.ctrlKey
+      },
     },
   },
   AutoCAD: {

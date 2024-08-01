@@ -2,8 +2,10 @@ import {
   createArrayExpression,
   createBinaryExpression,
   createCallExpressionStdLib,
+  createIdentifier,
   createLiteral,
   createPipeSubstitution,
+  createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
 import { roundOff } from './utils'
@@ -13,62 +15,53 @@ import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn('XY')
  *  |> startProfileAt([0, 0], %)
- *  |> angledLine([0, 0], %, 'a')
- *  |> angledLine([segAng('a', %) - 90, 0], %, 'b')
- *  |> angledLine([segAng('a', %), -segLen('a', %)], %, 'c')
+ *  |> angledLine([0, 0], %, $a)
+ *  |> angledLine([segAng(a) - 90, 0], %, $b)
+ *  |> angledLine([segAng(a), -segLen(a)], %, $c)
  *  |> close(%)
  */
 export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],
   tags: [string, string, string]
 ) => [
-  createCallExpressionStdLib('startProfileAt', [
-    createArrayExpression([
-      createLiteral(roundOff(rectangleOrigin[0])),
-      createLiteral(roundOff(rectangleOrigin[1])),
-    ]),
-    createPipeSubstitution(),
-  ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createLiteral(0), // 0 deg
       createLiteral(0), // This will be the width of the rectangle
     ]),
     createPipeSubstitution(),
-    createLiteral(tags[0]),
+    createTagDeclarator(tags[0]),
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [
-          createLiteral(tags[0]),
-          createPipeSubstitution(),
-        ]),
+        createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
       createLiteral(0), // This will be the height of the rectangle
     ]),
     createPipeSubstitution(),
-    createLiteral(tags[1]),
+    createTagDeclarator(tags[1]),
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
-      createCallExpressionStdLib('segAng', [
-        createLiteral(tags[0]),
-        createPipeSubstitution(),
-      ]), // same angle as the first line
+      createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [
-          createLiteral(tags[0]),
-          createPipeSubstitution(),
-        ]),
+        createCallExpressionStdLib('segLen', [createIdentifier(tags[0])]),
         '-'
       ), // negative height
     ]),
     createPipeSubstitution(),
-    createLiteral(tags[2]),
+    createTagDeclarator(tags[2]),
   ]),
+  createCallExpressionStdLib('lineTo', [
+    createArrayExpression([
+      createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
+      createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
+    ]),
+    createPipeSubstitution(),
+  ]), // close the rectangle
   createCallExpressionStdLib('close', [createPipeSubstitution()]),
 ]
 
@@ -93,10 +86,7 @@ export function updateRectangleSketch(
   ;((pipeExpression.body[3] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [
-        createLiteral(tag),
-        createPipeSubstitution(),
-      ]),
+      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ]), // 90 offset from the previous line

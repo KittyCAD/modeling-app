@@ -1,4 +1,5 @@
-import { SettingsLevel } from 'lib/settings/settingsTypes'
+import { ActionButton } from '../components/ActionButton'
+import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { paths } from 'lib/paths'
@@ -11,8 +12,12 @@ import { SettingsTabs } from 'components/Settings/SettingsTabs'
 import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
 import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
 import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
+import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
+import { isTauri } from 'lib/isTauri'
 
-export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
+export const APP_VERSION = isTauri()
+  ? import.meta.env.PACKAGE_VERSION || 'unknown'
+  : 'main'
 
 export const Settings = () => {
   const navigate = useNavigate()
@@ -111,7 +116,7 @@ export const Settings = () => {
                 </>
               ) : (
                 <>
-                  <p>KEYBINDINGS MFER</p>
+                  <KeybindingsSectionsList scrollRef={scrollRef} />
                   <AllKeybindingsFields />
                 </>
               )}

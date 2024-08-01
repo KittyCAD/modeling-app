@@ -3,13 +3,21 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from 'vite-plugin-eslint'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
+// @ts-ignore: No types available
+import { lezer } from '@lezer/generator/rollup'
 
 const config = defineConfig({
   server: {
     open: true,
     port: 3000,
     watch: {
-      ignored: ['**/target/**'],
+      ignored: [
+        '**/target/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/test-results/**',
+        '**/playwright-report/**',
+      ],
     },
   },
   test: {
@@ -26,7 +34,7 @@ const config = defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
     },
-    exclude: [...configDefaults.exclude, '**/e2e/playwright/**/*'],
+    exclude: [...configDefaults.exclude, '**/e2e/**/*'],
     deps: {
       optimizer: {
         web: {
@@ -47,7 +55,12 @@ const config = defineConfig({
   build: {
     outDir: 'build',
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version()],
+  resolve: {
+    alias: {
+      '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
+    },
+  },
+  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer()],
   worker: {
     plugins: () => [viteTsconfigPaths()],
   },

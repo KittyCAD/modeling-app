@@ -8,8 +8,11 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, MemoryItem, UserVal},
+    executor::{
+        ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, FilletSurface, GeoMeta, MemoryItem, TagIdentifier, UserVal,
+    },
     std::Args,
 };
 
@@ -26,22 +29,23 @@ pub struct FilletData {
     pub tags: Vec<EdgeReference>,
 }
 
-/// A string or a uuid.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
+/// A tag or a uuid of an edge.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Ord, PartialOrd, Hash)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum EdgeReference {
     /// A uuid of an edge.
     Uuid(uuid::Uuid),
-    /// A tag name of an edge.
-    Tag(String),
+    /// A tag of an edge.
+    Tag(Box<TagIdentifier>),
 }
 
 /// Create fillets on tagged paths.
 pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (FilletData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
+        args.get_data_and_extrude_group_and_tag()?;
 
-    let extrude_group = inner_fillet(data, extrude_group, args).await?;
+    let extrude_group = inner_fillet(data, extrude_group, tag, args).await?;
     Ok(MemoryItem::ExtrudeGroup(extrude_group))
 }
 
@@ -55,19 +59,19 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
-///   |> lineTo([width/2, -length/2], %, 'edge1')
-///   |> lineTo([width/2, length/2], %, 'edge2')
-///   |> lineTo([-width/2, length/2], %, 'edge3')
-///   |> close(%, 'edge4')
+///   |> lineTo([width/2, -length/2], %, $edge1)
+///   |> lineTo([width/2, length/2], %, $edge2)
+///   |> lineTo([-width/2, length/2], %, $edge3)
+///   |> close(%, $edge4)
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
 ///     radius: filletRadius,
 ///     tags: [
-///       getNextAdjacentEdge('edge1', %),
-///       getNextAdjacentEdge('edge2', %),
-///       getNextAdjacentEdge('edge3', %),
-///       getNextAdjacentEdge('edge4', %)
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
 ///     ],
 ///   }, %)
 /// ```
@@ -77,6 +81,7 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_fillet(
     data: FilletData,
     extrude_group: Box<ExtrudeGroup>,
+    tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -90,46 +95,56 @@ async fn inner_fillet(
         }));
     }
 
-    for tag in data.tags {
-        let edge_id = match tag {
+    let mut extrude_group = extrude_group.clone();
+    let mut fillet_or_chamfers = Vec::new();
+    for edge_tag in data.tags {
+        let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(tag) => {
-                extrude_group
-                    .sketch_group_values
-                    .iter()
-                    .find(|p| p.get_name() == tag)
-                    .ok_or_else(|| {
-                        KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", tag),
-                            source_ranges: vec![args.source_range],
-                        })
-                    })?
-                    .get_base()
-                    .geo_meta
-                    .id
-            }
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
         };
 
-        args.send_modeling_cmd(
-            uuid::Uuid::new_v4(),
+        let id = uuid::Uuid::new_v4();
+        args.batch_end_cmd(
+            id,
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
                 tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
+                cut_type: Some(kittycad::types::CutType::Fillet),
             },
         )
         .await?;
+
+        fillet_or_chamfers.push(FilletOrChamfer::Fillet {
+            id,
+            edge_id,
+            radius: data.radius,
+            tag: Box::new(tag.clone()),
+        });
+
+        if let Some(ref tag) = tag {
+            extrude_group.value.push(ExtrudeSurface::Fillet(FilletSurface {
+                face_id: edge_id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
+
+    extrude_group.fillet_or_chamfers = fillet_or_chamfers;
 
     Ok(extrude_group)
 }
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_opposite_edge(tag, extrude_group, args.clone()).await?;
+    let edge = inner_get_opposite_edge(tag, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -159,42 +174,32 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> angledLine({
 ///     angle: 240,
 ///     length: 10,
-///   }, %, 'referenceEdge')
+///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getOppositeEdge("referenceEdge", %)],
+///     tags: [getOppositeEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
     name = "getOppositeEdge",
 }]
-async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_opposite_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = extrude_group
-        .sketch_group_values
-        .iter()
-        .find(|p| p.get_name() == tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let tagged_path = args.get_tag_engine_info(&tag)?;
 
-    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DGetOppositeEdge {
-                edge_id: tagged_path.geo_meta.id,
-                object_id: extrude_group.id,
+                edge_id: tagged_path.id,
+                object_id: tagged_path.sketch_group,
                 face_id,
             },
         )
@@ -214,9 +219,9 @@ async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, 
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_next_adjacent_edge(tag, extrude_group, args.clone()).await?;
+    let edge = inner_get_next_adjacent_edge(tag, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -246,46 +251,32 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
 ///   |> angledLine({
 ///     angle: 240,
 ///     length: 10,
-///   }, %, 'referenceEdge')
+///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getNextAdjacentEdge("referenceEdge", %)],
+///     tags: [getNextAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
 }]
-async fn inner_get_next_adjacent_edge(
-    tag: String,
-    extrude_group: Box<ExtrudeGroup>,
-    args: Args,
-) -> Result<Uuid, KclError> {
+async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = extrude_group
-        .sketch_group_values
-        .iter()
-        .find(|p| p.get_name() == tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let tagged_path = args.get_tag_engine_info(&tag)?;
 
-    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                edge_id: tagged_path.geo_meta.id,
-                object_id: extrude_group.id,
+                edge_id: tagged_path.id,
+                object_id: tagged_path.sketch_group,
                 face_id,
             },
         )
@@ -302,7 +293,7 @@ async fn inner_get_next_adjacent_edge(
 
     ajacent_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No edge found next adjacent to tag: `{}`", tag),
+            message: format!("No edge found next adjacent to tag: `{}`", tag.value),
             source_ranges: vec![args.source_range],
         })
     })
@@ -310,9 +301,9 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
-    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_previous_adjacent_edge(tag, extrude_group, args.clone()).await?;
+    let edge = inner_get_previous_adjacent_edge(tag, args.clone()).await?;
     Ok(MemoryItem::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -342,46 +333,32 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
 ///   |> angledLine({
 ///     angle: 240,
 ///     length: 10,
-///   }, %, 'referenceEdge')
+///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius: 3,
-///     tags: [getPreviousAdjacentEdge("referenceEdge", %)],
+///     tags: [getPreviousAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
 }]
-async fn inner_get_previous_adjacent_edge(
-    tag: String,
-    extrude_group: Box<ExtrudeGroup>,
-    args: Args,
-) -> Result<Uuid, KclError> {
+async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = extrude_group
-        .sketch_group_values
-        .iter()
-        .find(|p| p.get_name() == tag)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("No edge found with tag: `{}`", tag),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
+    let tagged_path = args.get_tag_engine_info(&tag)?;
 
-    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
 
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DGetNextAdjacentEdge {
-                edge_id: tagged_path.geo_meta.id,
-                object_id: extrude_group.id,
+                edge_id: tagged_path.id,
+                object_id: tagged_path.sketch_group,
                 face_id,
             },
         )
@@ -398,25 +375,8 @@ async fn inner_get_previous_adjacent_edge(
 
     ajacent_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No edge found previous adjacent to tag: `{}`", tag),
+            message: format!("No edge found previous adjacent to tag: `{}`", tag.value),
             source_ranges: vec![args.source_range],
         })
     })
-}
-
-fn get_adjacent_face_to_tag(extrude_group: &ExtrudeGroup, tag: &str, args: &Args) -> Result<uuid::Uuid, KclError> {
-    extrude_group
-        .value
-        .iter()
-        .find_map(|extrude_surface| match extrude_surface {
-            ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => Some(Ok(extrude_plane.face_id)),
-            ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == tag => Some(Ok(extrude_arc.face_id)),
-            ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
-        })
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a face with the tag `{}`", tag),
-                source_ranges: vec![args.source_range],
-            })
-        })?
 }

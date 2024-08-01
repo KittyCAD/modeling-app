@@ -98,7 +98,7 @@ export const AllSettingsFields = forwardRef(
                         id={settingName}
                         className={
                           location.hash === `#${settingName}`
-                            ? 'bg-primary/10 dark:bg-chalkboard-90'
+                            ? 'bg-primary/5 dark:bg-chalkboard-90'
                             : ''
                         }
                         key={`${category}-${settingName}-${searchParamTab}`}

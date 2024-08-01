@@ -1,6 +1,11 @@
 //! Data types for the AST.
 
-use std::{collections::HashMap, fmt::Write, ops::RangeInclusive};
+use std::{
+    collections::HashMap,
+    fmt::Write,
+    ops::RangeInclusive,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::Result;
 use databake::*;
@@ -8,6 +13,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as JValue};
+use sha2::{Digest as DigestTrait, Sha256};
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
@@ -17,7 +23,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind, UserVal,
+        BodyType, DynamicState, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange,
+        StatementKind, TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -25,6 +32,9 @@ use crate::{
 
 mod literal_value;
 mod none;
+
+/// Position-independent digest of the AST node.
+pub type Digest = [u8; 32];
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -35,9 +45,43 @@ pub struct Program {
     pub end: usize,
     pub body: Vec<BodyItem>,
     pub non_code_meta: NonCodeMeta,
+
+    pub digest: Option<Digest>,
+}
+
+macro_rules! compute_digest {
+    (|$slf:ident, $hasher:ident| $body:block) => {
+        /// Compute a digest over the AST node.
+        pub fn compute_digest(&mut self) -> Digest {
+            if let Some(node_digest) = self.digest {
+                return node_digest;
+            }
+
+            let mut $hasher = Sha256::new();
+
+            #[allow(unused_mut)]
+            let mut $slf = self;
+
+            $hasher.update(std::any::type_name::<Self>());
+
+            $body
+
+            let node_digest: Digest = $hasher.finalize().into();
+            $slf.digest = Some(node_digest);
+            node_digest
+        }
+    };
 }
 
 impl Program {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.body.len().to_ne_bytes());
+        for body_item in slf.body.iter_mut() {
+            hasher.update(body_item.compute_digest());
+        }
+        hasher.update(slf.non_code_meta.compute_digest());
+    });
+
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         // Check if we are in the non code meta.
         if let Some(meta) = self.get_non_code_meta_for_position(pos) {
@@ -147,6 +191,55 @@ impl Program {
         }
     }
 
+    /// Check the provided Program for any lint findings.
+    pub fn lint<'a, RuleT>(&'a self, rule: RuleT) -> Result<Vec<crate::lint::Discovered>>
+    where
+        RuleT: crate::lint::rule::Rule<'a>,
+    {
+        let v = Arc::new(Mutex::new(vec![]));
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+            let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            findings.append(&mut rule.check(node)?);
+            Ok(true)
+        })?;
+        let x = v.lock().unwrap();
+        Ok(x.clone())
+    }
+
+    pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
+        let rules = vec![
+            crate::lint::checks::lint_variables,
+            crate::lint::checks::lint_object_properties,
+            crate::lint::checks::lint_call_expressions,
+        ];
+
+        let mut findings = vec![];
+        for rule in rules {
+            findings.append(&mut self.lint(rule)?);
+        }
+        Ok(findings)
+    }
+
+    /// Walk the ast and get all the variables and tags as completion items.
+    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
+        let completions = Arc::new(Mutex::new(vec![]));
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::walk::Node::TagDeclarator(tag) => {
+                    findings.push(tag.into());
+                }
+                crate::walk::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                }
+                _ => {}
+            }
+            Ok(true)
+        })?;
+        let x = completions.lock().unwrap();
+        Ok(x.clone())
+    }
+
     /// Returns the body item that includes the given character position.
     pub fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
         for item in &self.body {
@@ -212,21 +305,23 @@ impl Program {
     }
 
     /// Returns all the lsp symbols in the program.
-    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
-        let mut symbols = vec![];
-        for item in &self.body {
-            match item {
-                BodyItem::ExpressionStatement(_expression_statement) => {
-                    continue;
+    pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
+        let symbols = Arc::new(Mutex::new(vec![]));
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+            let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::walk::Node::TagDeclarator(tag) => {
+                    findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    symbols.extend(variable_declaration.get_lsp_symbols(code))
+                crate::walk::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                _ => {}
             }
-        }
-
-        symbols
+            Ok(true)
+        })?;
+        let x = symbols.lock().unwrap();
+        Ok(x.clone())
     }
 
     // Return all the lsp folding ranges in the program.
@@ -438,6 +533,14 @@ pub enum BodyItem {
 }
 
 impl BodyItem {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            BodyItem::ExpressionStatement(es) => es.compute_digest(),
+            BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
+            BodyItem::ReturnStatement(rs) => rs.compute_digest(),
+        }
+    }
+
     pub fn start(&self) -> usize {
         match self {
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start(),
@@ -474,6 +577,7 @@ impl From<&BodyItem> for SourceRange {
 pub enum Value {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
+    TagDeclarator(Box<TagDeclarator>),
     BinaryExpression(Box<BinaryExpression>),
     FunctionExpression(Box<FunctionExpression>),
     CallExpression(Box<CallExpression>),
@@ -487,6 +591,28 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            Value::Literal(lit) => lit.compute_digest(),
+            Value::Identifier(id) => id.compute_digest(),
+            Value::TagDeclarator(tag) => tag.compute_digest(),
+            Value::BinaryExpression(be) => be.compute_digest(),
+            Value::FunctionExpression(fe) => fe.compute_digest(),
+            Value::CallExpression(ce) => ce.compute_digest(),
+            Value::PipeExpression(pe) => pe.compute_digest(),
+            Value::PipeSubstitution(ps) => ps.compute_digest(),
+            Value::ArrayExpression(ae) => ae.compute_digest(),
+            Value::ObjectExpression(oe) => oe.compute_digest(),
+            Value::MemberExpression(me) => me.compute_digest(),
+            Value::UnaryExpression(ue) => ue.compute_digest(),
+            Value::None(_) => {
+                let mut hasher = Sha256::new();
+                hasher.update(b"Value::None");
+                hasher.finalize().into()
+            }
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         match &self {
             Value::BinaryExpression(bin_exp) => bin_exp.recast(options),
@@ -497,6 +623,7 @@ impl Value {
             Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
             Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
             Value::Identifier(ident) => ident.name.to_string(),
+            Value::TagDeclarator(tag) => tag.recast(),
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
@@ -537,6 +664,7 @@ impl Value {
             Value::FunctionExpression(_func_exp) => None,
             Value::CallExpression(_call_exp) => None,
             Value::Identifier(_ident) => None,
+            Value::TagDeclarator(_tag) => None,
             Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Value::UnaryExpression(_unary_exp) => None,
             Value::PipeSubstitution(_pipe_substitution) => None,
@@ -559,6 +687,7 @@ impl Value {
             Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Value::Identifier(_) => {}
+            Value::TagDeclarator(_) => {}
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
@@ -570,6 +699,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.start(),
             Value::Identifier(identifier) => identifier.start(),
+            Value::TagDeclarator(tag) => tag.start(),
             Value::BinaryExpression(binary_expression) => binary_expression.start(),
             Value::FunctionExpression(function_expression) => function_expression.start(),
             Value::CallExpression(call_expression) => call_expression.start(),
@@ -587,6 +717,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.end(),
             Value::Identifier(identifier) => identifier.end(),
+            Value::TagDeclarator(tag) => tag.end(),
             Value::BinaryExpression(binary_expression) => binary_expression.end(),
             Value::FunctionExpression(function_expression) => function_expression.end(),
             Value::CallExpression(call_expression) => call_expression.end(),
@@ -618,6 +749,7 @@ impl Value {
             Value::None(_) => None,
             Value::Literal(_) => None,
             Value::Identifier(_) => None,
+            Value::TagDeclarator(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Value::PipeSubstitution(_) => None,
         }
@@ -628,6 +760,7 @@ impl Value {
         match self {
             Value::Literal(_literal) => {}
             Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Value::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
             Value::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -652,6 +785,7 @@ impl Value {
         match self {
             Value::Literal(literal) => literal.get_constraint_level(),
             Value::Identifier(identifier) => identifier.get_constraint_level(),
+            Value::TagDeclarator(tag) => tag.get_constraint_level(),
             Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
@@ -707,6 +841,17 @@ impl From<&BinaryPart> for SourceRange {
 }
 
 impl BinaryPart {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            BinaryPart::Literal(lit) => lit.compute_digest(),
+            BinaryPart::Identifier(id) => id.compute_digest(),
+            BinaryPart::BinaryExpression(be) => be.compute_digest(),
+            BinaryPart::CallExpression(ce) => ce.compute_digest(),
+            BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
+            BinaryPart::MemberExpression(me) => me.compute_digest(),
+        }
+    }
+
     /// Get the constraint level.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
@@ -773,6 +918,7 @@ impl BinaryPart {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -783,10 +929,16 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, pipe_info, ctx).await
+                binary_expression
+                    .get_result(memory, dynamic_state, pipe_info, ctx)
+                    .await
             }
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await,
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await,
+            BinaryPart::CallExpression(call_expression) => {
+                call_expression.execute(memory, dynamic_state, pipe_info, ctx).await
+            }
+            BinaryPart::UnaryExpression(unary_expression) => {
+                unary_expression.get_result(memory, dynamic_state, pipe_info, ctx).await
+            }
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
@@ -836,6 +988,8 @@ pub struct NonCodeNode {
     pub start: usize,
     pub end: usize,
     pub value: NonCodeValue,
+
+    pub digest: Option<Digest>,
 }
 
 impl From<NonCodeNode> for SourceRange {
@@ -851,6 +1005,29 @@ impl From<&NonCodeNode> for SourceRange {
 }
 
 impl NonCodeNode {
+    compute_digest!(|slf, hasher| {
+        match &slf.value {
+            NonCodeValue::Shebang { value } => {
+                hasher.update(value);
+            }
+            NonCodeValue::InlineComment { value, style } => {
+                hasher.update(value);
+                hasher.update(style.digestable_id());
+            }
+            NonCodeValue::BlockComment { value, style } => {
+                hasher.update(value);
+                hasher.update(style.digestable_id());
+            }
+            NonCodeValue::NewLineBlockComment { value, style } => {
+                hasher.update(value);
+                hasher.update(style.digestable_id());
+            }
+            NonCodeValue::NewLine => {
+                hasher.update(b"\r\n");
+            }
+        }
+    });
+
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
     }
@@ -915,6 +1092,15 @@ pub enum CommentStyle {
     Block,
 }
 
+impl CommentStyle {
+    fn digestable_id(&self) -> [u8; 2] {
+        match &self {
+            CommentStyle::Line => *b"//",
+            CommentStyle::Block => *b"/*",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -969,6 +1155,8 @@ pub enum NonCodeValue {
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
     pub start: Vec<NonCodeNode>,
+
+    pub digest: Option<Digest>,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -994,11 +1182,26 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         Ok(NonCodeMeta {
             non_code_nodes,
             start: helper.start,
+            digest: None,
         })
     }
 }
 
 impl NonCodeMeta {
+    compute_digest!(|slf, hasher| {
+        let mut keys = slf.non_code_nodes.keys().copied().collect::<Vec<_>>();
+        keys.sort();
+
+        for key in keys.into_iter() {
+            hasher.update(key.to_ne_bytes());
+            let nodes = slf.non_code_nodes.get_mut(&key).unwrap();
+            hasher.update(nodes.len().to_ne_bytes());
+            for node in nodes.iter_mut() {
+                hasher.update(node.compute_digest());
+            }
+        }
+    });
+
     pub fn insert(&mut self, i: usize, new: NonCodeNode) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
@@ -1022,9 +1225,17 @@ pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
     pub expression: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ExpressionStatement);
+
+impl ExpressionStatement {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.expression.compute_digest());
+    });
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -1036,6 +1247,8 @@ pub struct CallExpression {
     pub callee: Identifier,
     pub arguments: Vec<Value>,
     pub optional: bool,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(CallExpression);
@@ -1054,8 +1267,18 @@ impl CallExpression {
             callee: Identifier::new(name),
             arguments,
             optional: false,
+            digest: None,
         })
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.callee.compute_digest());
+        hasher.update(slf.arguments.len().to_ne_bytes());
+        for argument in slf.arguments.iter_mut() {
+            hasher.update(argument.compute_digest());
+        }
+        hasher.update(if slf.optional { [1] } else { [0] });
+    });
 
     /// Is at least one argument the '%' i.e. the substitution operator?
     pub fn has_substitution_arg(&self) -> bool {
@@ -1076,7 +1299,12 @@ impl CallExpression {
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
-            "{}({})",
+            "{}{}({})",
+            if is_in_pipe {
+                "".to_string()
+            } else {
+                options.get_indentation(indentation_level)
+            },
             self.callee.name,
             self.arguments
                 .iter()
@@ -1090,6 +1318,7 @@ impl CallExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -1102,7 +1331,14 @@ impl CallExpression {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
             let result = ctx
-                .arg_into_mem_item(arg, memory, pipe_info, &metadata, StatementKind::Expression)
+                .arg_into_mem_item(
+                    arg,
+                    memory,
+                    dynamic_state,
+                    pipe_info,
+                    &metadata,
+                    StatementKind::Expression,
+                )
                 .await?;
             fn_args.push(result);
         }
@@ -1110,8 +1346,70 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
-                let result = func.std_lib_fn()(args).await?;
+                let args =
+                    crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone(), dynamic_state.clone());
+                let mut result = func.std_lib_fn()(args).await?;
+
+                // If the return result is a sketch group or extrude group, we want to update the
+                // memory for the tags of the group.
+                // TODO: This could probably be done in a better way, but as of now this was my only idea
+                // and it works.
+                match result {
+                    MemoryItem::SketchGroup(ref sketch_group) => {
+                        for (_, tag) in sketch_group.tags.iter() {
+                            memory.update_tag(&tag.value, tag.clone())?;
+                        }
+                    }
+                    MemoryItem::ExtrudeGroup(ref mut extrude_group) => {
+                        for value in &extrude_group.value {
+                            if let Some(tag) = value.get_tag() {
+                                // Get the past tag and update it.
+                                let mut t = if let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) {
+                                    t.clone()
+                                } else {
+                                    // It's probably a fillet or a chamfer.
+                                    // Initialize it.
+                                    TagIdentifier {
+                                        value: tag.name.clone(),
+                                        info: Some(TagEngineInfo {
+                                            id: value.get_id(),
+                                            surface: Some(value.clone()),
+                                            path: None,
+                                            sketch_group: extrude_group.id,
+                                        }),
+                                        meta: vec![Metadata {
+                                            source_range: tag.clone().into(),
+                                        }],
+                                    }
+                                };
+
+                                let Some(ref info) = t.info else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("Tag {} does not have path info", tag.name),
+                                        source_ranges: vec![tag.into()],
+                                    }));
+                                };
+
+                                let mut info = info.clone();
+                                info.surface = Some(value.clone());
+                                info.sketch_group = extrude_group.id;
+                                t.info = Some(info);
+
+                                memory.update_tag(&tag.name, t.clone())?;
+
+                                // update the sketch group tags.
+                                extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
+                            }
+                        }
+
+                        // Find the stale sketch group in memory and update it.
+                        if let Some(current_env) = memory.environments.get_mut(memory.current_env.index()) {
+                            current_env.update_sketch_group_tags(&extrude_group.sketch_group);
+                        }
+                    }
+                    _ => {}
+                }
+
                 Ok(result)
             }
             FunctionKind::Std(func) => {
@@ -1158,9 +1456,14 @@ impl CallExpression {
                     }
                 }
 
+                let mut fn_dynamic_state = dynamic_state.clone();
+
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match ctx.inner_execute(p, &mut fn_memory, BodyType::Block).await {
+                let results = match ctx
+                    .inner_execute(&p, &mut fn_memory, &mut fn_dynamic_state, BodyType::Block)
+                    .await
+                {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
@@ -1175,26 +1478,27 @@ impl CallExpression {
                         source_ranges: vec![self.into()],
                     })
                 })?;
-                let result = result.get_value()?;
 
+                let result = result.get_value()?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
+                let fn_dynamic_state = dynamic_state.merge(memory);
                 let result = func
-                    .call_fn(fn_args, memory.clone(), ctx.clone())
+                    .call_fn(fn_args, &fn_dynamic_state, ctx.clone())
                     .await
                     .map_err(|e| {
                         // Add the call expression to the source ranges.
                         e.add_source_ranges(vec![self.into()])
-                    })?
-                    .ok_or_else(|| {
-                        KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of user-defined function {} is undefined", fn_name),
-                            source_ranges: vec![self.into()],
-                        })
                     })?;
 
+                let result = result.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
                 let result = result.get_value()?;
 
                 Ok(result)
@@ -1292,20 +1596,64 @@ pub struct VariableDeclaration {
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
     pub kind: VariableKind, // Change to enum if there are specific values
+
+    pub digest: Option<Digest>,
+}
+
+impl From<&VariableDeclaration> for Vec<CompletionItem> {
+    fn from(declaration: &VariableDeclaration) -> Self {
+        let mut completions = vec![];
+        for variable in &declaration.declarations {
+            completions.push(CompletionItem {
+                label: variable.id.name.to_string(),
+                label_details: None,
+                kind: Some(match declaration.kind {
+                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
+                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                }),
+                detail: Some(declaration.kind.to_string()),
+                documentation: None,
+                deprecated: None,
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            })
+        }
+        completions
+    }
 }
 
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.declarations.len().to_ne_bytes());
+        for declarator in &mut slf.declarations {
+            hasher.update(declarator.compute_digest());
+        }
+        hasher.update(slf.kind.digestable_id());
+    });
+
     pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
         Self {
             start: 0,
             end: 0,
             declarations,
             kind,
+            digest: None,
         }
     }
-
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
@@ -1335,7 +1683,7 @@ impl VariableDeclaration {
                 indentation,
                 self.kind,
                 declaration.id.name,
-                declaration.init.recast(options, indentation_level, false)
+                declaration.init.recast(options, indentation_level, false).trim()
             );
             output
         })
@@ -1486,6 +1834,15 @@ pub enum VariableKind {
 }
 
 impl VariableKind {
+    fn digestable_id(&self) -> [u8; 1] {
+        match self {
+            VariableKind::Let => [1],
+            VariableKind::Const => [2],
+            VariableKind::Fn => [3],
+            VariableKind::Var => [4],
+        }
+    }
+
     pub fn to_completion_items() -> Result<Vec<CompletionItem>> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
@@ -1525,6 +1882,8 @@ pub struct VariableDeclarator {
     pub id: Identifier,
     /// The value of the variable.
     pub init: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(VariableDeclarator);
@@ -1536,8 +1895,14 @@ impl VariableDeclarator {
             end: 0,
             id: Identifier::new(name),
             init,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.id.compute_digest());
+        hasher.update(slf.init.compute_digest());
+    });
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         self.init.get_constraint_level()
@@ -1553,6 +1918,8 @@ pub struct Literal {
     pub end: usize,
     pub value: LiteralValue,
     pub raw: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(Literal);
@@ -1564,8 +1931,13 @@ impl Literal {
             end: 0,
             raw: JValue::from(value.clone()).to_string(),
             value,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.value.digestable_id());
+    });
 
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
@@ -1624,6 +1996,8 @@ pub struct Identifier {
     pub start: usize,
     pub end: usize,
     pub name: String,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(Identifier);
@@ -1634,8 +2008,15 @@ impl Identifier {
             start: 0,
             end: 0,
             name: name.to_string(),
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        let name = slf.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
+    });
 
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
@@ -1653,6 +2034,151 @@ impl Identifier {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct TagDeclarator {
+    pub start: usize,
+    pub end: usize,
+    #[serde(rename = "value")]
+    pub name: String,
+
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(TagDeclarator);
+
+impl From<Box<TagDeclarator>> for SourceRange {
+    fn from(tag: Box<TagDeclarator>) -> Self {
+        Self([tag.start, tag.end])
+    }
+}
+
+impl From<Box<TagDeclarator>> for Vec<SourceRange> {
+    fn from(tag: Box<TagDeclarator>) -> Self {
+        vec![tag.into()]
+    }
+}
+
+impl From<&Box<TagDeclarator>> for MemoryItem {
+    fn from(tag: &Box<TagDeclarator>) -> Self {
+        MemoryItem::TagDeclarator(tag.clone())
+    }
+}
+
+impl From<&TagDeclarator> for MemoryItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        MemoryItem::TagDeclarator(Box::new(tag.clone()))
+    }
+}
+
+impl From<&TagDeclarator> for TagIdentifier {
+    fn from(tag: &TagDeclarator) -> Self {
+        TagIdentifier {
+            value: tag.name.clone(),
+            info: None,
+            meta: vec![Metadata {
+                source_range: tag.into(),
+            }],
+        }
+    }
+}
+
+impl From<&TagDeclarator> for CompletionItem {
+    fn from(tag: &TagDeclarator) -> Self {
+        CompletionItem {
+            label: tag.name.to_string(),
+            label_details: None,
+            kind: Some(CompletionItemKind::REFERENCE),
+            detail: Some("tag (A reference to an entity you previously named)".to_string()),
+            documentation: None,
+            deprecated: None,
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+}
+
+impl TagDeclarator {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+            digest: None,
+        }
+    }
+
+    compute_digest!(|slf, hasher| {
+        let name = slf.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
+    });
+
+    pub fn recast(&self) -> String {
+        // TagDeclarators are always prefixed with a dollar sign.
+        format!("${}", self.name)
+    }
+
+    /// Get the constraint level for this identifier.
+    /// TagDeclarator are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if self.name == old_name {
+            self.name = new_name.to_string();
+        }
+    }
+
+    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
+        let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
+            value: self.name.clone(),
+            info: None,
+            meta: vec![Metadata {
+                source_range: self.into(),
+            }],
+        }));
+
+        memory.add(&self.name, memory_item.clone(), self.into())?;
+
+        Ok(self.into())
+    }
+
+    pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
+        let source_range: SourceRange = self.into();
+
+        vec![
+            #[allow(deprecated)]
+            DocumentSymbol {
+                name: self.name.to_string(),
+                detail: None,
+                kind: SymbolKind::CONSTANT,
+                range: source_range.to_lsp_range(code),
+                selection_range: source_range.to_lsp_range(code),
+                children: None,
+                tags: None,
+                deprecated: None,
+            },
+        ]
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1660,14 +2186,24 @@ impl Identifier {
 pub struct PipeSubstitution {
     pub start: usize,
     pub end: usize,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(PipeSubstitution);
 
 impl PipeSubstitution {
     pub fn new() -> Self {
-        Self { start: 0, end: 0 }
+        Self {
+            start: 0,
+            end: 0,
+            digest: None,
+        }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(b"PipeSubstitution");
+    });
 }
 
 impl Default for PipeSubstitution {
@@ -1690,6 +2226,8 @@ pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Value>,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ArrayExpression);
@@ -1706,8 +2244,16 @@ impl ArrayExpression {
             start: 0,
             end: 0,
             elements,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.elements.len().to_ne_bytes());
+        for value in slf.elements.iter_mut() {
+            hasher.update(value.compute_digest());
+        }
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for element in &mut self.elements {
@@ -1751,7 +2297,7 @@ impl ArrayExpression {
                 inner_indentation,
                 self.elements
                     .iter()
-                    .map(|el| el.recast(options, indentation_level, false))
+                    .map(|el| el.recast(options, indentation_level, is_in_pipe))
                     .collect::<Vec<String>>()
                     .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
@@ -1781,6 +2327,7 @@ impl ArrayExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -1789,19 +2336,36 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
+                    binary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
                 }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::CallExpression(call_expression) => {
+                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::ArrayExpression(array_expression) => {
+                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::PipeExpression(pipe_expression) => {
+                    pipe_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -1845,6 +2409,8 @@ pub struct ObjectExpression {
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
+
+    pub digest: Option<Digest>,
 }
 
 impl ObjectExpression {
@@ -1853,8 +2419,16 @@ impl ObjectExpression {
             start: 0,
             end: 0,
             properties,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.properties.len().to_ne_bytes());
+        for prop in slf.properties.iter_mut() {
+            hasher.update(prop.compute_digest());
+        }
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for property in &mut self.properties {
@@ -1886,7 +2460,7 @@ impl ObjectExpression {
                     format!(
                         "{}: {}",
                         prop.key.name,
-                        prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
                     )
                 })
                 .collect::<Vec<String>>()
@@ -1940,6 +2514,7 @@ impl ObjectExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -1947,19 +2522,36 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
+                Value::TagDeclarator(tag) => tag.execute(memory).await?,
                 Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
+                    binary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
                 }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::CallExpression(call_expression) => {
+                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::ArrayExpression(array_expression) => {
+                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::PipeExpression(pipe_expression) => {
+                    pipe_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
                 Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -2005,11 +2597,18 @@ pub struct ObjectProperty {
     pub end: usize,
     pub key: Identifier,
     pub value: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ObjectProperty);
 
 impl ObjectProperty {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.key.compute_digest());
+        hasher.update(slf.value.compute_digest());
+    });
+
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let source_range: SourceRange = self.clone().into();
         let inner_source_range: SourceRange = self.key.clone().into();
@@ -2049,6 +2648,13 @@ pub enum MemberObject {
 }
 
 impl MemberObject {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            MemberObject::MemberExpression(me) => me.compute_digest(),
+            MemberObject::Identifier(id) => id.compute_digest(),
+        }
+    }
+
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
@@ -2096,6 +2702,13 @@ pub enum LiteralIdentifier {
 }
 
 impl LiteralIdentifier {
+    pub fn compute_digest(&mut self) -> Digest {
+        match self {
+            LiteralIdentifier::Identifier(id) => id.compute_digest(),
+            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
+        }
+    }
+
     pub fn start(&self) -> usize {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.start,
@@ -2133,11 +2746,19 @@ pub struct MemberExpression {
     pub object: MemberObject,
     pub property: LiteralIdentifier,
     pub computed: bool,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(MemberExpression);
 
 impl MemberExpression {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.object.compute_digest());
+        hasher.update(slf.property.compute_digest());
+        hasher.update(if slf.computed { [1] } else { [0] });
+    });
+
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2298,6 +2919,8 @@ pub struct BinaryExpression {
     pub operator: BinaryOperator,
     pub left: BinaryPart,
     pub right: BinaryPart,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(BinaryExpression);
@@ -2310,8 +2933,15 @@ impl BinaryExpression {
             operator,
             left,
             right,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.operator.digestable_id());
+        hasher.update(slf.left.compute_digest());
+        hasher.update(slf.right.compute_digest());
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         self.left.replace_value(source_range, new_value.clone());
@@ -2383,11 +3013,20 @@ impl BinaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
-        let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+        let left_json_value = self
+            .left
+            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .await?
+            .get_json_value()?;
+        let right_json_value = self
+            .right
+            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .await?
+            .get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -2506,6 +3145,17 @@ impl Associativity {
 }
 
 impl BinaryOperator {
+    pub fn digestable_id(&self) -> [u8; 3] {
+        match self {
+            BinaryOperator::Add => *b"add",
+            BinaryOperator::Sub => *b"sub",
+            BinaryOperator::Mul => *b"mul",
+            BinaryOperator::Div => *b"div",
+            BinaryOperator::Mod => *b"mod",
+            BinaryOperator::Pow => *b"pow",
+        }
+    }
+
     /// Follow JS definitions of each operator.
     /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn precedence(&self) -> u8 {
@@ -2534,6 +3184,8 @@ pub struct UnaryExpression {
     pub end: usize,
     pub operator: UnaryOperator,
     pub argument: BinaryPart,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(UnaryExpression);
@@ -2545,8 +3197,14 @@ impl UnaryExpression {
             end: argument.end(),
             operator,
             argument,
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.operator.digestable_id());
+        hasher.update(slf.argument.compute_digest());
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         self.argument.replace_value(source_range, new_value);
@@ -2573,13 +3231,14 @@ impl UnaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, pipe_info, ctx)
+                .get_result(memory, dynamic_state, pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
@@ -2624,6 +3283,15 @@ pub enum UnaryOperator {
     Not,
 }
 
+impl UnaryOperator {
+    pub fn digestable_id(&self) -> [u8; 3] {
+        match self {
+            UnaryOperator::Neg => *b"neg",
+            UnaryOperator::Not => *b"not",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -2635,6 +3303,8 @@ pub struct PipeExpression {
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Value>,
     pub non_code_meta: NonCodeMeta,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(PipeExpression);
@@ -2652,8 +3322,17 @@ impl PipeExpression {
             end: 0,
             body,
             non_code_meta: Default::default(),
+            digest: None,
         }
     }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.body.len().to_ne_bytes());
+        for value in slf.body.iter_mut() {
+            hasher.update(value.compute_digest());
+        }
+        hasher.update(slf.non_code_meta.compute_digest());
+    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for value in &mut self.body {
@@ -2678,7 +3357,8 @@ impl PipeExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        self.body
+        let pipe = self
+            .body
             .iter()
             .enumerate()
             .map(|(index, statement)| {
@@ -2710,7 +3390,8 @@ impl PipeExpression {
                 }
                 s
             })
-            .collect::<String>()
+            .collect::<String>();
+        format!("{}{}", options.get_indentation(indentation_level), pipe)
     }
 
     /// Returns a hover value that includes the given character position.
@@ -2728,10 +3409,11 @@ impl PipeExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
+        execute_pipe_body(memory, dynamic_state, &self.body, pipe_info, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2745,6 +3427,7 @@ impl PipeExpression {
 #[async_recursion::async_recursion]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
+    dynamic_state: &DynamicState,
     body: &[Value],
     pipe_info: &PipeInfo,
     source_range: SourceRange,
@@ -2765,7 +3448,14 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .arg_into_mem_item(first, memory, pipe_info, &meta, StatementKind::Expression)
+        .arg_into_mem_item(
+            first,
+            memory,
+            dynamic_state,
+            pipe_info,
+            &meta,
+            StatementKind::Expression,
+        )
         .await?;
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -2776,9 +3466,15 @@ async fn execute_pipe_body(
     for expression in body {
         let output = match expression {
             Value::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &new_pipe_info, ctx).await?
+                binary_expression
+                    .get_result(memory, dynamic_state, &new_pipe_info, ctx)
+                    .await?
             }
-            Value::CallExpression(call_expression) => call_expression.execute(memory, &new_pipe_info, ctx).await?,
+            Value::CallExpression(call_expression) => {
+                call_expression
+                    .execute(memory, dynamic_state, &new_pipe_info, ctx)
+                    .await?
+            }
             Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
             _ => {
                 // Return an error this should not happen.
@@ -2808,12 +3504,28 @@ pub enum FnArgPrimitive {
     #[display("bool")]
     #[serde(rename = "bool")]
     Boolean,
+    /// A tag.
+    Tag,
     /// A sketch group type.
     SketchGroup,
     /// A sketch surface type.
     SketchSurface,
     /// An extrude group type.
     ExtrudeGroup,
+}
+
+impl FnArgPrimitive {
+    pub fn digestable_id(&self) -> &[u8] {
+        match self {
+            FnArgPrimitive::String => b"string",
+            FnArgPrimitive::Number => b"number",
+            FnArgPrimitive::Boolean => b"boolean",
+            FnArgPrimitive::Tag => b"tag",
+            FnArgPrimitive::SketchGroup => b"sketchgroup",
+            FnArgPrimitive::SketchSurface => b"sketchsurface",
+            FnArgPrimitive::ExtrudeGroup => b"extrudegroup",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake)]
@@ -2830,6 +3542,32 @@ pub enum FnArgType {
     },
 }
 
+impl FnArgType {
+    pub fn compute_digest(&mut self) -> Digest {
+        let mut hasher = Sha256::new();
+
+        match self {
+            FnArgType::Primitive(prim) => {
+                hasher.update(b"FnArgType::Primitive");
+                hasher.update(prim.digestable_id())
+            }
+            FnArgType::Array(prim) => {
+                hasher.update(b"FnArgType::Array");
+                hasher.update(prim.digestable_id())
+            }
+            FnArgType::Object { properties } => {
+                hasher.update(b"FnArgType::Object");
+                hasher.update(properties.len().to_ne_bytes());
+                for prop in properties.iter_mut() {
+                    hasher.update(prop.compute_digest());
+                }
+            }
+        }
+
+        hasher.finalize().into()
+    }
+}
+
 /// Parameter of a KCL function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -2844,6 +3582,24 @@ pub struct Parameter {
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
+
+    pub digest: Option<Digest>,
+}
+
+impl Parameter {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.identifier.compute_digest());
+        match &mut slf.type_ {
+            Some(arg) => {
+                hasher.update(b"Parameter::type_::Some");
+                hasher.update(arg.compute_digest())
+            }
+            None => {
+                hasher.update(b"Parameter::type_::None");
+            }
+        }
+        hasher.update(if slf.optional { [1] } else { [0] })
+    });
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -2857,6 +3613,8 @@ pub struct FunctionExpression {
     pub body: Program,
     #[serde(skip)]
     pub return_type: Option<FnArgType>,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -2886,12 +3644,30 @@ impl FunctionExpression {
         }
     }
 
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.params.len().to_ne_bytes());
+        for param in slf.params.iter_mut() {
+            hasher.update(param.compute_digest());
+        }
+        hasher.update(slf.body.compute_digest());
+        match &mut slf.return_type {
+            Some(rt) => {
+                hasher.update(b"FunctionExpression::return_type::Some");
+                hasher.update(rt.compute_digest());
+            }
+            None => {
+                hasher.update(b"FunctionExpression::return_type::None");
+            }
+        }
+    });
+
     pub fn into_parts(self) -> Result<FunctionExpressionParts, RequiredParamAfterOptionalParam> {
         let Self {
             start,
             end,
             params,
             body,
+            digest: _,
             return_type: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
@@ -2972,9 +3748,17 @@ pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
     pub argument: Value,
+
+    pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ReturnStatement);
+
+impl ReturnStatement {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.argument.compute_digest());
+    });
+}
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -2997,6 +3781,7 @@ pub enum Hover {
 
 /// Format options.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {
@@ -3261,8 +4046,134 @@ fn ghi = (x) => {
         let tokens = crate::token::lexer(code).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let symbols = program.get_lsp_symbols(code);
+        let symbols = program.get_lsp_symbols(code).unwrap();
         assert_eq!(symbols.len(), 7);
+    }
+
+    #[test]
+    fn test_recast_bug_fn_in_fn() {
+        let some_program_string = r#"// Start point (top left)
+const zoo_x = -20
+const zoo_y = 7
+// Scale
+const s = 1 // s = 1 -> height of Z is 13.4mm
+// Depth
+const d = 1
+
+fn rect = (x, y, w, h) => {
+  startSketchOn('XY')
+    |> startProfileAt([x, y], %)
+    |> xLine(w, %)
+    |> yLine(h, %)
+    |> xLine(-w, %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+  startSketchOn('XY')
+    |> startProfileAt([x1, y1], %)
+    |> lineTo([x2, y2], %)
+    |> lineTo([x3, y3], %)
+    |> lineTo([x4, y4], %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn crosshair = (x, y) => {
+  startSketchOn('XY')
+    |> startProfileAt([x, y], %)
+    |> yLine(1, %)
+    |> yLine(-2, %)
+    |> yLine(1, %)
+    |> xLine(1, %)
+    |> xLine(-2, %)
+}
+
+fn z = (z_x, z_y) => {
+  const z_end_w = s * 8.4
+  const z_end_h = s * 3
+  const z_corner = s * 2
+  const z_w = z_end_w + 2 * z_corner
+  const z_h = z_w * 1.08130081300813
+  rect(z_x, z_y, z_end_w, -z_end_h)
+  rect(z_x + z_w, z_y, -z_corner, -z_corner)
+  rect(z_x + z_w, z_y - z_h, -z_end_w, z_end_h)
+  rect(z_x, z_y - z_h, z_corner, z_corner)
+  quad(z_x, z_y - z_h + z_corner, z_x + z_w - z_corner, z_y, z_x + z_w, z_y - z_corner, z_x + z_corner, z_y - z_h)
+}
+
+fn o = (c_x, c_y) => {
+  // Outer and inner radii
+  const o_r = s * 6.95
+  const i_r = 0.5652173913043478 * o_r
+
+  // Angle offset for diagonal break
+  const a = 7
+
+  // Start point for the top sketch
+  const o_x1 = c_x + o_r * cos((45 + a) / 360 * tau())
+  const o_y1 = c_y + o_r * sin((45 + a) / 360 * tau())
+
+  // Start point for the bottom sketch
+  const o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
+  const o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
+
+  // End point for the bottom startSketchAt
+  const o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
+  const o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
+
+  // Where is the center?
+  // crosshair(c_x, c_y)
+
+
+  startSketchOn('XY')
+    |> startProfileAt([o_x1, o_y1], %)
+    |> arc({
+         radius: o_r,
+         angle_start: 45 + a,
+         angle_end: 225 - a
+       }, %)
+    |> angledLine([45, o_r - i_r], %)
+    |> arc({
+         radius: i_r,
+         angle_start: 225 - a,
+         angle_end: 45 + a
+       }, %)
+    |> close(%)
+    |> extrude(d, %)
+
+  startSketchOn('XY')
+    |> startProfileAt([o_x2, o_y2], %)
+    |> arc({
+         radius: o_r,
+         angle_start: 225 + a,
+         angle_end: 360 + 45 - a
+       }, %)
+    |> angledLine([225, o_r - i_r], %)
+    |> arc({
+         radius: i_r,
+         angle_start: 45 - a,
+         angle_end: 225 + a - 360
+       }, %)
+    |> close(%)
+    |> extrude(d, %)
+}
+
+fn zoo = (x0, y0) => {
+  z(x0, y0)
+  o(x0 + s * 20, y0 - (s * 6.7))
+  o(x0 + s * 35, y0 - (s * 6.7))
+}
+
+zoo(zoo_x, zoo_y)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]
@@ -3332,8 +4243,6 @@ const outsideRevolve = startSketchOn('XZ')
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        println!("{:#?}", program);
-
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
@@ -3399,6 +4308,80 @@ const outsideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_fn_in_object() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [{ prop: callExp(bing.yo) }]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_fn_in_array() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [callExp(bing.yo)]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_space_in_fn_call() {
+        let some_program_string = r#"fn thing = (x) => {
+    return x + 1
+}
+
+thing ( 1 )
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"fn thing = (x) => {
+  return x + 1
+}
+
+thing(1)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_object_fn_in_array_weird_bracket() {
+        let some_program_string = r#"const bing = { yo: 55 }
+const myNestedVar = [
+  {
+  prop:   line([bing.yo, 21], sketch001)
+}
+]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const bing = { yo: 55 }
+const myNestedVar = [
+  { prop: line([bing.yo, 21], sketch001) }
+]
 "#
         );
     }
@@ -3552,10 +4535,10 @@ const hole_diam = 5
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-    |> close(%, "edge4")
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %,$edge1)
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
+    |> close(%, $edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -3565,10 +4548,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-  getEdge("edge2", %),
-  getEdge("edge4", %),
-  getOppositeEdge("edge2", %),
-  getOppositeEdge("edge4", %)
+  edge2,
+  edge4,
+  getOppositeEdge(edge2),
+  getOppositeEdge(edge4)
 ]
      }, %)
   // build the bracket sketch around the body
@@ -3582,14 +4565,14 @@ fn bracketSketch = (w, d, t) => {
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, "edge1")
-    |> lineTo([w / 2 + t, -t], %, "edge2")
-    |> lineTo([w / 2 + t, d + t], %, "edge3")
-    |> lineTo([w / 2, d + t], %, "edge4")
-    |> lineTo([w / 2, 0], %, "edge5")
-    |> lineTo([-w / 2, 0], %, "edge6")
-    |> lineTo([-w / 2, d + t], %, "edge7")
-    |> close(%, "edge8")
+    |> lineTo([-w / 2 - t, -t], %, $edge1)
+    |> lineTo([w / 2 + t, -t], %, $edge2)
+    |> lineTo([w / 2 + t, d + t], %, $edge3)
+    |> lineTo([w / 2, d + t], %, $edge4)
+    |> lineTo([w / 2, 0], %, $edge5)
+    |> lineTo([-w / 2, 0], %, $edge6)
+    |> lineTo([-w / 2, d + t], %, $edge7)
+    |> close(%, $edge8)
   return s
 }
 // build the body of the bracket
@@ -3598,10 +4581,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-  getNextAdjacentEdge("edge7", %),
-  getNextAdjacentEdge("edge2", %),
-  getNextAdjacentEdge("edge3", %),
-  getNextAdjacentEdge("edge6", %)
+  getNextAdjacentEdge(edge7),
+  getNextAdjacentEdge(edge2),
+  getNextAdjacentEdge(edge3),
+  getNextAdjacentEdge(edge6)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
@@ -3656,7 +4639,6 @@ const tabs_l = startSketchOn({
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        println!("{:#?}", program);
 
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
@@ -3673,10 +4655,10 @@ const hole_diam = 5
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-    |> close(%, "edge4")
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
+    |> close(%, $edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -3686,10 +4668,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-         getEdge("edge2", %),
-         getEdge("edge4", %),
-         getOppositeEdge("edge2", %),
-         getOppositeEdge("edge4", %)
+         edge2,
+         edge4,
+         getOppositeEdge(edge2),
+         getOppositeEdge(edge4)
        ]
      }, %)
 // build the bracket sketch around the body
@@ -3703,14 +4685,14 @@ fn bracketSketch = (w, d, t) => {
          }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, "edge1")
-    |> lineTo([w / 2 + t, -t], %, "edge2")
-    |> lineTo([w / 2 + t, d + t], %, "edge3")
-    |> lineTo([w / 2, d + t], %, "edge4")
-    |> lineTo([w / 2, 0], %, "edge5")
-    |> lineTo([-w / 2, 0], %, "edge6")
-    |> lineTo([-w / 2, d + t], %, "edge7")
-    |> close(%, "edge8")
+    |> lineTo([-w / 2 - t, -t], %, $edge1)
+    |> lineTo([w / 2 + t, -t], %, $edge2)
+    |> lineTo([w / 2 + t, d + t], %, $edge3)
+    |> lineTo([w / 2, d + t], %, $edge4)
+    |> lineTo([w / 2, 0], %, $edge5)
+    |> lineTo([-w / 2, 0], %, $edge6)
+    |> lineTo([-w / 2, d + t], %, $edge7)
+    |> close(%, $edge8)
   return s
 }
 // build the body of the bracket
@@ -3719,10 +4701,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge("edge7", %),
-         getNextAdjacentEdge("edge2", %),
-         getNextAdjacentEdge("edge3", %),
-         getNextAdjacentEdge("edge6", %)
+         getNextAdjacentEdge(edge7),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge6)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)
@@ -4032,7 +5014,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %)
   /* and
   here
@@ -4055,7 +5037,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo([0, 1], %, 'myTag')
+  |> lineTo([0, 1], %, $myTag)
   |> lineTo([1, 1], %)
   /* and
   here */
@@ -4073,12 +5055,12 @@ const mySk1 = startSketchOn('XY')
     fn test_recast_multiline_object() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.08], %)
-  |> line([0.62, 4.15], %, 'seg01')
+  |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,
        offset: -1.35,
-       intersectTag: 'seg01'
+       intersectTag: seg01
      }, %)
   |> line([-0.42, -1.72], %)"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -4163,13 +5145,13 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
+  |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
-       -angleToMatchLengthX('seg01', myVar, %),
+       -angleToMatchLengthX(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> angledLineToY([
-       -angleToMatchLengthY('seg01', myVar, %),
+       -angleToMatchLengthY(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -4189,13 +5171,13 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
    |> startProfileAt([0, 0], %)
-   |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
+   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
    |> angledLineToX([
-         -angleToMatchLengthX('seg01', myVar, %),
+         -angleToMatchLengthX(seg01, myVar, %),
          myVar
       ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
    |> angledLineToY([
-         -angleToMatchLengthY('seg01', myVar, %),
+         -angleToMatchLengthY(seg01, myVar, %),
          myVar
       ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
@@ -4531,28 +5513,34 @@ const firstExtrude = startSketchOn('XY')
                         identifier: Identifier {
                             start: 35,
                             end: 40,
-                            name: "thing".to_owned()
+                            name: "thing".to_owned(),
+                            digest: None,
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 50,
                             end: 56,
-                            name: "things".to_owned()
+                            name: "things".to_owned(),
+                            digest: None,
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 68,
                             end: 72,
-                            name: "more".to_owned()
+                            name: "more".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true
+                        optional: true,
+                        digest: None
                     }
                 ]
             })
@@ -4587,28 +5575,34 @@ const firstExtrude = startSketchOn('XY')
                         identifier: Identifier {
                             start: 18,
                             end: 23,
-                            name: "thing".to_owned()
+                            name: "thing".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 33,
                             end: 39,
-                            name: "things".to_owned()
+                            name: "things".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false
+                        optional: false,
+                        digest: None
                     },
                     Parameter {
                         identifier: Identifier {
                             start: 51,
                             end: 55,
-                            name: "more".to_owned()
+                            name: "more".to_owned(),
+                            digest: None
                         },
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true
+                        optional: true,
+                        digest: None
                     }
                 ]
             })
@@ -4701,8 +5695,10 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -4716,17 +5712,21 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: false,
+                        digest: None,
                     }],
                     body: Program {
                         start: 0,
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -4740,17 +5740,21 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
+                            digest: None,
                         },
                         type_: None,
                         optional: true,
+                        digest: None,
                     }],
                     body: Program {
                         start: 0,
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
             (
@@ -4765,18 +5769,22 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 start: 0,
                                 end: 0,
                                 name: "foo".to_owned(),
+                                digest: None,
                             },
                             type_: None,
                             optional: false,
+                            digest: None,
                         },
                         Parameter {
                             identifier: Identifier {
                                 start: 0,
                                 end: 0,
                                 name: "bar".to_owned(),
+                                digest: None,
                             },
                             type_: None,
                             optional: true,
+                            digest: None,
                         },
                     ],
                     body: Program {
@@ -4784,8 +5792,10 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        digest: None,
                     },
                     return_type: None,
+                    digest: None,
                 },
             ),
         ]
@@ -4810,6 +5820,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             expression,
             start: _,
             end: _,
+            digest: None,
         }) = program.body.first().unwrap()
         else {
             panic!("expected a function!");
@@ -4838,5 +5849,70 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_tag_named_std_lib() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $xLine)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_empty_tag() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_digest() {
+        let prog1_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %)
+"#;
+        let prog1_tokens = crate::token::lexer(prog1_string).unwrap();
+        let prog1_parser = crate::parser::Parser::new(prog1_tokens);
+        let prog1_digest = prog1_parser.ast().unwrap().compute_digest();
+
+        let prog2_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 2], %)
+    |> line([5, 5], %)
+"#;
+        let prog2_tokens = crate::token::lexer(prog2_string).unwrap();
+        let prog2_parser = crate::parser::Parser::new(prog2_tokens);
+        let prog2_digest = prog2_parser.ast().unwrap().compute_digest();
+
+        assert!(prog1_digest != prog2_digest);
+
+        let prog3_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %)
+"#;
+        let prog3_tokens = crate::token::lexer(prog3_string).unwrap();
+        let prog3_parser = crate::parser::Parser::new(prog3_tokens);
+        let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
+
+        assert_eq!(prog1_digest, prog3_digest);
     }
 }

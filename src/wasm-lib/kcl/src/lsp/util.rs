@@ -1,7 +1,7 @@
 //! Utility functions for working with ropes and positions.
 
 use ropey::Rope;
-use tower_lsp::lsp_types::Position;
+use tower_lsp::lsp_types::{Diagnostic, Position};
 
 pub fn position_to_offset(position: Position, rope: &Rope) -> Option<usize> {
     Some(rope.try_line_to_char(position.line as usize).ok()? + position.character as usize)
@@ -30,4 +30,14 @@ pub fn get_line_before(pos: Position, rope: &Rope) -> Option<String> {
     }
     let line_start = offset - char_offset;
     Some(rope.slice(line_start..offset).to_string())
+}
+
+/// Convert an object into a [lsp_types::Diagnostic] given the
+/// [TextDocumentItem]'s `.text` field.
+pub trait IntoDiagnostic {
+    /// Convert the traited object to a [lsp_types::Diagnostic].
+    fn to_lsp_diagnostic(&self, text: &str) -> Diagnostic;
+
+    /// Get the severity of the diagnostic.
+    fn severity(&self) -> tower_lsp::lsp_types::DiagnosticSeverity;
 }

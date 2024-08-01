@@ -1,0 +1,316 @@
+{
+  "version": "0.20.1",
+  "git_rev": "3a05211d306ca045ace2e7bf10b7f8138e1daad5",
+  "timestamp": "2024-05-07T20:06:34.655Z",
+  "tauri": false,
+  "os": {
+    "platform": "Mac OS",
+    "version": "10.15.7",
+    "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+  },
+  "webrtc_stats": {
+    "packets_lost": 0,
+    "frames_received": 672,
+    "frame_width": 1440.0,
+    "frame_height": 712.0,
+    "frame_rate": 58.0,
+    "key_frames_decoded": 7,
+    "frames_dropped": 77,
+    "pause_count": 0,
+    "total_pauses_duration": 0.0,
+    "freeze_count": 12,
+    "total_freezes_duration": 3.057,
+    "pli_count": 6,
+    "jitter": 0.011
+  },
+  "pool": "",
+  "client_state": {
+    "engine_command_manager": {
+      "artifact_map": {
+        "ac7a8c52-7437-42e6-ae2a-25c54d0b4a16": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "83a2e866-d8e1-47d9-afae-d55a64cd5b40": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "plane_set_color",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "c92d7e84-a03e-456e-aad0-3e302ae0ffb6": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "a9abb9b8-54b1-4042-8ab3-e67c7ddb4cb3": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "plane_set_color",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "bafb884d-ee93-48f5-a667-91d1bdb8178a": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "6b7f539b-c4ca-4e62-a971-147e1abaca7b": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "plane_set_color",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "6ddaaaa3-b080-4cb3-b08e-8fe277312ccc": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "f1ef28b0-49b3-45f8-852d-772648149785": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "7c532be8-f07d-456b-8643-53808df86823": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "79cc6dfc-7205-41b2-922f-0d0279f5a30d",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "cf38f826-6d15-45f4-9c64-a6e9e4909e75": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "d69e6248-9e0f-4bc8-bc6e-d995931e8886": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "plane_set_color",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "cdb44075-ac6d-4626-b321-26d022f5f7f0": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "44f81391-0f2d-49f3-92b9-7dfc8446d571": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "plane_set_color",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "7b893ecf-8887-49c3-b978-392813d5f625": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "61247d28-04ba-4768-85b0-fbc582151dbd": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "plane_set_color",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "1318f5af-76a9-4161-9f6a-d410831fd098": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "908d264c-5989-4030-b2f4-5dfb52fda71a": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        },
+        "0de4c253-ee21-4385-93bd-b93264f7eb60": {
+          "type": "result",
+          "range": [0, 0],
+          "pathToNode": [],
+          "commandType": "make_plane",
+          "data": { "type": "empty" },
+          "raw": {
+            "success": true,
+            "request_id": "91f1be72-4267-40a4-9923-9c5b5a0ec29c",
+            "resp": {
+              "type": "modeling",
+              "data": { "modeling_response": { "type": "empty" } }
+            }
+          }
+        }
+      },
+      "engine_connection": {
+        "state": {
+          "type": "connection-established"
+        }
+      }
+    },
+    "kcl_manager": {},
+    "scene_infra": {},
+    "auth_machine": {},
+    "command_bar_machine": {},
+    "file_machine": {},
+    "home_machine": {},
+    "modeling_machine": {},
+    "settings_machine": {}
+  }
+}

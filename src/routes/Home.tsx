@@ -1,4 +1,4 @@
-import { FormEvent, useEffect } from 'react'
+import { FormEvent, useEffect, useRef } from 'react'
 import { remove } from '@tauri-apps/plugin-fs'
 import {
   getNextProjectIndex,
@@ -57,6 +57,9 @@ const Home = () => {
     kclManager.cancelAllExecutions()
   }, [])
 
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
     () => navigate(paths.HOME + paths.SETTINGS),
@@ -64,6 +67,7 @@ const Home = () => {
       splitKey: '|',
     }
   )
+  const ref = useRef<HTMLDivElement>(null)
 
   const [state, send, actor] = useMachine(homeMachine, {
     context: {
@@ -198,7 +202,7 @@ const Home = () => {
   }
 
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden">
+    <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
       <AppHeader showToolbar={false} />
       <div className="w-full flex flex-col overflow-hidden max-w-5xl px-4 mx-auto mt-24 lg:px-2">
         <section>

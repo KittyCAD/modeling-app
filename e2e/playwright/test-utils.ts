@@ -1,5 +1,6 @@
-import { test, expect, Page, Download } from '@playwright/test'
-import { EngineCommand } from '../../src/lang/std/engineConnection'
+import { expect, Page, Download } from '@playwright/test'
+import { EngineCommand } from 'lang/std/artifactMap'
+import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
@@ -7,18 +8,27 @@ import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
 import { APP_NAME } from 'lib/constants'
 
-async function waitForPageLoad(page: Page) {
-  // wait for 'Loading stream...' spinner
-  await page.getByTestId('loading-stream').waitFor()
-  // wait for all spinners to be gone
-  await page.getByTestId('loading').waitFor({ state: 'detached' })
+type TestColor = [number, number, number]
+export const TEST_COLORS = {
+  WHITE: [249, 249, 249] as TestColor,
+  YELLOW: [255, 255, 0] as TestColor,
+  BLUE: [0, 0, 255] as TestColor,
+} as const
 
-  await page.getByTestId('start-sketch').waitFor()
+async function waitForPageLoad(page: Page) {
+  // wait for all spinners to be gone
+  await expect(page.getByTestId('loading')).not.toBeAttached({
+    timeout: 20_000,
+  })
+
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
+    timeout: 20_000,
+  })
 }
 
 async function removeCurrentCode(page: Page) {
   const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
-  await page.click('.cm-content')
+  await page.locator('.cm-content').click()
   await page.keyboard.down(hotkey)
   await page.keyboard.press('a')
   await page.keyboard.up(hotkey)
@@ -27,16 +37,16 @@ async function removeCurrentCode(page: Page) {
 }
 
 async function sendCustomCmd(page: Page, cmd: EngineCommand) {
-  await page.fill('[data-testid="custom-cmd-input"]', JSON.stringify(cmd))
-  await page.click('[data-testid="custom-cmd-send-button"]')
+  await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
+  await page.getByTestId('custom-cmd-send-button').click()
 }
 
 async function clearCommandLogs(page: Page) {
-  await page.click('[data-testid="clear-commands"]')
+  await page.getByTestId('clear-commands').click()
 }
 
-async function expectCmdLog(page: Page, locatorStr: string) {
-  await expect(page.locator(locatorStr).last()).toBeVisible()
+async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
+  await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
 async function waitForDefaultPlanesToBeVisible(page: Page) {
@@ -48,44 +58,45 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
 }
 
 async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  const paneLocator = page.getByTestId('code-pane-button')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
+  const isOpen = ariaSelected === 'true'
 
   if (!isOpen) {
     await paneLocator.click()
-    await paneLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function closeKclCodePanel(page: Page) {
-  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  const paneLocator = page.getByTestId('code-pane-button')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
+  const isOpen = ariaSelected === 'true'
+
   if (isOpen) {
     await paneLocator.click()
-    await paneLocator
-      .and(page.locator(':not([aria-selected="true"])'))
-      .waitFor()
+    await expect(paneLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+  const debugLocator = page.getByTestId('debug-pane-button')
+  await expect(debugLocator).toBeVisible()
+  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
     await debugLocator.click()
-    await debugLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function closeDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+  const debugLocator = page.getByTestId('debug-pane-button')
+  await expect(debugLocator).toBeVisible()
+  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
   if (isOpen) {
     await debugLocator.click()
-    await debugLocator
-      .and(page.locator(':not([aria-selected="true"])'))
-      .waitFor()
+    await expect(debugLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
 }
 
@@ -96,6 +107,124 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+export const wiggleMove = async (
+  page: any,
+  x: number,
+  y: number,
+  steps: number,
+  dist: number,
+  ang: number,
+  amplitude: number,
+  freq: number,
+  locator?: string
+) => {
+  const tau = Math.PI * 2
+  const deg = tau / 360
+  const step = dist / steps
+  for (let i = 0, j = 0; i < dist; i += step, j += 1) {
+    if (locator) {
+      const isElVis = await page.locator(locator).isVisible()
+      if (isElVis) return
+    }
+    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
+    const [x2, y2] = [
+      Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
+      Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
+    ]
+    const [xr, yr] = [x2, y2]
+    await page.mouse.move(x + xr, y + yr, { steps: 5 })
+  }
+}
+
+export const circleMove = async (
+  page: any,
+  x: number,
+  y: number,
+  steps: number,
+  diameter: number,
+  locator?: string
+) => {
+  const tau = Math.PI * 2
+  const step = tau / steps
+  for (let i = 0; i < tau; i += step) {
+    if (locator) {
+      const isElVis = await page.locator(locator).isVisible()
+      if (isElVis) return
+    }
+    const [x1, y1] = [Math.cos(i) * diameter, Math.sin(i) * diameter]
+    const [xr, yr] = [x1, y1]
+    await page.mouse.move(x + xr, y + yr, { steps: 5 })
+  }
+}
+
+export const getMovementUtils = (opts: any) => {
+  // The way we truncate is kinda odd apparently, so we need this function
+  // "[k]itty[c]ad round"
+  const kcRound = (n: number) => Math.trunc(n * 100) / 100
+
+  // To translate between screen and engine ("[U]nit") coordinates
+  // NOTE: these pretty much can't be perfect because of screen scaling.
+  // Handle on a case-by-case.
+  const toU = (x: number, y: number) => [
+    kcRound(x * 0.0678),
+    kcRound(-y * 0.0678), // Y is inverted in our coordinate system
+  ]
+
+  // Turn the array into a string with specific formatting
+  const fromUToString = (xy: number[]) => `[${xy[0]}, ${xy[1]}]`
+
+  // Combine because used often
+  const toSU = (xy: number[]) => fromUToString(toU(xy[0], xy[1]))
+
+  // Make it easier to click around from center ("click [from] zero zero")
+  const click00 = (x: number, y: number) =>
+    opts.page.mouse.click(opts.center.x + x, opts.center.y + y, { delay: 100 })
+
+  // Relative clicker, must keep state
+  let last = { x: 0, y: 0 }
+  const click00r = async (x?: number, y?: number) => {
+    // reset relative coordinates when anything is undefined
+    if (x === undefined || y === undefined) {
+      last.x = 0
+      last.y = 0
+      return
+    }
+
+    await circleMove(
+      opts.page,
+      opts.center.x + last.x + x,
+      opts.center.y + last.y + y,
+      10,
+      10
+    )
+    await click00(last.x + x, last.y + y)
+    last.x += x
+    last.y += y
+
+    // Returns the new absolute coordinate if you need it.
+    return [last.x, last.y]
+  }
+
+  return { toSU, click00r }
+}
+
+async function waitForAuthAndLsp(page: Page) {
+  const waitForLspPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+
+  await page.goto('/')
+  await waitForPageLoad(page)
+
+  return waitForLspPromise
+}
+
 export async function getUtils(page: Page) {
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
@@ -103,7 +232,8 @@ export async function getUtils(page: Page) {
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
   return {
-    waitForAuthSkipAppStart: () => waitForPageLoad(page),
+    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -117,7 +247,8 @@ export async function getUtils(page: Page) {
       await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
-    expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    expectCmdLog: (locatorStr: string, timeout = 5000) =>
+      expectCmdLog(page, locatorStr, timeout),
     openKclCodePanel: () => openKclCodePanel(page),
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
@@ -135,21 +266,27 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox()
+        .boundingBox({ timeout: 5000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
       const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
       return {
-        x: bbox.x + angleXOffset,
-        y: bbox.y - angleYOffset,
+        x: Math.round(bbox.x + angleXOffset),
+        y: Math.round(bbox.y - angleYOffset),
       }
+    },
+    getAngle: async (locator: string) => {
+      const overlay = page.locator(locator)
+      return Number(await overlay.getAttribute('data-overlay-angle'))
     },
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
         .boundingBox()
-        .then((box) => ({ x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+    codeLocator: page.locator('.cm-content'),
+    canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,
@@ -164,6 +301,38 @@ export async function getUtils(page: Page) {
       if (!endWithDebugPanelOpen) {
         await closeDebugPanel(page)
       }
+    },
+    /**
+     * Given an expected RGB value, diff if the channel with the largest difference
+     */
+    getGreatestPixDiff: async (
+      coords: { x: number; y: number },
+      expected: [number, number, number]
+    ): Promise<number> => {
+      const buffer = await page.screenshot({
+        fullPage: true,
+      })
+      const screenshot = await PNG.sync.read(buffer)
+      const pixMultiplier: number = await page.evaluate(
+        'window.devicePixelRatio'
+      )
+      const index =
+        (screenshot.width * coords.y * pixMultiplier +
+          coords.x * pixMultiplier) *
+        4 // rbga is 4 channels
+      const maxDiff = Math.max(
+        Math.abs(screenshot.data[index] - expected[0]),
+        Math.abs(screenshot.data[index + 1] - expected[1]),
+        Math.abs(screenshot.data[index + 2] - expected[2])
+      )
+      if (maxDiff > 4) {
+        console.log(
+          `Expected: ${expected} Actual: [${screenshot.data[index]}, ${
+            screenshot.data[index + 1]
+          }, ${screenshot.data[index + 2]}]`
+        )
+      }
+      return maxDiff
     },
     doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
       new Promise(async (resolve) => {
@@ -209,11 +378,10 @@ export async function getUtils(page: Page) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      // Skip on non-Chromium browsers, since we need to use the CDP.
-      test.skip(
-        cdpSession === null,
-        'Network emulation is only supported in Chromium'
-      )
+      if (cdpSession === null) {
+        // Use a fail safe if we can't simulate disconnect (on Safari)
+        return page.evaluate('window.tearDown()')
+      }
 
       cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
     },
@@ -304,8 +472,11 @@ export const doExport = async (
   page: Page
 ): Promise<Paths> => {
   await page.getByRole('button', { name: APP_NAME }).click()
-  await expect(page.getByRole('button', { name: 'Export Part' })).toBeVisible()
-  await page.getByRole('button', { name: 'Export Part' }).click()
+  const exportMenuButton = page.getByRole('button', {
+    name: 'Export current part',
+  })
+  await expect(exportMenuButton).toBeVisible()
+  await exportMenuButton.click()
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar
@@ -366,3 +537,8 @@ export const doExport = async (
     outputType: output.type,
   }
 }
+
+/**
+ * Gets the appropriate modifier key for the platform.
+ */
+export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'

@@ -6,14 +6,15 @@ import { modelingMachine } from 'machines/modelingMachine'
 import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
-import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
-import { useShouldDisableModelingActions } from './useShouldDisableModelingActions'
 import { useKclContext } from 'lang/KclProvider'
 import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
-import { useStore } from 'useStore'
+  Command,
+  StateMachineCommandSetConfig,
+  StateMachineCommandSetSchema,
+} from 'lib/commandTypes'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { useAppState } from 'AppState'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -24,20 +25,20 @@ export type AllMachines =
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 > {
   machineId: T['id']
   state: StateFrom<T>
   send: Function
   actor: InterpreterFrom<T>
-  commandBarConfig?: CommandSetConfig<T, S>
+  commandBarConfig?: StateMachineCommandSetConfig<T, S>
   allCommandsRequireNetwork?: boolean
   onCancel?: () => void
 }
 
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 >({
   machineId,
   state,
@@ -48,21 +49,23 @@ export default function useStateMachineCommands<
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { commandBarSend } = useCommandsContext()
-  const { overallState } = useNetworkStatus()
+  const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const { isStreamReady } = useAppState()
 
   useEffect(() => {
     const disableAllButtons =
-      overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
+      (overallState !== NetworkHealthState.Ok &&
+        overallState !== NetworkHealthState.Weak) ||
+      isExecuting ||
+      !isStreamReady
     const newCommands = state.nextEvents
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .map((type) =>
+      .flatMap((type) =>
         createMachineCommand<T, S>({
-          ownerMachine: machineId,
+          // The group is the owner machine's ID.
+          groupId: machineId,
           type,
           state,
           send,
