@@ -14,6 +14,7 @@ import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
+import { useKclContext } from 'lang/KclProvider'
 
 export type SidebarType =
   | 'code'
@@ -25,6 +26,14 @@ export type SidebarType =
   | 'lspMessages'
   | 'variables'
 
+/**
+ * This interface can be extended as more context is needed for the panes
+ * to determine if they should show their badges or not.
+ */
+interface PaneCallbackProps {
+  kclContext: ReturnType<typeof useKclContext>
+}
+
 export type SidebarPane = {
   id: SidebarType
   title: string
@@ -33,6 +42,7 @@ export type SidebarPane = {
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
   hideOnPlatform?: 'desktop' | 'web'
+  showBadge?: (props: PaneCallbackProps) => boolean | number
 }
 
 export const sidebarPanes: SidebarPane[] = [
@@ -74,6 +84,7 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faExclamationCircle,
     Content: KclErrorsPane,
     keybinding: 'Shift + E',
+    showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
     id: 'debug',

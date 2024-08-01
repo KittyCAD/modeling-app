@@ -12,6 +12,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { useKclContext } from 'lang/KclProvider'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -19,6 +20,7 @@ interface ModelingSidebarProps {
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const { commandBarSend } = useCommandsContext()
+  const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
   const { send, context } = useModelingContext()
@@ -61,6 +63,15 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       ),
     [sidebarPanes, showDebugPanel.current]
   )
+
+  const paneBadgeMap: Record<SidebarType, number | boolean> = useMemo(() => {
+    return filteredPanes.reduce((acc, pane) => {
+      if (pane.showBadge) {
+        acc[pane.id] = pane.showBadge({ kclContext })
+      }
+      return acc
+    }, {} as Record<SidebarType, number | boolean>)
+  }, [kclContext.errors])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -120,6 +131,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                 paneIsOpen={context.store?.openPanes.includes(pane.id)}
                 onClick={() => togglePane(pane.id)}
                 aria-pressed={context.store?.openPanes.includes(pane.id)}
+                showBadge={paneBadgeMap[pane.id]}
               />
             ))}
           </ul>
@@ -186,12 +198,14 @@ interface ModelingPaneButtonProps
   }
   onClick: () => void
   paneIsOpen?: boolean
+  showBadge?: boolean | number
 }
 
 function ModelingPaneButton({
   paneConfig,
   onClick,
   paneIsOpen,
+  showBadge,
   ...props
 }: ModelingPaneButtonProps) {
   useHotkeys(paneConfig.keybinding, onClick, {
@@ -223,6 +237,23 @@ function ModelingPaneButton({
         {paneConfig.title}
         {paneIsOpen !== undefined ? ` pane` : ''}
       </span>
+      {!!showBadge && (
+        <p
+          className={
+            'absolute m-0 p-0 -top-1 -right-1 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80'
+          }
+        >
+          <span className="sr-only">&nbsp;has&nbsp;</span>
+          {typeof showBadge === 'number' ? (
+            <span>{showBadge}</span>
+          ) : (
+            <span className="sr-only">a</span>
+          )}
+          <span className="sr-only">
+            &nbsp;notification{Number(showBadge) > 1 ? 's' : ''}
+          </span>
+        </p>
+      )}
       <Tooltip
         position="right"
         contentClassName="max-w-none flex items-center gap-4"
