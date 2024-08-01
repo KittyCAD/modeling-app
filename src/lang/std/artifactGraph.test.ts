@@ -209,12 +209,9 @@ describe('testing createArtifactGraph', () => {
     })
 
     it('there should be 5 + 4 segments,  4 (+close) from the first extrusion and 3 (+close) from the second', () => {
-      const segments = [
-        ...filterArtifacts(
-          { types: ['segment'] },
-          engineCommandManager.artifactGraph
-        ),
-      ].map((segment) => expandSegment(segment[1], theMap))
+      const segments = [...filterArtifacts({ types: ['segment'] }, theMap)].map(
+        (segment) => expandSegment(segment[1], theMap)
+      )
       expect(segments).toHaveLength(9)
     })
 
