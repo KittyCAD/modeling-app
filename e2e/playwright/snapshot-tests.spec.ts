@@ -65,7 +65,7 @@ const part001 = startSketchOn('-XZ')
         angle: topAng,
         to: totalHeightHalf,
       }, %, $seg04)
-  |> xLineTo(totalLen, %, $seg03')
+  |> xLineTo(totalLen, %, $seg03)
   |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
@@ -711,7 +711,7 @@ const part002 = startSketchOn(part001, 'seg01')
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(2)
+  ).toHaveCount(1)
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
@@ -761,7 +761,7 @@ test('Zoom to fit on load - solid 2d', async ({ page, context }) => {
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(2)
+  ).toHaveCount(1)
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
@@ -798,7 +798,7 @@ test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(2)
+  ).toHaveCount(1)
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
@@ -829,7 +829,7 @@ test.describe('Grid visibility', () => {
     // wait for execution done
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await u.closeDebugPanel()
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
@@ -877,7 +877,7 @@ test.describe('Grid visibility', () => {
     // wait for execution done
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await u.closeDebugPanel()
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
