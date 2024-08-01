@@ -335,9 +335,9 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   let project = {
     ...walked,
     // We need to map from node fs.Stats to FileMetadata
-    metadata: metadata.map((data: { mtimeMs: number }) => ({
-      modified: data.mtimeMs,
-    })),
+    metadata: {
+      modified: metadata.mtimeMs,
+    },
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
