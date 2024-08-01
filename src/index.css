@@ -96,6 +96,11 @@ button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
+/* Thanks Chris I needed this https://css-tricks.com/slightly-careful-sub-elements-clickable-things/ */
+button > * {
+  @apply pointer-events-none;
+}
+
 a {
   @apply text-primary underline hover:hue-rotate-15;
 }

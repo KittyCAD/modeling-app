@@ -6,12 +6,12 @@ import { modelingMachine } from 'machines/modelingMachine'
 import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
+import { useKclContext } from 'lang/KclProvider'
 import {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from 'lib/commandTypes'
-import { useKclContext } from 'lang/KclProvider'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { useAppState } from 'AppState'

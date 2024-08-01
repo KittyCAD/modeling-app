@@ -10,6 +10,17 @@ import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
+import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+
+function InteractionSequenceInfo() {
+  const {
+    state: {
+      context: { currentSequence },
+    },
+  } = useInteractionMapContext()
+
+  return <span className="font-mono text-xs">{currentSequence}</span>
+}
 
 export function LowerRightControls({
   children,
@@ -62,6 +73,7 @@ export function LowerRightControls({
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
+        <InteractionSequenceInfo />
         <a
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"

@@ -26,6 +26,8 @@ export type SidebarType =
   | 'lspMessages'
   | 'variables'
 
+const PANE_KEYBINDING_PREFIX = 'ctrl+shift+p ' as const
+
 /**
  * This interface can be extended as more context is needed for the panes
  * to determine if they should show their badges or not.
@@ -51,7 +53,7 @@ export const sidebarPanes: SidebarPane[] = [
     title: 'KCL Code',
     icon: faCode,
     Content: KclEditorPane,
-    keybinding: 'Shift + C',
+    keybinding: PANE_KEYBINDING_PREFIX + 'c',
     Menu: KclEditorMenu,
   },
   {
@@ -59,7 +61,7 @@ export const sidebarPanes: SidebarPane[] = [
     title: 'Project Files',
     icon: 'folder',
     Content: FileTreeInner,
-    keybinding: 'Shift + F',
+    keybinding: PANE_KEYBINDING_PREFIX + 'f',
     Menu: FileTreeMenu,
     hideOnPlatform: 'web',
   },
@@ -69,21 +71,21 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faSquareRootVariable,
     Content: MemoryPane,
     Menu: MemoryPaneMenu,
-    keybinding: 'Shift + V',
+    keybinding: PANE_KEYBINDING_PREFIX + 'v',
   },
   {
     id: 'logs',
     title: 'Logs',
     icon: faCodeCommit,
     Content: LogsPane,
-    keybinding: 'Shift + L',
+    keybinding: PANE_KEYBINDING_PREFIX + 'l',
   },
   {
     id: 'kclErrors',
     title: 'KCL Errors',
     icon: faExclamationCircle,
     Content: KclErrorsPane,
-    keybinding: 'Shift + E',
+    keybinding: PANE_KEYBINDING_PREFIX + 'e',
     showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
@@ -91,6 +93,6 @@ export const sidebarPanes: SidebarPane[] = [
     title: 'Debug',
     icon: faBugSlash,
     Content: DebugPane,
-    keybinding: 'Shift + D',
+    keybinding: PANE_KEYBINDING_PREFIX + 'd',
   },
 ]

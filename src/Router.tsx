@@ -33,14 +33,15 @@ import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import { getState, setState } from 'lib/tauri'
-import { CoreDumpManager } from 'lib/coredump'
-import { engineCommandManager } from 'lib/singletons'
+import { AppStateProvider } from 'AppState'
+import { InteractionMapMachineProvider } from 'components/InteractionMapMachineProvider'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useMemo } from 'react'
+import { engineCommandManager } from 'lib/singletons'
+import { CoreDumpManager } from 'lib/coredump'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
-import { useMemo } from 'react'
-import { AppStateProvider } from 'AppState'
 
 const router = createBrowserRouter([
   {
@@ -49,17 +50,19 @@ const router = createBrowserRouter([
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
-      <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <Outlet />
-              </AppStateProvider>
-            </KclContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
-      </CommandBarProvider>
+      <InteractionMapMachineProvider>
+        <CommandBarProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <Outlet />
+                </AppStateProvider>
+              </KclContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </CommandBarProvider>
+      </InteractionMapMachineProvider>
     ),
     errorElement: <ErrorPage />,
     children: [

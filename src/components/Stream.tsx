@@ -6,7 +6,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { btnName } from 'lib/cameraControls'
+import { buttonName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAppStream } from 'AppState'
@@ -227,7 +227,7 @@ export const Stream = () => {
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
 
-    if (!context.store?.didDragInStream && btnName(e).left) {
+    if (!context.store?.didDragInStream && buttonName(e).left) {
       sendSelectEventToEngine(
         e,
         videoRef.current,

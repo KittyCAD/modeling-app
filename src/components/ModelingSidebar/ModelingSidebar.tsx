@@ -1,7 +1,6 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
 import { useCallback, useMemo } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
@@ -13,6 +12,10 @@ import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
+import { KEYBINDING_CATEGORIES } from 'lib/constants'
+import { useInteractionMap } from 'hooks/useInteractionMap'
+import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+import { InteractionSequence } from 'components/Settings/AllKeybindingsFields'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -62,6 +65,18 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
             : pane.hideOnPlatform === 'desktop')
       ),
     [sidebarPanes, showDebugPanel.current]
+  )
+
+  useInteractionMap(
+    filteredPanes.map((pane) => ({
+      name: pane.id,
+      action: () => togglePane(pane.id),
+      keybinding: pane.keybinding,
+      title: `Toggle ${pane.title} pane`,
+      sequence: pane.keybinding,
+    })),
+    [filteredPanes, context.store?.openPanes],
+    KEYBINDING_CATEGORIES.USER_INTERFACE
   )
 
   const paneBadgeMap: Record<SidebarType, number | boolean> = useMemo(() => {
@@ -208,9 +223,15 @@ function ModelingPaneButton({
   showBadge,
   ...props
 }: ModelingPaneButtonProps) {
-  useHotkeys(paneConfig.keybinding, onClick, {
-    scopes: ['modeling'],
-  })
+  const { state: interactionMapState } = useInteractionMapContext()
+
+  const resolvedKeybinding = useMemo(
+    () =>
+      interactionMapState.context.overrides[
+        `${KEYBINDING_CATEGORIES.USER_INTERFACE}.${paneConfig.id}`
+      ] || paneConfig.keybinding,
+    [interactionMapState.context.overrides]
+  )
 
   return (
     <button
@@ -263,7 +284,10 @@ function ModelingPaneButton({
           {paneConfig.title}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
-        <kbd className="hotkey text-xs capitalize">{paneConfig.keybinding}</kbd>
+        <InteractionSequence
+          sequence={resolvedKeybinding}
+          className="flex-nowrap !gap-1"
+        />
       </Tooltip>
     </button>
   )
