@@ -15,7 +15,11 @@ import {
   recast,
   SourceRange,
 } from 'lang/wasm'
-import { expectNodeOnPath, getLastNodeFromPath } from './queryAst'
+import {
+  expectNodeOnPath,
+  getLastNodeFromPath,
+  getNodeFromPath,
+} from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 
@@ -315,12 +319,14 @@ export class KclManager {
     Object.entries(this.engineCommandManager.artifactMap).forEach(
       ([commandId, artifact]) => {
         if (!artifact.pathToNode) return
-        const node = expectNodeOnPath<CallExpression>(
+        const _node = getNodeFromPath<CallExpression>(
           this.ast,
           artifact.pathToNode,
           'CallExpression'
         )
-        if (err(node)) return
+        if (err(_node)) return
+        const { node } = _node
+        if (isArray(node) || node.type !== 'CallExpression') return
         const [oldStart, oldEnd] = artifact.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
