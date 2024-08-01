@@ -15,7 +15,8 @@ import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSections
 import { isDesktop } from 'lib/isDesktop'
 
 export const APP_VERSION = isDesktop()
-  ? import.meta.env.PACKAGE_VERSION || 'unknown'
+  ? // @ts-ignore
+    import.meta.env.PACKAGE_VERSION || 'unknown'
   : 'main'
 
 export const Settings = () => {

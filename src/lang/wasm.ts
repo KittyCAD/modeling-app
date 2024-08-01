@@ -23,9 +23,7 @@ import {
   configurationToSettingsPayload,
   projectConfigurationToSettingsPayload,
 } from 'lib/settings/settingsUtils'
-import {
-  SaveSettingsPayload,
-} from 'lib/settings/settingsTypes'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
@@ -589,7 +587,7 @@ export function parseProjectSettings(
 }
 
 export function parseProjectRoute(
-  configuration: Configuration,
+  configuration: Partial<SaveSettingsPayload>,
   route_str: string
 ): ProjectRoute | Error {
   return parse_project_route(JSON.stringify(configuration), route_str)

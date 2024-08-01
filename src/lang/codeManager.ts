@@ -121,7 +121,7 @@ export default class CodeManager {
         this._currentFilePath &&
           window.electron
             .writeFile(this._currentFilePath, this.code ?? '')
-            .catch((err) => {
+            .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.error('error saving file', err)
               toast.error('Error saving file, please check file permissions')

@@ -101,7 +101,10 @@ const router = createBrowserRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
-                {!isDesktop() && import.meta.env.PROD && <DownloadAppBanner />}
+                {
+                  // @ts-ignore
+                  !isDesktop() && import.meta.env.PROD && <DownloadAppBanner />
+                }
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>

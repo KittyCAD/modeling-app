@@ -5,6 +5,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { parseProjectRoute, readAppSettingsFile } from './desktop'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
+import { SaveSettingsPayload } from './settings/settingsTypes'
 import { err } from 'lib/trap'
 
 const prependRoutes =
@@ -33,7 +34,7 @@ export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${
 
 export async function getProjectMetaByRouteId(
   id?: string,
-  configuration?: Configuration | Error
+  configuration?: Partial<SaveSettingsPayload> | Error
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
