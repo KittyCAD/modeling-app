@@ -148,7 +148,6 @@ export function createArtifactGraph({
   const myMap = new Map<string, Artifact>()
   let currentPlaneId = ''
 
-  const getArtifact = (id: string) => myMap.get(id)
   orderedCommands.forEach((orderedCommand) => {
     if (orderedCommand.command?.type === 'modeling_cmd_req') {
       if (orderedCommand.command.cmd.type === 'enable_sketch_mode') {
@@ -161,7 +160,7 @@ export function createArtifactGraph({
     const modArr = getArtifactsToUpdate({
       orderedCommand,
       responseMap,
-      getArtifact,
+      getArtifact: (id: string) => myMap.get(id),
       currentPlaneId,
       ast,
     })
@@ -186,6 +185,15 @@ export function createArtifactGraph({
   return myMap
 }
 
+/**
+ * Processes a single command and it's response in order to populate the artifact map
+ * It does not mutate the map directly, but returns an array of artifacts to update
+ * 
+ * @param currentPlaneId is only needed for `start_path` commands because this command does not have a pathId
+ * instead it relies on the id used with the `enable_sketch_mode` command, so this much be kept track of
+ * outside of this function. It would be good to update the `start_path` command to include the planeId so we 
+ * can remove this.
+ */
 export function getArtifactsToUpdate({
   orderedCommand: { command, range },
   getArtifact,
