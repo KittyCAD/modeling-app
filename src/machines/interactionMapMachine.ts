@@ -6,15 +6,20 @@ export type InteractionMapItem = {
   name: string
   title: string
   sequence: string
-  guard: (e: MouseEvent | KeyboardEvent) => boolean
+  guard?: (e: MouseEvent | KeyboardEvent) => boolean
   action: () => void
   ownerId: string
 }
 
+export function makeOverrideKey(interactionMapItem: InteractionMapItem) {
+  return `${interactionMapItem.ownerId}.${interactionMapItem.name}`
+}
+
 export const interactionMapMachine = createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QEkB2AXMAnAhgY3QEsB7VAAgFkcAHMgQQOKwGI6IIz1izCNt8ipMgFsaAbQAMAXUShqxWIUGpZIAB6IAzAE4AbADoATBIAcAdk0AWCQFYJmiRMMAaEAE9EAWgCMN7-t0JbRNdS0tDM29dbQBfGNc0TFwCEnIqWgYuFgAlMGFiADcwMgAzLGJhHj5k5RFxaVV5RWVVDQRow30TU29rbrsrb1cPBB8-AKDtXytg7R0TOITqgVTKGnpGLH0AGUJYTFReKFKmKqSV0mYAMUIsYrAijEkZJBAmpVTWxDmbfTMI7wmEyWYGGbThYZaUJGKw2SxwmwWSJmRYgRL8FJCdIbLL6XKwYgAGyKZAAFsR0ABrMBuZgQUhgfS8ArEan6O4E4lgAASFOpbgAQm4AAp3EqENTPRoKD6kL4IbzeTSaLreMyWXS6RWaXRmOaQhB2Aw2KyGawOEyInWo9E1VbYzJMPFwIkk8lUmnMbDlLbUQk4dAlJjCdkurm8j2CkViiVS17vFqvNreCSArq6Yw6iLaRyGGwGqK-bRzUKGbyGM0mYuGG3LTFpdaOrb413Fd38r1YH36P0BoNYEMc1sR-lC0VgcWS7wvOQyxOgZNOfxWeHRDPzMsGgFdPSObrKsxwywo+Jouu1B2bfQAUTUYDwAFdMGR+aJaA8wBg6QymagWWywDvR9MAAaRpN9MlSONZ2aT4k0QMIzH0YJvGCGYbGCVNdANTQ4X0DVUzsCswW6WJT1tC4GwyK9b3vJ9ilfdYPy-b0nV7QNg30QC6NA8CaEg0hoLeOc4IXBCQQCGxjDVawKz1eEt0tdMHDMboU20M0zBPU9UGICA4FUCj6zWaismlWC5Xg0YhncRBfH0csdRTWwTEMaIbF0TRa3OYzL1xXZ9k-I4TiwM4MXnYSLJUKz-iQwwTFwzQEvhM1bC3DTVSBTzHBNdzvPC+1GyvFsuTJPkaXM2VorEhVj1+CRdBMctLHUk03JwzR-HLHMLECDyEu8fK7SxIrcVo4CGL499HnQSqIraY9FJVUJgQ1cJUP+CRLDiOIgA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QEkB2AXMAnAhgY3QEsB7VAAgFkcAHMgQQOKwGI6IIz1izCNt8ipMgFsaAbQAMAXUShqxWIUGpZIAB6IAzAE4AbADoATBIAcAdk0AWCQFYJmiRMMAaEAE9EAWgCMN7-t0JbRNdS0tDM29dbQBfGNc0TFwCEnIqWgYuFgAlMGFiADcwMgAzLGJhHj5k5RFxaVV5RWVVDQRow30TU29rbrsrb1cPBB8-AKDtXytg7R0TOITqgVTKGnpGLH0AGUJYTFReKFKmKqSV0mYAMUIsYrAijEkZJBAmpVTWxDmbfTMI7wmEyWYGGbThYZaUJGKw2SxwmwWSJmRYgRL8FJCdIbLL6XKwYgAGyKZAAFsR0ABrMBuZgQUhgfS8ArEan6O4E4lgAASFOpbgAQm4AAp3EqENTPRoKD6kL4IbzeTSaLreMyWXS6RWaXRmOaQhB2Aw2KyGawOEyInWo9E1VbYzJMPFwIkk8lUmnMbDlLbUQk4dAlJjCdkurm8j2CkViiVS17vFqvNreCSArq6Yw6iLaRyGGwGqK-bRzUKGbyGM0mYuGG3LTFpdaOrb413Fd38r1YH36P0BoNYEMc1sR-lC0VgcWS7wvOQyxOgZNOfxWeHRDPzMsGgFdPSObrKsxwywo+Jouu1B2bfQAUTUYDwAFdMGR+aJaA8wBg6QymagWWywDvR9MAAaRpN9MlSONZ2aT4k0QMIzH0YJvGCGYbGCVNdANTQ4X0DVUzsCswW6WJT1tC4GwyK9b3vJ9ilfdYPy-b0nV7QNg30QC6NA8CaEg0hoLeOc4IXBCQQCGxjDVawKz1eEt0tdMHDMboU20M0zBPJZznrNZqKyZgAFVqAgANikKb1CAgOAhITUT1EQbUVRBA9gRsEw1SGdwvHLExkLLCR1yCzVyxPU9UGIGz4FeCi9MvLJpVguV4NGbyRl8fRyx1XCTDBQxNH+MJa10i9GyvXZ9k-I4TiwM4MXnYTkpUVL-iQwwTFwzROvhM1bC3DTVSBXQHFsHVtBsEqGvtcrcRbLkyT5GkktlFqxIVY9fiCzyzXUk1DGwnyEGVfxyxzCxAhsXROu8Ka7SxWanVo4CGL499HnQFbGraY9FJVUJgQ1cJUP+CRLDiOIgA */
   context: {
     interactionMap: [] as InteractionMapItem[],
+    overrides: {} as { [key: string]: string },
     currentSequence: '' as string,
   },
   predictableActionArguments: true,
@@ -35,6 +40,7 @@ export const interactionMapMachine = createMachine({
       | { type: 'Update prefix matrix' }
       | { type: 'Add last interaction to sequence' }
       | { type: 'Clear sequence' }
+      | { type: 'Update overrides'; data: { [key: string]: string } }
       | { type: 'Resolve hotkey by prefix'; data: MouseEvent | KeyboardEvent }
       | { type: 'done.invoke.resolveHotkeyByPrefix'; data: InteractionMapItem }
       | {
@@ -114,6 +120,12 @@ export const interactionMapMachine = createMachine({
           type: 'Remove from interactionMap',
         },
       ],
+    },
+
+    'Update overrides': {
+      target: '#Interaction Map Actor',
+      internal: true,
+      actions: ['Merge into overrides', 'Persist keybinding overrides'],
     },
   },
 })

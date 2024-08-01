@@ -10,7 +10,6 @@ import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useShouldDisableModelingActions } from 'hooks/useShouldDisableModelingActions'
 import { useInteractionMap } from 'hooks/useInteractionMap'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
-import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
 import { KEYBINDING_CATEGORIES } from 'lib/constants'
 import { useAppState } from 'AppState'
@@ -30,7 +29,6 @@ export function Toolbar({
 }: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
   const { commandBarSend } = useCommandsContext()
-  const shouldDisableModelingActions = useShouldDisableModelingActions()
   useInteractionMap(
     [
       {
@@ -39,7 +37,7 @@ export function Toolbar({
         sequence: 'shift+s',
         action: () =>
           send({ type: 'Enter sketch', data: { forceNewSketch: true } }),
-        guard: () => !shouldDisableModelingActions && state.matches('idle'),
+        guard: () => state.can('Enter sketch'),
       },
       {
         name: 'extrude',
@@ -50,10 +48,10 @@ export function Toolbar({
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
-        guard: () => !shouldDisableModelingActions && state.matches('idle'),
+        guard: () => state.can('Extrude'),
       },
     ],
-    [shouldDisableModelingActions, commandBarSend, state],
+    [commandBarSend, state],
     KEYBINDING_CATEGORIES.MODELING
   )
   const iconClassName =
@@ -286,19 +284,19 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
   itemConfig: ToolbarItemResolved
   configCallbackProps: ToolbarItemCallbackProps
 }) {
-  useHotkeys(
-    itemConfig.hotkey || '',
-    () => {
-      itemConfig.onClick(configCallbackProps)
-    },
-    {
-      enabled:
-        itemConfig.status === 'available' &&
-        !!itemConfig.hotkey &&
-        !itemConfig.disabled &&
-        !itemConfig.disableHotkey,
-    }
-  )
+  // useHotkeys(
+  //   itemConfig.hotkey || '',
+  //   () => {
+  //     itemConfig.onClick(configCallbackProps)
+  //   },
+  //   {
+  //     enabled:
+  //       itemConfig.status === 'available' &&
+  //       !!itemConfig.hotkey &&
+  //       !itemConfig.disabled &&
+  //       !itemConfig.disableHotkey,
+  //   }
+  // )
 
   return (
     <>

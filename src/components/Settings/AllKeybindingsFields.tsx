@@ -1,13 +1,11 @@
 import { ActionIcon } from 'components/ActionIcon'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+import { resolveInteractionEvent } from 'lib/keyboard'
 import {
-  isModifierKey,
-  mapKey,
-  mouseButtonToName,
-  resolveInteractionEvent,
-} from 'lib/keyboard'
-import { InteractionMapItem } from 'machines/interactionMapMachine'
-import { useEffect, useState } from 'react'
+  InteractionMapItem,
+  makeOverrideKey,
+} from 'machines/interactionMapMachine'
+import { FormEvent, HTMLProps, useEffect, useRef, useState } from 'react'
 
 export function AllKeybindingsFields() {
   const { state } = useInteractionMapContext()
@@ -23,8 +21,23 @@ export function AllKeybindingsFields() {
 }
 
 function KeybindingField({ item }: { item: InteractionMapItem }) {
+  const { send, state } = useInteractionMapContext()
   const [isEditing, setIsEditing] = useState(false)
   const [newSequence, setNewSequence] = useState('')
+  const submitRef = useRef<HTMLButtonElement>(null)
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (newSequence !== item.sequence) {
+      send({
+        type: 'Update overrides',
+        data: {
+          [makeOverrideKey(item)]: newSequence,
+        },
+      })
+    }
+    setIsEditing(false)
+  }
 
   useEffect(() => {
     const blockOtherEvents = (e: KeyboardEvent | MouseEvent) => {
@@ -34,13 +47,25 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
     }
 
     const handleInteraction = (e: KeyboardEvent | MouseEvent) => {
+      if (e instanceof KeyboardEvent && e.key === 'Escape') {
+        blockOtherEvents(e)
+        setIsEditing(false)
+        return
+      } else if (e instanceof KeyboardEvent && e.key === 'Enter') {
+        return
+      } else if (e instanceof MouseEvent && e.target === submitRef.current) {
+        return
+      }
       blockOtherEvents(e)
 
       const resolvedInteraction = resolveInteractionEvent(e)
       if (resolvedInteraction.isModifier) return
-      setNewSequence(
-        (prev) => prev + (prev.length ? ' ' : '') + resolvedInteraction.asString
-      )
+      setNewSequence((prev) => {
+        const newSequence =
+          prev + (prev.length ? ' ' : '') + resolvedInteraction.asString
+        console.log('newSequence', newSequence)
+        return newSequence
+      })
     }
 
     const handleContextMenu = (e: MouseEvent) => {
@@ -49,47 +74,100 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
 
     if (!isEditing) {
       setNewSequence('')
-      globalThis?.window?.removeEventListener('keydown', handleInteraction)
-      globalThis?.window?.removeEventListener('mousedown', handleInteraction)
-      globalThis?.window?.removeEventListener('contextmenu', handleContextMenu)
+      globalThis?.window?.removeEventListener('keydown', handleInteraction, {
+        capture: true,
+      })
+      globalThis?.window?.removeEventListener('mousedown', handleInteraction, {
+        capture: true,
+      })
+      globalThis?.window?.removeEventListener(
+        'contextmenu',
+        handleContextMenu,
+        { capture: true }
+      )
     } else {
-      globalThis?.window?.addEventListener('keydown', handleInteraction)
-      globalThis?.window?.addEventListener('mousedown', handleInteraction)
-      globalThis?.window?.addEventListener('contextmenu', handleContextMenu)
+      globalThis?.window?.addEventListener('keydown', handleInteraction, {
+        capture: true,
+      })
+      globalThis?.window?.addEventListener('mousedown', handleInteraction, {
+        capture: true,
+      })
+      globalThis?.window?.addEventListener('contextmenu', handleContextMenu, {
+        capture: true,
+      })
     }
 
     return () => {
-      globalThis?.window?.removeEventListener('keydown', handleInteraction)
-      globalThis?.window?.removeEventListener('mousedown', handleInteraction)
-      globalThis?.window?.removeEventListener('contextmenu', handleContextMenu)
+      globalThis?.window?.removeEventListener('keydown', handleInteraction, {
+        capture: true,
+      })
+      globalThis?.window?.removeEventListener('mousedown', handleInteraction, {
+        capture: true,
+      })
+      globalThis?.window?.removeEventListener(
+        'contextmenu',
+        handleContextMenu,
+        { capture: true }
+      )
     }
-  }, [isEditing])
+  }, [isEditing, setNewSequence])
 
-  return (
+  return isEditing ? (
+    <form
+      key={item.ownerId + '-' + item.name}
+      className="flex gap-2 justify-between items-start"
+      onSubmit={handleSubmit}
+    >
+      <h3>{item.title}</h3>
+      <InteractionSequence sequence={newSequence} showNoSequence />
+      <input type="hidden" value={item.sequence} name="sequence" />
+      <button ref={submitRef} className="p-0 m-0" type="submit">
+        <ActionIcon icon="checkmark" />
+      </button>
+    </form>
+  ) : (
     <div
       key={item.ownerId + '-' + item.name}
       className="flex gap-2 justify-between items-start"
     >
       <h3>{item.title}</h3>
-      <div className="flex-1 flex flex-wrap justify-end gap-3">
-        {(isEditing ? newSequence : item.sequence)
-          .split(' ')
-          .map((chord, i) => (
-            <kbd
-              key={`${item.ownerId}-${item.name}-${chord}-${i}`}
-              className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80"
-            >
-              {chord}
-            </kbd>
-          ))}
-      </div>
+      <InteractionSequence
+        sequence={
+          state.context.overrides[makeOverrideKey(item)] || item.sequence
+        }
+        showNoSequence
+      />
       <button
-        onClick={() => setIsEditing((prev) => !prev)}
+        ref={submitRef}
         className="p-0 m-0"
-        type={isEditing ? 'submit' : 'button'}
+        onClick={() => setIsEditing(true)}
       >
-        <ActionIcon icon={isEditing ? 'checkmark' : 'sketch'} />
+        <ActionIcon icon="sketch" />
       </button>
     </div>
+  )
+}
+
+export function InteractionSequence({
+  sequence,
+  className = '',
+  showNoSequence = false,
+  ...props
+}: HTMLProps<HTMLDivElement> & { sequence: string; showNoSequence?: boolean }) {
+  return sequence.length ? (
+    <div
+      className={'flex-1 flex flex-wrap justify-end gap-3 ' + className}
+      {...props}
+    >
+      {sequence.split(' ').map((chord, i) => (
+        <kbd key={`sequence-${sequence}-${chord}-${i}`} className="hotkey">
+          {chord}
+        </kbd>
+      ))}
+    </div>
+  ) : (
+    showNoSequence && (
+      <div className="flex-1 flex justify-end text-xs">No sequence set</div>
+    )
   )
 }

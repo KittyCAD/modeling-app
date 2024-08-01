@@ -26,7 +26,7 @@ export type SidebarType =
   | 'lspMessages'
   | 'variables'
 
-const PANE_KEYBINDING_PREFIX = 'alt+p ' as const
+const PANE_KEYBINDING_PREFIX = 'ctrl+shift+p ' as const
 
 /**
  * This interface can be extended as more context is needed for the panes

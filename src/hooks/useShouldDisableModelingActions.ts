@@ -1,9 +1,6 @@
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
+import { useAppState } from 'AppState'
+import { NetworkHealthState, useNetworkStatus } from 'hooks/useNetworkStatus'
 import { useKclContext } from 'lang/KclProvider'
-import { useStore } from 'useStore'
 
 /**
  * Custom hook to determine if modeling actions should be disabled
@@ -13,9 +10,7 @@ import { useStore } from 'useStore'
 export function useShouldDisableModelingActions() {
   const { overallState } = useNetworkStatus()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const { isStreamReady } = useAppState()
 
   return overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
 }

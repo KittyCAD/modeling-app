@@ -12,6 +12,10 @@ import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
+import { KEYBINDING_CATEGORIES } from 'lib/constants'
+import { useInteractionMap } from 'hooks/useInteractionMap'
+import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+import { InteractionSequence } from 'components/Settings/AllKeybindingsFields'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -61,6 +65,18 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
             : pane.hideOnPlatform === 'desktop')
       ),
     [sidebarPanes, showDebugPanel.current]
+  )
+
+  useInteractionMap(
+    filteredPanes.map((pane) => ({
+      name: pane.id,
+      action: () => togglePane(pane.id),
+      keybinding: pane.keybinding,
+      title: `Toggle ${pane.title} pane`,
+      sequence: pane.keybinding,
+    })),
+    [filteredPanes, context.store?.openPanes],
+    KEYBINDING_CATEGORIES.USER_INTERFACE
   )
 
   const paneBadgeMap: Record<SidebarType, number | boolean> = useMemo(() => {
@@ -207,6 +223,16 @@ function ModelingPaneButton({
   showBadge,
   ...props
 }: ModelingPaneButtonProps) {
+  const { state: interactionMapState } = useInteractionMapContext()
+
+  const resolvedKeybinding = useMemo(
+    () =>
+      interactionMapState.context.overrides[
+        `${KEYBINDING_CATEGORIES.USER_INTERFACE}.${paneConfig.id}`
+      ] || paneConfig.keybinding,
+    [interactionMapState.context.overrides]
+  )
+
   return (
     <button
       className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
@@ -258,7 +284,10 @@ function ModelingPaneButton({
           {paneConfig.title}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
-        <kbd className="hotkey text-xs capitalize">{paneConfig.keybinding}</kbd>
+        <InteractionSequence
+          sequence={resolvedKeybinding}
+          className="flex-nowrap !gap-1"
+        />
       </Tooltip>
     </button>
   )

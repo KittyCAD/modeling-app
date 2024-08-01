@@ -61,4 +61,5 @@ export const KCL_DEFAULT_LENGTH = `5`
 export const KEYBINDING_CATEGORIES = {
   MODELING: 'modeling',
   COMMAND_BAR: 'command-bar',
+  USER_INTERFACE: 'user-interface',
 }

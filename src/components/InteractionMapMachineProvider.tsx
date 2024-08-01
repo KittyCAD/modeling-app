@@ -10,6 +10,7 @@ import {
 import {
   MouseButtonName,
   interactionMapMachine,
+  makeOverrideKey,
 } from 'machines/interactionMapMachine'
 import { createContext, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -61,7 +62,9 @@ export function InteractionMapMachineProvider({
           // normalize any interaction sequences to be sorted
           const normalizedInteractions = event.data.map((item) => ({
             ...item,
-            sequence: item.sequence
+            sequence: (
+              context.overrides[makeOverrideKey(item)] || item.sequence
+            )
               .split(' ')
               .map((step) =>
                 step
@@ -94,6 +97,17 @@ export function InteractionMapMachineProvider({
           ]
         },
       }),
+      'Merge into overrides': assign({
+        overrides: (context, event) => {
+          return {
+            ...context.overrides,
+            ...event.data,
+          }
+        },
+      }),
+      'Persist keybinding overrides': (context) => {
+        console.log('Persisting keybinding overrides', context.overrides)
+      },
     },
     services: {
       'Resolve hotkey by prefix': (context, event) => {
@@ -111,13 +125,16 @@ export function InteractionMapMachineProvider({
           resolvedInteraction.asString
 
         const matches = context.interactionMap.filter((item) =>
-          item.sequence.startsWith(searchString)
+          (
+            context.overrides[makeOverrideKey(item)] || item.sequence
+          ).startsWith(searchString)
         )
 
         console.log('matches', {
           matches,
           interactionMap: context.interactionMap,
           searchString,
+          overrides: context.overrides,
         })
 
         // If we have no matches, reject the promise
@@ -126,8 +143,11 @@ export function InteractionMapMachineProvider({
         }
 
         const exactMatches = matches.filter(
-          (item) => item.sequence === searchString
+          (item) =>
+            (context.overrides[makeOverrideKey(item)] || item.sequence) ===
+            searchString
         )
+        console.log('exactMatches', exactMatches)
         if (!exactMatches.length) {
           // We have a prefix match.
           // Reject the promise and return the step
@@ -136,9 +156,11 @@ export function InteractionMapMachineProvider({
         }
 
         // Resolve to just one exact match
-        const availableExactMatches = exactMatches.filter((item) =>
-          item.guard(event.data)
+        const availableExactMatches = exactMatches.filter(
+          (item) => !item.guard || item.guard(event.data)
         )
+
+        console.log('availableExactMatches', availableExactMatches)
         if (availableExactMatches.length === 0) {
           return Promise.reject()
         } else {
