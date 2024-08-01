@@ -18,6 +18,7 @@ import {
   createPipeExpression,
 } from '../modifyAst'
 import {
+  expectNodeOnPath,
   getNodeFromPath,
   getNodePathFromSourceRange,
   hasSketchPipeBeenExtruded,
@@ -46,15 +47,12 @@ export function addFillet(
    */
 
   // Find the specific sketch segment to tag with the new tag
-  const sketchSegmentChunk = getNodeFromPath(
+  const sketchSegmentNode = expectNodeOnPath<CallExpression>(
     _node,
     pathToSegmentNode,
     'CallExpression'
   )
-  if (err(sketchSegmentChunk)) return sketchSegmentChunk
-  const { node: sketchSegmentNode } = sketchSegmentChunk as {
-    node: CallExpression
-  }
+  if (err(sketchSegmentNode)) return sketchSegmentNode
 
   // Check whether selection is a valid segment from sketchLineHelpersMap
   if (!(sketchSegmentNode.callee.name in sketchLineHelperMap)) {
@@ -93,13 +91,12 @@ export function addFillet(
   ])
 
   // Locate the extrude call
-  const extrudeChunk = getNodeFromPath<VariableDeclaration>(
+  const extrudeVarDecl = expectNodeOnPath<VariableDeclaration>(
     _node,
     pathToExtrudeNode,
     'VariableDeclaration'
   )
-  if (err(extrudeChunk)) return extrudeChunk
-  const { node: extrudeVarDecl } = extrudeChunk
+  if (err(extrudeVarDecl)) return extrudeVarDecl
 
   const extrudeDeclarator = extrudeVarDecl.declarations[0]
   const extrudeInit = extrudeDeclarator.init
@@ -281,12 +278,12 @@ export const hasValidFilletSelection = ({
         'CallExpression'
       )
       if (err(segmentNode)) return false
-      if (segmentNode.node.type === 'CallExpression') {
-        const segmentName = segmentNode.node.callee.name
+      if (segmentNode.stopAtNode) {
+        const segmentName = segmentNode.stopAtNode.callee.name
         if (segmentName in sketchLineHelperMap) {
           const edges = isTagUsedInFillet({
             ast,
-            callExp: segmentNode.node,
+            callExp: segmentNode.stopAtNode,
           })
           // edge has already been filleted
           if (

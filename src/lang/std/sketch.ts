@@ -14,8 +14,10 @@ import {
   Identifier,
 } from 'lang/wasm'
 import {
+  isNodeType,
+  expectLastNodeFromPath,
+  expectNodeOnPath,
   getNodeFromPath,
-  getNodeFromPathCurry,
   getNodePathFromSourceRange,
 } from 'lang/queryAst'
 import {
@@ -50,7 +52,7 @@ import {
   mutateObjExpProp,
   findUniqueName,
 } from 'lang/modifyAst'
-import { roundOff, getLength, getAngle } from 'lib/utils'
+import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
@@ -330,13 +332,12 @@ export const lineTo: SketchLineHelper = {
     referencedSegment,
   }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
+    const pipe = expectNodeOnPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
-    const { node: pipe } = nodeMeta
+    if (err(pipe)) return pipe
 
     const newVals: [Value, Value] = [
       createLiteral(roundOff(to[0], 2)),
@@ -373,7 +374,7 @@ export const lineTo: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
 
@@ -382,8 +383,13 @@ export const lineTo: SketchLineHelper = {
       createLiteral(to[1]),
     ])
 
-    mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        mutateArrExp(firstArg, toArrExp) ||
+          mutateObjExpProp(firstArg, toArrExp, 'to')
+      }
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -414,7 +420,7 @@ export const line: SketchLineHelper = {
     spliceBetween,
   }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression | CallExpression>(
+    const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
@@ -427,12 +433,16 @@ export const line: SketchLineHelper = {
       'VariableDeclarator'
     )
     if (err(nodeMeta2)) return nodeMeta2
-    const { node: varDec } = nodeMeta2
+    const { stopAtNode: varDec } = nodeMeta2
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
 
-    if (spliceBetween && !createCallback && pipe.type === 'PipeExpression') {
+    if (
+      spliceBetween &&
+      !createCallback &&
+      isNodeType<PipeExpression>(pipe, 'PipeExpression')
+    ) {
       const callExp = createCallExpression('line', [
         createArrayExpression([newXVal, newYVal]),
         createPipeSubstitution(),
@@ -455,7 +465,11 @@ export const line: SketchLineHelper = {
       }
     }
 
-    if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
+    if (
+      replaceExisting &&
+      createCallback &&
+      isNodeType<PipeExpression>(pipe, 'PipeExpression')
+    ) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
         [newXVal, newYVal],
@@ -477,7 +491,7 @@ export const line: SketchLineHelper = {
       createArrayExpression([newXVal, newYVal]),
       createPipeSubstitution(),
     ])
-    if (pipe.type === 'PipeExpression') {
+    if (isNodeType<PipeExpression>(pipe, 'PipeExpression')) {
       pipe.body = [...pipe.body, callExp]
       return {
         modifiedAst: _node,
@@ -488,6 +502,7 @@ export const line: SketchLineHelper = {
         ],
       }
     } else {
+      if (!varDec) return new Error('Variable declaration not found')
       varDec.init = createPipeExpression([varDec.init, callExp])
     }
     return {
@@ -497,7 +512,11 @@ export const line: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
 
@@ -506,10 +525,15 @@ export const line: SketchLineHelper = {
       createLiteral(roundOff(to[1] - from[1], 2)),
     ])
 
-    if (callExpression.arguments?.[0].type === 'ObjectExpression') {
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
-    } else {
-      mutateArrExp(callExpression.arguments?.[0], toArrExp)
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        if (firstArg.type === 'ObjectExpression') {
+          mutateObjExpProp(firstArg, toArrExp, 'to')
+        } else {
+          mutateArrExp(firstArg, toArrExp)
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -531,10 +555,12 @@ export const line: SketchLineHelper = {
 export const xLineTo: SketchLineHelper = {
   add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const pipe = expectLastNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(pipe)) return pipe
 
     const newVal = createLiteral(roundOff(to[0], 2))
 
@@ -563,14 +589,24 @@ export const xLineTo: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
-    const newX = createLiteral(roundOff(to[0], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newX
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newX, 'to')
+
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const newX = createLiteral(roundOff(to[0], 2))
+        if (isLiteralArrayOrStatic(firstArg)) {
+          callExpression.arguments[0] = newX
+        } else {
+          mutateObjExpProp(firstArg, newX, 'to')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -592,10 +628,12 @@ export const xLineTo: SketchLineHelper = {
 export const yLineTo: SketchLineHelper = {
   add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const pipe = expectLastNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(pipe)) return pipe
 
     const newVal = createLiteral(roundOff(to[1], 2))
 
@@ -624,14 +662,24 @@ export const yLineTo: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
-    const newY = createLiteral(roundOff(to[1], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newY
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newY, 'to')
+
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const newY = createLiteral(roundOff(to[1], 2))
+        if (isLiteralArrayOrStatic(firstArg)) {
+          callExpression.arguments[0] = newY
+        } else {
+          mutateObjExpProp(firstArg, newY, 'to')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -653,10 +701,12 @@ export const yLineTo: SketchLineHelper = {
 export const xLine: SketchLineHelper = {
   add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const pipe = expectNodeOnPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(pipe)) return pipe
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
     const firstArg = newVal
@@ -684,14 +734,24 @@ export const xLine: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
-    const newX = createLiteral(roundOff(to[0] - from[0], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newX
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newX, 'length')
+
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const newX = createLiteral(roundOff(to[0] - from[0], 2))
+        if (isLiteralArrayOrStatic(firstArg)) {
+          callExpression.arguments[0] = newX
+        } else {
+          mutateObjExpProp(firstArg, newX, 'length')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -713,10 +773,12 @@ export const xLine: SketchLineHelper = {
 export const yLine: SketchLineHelper = {
   add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const pipe = expectNodeOnPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(pipe)) return pipe
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -741,14 +803,24 @@ export const yLine: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
-    const newY = createLiteral(roundOff(to[1] - from[1], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newY
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newY, 'length')
+
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const newY = createLiteral(roundOff(to[1] - from[1], 2))
+        if (isLiteralArrayOrStatic(firstArg)) {
+          callExpression.arguments[0] = newY
+        } else {
+          mutateObjExpProp(firstArg, newY, 'length')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -777,8 +849,11 @@ export const tangentialArcTo: SketchLineHelper = {
     referencedSegment,
   }) => {
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression | CallExpression>('PipeExpression')
+    const _node1 = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
     const _node2 = getNodeFromPath<VariableDeclarator>(
@@ -787,12 +862,16 @@ export const tangentialArcTo: SketchLineHelper = {
       'VariableDeclarator'
     )
     if (err(_node2)) return _node2
-    const { node: varDec } = _node2
+    const { stopAtNode: varDec } = _node2
 
     const toX = createLiteral(roundOff(to[0], 2))
     const toY = createLiteral(roundOff(to[1], 2))
 
-    if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
+    if (
+      replaceExisting &&
+      createCallback &&
+      isNodeType<PipeExpression>(pipe, 'PipeExpression')
+    ) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
         [toX, toY],
@@ -813,7 +892,7 @@ export const tangentialArcTo: SketchLineHelper = {
       createArrayExpression([toX, toY]),
       createPipeSubstitution(),
     ])
-    if (pipe.type === 'PipeExpression') {
+    if (isNodeType<PipeExpression>(pipe, 'PipeExpression')) {
       pipe.body = [...pipe.body, newLine]
       return {
         modifiedAst: _node,
@@ -824,6 +903,7 @@ export const tangentialArcTo: SketchLineHelper = {
         ],
       }
     } else {
+      if (!varDec) return new Error('Variable declaration not found')
       varDec.init = createPipeExpression([varDec.init, newLine])
     }
     return {
@@ -833,15 +913,23 @@ export const tangentialArcTo: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const x = createLiteral(roundOff(to[0], 2))
     const y = createLiteral(roundOff(to[1], 2))
 
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
-      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
+          mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -909,10 +997,12 @@ export const angledLine: SketchLineHelper = {
     referencedSegment,
   }) => {
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const pipe = expectNodeOnPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(pipe)) return pipe
 
     const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
@@ -947,7 +1037,11 @@ export const angledLine: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
@@ -956,10 +1050,16 @@ export const angledLine: SketchLineHelper = {
     const angleLit = createLiteral(angle)
     const lengthLit = createLiteral(lineLength)
 
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        if (
+          !mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))
+        ) {
+          mutateObjExpProp(firstArg, angleLit, 'angle')
+          mutateObjExpProp(firstArg, lengthLit, 'length')
+        }
+      }
     }
 
     return {
@@ -993,20 +1093,18 @@ export const angledLineOfXLength: SketchLineHelper = {
     replaceExisting,
   }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
+    const pipe = expectNodeOnPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
-    const { node: pipe } = nodeMeta
-    const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+    if (err(pipe)) return pipe
+    const varDec = expectNodeOnPath<VariableDeclarator>(
       _node,
       pathToNode,
       'VariableDeclarator'
     )
-    if (err(nodeMeta2)) return nodeMeta2
-    const { node: varDec } = nodeMeta2
+    if (err(varDec)) return varDec
 
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.get(variableName)
@@ -1040,23 +1138,33 @@ export const angledLineOfXLength: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
     const xLength = roundOff(Math.abs(to[0] - from[0]), 2)
 
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = isAngleLiteral(firstArg)
-      ? Math.abs(xLength)
-      : xLength // todo make work for variable angle > 180
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const adjustedXLength = isAngleLiteral(firstArg)
+          ? Math.abs(xLength)
+          : xLength // todo make work for variable angle > 180
 
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedXLength)
+        const angleLit = createLiteral(angle)
+        const lengthLit = createLiteral(adjustedXLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
+        if (
+          !mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))
+        ) {
+          mutateObjExpProp(firstArg, angleLit, 'angle')
+          mutateObjExpProp(firstArg, lengthLit, 'length')
+        }
+      }
     }
 
     return {
@@ -1090,20 +1198,18 @@ export const angledLineOfYLength: SketchLineHelper = {
     replaceExisting,
   }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
+    const pipe = expectNodeOnPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
-    const { node: pipe } = nodeMeta
-    const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+    if (err(pipe)) return pipe
+    const varDec = expectNodeOnPath<VariableDeclarator>(
       _node,
       pathToNode,
       'VariableDeclarator'
     )
-    if (err(nodeMeta2)) return nodeMeta2
-    const { node: varDec } = nodeMeta2
+    if (err(varDec)) return varDec
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.get(variableName)
     if (!sketch || sketch.type !== 'SketchGroup') {
@@ -1137,23 +1243,33 @@ export const angledLineOfYLength: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
     const yLength = roundOff(to[1] - from[1], 2)
 
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedYLength = isAngleLiteral(firstArg)
-      ? Math.abs(yLength)
-      : yLength // todo make work for variable angle > 180
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const adjustedYLength = isAngleLiteral(firstArg)
+          ? Math.abs(yLength)
+          : yLength // todo make work for variable angle > 180
 
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedYLength)
+        const angleLit = createLiteral(angle)
+        const lengthLit = createLiteral(adjustedYLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
+        if (
+          !mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))
+        ) {
+          mutateObjExpProp(firstArg, angleLit, 'angle')
+          mutateObjExpProp(firstArg, lengthLit, 'length')
+        }
+      }
     }
 
     return {
@@ -1187,14 +1303,13 @@ export const angledLineToX: SketchLineHelper = {
     referencedSegment,
   }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
+    const pipe = expectNodeOnPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
+    if (err(pipe)) return pipe
 
-    const { node: pipe } = nodeMeta
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
     if (replaceExisting && createCallback) {
@@ -1227,22 +1342,32 @@ export const angledLineToX: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
-
     const { node: callExpression } = nodeMeta
+
     const angle = roundOff(getAngle(from, to), 0)
     const xLength = roundOff(to[0], 2)
 
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = xLength
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const adjustedXLength = xLength
 
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedXLength)
+        const angleLit = createLiteral(angle)
+        const lengthLit = createLiteral(adjustedXLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'to')
+        if (
+          !mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))
+        ) {
+          mutateObjExpProp(firstArg, angleLit, 'angle')
+          mutateObjExpProp(firstArg, lengthLit, 'to')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -1275,14 +1400,12 @@ export const angledLineToY: SketchLineHelper = {
     referencedSegment,
   }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
+    const pipe = expectNodeOnPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
-
-    const { node: pipe } = nodeMeta
+    if (err(pipe)) return pipe
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yArg = createLiteral(roundOff(to[1], 2))
@@ -1317,22 +1440,32 @@ export const angledLineToY: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
     if (err(nodeMeta)) return nodeMeta
-
     const { node: callExpression } = nodeMeta
+
     const angle = roundOff(getAngle(from, to), 0)
     const xLength = roundOff(to[1], 2)
 
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = xLength
+    if (isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+      const firstArg = callExpression.arguments[0]
+      if (firstArg) {
+        const adjustedXLength = xLength
 
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedXLength)
+        const angleLit = createLiteral(angle)
+        const lengthLit = createLiteral(adjustedXLength)
 
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'to')
+        if (
+          !mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))
+        ) {
+          mutateObjExpProp(firstArg, angleLit, 'angle')
+          mutateObjExpProp(firstArg, lengthLit, 'to')
+        }
+      }
     }
     return {
       modifiedAst: _node,
@@ -1372,7 +1505,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     )
     if (err(nodeMeta)) return nodeMeta
 
-    const { node: pipe } = nodeMeta
+    const { stopAtNode: pipe } = nodeMeta
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     if (!referencedSegment) {
@@ -1409,6 +1542,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
         ]
       )
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      if (!pipe) return new Error('Pipe expression not found')
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -1420,10 +1554,13 @@ export const angledLineThatIntersects: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from, previousProgramMemory }) => {
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
-    if (err(nodeMeta)) return nodeMeta
+    const callExpression = expectLastNodeFromPath<CallExpression>(
+      _node,
+      pathToNode,
+      'CallExpression'
+    )
+    if (err(callExpression)) return callExpression
 
-    const { node: callExpression } = nodeMeta
     const angle = roundOff(getAngle(from, to), 0)
 
     const firstArg = callExpression.arguments?.[0]
@@ -1434,14 +1571,13 @@ export const angledLineThatIntersects: SketchLineHelper = {
         : createLiteral('')
     const intersectTagName =
       intersectTag.type === 'Identifier' ? intersectTag.name : ''
-    const nodeMeta2 = getNodeFromPath<VariableDeclaration>(
+    const varDec = expectNodeOnPath<VariableDeclaration>(
       _node,
       pathToNode,
       'VariableDeclaration'
     )
-    if (err(nodeMeta2)) return nodeMeta2
+    if (err(varDec)) return varDec
 
-    const { node: varDec } = nodeMeta2
     const varName = varDec.declarations[0].id.name
     const sketchGroup = previousProgramMemory.get(varName) as SketchGroup
     const intersectPath = sketchGroup.value.find(
@@ -1553,11 +1689,16 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
   to,
 }) => {
   const _node = { ...node }
-  const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
-  if (err(nodeMeta)) {
-    console.error(nodeMeta)
+  const callExpression = expectLastNodeFromPath<CallExpression>(
+    _node,
+    pathToNode,
+    'CallExpression'
+  )
+  if (err(callExpression)) {
+    console.error(callExpression)
     return {
       modifiedAst: {
+        type: 'Program',
         start: 0,
         end: 0,
         body: [],
@@ -1572,7 +1713,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
     }
   }
 
-  const { node: callExpression } = nodeMeta
   const toArrExp = createArrayExpression([
     createLiteral(roundOff(to[0])),
     createLiteral(roundOff(to[1])),
@@ -1615,8 +1755,14 @@ export function changeSketchArguments(
   if (err(nodeMeta)) return nodeMeta
 
   const { node: callExpression, shallowPath } = nodeMeta
+  if (isArray(callExpression)) {
+    return new Error('Expected call expression but found array')
+  }
+  if (!isNodeType<CallExpression>(callExpression, 'CallExpression')) {
+    return new Error('Call expression not found')
+  }
 
-  if (callExpression?.callee?.name in sketchLineHelperMap) {
+  if (callExpression.callee.name in sketchLineHelperMap) {
     const { updateArgs } = sketchLineHelperMap[callExpression.callee.name]
     if (!updateArgs) {
       return new Error('not a sketch line helper')
@@ -1631,7 +1777,7 @@ export function changeSketchArguments(
     })
   }
 
-  return new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
+  return new Error(`not a sketch line helper: ${callExpression.callee.name}`)
 }
 
 export function getConstraintInfo(
@@ -1737,10 +1883,13 @@ export function addCallExpressionsToPipe({
   )
   if (err(pipeExpression)) return pipeExpression
 
-  if (pipeExpression.node.type !== 'PipeExpression') {
+  if (!pipeExpression.stopAtNode) {
     return new Error('not a pipe expression')
   }
-  pipeExpression.node.body = [...pipeExpression.node.body, ...expressions]
+  pipeExpression.stopAtNode.body = [
+    ...pipeExpression.stopAtNode.body,
+    ...expressions,
+  ]
   return _node
 }
 
@@ -1763,10 +1912,13 @@ export function addCloseToPipe({
   )
   if (err(pipeExpression)) return pipeExpression
 
-  if (pipeExpression.node.type !== 'PipeExpression') {
+  if (!pipeExpression.stopAtNode) {
     return new Error('not a pipe expression')
   }
-  pipeExpression.node.body = [...pipeExpression.node.body, closeExpression]
+  pipeExpression.stopAtNode.body = [
+    ...pipeExpression.stopAtNode.body,
+    closeExpression,
+  ]
   return _node
 }
 
@@ -1854,18 +2006,16 @@ type addTagFn = (a: AddTagInfo) => { modifiedAst: Program; tag: string } | Error
 function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
-    const callExpr = getNodeFromPath<CallExpression>(
+    const primaryCallExp = expectNodeOnPath<CallExpression>(
       _node,
       pathToNode,
       'CallExpression'
     )
-    if (err(callExpr)) return callExpr
-
-    const { node: primaryCallExp } = callExpr
+    if (err(primaryCallExp)) return primaryCallExp
 
     // Tag is always 3rd expression now, using arg index feels brittle
     // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[tagIndex]
+    const thirdArg = primaryCallExp.arguments[tagIndex]
     const tagDeclarator =
       thirdArg ||
       (createTagDeclarator(findUniqueName(_node, 'seg', 2)) as TagDeclarator)

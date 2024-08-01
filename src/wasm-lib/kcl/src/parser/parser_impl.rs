@@ -872,6 +872,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         end,
         body,
         non_code_meta,
+        ts_type: (),
         digest: None,
     })
 }
@@ -1746,6 +1747,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         }],
                         digest: None,
                     },
+                    ts_type: (),
                     digest: None,
                 },
                 return_type: None,
@@ -2400,6 +2402,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 digest: None,
             })],
             non_code_meta: NonCodeMeta::default(),
+            ts_type: (),
             digest: None,
         };
 
@@ -2864,6 +2867,7 @@ e
                 digest: None,
             })],
             non_code_meta: NonCodeMeta::default(),
+            ts_type: (),
             digest: None,
         };
 

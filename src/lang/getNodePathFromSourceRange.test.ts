@@ -1,4 +1,5 @@
-import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
+import { isArray } from 'lib/utils'
+import { getNodePathFromSourceRange, getLastNodeFromPath } from './queryAst'
 import { Identifier, parse, initPromise, Parameter } from './wasm'
 import { err } from 'lib/trap'
 
@@ -25,10 +26,13 @@ const sk3 = startSketchAt([0, 0])
     const ast = parse(code)
     if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const _node = getNodeFromPath<any>(ast, nodePath)
+    const _node = getLastNodeFromPath(ast, nodePath)
     if (err(_node)) throw _node
     const { node } = _node
 
+    if (isArray(node)) {
+      throw new Error('Expected call expression node, but found array')
+    }
     expect([node.start, node.end]).toEqual(sourceRange)
     expect(node.type).toBe('CallExpression')
   })
@@ -53,7 +57,7 @@ const b1 = cube([0,0], 10)`
     const ast = parse(code)
     if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const _node = getNodeFromPath<Parameter>(ast, nodePath)
+    const _node = getLastNodeFromPath(ast, nodePath)
     if (err(_node)) throw _node
     const node = _node.node
 
@@ -66,8 +70,12 @@ const b1 = cube([0,0], 10)`
       ['params', 'FunctionExpression'],
       [0, 'index'],
     ])
+    if (isArray(node)) {
+      throw new Error('Expected parameter node, but found array')
+    }
     expect(node.type).toBe('Parameter')
-    expect(node.identifier.name).toBe('pos')
+    const param = node as any as Parameter
+    expect(param.identifier.name).toBe('pos')
   })
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {
@@ -90,7 +98,7 @@ const b1 = cube([0,0], 10)`
     const ast = parse(code)
     if (err(ast)) throw ast
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const _node = getNodeFromPath<Identifier>(ast, nodePath)
+    const _node = getLastNodeFromPath(ast, nodePath)
     if (err(_node)) throw _node
     const node = _node.node
     expect(nodePath).toEqual([
@@ -112,7 +120,11 @@ const b1 = cube([0,0], 10)`
       ['elements', 'ArrayExpression'],
       [0, 'index'],
     ])
+    if (isArray(node)) {
+      throw new Error('Expected identifier node, but found array')
+    }
     expect(node.type).toBe('Identifier')
-    expect(node.name).toBe('scale')
+    const ident = node as any as Identifier
+    expect(ident.name).toBe('scale')
   })
 })

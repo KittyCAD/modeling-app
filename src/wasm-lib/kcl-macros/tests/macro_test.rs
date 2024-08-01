@@ -37,6 +37,7 @@ fn basic() {
             digest: None,
         })],
         non_code_meta: NonCodeMeta::default(),
+        ts_type: (),
         digest: None,
     };
     assert_eq!(expected, actual);

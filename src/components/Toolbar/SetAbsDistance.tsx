@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value } from '../../lang/wasm'
+import { BinaryPart, CallExpression, Program, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -49,22 +49,22 @@ export function absDistanceInfo({
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(
+    const tmp = getNodeFromPath<CallExpression>(
       kclManager.ast,
       pathToNode,
       'CallExpression'
     )
     if (err(tmp)) return tmp
-    return tmp.node
+    return tmp.stopAtNode
   })
-  const _err1 = _nodes.find(err)
-  if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes: (CallExpression | null)[] = []
+  for (const node of _nodes) {
+    if (err(node)) return node
+    nodes.push(node)
+  }
 
   const isAllTooltips = nodes.every(
-    (node) =>
-      node?.type === 'CallExpression' &&
-      toolTips.includes(node.callee.name as any)
+    (node) => node && toolTips.includes(node.callee.name as any)
   )
 
   const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)

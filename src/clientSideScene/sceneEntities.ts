@@ -61,7 +61,12 @@ import {
   codeManager,
   editorManager,
 } from 'lib/singletons'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  isNodeType,
+  expectNodeOnPath,
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+} from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
 import {
   createArcGeometry,
@@ -77,7 +82,13 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
+import {
+  isArray,
+  isOverlap,
+  normaliseAngle,
+  roundOff,
+  throttle,
+} from 'lib/utils'
 import {
   addStartProfileAt,
   createArrayExpression,
@@ -463,13 +474,18 @@ export class SceneEntities {
       )
 
       let seg: Group
-      const _node1 = getNodeFromPath<CallExpression>(
+      const callExp = getNodeFromPath<CallExpression>(
         maybeModdedAst,
         segPathToNode,
         'CallExpression'
       )
-      if (err(_node1)) return
-      const callExpName = _node1.node?.callee?.name
+      if (err(callExp)) return
+      const callExpName = isNodeType<CallExpression>(
+        callExp.node,
+        'CallExpression'
+      )
+        ? callExp.node.callee.name
+        : ''
 
       if (segment.type === 'TangentialArcTo') {
         seg = tangentialArcToSegment({
@@ -590,8 +606,12 @@ export class SceneEntities {
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
+    const variableDeclarationName = isNodeType<VariableDeclaration>(
+      _node1.node,
+      'VariableDeclaration'
+    )
+      ? _node1.node.declarations[0]?.id?.name || ''
+      : ''
 
     const sg = kclManager.programMemory.get(
       variableDeclarationName
@@ -728,15 +748,14 @@ export class SceneEntities {
   ) => {
     let _ast = structuredClone(kclManager.ast)
 
-    const _node1 = getNodeFromPath<VariableDeclaration>(
+    const varDec = expectNodeOnPath<VariableDeclaration>(
       _ast,
       sketchPathToNode || [],
       'VariableDeclaration'
     )
-    if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
-    const startSketchOn = _node1.node?.declarations
+    if (trap(varDec)) return Promise.reject(varDec)
+    const variableDeclarationName = varDec.declarations?.[0]?.id?.name || ''
+    const startSketchOn = varDec.declarations
     const startSketchOnInit = startSketchOn?.[0]?.init
 
     const tags: [string, string, string] = [
@@ -775,12 +794,17 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = isNodeType<VariableDeclaration>(
+          _node.node,
+          'VariableDeclaration'
+        )
+          ? _node.node.declarations[0]?.init
+          : null
 
         const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
 
-        if (sketchInit.type === 'PipeExpression') {
+        if (sketchInit?.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
         }
 
@@ -823,9 +847,14 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = isNodeType<VariableDeclaration>(
+          _node.node,
+          'VariableDeclaration'
+        )
+          ? _node.node.declarations[0]?.init
+          : null
 
-        if (sketchInit.type === 'PipeExpression') {
+        if (sketchInit?.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
           let _recastAst = parse(recast(_ast))
@@ -1061,7 +1090,7 @@ export class SceneEntities {
     if (trap(_node)) return
     const node = _node.node
 
-    if (node.type !== 'CallExpression') return
+    if (isArray(node) || node.type !== 'CallExpression') return
 
     let modded:
       | {
@@ -1666,7 +1695,9 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([node.start, node.end])
+          editorManager.setHighlightRange(
+            !isArray(node) ? [node.start, node.end] : [0, 0]
+          )
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -1796,7 +1827,14 @@ function prepareTruncatedMemoryAndAst(
     'VariableDeclaration'
   )
   if (err(_node)) return _node
-  const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
+  if (isArray(_node.node))
+    return new Error('Expected node to be an object, but found Array')
+  const variableDeclarationName = isNodeType<VariableDeclaration>(
+    _node.node,
+    'VariableDeclaration'
+  )
+    ? _node.node.declarations[0]?.id?.name || ''
+    : ''
   const lastSeg = (
     programMemory.get(variableDeclarationName) as SketchGroup
   ).value.slice(-1)[0]
@@ -1919,7 +1957,12 @@ export function sketchGroupFromPathToNode({
   )
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
-  const result = programMemory.get(varDec?.id?.name || '')
+  if (isArray(varDec))
+    return new Error('Expected node to be an object, but found Array')
+  const varName = isNodeType<VariableDeclarator>(varDec, 'VariableDeclarator')
+    ? varDec.id.name
+    : ''
+  const result = programMemory.get(varName)
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }

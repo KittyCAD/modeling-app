@@ -12,7 +12,7 @@ import {
   hasValidFilletSelection,
   isTagUsedInFillet,
 } from './addFillet'
-import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
+import { expectNodeOnPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
@@ -270,13 +270,13 @@ const extrude001 = extrude(-5, sketch001)
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = expectNodeOnPath<CallExpression>(
       ast,
       pathToNode,
       'CallExpression'
     )
     if (err(callExp)) return
-    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    const edges = isTagUsedInFillet({ ast, callExp })
     expect(edges).toEqual(['getOppositeEdge', 'baseEdge'])
   })
   it('should correctly identify getPreviousAdjacentEdge edges', () => {
@@ -289,13 +289,13 @@ const extrude001 = extrude(-5, sketch001)
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = expectNodeOnPath<CallExpression>(
       ast,
       pathToNode,
       'CallExpression'
     )
     if (err(callExp)) return
-    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    const edges = isTagUsedInFillet({ ast, callExp })
     expect(edges).toEqual(['getPreviousAdjacentEdge'])
   })
   it('should correctly identify no edges', () => {
@@ -308,13 +308,13 @@ const extrude001 = extrude(-5, sketch001)
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = expectNodeOnPath<CallExpression>(
       ast,
       pathToNode,
       'CallExpression'
     )
     if (err(callExp)) return
-    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    const edges = isTagUsedInFillet({ ast, callExp })
     expect(edges).toEqual([])
   })
 })

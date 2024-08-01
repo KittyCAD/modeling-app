@@ -11,6 +11,7 @@ import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
   isNodeSafeToReplacePath,
   getNodePathFromSourceRange,
+  expectNodeOnPath,
 } from 'lang/queryAst'
 import {
   kclManager,
@@ -879,8 +880,8 @@ export const modelingMachine = createMachine(
           'VariableDeclarator'
         )
         if (err(variableDeclaration)) return false
-        if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-        const pipeExpression = variableDeclaration.node.init
+        if (!variableDeclaration.stopAtNode) return false
+        const pipeExpression = variableDeclaration.stopAtNode.init
         if (pipeExpression.type !== 'PipeExpression') return false
         const hasStartSketchOn = pipeExpression.body.some(
           (item) =>
@@ -1134,13 +1135,13 @@ export const modelingMachine = createMachine(
           selection.codeBasedSelections[0].range
         )
 
-        const varDecNode = getNodeFromPath<VariableDeclaration>(
+        const varDecNode = expectNodeOnPath<VariableDeclaration>(
           ast,
           pathToSegmentNode,
           'VariableDeclaration'
         )
         if (err(varDecNode)) return
-        const sketchVar = varDecNode.node.declarations[0].id.name
+        const sketchVar = varDecNode.declarations[0].id.name
         const sketchGroup = kclManager.programMemory.get(sketchVar)
         if (sketchGroup?.type !== 'SketchGroup') return
         const idArtifact = engineCommandManager.artifactMap[sketchGroup.id]
@@ -1625,14 +1626,13 @@ export function isEditingExistingSketch({
   // should check that the variable declaration is a pipeExpression
   // and that the pipeExpression contains a "startProfileAt" callExpression
   if (!sketchDetails?.sketchPathToNode) return false
-  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+  const variableDeclaration = expectNodeOnPath<VariableDeclarator>(
     kclManager.ast,
     sketchDetails.sketchPathToNode,
     'VariableDeclarator'
   )
   if (err(variableDeclaration)) return false
-  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-  const pipeExpression = variableDeclaration.node.init
+  const pipeExpression = variableDeclaration.init
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasStartProfileAt = pipeExpression.body.some(
     (item) =>
@@ -1654,5 +1654,5 @@ export function canRectangleTool({
   // This should not be returning false, and it should be caught
   // but we need to simulate old behavior to move on.
   if (err(node)) return false
-  return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+  return node.stopAtNode?.declarations?.[0]?.init.type !== 'PipeExpression'
 }

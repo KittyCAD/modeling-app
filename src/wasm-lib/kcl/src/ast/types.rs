@@ -41,6 +41,17 @@ pub type Digest = [u8; 32];
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
+    // This is so that it can be used with other AST nodes in TypeScript and the
+    // node type can be determined at runtime.
+    #[serde(
+        default,
+        rename = "type",
+        serialize_with = "Program::serialize_ts_type",
+        skip_deserializing
+    )]
+    #[ts(rename = "type", type = "\"Program\"")]
+    pub ts_type: (),
+
     pub start: usize,
     pub end: usize,
     pub body: Vec<BodyItem>,
@@ -81,6 +92,13 @@ impl Program {
         }
         hasher.update(slf.non_code_meta.compute_digest());
     });
+
+    fn serialize_ts_type<S>(_: &(), serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str("Program")
+    }
 
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         // Check if we are in the non code meta.
@@ -5695,6 +5713,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        ts_type: (),
                         digest: None,
                     },
                     return_type: None,
@@ -5723,6 +5742,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        ts_type: (),
                         digest: None,
                     },
                     return_type: None,
@@ -5751,6 +5771,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        ts_type: (),
                         digest: None,
                     },
                     return_type: None,
@@ -5792,6 +5813,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         end: 0,
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        ts_type: (),
                         digest: None,
                     },
                     return_type: None,
