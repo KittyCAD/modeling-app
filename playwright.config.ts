@@ -23,6 +23,7 @@ export default defineConfig({
   reporter: [
     [process.env.CI ? 'dot' : 'list'],
     ['json', { outputFile: './test-results/report.json' }],
+    ['html'],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
