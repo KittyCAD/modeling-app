@@ -45,7 +45,7 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
   return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        {!isTauri() ? (
+        {!isDesktop() ? (
           <OnboardingWarningWeb {...props} />
         ) : (
           <OnboardingWarningDesktop {...props} />

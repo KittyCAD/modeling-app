@@ -86,7 +86,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       ).filter(
         (pane) =>
           !pane.hideOnPlatform ||
-          (isTauri()
+          (isDesktop()
             ? pane.hideOnPlatform === 'web'
             : pane.hideOnPlatform === 'desktop')
       ),
@@ -142,110 +142,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       }}
     >
       <div id="app-sidebar" className={styles.grid + ' flex-1'}>
-        <ModelingSidebarSection id="sidebar-top" panes={topPanes} />
-        <ModelingSidebarSection
-          id="sidebar-bottom"
-          panes={bottomPanes}
-          alignButtons="end"
-        />
-      </div>
-    </Resizable>
-  )
-}
-
-interface ModelingSidebarSectionProps extends HTMLAttributes<HTMLDivElement> {
-  panes: SidebarPane[]
-  alignButtons?: 'start' | 'end'
-}
-
-function ModelingSidebarSection({
-  panes,
-  alignButtons = 'start',
-  className,
-  ...props
-}: ModelingSidebarSectionProps) {
-  const { settings } = useSettingsAuthContext()
-  const showDebugPanel = settings.context.modeling.showDebugPanel
-  const paneIds = panes.map((pane) => pane.id)
-  const { send, context } = useModelingContext()
-  const foundOpenPane = context.store?.openPanes.find((pane) =>
-    paneIds.includes(pane)
-  )
-  const [currentPane, setCurrentPane] = useState(
-    foundOpenPane || ('none' as SidebarType | 'none')
-  )
-
-  const togglePane = useCallback(
-    (newPane: SidebarType | 'none') => {
-      if (newPane === 'none') {
-        send({
-          type: 'Set context',
-          data: {
-            openPanes: context.store?.openPanes.filter(
-              (p) => p !== currentPane
-            ),
-          },
-        })
-        setCurrentPane('none')
-      } else if (newPane === currentPane) {
-        setCurrentPane('none')
-        send({
-          type: 'Set context',
-          data: {
-            openPanes: context.store?.openPanes.filter((p) => p !== newPane),
-          },
-        })
-      } else {
-        send({
-          type: 'Set context',
-          data: {
-            openPanes: [
-              ...context.store?.openPanes.filter((p) => p !== currentPane),
-              newPane,
-            ],
-          },
-        })
-        setCurrentPane(newPane)
-      }
-    },
-    [context.store?.openPanes, send, currentPane, setCurrentPane]
-  )
-
-  // Filter out the debug panel if it's not supposed to be shown
-  // TODO: abstract out for allowing user to configure which panes to show
-  const filteredPanes = (
-    showDebugPanel.current ? panes : panes.filter((pane) => pane.id !== 'debug')
-  ).filter(
-    (pane) =>
-      !pane.hideOnPlatform ||
-      (isDesktop()
-        ? pane.hideOnPlatform === 'web'
-        : pane.hideOnPlatform === 'desktop')
-  )
-  useEffect(() => {
-    if (
-      !showDebugPanel.current &&
-      currentPane === 'debug' &&
-      context.store?.openPanes.includes('debug')
-    ) {
-      togglePane('debug')
-    }
-  }, [showDebugPanel.current, togglePane, context.store?.openPanes])
-
-  return (
-    <div className={'group contents ' + className} {...props}>
-      <Tab.Group
-        vertical
-        selectedIndex={
-          currentPane === 'none' ? 0 : paneIds.indexOf(currentPane) + 1
-        }
-        onChange={(index) => {
-          const newPane = index === 0 ? 'none' : paneIds[index - 1]
-          togglePane(newPane)
-        }}
-      >
-        <Tab.List
-          id={`${props.id}-ribbon`}
+        <ul
           className={
             (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
             'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
