@@ -67,7 +67,7 @@
             "type": "object"
           },
           {
-            "description": "Details for a 3d printer connected over USB.",
+            "description": "Details for a 3d printer connected over network.",
             "properties": {
               "hostname": {
                 "description": "The hostname of the printer.",
