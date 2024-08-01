@@ -44,7 +44,7 @@ ts-rs = { version = "9.0.1", features = ["uuid-impl", "url-impl", "chrono-impl",
 url = { version = "2.5.2", features = ["serde"] }
 uuid = { version = "1.10.0", features = ["v4", "js", "serde"] }
 validator = { version = "0.18.1", features = ["derive"] }
-winnow = "0.5.40"
+winnow = "0.6.16"
 zip = { version = "2.0.0", default-features = false }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
