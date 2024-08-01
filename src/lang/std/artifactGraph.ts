@@ -165,24 +165,34 @@ export function createArtifactGraph({
       ast,
     })
     modArr.forEach(({ id, artifact }) => {
-      const oldArtifact = myMap.get(id)
-      if (oldArtifact?.type !== artifact.type) {
-        myMap.set(id, artifact)
-        return
-      }
-      const mergedArtifact = { ...oldArtifact, ...artifact }
-      Object.entries(artifact).forEach(([propName, value]) => {
-        const otherValue = (oldArtifact as any)[propName]
-        if (Array.isArray(value) && Array.isArray(otherValue)) {
-          ;(mergedArtifact as any)[propName] = [
-            ...new Set([...otherValue, ...value]),
-          ]
-        }
-      })
+      const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
       myMap.set(id, mergedArtifact)
     })
   })
   return myMap
+}
+
+
+function mergeArtifacts(
+  oldArtifact: Artifact | undefined,
+  newArtifact: Artifact,
+): Artifact {
+  // only has string and array of strings
+  interface GenericArtifact {[key: string]: string | Array<string>}
+  if (!oldArtifact) return newArtifact
+  // merging artifacts of different types should never happen, but if it does, just return the new artifact
+  if (oldArtifact.type !== newArtifact.type) return newArtifact
+  const _oldArtifact = oldArtifact as any as GenericArtifact
+  const mergedArtifact = { ...oldArtifact, ...newArtifact } as GenericArtifact
+  Object.entries(newArtifact as any as GenericArtifact).forEach(([propName, value]) => {
+    const otherValue = _oldArtifact[propName]
+    if (Array.isArray(value) && Array.isArray(otherValue)) {
+      mergedArtifact[propName] = [
+        ...new Set([...otherValue, ...value]),
+      ]
+    }
+  })
+  return mergedArtifact as any as Artifact
 }
 
 /**
