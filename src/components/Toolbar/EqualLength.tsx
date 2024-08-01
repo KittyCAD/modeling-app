@@ -5,7 +5,7 @@ import {
   getNodePathFromSourceRange,
   getLastNodeFromPath,
   DynamicNode,
-  castDynamicNode,
+  isNodeType,
   expectNodeOnPath,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
@@ -68,7 +68,7 @@ export function setEqualLengthInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      castDynamicNode<CallExpression>(node, 'CallExpression') &&
+      isNodeType<CallExpression>(node, 'CallExpression') &&
       toolTips.includes(node.callee.name as any)
   )
 

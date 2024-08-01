@@ -47,7 +47,7 @@ function isAstNode(
  * Given T and its corresponding SyntaxType, narrow the node to type T if
  * node.type matches.
  */
-export function castDynamicNode<T extends DynamicNode>(
+export function isNodeType<T extends DynamicNode>(
   node: any,
   syntaxType: SyntaxType | SyntaxType[]
 ): node is T {
@@ -117,7 +117,7 @@ export function getNodeFromPath<T extends DynamicNode>(
     if (!stopAtNode) {
       pathsExplored.push(pathItem)
     }
-    if (stopAt && castDynamicNode<T>(currentNode, stopAt)) {
+    if (stopAt && isNodeType<T>(currentNode, stopAt)) {
       // it will match the deepest node of the type
       // instead of returning at the first match
       stopAtNode = currentNode
@@ -169,7 +169,7 @@ export function expectLastNodeFromPath<T extends DynamicNode>(
 ): T | Error {
   const result = getLastNodeFromPath(node, path)
   if (err(result)) return result
-  if (!castDynamicNode<T>(result.node, syntaxType)) {
+  if (!isNodeType<T>(result.node, syntaxType)) {
     return new Error(
       `Expected node of type ${syntaxType}: found ${JSON.stringify(result)}`
     )

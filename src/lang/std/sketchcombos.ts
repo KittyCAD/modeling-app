@@ -12,7 +12,7 @@ import {
   ProgramMemory,
 } from '../wasm'
 import {
-  castDynamicNode,
+  isNodeType,
   expectNodeOnPath,
   getLastNodeFromPath,
   getNodeFromPath,
@@ -1462,7 +1462,7 @@ export function getRemoveConstraintsTransforms(
       console.error('Expected node, but found Array')
       return false
     }
-    if (castDynamicNode<CallExpression>(node, 'CallExpression'))
+    if (isNodeType<CallExpression>(node, 'CallExpression'))
       return getRemoveConstraintsTransform(node, constraintType)
 
     return false

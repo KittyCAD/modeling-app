@@ -11,7 +11,7 @@ import {
   getLastNodeFromPath,
   DynamicNode,
   expectNodeOnPath,
-  castDynamicNode,
+  isNodeType,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
@@ -79,7 +79,7 @@ export function angleBetweenInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      castDynamicNode<CallExpression>(node, 'CallExpression') &&
+      isNodeType<CallExpression>(node, 'CallExpression') &&
       toolTips.includes(node.callee.name as any)
   )
 

@@ -5,7 +5,7 @@ import {
   getNodePathFromSourceRange,
   getLastNodeFromPath,
   DynamicNode,
-  castDynamicNode,
+  isNodeType,
 } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -45,7 +45,7 @@ export function horzVertInfo(
 
   const isAllTooltips = nodes.every(
     (node) =>
-      castDynamicNode<CallExpression>(node, 'CallExpression') &&
+      isNodeType<CallExpression>(node, 'CallExpression') &&
       toolTips.includes(node.callee.name as any)
   )
 

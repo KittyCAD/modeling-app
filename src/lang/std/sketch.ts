@@ -14,7 +14,7 @@ import {
   Identifier,
 } from 'lang/wasm'
 import {
-  castDynamicNode,
+  isNodeType,
   expectLastNodeFromPath,
   expectNodeOnPath,
   getNodeFromPath,
@@ -1670,7 +1670,7 @@ export function changeSketchArguments(
   if (isArray(callExpression)) {
     return new Error('Expected call expression but found array')
   }
-  if (!castDynamicNode<CallExpression>(callExpression, 'CallExpression')) {
+  if (!isNodeType<CallExpression>(callExpression, 'CallExpression')) {
     return new Error('Call expression not found')
   }
 

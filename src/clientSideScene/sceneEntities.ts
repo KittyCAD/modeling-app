@@ -62,7 +62,7 @@ import {
   editorManager,
 } from 'lib/singletons'
 import {
-  castDynamicNode,
+  isNodeType,
   expectNodeOnPath,
   getNodeFromPath,
   getNodePathFromSourceRange,
@@ -480,7 +480,7 @@ export class SceneEntities {
         'CallExpression'
       )
       if (err(callExp)) return
-      const callExpName = castDynamicNode<CallExpression>(
+      const callExpName = isNodeType<CallExpression>(
         callExp.node,
         'CallExpression'
       )
@@ -606,7 +606,7 @@ export class SceneEntities {
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName = castDynamicNode<VariableDeclaration>(
+    const variableDeclarationName = isNodeType<VariableDeclaration>(
       _node1.node,
       'VariableDeclaration'
     )
@@ -794,7 +794,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = castDynamicNode<VariableDeclaration>(
+        const sketchInit = isNodeType<VariableDeclaration>(
           _node.node,
           'VariableDeclaration'
         )
@@ -847,7 +847,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = castDynamicNode<VariableDeclaration>(
+        const sketchInit = isNodeType<VariableDeclaration>(
           _node.node,
           'VariableDeclaration'
         )
@@ -1829,7 +1829,7 @@ function prepareTruncatedMemoryAndAst(
   if (err(_node)) return _node
   if (isArray(_node.node))
     return new Error('Expected node to be an object, but found Array')
-  const variableDeclarationName = castDynamicNode<VariableDeclaration>(
+  const variableDeclarationName = isNodeType<VariableDeclaration>(
     _node.node,
     'VariableDeclaration'
   )
@@ -1959,10 +1959,7 @@ export function sketchGroupFromPathToNode({
   const varDec = _varDec.node
   if (isArray(varDec))
     return new Error('Expected node to be an object, but found Array')
-  const varName = castDynamicNode<VariableDeclarator>(
-    varDec,
-    'VariableDeclarator'
-  )
+  const varName = isNodeType<VariableDeclarator>(varDec, 'VariableDeclarator')
     ? varDec.id.name
     : ''
   const result = programMemory.get(varName)

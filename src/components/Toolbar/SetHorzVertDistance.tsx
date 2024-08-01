@@ -9,7 +9,7 @@ import {
   getNodePathFromSourceRange,
   getLastNodeFromPath,
   expectNodeOnPath,
-  castDynamicNode,
+  isNodeType,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
@@ -77,7 +77,7 @@ export function horzVertDistanceInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      castDynamicNode<CallExpression>(node, 'CallExpression') &&
+      isNodeType<CallExpression>(node, 'CallExpression') &&
       [
         ...toolTips,
         'startSketchAt', // TODO probably a better place for this to live
