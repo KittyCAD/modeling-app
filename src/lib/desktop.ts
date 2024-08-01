@@ -337,6 +337,13 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
     // We need to map from node fs.Stats to FileMetadata
     metadata: {
       modified: metadata.mtimeMs,
+      accessed: metadata.atimeMs,
+      created: metadata.ctimeMs,
+      // this is not used anywhere and we use statIsDirectory in other places
+      // that need to know if it's a file or directory.
+      type: null,
+      size: metadata.size,
+      permission: metadata.mode,
     },
     kcl_file_count: 0,
     directory_count: 0,
