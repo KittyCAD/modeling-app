@@ -35,7 +35,7 @@ interface _solid2D {
 export interface PathArtifact {
   type: 'path'
   plane: _PlaneArtifact | _WallArtifact
-  segs: Array<_SegmentArtifact>
+  segments: Array<_SegmentArtifact>
   extrusion: _ExtrusionArtifact
   codeRef: CommonCommandProperties
 }
@@ -43,7 +43,7 @@ export interface PathArtifact {
 interface _SegmentArtifact {
   type: 'segment'
   pathId: string
-  surfId: string
+  surfaceId: string
   edgeIds: Array<string>
   edgeCutId?: string
   codeRef: CommonCommandProperties
@@ -60,14 +60,14 @@ interface SegmentArtifact {
 interface _ExtrusionArtifact {
   type: 'extrusion'
   pathId: string
-  surfIds: Array<string>
+  surfaceIds: Array<string>
   edgeIds: Array<string>
   codeRef: CommonCommandProperties
 }
 interface ExtrusionArtifact {
   type: 'extrusion'
   pathId: string
-  surfs: Array<_WallArtifact | _CapArtifact>
+  surfaces: Array<_WallArtifact | _CapArtifact>
   edges: Array<string>
   codeRef: CommonCommandProperties
 }
@@ -100,14 +100,14 @@ interface _EdgeCut {
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: string
   edgeIds: Array<string>
-  surfId: string
+  surfaceId: string
   codeRef: CommonCommandProperties
 }
 
 interface EdgeCutEdge {
   type: 'edgeCutEdge'
   edgeCutId: string
-  surfId: string
+  surfaceId: string
 }
 
 export type Artifact =
@@ -276,7 +276,7 @@ export function getArtifactsToUpdate({
       artifact: {
         type: 'segment',
         pathId,
-        surfId: '',
+        surfaceId: '',
         edgeIds: [],
         codeRef: { range, pathToNode },
       },
@@ -312,7 +312,7 @@ export function getArtifactsToUpdate({
       artifact: {
         type: 'extrusion',
         pathId: cmd.target,
-        surfIds: [],
+        surfaceIds: [],
         edgeIds: [],
         codeRef: { range, pathToNode },
       },
@@ -350,7 +350,7 @@ export function getArtifactsToUpdate({
             })
             returnArr.push({
               id: curve_id,
-              artifact: { ...seg, surfId: face_id },
+              artifact: { ...seg, surfaceId: face_id },
             })
             const extrusion = getArtifact(path.extrusionId)
             if (extrusion?.type === 'extrusion') {
@@ -358,7 +358,7 @@ export function getArtifactsToUpdate({
                 id: path.extrusionId,
                 artifact: {
                   ...extrusion,
-                  surfIds: [face_id],
+                  surfaceIds: [face_id],
                 },
               })
             }
@@ -386,7 +386,7 @@ export function getArtifactsToUpdate({
             id: path.extrusionId,
             artifact: {
               ...extrusion,
-              surfIds: [face_id],
+              surfaceIds: [face_id],
             },
           })
         }
@@ -401,7 +401,7 @@ export function getArtifactsToUpdate({
         subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
-        surfId: '',
+        surfaceId: '',
         codeRef: { range, pathToNode },
       },
     })
@@ -516,7 +516,7 @@ export function expandPath(
   if (err(plane)) return plane
   return {
     type: 'path',
-    segs: Array.from(segs.values()),
+    segments: Array.from(segs.values()),
     extrusion,
     plane,
     codeRef: path.codeRef,
@@ -528,12 +528,12 @@ export function expandExtrusion(
   artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
   const surfs = getArtifactsOfTypes(
-    { keys: extrusion.surfIds, types: ['wall', 'cap'] },
+    { keys: extrusion.surfaceIds, types: ['wall', 'cap'] },
     artifactGraph
   )
   return {
     type: 'extrusion',
-    surfs: Array.from(surfs.values()),
+    surfaces: Array.from(surfs.values()),
     edges: extrusion.edgeIds,
     pathId: extrusion.pathId,
     codeRef: extrusion.codeRef,
@@ -549,7 +549,7 @@ export function expandSegment(
     artifactGraph
   )
   const surf = getArtifactOfTypes(
-    { key: segment.surfId, types: ['wall'] },
+    { key: segment.surfaceId, types: ['wall'] },
     artifactGraph
   )
   const edges = getArtifactsOfTypes(

@@ -60,7 +60,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-3" => {
@@ -79,7 +79,7 @@ Map {
     "edgeCutId": "UUID",
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-4" => {
@@ -97,7 +97,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-5" => {
@@ -115,7 +115,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-6" => {
@@ -154,7 +154,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfIds": [
+    "surfaceIds": [
       "UUID",
       "UUID",
       "UUID",
@@ -265,7 +265,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-18" => {
@@ -283,7 +283,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-19" => {
@@ -301,7 +301,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfId": "UUID",
+    "surfaceId": "UUID",
     "type": "segment",
   },
   "UUID-20" => {
@@ -340,7 +340,7 @@ Map {
     },
     "edgeIds": [],
     "pathId": "UUID",
-    "surfIds": [
+    "surfaceIds": [
       "UUID",
       "UUID",
       "UUID",

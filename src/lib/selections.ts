@@ -544,13 +544,13 @@ function codeToIdSelections(
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
           const wall = engineCommandManager.artifactGraph.get(
-            entry.artifact.surfId
+            entry.artifact.surfaceId
           )
           if (wall?.type !== 'wall') return
           bestCandidate = {
             artifact: wall,
             selection: { type, range, ...rest },
-            id: entry.artifact.surfId,
+            id: entry.artifact.surfaceId,
           }
           return
         }
@@ -567,7 +567,7 @@ function codeToIdSelections(
           )
           if (err(extrusion)) return
           const caps = getArtifactsOfTypes(
-            { keys: extrusion.surfIds, types: ['cap'] },
+            { keys: extrusion.surfaceIds, types: ['cap'] },
             engineCommandManager.artifactGraph
           )
           const cap = [...caps].find(
