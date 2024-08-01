@@ -8,18 +8,18 @@ interface CommonCommandProperties {
   pathToNode: PathToNode
 }
 
-export interface _PlaneArtifact {
+export interface PlaneArtifact {
   type: 'plane'
   pathIds: Array<string>
   codeRef: CommonCommandProperties
 }
-export interface PlaneArtifact {
+export interface PlaneArtifactRich {
   type: 'plane'
-  paths: Array<_PathArtifact>
+  paths: Array<PathArtifact>
   codeRef: CommonCommandProperties
 }
 
-export interface _PathArtifact {
+export interface PathArtifact {
   type: 'path'
   planeId: string
   segIds: Array<string>
@@ -28,19 +28,19 @@ export interface _PathArtifact {
   codeRef: CommonCommandProperties
 }
 
-interface _solid2D {
+interface solid2D {
   type: 'solid2D'
   pathId: string
 }
-export interface PathArtifact {
+export interface PathArtifactRich {
   type: 'path'
-  plane: _PlaneArtifact | _WallArtifact
-  segments: Array<_SegmentArtifact>
-  extrusion: _ExtrusionArtifact
+  plane: PlaneArtifact | WallArtifact
+  segments: Array<SegmentArtifact>
+  extrusion: ExtrusionArtifact
   codeRef: CommonCommandProperties
 }
 
-interface _SegmentArtifact {
+interface SegmentArtifact {
   type: 'segment'
   pathId: string
   surfaceId: string
@@ -48,38 +48,38 @@ interface _SegmentArtifact {
   edgeCutId?: string
   codeRef: CommonCommandProperties
 }
-interface SegmentArtifact {
+interface SegmentArtifactRich {
   type: 'segment'
-  path: _PathArtifact
-  surf: _WallArtifact
-  edges: Array<_ExtrudeEdge>
-  edgeCut?: _EdgeCut
+  path: PathArtifact
+  surf: WallArtifact
+  edges: Array<ExtrudeEdge>
+  edgeCut?: EdgeCut
   codeRef: CommonCommandProperties
 }
 
-interface _ExtrusionArtifact {
+interface ExtrusionArtifact {
   type: 'extrusion'
   pathId: string
   surfaceIds: Array<string>
   edgeIds: Array<string>
   codeRef: CommonCommandProperties
 }
-interface ExtrusionArtifact {
+interface ExtrusionArtifactRich {
   type: 'extrusion'
-  pathId: string
-  surfaces: Array<_WallArtifact | _CapArtifact>
-  edges: Array<string>
+  path: PathArtifact
+  surfaces: Array<WallArtifact | CapArtifact>
+  edges: Array<ExtrudeEdge>
   codeRef: CommonCommandProperties
 }
 
-interface _WallArtifact {
+interface WallArtifact {
   type: 'wall'
   segId: string
   edgeCutEdgeIds: Array<string>
   extrusionId: string
   pathIds: Array<string>
 }
-interface _CapArtifact {
+interface CapArtifact {
   type: 'cap'
   subType: 'start' | 'end'
   edgeCutEdgeIds: Array<string>
@@ -87,7 +87,7 @@ interface _CapArtifact {
   pathIds: Array<string>
 }
 
-interface _ExtrudeEdge {
+interface ExtrudeEdge {
   type: 'extrudeEdge'
   segId: string
   extrusionId: string
@@ -95,7 +95,7 @@ interface _ExtrudeEdge {
 }
 
 /** A edgeCut is a more generic term for both fillet or chamfer */
-interface _EdgeCut {
+interface EdgeCut {
   type: 'edgeCut'
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: string
@@ -111,16 +111,16 @@ interface EdgeCutEdge {
 }
 
 export type Artifact =
-  | _PlaneArtifact
-  | _PathArtifact
-  | _SegmentArtifact
-  | _ExtrusionArtifact
-  | _WallArtifact
-  | _CapArtifact
-  | _ExtrudeEdge
-  | _EdgeCut
+  | PlaneArtifact
+  | PathArtifact
+  | SegmentArtifact
+  | ExtrusionArtifact
+  | WallArtifact
+  | CapArtifact
+  | ExtrudeEdge
+  | EdgeCut
   | EdgeCutEdge
-  | _solid2D
+  | solid2D
 
 export type ArtifactGraph = Map<string, Artifact>
 
@@ -329,7 +329,7 @@ export function getArtifactsToUpdate({
     response.type === 'modeling' &&
     response.data.modeling_response.type === 'solid3d_get_extrusion_face_info'
   ) {
-    let lastPath: _PathArtifact
+    let lastPath: PathArtifact
     response.data.modeling_response.data.faces.forEach(
       ({ curve_id, cap, face_id }) => {
         if (cap === 'none' && curve_id && face_id) {
@@ -479,9 +479,9 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
 }
 
 export function expandPlane(
-  plane: _PlaneArtifact,
+  plane: PlaneArtifact,
   artifactGraph: ArtifactGraph
-): PlaneArtifact {
+): PlaneArtifactRich {
   const paths = getArtifactsOfTypes(
     { keys: plane.pathIds, types: ['path'] },
     artifactGraph
@@ -494,9 +494,9 @@ export function expandPlane(
 }
 
 export function expandPath(
-  path: _PathArtifact,
+  path: PathArtifact,
   artifactGraph: ArtifactGraph
-): PathArtifact | Error {
+): PathArtifactRich | Error {
   const segs = getArtifactsOfTypes(
     { keys: path.segIds, types: ['segment'] },
     artifactGraph
@@ -524,26 +524,35 @@ export function expandPath(
 }
 
 export function expandExtrusion(
-  extrusion: _ExtrusionArtifact,
+  extrusion: ExtrusionArtifact,
   artifactGraph: ArtifactGraph
-): ExtrusionArtifact | Error {
+): ExtrusionArtifactRich | Error {
   const surfs = getArtifactsOfTypes(
     { keys: extrusion.surfaceIds, types: ['wall', 'cap'] },
     artifactGraph
   )
+  const edges = getArtifactsOfTypes(
+    { keys: extrusion.edgeIds, types: ['extrudeEdge'] },
+    artifactGraph
+  )
+  const path = getArtifactOfTypes(
+    { key: extrusion.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (err(path)) return path
   return {
     type: 'extrusion',
     surfaces: Array.from(surfs.values()),
-    edges: extrusion.edgeIds,
-    pathId: extrusion.pathId,
+    edges: Array.from(edges.values()),
+    path,
     codeRef: extrusion.codeRef,
   }
 }
 
 export function expandSegment(
-  segment: _SegmentArtifact,
+  segment: SegmentArtifact,
   artifactGraph: ArtifactGraph
-): SegmentArtifact | Error {
+): SegmentArtifactRich | Error {
   const path = getArtifactOfTypes(
     { key: segment.pathId, types: ['path'] },
     artifactGraph
@@ -577,7 +586,7 @@ export function expandSegment(
 }
 
 export function getCapCodeRef(
-  cap: _CapArtifact,
+  cap: CapArtifact,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
   const extrusion = getArtifactOfTypes(
@@ -594,7 +603,7 @@ export function getCapCodeRef(
 }
 
 export function getSolid2dCodeRef(
-  solid2D: _solid2D,
+  solid2D: solid2D,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
   const path = getArtifactOfTypes(
@@ -606,7 +615,7 @@ export function getSolid2dCodeRef(
 }
 
 export function getWallCodeRef(
-  wall: _WallArtifact,
+  wall: WallArtifact,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
   const seg = getArtifactOfTypes(
@@ -620,7 +629,7 @@ export function getWallCodeRef(
 export function getExtrusionFromSuspectedExtrudeSurface(
   id: string,
   artifactGraph: ArtifactGraph
-): _ExtrusionArtifact | Error {
+): ExtrusionArtifact | Error {
   const artifact = getArtifactOfTypes(
     { key: id, types: ['wall', 'cap'] },
     artifactGraph
@@ -635,7 +644,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
 export function getExtrusionFromSuspectedPath(
   id: string,
   artifactGraph: ArtifactGraph
-): _ExtrusionArtifact | Error {
+): ExtrusionArtifact | Error {
   const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
   if (err(path)) return path
   return getArtifactOfTypes(
