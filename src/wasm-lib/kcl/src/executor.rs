@@ -2063,6 +2063,15 @@ mod tests {
         Ok(memory)
     }
 
+    /// Convenience function to get a JSON value from memory and unwrap.
+    fn mem_get_json(memory: &ProgramMemory, name: &str) -> serde_json::Value {
+        memory
+            .get(name, SourceRange::default())
+            .unwrap()
+            .get_json_value()
+            .unwrap()
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_assign_two_variables() {
         let ast = r#"const myVar = 5
@@ -2737,71 +2746,15 @@ let notMember = !obj.a
 // fn identity = (x) => { return x }
 // let notPipeSub = 1 |> identity(!%)
 "#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(false),
-            memory
-                .get("notTrue", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(true),
-            memory
-                .get("notFalse", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(true),
-            memory
-                .get("c", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(false),
-            memory
-                .get("d", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(true),
-            memory
-                .get("notNull", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(false),
-            memory
-                .get("notZero", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(false),
-            memory
-                .get("notEmptyString", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(false),
-            memory
-                .get("notMember", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+        let mem = parse_execute(ast).await.unwrap();
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notNull"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notZero"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notEmptyString"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notMember"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
