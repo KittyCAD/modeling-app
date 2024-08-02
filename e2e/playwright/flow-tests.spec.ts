@@ -3800,7 +3800,7 @@ const extrude001 = extrude(-10, sketch001)`
     // since the default variable name is already in use (distance)
     await page.getByRole('button', { name: 'Create new variable' }).click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-      'FAIL_distance001'
+      'distance001'
     )
 
     const continueButton = page.getByRole('button', { name: 'Continue' })
@@ -7946,7 +7946,7 @@ test('Delete key does not navigate back', async ({ page }) => {
 
   // Make sure that delete doesn't go back from settings
   await page.keyboard.press('Delete')
-  await expect(page.url()).toContain('/settings_FAIL')
+  await expect(page.url()).toContain('/settings')
 
   // Now close the settings and try delete again,
   // make sure it doesn't go back to settings
