@@ -78,8 +78,6 @@ export function useEngineConnectionSubscriptions() {
             .clone()
             .sub(sceneInfra.camControls.target)
 
-          console.log('what teh yo', camVector, defaultPlaneStrMap[planeId])
-
           if (engineCommandManager.defaultPlanes?.xy === planeId) {
             zAxis = [0, 0, 1]
             yAxis = [0, 1, 0]
