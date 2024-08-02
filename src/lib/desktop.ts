@@ -209,6 +209,14 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
 
   const entries = await window.electron.readdir(path)
 
+  // Sort all entries so files come first and directories last
+  // so a top-most KCL file is returned first.
+  entries.sort((a: string, b: string) => {
+    if (a.endsWith(".kcl") && !b.endsWith(".kcl")) { return -1 }
+    if (!a.endsWith(".kcl") && b.endsWith(".kcl")) { return 1 }
+    return 0
+  })
+
   for (let e of entries) {
     // ignore hidden files and directories (starting with a dot)
     if (e.indexOf('.') === 0) {

@@ -44,7 +44,7 @@ function RenameForm({
       data: {
         oldName: fileOrDir.name || '',
         newName: inputRef.current?.value || fileOrDir.name || '',
-        isDir: fileOrDir.children !== undefined,
+        isDir: fileOrDir.children !== null,
       },
     })
   }
@@ -90,7 +90,7 @@ function DeleteFileTreeItemDialog({
   const { send } = useFileContext()
   return (
     <DeleteConfirmationDialog
-      title={`Delete ${fileOrDir.children !== undefined ? 'folder' : 'file'}`}
+      title={`Delete ${fileOrDir.children !== null ? 'folder' : 'file'}`}
       onDismiss={() => setIsOpen(false)}
       onConfirm={() => {
         send({ type: 'Delete file', data: fileOrDir })
@@ -99,7 +99,7 @@ function DeleteFileTreeItemDialog({
     >
       <p className="my-4">
         This will permanently delete "{fileOrDir.name || 'this file'}"
-        {fileOrDir.children !== undefined ? ' and all of its contents. ' : '. '}
+        {fileOrDir.children !== null ? ' and all of its contents. ' : '. '}
       </p>
       <p className="my-4">
         Are you sure you want to delete "{fileOrDir.name || 'this file'}
@@ -165,7 +165,7 @@ const FileTreeItem = ({
   }
 
   function handleClick() {
-    if (fileOrDir.children !== undefined) return // Don't open directories
+    if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
       // Import non-kcl files
@@ -194,7 +194,7 @@ const FileTreeItem = ({
 
   return (
     <div className="contents" ref={itemRef}>
-      {fileOrDir.children === undefined ? (
+      {fileOrDir.children === null ? (
         <li
           className={
             'group m-0 p-0 border-solid border-0 hover:bg-primary/5 focus-within:bg-primary/5 dark:hover:bg-primary/20 dark:focus-within:bg-primary/20 ' +

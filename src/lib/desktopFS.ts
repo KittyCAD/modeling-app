@@ -30,9 +30,9 @@ export function sortProject(project: FileEntry[]): FileEntry[] {
       return -1
     } else if (b.name === PROJECT_ENTRYPOINT) {
       return 1
-    } else if (a.children === undefined && b.children !== undefined) {
+    } else if (a.children === null && b.children !== null) {
       return -1
-    } else if (a.children !== undefined && b.children === undefined) {
+    } else if (a.children !== null && b.children === null) {
       return 1
     } else if (a.name && b.name) {
       return a.name.localeCompare(b.name)
@@ -42,7 +42,7 @@ export function sortProject(project: FileEntry[]): FileEntry[] {
   })
 
   return sortedProject.map((fileOrDir: FileEntry) => {
-    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+    if ('children' in fileOrDir && fileOrDir.children !== null) {
       return {
         ...fileOrDir,
         children: sortProject(fileOrDir.children || []),
