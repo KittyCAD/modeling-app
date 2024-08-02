@@ -1,0 +1,18 @@
+// This tests computed properties. 
+
+const arr = [0, 0, 0, 10]
+const i = 3
+const ten = arr[i]
+
+assertLessThanOrEq(ten, 10, "oops")
+assertGreaterThanOrEq(ten, 10, "oops2")
+
+const p = "foo"
+const obj = {
+  foo: 1,
+  bar: 0,
+}
+const one = obj[p]
+
+assertLessThanOrEq(one, 1, "oops")
+assertGreaterThanOrEq(one, 1, "oops2")

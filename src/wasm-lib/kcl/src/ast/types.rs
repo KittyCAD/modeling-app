@@ -2834,29 +2834,74 @@ impl MemberExpression {
     }
 
     pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let property_name = match &self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
+        #[derive(Debug)]
+        enum Property {
+            Number(usize),
+            String(String),
+        }
+
+        impl Property {
+            fn type_name(&self) -> &'static str {
+                match self {
+                    Property::Number(_) => "number",
+                    Property::String(_) => "string",
+                }
+            }
+        }
+
+        let property_src: SourceRange = self.property.clone().into();
+        let property_sr = vec![property_src];
+
+        let property: Property = match self.property.clone() {
+            LiteralIdentifier::Identifier(identifier) => {
+                let prop = memory.get(&identifier.name, property_src)?;
+                let MemoryItem::UserVal(prop) = prop else {
+                    return Err(KclError::Syntax(KclErrorDetails {
+                        source_ranges: property_sr,
+                        message: format!(
+                            "{} is not a valid property/index, you can only use a string or int (>= 0) here",
+                            identifier.name
+                        ),
+                    }));
+                };
+                match prop.value {
+                    JValue::Number(ref x) => Property::Number(x.as_u64().unwrap().try_into().unwrap()), // TODO: remove unwrap
+                    JValue::String(ref x) => Property::String(x.to_owned()),
+                    _ => {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: property_sr,
+                            message: format!(
+                                "{} is not a valid property/index, you can only use a string or int (>= 0) here",
+                                identifier.name
+                            ),
+                        }));
+                    }
+                }
+            }
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::IInteger(x) if x >= 0 => return self.get_result_array(memory, x as usize),
                     LiteralValue::IInteger(x) => {
+                        if let Ok(x) = u64::try_from(x) {
+                            Property::Number(x.try_into().unwrap())
+                        } else {
+                            return Err(KclError::Syntax(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                            }));
+                        }
+                    }
+                    LiteralValue::String(s) => Property::String(s),
+                    _ => {
                         return Err(KclError::Syntax(KclErrorDetails {
                             source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                            message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                        }));
                     }
-                    LiteralValue::Fractional(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
-                            source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
-                    }
-                    LiteralValue::String(s) => s,
-                    LiteralValue::Bool(b) => b.to_string(),
                 }
             }
         };
+        eprintln!("ADAM: Read {:?} and resolved it to {:?}", &self.property, property);
 
         let object = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
@@ -2868,25 +2913,57 @@ impl MemberExpression {
 
         let object_json = object.get_json_value()?;
 
-        if let serde_json::Value::Object(map) = object_json {
-            if let Some(value) = map.get(&property_name) {
-                Ok(MemoryItem::UserVal(UserVal {
-                    value: value.clone(),
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }))
-            } else {
-                Err(KclError::UndefinedValue(KclErrorDetails {
-                    message: format!("Property {} not found in object", property_name),
-                    source_ranges: vec![self.clone().into()],
-                }))
+        // Check the property and object match -- e.g. ints for arrays, strs for objects.
+        match (object_json, property) {
+            (JValue::Object(map), Property::String(property)) => {
+                if let Some(value) = map.get(&property) {
+                    Ok(MemoryItem::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Property {property} not found in object"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
             }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("MemberExpression object is not an object: {:?}", object),
+            (JValue::Object(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only strings can be used as the property of an object, but you're using a {}",
+                    p.type_name()
+                ),
                 source_ranges: vec![self.clone().into()],
-            }))
+            })),
+            (JValue::Array(arr), Property::Number(index)) => {
+                let value_of_arr: Option<&JValue> = arr.get(index);
+                if let Some(value) = value_of_arr {
+                    Ok(MemoryItem::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("The array doesn't have any item at index {index}"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Array(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only integers >= 0 can be used as the index of an array, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (_, _) => Err(KclError::Semantic(KclErrorDetails {
+                message: "Only arrays and objects can be indexed".to_owned(),
+                source_ranges: vec![self.clone().into()],
+            })),
         }
     }
 
