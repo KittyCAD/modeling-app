@@ -2087,6 +2087,20 @@ const newVar = myVar + 1"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_top_level_pipe_without_variable() {
+        let ast = r#"startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> lineTo([2, 2], %, $yo)
+"#;
+        let result = parse_execute(ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 78])], message: "A top-level pipe expression must be assigned to a new variable declaration" }"#.to_owned()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_angled_line_that_intersects() {
         let ast_fn = |offset: &str| -> String {
             format!(

@@ -50,6 +50,37 @@ fn program(i: TokenSlice) -> PResult<Program> {
     // Once this is merged and stable, consider changing this as I think it's more accurate
     // without the -1.
     out.end -= 1;
+
+    // Prevent top-level pipe expressions without a variable declaration, giving
+    // a good error message that will help users fix their code.  This is a
+    // band-aid until we can use the artifact graph.
+    let source_ranges = out
+        .body
+        .iter()
+        .filter_map(|item| {
+            if let BodyItem::ExpressionStatement(ExpressionStatement {
+                expression: Value::PipeExpression(_),
+                start,
+                end,
+                ..
+            }) = item
+            {
+                Some(SourceRange([*start, *end]))
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+    if !source_ranges.is_empty() {
+        return Err(ErrMode::Cut(
+            KclError::Syntax(KclErrorDetails {
+                source_ranges,
+                message: "A top-level pipe expression must be assigned to a new variable declaration".to_owned(),
+            })
+            .into(),
+        ));
+    }
+
     Ok(out)
 }
 
