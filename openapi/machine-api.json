@@ -67,7 +67,7 @@
             "type": "object"
           },
           {
-            "description": "Details for a 3d printer connected over USB.",
+            "description": "Details for a 3d printer connected over network.",
             "properties": {
               "hostname": {
                 "description": "The hostname of the printer.",
@@ -98,6 +98,11 @@
                 "minimum": 0,
                 "nullable": true,
                 "type": "integer"
+              },
+              "serial": {
+                "description": "The serial number of the printer.",
+                "nullable": true,
+                "type": "string"
               },
               "type": {
                 "enum": [

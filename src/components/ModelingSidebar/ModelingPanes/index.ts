@@ -11,19 +11,27 @@ import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
 import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { KclErrorsPane, LogsPane } from './LoggingPanes'
+import { LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
+import { useKclContext } from 'lang/KclProvider'
 
 export type SidebarType =
   | 'code'
   | 'debug'
   | 'export'
   | 'files'
-  | 'kclErrors'
   | 'logs'
   | 'lspMessages'
   | 'variables'
+
+/**
+ * This interface can be extended as more context is needed for the panes
+ * to determine if they should show their badges or not.
+ */
+interface PaneCallbackProps {
+  kclContext: ReturnType<typeof useKclContext>
+}
 
 export type SidebarPane = {
   id: SidebarType
@@ -33,6 +41,7 @@ export type SidebarPane = {
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
   hideOnPlatform?: 'desktop' | 'web'
+  showBadge?: (props: PaneCallbackProps) => boolean | number
 }
 
 export const sidebarPanes: SidebarPane[] = [
@@ -43,6 +52,7 @@ export const sidebarPanes: SidebarPane[] = [
     Content: KclEditorPane,
     keybinding: 'Shift + C',
     Menu: KclEditorMenu,
+    showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
     id: 'files',
@@ -67,13 +77,6 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faCodeCommit,
     Content: LogsPane,
     keybinding: 'Shift + L',
-  },
-  {
-    id: 'kclErrors',
-    title: 'KCL Errors',
-    icon: faExclamationCircle,
-    Content: KclErrorsPane,
-    keybinding: 'Shift + E',
   },
   {
     id: 'debug',
