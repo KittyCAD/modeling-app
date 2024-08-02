@@ -3994,7 +3994,7 @@ mod tests {
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
-startSketchOn('XY')
+let s1 = startSketchOn('XY')
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
@@ -4025,7 +4025,7 @@ ghi("things")
         assert_eq!(folding_ranges[1].end_line, 254);
         assert_eq!(
             folding_ranges[1].collapsed_text,
-            Some("startSketchOn('XY')".to_string())
+            Some("let s1 = startSketchOn('XY')".to_string())
         );
         assert_eq!(folding_ranges[2].start_line, 390);
         assert_eq!(folding_ranges[2].end_line, 403);
@@ -5264,7 +5264,7 @@ fn ghi = (part001) => {
 
     #[test]
     fn test_recast_trailing_comma() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"let s = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> arc({
     radius: 1,
@@ -5278,7 +5278,7 @@ fn ghi = (part001) => {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"startSketchOn('XY')
+            r#"let s = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> arc({
        radius: 1,
@@ -5858,7 +5858,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"let s = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %, $xLine)
 "#;
@@ -5869,13 +5869,13 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([84, 90])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_empty_tag() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"let s = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %, $)
 "#;
@@ -5886,13 +5886,13 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([65, 67])], message: "Unexpected token" }"#
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_digest() {
-        let prog1_string = r#"startSketchOn('XY')
+        let prog1_string = r#"let s = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %)
 "#;
@@ -5900,7 +5900,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         let prog1_parser = crate::parser::Parser::new(prog1_tokens);
         let prog1_digest = prog1_parser.ast().unwrap().compute_digest();
 
-        let prog2_string = r#"startSketchOn('XY')
+        let prog2_string = r#"let s = startSketchOn('XY')
     |> startProfileAt([0, 2], %)
     |> line([5, 5], %)
 "#;
@@ -5910,7 +5910,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
         assert!(prog1_digest != prog2_digest);
 
-        let prog3_string = r#"startSketchOn('XY')
+        let prog3_string = r#"let s = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %)
 "#;

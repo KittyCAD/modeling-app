@@ -1395,7 +1395,7 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 /// Close the current sketch.
 ///
 /// ```no_run
-/// startSketchOn('XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///    |> startProfileAt([0, 0], %)
 ///    |> line([10, 10], %)
 ///    |> line([10, 0], %)

@@ -484,7 +484,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_top_level_expression() {
-    let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
+    let code = r#"let c1 = startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("top_level_expression", &result);
@@ -2117,7 +2117,7 @@ async fn kcl_test_extrude_custom_plane() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_arc_error_same_start_end() {
-    let code = r#"startSketchOn('XY')
+    let code = r#"let x = startSketchOn('XY')
   |> startProfileAt([10, 0], %)
   |> arc({
        angle_start: 180,
@@ -2137,7 +2137,7 @@ async fn kcl_test_arc_error_same_start_end() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 140])], message: "Arc start and end angles must be different" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([65, 148])], message: "Arc start and end angles must be different" }"#
     );
 }
 

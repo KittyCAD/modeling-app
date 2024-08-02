@@ -1354,7 +1354,7 @@ async fn test_kcl_lsp_formatting() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"startSketchOn('XY')
+                text: r#"let s = startSketchOn('XY')
                     |> startProfileAt([0,0], %)"#
                     .to_string(),
             },
@@ -1385,7 +1385,7 @@ async fn test_kcl_lsp_formatting() {
     assert_eq!(formatting.len(), 1);
     assert_eq!(
         formatting[0].new_text,
-        r#"startSketchOn('XY')
+        r#"let s = startSketchOn('XY')
     |> startProfileAt([0, 0], %)"#
     );
 }
@@ -2901,7 +2901,7 @@ async fn test_kcl_lsp_folding() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"startSketchOn('XY')
+                text: r#"let s = startSketchOn('XY')
                     |> startProfileAt([0,0], %)"#
                     .to_string(),
             },
@@ -2926,12 +2926,12 @@ async fn test_kcl_lsp_folding() {
     assert_eq!(
         folding.first().unwrap().clone(),
         tower_lsp::lsp_types::FoldingRange {
-            start_line: 19,
+            start_line: 27,
             start_character: None,
-            end_line: 67,
+            end_line: 75,
             end_character: None,
             kind: Some(tower_lsp::lsp_types::FoldingRangeKind::Region),
-            collapsed_text: Some("startSketchOn('XY')".to_string())
+            collapsed_text: Some("let s = startSketchOn('XY')".to_string())
         }
     );
 }
