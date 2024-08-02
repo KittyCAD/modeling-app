@@ -5,6 +5,7 @@ import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { createAndOpenNewProject } from 'lib/tauriFS'
 import { paths } from 'lib/paths'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -12,16 +13,17 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu(props: React.PropsWithChildren) {
   const location = useLocation()
+  const filePath = useAbsoluteFilePath()
   const isInProject = location.pathname.includes(paths.FILE)
   const navigate = useNavigate()
   const { settings } = useSettingsAuthContext()
 
   return (
     <Popover className="relative">
-      <Popover.Button className="border-none p-0 m-0 rounded-full grid place-content-center">
+      <Popover.Button className="grid p-0 m-0 border-none rounded-full place-content-center">
         <CustomIcon
           name="questionMark"
-          className="w-7 h-7 rounded-full bg-chalkboard-110 dark:bg-chalkboard-80 text-chalkboard-10"
+          className="rounded-full w-7 h-7 bg-chalkboard-110 dark:bg-chalkboard-80 text-chalkboard-10"
         />
         <span className="sr-only">Help and resources</span>
         <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
@@ -30,7 +32,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
       </Popover.Button>
       <Popover.Panel
         as="ul"
-        className="absolute right-0 left-auto bottom-full mb-1 w-64 py-2 flex flex-col gap-1 align-stretch text-chalkboard-10 dark:text-inherit bg-chalkboard-110 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-110 dark:border-chalkboard-80 text-sm m-0 p-0"
+        className="absolute right-0 left-auto flex flex-col w-64 gap-1 p-0 py-2 m-0 mb-1 text-sm border border-solid rounded shadow-lg bottom-full align-stretch text-chalkboard-10 dark:text-inherit bg-chalkboard-110 dark:bg-chalkboard-100 border-chalkboard-110 dark:border-chalkboard-80"
       >
         <HelpMenuItem
           as="a"
@@ -84,7 +86,12 @@ export function HelpMenu(props: React.PropsWithChildren) {
         </HelpMenuItem>
         <HelpMenuItem
           as="button"
-          onClick={() => navigate('settings?tab=keybindings')}
+          onClick={() => {
+            const targetPath = location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS
+              : paths.HOME + paths.SETTINGS
+            navigate(targetPath + '?tab=keybindings')
+          }}
         >
           Keyboard shortcuts
         </HelpMenuItem>
@@ -128,7 +135,7 @@ function HelpMenuItem({
 }: HelpMenuItemProps) {
   const baseClassName = 'block px-2 py-1 hover:bg-chalkboard-80'
   return (
-    <li className="m-0 p-0">
+    <li className="p-0 m-0">
       {as === 'a' ? (
         <a
           {...(props as React.ComponentProps<'a'>)}
