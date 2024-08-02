@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'openapi/machine-api.json'
+      - '.github/workflows/generate-machine-api-types.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
