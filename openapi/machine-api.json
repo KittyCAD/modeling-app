@@ -251,6 +251,9 @@
       },
       "Message2": {
         "description": "A message from the printer.",
+        "enum": [
+          "ok"
+        ],
         "type": "string"
       },
       "Message3": {
@@ -856,6 +859,13 @@
             "description": "Project file.",
             "enum": [
               "project_file"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Stop the print.",
+            "enum": [
+              "stop"
             ],
             "type": "string"
           }
