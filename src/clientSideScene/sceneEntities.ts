@@ -84,10 +84,7 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import {
-  Selections,
-  getEventForSegmentSelection,
-} from 'lib/selections'
+import { Selections, getEventForSegmentSelection } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
