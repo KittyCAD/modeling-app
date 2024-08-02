@@ -1497,7 +1497,7 @@ impl CallExpression {
                     let mut source_ranges: Vec<SourceRange> = vec![self.into()];
                     // We want to send the source range of the original function.
                     if let MemoryItem::Function { meta, .. } = func {
-                        source_ranges = meta.into_iter().map(|m| m.source_range).collect();
+                        source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of user-defined function {} is undefined", fn_name),
