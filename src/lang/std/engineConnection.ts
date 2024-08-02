@@ -2,7 +2,7 @@ import { Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
-import { uuidv4 } from 'lib/utils'
+import { deferExecution, uuidv4 } from 'lib/utils'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
@@ -12,6 +12,7 @@ import {
   ResponseMap,
   createArtifactMap,
 } from 'lang/std/artifactMap'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
@@ -1204,6 +1205,8 @@ export class EngineCommandManager extends EventTarget {
   private onEngineConnectionNewTrack = ({
     detail,
   }: CustomEvent<NewTrackArgs>) => {}
+  modelingSend: ReturnType<typeof useModelingContext>['send'] =
+    (() => {}) as any
 
   start({
     restart,
@@ -1549,7 +1552,6 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.artifactMap = {}
     this.orderedCommands = []
     this.responseMap = {}
     await this.initPlanes()
@@ -1784,6 +1786,14 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(message.command)
     return promise
   }
+
+  deferredArtifactPopulated = deferExecution((a?: null) => {
+    this.modelingSend({ type: 'Artifact graph populated' })
+  }, 200)
+  deferredArtifactEmptied = deferExecution((a?: null) => {
+    this.modelingSend({ type: 'Artifact graph emptied' })
+  }, 200)
+
   /**
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
@@ -1795,6 +1805,11 @@ export class EngineCommandManager extends EventTarget {
       responseMap: this.responseMap,
       ast: this.getAst(),
     })
+    if (Object.values(this.artifactMap).length) {
+      this.deferredArtifactEmptied(null)
+    } else {
+      this.deferredArtifactPopulated(null)
+    }
   }
   private async initPlanes() {
     if (this.planesInitialized()) return

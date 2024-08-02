@@ -102,6 +102,7 @@ export const ClientSideScene = ({
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
     canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
     sceneInfra.setSend(send)
+    engineCommandManager.modelingSend = send
     return () => {
       canvas?.removeEventListener('mousemove', sceneInfra.onMouseMove)
       canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
