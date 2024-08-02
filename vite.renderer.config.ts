@@ -19,6 +19,9 @@ export default defineConfig((env) => {
       outDir: `.vite/renderer/${name}`,
     },
     plugins: [pluginExposeRenderer(name), viteTsconfigPaths(), lezer()],
+    worker: {
+      plugins: () => [viteTsconfigPaths()],
+    },
     resolve: {
       preserveSymlinks: true,
       alias: {
