@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { createAndOpenNewProject } from 'lib/tauriFS'
 import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { useLspContext } from './LspProvider'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -13,6 +14,7 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu(props: React.PropsWithChildren) {
   const location = useLocation()
+  const { onProjectOpen } = useLspContext()
   const filePath = useAbsoluteFilePath()
   const isInProject = location.pathname.includes(paths.FILE)
   const navigate = useNavigate()
@@ -106,9 +108,9 @@ export function HelpMenu(props: React.PropsWithChildren) {
               },
             })
             if (isInProject) {
-              navigate('onboarding')
+              navigate(filePath + paths.ONBOARDING.INDEX)
             } else {
-              createAndOpenNewProject(navigate)
+              createAndOpenNewProject({ onProjectOpen, navigate })
             }
           }}
         >
