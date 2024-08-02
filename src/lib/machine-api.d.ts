@@ -4,245 +4,729 @@
  */
 
 export interface paths {
-  '/': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Return the OpenAPI schema in JSON format. */
-    get: operations['api_get_schema']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/machines': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** List available machines and their statuses */
-    get: operations['get_machines']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/ping': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Return pong. */
-    get: operations['ping']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/print': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Print a given file. File must be a sliceable 3D model. */
-    post: operations['print_file']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
+    "/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the OpenAPI schema in JSON format. */
+        get: operations["api_get_schema"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/machines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List available machines and their statuses */
+        get: operations["get_machines"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/machines/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the status of a specific machine */
+        get: operations["get_machine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return pong. */
+        get: operations["ping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/print": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Print a given file. File must be a sliceable 3D model. */
+        post: operations["print_file"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Error information from a response. */
-    Error: {
-      error_code?: string
-      message: string
-      request_id: string
-    }
-    /** @description Details for a 3d printer connected over USB. */
-    Machine:
-      | {
-          id: string
-          manufacturer: string
-          model: string
-          port: string
-          /** @enum {string} */
-          type: 'UsbPrinter'
-        }
-      | {
-          /** @description The hostname of the printer. */
-          hostname?: string | null
-          /**
-           * Format: ip
-           * @description The IP address of the printer.
-           */
-          ip: string
-          /** @description The manufacturer of the printer. */
-          manufacturer: components['schemas']['NetworkPrinterManufacturer']
-          /** @description The model of the printer. */
-          model?: string | null
-          /**
-           * Format: uint16
-           * @description The port of the printer.
-           */
-          port?: number | null
-          /** @description The serial number of the printer. */
-          serial?: string | null
-          /** @enum {string} */
-          type: 'NetworkPrinter'
-        }
-    /** @description Network printer manufacturer. */
-    NetworkPrinterManufacturer: 'Bambu' | 'Formlabs'
-    /** @description The response from the `/ping` endpoint. */
-    Pong: {
-      /** @description The pong response. */
-      message: string
-    }
-    /** @description The response from the `/print` endpoint. */
-    PrintJobResponse: {
-      /** @description The job id used for this print. */
-      job_id: string
-      /** @description The parameters used for this print. */
-      parameters: components['schemas']['PrintParameters']
-    }
-    /** @description Parameters for printing. */
-    PrintParameters: {
-      machine_id: string
-    }
-  }
-  responses: {
-    /** @description Error */
-    Error: {
-      headers: {
-        [name: string]: unknown
-      }
-      content: {
-        'application/json': components['schemas']['Error']
-      }
-    }
-  }
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+    schemas: {
+        /** @description Error information from a response. */
+        Error: {
+            error_code?: string;
+            message: string;
+            request_id: string;
+        };
+        /** @description A info message. */
+        Info: {
+            /** @description The info command. */
+            command: components["schemas"]["InfoCommand"];
+            /** @description The info module. */
+            module: components["schemas"]["InfoModule"][];
+            /** @description The reason of the info command. */
+            reason: string;
+            /** @description The result of the info command. */
+            result: string;
+            /** @description The sequence id. */
+            sequence_id: components["schemas"]["SequenceId"];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description An info command. */
+        InfoCommand: "get_version";
+        /** @description An info module. */
+        InfoModule: {
+            /** @description The hardware version. */
+            hw_ver: string;
+            /** @description The loader version. */
+            loader_ver?: string | null;
+            /** @description The module name. */
+            name: string;
+            /** @description The ota version. */
+            ota_ver?: string | null;
+            /** @description The project name. */
+            project_name: string;
+            /** @description The serial number. */
+            sn: string;
+            /** @description The software version. */
+            sw_ver: string;
+        };
+        /** @description Details for a 3d printer connected over USB. */
+        Machine: {
+            id: string;
+            manufacturer: string;
+            model: string;
+            port: string;
+            /** @enum {string} */
+            type: "UsbPrinter";
+        } | {
+            /** @description The hostname of the printer. */
+            hostname?: string | null;
+            /**
+             * Format: ip
+             * @description The IP address of the printer.
+             */
+            ip: string;
+            /** @description The manufacturer of the printer. */
+            manufacturer: components["schemas"]["NetworkPrinterManufacturer"];
+            /** @description The model of the printer. */
+            model?: string | null;
+            /**
+             * Format: uint16
+             * @description The port of the printer.
+             */
+            port?: number | null;
+            /** @description The serial number of the printer. */
+            serial?: string | null;
+            /** @enum {string} */
+            type: "NetworkPrinter";
+        };
+        /** @description A message from a machine. */
+        Message: {
+            UsbPrinter: components["schemas"]["Message2"];
+        } | {
+            NetworkPrinter: components["schemas"]["Message3"];
+        };
+        /** @description A message from the printer. */
+        Message2: string;
+        /** @description A message from the printer. */
+        Message3: {
+            Bambu: components["schemas"]["Message4"];
+        } | {
+            Formlabs: Record<string, never>;
+        };
+        /** @description A message from/to the printer. */
+        Message4: {
+            print: components["schemas"]["Print"];
+        } | {
+            info: components["schemas"]["Info"];
+        } | {
+            system: components["schemas"]["System"];
+        } | {
+            json: unknown;
+        } | {
+            unknown: string | null;
+        };
+        /** @description Network printer manufacturer. */
+        NetworkPrinterManufacturer: "Bambu" | "Formlabs";
+        /** @description The response from the `/ping` endpoint. */
+        Pong: {
+            /** @description The pong response. */
+            message: string;
+        };
+        /** @description A print message. */
+        Print: {
+            /** @description The ams. */
+            ams?: components["schemas"]["PrintAms"] | null;
+            /**
+             * Format: int64
+             * @description The ams rfid status.
+             */
+            ams_rfid_status?: number | null;
+            /**
+             * Format: int64
+             * @description The ams status.
+             */
+            ams_status?: number | null;
+            /**
+             * Format: double
+             * @description The target bed temperature.
+             */
+            bed_target_temper?: number | null;
+            /**
+             * Format: double
+             * @description The bed temperature.
+             */
+            bed_temper?: number | null;
+            /** @description The big fan 1 speed. */
+            big_fan1_speed?: string | null;
+            /** @description The big fan 2 speed. */
+            big_fan2_speed?: string | null;
+            /**
+             * Format: double
+             * @description The chamber temperature.
+             */
+            chamber_temper?: number | null;
+            /** @description The command. */
+            command: components["schemas"]["PrintCommand"];
+            /** @description The cooling fan speed. */
+            cooling_fan_speed?: string | null;
+            /**
+             * Format: int64
+             * @description The fan gear.
+             */
+            fan_gear?: number | null;
+            /** @description Force upgrade? */
+            force_upgrade?: boolean | null;
+            /** @description The gcode file. */
+            gcode_file?: string | null;
+            /** @description The gcode file prepare percent. */
+            gcode_file_prepare_percent?: string | null;
+            /** @description The gcode state. */
+            gcode_state?: string | null;
+            /** @description The heatbreak fan speed. */
+            heatbreak_fan_speed?: string | null;
+            /** @description The hms. */
+            hms?: unknown[] | null;
+            /**
+             * Format: int64
+             * @description The home flag.
+             */
+            home_flag?: number | null;
+            /**
+             * Format: int64
+             * @description The hw switch state.
+             */
+            hw_switch_state?: number | null;
+            /** @description The ipcam. */
+            ipcam?: components["schemas"]["PrintIpcam"] | null;
+            /**
+             * Format: int64
+             * @description The layer num.
+             */
+            layer_num?: number | null;
+            /** @description The lifecycle. */
+            lifecycle?: string | null;
+            /** @description The lights report. */
+            lights_report?: components["schemas"]["PrintLightsReport"][] | null;
+            /**
+             * Format: int64
+             * @description The percentage of the print completed.
+             */
+            mc_percent?: number | null;
+            /** @description The mc print line number. */
+            mc_print_line_number?: string | null;
+            /** @description The print stage. */
+            mc_print_stage?: string | null;
+            /**
+             * Format: int64
+             * @description The mc print sub stage.
+             */
+            mc_print_sub_stage?: number | null;
+            /**
+             * Format: int64
+             * @description The remaining time of the print.
+             */
+            mc_remaining_time?: number | null;
+            /** @description The mess production state. */
+            mess_production_state?: string | null;
+            /**
+             * Format: int64
+             * @description The message.
+             */
+            msg?: number | null;
+            /**
+             * Format: double
+             * @description The target nozzle temperature.
+             */
+            nozzle_target_temper?: number | null;
+            /**
+             * Format: double
+             * @description The nozzle temperature.
+             */
+            nozzle_temper?: number | null;
+            /** @description Online status. */
+            online?: components["schemas"]["PrintOnline"] | null;
+            /**
+             * Format: int64
+             * @description The print error.
+             */
+            print_error?: number | null;
+            /** @description The print type. */
+            print_type?: string | null;
+            /** @description The profile id. */
+            profile_id?: string | null;
+            /** @description The project id. */
+            project_id?: string | null;
+            /**
+             * Format: int64
+             * @description The queue est.
+             */
+            queue_est?: number | null;
+            /**
+             * Format: int64
+             * @description The queue number.
+             */
+            queue_number?: number | null;
+            /**
+             * Format: int64
+             * @description The queue sts.
+             */
+            queue_sts?: number | null;
+            /**
+             * Format: int64
+             * @description The queue total.
+             */
+            queue_total?: number | null;
+            /** @description The s obj. */
+            s_obj?: unknown[] | null;
+            /** @description Sdcard? */
+            sdcard?: boolean | null;
+            /** @description The sequence id. */
+            sequence_id: components["schemas"]["SequenceId"];
+            /**
+             * Format: int64
+             * @description The spd lvl.
+             */
+            spd_lvl?: number | null;
+            /**
+             * Format: int64
+             * @description The spd mag.
+             */
+            spd_mag?: number | null;
+            /** @description The stg. */
+            stg?: unknown[] | null;
+            /**
+             * Format: int64
+             * @description The stg cur.
+             */
+            stg_cur?: number | null;
+            /** @description The subtask id. */
+            subtask_id?: string | null;
+            /** @description The subtask name. */
+            subtask_name?: string | null;
+            /** @description The task id. */
+            task_id?: string | null;
+            /**
+             * Format: int64
+             * @description The total layer num.
+             */
+            total_layer_num?: number | null;
+            /** @description The upgrade state. */
+            upgrade_state?: components["schemas"]["PrintUpgradeState"] | null;
+            /** @description The upload. */
+            upload?: components["schemas"]["PrintUpload"] | null;
+            /** @description The tray. */
+            vt_tray?: components["schemas"]["PrintTray"] | null;
+            /** @description The wifi signal. */
+            wifi_signal?: string | null;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description The print ams. */
+        PrintAms: {
+            /** @description The ams. */
+            ams?: components["schemas"]["PrintAmsData"][] | null;
+            /** @description The ams exist bits. */
+            ams_exist_bits?: string | null;
+            /** @description The insert flag. */
+            insert_flag?: boolean | null;
+            /** @description The power on flag. */
+            power_on_flag?: boolean | null;
+            /** @description The tray exist bits. */
+            tray_exist_bits?: string | null;
+            /** @description The tray is bbl bits. */
+            tray_is_bbl_bits?: string | null;
+            /** @description The tray now. */
+            tray_now?: string | null;
+            /** @description The tray pre. */
+            tray_pre?: string | null;
+            /** @description The tray read done bits. */
+            tray_read_done_bits?: string | null;
+            /** @description The tray reading bits. */
+            tray_reading_bits?: string | null;
+            /** @description The tray tar. */
+            tray_tar?: string | null;
+            /**
+             * Format: int64
+             * @description The version.
+             */
+            version?: number | null;
+        };
+        /** @description The print ams data. */
+        PrintAmsData: {
+            /** @description The humidity. */
+            humidity: string;
+            /** @description The id. */
+            id: string;
+            /** @description The temperature. */
+            temp: string;
+            /** @description The tray. */
+            tray: components["schemas"]["PrintTray"][];
+        };
+        /** @description A print command. */
+        PrintCommand: "push_status" | "gcode_line" | "project_file";
+        /** @description The print ipcam. */
+        PrintIpcam: {
+            /** @description The ipcam dev. */
+            ipcam_dev?: string | null;
+            /** @description The ipcam record. */
+            ipcam_record?: string | null;
+            /**
+             * Format: int64
+             * @description The mode bits.
+             */
+            mode_bits?: number | null;
+            /** @description The timelapse. */
+            timelapse?: string | null;
+        };
+        /** @description The response from the `/print` endpoint. */
+        PrintJobResponse: {
+            /** @description The job id used for this print. */
+            job_id: string;
+            /** @description The parameters used for this print. */
+            parameters: components["schemas"]["PrintParameters"];
+        };
+        /** @description A print lights report. */
+        PrintLightsReport: {
+            /** @description The mode. */
+            mode: string;
+            /** @description The node. */
+            node: string;
+        };
+        /** @description The print online. */
+        PrintOnline: {
+            /** @description The ahb. */
+            ahb: boolean;
+            /** @description The rfid. */
+            rfid?: boolean | null;
+            /**
+             * Format: int64
+             * @description The version.
+             */
+            version: number;
+        };
+        /** @description Parameters for printing. */
+        PrintParameters: {
+            /** @description The name for the job. */
+            job_name: string;
+            /** @description The machine id to print to. */
+            machine_id: string;
+        };
+        /** @description The print tray. */
+        PrintTray: {
+            /** @description The bed temperature. */
+            bed_temp?: string | null;
+            /** @description The bed temperature type. */
+            bed_temp_type?: string | null;
+            /** @description The id. */
+            id: string;
+            /**
+             * Format: double
+             * @description The tray k.
+             */
+            k?: number | null;
+            /**
+             * Format: int64
+             * @description The tray n.
+             */
+            n?: number | null;
+            /** @description The nozzle temperature max. */
+            nozzle_temp_max?: string | null;
+            /** @description The nozzle temperature min. */
+            nozzle_temp_min?: string | null;
+            /**
+             * Format: int64
+             * @description The tray remain.
+             */
+            remain?: number | null;
+            /** @description The tag uid. */
+            tag_uid?: string | null;
+            /** @description The tray color. */
+            tray_color?: string | null;
+            /** @description The tray diameter. */
+            tray_diameter?: string | null;
+            /** @description The tray id name. */
+            tray_id_name?: string | null;
+            /** @description The tray info index. */
+            tray_info_idx?: string | null;
+            /** @description The tray sub brands. */
+            tray_sub_brands?: string | null;
+            /** @description The tray temperature. */
+            tray_temp?: string | null;
+            /** @description The tray time. */
+            tray_time?: string | null;
+            /** @description The tray type. */
+            tray_type?: string | null;
+            /** @description The tray uuid. */
+            tray_uuid?: string | null;
+            /** @description The tray weight. */
+            tray_weight?: string | null;
+            /** @description The xcam info. */
+            xcam_info?: string | null;
+        };
+        /** @description A print upgrade state. */
+        PrintUpgradeState: {
+            /** @description The consistency request. */
+            consistency_request?: boolean | null;
+            /**
+             * Format: int64
+             * @description The dis state.
+             */
+            dis_state?: number | null;
+            /**
+             * Format: int64
+             * @description The error code.
+             */
+            err_code?: number | null;
+            /** @description Force upgrade? */
+            force_upgrade?: boolean | null;
+            /** @description The message. */
+            message?: string | null;
+            /** @description The module. */
+            module?: string | null;
+            /** @description The new version list. */
+            new_ver_list?: unknown[] | null;
+            /**
+             * Format: int64
+             * @description The new version state.
+             */
+            new_version_state?: number | null;
+            /** @description The progress. */
+            progress?: string | null;
+            /**
+             * Format: int64
+             * @description The sequence id.
+             */
+            sequence_id?: number | null;
+            /** @description The status. */
+            status?: string | null;
+        };
+        /** @description The print upload. */
+        PrintUpload: {
+            /** @description The message. */
+            message: string;
+            /**
+             * Format: int64
+             * @description The progress.
+             */
+            progress: number;
+            /** @description The status. */
+            status: string;
+        };
+        /** @description The sequence id type. */
+        SequenceId: string | number;
+        /** @description A system message. */
+        System: {
+            /** @description The system command. */
+            command: components["schemas"]["SystemCommand"];
+            /** @description The result of the system command. */
+            result: string;
+            /** @description The sequence id. */
+            sequence_id: components["schemas"]["SequenceId"];
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description A system command. */
+        SystemCommand: "ledctrl" | "get_accessories";
+    };
+    responses: {
+        /** @description Error */
+        Error: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+    };
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-  api_get_schema: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': unknown
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  get_machines: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            [key: string]: components['schemas']['Machine'] | undefined
-          }
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  ping: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Pong']
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  print_file: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'multipart/form-data': string
-      }
-    }
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['PrintJobResponse']
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
+    api_get_schema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    get_machines: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["Machine"];
+                    };
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    get_machine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The machine ID. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    ping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pong"];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    print_file: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": string;
+            };
+        };
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrintJobResponse"];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
 }
