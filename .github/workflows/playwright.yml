@@ -178,7 +178,7 @@ jobs:
         retention-days: 30
         overwrite: true
     - name: Run ubuntu/chrome flow (retry 1)
-      run: yarn playwright test --project="Google Chrome" --last-failed
+      run: yarn playwright test --project="Google Chrome" --last-failed --pass-with-no-tests
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -297,7 +297,7 @@ jobs:
         retention-days: 30
         overwrite: true
     - name: Run macos/safari flow (retry 1)
-      run: yarn playwright test --project="webkit" --last-failed
+      run: yarn playwright test --project="webkit" --last-failed --pass-with-no-tests
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
