@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import React, { createContext, useEffect, useRef } from 'react'
+import React, { createContext, useEffect, useMemo, useRef } from 'react'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -8,7 +8,12 @@ import {
   StateFrom,
   assign,
 } from 'xstate'
-import { SetSelections, modelingMachine } from 'machines/modelingMachine'
+import {
+  SetSelections,
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
@@ -99,6 +104,7 @@ export const ModelingMachineProvider = ({
   } = useSettingsAuthContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
+  const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
@@ -121,6 +127,13 @@ export const ModelingMachineProvider = ({
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine,
     {
+      context: {
+        ...modelingMachineDefaultContext,
+        store: {
+          ...modelingMachineDefaultContext.store,
+          ...persistedContext,
+        },
+      },
       actions: {
         'disable copilot': () => {
           editorManager.setCopilotEnabled(false)

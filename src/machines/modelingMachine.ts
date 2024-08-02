@@ -255,10 +255,40 @@ interface PersistedModelingContext {
 type PersistedKeys = keyof PersistedModelingContext
 export const PersistedValues: PersistedKeys[] = ['openPanes']
 
-const persistedContext: Partial<PersistedModelingContext> = (typeof window !==
+export const getPersistedContext = (): Partial<PersistedModelingContext> =>  {
+  const c = (typeof window !==
   'undefined' &&
   JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
   openPanes: ['code'],
+}
+  return c
+}
+
+export const modelingMachineDefaultContext = {
+  tool: null as Models['SceneToolType_type'] | null,
+  selection: [] as string[],
+  selectionRanges: {
+    otherSelections: [],
+    codeBasedSelections: [],
+  } as Selections,
+  sketchDetails: {
+    sketchPathToNode: [],
+    zAxis: [0, 0, 1],
+    yAxis: [0, 1, 0],
+    origin: [0, 0, 0],
+  } as null | SketchDetails,
+  sketchPlaneId: '' as string,
+  sketchEnginePathId: '' as string,
+  moveDescs: [] as MoveDesc[],
+  mouseState: { type: 'idle' } as MouseState,
+  segmentOverlays: {} as SegmentOverlays,
+  segmentHoverMap: {} as { [pathToNodeString: string]: number },
+  store: {
+    buttonDownInStream: undefined,
+    didDragInStream: false,
+    streamDimensions: { streamWidth: 1280, streamHeight: 720 },
+    openPanes: getPersistedContext().openPanes || ['code'],
+  } as Store,
 }
 
 export const modelingMachine = createMachine(
@@ -270,32 +300,7 @@ export const modelingMachine = createMachine(
     predictableActionArguments: true,
     preserveActionOrder: true,
 
-    context: {
-      tool: null as Models['SceneToolType_type'] | null,
-      selection: [] as string[],
-      selectionRanges: {
-        otherSelections: [],
-        codeBasedSelections: [],
-      } as Selections,
-      sketchDetails: {
-        sketchPathToNode: [],
-        zAxis: [0, 0, 1],
-        yAxis: [0, 1, 0],
-        origin: [0, 0, 0],
-      } as null | SketchDetails,
-      sketchPlaneId: '' as string,
-      sketchEnginePathId: '' as string,
-      moveDescs: [] as MoveDesc[],
-      mouseState: { type: 'idle' } as MouseState,
-      segmentOverlays: {} as SegmentOverlays,
-      segmentHoverMap: {} as { [pathToNodeString: string]: number },
-      store: {
-        buttonDownInStream: undefined,
-        didDragInStream: false,
-        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
-        openPanes: persistedContext.openPanes || ['code'],
-      } as Store,
-    },
+    context: modelingMachineDefaultContext,
 
     schema: {
       events: {} as ModelingMachineEvent,
