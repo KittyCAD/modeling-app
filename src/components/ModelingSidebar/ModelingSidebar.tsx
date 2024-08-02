@@ -58,7 +58,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           data: { name: 'Make', groupId: 'modeling' },
         })
       },
-      hide: () => machineManager.machines.length === 0,
+      hide: () => machineManager.machineCount() === 0,
       hideOnPlatform: 'web',
     },
   ]

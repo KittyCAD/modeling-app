@@ -7,7 +7,7 @@ import { components } from './machine-api'
 // Make files locally from an export call.
 export async function exportMake(data: ArrayBuffer) {
   const machines = machineManager.machines
-  if (machines.length === 0) {
+  if (machineManager.machineCount() === 0) {
     console.log('No machines available')
     toast.error('No machines available')
     return
@@ -20,26 +20,28 @@ export async function exportMake(data: ArrayBuffer) {
     return
   }
 
-  // Grab the first machine.
-  const machine = machines[0]
-  let machineId = ''
-  if ('id' in machine) {
-    machineId = machine.id
-  } else if ('hostname' in machine && machine.hostname) {
-    machineId = machine.hostname
-  } else if ('ip' in machine) {
-    machineId = machine.ip
-  }
+  console.log('starting print', machines, machineApiIp)
 
-  if (machineId === '') {
+  // Grab the first machine.
+  let machineId = null
+  Object.keys(machines).forEach((key) => {
+    machineId = key
+  })
+
+  console.log('machineId', machineId)
+
+  if (!machineId) {
     console.log('No machine id found')
     toast.error('No machine id found')
     return
   }
+
+  console.log('machineId', machineId)
   const params: components['schemas']['PrintParameters'] = {
     machine_id: machineId,
     job_name: 'Exported Job', // TODO: make this the project name.
   }
+  console.log('params', params)
   const formData = new FormData()
   formData.append('params', JSON.stringify(params))
   let files: ModelingAppFile[] = deserialize_files(new Uint8Array(data))
@@ -48,12 +50,15 @@ export async function exportMake(data: ArrayBuffer) {
     type: 'text/plain',
   })
   formData.append('file', fileBlob, file.name)
+  console.log('formData', formData)
 
   const response = await fetch('http://' + machineApiIp + '/print', {
     mode: 'no-cors',
     method: 'POST',
     body: formData,
   })
+
+  console.log('response', response)
 
   return response
 }

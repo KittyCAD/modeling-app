@@ -97,7 +97,7 @@ function ProjectMenuPopover({
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
-  const machines = machineManager.machines
+  const machineCount = machineManager.machineCount()
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -163,7 +163,7 @@ function ProjectMenuPopover({
               )}
             </>
           ),
-          disabled: !findCommand(makeCommandInfo) || machines.length === 0,
+          disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
             commandBarSend({
               type: 'Find and select command',

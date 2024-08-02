@@ -4,7 +4,9 @@ import { getMachineApiIp, listMachines } from './tauri'
 
 export default class MachineManager {
   private _isTauri: boolean = isTauri()
-  private _machines: components['schemas']['Machine'][] = []
+  private _machines: {
+    [key: string]: components['schemas']['Machine']
+  } = {}
   private _machineApiIp: string | null = null
 
   constructor() {
@@ -27,8 +29,14 @@ export default class MachineManager {
     }, 10000)
   }
 
-  get machines(): components['schemas']['Machine'][] {
+  get machines(): {
+    [key: string]: components['schemas']['Machine']
+  } {
     return this._machines
+  }
+
+  machineCount(): number {
+    return Object.keys(this._machines).length
   }
 
   get machineApiIp(): string | null {

@@ -1424,7 +1424,6 @@ export class EngineCommandManager extends EventTarget {
             }
             case ExportIntent.Make: {
               exportMake(event.data).then(() => {
-                //console.log(await response.json());
                 this.pendingExport?.resolve(null)
               }, this.pendingExport?.reject)
               break
@@ -1735,7 +1734,12 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
-        this.pendingExport = { resolve, reject }
+        this.pendingExport = {
+          resolve,
+          reject: () => {
+            this.exportIntent = null
+          },
+        }
       })
       this.engineConnection?.send(command)
       return promise

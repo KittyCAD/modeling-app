@@ -28,9 +28,9 @@ export async function setState(state: ProjectState | undefined): Promise<void> {
 }
 
 // List machines on the local network.
-export async function listMachines(): Promise<
-  components['schemas']['Machine'][]
-> {
+export async function listMachines(): Promise<{
+  [key: string]: components['schemas']['Machine']
+}> {
   let machines: string = await invoke<string>('list_machines')
   return JSON.parse(machines)
 }
