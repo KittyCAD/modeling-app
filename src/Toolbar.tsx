@@ -190,49 +190,59 @@ export function Toolbar({
                     maybeIconConfig[0].onClick(configCallbackProps)
                   }
                 >
-                  <ToolbarItemContents
-                    itemConfig={maybeIconConfig[0]}
-                    configCallbackProps={configCallbackProps}
-                  />
+                  <span
+                    className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
+                  >
+                    {maybeIconConfig[0].title}
+                  </span>
                 </ActionButton>
+                <ToolbarItemTooltip
+                  itemConfig={maybeIconConfig[0]}
+                  configCallbackProps={configCallbackProps}
+                />
               </ActionButtonDropdown>
             )
           }
           const itemConfig = maybeIconConfig
 
           return (
-            <ActionButton
-              Element="button"
-              key={itemConfig.id}
-              id={itemConfig.id}
-              data-testid={itemConfig.id}
-              iconStart={{
-                icon: itemConfig.icon,
-                className: iconClassName,
-                bgClassName: bgClassName,
-              }}
-              className={
-                'pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
-                buttonBorderClassName +
-                ' ' +
-                buttonBgClassName +
-                (!itemConfig.showTitle ? ' !px-0' : '')
-              }
-              name={itemConfig.title}
-              aria-description={itemConfig.description}
-              aria-pressed={itemConfig.isActive}
-              disabled={
-                disableAllButtons ||
-                itemConfig.status !== 'available' ||
-                itemConfig.disabled
-              }
-              onClick={() => itemConfig.onClick(configCallbackProps)}
-            >
-              <ToolbarItemContents
+            <div className="relative" key={itemConfig.id}>
+              <ActionButton
+                Element="button"
+                key={itemConfig.id}
+                id={itemConfig.id}
+                data-testid={itemConfig.id}
+                iconStart={{
+                  icon: itemConfig.icon,
+                  className: iconClassName,
+                  bgClassName: bgClassName,
+                }}
+                className={
+                  'pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                  buttonBorderClassName +
+                  ' ' +
+                  buttonBgClassName +
+                  (!itemConfig.showTitle ? ' !px-0' : '')
+                }
+                name={itemConfig.title}
+                aria-description={itemConfig.description}
+                aria-pressed={itemConfig.isActive}
+                disabled={
+                  disableAllButtons ||
+                  itemConfig.status !== 'available' ||
+                  itemConfig.disabled
+                }
+                onClick={() => itemConfig.onClick(configCallbackProps)}
+              >
+                <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
+                  {itemConfig.title}
+                </span>
+              </ActionButton>
+              <ToolbarItemTooltip
                 itemConfig={itemConfig}
                 configCallbackProps={configCallbackProps}
               />
-            </ActionButton>
+            </div>
           )
         })}
       </ul>
@@ -250,7 +260,7 @@ export function Toolbar({
  * It contains a tooltip with the title, description, and links
  * and a hotkey listener
  */
-const ToolbarItemContents = memo(function ToolbarItemContents({
+const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
   configCallbackProps,
 }: {
@@ -272,73 +282,69 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
   )
 
   return (
-    <>
-      <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
-        {itemConfig.title}
-      </span>
-      <Tooltip
-        position="bottom"
-        wrapperClassName="!p-4 !pointer-events-auto"
-        contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
-      >
-        <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
-          <span
-            className={`text-sm flex-1 ${
-              itemConfig.status !== 'available'
-                ? 'text-chalkboard-70 dark:text-chalkboard-40'
-                : ''
-            }`}
-          >
-            {itemConfig.title}
-          </span>
-          {itemConfig.status === 'available' && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
-          ) : itemConfig.status === 'kcl-only' ? (
+    <Tooltip
+      inert={false}
+      position="bottom"
+      wrapperClassName="!p-4 !pointer-events-auto"
+      contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
+    >
+      <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
+        <span
+          className={`text-sm flex-1 ${
+            itemConfig.status !== 'available'
+              ? 'text-chalkboard-70 dark:text-chalkboard-40'
+              : ''
+          }`}
+        >
+          {itemConfig.title}
+        </span>
+        {itemConfig.status === 'available' && itemConfig.hotkey ? (
+          <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+        ) : itemConfig.status === 'kcl-only' ? (
+          <>
+            <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
+              KCL code only
+            </span>
+            <CustomIcon
+              name="code"
+              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+          </>
+        ) : (
+          itemConfig.status === 'unavailable' && (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
-                KCL code only
+                In development
               </span>
               <CustomIcon
-                name="code"
+                name="lockClosed"
                 className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
               />
             </>
-          ) : (
-            itemConfig.status === 'unavailable' && (
-              <>
-                <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
-                  In development
-                </span>
-                <CustomIcon
-                  name="lockClosed"
-                  className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
-                />
-              </>
-            )
-          )}
-        </div>
-        <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
-        {itemConfig.links.length > 0 && (
-          <>
-            <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-            <ul className="p-0 px-1 m-0 flex flex-col">
-              {itemConfig.links.map((link) => (
-                <li key={link.label} className="contents">
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
-                  >
-                    <span className="flex-1">Open {link.label}</span>
-                    <CustomIcon name="link" className="w-4 h-4" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </>
+          )
         )}
-      </Tooltip>
-    </>
+      </div>
+      <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
+      {itemConfig.links.length > 0 && (
+        <>
+          <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+          <ul className="p-0 px-1 m-0 flex flex-col">
+            {itemConfig.links.map((link) => (
+              <li key={link.label} className="contents">
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
+                >
+                  <span className="flex-1">Open {link.label}</span>
+                  <CustomIcon name="link" className="w-4 h-4" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </Tooltip>
   )
 })
