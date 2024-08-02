@@ -25,8 +25,9 @@ export const CommandBar = () => {
   }, [pathname])
 
   useInteractionMap(
-    [
-      {
+    KEYBINDING_CATEGORIES.COMMAND_BAR,
+    {
+      toggle: {
         name: 'toggle',
         title: 'Toggle Command Bar',
         sequence: 'meta+k g RightButton+shift',
@@ -38,8 +39,9 @@ export const CommandBar = () => {
           })
         },
         guard: () => true,
+        ownerId: KEYBINDING_CATEGORIES.COMMAND_BAR,
       },
-      {
+      close: {
         name: 'close',
         title: 'Close Command Bar',
         sequence: 'esc',
@@ -47,10 +49,10 @@ export const CommandBar = () => {
           commandBarSend({ type: 'Close' })
         },
         guard: () => !commandBarState.matches('Closed'),
+        ownerId: KEYBINDING_CATEGORIES.COMMAND_BAR,
       },
-    ],
-    [commandBarState, commandBarSend],
-    KEYBINDING_CATEGORIES.COMMAND_BAR
+    },
+    [commandBarState, commandBarSend]
   )
 
   function stepBack() {

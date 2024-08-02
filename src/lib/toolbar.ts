@@ -275,7 +275,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
-        hotkey: 'Esc',
+        hotkey: 'escape',
         description: 'Exit the current sketch',
         links: [],
       },
@@ -296,7 +296,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('Sketch.Rectangle tool.Awaiting second corner'),
         title: 'Line',
         hotkey: (state) =>
-          state.matches('Sketch.Line tool') ? ['Esc', 'L'] : 'L',
+          state.matches('Sketch.Line tool') ? ['escape', 'L'] : 'L',
         description: 'Start drawing straight lines',
         links: [],
         isActive: (state) => state.matches('Sketch.Line tool'),
@@ -320,7 +320,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !state.matches('Sketch.Tangential arc to'),
           title: 'Tangential Arc',
           hotkey: (state) =>
-            state.matches('Sketch.Tangential arc to') ? ['Esc', 'A'] : 'A',
+            state.matches('Sketch.Tangential arc to') ? ['escape', 'A'] : 'A',
           description: 'Start drawing an arc tangent to the current segment',
           links: [],
           isActive: (state) => state.matches('Sketch.Tangential arc to'),
@@ -400,7 +400,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !state.matches('Sketch.Rectangle tool'),
           title: 'Corner rectangle',
           hotkey: (state) =>
-            state.matches('Sketch.Rectangle tool') ? ['Esc', 'R'] : 'R',
+            state.matches('Sketch.Rectangle tool') ? ['escape', 'R'] : 'R',
           description: 'Start drawing a rectangle',
           links: [],
           isActive: (state) => state.matches('Sketch.Rectangle tool'),

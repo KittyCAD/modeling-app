@@ -1,4 +1,4 @@
-import { useRef, useMemo, memo } from 'react'
+import { useRef, useMemo, memo, useCallback } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -23,6 +23,7 @@ import {
 } from 'lib/toolbar'
 import { useKclContext } from 'lang/KclProvider'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+import { InteractionSequence } from 'components/Settings/AllKeybindingsFields'
 
 export function Toolbar({
   className = '',
@@ -253,7 +254,7 @@ export function Toolbar({
  * It contains a tooltip with the title, description, and links
  * and a hotkey listener
  */
-const ToolbarItemContents = memo(function ToolbarItemContents({
+function ToolbarItemContents({
   itemConfig,
   configCallbackProps,
 }: {
@@ -261,32 +262,35 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
   configCallbackProps: ToolbarItemCallbackProps
 }) {
   const { state: interactionMapState } = useInteractionMapContext()
-  const resolvedSequence =
-    interactionMapState.context.overrides[
-      `${KEYBINDING_CATEGORIES.MODELING}.${itemConfig.id}`
-    ] ||
-    (itemConfig.hotkey instanceof Array
-      ? itemConfig.hotkey[0]
-      : itemConfig.hotkey) ||
-    ''
+  const resolvedSequence = useMemo(
+    () =>
+      interactionMapState.context.overrides[
+        `${KEYBINDING_CATEGORIES.MODELING}.${itemConfig.id}`
+      ] ||
+      (itemConfig.hotkey instanceof Array
+        ? itemConfig.hotkey[0]
+        : itemConfig.hotkey) ||
+      '',
+    [interactionMapState.context.overrides, itemConfig.id, itemConfig.hotkey]
+  )
+
   useInteractionMap(
-    [
-      {
+    KEYBINDING_CATEGORIES.MODELING,
+    {
+      [itemConfig.id]: {
         name: itemConfig.id,
         title: itemConfig.title,
         sequence: resolvedSequence,
         action: () => itemConfig.onClick(configCallbackProps),
         guard: () =>
-          !(
-            itemConfig.status === 'available' &&
-            !!itemConfig.hotkey &&
-            !itemConfig.disabled &&
-            !itemConfig.disableHotkey
-          ),
+          itemConfig.status === 'available' &&
+          !!itemConfig.hotkey &&
+          !itemConfig.disabled &&
+          !itemConfig.disableHotkey,
+        ownerId: KEYBINDING_CATEGORIES.MODELING,
       },
-    ],
-    [configCallbackProps.modelingSend, configCallbackProps.commandBarSend],
-    KEYBINDING_CATEGORIES.MODELING
+    },
+    [itemConfig.disabled, itemConfig.disableHotkey, resolvedSequence]
   )
 
   return (
@@ -310,7 +314,10 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
             {itemConfig.title}
           </span>
           {itemConfig.status === 'available' && resolvedSequence ? (
-            <kbd className="flex-none hotkey">{resolvedSequence}</kbd>
+            <InteractionSequence
+              sequence={resolvedSequence}
+              className="flex-nowrap !gap-1"
+            />
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
@@ -359,4 +366,4 @@ const ToolbarItemContents = memo(function ToolbarItemContents({
       </Tooltip>
     </>
   )
-})
+}

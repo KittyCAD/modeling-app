@@ -8,9 +8,12 @@ import {
   sortKeys,
 } from 'lib/keyboard'
 import {
+  InteractionMapItem,
   MouseButtonName,
+  getSortedInteractionMapSequences,
   interactionMapMachine,
   makeOverrideKey,
+  normalizeSequence,
 } from 'machines/interactionMapMachine'
 import { createContext, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -59,42 +62,41 @@ export function InteractionMapMachineProvider({
       }),
       'Add to interactionMap': assign({
         interactionMap: (context, event) => {
-          // normalize any interaction sequences to be sorted
-          const normalizedInteractions = event.data.map((item) => ({
-            ...item,
-            sequence: (
-              context.overrides[makeOverrideKey(item)] || item.sequence
+          const newInteractions: Record<string, InteractionMapItem> =
+            Object.fromEntries(
+              Object.entries(event.data.items).map(([name, item]) => [
+                name,
+                {
+                  ...item,
+                  sequence: normalizeSequence(item.sequence),
+                },
+              ])
             )
-              .split(' ')
-              .map((step) =>
-                step
-                  .split(INTERACTION_MAP_SEPARATOR)
-                  .sort(sortKeys)
-                  .map(mapKey)
-                  .join(INTERACTION_MAP_SEPARATOR)
-              )
-              .join(' '),
-          }))
 
-          // Add the new items to the interactionMap and sort by sequence
-          // making it faster to search for a sequence
-          const newInteractionMap = [
+          const newInteractionMap = {
             ...context.interactionMap,
-            ...normalizedInteractions,
-          ].sort((a, b) => a.sequence.localeCompare(b.sequence))
+            [event.data.ownerId]: {
+              ...context.interactionMap[event.data.ownerId],
+              ...newInteractions,
+            },
+          }
 
-          console.log('newInteractionMap', newInteractionMap)
+          // console.log('newInteractionMap', newInteractionMap)
           return newInteractionMap
         },
       }),
       'Remove from interactionMap': assign({
         interactionMap: (context, event) => {
-          // Filter out any items that have an ownerId that matches event.data
-          return [
-            ...context.interactionMap.filter(
-              (item) => item.ownerId !== event.data
-            ),
-          ]
+          const newInteractionMap = { ...context.interactionMap }
+          if (event.data instanceof Array) {
+            event.data.forEach((key) => {
+              const [ownerId, itemName] = key.split(INTERACTION_MAP_SEPARATOR)
+              delete newInteractionMap[ownerId][itemName]
+            })
+          } else {
+            delete newInteractionMap[event.data]
+          }
+          return newInteractionMap
         },
       }),
       'Merge into overrides': assign({
@@ -123,16 +125,15 @@ export function InteractionMapMachineProvider({
         const searchString =
           (context.currentSequence ? context.currentSequence + ' ' : '') +
           resolvedInteraction.asString
+        const sortedInteractions = getSortedInteractionMapSequences(context)
 
-        const matches = context.interactionMap.filter((item) =>
-          (
-            context.overrides[makeOverrideKey(item)] || item.sequence
-          ).startsWith(searchString)
+        const matches = sortedInteractions.filter(([sequence]) =>
+          sequence.startsWith(searchString)
         )
 
         console.log('matches', {
           matches,
-          interactionMap: context.interactionMap,
+          sortedInteractions,
           searchString,
           overrides: context.overrides,
         })
@@ -143,9 +144,7 @@ export function InteractionMapMachineProvider({
         }
 
         const exactMatches = matches.filter(
-          (item) =>
-            (context.overrides[makeOverrideKey(item)] || item.sequence) ===
-            searchString
+          ([sequence]) => sequence === searchString
         )
         console.log('exactMatches', exactMatches)
         if (!exactMatches.length) {
@@ -157,7 +156,7 @@ export function InteractionMapMachineProvider({
 
         // Resolve to just one exact match
         const availableExactMatches = exactMatches.filter(
-          (item) => !item.guard || item.guard(event.data)
+          ([_, item]) => !item.guard || item.guard(event.data)
         )
 
         console.log('availableExactMatches', availableExactMatches)
@@ -166,7 +165,7 @@ export function InteractionMapMachineProvider({
         } else {
           // return the last-added, available exact match
           return Promise.resolve(
-            availableExactMatches[availableExactMatches.length - 1]
+            availableExactMatches[availableExactMatches.length - 1][1]
           )
         }
       },

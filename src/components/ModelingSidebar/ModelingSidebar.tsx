@@ -67,18 +67,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     [sidebarPanes, showDebugPanel.current]
   )
 
-  useInteractionMap(
-    filteredPanes.map((pane) => ({
-      name: pane.id,
-      action: () => togglePane(pane.id),
-      keybinding: pane.keybinding,
-      title: `Toggle ${pane.title} pane`,
-      sequence: pane.keybinding,
-    })),
-    [filteredPanes, context.store?.openPanes],
-    KEYBINDING_CATEGORIES.USER_INTERFACE
-  )
-
   const paneBadgeMap: Record<SidebarType, number | boolean> = useMemo(() => {
     return filteredPanes.reduce((acc, pane) => {
       if (pane.showBadge) {
@@ -100,6 +88,24 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       })
     },
     [context.store?.openPanes, send]
+  )
+
+  useInteractionMap(
+    KEYBINDING_CATEGORIES.USER_INTERFACE,
+    Object.fromEntries(
+      filteredPanes.map((pane) => [
+        pane.id,
+        {
+          name: pane.id,
+          action: () => togglePane(pane.id),
+          keybinding: pane.keybinding,
+          title: `Toggle ${pane.title} pane`,
+          sequence: pane.keybinding,
+          ownerId: KEYBINDING_CATEGORIES.USER_INTERFACE,
+        },
+      ])
+    ),
+    [filteredPanes, context.store?.openPanes]
   )
 
   return (

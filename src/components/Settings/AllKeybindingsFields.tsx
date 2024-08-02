@@ -1,5 +1,5 @@
-import { ActionIcon } from 'components/ActionIcon'
 import { CustomIcon } from 'components/CustomIcon'
+import decamelize from 'decamelize'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
 import { resolveInteractionEvent } from 'lib/keyboard'
 import {
@@ -13,11 +13,42 @@ export function AllKeybindingsFields() {
   return (
     <div className="relative overflow-y-auto">
       <div className="flex flex-col gap-4 px-2">
-        {state.context.interactionMap.map((item) => (
+        {Object.entries(state.context.interactionMap).map(
+          ([category, categoryItems]) => (
+            <KeybindingSection
+              key={category}
+              category={category}
+              items={categoryItems}
+            />
+          )
+        )}
+      </div>
+    </div>
+  )
+}
+
+function KeybindingSection({
+  category,
+  items,
+  ...props
+}: HTMLProps<HTMLDivElement> & {
+  category: string
+  items: Record<string, InteractionMapItem>
+}) {
+  return (
+    <section {...props}>
+      <h2
+        id={`category-${category}`}
+        className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
+      >
+        {decamelize(category, { separator: ' ' })}
+      </h2>
+      <div className="flex flex-col my-2 gap-2">
+        {Object.entries(items).map(([_, item]) => (
           <KeybindingField key={item.ownerId + '-' + item.name} item={item} />
         ))}
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -116,7 +147,7 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
   return isEditing ? (
     <form
       key={item.ownerId + '-' + item.name}
-      className="flex gap-2 justify-between items-center"
+      className="group flex gap-2 justify-between items-center"
       onSubmit={handleSubmit}
     >
       <h3>{item.title}</h3>
@@ -134,7 +165,7 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
   ) : (
     <div
       key={item.ownerId + '-' + item.name}
-      className="flex gap-2 justify-between items-center"
+      className="group flex gap-2 justify-between items-center"
     >
       <h3>{item.title}</h3>
       <InteractionSequence
@@ -145,7 +176,7 @@ function KeybindingField({ item }: { item: InteractionMapItem }) {
       />
       <button
         ref={submitRef}
-        className="p-0 m-0"
+        className="invisible group-focus:visible group-hover:visible p-0 m-0 [&:not(:hover)]:border-transparent"
         onClick={() => setIsEditing(true)}
       >
         <CustomIcon name="sketch" className="w-5 h-5" />
