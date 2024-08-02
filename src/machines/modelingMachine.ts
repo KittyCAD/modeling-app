@@ -255,12 +255,11 @@ interface PersistedModelingContext {
 type PersistedKeys = keyof PersistedModelingContext
 export const PersistedValues: PersistedKeys[] = ['openPanes']
 
-export const getPersistedContext = (): Partial<PersistedModelingContext> =>  {
-  const c = (typeof window !==
-  'undefined' &&
-  JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
-  openPanes: ['code'],
-}
+export const getPersistedContext = (): Partial<PersistedModelingContext> => {
+  const c = (typeof window !== 'undefined' &&
+    JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+    openPanes: ['code'],
+  }
   return c
 }
 
