@@ -11,7 +11,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
 import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { KclErrorsPane, LogsPane } from './LoggingPanes'
+import { LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
 import { useKclContext } from 'lang/KclProvider'
@@ -21,7 +21,6 @@ export type SidebarType =
   | 'debug'
   | 'export'
   | 'files'
-  | 'kclErrors'
   | 'logs'
   | 'lspMessages'
   | 'variables'
@@ -53,6 +52,7 @@ export const sidebarPanes: SidebarPane[] = [
     Content: KclEditorPane,
     keybinding: 'Shift + C',
     Menu: KclEditorMenu,
+    showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
     id: 'files',
@@ -77,14 +77,6 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faCodeCommit,
     Content: LogsPane,
     keybinding: 'Shift + L',
-  },
-  {
-    id: 'kclErrors',
-    title: 'KCL Errors',
-    icon: faExclamationCircle,
-    Content: KclErrorsPane,
-    keybinding: 'Shift + E',
-    showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
     id: 'debug',
