@@ -1815,16 +1815,6 @@ export class EngineCommandManager extends EventTarget {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()
     this.defaultPlanes = planes
-
-    this.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) return
-        if (!planes) return
-        if (![planes.xy, planes.yz, planes.xz].includes(data.entity_id)) return
-        this.onPlaneSelectCallback(data.entity_id)
-      },
-    })
   }
   planesInitialized(): boolean {
     return (
@@ -1833,11 +1823,6 @@ export class EngineCommandManager extends EventTarget {
       this.defaultPlanes.yz !== '' &&
       this.defaultPlanes.xz !== ''
     )
-  }
-
-  onPlaneSelectCallback = (id: string) => {}
-  onPlaneSelected(callback: (id: string) => void) {
-    this.onPlaneSelectCallback = callback
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {
