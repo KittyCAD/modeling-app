@@ -15,7 +15,7 @@ import { SettingsFieldInput } from './SettingsFieldInput'
 import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
-import { createNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { paths } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { sep } from '@tauri-apps/api/path'
@@ -74,19 +74,7 @@ export const AllSettingsFields = forwardRef(
           } else {
             // If we're in the global settings, create a new project and navigate
             // to the onboarding start in that project
-            const newProject = await createNewProject()
-            onProjectOpen(
-              {
-                name: newProject.name,
-                path: newProject.path,
-              },
-              null
-            )
-            navigate(
-              `${paths.FILE}/${encodeURIComponent(newProject.path)}${
-                paths.ONBOARDING.INDEX
-              }`
-            )
+            await createAndOpenNewProject({ onProjectOpen, navigate })
           }
         }
       }

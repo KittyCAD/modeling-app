@@ -3,10 +3,10 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createNewProject } from 'lib/tauriFS'
+import { createAndOpenNewProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { APP_NAME } from 'lib/constants'
 import { useState } from 'react'
 import { useLspContext } from 'components/LspProvider'
@@ -61,18 +61,7 @@ function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
       fileContext.project.path || null,
       false
     )
-    // Clear the scene and end the session.
-    engineCommandManager.endSession()
-    const newProject = await createNewProject()
-    onProjectOpen(
-      {
-        name: newProject.name,
-        path: newProject.path,
-      },
-      null
-    )
-    console.log('newProject', newProject)
-    navigate(`${paths.FILE}/${encodeURIComponent(newProject.path)}`)
+    await createAndOpenNewProject({ onProjectOpen, navigate })
     props.setShouldShowWarning(false)
   }
 
