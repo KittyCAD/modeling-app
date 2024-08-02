@@ -61,7 +61,6 @@ export async function executeAst({
 }> {
   try {
     if (!useFakeExecutor) {
-      console.trace('executing ast from langHelpers')
       engineCommandManager.endSession()
       engineCommandManager.startNewSession()
     }
