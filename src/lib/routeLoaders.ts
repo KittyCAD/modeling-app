@@ -90,14 +90,13 @@ export const fileLoader: LoaderFunction = async (
     let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      // TODO: PROJECT_ENTRYPOINT is hardcoded
-      // until we support setting a project's entrypoint file
       if (!current_file_name || !current_file_path || !project_name) {
+        const project = await getProjectInfo(project_path)
         return redirect(
           `${paths.FILE}/${encodeURIComponent(
-            `${params.id}${
-              isDesktop() ? window.electron.path.sep : '/'
-            }${PROJECT_ENTRYPOINT}`
+            isDesktop()
+            ? project.default_file
+            : (params.id + '/' + PROJECT_ENTRYPOINT)
           )}`
         )
       }
