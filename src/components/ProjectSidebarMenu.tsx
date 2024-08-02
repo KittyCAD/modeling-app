@@ -11,7 +11,7 @@ import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, machineManager } from 'lib/singletons'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
@@ -90,12 +90,14 @@ function ProjectMenuPopover({
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commandBarState.context.commands.find(
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
+  const machines = machineManager.machines
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -142,6 +144,32 @@ function ProjectMenuPopover({
               type: 'Find and select command',
               data: exportCommandInfo,
             }),
+        },
+        'break',
+        {
+          id: 'make',
+          Element: 'button',
+          className: !isTauri() ? 'hidden' : '',
+          children: (
+            <>
+              <span>Make current part</span>
+              {!findCommand(makeCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(makeCommandInfo) || machines.length === 0,
+          onClick: () => {
+            commandBarSend({
+              type: 'Find and select command',
+              data: makeCommandInfo,
+            })
+          },
         },
         'break',
         {

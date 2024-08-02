@@ -370,6 +370,63 @@ fn show_in_folder(app: tauri::AppHandle, path: &str) -> Result<(), InvokeError> 
     Ok(())
 }
 
+const SERVICE_NAME: &str = "_machine-api._tcp.local.";
+
+async fn find_machine_api() -> Result<Option<String>> {
+    println!("Looking for machine API...");
+    // Timeout if no response is received after 5 seconds.
+    let timeout_duration = std::time::Duration::from_secs(5);
+
+    let mdns = mdns_sd::ServiceDaemon::new()?;
+
+    // Browse for a service type.
+    let receiver = mdns.browse(SERVICE_NAME)?;
+    let resp = tokio::time::timeout(
+        timeout_duration,
+        tokio::spawn(async move {
+            while let Ok(event) = receiver.recv() {
+                if let mdns_sd::ServiceEvent::ServiceResolved(info) = event {
+                    if let Some(addr) = info.get_addresses().iter().next() {
+                        return Some(format!("{}:{}", addr, info.get_port()));
+                    }
+                }
+            }
+
+            None
+        }),
+    )
+    .await;
+
+    // Shut down.
+    mdns.shutdown()?;
+
+    let Ok(Ok(Some(addr))) = resp else {
+        return Ok(None);
+    };
+
+    Ok(Some(addr))
+}
+
+#[tauri::command]
+async fn list_machines() -> Result<String, InvokeError> {
+    let machine_api = find_machine_api().await.map_err(InvokeError::from_anyhow)?;
+
+    let Some(machine_api) = machine_api else {
+        // Empty array.
+        return Ok("[]".to_string());
+    };
+
+    let client = reqwest::Client::new();
+    let response = client
+        .get(format!("http://{}/machines", machine_api))
+        .send()
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    let text = response.text().await.map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    Ok(text)
+}
+
 #[allow(dead_code)]
 fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
     log::debug!("Opening URL: {:?}", url);
@@ -417,6 +474,7 @@ fn main() -> Result<()> {
             read_project_settings_file,
             write_project_settings_file,
             rename_project_directory,
+            list_machines
         ])
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_deep_link::init())

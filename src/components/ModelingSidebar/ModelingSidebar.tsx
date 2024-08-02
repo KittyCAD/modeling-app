@@ -13,6 +13,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
+import { machineManager } from 'lib/singletons'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -45,7 +46,30 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           data: { name: 'Export', groupId: 'modeling' },
         }),
     },
+    {
+      id: 'make',
+      title: 'Make part',
+      icon: 'printer3d',
+      iconClassName: '!p-0',
+      keybinding: 'Ctrl + Shift + M',
+      action: async () => {
+        commandBarSend({
+          type: 'Find and select command',
+          data: { name: 'Make', groupId: 'modeling' },
+        })
+      },
+      hide: () => machineManager.machines.length === 0,
+      hideOnPlatform: 'web',
+    },
   ]
+  const filteredActions: SidebarAction[] = sidebarActions.filter(
+    (action) =>
+      (!action.hide || (action.hide instanceof Function && !action.hide())) &&
+      (!action.hideOnPlatform ||
+        (isTauri()
+          ? action.hideOnPlatform === 'web'
+          : action.hideOnPlatform === 'desktop'))
+  )
 
   //   // Filter out the debug panel if it's not supposed to be shown
   //   // TODO: abstract out for allowing user to configure which panes to show
@@ -135,23 +159,30 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
               />
             ))}
           </ul>
-          <hr className="w-full border-chalkboard-20 dark:border-chalkboard-80" />
-          <ul id="sidebar-actions" className="w-fit p-2 flex flex-col gap-2">
-            {sidebarActions.map((action) => (
-              <ModelingPaneButton
-                key={action.id}
-                paneConfig={{
-                  id: action.id,
-                  title: action.title,
-                  icon: action.icon,
-                  keybinding: action.keybinding,
-                  iconClassName: action.iconClassName,
-                  iconSize: 'md',
-                }}
-                onClick={action.action}
-              />
-            ))}
-          </ul>
+          {filteredActions.length > 0 && (
+            <>
+              <hr className="w-full border-chalkboard-20 dark:border-chalkboard-80" />
+              <ul
+                id="sidebar-actions"
+                className="w-fit p-2 flex flex-col gap-2"
+              >
+                {filteredActions.map((action) => (
+                  <ModelingPaneButton
+                    key={action.id}
+                    paneConfig={{
+                      id: action.id,
+                      title: action.title,
+                      icon: action.icon,
+                      keybinding: action.keybinding,
+                      iconClassName: action.iconClassName,
+                      iconSize: 'md',
+                    }}
+                    onClick={action.action}
+                  />
+                ))}
+              </ul>
+            </>
+          )}
         </ul>
         <ul
           id="pane-section"
@@ -277,4 +308,5 @@ export type SidebarAction = {
   keybinding: string
   action: () => void
   hideOnPlatform?: 'desktop' | 'web'
+  hide?: boolean | (() => boolean)
 }

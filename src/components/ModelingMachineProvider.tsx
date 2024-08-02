@@ -77,6 +77,7 @@ import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { ExportIntent } from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -351,8 +352,55 @@ export const ModelingMachineProvider = ({
 
           return {}
         }),
+        Make: async (_, event) => {
+          if (event.type !== 'Make' || TEST) return
+          // Check if we already have an export intent.
+          if (engineCommandManager.exportIntent) {
+            toast.error('Already exporting')
+            return
+          }
+          // Set the export intent.
+          engineCommandManager.exportIntent = ExportIntent.Make
+
+          console.log('making', event.data)
+
+          const format: Models['OutputFormat_type'] = {
+            type: 'stl',
+            coords: {
+              forward: {
+                axis: 'y',
+                direction: 'negative',
+              },
+              up: {
+                axis: 'z',
+                direction: 'positive',
+              },
+            },
+            storage: 'ascii',
+            units: defaultUnit.current,
+            selection: { type: 'default_scene' },
+          }
+
+          toast.promise(
+            exportFromEngine({
+              format: format,
+            }),
+            {
+              loading: 'Starting print...',
+              success: 'Started print successfully',
+              error: 'Error while starting print',
+            }
+          )
+        },
         'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          if (engineCommandManager.exportIntent) {
+            toast.error('Already exporting')
+            return
+          }
+          // Set the export intent.
+          engineCommandManager.exportIntent = ExportIntent.Save
+
           console.log('exporting', event.data)
           const format = {
             ...event.data,

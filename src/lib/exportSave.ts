@@ -6,7 +6,7 @@ import { writeFile } from '@tauri-apps/plugin-fs'
 
 import JSZip from 'jszip'
 
-interface ModelingAppFile {
+export interface ModelingAppFile {
   name: string
   contents: number[]
 }

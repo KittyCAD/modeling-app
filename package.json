@@ -87,7 +87,8 @@
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json",
     "postinstall": "yarn xstate:typegen",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
-    "make:dev": "make dev"
+    "make:dev": "make dev",
+    "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts"
   },
   "prettier": {
     "trailingComma": "es5",

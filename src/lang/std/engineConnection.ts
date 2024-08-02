@@ -13,6 +13,8 @@ import {
   createArtifactMap,
 } from 'lang/std/artifactMap'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { exportMake } from 'lib/exportMake'
+import toast from 'react-hot-toast'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
@@ -28,6 +30,11 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
+}
+
+export enum ExportIntent {
+  Save = 'save',
+  Make = 'make',
 }
 
 /** This looks funny, I know. This is needed because node and the browser
@@ -1157,6 +1164,12 @@ export class EngineCommandManager extends EventTarget {
     resolve: (a: null) => void
     reject: (reason: any) => void
   }
+  /**
+   * Export intent traxcks the intent of the export. If it is null there is no
+   * export in progress. Otherwise it is an enum value of the intent.
+   * Another export cannot be started if one is already in progress.
+   */
+  private _exportIntent: ExportIntent | null = null
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   private resolveReady = () => {}
   /** Folks should realize that wait for ready does not get called _everytime_
@@ -1207,6 +1220,14 @@ export class EngineCommandManager extends EventTarget {
   }: CustomEvent<NewTrackArgs>) => {}
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
+
+  set exportIntent(intent: ExportIntent | null) {
+    this._exportIntent = intent
+  }
+
+  get exportIntent() {
+    return this._exportIntent
+  }
 
   start({
     restart,
@@ -1384,9 +1405,33 @@ export class EngineCommandManager extends EventTarget {
           // because in all other cases we send JSON strings. But in the case of
           // export we send a binary blob.
           // Pass this to our export function.
-          exportSave(event.data).then(() => {
-            this.pendingExport?.resolve(null)
-          }, this.pendingExport?.reject)
+          if (this.exportIntent === null) {
+            toast.error(
+              'Export intent was not set, but export data was received'
+            )
+            console.error(
+              'Export intent was not set, but export data was received'
+            )
+            return
+          }
+
+          switch (this.exportIntent) {
+            case ExportIntent.Save: {
+              exportSave(event.data).then(() => {
+                this.pendingExport?.resolve(null)
+              }, this.pendingExport?.reject)
+              break
+            }
+            case ExportIntent.Make: {
+              exportMake(event.data).then(() => {
+                //console.log(await response.json());
+                this.pendingExport?.resolve(null)
+              }, this.pendingExport?.reject)
+              break
+            }
+          }
+          // Set the export intent back to null.
+          this.exportIntent = null
           return
         }
 
