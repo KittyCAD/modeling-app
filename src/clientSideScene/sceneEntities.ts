@@ -87,7 +87,6 @@ import {
 import {
   Selections,
   getEventForSegmentSelection,
-  sendSelectEventToEngine,
 } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
