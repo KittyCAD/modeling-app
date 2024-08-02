@@ -423,7 +423,7 @@ describe('testing pipe operator special', () => {
   test('pipe operator with sketch', () => {
     let code = `const mySketch = startSketchAt([0, 0])
   |> lineTo([2, 3], %)
-  |> lineTo([0, 1], %, "myPath")
+  |> lineTo([0, 1], %, $myPath)
   |> lineTo([1, 1], %)
   |> rx(45, %)
 `
@@ -435,14 +435,14 @@ describe('testing pipe operator special', () => {
       {
         type: 'VariableDeclaration',
         start: 0,
-        end: 132,
+        end: 131,
         kind: 'const',
         digest: null,
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
-            end: 132,
+            end: 131,
             id: {
               type: 'Identifier',
               start: 6,
@@ -454,7 +454,7 @@ describe('testing pipe operator special', () => {
             init: {
               type: 'PipeExpression',
               start: 17,
-              end: 132,
+              end: 131,
               digest: null,
               body: [
                 {
@@ -546,7 +546,7 @@ describe('testing pipe operator special', () => {
                 {
                   type: 'CallExpression',
                   start: 67,
-                  end: 94,
+                  end: 93,
                   digest: null,
                   callee: {
                     type: 'Identifier',
@@ -589,7 +589,7 @@ describe('testing pipe operator special', () => {
                     {
                       type: 'TagDeclarator',
                       start: 85,
-                      end: 93,
+                      end: 92,
                       value: 'myPath',
                       digest: null,
                     },
@@ -598,35 +598,35 @@ describe('testing pipe operator special', () => {
                 },
                 {
                   type: 'CallExpression',
-                  start: 100,
-                  end: 117,
+                  start: 99,
+                  end: 116,
                   digest: null,
                   callee: {
                     type: 'Identifier',
-                    start: 100,
-                    end: 106,
+                    start: 99,
+                    end: 105,
                     name: 'lineTo',
                     digest: null,
                   },
                   arguments: [
                     {
                       type: 'ArrayExpression',
-                      start: 107,
-                      end: 113,
+                      start: 106,
+                      end: 112,
                       digest: null,
                       elements: [
                         {
                           type: 'Literal',
-                          start: 108,
-                          end: 109,
+                          start: 107,
+                          end: 108,
                           value: 1,
                           raw: '1',
                           digest: null,
                         },
                         {
                           type: 'Literal',
-                          start: 111,
-                          end: 112,
+                          start: 110,
+                          end: 111,
                           value: 1,
                           raw: '1',
                           digest: null,
@@ -635,8 +635,8 @@ describe('testing pipe operator special', () => {
                     },
                     {
                       type: 'PipeSubstitution',
-                      start: 115,
-                      end: 116,
+                      start: 114,
+                      end: 115,
                       digest: null,
                     },
                   ],
@@ -644,29 +644,29 @@ describe('testing pipe operator special', () => {
                 },
                 {
                   type: 'CallExpression',
-                  start: 123,
-                  end: 132,
+                  start: 122,
+                  end: 131,
                   digest: null,
                   callee: {
                     type: 'Identifier',
-                    start: 123,
-                    end: 125,
+                    start: 122,
+                    end: 124,
                     name: 'rx',
                     digest: null,
                   },
                   arguments: [
                     {
                       type: 'Literal',
-                      start: 126,
-                      end: 128,
+                      start: 125,
+                      end: 127,
                       value: 45,
                       raw: '45',
                       digest: null,
                     },
                     {
                       type: 'PipeSubstitution',
-                      start: 130,
-                      end: 131,
+                      start: 129,
+                      end: 130,
                       digest: null,
                     },
                   ],
@@ -1782,11 +1782,11 @@ const key = 'c'`
   })
   it('comments nested within a block statement', () => {
     const code = `const mySketch = startSketchAt([0,0])
-  |> lineTo([0, 1], %, 'myPath')
+  |> lineTo([0, 1], %, $myPath)
   |> lineTo([1, 1], %) /* this is
       a comment
       spanning a few lines */
-  |> lineTo([1,0], %, "rightPath")
+  |> lineTo([1,0], %, $rightPath)
   |> close(%)
 `
 
@@ -1798,8 +1798,8 @@ const key = 'c'`
       .nonCodeNodes
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression][0]).toEqual({
       type: 'NonCodeNode',
-      start: 93,
-      end: 150,
+      start: 92,
+      end: 149,
       digest: null,
       value: {
         type: 'inlineComment',
@@ -1812,7 +1812,7 @@ const key = 'c'`
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo([0, 1], %, "myPath")',
+      '  |> lineTo([0, 1], %, $myPath)',
       '  |> lineTo([1, 1], %)',
       '// a comment',
       '  |> rx(90, %)',
@@ -1825,8 +1825,8 @@ const key = 'c'`
       .nonCodeNodes[3][0]
     expect(sketchNonCodeMeta).toEqual({
       type: 'NonCodeNode',
-      start: 114,
-      end: 127,
+      start: 113,
+      end: 126,
       digest: null,
       value: {
         type: 'blockComment',
@@ -1968,7 +1968,7 @@ describe('testing nested call expressions', () => {
 })
 
 describe('should recognise callExpresions in binaryExpressions', () => {
-  const code = "xLineTo(segEndX('seg02', %) + 1, %)"
+  const code = 'xLineTo(segEndX(seg02) + 1, %)'
   it('should recognise the callExp', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
@@ -1979,12 +1979,12 @@ describe('should recognise callExpresions in binaryExpressions', () => {
         type: 'BinaryExpression',
         operator: '+',
         start: 8,
-        end: 31,
+        end: 26,
         digest: null,
         left: {
           type: 'CallExpression',
           start: 8,
-          end: 27,
+          end: 22,
           digest: null,
           callee: {
             type: 'Identifier',
@@ -1997,11 +1997,10 @@ describe('should recognise callExpresions in binaryExpressions', () => {
             {
               type: 'Identifier',
               start: 16,
-              end: 23,
+              end: 21,
               name: 'seg02',
               digest: null,
             },
-            { type: 'PipeSubstitution', start: 25, end: 26, digest: null },
           ],
           optional: false,
         },
@@ -2009,12 +2008,12 @@ describe('should recognise callExpresions in binaryExpressions', () => {
           type: 'Literal',
           value: 1,
           raw: '1',
-          start: 30,
-          end: 31,
+          start: 25,
+          end: 26,
           digest: null,
         },
       },
-      { type: 'PipeSubstitution', start: 33, end: 34, digest: null },
+      { type: 'PipeSubstitution', start: 28, end: 29, digest: null },
     ])
   })
 })

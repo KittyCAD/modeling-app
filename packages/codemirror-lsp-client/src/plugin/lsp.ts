@@ -17,8 +17,8 @@ import type {
   PluginSpec,
   ViewPlugin,
 } from '@codemirror/view'
-import { setDiagnosticsEffect } from '@codemirror/lint'
 import { EditorView, Tooltip } from '@codemirror/view'
+import { linter } from '@codemirror/lint'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -36,7 +36,6 @@ import lspAutocompleteExt from './autocomplete'
 import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
-import lspLintExt from './lint'
 import lspSemanticTokensExt from './semantic-tokens'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
@@ -215,20 +214,6 @@ export class LanguageServerPlugin implements PluginValue {
     }
 
     if (!this.client.ready) return
-
-    // TODO(paultag): This is the *wrong* place for this to live.
-    //
-    // We need to clear diagnostics before updating the code, because
-    // if the code shrinks, the errors/diagnostics can go out of range
-    // of the source code, which cause an exception, breaking all the
-    // things.
-    //
-    // We need some sort of clear diagnostics boolean on the editor
-    // and we can drop this.
-    this.view.dispatch({
-      effects: [setDiagnosticsEffect.of([])],
-      annotations: [],
-    })
 
     try {
       // Update the state (not the editor) with the new code.
@@ -587,8 +572,8 @@ export class LanguageServerPluginSpec
       lspFormatExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),
-      lspLintExt(),
       lspSemanticTokensExt(),
+      linter(null),
     ]
   }
 }

@@ -88,6 +88,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
             memory: *transform.memory,
+            dynamic_state: args.dynamic_state.clone(),
         },
         extr,
         &args,

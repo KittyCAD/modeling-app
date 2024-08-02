@@ -11,10 +11,8 @@ import {
   Raycaster,
   Vector2,
   Group,
-  PlaneGeometry,
   MeshBasicMaterial,
   Mesh,
-  DoubleSide,
   Intersection,
   Object3D,
   Object3DEventMap,
@@ -48,7 +46,6 @@ export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
 export const DEBUG_SHOW_BOTH_SCENES: false = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
-export const DEFAULT_PLANES = 'default-planes'
 
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'
@@ -72,7 +69,7 @@ interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   }
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
-interface OnClickCallbackArgs {
+export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: {
     twoD: Vector2
@@ -325,16 +322,9 @@ export class SceneInfra {
       this.camControls.camera,
       this.camControls.target
     )
-    const planesGroup = this.scene.getObjectByName(DEFAULT_PLANES)
     const axisGroup = this.scene
       .getObjectByName(AXIS_GROUP)
       ?.getObjectByName('gridHelper')
-    planesGroup &&
-      planesGroup.scale.set(
-        scale / this._baseUnitMultiplier,
-        scale / this._baseUnitMultiplier,
-        scale / this._baseUnitMultiplier
-      )
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
@@ -632,59 +622,6 @@ export class SceneInfra {
       this.onClickCallback({ mouseEvent, intersects })
     }
   }
-  showDefaultPlanes() {
-    const addPlane = (
-      rotation: { x: number; y: number; z: number }, //
-      type: DefaultPlane
-    ): Mesh => {
-      const planeGeometry = new PlaneGeometry(100, 100)
-      const planeMaterial = new MeshBasicMaterial({
-        color: defaultPlaneColor(type),
-        transparent: true,
-        opacity: 0.0,
-        side: DoubleSide,
-        depthTest: false, // needed to avoid transparency issues
-      })
-      const plane = new Mesh(planeGeometry, planeMaterial)
-      plane.rotation.x = rotation.x
-      plane.rotation.y = rotation.y
-      plane.rotation.z = rotation.z
-      plane.userData.type = type
-      plane.name = type
-      return plane
-    }
-    const planes = [
-      addPlane({ x: 0, y: Math.PI / 2, z: 0 }, YZ_PLANE),
-      addPlane({ x: 0, y: 0, z: 0 }, XY_PLANE),
-      addPlane({ x: -Math.PI / 2, y: 0, z: 0 }, XZ_PLANE),
-    ]
-    const planesGroup = new Group()
-    planesGroup.userData.type = DEFAULT_PLANES
-    planesGroup.name = DEFAULT_PLANES
-    planesGroup.add(...planes)
-    planesGroup.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.layers.enable(SKETCH_LAYER)
-      }
-    })
-    planesGroup.layers.enable(SKETCH_LAYER)
-    const sceneScale = getSceneScale(
-      this.camControls.camera,
-      this.camControls.target
-    )
-    planesGroup.scale.set(
-      sceneScale / this._baseUnitMultiplier,
-      sceneScale / this._baseUnitMultiplier,
-      sceneScale / this._baseUnitMultiplier
-    )
-    this.scene.add(planesGroup)
-  }
-  removeDefaultPlanes() {
-    const planesGroup = this.scene.children.find(
-      ({ userData }) => userData.type === DEFAULT_PLANES
-    )
-    if (planesGroup) this.scene.remove(planesGroup)
-  }
   updateOtherSelectionColors = (otherSelections: Axis[]) => {
     const axisGroup = this.scene.children.find(
       ({ userData }) => userData?.type === AXIS_GROUP
@@ -741,29 +678,4 @@ function baseUnitTomm(baseUnit: BaseUnit) {
     case 'yd':
       return 914.4
   }
-}
-
-export type DefaultPlane =
-  | 'xy-default-plane'
-  | 'xz-default-plane'
-  | 'yz-default-plane'
-
-export const XY_PLANE: DefaultPlane = 'xy-default-plane'
-export const XZ_PLANE: DefaultPlane = 'xz-default-plane'
-export const YZ_PLANE: DefaultPlane = 'yz-default-plane'
-
-export function defaultPlaneColor(
-  plane: DefaultPlane,
-  lowCh = 0.1,
-  highCh = 0.7
-): Color {
-  switch (plane) {
-    case XY_PLANE:
-      return new Color(highCh, lowCh, lowCh)
-    case XZ_PLANE:
-      return new Color(lowCh, lowCh, highCh)
-    case YZ_PLANE:
-      return new Color(lowCh, highCh, lowCh)
-  }
-  return new Color(lowCh, lowCh, lowCh)
 }

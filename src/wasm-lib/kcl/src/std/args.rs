@@ -1,17 +1,17 @@
 use std::any::type_name;
 
-use crate::{
-    ast::types::{parse_json_number_as_f64, TagDeclarator},
-    errors::{KclError, KclErrorDetails},
-    executor::{
-        ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata, ProgramMemory,
-        SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
-    },
-};
 use kittycad::types::OkWebSocketResponseData;
 use serde::de::DeserializeOwned;
 
 use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
+use crate::{
+    ast::types::{parse_json_number_as_f64, TagDeclarator},
+    errors::{KclError, KclErrorDetails},
+    executor::{
+        DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata,
+        ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
+    },
+};
 
 #[derive(Debug, Clone)]
 pub struct Args {
@@ -19,6 +19,7 @@ pub struct Args {
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
     pub current_program_memory: ProgramMemory,
+    pub dynamic_state: DynamicState,
 }
 
 impl Args {
@@ -27,17 +28,19 @@ impl Args {
         source_range: SourceRange,
         ctx: ExecutorContext,
         current_program_memory: ProgramMemory,
+        dynamic_state: DynamicState,
     ) -> Self {
         Self {
             args,
             source_range,
             ctx,
             current_program_memory,
+            dynamic_state,
         }
     }
 
     // Add a modeling command to the batch but don't fire it right away.
-    pub async fn batch_modeling_cmd(
+    pub(crate) async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
@@ -48,7 +51,7 @@ impl Args {
     // Add a modeling command to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
-    pub async fn batch_end_cmd(
+    pub(crate) async fn batch_end_cmd(
         &self,
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
@@ -57,7 +60,7 @@ impl Args {
     }
 
     /// Send the modeling cmd and wait for the response.
-    pub async fn send_modeling_cmd(
+    pub(crate) async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
@@ -65,8 +68,52 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
+    fn get_tag_info_from_memory<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let MemoryItem::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+            Ok(t.info.as_ref().ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Tag `{}` does not have engine info", tag.value),
+                    source_ranges: vec![self.source_range],
+                })
+            })?)
+        } else {
+            Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` does not exist", tag.value),
+                source_ranges: vec![self.source_range],
+            }))
+        }
+    }
+
+    pub(crate) fn get_tag_engine_info<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let Some(info) = &tag.info {
+            return Ok(info);
+        }
+
+        self.get_tag_info_from_memory(tag)
+    }
+
+    fn get_tag_engine_info_check_surface<'a>(
+        &'a self,
+        tag: &'a TagIdentifier,
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+        if let Some(info) = &tag.info {
+            if info.surface.is_some() {
+                return Ok(info);
+            }
+        }
+
+        self.get_tag_info_from_memory(tag)
+    }
+
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
-    pub async fn flush_batch_for_extrude_group_set(
+    #[allow(clippy::vec_box)]
+    pub(crate) async fn flush_batch_for_extrude_group_set(
         &self,
         extrude_groups: Vec<Box<ExtrudeGroup>>,
     ) -> Result<(), KclError> {
@@ -85,6 +132,10 @@ impl Args {
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                );
+                ids.extend(
+                    self.dynamic_state
+                        .fillet_or_chamfer_ids_on_sketch_group(sketch_group_id),
                 );
                 traversed_sketch_groups.push(sketch_group_id);
             }
@@ -125,7 +176,15 @@ impl Args {
         }))
     }
 
-    pub fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {
+    pub(crate) fn make_null_user_val(&self) -> Result<MemoryItem, KclError> {
+        self.make_user_val_from_json(serde_json::Value::Null)
+    }
+
+    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> Result<MemoryItem, KclError> {
+        self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from(n)))
+    }
+
+    pub(crate) fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {
         self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from_f64(f).ok_or_else(
             || {
                 KclError::Type(KclErrorDetails {
@@ -136,11 +195,26 @@ impl Args {
         )?))
     }
 
-    pub fn get_number(&self) -> Result<f64, KclError> {
+    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<MemoryItem, KclError> {
+        let mut arr = Vec::new();
+        for n in f {
+            arr.push(serde_json::Value::Number(serde_json::Number::from_f64(n).ok_or_else(
+                || {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Failed to convert `{}` to a number", n),
+                        source_ranges: vec![self.source_range],
+                    })
+                },
+            )?));
+        }
+        self.make_user_val_from_json(serde_json::Value::Array(arr))
+    }
+
+    pub(crate) fn get_number(&self) -> Result<f64, KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
+    pub(crate) fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
         let mut numbers: Vec<f64> = Vec::new();
         for arg in &self.args {
             let parsed = arg.get_json_value()?;
@@ -149,11 +223,11 @@ impl Args {
         Ok(numbers)
     }
 
-    pub fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, ExtrudeGroupSet), KclError> {
+    pub(crate) fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, ExtrudeGroupSet), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_hypotenuse_leg(&self) -> Result<(f64, f64), KclError> {
+    pub(crate) fn get_hypotenuse_leg(&self) -> Result<(f64, f64), KclError> {
         let numbers = self.get_number_array()?;
 
         if numbers.len() != 2 {
@@ -166,7 +240,7 @@ impl Args {
         Ok((numbers[0], numbers[1]))
     }
 
-    pub fn get_circle_args(
+    pub(crate) fn get_circle_args(
         &self,
     ) -> Result<
         (
@@ -180,55 +254,53 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_segment_name_sketch_group(&self) -> Result<(TagIdentifier, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub fn get_data<'a, T>(&'a self) -> Result<T, KclError>
+    pub(crate) fn get_data<'a, T>(&'a self) -> Result<T, KclError>
     where
         T: FromArgs<'a> + serde::de::DeserializeOwned,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
+    pub(crate) fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_group_and_optional_tag(
+        &self,
+    ) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
+    pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, Box<SketchGroup>), KclError>
+    pub(crate) fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, Box<SketchGroup>), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_group_set<'a, T>(&'a self) -> Result<(T, SketchGroupSet), KclError>
+    pub(crate) fn get_data_and_sketch_group_set<'a, T>(&'a self) -> Result<(T, SketchGroupSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_group_and_tag<'a, T>(
+    pub(crate) fn get_data_and_sketch_group_and_tag<'a, T>(
         &'a self,
     ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError>
     where
@@ -237,28 +309,30 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_surface<'a, T>(
+        &'a self,
+    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_extrude_group_set<'a, T>(&'a self) -> Result<(T, ExtrudeGroupSet), KclError>
+    pub(crate) fn get_data_and_extrude_group_set<'a, T>(&'a self) -> Result<(T, ExtrudeGroupSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_extrude_group<'a, T>(&'a self) -> Result<(T, Box<ExtrudeGroup>), KclError>
+    pub(crate) fn get_data_and_extrude_group<'a, T>(&'a self) -> Result<(T, Box<ExtrudeGroup>), KclError>
     where
         T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_data_and_extrude_group_and_tag<'a, T>(
+    pub(crate) fn get_data_and_extrude_group_and_tag<'a, T>(
         &'a self,
     ) -> Result<(T, Box<ExtrudeGroup>, Option<TagDeclarator>), KclError>
     where
@@ -267,21 +341,16 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_tag_and_extrude_group(&self) -> Result<(TagIdentifier, Box<ExtrudeGroup>), KclError> {
+    pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_segment_name_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_number_sketch_group_set(&self) -> Result<(f64, SketchGroupSet), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub fn get_number_sketch_group_set(&self) -> Result<(f64, SketchGroupSet), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub async fn get_adjacent_face_to_tag(
+    pub(crate) async fn get_adjacent_face_to_tag(
         &self,
-        extrude_group: &ExtrudeGroup,
         tag: &TagIdentifier,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
@@ -292,58 +361,72 @@ impl Args {
             }));
         }
 
-        if let Some(face_from_surface) = extrude_group
-            .value
-            .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) => {
-                    if let Some(plane_tag) = &extrude_plane.tag {
-                        if plane_tag.name == tag.value {
-                            Some(Ok(extrude_plane.face_id))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                }
-                // The must be planar check must be called before the arc check.
-                ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
-                    message: format!("Tag `{}` is a non-planar surface", tag.value),
-                    source_ranges: vec![self.source_range],
-                }))),
-                ExtrudeSurface::ExtrudeArc(extrude_arc) => {
-                    if let Some(arc_tag) = &extrude_arc.tag {
-                        if arc_tag.name == tag.value {
-                            Some(Ok(extrude_arc.face_id))
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    }
-                }
-            })
-        {
-            return face_from_surface;
-        }
+        let engine_info = self.get_tag_engine_info_check_surface(tag)?;
 
-        // A face could also be the result of a chamfer or fillet.
-        if let Some(face_from_chamfer_fillet) = extrude_group.fillet_or_chamfers.iter().find_map(|fc| {
-            if let Some(ntag) = &fc.tag() {
-                if ntag.name == tag.value {
-                    Some(Ok(fc.id()))
+        let surface = engine_info.surface.as_ref().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` does not have a surface", tag.value),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        if let Some(face_from_surface) = match surface {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) => {
+                if let Some(plane_tag) = &extrude_plane.tag {
+                    if plane_tag.name == tag.value {
+                        Some(Ok(extrude_plane.face_id))
+                    } else {
+                        None
+                    }
                 } else {
                     None
                 }
-            } else {
-                None
             }
-        }) {
-            // We want to make sure we execute the fillet before this operation.
-            self.flush_batch_for_extrude_group_set(extrude_group.into()).await?;
-
-            return face_from_chamfer_fillet;
+            // The must be planar check must be called before the arc check.
+            ExtrudeSurface::ExtrudeArc(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` is a non-planar surface", tag.value),
+                source_ranges: vec![self.source_range],
+            }))),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) => {
+                if let Some(arc_tag) = &extrude_arc.tag {
+                    if arc_tag.name == tag.value {
+                        Some(Ok(extrude_arc.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+            ExtrudeSurface::Chamfer(chamfer) => {
+                if let Some(chamfer_tag) = &chamfer.tag {
+                    if chamfer_tag.name == tag.value {
+                        Some(Ok(chamfer.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+            // The must be planar check must be called before the fillet check.
+            ExtrudeSurface::Fillet(_) if must_be_planar => Some(Err(KclError::Type(KclErrorDetails {
+                message: format!("Tag `{}` is a non-planar surface", tag.value),
+                source_ranges: vec![self.source_range],
+            }))),
+            ExtrudeSurface::Fillet(fillet) => {
+                if let Some(fillet_tag) = &fillet.tag {
+                    if fillet_tag.name == tag.value {
+                        Some(Ok(fillet.face_id))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            }
+        } {
+            return face_from_surface;
         }
 
         // If we still haven't found the face, return an error.
@@ -381,7 +464,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but wasn't",
-                    type_name::<T>()
+                    type_name::<T>(),
                 ),
                 source_ranges: vec![args.source_range],
             }));
@@ -525,6 +608,7 @@ impl_from_arg_via_json!(super::fillet::FilletData);
 impl_from_arg_via_json!(super::revolve::RevolveData);
 impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
+impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);

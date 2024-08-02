@@ -88,7 +88,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   ],
   Export: {
     description: 'Export the current model.',
-    icon: 'exportFile',
+    icon: 'floppyDiskArrow',
     needsReview: true,
     args: {
       type: {
@@ -96,7 +96,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: 'gltf',
         required: true,
         options: [
-          { name: 'gLTF', isCurrent: true, value: 'gltf' },
+          { name: 'glTF', isCurrent: true, value: 'gltf' },
           { name: 'OBJ', isCurrent: false, value: 'obj' },
           { name: 'STL', isCurrent: false, value: 'stl' },
           { name: 'STEP', isCurrent: false, value: 'step' },

@@ -22,11 +22,9 @@ import {
 import {
   ARROWHEAD,
   AXIS_GROUP,
-  DEFAULT_PLANES,
-  DefaultPlane,
-  defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
+  OnClickCallbackArgs,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   SEGMENT_LENGTH_LABEL,
@@ -78,6 +76,7 @@ import {
 } from 'lang/std/sketch'
 import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
+  addStartProfileAt,
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
@@ -95,10 +94,7 @@ import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
-import {
-  ArtifactMapCommand,
-  EngineCommandManager,
-} from 'lang/std/engineConnection'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
@@ -203,6 +199,7 @@ export class SceneEntities {
 
   createIntersectionPlane() {
     if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
+      // this.removeIntersectionPlane()
       console.warn('createIntersectionPlane called when it already exists')
       return
     }
@@ -297,6 +294,51 @@ export class SceneEntities {
   removeIntersectionPlane() {
     const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
     if (intersectionPlane) this.scene.remove(intersectionPlane)
+  }
+
+  setupNoPointsListener({
+    sketchDetails,
+    afterClick,
+  }: {
+    sketchDetails: SketchDetails
+    afterClick: (args: OnClickCallbackArgs) => void
+  }) {
+    // Create a THREEjs plane to raycast clicks onto
+    this.createIntersectionPlane()
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(...sketchDetails.yAxis),
+      new Vector3(...sketchDetails.zAxis)
+    )
+
+    // Position the click raycast plane
+    if (this.intersectionPlane) {
+      this.intersectionPlane.setRotationFromQuaternion(quaternion)
+      this.intersectionPlane.position.copy(
+        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+      )
+    }
+    sceneInfra.setCallbacks({
+      onClick: async (args) => {
+        if (!args) return
+        if (args.mouseEvent.which !== 1) return
+        const { intersectionPoint } = args
+        if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
+        const addStartProfileAtRes = addStartProfileAt(
+          kclManager.ast,
+          sketchDetails.sketchPathToNode,
+          [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
+        )
+
+        if (trap(addStartProfileAtRes)) return
+        const { modifiedAst } = addStartProfileAtRes
+
+        await kclManager.updateAst(modifiedAst, false)
+        this.removeIntersectionPlane()
+
+        // Now perform the caller-specified action
+        afterClick(args)
+      },
+    })
   }
 
   async setupSketch({
@@ -538,7 +580,7 @@ export class SceneEntities {
     segmentName: 'line' | 'tangentialArcTo' = 'line',
     shouldTearDown = true
   ) => {
-    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    const _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -675,21 +717,6 @@ export class SceneEntities {
       ...this.mouseEnterLeaveCallbacks(),
     })
   }
-  setupRectangleOriginListener = () => {
-    sceneInfra.setCallbacks({
-      onClick: (args) => {
-        const twoD = args.intersectionPoint?.twoD
-        if (!twoD) {
-          console.warn(`This click didn't have a 2D intersection`, args)
-          return
-        }
-        sceneInfra.modelingSend({
-          type: 'Add rectangle origin',
-          data: [twoD.x, twoD.y],
-        })
-      },
-    })
-  }
   setupDraftRectangle = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
@@ -697,7 +724,7 @@ export class SceneEntities {
     sketchOrigin: [number, number, number],
     rectangleOrigin: [x: number, y: number]
   ) => {
-    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    let _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -707,6 +734,8 @@ export class SceneEntities {
     if (trap(_node1)) return Promise.reject(_node1)
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
+    const startSketchOn = _node1.node?.declarations
+    const startSketchOnInit = startSketchOn?.[0]?.init
 
     const tags: [string, string, string] = [
       findUniqueName(_ast, 'rectangleSegmentA'),
@@ -714,21 +743,14 @@ export class SceneEntities {
       findUniqueName(_ast, 'rectangleSegmentC'),
     ]
 
-    const _node2 = getNodeFromPath<VariableDeclaration>(
-      _ast,
-      sketchPathToNode || [],
-      'VariableDeclaration'
-    )
-    if (trap(_node2)) return Promise.reject(_node2)
-    const startSketchOn = _node2.node?.declarations
-
-    const startSketchOnInit = startSketchOn?.[0]?.init
     startSketchOn[0].init = createPipeExpression([
       startSketchOnInit,
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    _ast = parse(recast(_ast))
+    let _recastAst = parse(recast(_ast))
+    if (trap(_recastAst)) return Promise.reject(_recastAst)
+    _ast = _recastAst
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -742,7 +764,7 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
-        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        const pathToNodeTwo = structuredClone(sketchPathToNode)
         pathToNodeTwo[1][0] = 0
 
         const _node = getNodeFromPath<VariableDeclaration>(
@@ -804,7 +826,9 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
-          _ast = parse(recast(_ast))
+          let _recastAst = parse(recast(_ast))
+          if (trap(_recastAst)) return Promise.reject(_recastAst)
+          _ast = _recastAst
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1008,10 +1032,14 @@ export class SceneEntities {
       PROFILE_START,
     ])
     if (!group) return
-    const pathToNode: PathToNode = JSON.parse(
-      JSON.stringify(group.userData.pathToNode)
-    )
-    const varDecIndex = JSON.parse(JSON.stringify(pathToNode[1][0]))
+    const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
+    const varDecIndex = pathToNode[1][0]
+    if (typeof varDecIndex !== 'number') {
+      console.error(
+        `Expected varDecIndex to be a number, but found: ${typeof varDecIndex} ${varDecIndex}`
+      )
+      return
+    }
     if (draftInfo) {
       pathToNode[1][0] = 0
     }
@@ -1472,150 +1500,6 @@ export class SceneEntities {
       this._tearDownSketch(0, resolve, reject, { removeAxis })
     })
   }
-  setupDefaultPlaneHover() {
-    sceneInfra.setCallbacks({
-      onMouseEnter: ({ selected }) => {
-        if (!(selected instanceof Mesh && selected.parent)) return
-        if (selected.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = selected.userData.type
-        selected.material.color = defaultPlaneColor(type, 0.5, 1)
-      },
-      onMouseLeave: ({ selected }) => {
-        if (!(selected instanceof Mesh && selected.parent)) return
-        if (selected.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = selected.userData.type
-        selected.material.color = defaultPlaneColor(type)
-      },
-      onClick: async (args) => {
-        const { entity_id } = await sendSelectEventToEngine(
-          args?.mouseEvent,
-          document.getElementById('video-stream') as HTMLVideoElement,
-          sceneInfra._streamDimensions
-        )
-
-        let _entity_id = entity_id
-        if (!_entity_id) return
-        if (
-          engineCommandManager.defaultPlanes?.xy === _entity_id ||
-          engineCommandManager.defaultPlanes?.xz === _entity_id ||
-          engineCommandManager.defaultPlanes?.yz === _entity_id ||
-          engineCommandManager.defaultPlanes?.negXy === _entity_id ||
-          engineCommandManager.defaultPlanes?.negXz === _entity_id ||
-          engineCommandManager.defaultPlanes?.negYz === _entity_id
-        ) {
-          const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-            [engineCommandManager.defaultPlanes.xy]: 'XY',
-            [engineCommandManager.defaultPlanes.xz]: 'XZ',
-            [engineCommandManager.defaultPlanes.yz]: 'YZ',
-            [engineCommandManager.defaultPlanes.negXy]: '-XY',
-            [engineCommandManager.defaultPlanes.negXz]: '-XZ',
-            [engineCommandManager.defaultPlanes.negYz]: '-YZ',
-          }
-          // TODO can we get this information from rust land when it creates the default planes?
-          // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-          let zAxis: [number, number, number] = [0, 0, 1]
-          let yAxis: [number, number, number] = [0, 1, 0]
-
-          // get unit vector from camera position to target
-          const camVector = sceneInfra.camControls.camera.position
-            .clone()
-            .sub(sceneInfra.camControls.target)
-
-          if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
-            zAxis = [0, 0, 1]
-            yAxis = [0, 1, 0]
-            if (camVector.z < 0) {
-              zAxis = [0, 0, -1]
-              _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
-            }
-          } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
-            zAxis = [1, 0, 0]
-            yAxis = [0, 0, 1]
-            if (camVector.x < 0) {
-              zAxis = [-1, 0, 0]
-              _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
-            }
-          } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
-            zAxis = [0, 1, 0]
-            yAxis = [0, 0, 1]
-            _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
-            if (camVector.y < 0) {
-              zAxis = [0, -1, 0]
-              _entity_id = engineCommandManager.defaultPlanes?.xz || ''
-            }
-          }
-
-          sceneInfra.modelingSend({
-            type: 'Select default plane',
-            data: {
-              type: 'defaultPlane',
-              planeId: _entity_id,
-              plane: defaultPlaneStrMap[_entity_id],
-              zAxis,
-              yAxis,
-            },
-          })
-          return
-        }
-        const artifact = this.engineCommandManager.artifactMap[_entity_id]
-        // If we clicked on an extrude wall, we climb up the parent Id
-        // to get the sketch profile's face ID. If we clicked on an endcap,
-        // we already have it.
-        const targetId =
-          'additionalData' in artifact &&
-          artifact.additionalData?.type === 'cap'
-            ? _entity_id
-            : artifact.parentId
-
-        // tsc cannot infer that target can have extrusions
-        // from the commandType (why?) so we need to cast it
-        const target = this.engineCommandManager.artifactMap?.[
-          targetId || ''
-        ] as ArtifactMapCommand & { extrusions?: string[] }
-
-        // TODO: We get the first extrusion command ID,
-        // which is fine while backend systems only support one extrusion.
-        // but we need to more robustly handle resolving to the correct extrusion
-        // if there are multiple.
-        const extrusions =
-          this.engineCommandManager.artifactMap?.[target?.extrusions?.[0] || '']
-
-        if (artifact?.commandType !== 'solid3d_get_extrusion_face_info') return
-
-        const faceInfo = await getFaceDetails(_entity_id)
-        if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
-        const { z_axis, y_axis, origin } = faceInfo
-        const sketchPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
-          artifact.range
-        )
-
-        const extrudePathToNode = extrusions?.range
-          ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
-          : []
-
-        sceneInfra.modelingSend({
-          type: 'Select default plane',
-          data: {
-            type: 'extrudeFace',
-            zAxis: [z_axis.x, z_axis.y, z_axis.z],
-            yAxis: [y_axis.x, y_axis.y, y_axis.z],
-            position: [origin.x, origin.y, origin.z].map(
-              (num) => num / sceneInfra._baseUnitMultiplier
-            ) as [number, number, number],
-            sketchPathToNode,
-            extrudePathToNode,
-            cap:
-              artifact?.additionalData?.type === 'cap'
-                ? artifact.additionalData.info
-                : 'none',
-            faceId: _entity_id,
-          },
-        })
-        return
-      },
-    })
-  }
   mouseEnterLeaveCallbacks() {
     return {
       onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
@@ -1762,7 +1646,7 @@ function prepareTruncatedMemoryAndAst(
     }
   | Error {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
-  const _ast = JSON.parse(JSON.stringify(ast))
+  const _ast = structuredClone(ast)
 
   const _node = getNodeFromPath<VariableDeclaration>(
     _ast,
@@ -1821,7 +1705,7 @@ function prepareTruncatedMemoryAndAst(
   }
   const truncatedAst: Program = {
     ..._ast,
-    body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
+    body: [structuredClone(_ast.body[bodyIndex])],
   }
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.
@@ -1855,10 +1739,7 @@ function prepareTruncatedMemoryAndAst(
     if (!memoryItem) {
       continue
     }
-    const error = programMemoryOverride.set(
-      name,
-      JSON.parse(JSON.stringify(memoryItem))
-    )
+    const error = programMemoryOverride.set(name, structuredClone(memoryItem))
     if (err(error)) return error
   }
   return {

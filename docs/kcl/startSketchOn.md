@@ -55,7 +55,7 @@ const exampleSketch = startSketchOn("XY")
 
 const example = extrude(10, exampleSketch)
 
-const exampleSketch002 = startSketchOn(example, 'sketchingFace')
+const exampleSketch002 = startSketchOn(example, sketchingFace)
   |> startProfileAt([1, 1], %)
   |> line([8, 0], %)
   |> line([0, 8], %)
@@ -64,7 +64,7 @@ const exampleSketch002 = startSketchOn(example, 'sketchingFace')
 
 const example002 = extrude(10, exampleSketch002)
 
-const exampleSketch003 = startSketchOn(example002, 'sketchingFace002')
+const exampleSketch003 = startSketchOn(example002, sketchingFace002)
   |> startProfileAt([-8, 12], %)
   |> line([0, 6], %)
   |> line([6, 0], %)
@@ -106,9 +106,9 @@ const example002 = extrude(5, exampleSketch002)
 const a1 = startSketchOn({
        plane: {
          origin: { x: 0, y: 0, z: 0 },
-         x_axis: { x: 1, y: 0, z: 0 },
-         y_axis: { x: 0, y: 1, z: 0 },
-         z_axis: { x: 0, y: 0, z: 1 }
+         xAxis: { x: 1, y: 0, z: 0 },
+         yAxis: { x: 0, y: 1, z: 0 },
+         zAxis: { x: 0, y: 0, z: 1 }
        }
      })
   |> startProfileAt([0, 0], %)
@@ -141,19 +141,19 @@ const a1 = startSketchOn({
 	z: number,
 },
 	// What should the plane’s X axis be?
-	x_axis: {
+	xAxis: {
 	x: number,
 	y: number,
 	z: number,
 },
 	// What should the plane’s Y axis be?
-	y_axis: {
+	yAxis: {
 	x: number,
 	y: number,
 	z: number,
 },
 	// The z-axis (normal).
-	z_axis: {
+	zAxis: {
 	x: number,
 	y: number,
 	z: number,
@@ -166,15 +166,21 @@ const a1 = startSketchOn({
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -192,7 +198,7 @@ const a1 = startSketchOn({
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -400,6 +406,38 @@ const a1 = startSketchOn({
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 }
 ```
@@ -407,6 +445,92 @@ const a1 = startSketchOn({
 ```js
 "start" | "end" |
 {
+	// Engine information for a tag.
+	info: {
+	// The id of the tagged object.
+	id: uuid,
+	// The path the tag is on.
+	path: {
+	// The from point.
+	from: [number, number],
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+},
+	// The sketch group the tag is on.
+	sketchGroup: uuid,
+	// The surface information for the tag.
+	surface: {
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
+},
+},
 	value: string,
 }
 ```
@@ -454,15 +578,21 @@ const a1 = startSketchOn({
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
@@ -480,7 +610,7 @@ const a1 = startSketchOn({
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -688,6 +818,38 @@ const a1 = startSketchOn({
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.

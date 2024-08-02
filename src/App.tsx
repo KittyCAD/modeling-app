@@ -2,7 +2,7 @@ import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import { EngineCommand } from './lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactMap'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -95,16 +95,16 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-    if (context.store?.buttonDownInStream === undefined) {
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'highlight_set_entity',
-          selected_at_window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    }
+    if (state.matches('idle.showPlanes')) return
+    if (context.store?.buttonDownInStream !== undefined) return
+    debounceSocketSend({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'highlight_set_entity',
+        selected_at_window: { x, y },
+      },
+      cmd_id: newCmdId,
+    })
   }
 
   return (

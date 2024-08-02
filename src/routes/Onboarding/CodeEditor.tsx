@@ -1,5 +1,11 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
+import {
+  kbdClasses,
+  OnboardingButtons,
+  useDemoCode,
+  useDismiss,
+  useNextClick,
+} from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export default function OnboardingCodeEditor() {
@@ -66,8 +72,8 @@ export default function OnboardingCodeEditor() {
           </p>
           <p className="my-4">
             You can resize the pane by dragging the handle on the right, and you
-            can collapse it by clicking the title bar or pressing{' '}
-            <kbd>Shift</kbd> + <kbd>C</kbd>.
+            can collapse it by clicking the X button in the pane's title bar or
+            pressing <kbd className={kbdClasses}>Shift + C</kbd>.
           </p>
         </section>
         <OnboardingButtons

@@ -3,10 +3,14 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { ActionButton } from 'components/ActionButton'
 import Tooltip from 'components/Tooltip'
+import { CustomIconName } from 'components/CustomIcon'
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { ActionIcon } from 'components/ActionIcon'
 
 export interface ModelingPaneProps
   extends React.PropsWithChildren,
     React.HTMLAttributes<HTMLDivElement> {
+  icon?: CustomIconName | IconDefinition
   title: string
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
@@ -14,13 +18,25 @@ export interface ModelingPaneProps
 }
 
 export const ModelingPaneHeader = ({
+  icon,
   title,
   Menu,
   onClose,
-}: Pick<ModelingPaneProps, 'title' | 'Menu' | 'onClose'>) => {
+}: Pick<ModelingPaneProps, 'icon' | 'title' | 'Menu' | 'onClose'>) => {
   return (
     <div className={styles.header}>
-      <div className="flex gap-2 items-center flex-1">{title}</div>
+      <div className="flex gap-2 items-center flex-1">
+        {icon && (
+          <ActionIcon
+            icon={icon}
+            className="p-1"
+            size="sm"
+            iconClassName="!text-chalkboard-80 dark:!text-chalkboard-30"
+            bgClassName="!bg-transparent"
+          />
+        )}
+        <span>{title}</span>
+      </div>
       {Menu instanceof Function ? <Menu /> : Menu}
       <ActionButton
         Element="button"
@@ -42,6 +58,7 @@ export const ModelingPaneHeader = ({
 
 export const ModelingPane = ({
   title,
+  icon,
   id,
   children,
   className,
@@ -63,14 +80,19 @@ export const ModelingPane = ({
       data-testid={detailsTestId}
       id={id}
       className={
-        'group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 ' +
+        'focus-within:border-primary dark:focus-within:border-chalkboard-50 ' +
         pointerEventsCssClass +
         styles.panel +
         ' group ' +
         (className || '')
       }
     >
-      <ModelingPaneHeader title={title} Menu={Menu} onClose={onClose} />
+      <ModelingPaneHeader
+        icon={icon}
+        title={title}
+        Menu={Menu}
+        onClose={onClose}
+      />
       <div className="relative w-full">{children}</div>
     </section>
   )

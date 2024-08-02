@@ -1,4 +1,4 @@
-import { WheelEvent, useRef, useMemo } from 'react'
+import { useRef, useMemo, memo } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -12,11 +12,14 @@ import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
 import { useAppState } from 'AppState'
+import { CustomIcon } from 'components/CustomIcon'
 import {
-  canRectangleTool,
-  isEditingExistingSketch,
-} from 'machines/modelingMachine'
-import { DEV } from 'env'
+  toolbarConfig,
+  ToolbarItem,
+  ToolbarItemCallbackProps,
+  ToolbarItemResolved,
+  ToolbarModeName,
+} from 'lib/toolbar'
 
 export function Toolbar({
   className = '',
@@ -25,12 +28,14 @@ export function Toolbar({
   const { state, send, context } = useModelingContext()
   const { commandBarSend } = useCommandsContext()
   const iconClassName =
-    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-ui-open:!text-chalkboard-10 dark:group-ui-open:!text-chalkboard-10'
-  const bgClassName =
-    'group-disabled:!bg-transparent group-enabled:group-hover:bg-primary/10 dark:group-enabled:group-hover:bg-primary group-pressed:bg-primary group-ui-open:bg-primary'
-  const buttonClassName =
-    'bg-chalkboard-10 dark:bg-chalkboard-100 enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!border-primary ui-open:!border-primary'
-  const pathId = useMemo(() => {
+    'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
+  const bgClassName = '!bg-transparent'
+  const buttonBgClassName =
+    'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
+  const buttonBorderClassName =
+    '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
+
+  const sketchPathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
       return false
     }
@@ -51,401 +56,295 @@ export function Toolbar({
     isExecuting ||
     !isStreamReady
 
-  const disableLineButton =
-    state.matches('Sketch.Rectangle tool.Awaiting second corner') ||
-    disableAllButtons
-  useHotkeys(
-    'l',
-    () =>
-      state.matches('Sketch.Line tool')
-        ? send('CancelSketch')
-        : send({
-            type: 'change tool',
-            data: { tool: 'line' },
-          }),
-    { enabled: !disableLineButton, scopes: ['sketch'] }
-  )
-  const disableTangentialArc =
-    (!isEditingExistingSketch(context) &&
-      !state.matches('Sketch.Tangential arc to')) ||
-    disableAllButtons
-  useHotkeys(
-    'a',
-    () =>
-      state.matches('Sketch.Tangential arc to')
-        ? send('CancelSketch')
-        : send({
-            type: 'change tool',
-            data: { tool: 'tangentialArc' },
-          }),
-    { enabled: !disableTangentialArc, scopes: ['sketch'] }
-  )
-  const disableRectangle =
-    (!canRectangleTool(context) && !state.matches('Sketch.Rectangle tool')) ||
-    disableAllButtons
-  useHotkeys(
-    'r',
-    () =>
-      state.matches('Sketch.Rectangle tool')
-        ? send('CancelSketch')
-        : send({
-            type: 'change tool',
-            data: { tool: 'rectangle' },
-          }),
-    { enabled: !disableRectangle, scopes: ['sketch'] }
-  )
-  useHotkeys(
-    's',
-    () =>
-      state.nextEvents.includes('Enter sketch') && pathId
-        ? send({ type: 'Enter sketch' })
-        : send({ type: 'Enter sketch', data: { forceNewSketch: true } }),
-    { enabled: !disableAllButtons, scopes: ['modeling'] }
-  )
-  useHotkeys(
-    'esc',
-    () =>
-      ['Sketch no face', 'Sketch.SketchIdle'].some(state.matches)
-        ? send('Cancel')
-        : send('CancelSketch'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
-  )
-  useHotkeys(
-    'e',
-    () =>
-      commandBarSend({
-        type: 'Find and select command',
-        data: { name: 'Extrude', groupId: 'modeling' },
-      }),
-    { enabled: !disableAllButtons, scopes: ['modeling'] }
-  )
-  const disableFillet = !state.can('Fillet') || disableAllButtons
-  useHotkeys(
-    'f',
-    () =>
-      commandBarSend({
-        type: 'Find and select command',
-        data: { name: 'Fillet', groupId: 'modeling' },
-      }),
-    { enabled: !disableFillet, scopes: ['modeling'] }
+  const currentMode =
+    (Object.entries(toolbarConfig).find(([_, mode]) =>
+      mode.check(state)
+    )?.[0] as ToolbarModeName) || 'modeling'
+
+  /** These are the props that will be passed to the callbacks in the toolbar config
+   * They are memoized to prevent unnecessary re-renders,
+   * but they still get a lot of churn from the state machine
+   * so I think there's a lot of room for improvement here
+   */
+  const configCallbackProps: ToolbarItemCallbackProps = useMemo(
+    () => ({
+      modelingStateMatches: state.matches,
+      modelingSend: send,
+      commandBarSend,
+      sketchPathId,
+    }),
+    [state.matches, send, commandBarSend, sketchPathId]
   )
 
-  function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
-    const span = toolbarButtonsRef.current
-    if (!span) {
-      return
+  /**
+   * Resolve all the callbacks and values for the current mode,
+   * so we don't need to worry about the other modes
+   */
+  const currentModeItems: (
+    | ToolbarItemResolved
+    | ToolbarItemResolved[]
+    | 'break'
+  )[] = useMemo(() => {
+    return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
+      if (maybeIconConfig === 'break') {
+        return 'break'
+      } else if (Array.isArray(maybeIconConfig)) {
+        return maybeIconConfig.map(resolveItemConfig)
+      } else {
+        return resolveItemConfig(maybeIconConfig)
+      }
+    })
+
+    function resolveItemConfig(
+      maybeIconConfig: ToolbarItem
+    ): ToolbarItemResolved {
+      return {
+        ...maybeIconConfig,
+        title:
+          typeof maybeIconConfig.title === 'string'
+            ? maybeIconConfig.title
+            : maybeIconConfig.title(configCallbackProps),
+        description: maybeIconConfig.description,
+        links: maybeIconConfig.links || [],
+        isActive: maybeIconConfig.isActive?.(state),
+        hotkey:
+          typeof maybeIconConfig.hotkey === 'string'
+            ? maybeIconConfig.hotkey
+            : maybeIconConfig.hotkey?.(state),
+        disabled:
+          disableAllButtons ||
+          maybeIconConfig.status !== 'available' ||
+          maybeIconConfig.disabled?.(state) === true,
+        disableHotkey: maybeIconConfig.disableHotkey?.(state),
+        status: maybeIconConfig.status,
+      }
     }
+  }, [currentMode, disableAllButtons, configCallbackProps])
 
-    span.scrollLeft = span.scrollLeft += ev.deltaY
-  }
-  const nextEvents = useMemo(() => state.nextEvents, [state.nextEvents])
-  const splitMenuItems = useMemo(
-    () =>
-      nextEvents
-        .filter(
-          (eventName) =>
-            eventName.includes('Make segment') ||
-            eventName.includes('Constrain')
-        )
-        .sort((a, b) => {
-          const aisEnabled = nextEvents
-            .filter((event) => state.can(event as any))
-            .includes(a)
-          const bIsEnabled = nextEvents
-            .filter((event) => state.can(event as any))
-            .includes(b)
-          if (aisEnabled && !bIsEnabled) {
-            return -1
-          }
-          if (!aisEnabled && bIsEnabled) {
-            return 1
-          }
-          return 0
-        })
-        .map((eventName) => ({
-          label: eventName
-            .replace('Make segment ', '')
-            .replace('Constrain ', ''),
-          onClick: () => send(eventName),
-          disabled:
-            !nextEvents
-              .filter((event) => state.can(event as any))
-              .includes(eventName) || disableAllButtons,
-        })),
-
-    [JSON.stringify(nextEvents), state]
-  )
   return (
-    <menu className="max-w-full whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
+    <menu className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-20 dark:border-chalkboard-80 border-t-0 shadow-sm">
       <ul
         {...props}
         ref={toolbarButtonsRef}
-        onWheel={handleToolbarButtonsWheelEvent}
-        className={'m-0 py-1 rounded-l-sm flex gap-2 items-center ' + className}
-        style={{ scrollbarWidth: 'thin' }}
+        className={
+          'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center ' +
+          className
+        }
       >
-        {nextEvents.includes('Enter sketch') && (
-          <li className="contents">
-            <ActionButton
-              className={buttonClassName}
-              Element="button"
-              onClick={() =>
-                send({ type: 'Enter sketch', data: { forceNewSketch: true } })
-              }
-              iconStart={{
-                icon: 'sketch',
-                iconClassName,
-                bgClassName,
-              }}
-              disabled={disableAllButtons}
-            >
-              <span data-testid="start-sketch">Start Sketch</span>
-              <Tooltip
-                delay={1250}
-                position="bottom"
-                className="!px-2 !text-xs"
-              >
-                Shortcut: S
-              </Tooltip>
-            </ActionButton>
-          </li>
-        )}
-        {nextEvents.includes('Enter sketch') && pathId && (
-          <li className="contents">
-            <ActionButton
-              className={buttonClassName}
-              Element="button"
-              onClick={() => send({ type: 'Enter sketch' })}
-              iconStart={{
-                icon: 'sketch',
-                iconClassName,
-                bgClassName,
-              }}
-              disabled={disableAllButtons}
-            >
-              Edit Sketch
-              <Tooltip
-                delay={1250}
-                position="bottom"
-                className="!px-2 !text-xs"
-              >
-                Shortcut: S
-              </Tooltip>
-            </ActionButton>
-          </li>
-        )}
-        {nextEvents.includes('Cancel') && !state.matches('idle') && (
-          <li className="contents">
-            <ActionButton
-              className={buttonClassName}
-              Element="button"
-              onClick={() => send({ type: 'Cancel' })}
-              iconStart={{
-                icon: 'arrowLeft',
-                iconClassName,
-                bgClassName,
-              }}
-              disabled={disableAllButtons}
-            >
-              Exit Sketch
-              <Tooltip
-                delay={1250}
-                position="bottom"
-                className="!px-2 !text-xs"
-              >
-                Shortcut: Esc
-              </Tooltip>
-            </ActionButton>
-          </li>
-        )}
-        {state.matches('Sketch no face') && (
-          <li className="contents">
-            <div className="mx-2 text-sm">click plane or face to sketch on</div>
-          </li>
-        )}
-        {state.matches('Sketch') && !state.matches('idle') && (
-          <>
-            <li className="contents" key="line-button">
-              <ActionButton
-                className={buttonClassName}
+        {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
+        {currentModeItems.map((maybeIconConfig, i) => {
+          if (maybeIconConfig === 'break') {
+            return (
+              <div
+                key={'break-' + i}
+                className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
+              />
+            )
+          } else if (Array.isArray(maybeIconConfig)) {
+            return (
+              <ActionButtonDropdown
                 Element="button"
-                onClick={() =>
-                  state?.matches('Sketch.Line tool')
-                    ? send('CancelSketch')
-                    : send({
-                        type: 'change tool',
-                        data: { tool: 'line' },
-                      })
+                key={maybeIconConfig[0].id}
+                data-testid={maybeIconConfig[0].id + '-dropdown'}
+                id={maybeIconConfig[0].id + '-dropdown'}
+                name={maybeIconConfig[0].title}
+                className={
+                  'group/wrapper ' +
+                  buttonBorderClassName +
+                  ' !bg-transparent relative group !gap-0'
                 }
-                aria-pressed={state?.matches('Sketch.Line tool')}
-                iconStart={{
-                  icon: 'line',
-                  iconClassName,
-                  bgClassName,
-                }}
-                disabled={disableLineButton}
+                splitMenuItems={maybeIconConfig.map((itemConfig) => ({
+                  id: itemConfig.id,
+                  label: itemConfig.title,
+                  hotkey: itemConfig.hotkey,
+                  onClick: () => itemConfig.onClick(configCallbackProps),
+                  disabled:
+                    disableAllButtons ||
+                    itemConfig.status !== 'available' ||
+                    itemConfig.disabled === true,
+                  status: itemConfig.status,
+                }))}
               >
-                Line
-                <Tooltip
-                  delay={1250}
-                  position="bottom"
-                  className="!px-2 !text-xs"
+                <ActionButton
+                  Element="button"
+                  id={maybeIconConfig[0].id}
+                  data-testid={maybeIconConfig[0].id}
+                  iconStart={{
+                    icon: maybeIconConfig[0].icon,
+                    className: iconClassName,
+                    bgClassName: bgClassName,
+                  }}
+                  className={
+                    '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                    buttonBgClassName
+                  }
+                  aria-pressed={maybeIconConfig[0].isActive}
+                  disabled={
+                    disableAllButtons ||
+                    maybeIconConfig[0].status !== 'available' ||
+                    maybeIconConfig[0].disabled
+                  }
+                  name={maybeIconConfig[0].title}
+                  aria-description={maybeIconConfig[0].description}
+                  onClick={() =>
+                    maybeIconConfig[0].onClick(configCallbackProps)
+                  }
                 >
-                  Shortcut: L
-                </Tooltip>
-              </ActionButton>
-            </li>
-            <li className="contents" key="tangential-arc-button">
+                  <span
+                    className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
+                  >
+                    {maybeIconConfig[0].title}
+                  </span>
+                </ActionButton>
+                <ToolbarItemTooltip
+                  itemConfig={maybeIconConfig[0]}
+                  configCallbackProps={configCallbackProps}
+                />
+              </ActionButtonDropdown>
+            )
+          }
+          const itemConfig = maybeIconConfig
+
+          return (
+            <div className="relative" key={itemConfig.id}>
               <ActionButton
-                className={buttonClassName}
                 Element="button"
-                onClick={() =>
-                  state.matches('Sketch.Tangential arc to')
-                    ? send('CancelSketch')
-                    : send({
-                        type: 'change tool',
-                        data: { tool: 'tangentialArc' },
-                      })
-                }
-                aria-pressed={state.matches('Sketch.Tangential arc to')}
+                key={itemConfig.id}
+                id={itemConfig.id}
+                data-testid={itemConfig.id}
                 iconStart={{
-                  icon: 'arc',
-                  iconClassName,
-                  bgClassName,
+                  icon: itemConfig.icon,
+                  className: iconClassName,
+                  bgClassName: bgClassName,
                 }}
-                disabled={disableTangentialArc}
-              >
-                Tangential Arc
-                <Tooltip
-                  delay={1250}
-                  position="bottom"
-                  className="!px-2 !text-xs"
-                >
-                  Shortcut: A
-                </Tooltip>
-              </ActionButton>
-            </li>
-            <li className="contents" key="rectangle-button">
-              <ActionButton
-                className={buttonClassName}
-                Element="button"
-                onClick={() =>
-                  state.matches('Sketch.Rectangle tool')
-                    ? send('CancelSketch')
-                    : send({
-                        type: 'change tool',
-                        data: { tool: 'rectangle' },
-                      })
+                className={
+                  'pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                  buttonBorderClassName +
+                  ' ' +
+                  buttonBgClassName +
+                  (!itemConfig.showTitle ? ' !px-0' : '')
                 }
-                aria-pressed={state.matches('Sketch.Rectangle tool')}
-                iconStart={{
-                  icon: 'rectangle',
-                  iconClassName,
-                  bgClassName,
-                }}
-                disabled={disableRectangle}
-                title={
-                  canRectangleTool(context)
-                    ? 'Rectangle'
-                    : 'Can only be used when a sketch is empty currently'
+                name={itemConfig.title}
+                aria-description={itemConfig.description}
+                aria-pressed={itemConfig.isActive}
+                disabled={
+                  disableAllButtons ||
+                  itemConfig.status !== 'available' ||
+                  itemConfig.disabled
                 }
+                onClick={() => itemConfig.onClick(configCallbackProps)}
               >
-                Rectangle
-                <Tooltip
-                  delay={1250}
-                  position="bottom"
-                  className="!px-2 !text-xs"
-                >
-                  Shortcut: R
-                </Tooltip>
+                <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
+                  {itemConfig.title}
+                </span>
               </ActionButton>
-            </li>
-          </>
-        )}
-        {state.matches('Sketch.SketchIdle') &&
-          nextEvents.filter(
-            (eventName) =>
-              eventName.includes('Make segment') ||
-              eventName.includes('Constrain')
-          ).length > 0 && (
-            <ActionButtonDropdown
-              splitMenuItems={splitMenuItems}
-              className={buttonClassName}
-              Element="button"
-              iconStart={{
-                icon: 'dimension',
-                iconClassName,
-                bgClassName,
-              }}
-            >
-              Constraints
-            </ActionButtonDropdown>
-          )}
-        {state.matches('idle') && (
-          <li className="contents">
-            <ActionButton
-              className={buttonClassName}
-              Element="button"
-              onClick={() =>
-                commandBarSend({
-                  type: 'Find and select command',
-                  data: { name: 'Extrude', groupId: 'modeling' },
-                })
-              }
-              disabled={!state.can('Extrude') || disableAllButtons}
-              title={
-                state.can('Extrude')
-                  ? 'extrude'
-                  : 'sketches need to be closed, or not already extruded'
-              }
-              iconStart={{
-                icon: 'extrude',
-                iconClassName,
-                bgClassName,
-              }}
-            >
-              Extrude
-              <Tooltip
-                delay={1250}
-                position="bottom"
-                className="!px-2 !text-xs"
-              >
-                Shortcut: E
-              </Tooltip>
-            </ActionButton>
-          </li>
-        )}
-        {state.matches('idle') && (DEV || (window as any)._enableFillet) && (
-          <li className="contents">
-            <ActionButton
-              className={buttonClassName}
-              Element="button"
-              onClick={() =>
-                commandBarSend({
-                  type: 'Find and select command',
-                  data: { name: 'Fillet', groupId: 'modeling' },
-                })
-              }
-              disabled={disableFillet}
-              title={disableFillet ? 'fillet' : "edge can't be filleted"}
-              iconStart={{
-                icon: 'fillet', // todo: add fillet icon
-                iconClassName,
-                bgClassName,
-              }}
-            >
-              Fillet
-              <Tooltip
-                delay={1250}
-                position="bottom"
-                className="!px-2 !text-xs"
-              >
-                Shortcut: F
-              </Tooltip>
-            </ActionButton>
-          </li>
-        )}
+              <ToolbarItemTooltip
+                itemConfig={itemConfig}
+                configCallbackProps={configCallbackProps}
+              />
+            </div>
+          )
+        })}
       </ul>
+      {state.matches('Sketch no face') && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+          <p className="text-xs">Select a plane or face to start sketching</p>
+        </div>
+      )}
     </menu>
   )
 }
+
+/**
+ * The single button and dropdown button share content, so we extract it here
+ * It contains a tooltip with the title, description, and links
+ * and a hotkey listener
+ */
+const ToolbarItemTooltip = memo(function ToolbarItemContents({
+  itemConfig,
+  configCallbackProps,
+}: {
+  itemConfig: ToolbarItemResolved
+  configCallbackProps: ToolbarItemCallbackProps
+}) {
+  useHotkeys(
+    itemConfig.hotkey || '',
+    () => {
+      itemConfig.onClick(configCallbackProps)
+    },
+    {
+      enabled:
+        itemConfig.status === 'available' &&
+        !!itemConfig.hotkey &&
+        !itemConfig.disabled &&
+        !itemConfig.disableHotkey,
+    }
+  )
+
+  return (
+    <Tooltip
+      inert={false}
+      position="bottom"
+      wrapperClassName="!p-4 !pointer-events-auto"
+      contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
+    >
+      <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
+        <span
+          className={`text-sm flex-1 ${
+            itemConfig.status !== 'available'
+              ? 'text-chalkboard-70 dark:text-chalkboard-40'
+              : ''
+          }`}
+        >
+          {itemConfig.title}
+        </span>
+        {itemConfig.status === 'available' && itemConfig.hotkey ? (
+          <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+        ) : itemConfig.status === 'kcl-only' ? (
+          <>
+            <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
+              KCL code only
+            </span>
+            <CustomIcon
+              name="code"
+              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+          </>
+        ) : (
+          itemConfig.status === 'unavailable' && (
+            <>
+              <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
+                In development
+              </span>
+              <CustomIcon
+                name="lockClosed"
+                className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+            </>
+          )
+        )}
+      </div>
+      <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
+      {itemConfig.links.length > 0 && (
+        <>
+          <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+          <ul className="p-0 px-1 m-0 flex flex-col">
+            {itemConfig.links.map((link) => (
+              <li key={link.label} className="contents">
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
+                >
+                  <span className="flex-1">Open {link.label}</span>
+                  <CustomIcon name="link" className="w-4 h-4" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </Tooltip>
+  )
+})

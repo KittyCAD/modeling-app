@@ -7,7 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings, lint::checks};
+use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -71,7 +71,7 @@ pub async fn kcl_lint(program_str: &str) -> Result<JsValue, String> {
 
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let mut findings = vec![];
-    for discovered_finding in program.lint(checks::lint_variables).into_iter().flatten() {
+    for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
     }
 
