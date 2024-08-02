@@ -408,6 +408,13 @@ async fn find_machine_api() -> Result<Option<String>> {
 }
 
 #[tauri::command]
+async fn get_machine_api_ip() -> Result<Option<String>, InvokeError> {
+    let machine_api = find_machine_api().await.map_err(InvokeError::from_anyhow)?;
+
+    Ok(machine_api)
+}
+
+#[tauri::command]
 async fn list_machines() -> Result<String, InvokeError> {
     let machine_api = find_machine_api().await.map_err(InvokeError::from_anyhow)?;
 
@@ -474,6 +481,7 @@ fn main() -> Result<()> {
             read_project_settings_file,
             write_project_settings_file,
             rename_project_directory,
+            get_machine_api_ip,
             list_machines
         ])
         .plugin(tauri_plugin_cli::init())

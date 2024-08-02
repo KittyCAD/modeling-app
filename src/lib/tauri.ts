@@ -35,6 +35,11 @@ export async function listMachines(): Promise<
   return JSON.parse(machines)
 }
 
+// Get the machine-api ip address.
+export async function getMachineApiIp(): Promise<string | null> {
+  return await invoke<string | null>('get_machine_api_ip')
+}
+
 export async function renameProjectDirectory(
   projectPath: string,
   newName: string
