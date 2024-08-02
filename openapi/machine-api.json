@@ -53,10 +53,12 @@
           },
           "reason": {
             "description": "The reason of the info command.",
+            "nullable": true,
             "type": "string"
           },
           "result": {
             "description": "The result of the info command.",
+            "nullable": true,
             "type": "string"
           },
           "sequence_id": {
@@ -71,8 +73,6 @@
         "required": [
           "command",
           "module",
-          "reason",
-          "result",
           "sequence_id"
         ],
         "type": "object"
@@ -112,6 +112,7 @@
           },
           "project_name": {
             "description": "The project name.",
+            "nullable": true,
             "type": "string"
           },
           "sn": {
@@ -126,7 +127,6 @@
         "required": [
           "hw_ver",
           "name",
-          "project_name",
           "sn",
           "sw_ver"
         ],
@@ -863,9 +863,23 @@
             "type": "string"
           },
           {
+            "description": "Resume the print.",
+            "enum": [
+              "resume"
+            ],
+            "type": "string"
+          },
+          {
             "description": "Stop the print.",
             "enum": [
               "stop"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Extrusion calibration get.",
+            "enum": [
+              "extrusion_cali_get"
             ],
             "type": "string"
           }
