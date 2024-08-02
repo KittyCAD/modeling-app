@@ -15,7 +15,7 @@ close(sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
 ### Examples
 
 ```js
-startSketchOn('XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
   |> line([10, 0], %)
