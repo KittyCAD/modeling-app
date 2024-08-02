@@ -22,9 +22,6 @@ import {
 import {
   ARROWHEAD,
   AXIS_GROUP,
-  DEFAULT_PLANES,
-  DefaultPlane,
-  defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
   OnClickCallbackArgs,
@@ -202,6 +199,7 @@ export class SceneEntities {
 
   createIntersectionPlane() {
     if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
+      // this.removeIntersectionPlane()
       console.warn('createIntersectionPlane called when it already exists')
       return
     }
@@ -1500,146 +1498,6 @@ export class SceneEntities {
     // TODO is to fix that
     return new Promise((resolve, reject) => {
       this._tearDownSketch(0, resolve, reject, { removeAxis })
-    })
-  }
-  setupDefaultPlaneHover() {
-    sceneInfra.setCallbacks({
-      onMouseEnter: ({ selected }) => {
-        if (!(selected instanceof Mesh && selected.parent)) return
-        if (selected.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = selected.userData.type
-        selected.material.color = defaultPlaneColor(type, 0.5, 1)
-      },
-      onMouseLeave: ({ selected }) => {
-        if (!(selected instanceof Mesh && selected.parent)) return
-        if (selected.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = selected.userData.type
-        selected.material.color = defaultPlaneColor(type)
-      },
-      onClick: async (args) => {
-        const { entity_id } = await sendSelectEventToEngine(
-          args?.mouseEvent,
-          document.getElementById('video-stream') as HTMLVideoElement,
-          sceneInfra._streamDimensions
-        )
-
-        let _entity_id = entity_id
-        if (!_entity_id) return
-        if (
-          engineCommandManager.defaultPlanes?.xy === _entity_id ||
-          engineCommandManager.defaultPlanes?.xz === _entity_id ||
-          engineCommandManager.defaultPlanes?.yz === _entity_id ||
-          engineCommandManager.defaultPlanes?.negXy === _entity_id ||
-          engineCommandManager.defaultPlanes?.negXz === _entity_id ||
-          engineCommandManager.defaultPlanes?.negYz === _entity_id
-        ) {
-          const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-            [engineCommandManager.defaultPlanes.xy]: 'XY',
-            [engineCommandManager.defaultPlanes.xz]: 'XZ',
-            [engineCommandManager.defaultPlanes.yz]: 'YZ',
-            [engineCommandManager.defaultPlanes.negXy]: '-XY',
-            [engineCommandManager.defaultPlanes.negXz]: '-XZ',
-            [engineCommandManager.defaultPlanes.negYz]: '-YZ',
-          }
-          // TODO can we get this information from rust land when it creates the default planes?
-          // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-          let zAxis: [number, number, number] = [0, 0, 1]
-          let yAxis: [number, number, number] = [0, 1, 0]
-
-          // get unit vector from camera position to target
-          const camVector = sceneInfra.camControls.camera.position
-            .clone()
-            .sub(sceneInfra.camControls.target)
-
-          if (engineCommandManager.defaultPlanes?.xy === _entity_id) {
-            zAxis = [0, 0, 1]
-            yAxis = [0, 1, 0]
-            if (camVector.z < 0) {
-              zAxis = [0, 0, -1]
-              _entity_id = engineCommandManager.defaultPlanes?.negXy || ''
-            }
-          } else if (engineCommandManager.defaultPlanes?.yz === _entity_id) {
-            zAxis = [1, 0, 0]
-            yAxis = [0, 0, 1]
-            if (camVector.x < 0) {
-              zAxis = [-1, 0, 0]
-              _entity_id = engineCommandManager.defaultPlanes?.negYz || ''
-            }
-          } else if (engineCommandManager.defaultPlanes?.xz === _entity_id) {
-            zAxis = [0, 1, 0]
-            yAxis = [0, 0, 1]
-            _entity_id = engineCommandManager.defaultPlanes?.negXz || ''
-            if (camVector.y < 0) {
-              zAxis = [0, -1, 0]
-              _entity_id = engineCommandManager.defaultPlanes?.xz || ''
-            }
-          }
-
-          sceneInfra.modelingSend({
-            type: 'Select default plane',
-            data: {
-              type: 'defaultPlane',
-              planeId: _entity_id,
-              plane: defaultPlaneStrMap[_entity_id],
-              zAxis,
-              yAxis,
-            },
-          })
-          return
-        }
-        const artifact = this.engineCommandManager.artifactMap[_entity_id]
-        // If we clicked on an extrude wall, we climb up the parent Id
-        // to get the sketch profile's face ID. If we clicked on an endcap,
-        // we already have it.
-        const pathId =
-          artifact?.type === 'extrudeWall' || artifact?.type === 'extrudeCap'
-            ? artifact.pathId
-            : ''
-
-        // tsc cannot infer that target can have extrusions
-        // from the commandType (why?) so we need to cast it
-        const path = this.engineCommandManager.artifactMap?.[pathId || '']
-        const extrusionId =
-          path?.type === 'startPath' ? path.extrusionIds[0] : ''
-
-        // TODO: We get the first extrusion command ID,
-        // which is fine while backend systems only support one extrusion.
-        // but we need to more robustly handle resolving to the correct extrusion
-        // if there are multiple.
-        const extrusions = this.engineCommandManager.artifactMap?.[extrusionId]
-
-        if (artifact?.type !== 'extrudeCap' && artifact?.type !== 'extrudeWall')
-          return
-
-        const faceInfo = await getFaceDetails(_entity_id)
-        if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
-        const { z_axis, y_axis, origin } = faceInfo
-        const sketchPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
-          artifact.range
-        )
-
-        const extrudePathToNode = extrusions?.range
-          ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
-          : []
-
-        sceneInfra.modelingSend({
-          type: 'Select default plane',
-          data: {
-            type: 'extrudeFace',
-            zAxis: [z_axis.x, z_axis.y, z_axis.z],
-            yAxis: [y_axis.x, y_axis.y, y_axis.z],
-            position: [origin.x, origin.y, origin.z].map(
-              (num) => num / sceneInfra._baseUnitMultiplier
-            ) as [number, number, number],
-            sketchPathToNode,
-            extrudePathToNode,
-            cap: artifact.type === 'extrudeCap' ? artifact.cap : 'none',
-            faceId: _entity_id,
-          },
-        })
-        return
-      },
     })
   }
   mouseEnterLeaveCallbacks() {
