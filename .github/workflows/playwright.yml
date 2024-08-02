@@ -34,7 +34,7 @@ jobs:
               - 'src/wasm-lib/**'
 
   playwright-ubuntu:
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ubuntu-latest-8-cores
     strategy:
       fail-fast: false
@@ -198,7 +198,7 @@ jobs:
         overwrite: true
 
   playwright-macos:
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: macos-14-large
     strategy:
       fail-fast: false
