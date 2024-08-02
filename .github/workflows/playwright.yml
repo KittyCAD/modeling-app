@@ -35,7 +35,7 @@ jobs:
 
   playwright-ubuntu:
     timeout-minutes: 30
-    runs-on: ubuntu-latest-8-cores
+    runs-on: ubuntu-latest-4-cores
     strategy:
       fail-fast: false
       matrix:
@@ -199,7 +199,7 @@ jobs:
 
   playwright-macos:
     timeout-minutes: 30
-    runs-on: macos-14-large
+    runs-on: macos-14
     strategy:
       fail-fast: false
       matrix:
