@@ -4211,7 +4211,7 @@ test.describe('Sketch tests', () => {
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([-4.42, 14.11], %)`
+  |> line([0.31, 16.47], %)`
     )
   })
   test('Can exit selection of face', async ({ page }) => {
