@@ -3,22 +3,16 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
-} from 'lib/tauriFS'
+import { createNewProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
-import { useNavigate } from 'react-router-dom'
-import { paths } from 'lib/paths'
-import { codeManager, kclManager } from 'lib/singletons'
-import { join } from '@tauri-apps/api/path'
-import {
-  APP_NAME,
-  ONBOARDING_PROJECT_NAME,
-  PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { createNewProjectDirectory, listProjects } from 'lib/tauri'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { APP_NAME } from 'lib/constants'
 import { useState } from 'react'
+import { useLspContext } from 'components/LspProvider'
+import { IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
+import { useFileContext } from 'hooks/useFileContext'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -47,30 +41,39 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
         {!isTauri() ? (
           <OnboardingWarningWeb {...props} />
         ) : (
-          <OnboardingWarningDesktop />
+          <OnboardingWarningDesktop {...props} />
         )}
       </div>
     </div>
   )
 }
 
-function OnboardingWarningDesktop() {
+function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
   const navigate = useNavigate()
   const dismiss = useDismiss()
+  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const { context: fileContext } = useFileContext()
+  const { onProjectClose, onProjectOpen } = useLspContext()
 
-  async function createAndOpenNewProject() {
-    const projects = await listProjects()
-    const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-    const name = interpolateProjectNameWithIndex(
-      ONBOARDING_PROJECT_NAME,
-      nextIndex
+  async function onAccept() {
+    onProjectClose(
+      loaderData.file || null,
+      fileContext.project.path || null,
+      false
     )
-    const newFile = await createNewProjectDirectory(name, bracket)
-    navigate(
-      `${paths.FILE}/${encodeURIComponent(
-        await join(newFile.path, PROJECT_ENTRYPOINT)
-      )}${paths.ONBOARDING.INDEX}`
+    // Clear the scene and end the session.
+    engineCommandManager.endSession()
+    const newProject = await createNewProject()
+    onProjectOpen(
+      {
+        name: newProject.name,
+        path: newProject.path,
+      },
+      null
     )
+    console.log('newProject', newProject)
+    navigate(`${paths.FILE}/${encodeURIComponent(newProject.path)}`)
+    props.setShouldShowWarning(false)
   }
 
   return (
@@ -88,11 +91,7 @@ function OnboardingWarningDesktop() {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={() => {
-          void createAndOpenNewProject()
-          codeManager.updateCodeEditor(bracket)
-          dismiss()
-        }}
+        next={onAccept}
         nextText="Make a new project"
       />
     </>

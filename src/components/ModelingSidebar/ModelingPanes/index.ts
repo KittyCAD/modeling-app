@@ -3,7 +3,6 @@ import {
   faBugSlash,
   faCode,
   faCodeCommit,
-  faExclamationCircle,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'

@@ -116,9 +116,7 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewProject(
-  navigate: (path: string) => void
-) {
+export async function createNewProject() {
   const configuration = await readAppSettingsFile()
   const projects = await listProjects(configuration)
   const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
@@ -127,5 +125,13 @@ export async function createAndOpenNewProject(
     nextIndex
   )
   const newFile = await createNewProjectDirectory(name, bracket, configuration)
+  return newFile
+}
+
+export async function createAndOpenNewProject(
+  navigate: (path: string) => void
+) {
+  const newFile = await createNewProject()
   navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
+  return newFile
 }
