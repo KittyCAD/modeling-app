@@ -51,7 +51,7 @@ export async function renameProjectDirectory(
       )
     )
   } catch (e) {
-    // Otherwise if it failed and the failure is "it doesnt exist" then rename it!
+    // Otherwise if it failed and the failure is "it doesn't exist" then rename it!
     if (e === 'ENOENT') {
       await window.electron.rename(projectPath, newPath)
       return newPath
