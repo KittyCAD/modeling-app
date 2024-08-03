@@ -130,18 +130,14 @@ export function useEngineConnectionSubscriptions() {
                   zAxis = [0, 0, -1]
                   planeId = engineCommandManager.defaultPlanes?.negXy || ''
                 }
-              } else if (
-                engineCommandManager.defaultPlanes?.yz === planeId
-              ) {
+              } else if (engineCommandManager.defaultPlanes?.yz === planeId) {
                 zAxis = [1, 0, 0]
                 yAxis = [0, 0, 1]
                 if (camVector.x < 0) {
                   zAxis = [-1, 0, 0]
                   planeId = engineCommandManager.defaultPlanes?.negYz || ''
                 }
-              } else if (
-                engineCommandManager.defaultPlanes?.xz === planeId
-              ) {
+              } else if (engineCommandManager.defaultPlanes?.xz === planeId) {
                 zAxis = [0, 1, 0]
                 yAxis = [0, 0, 1]
                 planeId = engineCommandManager.defaultPlanes?.negXz || ''
