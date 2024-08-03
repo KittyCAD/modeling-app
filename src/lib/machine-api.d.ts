@@ -93,29 +93,29 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** @description The type of accessory. */
+    AccessoryType: 'none'
     /** @description Error information from a response. */
     Error: {
       error_code?: string
       message: string
       request_id: string
     }
-    /** @description A info message. */
+    /** @description An info command. */
     Info: {
-      /** @description The info command. */
-      command: components['schemas']['InfoCommand']
+      /** @enum {string} */
+      command: 'get_version'
       /** @description The info module. */
       module: components['schemas']['InfoModule'][]
       /** @description The reason of the info command. */
-      reason?: string | null
+      reason?: components['schemas']['Reason'] | null
       /** @description The result of the info command. */
-      result?: string | null
+      result: components['schemas']['Result']
       /** @description The sequence id. */
       sequence_id: components['schemas']['SequenceId']
     } & {
       [key: string]: unknown
     }
-    /** @description An info command. */
-    InfoCommand: 'get_version'
     /** @description An info module. */
     InfoModule: {
       /** @description The hardware version. */
@@ -133,6 +133,10 @@ export interface components {
       /** @description The software version. */
       sw_ver: string
     }
+    /** @description The mode for the led. */
+    LedMode: 'on' | 'off' | 'flashing'
+    /** @description The node for the led. */
+    LedNode: 'chamber_light' | 'work_light'
     /** @description Details for a 3d printer connected over USB. */
     Machine:
       | {
@@ -205,200 +209,279 @@ export interface components {
         }
     /** @description Network printer manufacturer. */
     NetworkPrinterManufacturer: 'Bambu' | 'Formlabs'
+    /** @description A nozzle type. */
+    NozzleType: 'hardened_steel' | 'stainless_steel'
     /** @description The response from the `/ping` endpoint. */
     Pong: {
       /** @description The pong response. */
       message: string
     }
-    /** @description A print message. */
-    Print: {
-      /** @description The ams. */
-      ams?: components['schemas']['PrintAms'] | null
-      /**
-       * Format: int64
-       * @description The ams rfid status.
-       */
-      ams_rfid_status?: number | null
-      /**
-       * Format: int64
-       * @description The ams status.
-       */
-      ams_status?: number | null
-      /**
-       * Format: double
-       * @description The target bed temperature.
-       */
-      bed_target_temper?: number | null
-      /**
-       * Format: double
-       * @description The bed temperature.
-       */
-      bed_temper?: number | null
-      /** @description The big fan 1 speed. */
-      big_fan1_speed?: string | null
-      /** @description The big fan 2 speed. */
-      big_fan2_speed?: string | null
-      /**
-       * Format: double
-       * @description The chamber temperature.
-       */
-      chamber_temper?: number | null
-      /** @description The command. */
-      command: components['schemas']['PrintCommand']
-      /** @description The cooling fan speed. */
-      cooling_fan_speed?: string | null
-      /**
-       * Format: int64
-       * @description The fan gear.
-       */
-      fan_gear?: number | null
-      /** @description Force upgrade? */
-      force_upgrade?: boolean | null
-      /** @description The gcode file. */
-      gcode_file?: string | null
-      /** @description The gcode file prepare percent. */
-      gcode_file_prepare_percent?: string | null
-      /** @description The gcode state. */
-      gcode_state?: string | null
-      /** @description The heatbreak fan speed. */
-      heatbreak_fan_speed?: string | null
-      /** @description The hms. */
-      hms?: unknown[] | null
-      /**
-       * Format: int64
-       * @description The home flag.
-       */
-      home_flag?: number | null
-      /**
-       * Format: int64
-       * @description The hw switch state.
-       */
-      hw_switch_state?: number | null
-      /** @description The ipcam. */
-      ipcam?: components['schemas']['PrintIpcam'] | null
-      /**
-       * Format: int64
-       * @description The layer num.
-       */
-      layer_num?: number | null
-      /** @description The lifecycle. */
-      lifecycle?: string | null
-      /** @description The lights report. */
-      lights_report?: components['schemas']['PrintLightsReport'][] | null
-      /**
-       * Format: int64
-       * @description The percentage of the print completed.
-       */
-      mc_percent?: number | null
-      /** @description The mc print line number. */
-      mc_print_line_number?: string | null
-      /** @description The print stage. */
-      mc_print_stage?: string | null
-      /**
-       * Format: int64
-       * @description The mc print sub stage.
-       */
-      mc_print_sub_stage?: number | null
-      /**
-       * Format: int64
-       * @description The remaining time of the print.
-       */
-      mc_remaining_time?: number | null
-      /** @description The mess production state. */
-      mess_production_state?: string | null
-      /**
-       * Format: int64
-       * @description The message.
-       */
-      msg?: number | null
-      /**
-       * Format: double
-       * @description The target nozzle temperature.
-       */
-      nozzle_target_temper?: number | null
-      /**
-       * Format: double
-       * @description The nozzle temperature.
-       */
-      nozzle_temper?: number | null
-      /** @description Online status. */
-      online?: components['schemas']['PrintOnline'] | null
-      /**
-       * Format: int64
-       * @description The print error.
-       */
-      print_error?: number | null
-      /** @description The print type. */
-      print_type?: string | null
-      /** @description The profile id. */
-      profile_id?: string | null
-      /** @description The project id. */
-      project_id?: string | null
-      /**
-       * Format: int64
-       * @description The queue est.
-       */
-      queue_est?: number | null
-      /**
-       * Format: int64
-       * @description The queue number.
-       */
-      queue_number?: number | null
-      /**
-       * Format: int64
-       * @description The queue sts.
-       */
-      queue_sts?: number | null
-      /**
-       * Format: int64
-       * @description The queue total.
-       */
-      queue_total?: number | null
-      /** @description The s obj. */
-      s_obj?: unknown[] | null
-      /** @description Sdcard? */
-      sdcard?: boolean | null
-      /** @description The sequence id. */
-      sequence_id: components['schemas']['SequenceId']
-      /**
-       * Format: int64
-       * @description The spd lvl.
-       */
-      spd_lvl?: number | null
-      /**
-       * Format: int64
-       * @description The spd mag.
-       */
-      spd_mag?: number | null
-      /** @description The stg. */
-      stg?: unknown[] | null
-      /**
-       * Format: int64
-       * @description The stg cur.
-       */
-      stg_cur?: number | null
-      /** @description The subtask id. */
-      subtask_id?: string | null
-      /** @description The subtask name. */
-      subtask_name?: string | null
-      /** @description The task id. */
-      task_id?: string | null
-      /**
-       * Format: int64
-       * @description The total layer num.
-       */
-      total_layer_num?: number | null
-      /** @description The upgrade state. */
-      upgrade_state?: components['schemas']['PrintUpgradeState'] | null
-      /** @description The upload. */
-      upload?: components['schemas']['PrintUpload'] | null
-      /** @description The tray. */
-      vt_tray?: components['schemas']['PrintTray'] | null
-      /** @description The wifi signal. */
-      wifi_signal?: string | null
-    } & {
-      [key: string]: unknown
-    }
+    /** @description A print command. */
+    Print:
+      | ({
+          /** @description The ams. */
+          ams?: components['schemas']['PrintAms'] | null
+          /**
+           * Format: int64
+           * @description The ams rfid status.
+           */
+          ams_rfid_status?: number | null
+          /**
+           * Format: int64
+           * @description The ams status.
+           */
+          ams_status?: number | null
+          /** @description The aux part fan. */
+          aux_part_fan?: boolean | null
+          /**
+           * Format: double
+           * @description The target bed temperature.
+           */
+          bed_target_temper?: number | null
+          /**
+           * Format: double
+           * @description The bed temperature.
+           */
+          bed_temper?: number | null
+          /** @description The big fan 1 speed. */
+          big_fan1_speed?: string | null
+          /** @description The big fan 2 speed. */
+          big_fan2_speed?: string | null
+          /**
+           * Format: double
+           * @description The chamber temperature.
+           */
+          chamber_temper?: number | null
+          /** @enum {string} */
+          command: 'push_status'
+          /** @description The cooling fan speed. */
+          cooling_fan_speed?: string | null
+          /**
+           * Format: int64
+           * @description The fan gear.
+           */
+          fan_gear?: number | null
+          /** @description Force upgrade? */
+          force_upgrade?: boolean | null
+          /** @description The gcode file. */
+          gcode_file?: string | null
+          /** @description The gcode file prepare percent. */
+          gcode_file_prepare_percent?: string | null
+          /** @description The gcode state. */
+          gcode_state?: string | null
+          /** @description The heatbreak fan speed. */
+          heatbreak_fan_speed?: string | null
+          /** @description The hms. */
+          hms?: unknown[] | null
+          /**
+           * Format: int64
+           * @description The home flag.
+           */
+          home_flag?: number | null
+          /**
+           * Format: int64
+           * @description The hw switch state.
+           */
+          hw_switch_state?: number | null
+          /** @description The ipcam. */
+          ipcam?: components['schemas']['PrintIpcam'] | null
+          /**
+           * Format: int64
+           * @description The layer num.
+           */
+          layer_num?: number | null
+          /** @description The lifecycle. */
+          lifecycle?: string | null
+          /** @description The lights report. */
+          lights_report?: components['schemas']['PrintLightsReport'][] | null
+          /**
+           * Format: int64
+           * @description The percentage of the print completed.
+           */
+          mc_percent?: number | null
+          /** @description The mc print line number. */
+          mc_print_line_number?: string | null
+          /** @description The print stage. */
+          mc_print_stage?: string | null
+          /**
+           * Format: int64
+           * @description The mc print sub stage.
+           */
+          mc_print_sub_stage?: number | null
+          /**
+           * Format: int64
+           * @description The remaining time of the print.
+           */
+          mc_remaining_time?: number | null
+          /** @description The mess production state. */
+          mess_production_state?: string | null
+          /**
+           * Format: int64
+           * @description The message.
+           */
+          msg?: number | null
+          /** @description The nozzle diameter. */
+          nozzle_diameter?: string | null
+          /**
+           * Format: double
+           * @description The target nozzle temperature.
+           */
+          nozzle_target_temper?: number | null
+          /**
+           * Format: double
+           * @description The nozzle temperature.
+           */
+          nozzle_temper?: number | null
+          /** @description The nozzle type. */
+          nozzle_type?: components['schemas']['NozzleType'] | null
+          /** @description Online status. */
+          online?: components['schemas']['PrintOnline'] | null
+          /**
+           * Format: int64
+           * @description The print error.
+           */
+          print_error?: number | null
+          /** @description The print type. */
+          print_type?: string | null
+          /** @description The profile id. */
+          profile_id?: string | null
+          /** @description The project id. */
+          project_id?: string | null
+          /**
+           * Format: int64
+           * @description The queue est.
+           */
+          queue_est?: number | null
+          /**
+           * Format: int64
+           * @description The queue number.
+           */
+          queue_number?: number | null
+          /**
+           * Format: int64
+           * @description The queue sts.
+           */
+          queue_sts?: number | null
+          /**
+           * Format: int64
+           * @description The queue total.
+           */
+          queue_total?: number | null
+          /** @description The s obj. */
+          s_obj?: unknown[] | null
+          /** @description Sdcard? */
+          sdcard?: boolean | null
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+          /**
+           * Format: int64
+           * @description The spd lvl.
+           */
+          spd_lvl?: number | null
+          /**
+           * Format: int64
+           * @description The spd mag.
+           */
+          spd_mag?: number | null
+          /** @description The stg. */
+          stg?: unknown[] | null
+          /**
+           * Format: int64
+           * @description The stg cur.
+           */
+          stg_cur?: number | null
+          /** @description The subtask id. */
+          subtask_id?: string | null
+          /** @description The subtask name. */
+          subtask_name?: string | null
+          /** @description The task id. */
+          task_id?: string | null
+          /**
+           * Format: int64
+           * @description The total layer num.
+           */
+          total_layer_num?: number | null
+          /** @description The upgrade state. */
+          upgrade_state?: components['schemas']['PrintUpgradeState'] | null
+          /** @description The upload. */
+          upload?: components['schemas']['PrintUpload'] | null
+          /** @description The tray. */
+          vt_tray?: components['schemas']['PrintTray'] | null
+          /** @description The wifi signal. */
+          wifi_signal?: string | null
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'gcode_line'
+          /** @description The gcode line. */
+          line: string
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'project_file'
+          /** @description The gcode file. */
+          gcode_file: string
+          /** @description The profile id. */
+          profile_id: string
+          /** @description The project id. */
+          project_id: string
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+          /** @description The subtask id. */
+          subtask_id: string
+          /** @description The subtask name. */
+          subtask_name: string
+          /** @description The task id. */
+          task_id: string
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'pause'
+          /** @description The reason for the message. */
+          reason: components['schemas']['Reason']
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'resume'
+          /** @description The reason for the message. */
+          reason: components['schemas']['Reason']
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'stop'
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'extrusion_cali_get'
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
     /** @description The print ams. */
     PrintAms: {
       /** @description The ams. */
@@ -428,6 +511,8 @@ export interface components {
        * @description The version.
        */
       version?: number | null
+    } & {
+      [key: string]: unknown
     }
     /** @description The print ams data. */
     PrintAmsData: {
@@ -439,15 +524,9 @@ export interface components {
       temp: string
       /** @description The tray. */
       tray: components['schemas']['PrintTray'][]
+    } & {
+      [key: string]: unknown
     }
-    /** @description A print command. */
-    PrintCommand:
-      | 'push_status'
-      | 'gcode_line'
-      | 'project_file'
-      | 'resume'
-      | 'stop'
-      | 'extrusion_cali_get'
     /** @description The print ipcam. */
     PrintIpcam: {
       /** @description The ipcam dev. */
@@ -461,6 +540,8 @@ export interface components {
       mode_bits?: number | null
       /** @description The timelapse. */
       timelapse?: string | null
+    } & {
+      [key: string]: unknown
     }
     /** @description The response from the `/print` endpoint. */
     PrintJobResponse: {
@@ -472,9 +553,11 @@ export interface components {
     /** @description A print lights report. */
     PrintLightsReport: {
       /** @description The mode. */
-      mode: string
+      mode: components['schemas']['LedMode']
       /** @description The node. */
-      node: string
+      node: components['schemas']['LedNode']
+    } & {
+      [key: string]: unknown
     }
     /** @description The print online. */
     PrintOnline: {
@@ -487,6 +570,8 @@ export interface components {
        * @description The version.
        */
       version: number
+    } & {
+      [key: string]: unknown
     }
     /** @description Parameters for printing. */
     PrintParameters: {
@@ -546,6 +631,8 @@ export interface components {
       tray_weight?: string | null
       /** @description The xcam info. */
       xcam_info?: string | null
+    } & {
+      [key: string]: unknown
     }
     /** @description A print upgrade state. */
     PrintUpgradeState: {
@@ -583,6 +670,8 @@ export interface components {
       sequence_id?: number | null
       /** @description The status. */
       status?: string | null
+    } & {
+      [key: string]: unknown
     }
     /** @description The print upload. */
     PrintUpload: {
@@ -595,22 +684,81 @@ export interface components {
       progress: number
       /** @description The status. */
       status: string
-    }
-    /** @description The sequence id type. */
-    SequenceId: string | number
-    /** @description A system message. */
-    System: {
-      /** @description The system command. */
-      command: components['schemas']['SystemCommand']
-      /** @description The result of the system command. */
-      result: string
-      /** @description The sequence id. */
-      sequence_id: components['schemas']['SequenceId']
     } & {
       [key: string]: unknown
     }
+    /** @description A reason for a message. */
+    Reason:
+      | 'SUCCESS'
+      | 'FAIL'
+      | {
+          UNKNOWN: string
+        }
+    /** @description The result of a message. */
+    Result: 'SUCCESS' | 'FAIL'
+    /** @description The sequence id type. */
+    SequenceId: string | number
     /** @description A system command. */
-    SystemCommand: 'ledctrl' | 'get_accessories'
+    System:
+      | ({
+          /** @enum {string} */
+          command: 'ledctrl'
+          /**
+           * Format: uint32
+           * @description The interval time.
+           */
+          interval_time: number
+          /** @description The LED mode. */
+          led_mode: components['schemas']['LedMode']
+          /** @description The LED node. */
+          led_node: components['schemas']['LedNode']
+          /**
+           * Format: uint32
+           * @description The LED off time.
+           */
+          led_off_time: number
+          /**
+           * Format: uint32
+           * @description The LED on time.
+           */
+          led_on_time: number
+          /**
+           * Format: uint32
+           * @description The loop times.
+           */
+          loop_times: number
+          /** @description The reason for the message. */
+          reason?: components['schemas']['Reason'] | null
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @description The accessory type. */
+          accessory_type: components['schemas']['AccessoryType']
+          /** @description The aux part fan. */
+          aux_part_fan: boolean
+          /** @enum {string} */
+          command: 'get_accessories'
+          /**
+           * Format: double
+           * @description The nozzle diameter.
+           */
+          nozzle_diameter: number
+          /** @description The nozzle type. */
+          nozzle_type: components['schemas']['NozzleType']
+          /** @description The reason for the message. */
+          reason?: components['schemas']['Reason'] | null
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
   }
   responses: {
     /** @description Error */
