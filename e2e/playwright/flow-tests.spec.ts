@@ -4958,7 +4958,9 @@ const sketch002 = startSketchOn(extrude001, 'END')
     await u.expectCmdLog('[data-message-type="execution-done"]')
 
     await expect
-      .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {timeout: 5_000})
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {
+        timeout: 5_000,
+      })
       .toBeLessThan(8)
 
     // click start Sketch
@@ -4982,7 +4984,6 @@ const sketch002 = startSketchOn(extrude001, 'END')
   |> line([3.39, -3.39], %)
 `)
 
-    // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
