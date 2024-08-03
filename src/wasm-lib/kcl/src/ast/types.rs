@@ -2854,27 +2854,45 @@ impl MemberExpression {
 
         let property: Property = match self.property.clone() {
             LiteralIdentifier::Identifier(identifier) => {
-                let prop = memory.get(&identifier.name, property_src)?;
-                let MemoryItem::UserVal(prop) = prop else {
-                    return Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges: property_sr,
-                        message: format!(
-                            "{} is not a valid property/index, you can only use a string or int (>= 0) here",
-                            identifier.name
-                        ),
-                    }));
-                };
-                match prop.value {
-                    JValue::Number(ref x) => Property::Number(x.as_u64().unwrap().try_into().unwrap()), // TODO: remove unwrap
-                    JValue::String(ref x) => Property::String(x.to_owned()),
-                    _ => {
+                let name = identifier.name;
+                if !self.computed {
+                    // Treat the property as a literal
+                    Property::String(name.to_string())
+                } else {
+                    // Actually evaluate memory to compute the property.
+                    let prop = memory.get(&name, property_src)?;
+                    let MemoryItem::UserVal(prop) = prop else {
                         return Err(KclError::Syntax(KclErrorDetails {
                             source_ranges: property_sr,
                             message: format!(
-                                "{} is not a valid property/index, you can only use a string or int (>= 0) here",
-                                identifier.name
+                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
                             ),
                         }));
+                    };
+                    match prop.value {
+                        JValue::Number(ref num) => {
+                            num
+                                .as_u64()
+                                .and_then(|x| usize::try_from(x).ok())
+                                .map(Property::Number)
+                                .ok_or_else(|| {
+                                    KclError::Syntax(KclErrorDetails {
+                                        source_ranges: property_sr,
+                                        message: format!(
+                                            "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                                        ),
+                                    })
+                                })?
+                        }
+                        JValue::String(ref x) => Property::String(x.to_owned()),
+                        _ => {
+                            return Err(KclError::Syntax(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!(
+                                    "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
+                                ),
+                            }));
+                        }
                     }
                 }
             }
@@ -2901,9 +2919,9 @@ impl MemberExpression {
                 }
             }
         };
-        eprintln!("ADAM: Read {:?} and resolved it to {:?}", &self.property, property);
 
         let object = match &self.object {
+            // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
             MemberObject::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
