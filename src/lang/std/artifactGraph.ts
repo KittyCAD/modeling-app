@@ -354,7 +354,7 @@ export function getArtifactsToUpdate({
     return returnArr
   } else if (
     cmd.type === 'solid3d_get_extrusion_face_info' &&
-    response.type === 'modeling' &&
+    response?.type === 'modeling' &&
     response.data.modeling_response.type === 'solid3d_get_extrusion_face_info'
   ) {
     let lastPath: PathArtifact
