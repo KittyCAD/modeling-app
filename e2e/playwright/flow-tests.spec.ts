@@ -4902,7 +4902,11 @@ const sketch002 = startSketchOn(extrude001, 'END')
 `.replace(/\s/g, '')
     )
   })
-  test('empty-scene default-planes act as expected', async ({ page }) => {
+  test('empty-scene default-planes act as expected', async ({ page, browserName }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
     /**
      * Tests the following things
      * 1) The the planes are there on load because the scene is empty
