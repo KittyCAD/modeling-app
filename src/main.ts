@@ -27,11 +27,11 @@ const createWindow = () => {
   })
 
   const splashWindow = new BrowserWindow({
-     width: 500, 
-     height: 300, 
-     transparent: false, 
-     frame: false, 
-     alwaysOnTop: true 
+    width: 500,
+    height: 300,
+    transparent: false,
+    frame: false,
+    alwaysOnTop: true,
   })
 
   // and load the index.html of the app.
@@ -39,7 +39,9 @@ const createWindow = () => {
     splashWindow.loadFile(`splash.html`)
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
-    splashWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/splash.html`))
+    splashWindow.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/splash.html`)
+    )
     mainWindow.loadFile(
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     )
@@ -135,4 +137,3 @@ ipcMain.handle('login', async (event, host) => {
 
   return tokenSet.access_token
 })
-

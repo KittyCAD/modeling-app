@@ -63,3 +63,6 @@ Mac_App_Distribution.provisionprofile
 
 venv
 .vite/
+
+# electron
+out/
