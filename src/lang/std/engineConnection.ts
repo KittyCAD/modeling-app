@@ -1423,8 +1423,12 @@ export class EngineCommandManager extends EventTarget {
               break
             }
             case ExportIntent.Make: {
-              exportMake(event.data).then(() => {
-                this.pendingExport?.resolve(null)
+              exportMake(event.data).then((result) => {
+                if (result) {
+                  this.pendingExport?.resolve(null)
+                } else {
+                  this.pendingExport?.reject('Failed to make export')
+                }
               }, this.pendingExport?.reject)
               break
             }

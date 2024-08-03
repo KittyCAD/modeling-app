@@ -169,11 +169,8 @@ export interface components {
         } | {
             NetworkPrinter: components["schemas"]["Message3"];
         };
-        /**
-         * @description A message from the printer.
-         * @enum {string}
-         */
-        Message2: "ok";
+        /** @description A message from the printer. */
+        Message2: string;
         /** @description A message from the printer. */
         Message3: {
             Bambu: components["schemas"]["Message4"];
@@ -430,7 +427,7 @@ export interface components {
             tray: components["schemas"]["PrintTray"][];
         };
         /** @description A print command. */
-        PrintCommand: "push_status" | "gcode_line" | "project_file" | "stop";
+        PrintCommand: "push_status" | "gcode_line" | "project_file";
         /** @description The print ipcam. */
         PrintIpcam: {
             /** @description The ipcam dev. */

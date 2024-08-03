@@ -51,7 +51,7 @@ const save_ = async (file: ModelingAppFile) => {
     }
   } catch (e) {
     // TODO: do something real with the error.
-    console.log('export error', e)
+    console.error('export error', e)
   }
 }
 
