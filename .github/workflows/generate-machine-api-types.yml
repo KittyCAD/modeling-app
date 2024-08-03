@@ -24,6 +24,7 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn generate:machine-api
+      - run: yarn fmt
       - name: check for changes
         id: git-check
         run: |
