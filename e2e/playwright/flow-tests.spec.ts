@@ -26,7 +26,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
@@ -466,7 +466,7 @@ test.describe('Testing Camera Movement', () => {
 
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
@@ -2623,10 +2623,9 @@ test.describe('Testing selections', () => {
       await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
+      // bg-yellow-300/70 is more brittle than hover-highlight, but is closer to the user experience
       // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-200').first()).toBeVisible()
-
+      await expect(page.locator('.bg-yellow-300\\/70')).toBeVisible()
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
       await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
@@ -3078,7 +3077,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(6) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
@@ -4902,6 +4901,116 @@ const sketch002 = startSketchOn(extrude001, 'END')
   |>
 `.replace(/\s/g, '')
     )
+  })
+  test('empty-scene default-planes act as expected', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
+    /**
+     * Tests the following things
+     * 1) The the planes are there on load because the scene is empty
+     * 2) The planes don't changes color when hovered initially
+     * 3) Putting something in the scene makes the planes hidden
+     * 4) Removing everything from the scene shows the plans again
+     * 3) Once "start sketch" is click, the planes do respond to hovers
+     * 4) Selecting a plan works as expected, i.e. sketch mode
+     * 5) Reloading the scene with something already in the scene means the planes are hidden
+     */
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    await u.codeLocator.fill(`const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+`)
+
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    const noPlanesColor: [number, number, number] = [30, 30, 30]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+    ).toBeLessThan(3)
+
+    await u.clearCommandLogs()
+    await u.removeCurrentCode()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    await expect
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {
+        timeout: 5_000,
+      })
+      .toBeLessThan(8)
+
+    // click start Sketch
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 5 })
+    const hoveredColor: [number, number, number] = [93, 93, 127]
+    // now that we're expecting the user to select a plan, it does respond to hover
+    await expect
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, hoveredColor))
+      .toBeLessThan(8)
+
+    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(600)
+
+    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+    await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([11.8, 9.09], %)
+  |> line([3.39, -3.39], %)
+`)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([11.8, 9.09], %)
+  |> line([3.39, -3.39], %)
+`
+      )
+    })
+    await page.reload()
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // expect there to be no planes on load since there's something in the scene
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+    ).toBeLessThan(3)
   })
 })
 

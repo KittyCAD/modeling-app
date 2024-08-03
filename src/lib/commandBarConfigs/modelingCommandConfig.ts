@@ -237,7 +237,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'default',
           'line-end',
           'line-mid',
-          'extrude-wall', // to fix: accespts only this selection type
+          'extrude-wall', // to fix: accepts only this selection type
+          'solid2D',
           'start-cap',
           'end-cap',
           'point',

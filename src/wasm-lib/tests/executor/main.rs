@@ -39,6 +39,13 @@ async fn kcl_test_lego() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_computed_var() {
+    let code = kcl_input!("computed_var");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("computed_var", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_pipe_as_arg() {
     let code = kcl_input!("pipe_as_arg");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();

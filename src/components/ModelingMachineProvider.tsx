@@ -497,7 +497,7 @@ export const ModelingMachineProvider = ({
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactMap,
+            engineCommandManager.artifactGraph,
             selectionRanges
           )
         },
