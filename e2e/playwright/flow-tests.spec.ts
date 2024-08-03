@@ -8116,7 +8116,7 @@ test('Typing KCL errors induces a badge on the error logs pane button', async ({
   await u.closeDebugPanel()
 
   // Ensure no badge is present
-  const errorLogsButton = page.getByRole('button', { name: 'KCL Errors pane' })
+  const errorLogsButton = page.getByRole('button', { name: 'KCL Code pane' })
   await expect(errorLogsButton).not.toContainText('notification')
 
   // Delete a character to break the KCL

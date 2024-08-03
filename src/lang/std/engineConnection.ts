@@ -2,7 +2,7 @@ import { Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
-import { uuidv4 } from 'lib/utils'
+import { deferExecution, uuidv4 } from 'lib/utils'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
@@ -12,6 +12,7 @@ import {
   ResponseMap,
   createArtifactGraph,
 } from 'lang/std/artifactGraph'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
@@ -1197,6 +1198,8 @@ export class EngineCommandManager extends EventTarget {
     detail,
   }: CustomEvent<NewTrackArgs>) => {}
   disableWebRTC = false
+  modelingSend: ReturnType<typeof useModelingContext>['send'] =
+    (() => {}) as any
 
   start({
     disableWebRTC = false,
@@ -1773,6 +1776,14 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(message.command)
     return promise
   }
+
+  deferredArtifactPopulated = deferExecution((a?: null) => {
+    this.modelingSend({ type: 'Artifact graph populated' })
+  }, 200)
+  deferredArtifactEmptied = deferExecution((a?: null) => {
+    this.modelingSend({ type: 'Artifact graph emptied' })
+  }, 200)
+
   /**
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
@@ -1784,21 +1795,16 @@ export class EngineCommandManager extends EventTarget {
       responseMap: this.responseMap,
       ast: this.getAst(),
     })
+    if (this.artifactGraph.size) {
+      this.deferredArtifactEmptied(null)
+    } else {
+      this.deferredArtifactPopulated(null)
+    }
   }
   async initPlanes() {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()
     this.defaultPlanes = planes
-
-    this.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) return
-        if (!planes) return
-        if (![planes.xy, planes.yz, planes.xz].includes(data.entity_id)) return
-        this.onPlaneSelectCallback(data.entity_id)
-      },
-    })
   }
   planesInitialized(): boolean {
     return (
@@ -1807,11 +1813,6 @@ export class EngineCommandManager extends EventTarget {
       this.defaultPlanes.yz !== '' &&
       this.defaultPlanes.xz !== ''
     )
-  }
-
-  onPlaneSelectCallback = (id: string) => {}
-  onPlaneSelected(callback: (id: string) => void) {
-    this.onPlaneSelectCallback = callback
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {

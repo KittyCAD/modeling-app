@@ -19,7 +19,8 @@ import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { paths } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { sep } from '@tauri-apps/api/path'
-import { ForwardedRef, forwardRef } from 'react'
+import { ForwardedRef, forwardRef, useEffect } from 'react'
+import { useLspContext } from 'components/LspProvider'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -33,9 +34,10 @@ export const AllSettingsFields = forwardRef(
   ) => {
     const location = useLocation()
     const navigate = useNavigate()
+    const { onProjectOpen } = useLspContext()
     const dotDotSlash = useDotDotSlash()
     const {
-      settings: { send, context },
+      settings: { send, context, state },
     } = useSettingsAuthContext()
 
     const projectPath =
@@ -48,18 +50,36 @@ export const AllSettingsFields = forwardRef(
           )
         : undefined
 
-    function restartOnboarding() {
+    async function restartOnboarding() {
       send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
       })
-
-      if (isFileSettings) {
-        navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
-      } else {
-        createAndOpenNewProject(navigate)
-      }
     }
+
+    /**
+     * A "listener" for the XState to return to "idle" state
+     * when the user resets the onboarding, using the callback above
+     */
+    useEffect(() => {
+      async function navigateToOnboardingStart() {
+        if (
+          state.context.app.onboardingStatus.user === '' &&
+          state.matches('idle')
+        ) {
+          if (isFileSettings) {
+            // If we're in a project, first navigate to the onboarding start here
+            // so we can trigger the warning screen if necessary
+            navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
+          } else {
+            // If we're in the global settings, create a new project and navigate
+            // to the onboarding start in that project
+            await createAndOpenNewProject({ onProjectOpen, navigate })
+          }
+        }
+      }
+      navigateToOnboardingStart()
+    }, [isFileSettings, navigate, state])
 
     return (
       <div className="relative overflow-y-auto">
