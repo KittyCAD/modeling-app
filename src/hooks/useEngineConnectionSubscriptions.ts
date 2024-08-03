@@ -7,6 +7,13 @@ import {
 } from 'lib/singletons'
 import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
+import {
+  getCapCodeRef,
+  getExtrusionFromSuspectedExtrudeSurface,
+  getSolid2dCodeRef,
+  getWallCodeRef,
+} from 'lang/std/artifactGraph'
+import { err } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 
@@ -21,24 +28,58 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const sourceRange = engineCommandManager.artifactMap?.[data.entity_id]
-            ?.range || [0, 0]
-          editorManager.setHighlightRange(sourceRange)
+          const artifact = engineCommandManager.artifactGraph.get(
+            data.entity_id
+          )
+          if (artifact?.type === 'solid2D') {
+            const codeRef = getSolid2dCodeRef(
+              artifact,
+              engineCommandManager.artifactGraph
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange([codeRef.range])
+          } else if (artifact?.type === 'cap') {
+            const codeRef = getCapCodeRef(
+              artifact,
+              engineCommandManager.artifactGraph
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange([codeRef.range])
+          } else if (artifact?.type === 'wall') {
+            const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+              data.entity_id,
+              engineCommandManager.artifactGraph
+            )
+            const codeRef = getWallCodeRef(
+              artifact,
+              engineCommandManager.artifactGraph
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange(
+              err(extrusion)
+                ? [codeRef.range]
+                : [codeRef.range, extrusion.codeRef.range]
+            )
+          } else if (artifact?.type === 'segment') {
+            editorManager.setHighlightRange([
+              artifact?.codeRef?.range || [0, 0],
+            ])
+          } else {
+            editorManager.setHighlightRange([[0, 0]])
+          }
         } else if (
           !editorManager.highlightRange ||
-          (editorManager.highlightRange[0] !== 0 &&
-            editorManager.highlightRange[1] !== 0)
+          (editorManager.highlightRange[0][0] !== 0 &&
+            editorManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([0, 0])
+          editorManager.setHighlightRange([[0, 0]])
         }
       },
     })
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: async (engineEvent) => {
-        const event = await getEventForSelectWithPoint(engineEvent, {
-          sketchEnginePathId: context.sketchEnginePathId,
-        })
+        const event = await getEventForSelectWithPoint(engineEvent)
         event && send(event)
       },
     })
@@ -53,16 +94,17 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
         ? async ({ data }) => {
-            let planeId = data.entity_id
-            if (!planeId) return
+            let planeOrFaceId = data.entity_id
+            if (!planeOrFaceId) return
             if (
-              engineCommandManager.defaultPlanes?.xy === planeId ||
-              engineCommandManager.defaultPlanes?.xz === planeId ||
-              engineCommandManager.defaultPlanes?.yz === planeId ||
-              engineCommandManager.defaultPlanes?.negXy === planeId ||
-              engineCommandManager.defaultPlanes?.negXz === planeId ||
-              engineCommandManager.defaultPlanes?.negYz === planeId
+              engineCommandManager.defaultPlanes?.xy === planeOrFaceId ||
+              engineCommandManager.defaultPlanes?.xz === planeOrFaceId ||
+              engineCommandManager.defaultPlanes?.yz === planeOrFaceId ||
+              engineCommandManager.defaultPlanes?.negXy === planeOrFaceId ||
+              engineCommandManager.defaultPlanes?.negXz === planeOrFaceId ||
+              engineCommandManager.defaultPlanes?.negYz === planeOrFaceId
             ) {
+              let planeId = planeOrFaceId
               const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
                 [engineCommandManager.defaultPlanes.xy]: 'XY',
                 [engineCommandManager.defaultPlanes.xz]: 'XZ',
@@ -117,44 +159,34 @@ export function useEngineConnectionSubscriptions() {
               })
               return
             }
-            const artifact = engineCommandManager.artifactMap[planeId]
-            console.log('artifact', artifact)
-            // If we clicked on an extrude wall, we climb up the parent Id
-            // to get the sketch profile's face ID. If we clicked on an endcap,
-            // we already have it.
-            const pathId =
-              artifact?.type === 'extrudeWall' ||
-              artifact?.type === 'extrudeCap'
-                ? artifact.pathId
-                : ''
-
-            const path = engineCommandManager.artifactMap?.[pathId || '']
-            const extrusionId =
-              path?.type === 'startPath' ? path.extrusionIds[0] : ''
-
-            // TODO: We get the first extrusion command ID,
-            // which is fine while backend systems only support one extrusion.
-            // but we need to more robustly handle resolving to the correct extrusion
-            // if there are multiple.
-            const extrusions = engineCommandManager.artifactMap?.[extrusionId]
-
-            if (
-              artifact?.type !== 'extrudeCap' &&
-              artifact?.type !== 'extrudeWall'
+            const faceId = planeOrFaceId
+            const artifact = engineCommandManager.artifactGraph.get(faceId)
+            const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+              faceId,
+              engineCommandManager.artifactGraph
             )
-              return
 
-            const faceInfo = await getFaceDetails(planeId)
+            if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
+
+            const codeRef =
+              artifact.type === 'cap'
+                ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
+                : getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+
+            const faceInfo = await getFaceDetails(faceId)
             if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
               return
             const { z_axis, y_axis, origin } = faceInfo
             const sketchPathToNode = getNodePathFromSourceRange(
               kclManager.ast,
-              artifact.range
+              err(codeRef) ? [0, 0] : codeRef.range
             )
 
-            const extrudePathToNode = extrusions?.range
-              ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+            const extrudePathToNode = !err(extrusion)
+              ? getNodePathFromSourceRange(
+                  kclManager.ast,
+                  extrusion.codeRef.range
+                )
               : []
 
             sceneInfra.modelingSend({
@@ -168,8 +200,8 @@ export function useEngineConnectionSubscriptions() {
                 ) as [number, number, number],
                 sketchPathToNode,
                 extrudePathToNode,
-                cap: artifact.type === 'extrudeCap' ? artifact.cap : 'none',
-                faceId: planeId,
+                cap: artifact.type === 'cap' ? artifact.subType : 'none',
+                faceId: faceId,
               },
             })
             return

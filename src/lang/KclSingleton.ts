@@ -310,24 +310,30 @@ export class KclManager {
     this._kclErrors = errors
     this._programMemory = programMemory
     if (updates !== 'artifactRanges') return
-    Object.entries(this.engineCommandManager.artifactMap).forEach(
+
+    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
+    // problem this solves, but either way we should strive to remove it.
+    Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
-        if (!artifact.pathToNode) return
+        if (!('codeRef' in artifact)) return
         const _node1 = getNodeFromPath<CallExpression>(
           this.ast,
-          artifact.pathToNode,
+          artifact.codeRef.pathToNode,
           'CallExpression'
         )
         if (err(_node1)) return
         const { node } = _node1
         if (node.type !== 'CallExpression') return
-        const [oldStart, oldEnd] = artifact.range
+        const [oldStart, oldEnd] = artifact.codeRef.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactMap[commandId].range = [
-          node.start,
-          node.end,
-        ]
+        this.engineCommandManager.artifactGraph.set(commandId, {
+          ...artifact,
+          codeRef: {
+            ...artifact.codeRef,
+            range: [node.start, node.end],
+          },
+        })
       }
     )
   }

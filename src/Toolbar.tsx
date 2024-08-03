@@ -40,10 +40,10 @@ export function Toolbar({
       return false
     }
     return isCursorInSketchCommandRange(
-      engineCommandManager.artifactMap,
+      engineCommandManager.artifactGraph,
       context.selectionRanges
     )
-  }, [engineCommandManager.artifactMap, context.selectionRanges])
+  }, [engineCommandManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState } = useNetworkContext()

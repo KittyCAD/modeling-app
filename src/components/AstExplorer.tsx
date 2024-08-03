@@ -44,7 +44,7 @@ export function AstExplorer() {
       <div
         className="h-full relative"
         onMouseLeave={(e) => {
-          editorManager.setHighlightRange([0, 0])
+          editorManager.setHighlightRange([[0, 0]])
         }}
       >
         <pre className="text-xs">
@@ -113,12 +113,12 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        editorManager.setHighlightRange([obj?.start || 0, obj.end])
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        editorManager.setHighlightRange([obj?.start || 0, obj.end])
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
       }}
       onClick={(e) => {
         send({

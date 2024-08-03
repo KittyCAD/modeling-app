@@ -26,7 +26,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
@@ -466,7 +466,7 @@ test.describe('Testing Camera Movement', () => {
 
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
@@ -2623,10 +2623,9 @@ test.describe('Testing selections', () => {
       await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
+      // bg-yellow-300/70 is more brittle than hover-highlight, but is closer to the user experience
       // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-200').first()).toBeVisible()
-
+      await expect(page.locator('.bg-yellow-300\\/70')).toBeVisible()
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
       await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
@@ -3078,7 +3077,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(6) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
