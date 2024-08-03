@@ -106,9 +106,9 @@ export interface components {
       /** @description The info module. */
       module: components['schemas']['InfoModule'][]
       /** @description The reason of the info command. */
-      reason: string
+      reason?: string | null
       /** @description The result of the info command. */
-      result: string
+      result?: string | null
       /** @description The sequence id. */
       sequence_id: components['schemas']['SequenceId']
     } & {
@@ -127,7 +127,7 @@ export interface components {
       /** @description The ota version. */
       ota_ver?: string | null
       /** @description The project name. */
-      project_name: string
+      project_name?: string | null
       /** @description The serial number. */
       sn: string
       /** @description The software version. */
@@ -441,7 +441,13 @@ export interface components {
       tray: components['schemas']['PrintTray'][]
     }
     /** @description A print command. */
-    PrintCommand: 'push_status' | 'gcode_line' | 'project_file' | 'stop'
+    PrintCommand:
+      | 'push_status'
+      | 'gcode_line'
+      | 'project_file'
+      | 'resume'
+      | 'stop'
+      | 'extrusion_cali_get'
     /** @description The print ipcam. */
     PrintIpcam: {
       /** @description The ipcam dev. */
