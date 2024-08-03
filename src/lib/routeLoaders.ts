@@ -95,8 +95,8 @@ export const fileLoader: LoaderFunction = async (
         return redirect(
           `${paths.FILE}/${encodeURIComponent(
             isDesktop()
-            ? project.default_file
-            : (params.id + '/' + PROJECT_ENTRYPOINT)
+              ? project.default_file
+              : params.id + '/' + PROJECT_ENTRYPOINT
           )}`
         )
       }

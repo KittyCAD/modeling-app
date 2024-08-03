@@ -196,8 +196,12 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
   entries.sort((a: string, b: string) => {
-    if (a.endsWith(".kcl") && !b.endsWith(".kcl")) { return -1 }
-    if (!a.endsWith(".kcl") && b.endsWith(".kcl")) { return 1 }
+    if (a.endsWith('.kcl') && !b.endsWith('.kcl')) {
+      return -1
+    }
+    if (!a.endsWith('.kcl') && b.endsWith('.kcl')) {
+      return 1
+    }
     return 0
   })
 
@@ -233,7 +237,10 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   return entry
 }
 
-export const getDefaultKclFileForDir = async (projectDir: string, file: FileEntry) => {
+export const getDefaultKclFileForDir = async (
+  projectDir: string,
+  file: FileEntry
+) => {
   // Make sure the dir is a directory.
   const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {
