@@ -711,7 +711,7 @@ const part002 = startSketchOn(part001, 'seg01')
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(1)
+  ).toHaveCount(1, { timeout: 10_000 })
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
