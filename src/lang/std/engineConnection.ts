@@ -358,13 +358,12 @@ class EngineConnection extends EventTarget {
           break
         case EngineConnectionStateType.Disconnecting:
         case EngineConnectionStateType.Disconnected:
-          // Reconnect if we have disconnected.
-          if (!this.isConnecting()) this.connect(true)
+          // Let other parts of the app handle the reconnect
           break
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect(true)
+          if (!this.pingPongSpan.ping) this.connect()
           break
       }
     }, pingIntervalMs)

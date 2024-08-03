@@ -120,7 +120,7 @@ export function useSetupEngineManager(
     }, 500)
 
     const onOnline = () => {
-      startEngineInstance(true)
+      startEngineInstance(false)
     }
 
     const onVisibilityChange = () => {
