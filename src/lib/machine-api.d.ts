@@ -219,6 +219,20 @@ export interface components {
     /** @description A print command. */
     Print:
       | ({
+          /** @enum {string} */
+          command: 'ams_control'
+          /** @description The param. */
+          param?: string | null
+          /** @description The reason for the message. */
+          reason: components['schemas']['Reason']
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
           /** @description The ams. */
           ams?: components['schemas']['PrintAms'] | null
           /**
@@ -416,9 +430,20 @@ export interface components {
           /** @enum {string} */
           command: 'gcode_line'
           /** @description The gcode line. */
-          line: string
+          param?: string | null
+          /** @description The reason for the message. */
+          reason: components['schemas']['Reason']
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The return code. */
+          return_code?: string | null
           /** @description The sequence id. */
           sequence_id: components['schemas']['SequenceId']
+          /**
+           * Format: int64
+           * @description The source.
+           */
+          source?: number | null
         } & {
           [key: string]: unknown
         })
@@ -426,7 +451,7 @@ export interface components {
           /** @enum {string} */
           command: 'project_file'
           /** @description The gcode file. */
-          gcode_file: string
+          gcode_file?: string | null
           /** @description The profile id. */
           profile_id: string
           /** @description The project id. */
