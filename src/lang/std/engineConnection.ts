@@ -30,12 +30,6 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-/** This looks funny, I know. This is needed because node and the browser
- * disagree as to the type. In a browser it's a number, but in node it's a
- * "Timeout".
- */
-type IsomorphicTimeout = ReturnType<typeof setTimeout>
-
 type ClientMetrics = Models['ClientMetrics_type']
 
 interface WebRTCClientMetrics extends ClientMetrics {
