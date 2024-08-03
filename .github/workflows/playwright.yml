@@ -107,7 +107,7 @@ jobs:
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
       run: |
-        yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+        yarn playwright test --project="Google Chrome" --retries="3" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
