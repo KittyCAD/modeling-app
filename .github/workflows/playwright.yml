@@ -106,13 +106,19 @@ jobs:
     - name: build web
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
-      continue-on-error: true
       run: |
-        yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+        yarn playwright test --project="Google Chrome" --retries="3" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-ubuntu-snapshot-${{ github.sha }}
+        path: playwright-report/
+        retention-days: 30
+        overwrite: true
     - name: Clean up test-results
       if: always()
       continue-on-error: true
