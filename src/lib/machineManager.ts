@@ -8,6 +8,7 @@ export default class MachineManager {
     [key: string]: components['schemas']['Machine']
   } = {}
   private _machineApiIp: string | null = null
+  private _currentMachine: components['schemas']['Machine'] | null = null
 
   constructor() {
     if (!this._isTauri) {
@@ -41,6 +42,14 @@ export default class MachineManager {
 
   get machineApiIp(): string | null {
     return this._machineApiIp
+  }
+
+  get currentMachine(): components['schemas']['Machine'] | null {
+    return this._currentMachine
+  }
+
+  set currentMachine(machine: components['schemas']['Machine'] | null) {
+    this._currentMachine = machine
   }
 
   private async updateMachines(): Promise<void> {

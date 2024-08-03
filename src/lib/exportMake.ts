@@ -6,37 +6,41 @@ import { components } from './machine-api'
 
 // Make files locally from an export call.
 export async function exportMake(data: ArrayBuffer) {
-  const machines = machineManager.machines
   if (machineManager.machineCount() === 0) {
-    console.log('No machines available')
+    console.error('No machines available')
     toast.error('No machines available')
     return
   }
 
   const machineApiIp = machineManager.machineApiIp
   if (!machineApiIp) {
-    console.log('No machine api ip available')
+    console.error('No machine api ip available')
     toast.error('No machine api ip available')
     return
   }
 
-  console.log('starting print', machines, machineApiIp)
-
-  // Grab the first machine.
-  let machineId = null
-  Object.keys(machines).forEach((key) => {
-    machineId = key
-  })
-
-  console.log('machineId', machineId)
-
-  if (!machineId) {
-    console.log('No machine id found')
-    toast.error('No machine id found')
+  const currentMachine = machineManager.currentMachine
+  if (!currentMachine) {
+    console.error('No current machine available')
+    toast.error('No current machine available')
     return
   }
 
-  console.log('machineId', machineId)
+  let machineId = null
+  if ('id' in currentMachine) {
+    machineId = currentMachine.id
+  } else if ('hostname' in currentMachine && currentMachine.hostname) {
+    machineId = currentMachine.hostname
+  } else if ('ip' in currentMachine && currentMachine.ip) {
+    machineId = currentMachine.ip
+  }
+
+  if (!machineId) {
+    console.error('No machine id available', currentMachine)
+    toast.error('No machine id available')
+    return
+  }
+
   const params: components['schemas']['PrintParameters'] = {
     machine_id: machineId,
     job_name: 'Exported Job', // TODO: make this the project name.

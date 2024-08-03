@@ -27,6 +27,7 @@ import {
   codeManager,
   editorManager,
   sceneEntitiesManager,
+  machineManager,
 } from 'lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
@@ -363,6 +364,8 @@ export const ModelingMachineProvider = ({
           engineCommandManager.exportIntent = ExportIntent.Make
 
           console.log('making', event.data)
+          // Set the current machine.
+          machineManager.currentMachine = event.data.machine
 
           const format: Models['OutputFormat_type'] = {
             type: 'stl',
