@@ -689,14 +689,14 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
       'persistCode',
       `const part001 = startSketchOn('-XZ')
   |> startProfileAt([1.4, 2.47], %)
-  |> line([9.31, 10.55], %, 'seg01')
+  |> line([9.31, 10.55], %, $seg01)
   |> line([11.91, -10.42], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
-const part002 = startSketchOn(part001, 'seg01')
+const part002 = startSketchOn(part001, seg01)
   |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
-  |> line([0, -7.79], %, 'seg02')
+  |> line([0, -7.79], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
 `
