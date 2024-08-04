@@ -6,7 +6,11 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
-import { Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import {
+  Diagnostic,
+  forEachDiagnostic,
+  setDiagnosticsEffect,
+} from '@codemirror/lint'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -135,6 +139,29 @@ export default class EditorManager {
         Transaction.addToHistory.of(false),
       ],
     })
+  }
+
+  scrollToFirstDiagnosticIfExists() {
+    if (!this._editorView) return
+
+    let firstDiagnosticPos: [number, number] | null = null
+    forEachDiagnostic(
+      this._editorView.state,
+      (d: Diagnostic, from: number, to: number) => {
+        if (!firstDiagnosticPos) {
+          firstDiagnosticPos = [from, to]
+        }
+      }
+    )
+
+    if (!firstDiagnosticPos) return
+
+    const rect = this._editorView.coordsAtPos(firstDiagnosticPos[0]) // can return null
+    if (!rect) return
+    let top = rect.top
+    if (top === null || top === undefined) return
+
+    this._editorView.scrollDOM.scrollTo({ top, behavior: 'smooth' })
   }
 
   undo() {
