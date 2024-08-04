@@ -1,8 +1,8 @@
 import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
-import { ModelingAppFile } from './exportSave'
 import { machineManager } from './singletons'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
+import ModelingAppFile from './modelingAppFile'
 
 // Make files locally from an export call.
 export async function exportMake(data: ArrayBuffer): Promise<Response | null> {

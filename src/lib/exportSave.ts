@@ -5,11 +5,7 @@ import { save } from '@tauri-apps/plugin-dialog'
 import { writeFile } from '@tauri-apps/plugin-fs'
 
 import JSZip from 'jszip'
-
-export interface ModelingAppFile {
-  name: string
-  contents: number[]
-}
+import ModelingAppFile from './modelingAppFile'
 
 const save_ = async (file: ModelingAppFile) => {
   try {
