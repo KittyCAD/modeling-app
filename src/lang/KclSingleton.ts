@@ -347,7 +347,6 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    console.log('executeCode', zoomToFit)
     const ast = this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
