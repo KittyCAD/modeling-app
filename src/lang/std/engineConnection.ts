@@ -363,7 +363,8 @@ class EngineConnection extends EventTarget {
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect()
+          if (!this.pingPongSpan.ping)
+            this.connect(this.engineCommandManager.disableWebRTC ? true : false)
           break
       }
     }, pingIntervalMs)
