@@ -8248,7 +8248,7 @@ test('Opening and closing the code pane will consistenly show error diagnostics'
     localStorage.setItem('persistCode', code)
   }, bracket)
 
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 900 })
   await u.waitForAuthSkipAppStart()
 
   // wait for execution done
@@ -8257,7 +8257,7 @@ test('Opening and closing the code pane will consistenly show error diagnostics'
   await u.closeDebugPanel()
 
   // Ensure we have no errors in the gutter.
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
   // Ensure no badge is present
   const codePaneButton = page.getByRole('button', { name: 'KCL Code pane' })
@@ -8286,7 +8286,7 @@ test('Opening and closing the code pane will consistenly show error diagnostics'
   // Ensure that a badge appears on the button
   await expect(codePaneButton).toContainText('notification')
   // Ensure we have no errors in the gutter.
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
   // Open the code pane
   u.openKclCodePanel()
