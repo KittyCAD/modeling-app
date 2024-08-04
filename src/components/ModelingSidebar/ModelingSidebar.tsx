@@ -252,7 +252,7 @@ function ModelingPaneButton({
   })
 
   return (
-    <div>
+    <div id={paneConfig.id + '-button-holder'}>
       <button
         className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
@@ -293,10 +293,14 @@ function ModelingPaneButton({
       </button>
       {!!showBadge?.value && (
         <p
+          id={`${paneConfig.id}-badge`}
           className={
             'absolute m-0 p-0 top-1 right-0 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer'
           }
           onClick={showBadge.onClick}
+          title={`Click to view ${showBadge.value} notification${
+            Number(showBadge.value) > 1 ? 's' : ''
+          }`}
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
           {typeof showBadge.value === 'number' ? (
