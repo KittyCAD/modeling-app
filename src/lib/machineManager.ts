@@ -2,7 +2,7 @@ import { isTauri } from './isTauri'
 import { components } from './machine-api'
 import { getMachineApiIp, listMachines } from './tauri'
 
-export default class MachineManager {
+export class MachineManager {
   private _isTauri: boolean = isTauri()
   private _machines: {
     [key: string]: components['schemas']['Machine']
@@ -69,3 +69,6 @@ export default class MachineManager {
     this._machineApiIp = await getMachineApiIp()
   }
 }
+
+export const machineManager = new MachineManager()
+machineManager.start()

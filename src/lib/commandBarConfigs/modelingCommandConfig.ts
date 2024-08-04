@@ -3,7 +3,7 @@ import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
-import { machineManager } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']

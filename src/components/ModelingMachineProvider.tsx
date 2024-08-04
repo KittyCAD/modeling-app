@@ -27,8 +27,8 @@ import {
   codeManager,
   editorManager,
   sceneEntitiesManager,
-  machineManager,
 } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {

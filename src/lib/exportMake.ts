@@ -1,5 +1,5 @@
 import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
-import { machineManager } from './singletons'
+import { machineManager } from './machineManager'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
 import ModelingAppFile from './modelingAppFile'

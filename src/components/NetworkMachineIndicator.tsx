@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
 import Tooltip from './Tooltip'
-import { machineManager } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 import { isTauri } from 'lib/isTauri'
 import { CustomIcon } from './CustomIcon'
 

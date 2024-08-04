@@ -13,7 +13,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
-import { machineManager } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
