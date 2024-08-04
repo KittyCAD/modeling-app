@@ -156,12 +156,17 @@ export default class EditorManager {
 
     if (!firstDiagnosticPos) return
 
-    const rect = this._editorView.coordsAtPos(firstDiagnosticPos[0]) // can return null
-    if (!rect) return
-    let top = rect.top
-    if (top === null || top === undefined) return
-
-    this._editorView.scrollDOM.scrollTo({ top, behavior: 'smooth' })
+    this._editorView.focus()
+    this._editorView.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.cursor(firstDiagnosticPos[0]),
+      ]),
+      effects: [EditorView.scrollIntoView(firstDiagnosticPos[0])],
+      annotations: [
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
   }
 
   undo() {
