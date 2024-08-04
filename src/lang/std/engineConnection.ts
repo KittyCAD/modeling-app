@@ -1741,7 +1741,7 @@ export class EngineCommandManager extends EventTarget {
           reject: () => {
             this.exportIntent = null
           },
-          commandId: command.cmd_id
+          commandId: command.cmd_id,
         }
       })
       this.engineConnection?.send(command)
