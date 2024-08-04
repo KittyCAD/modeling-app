@@ -91,12 +91,16 @@ export class KclManager {
   set kclErrors(kclErrors) {
     if (kclErrors === this._kclErrors && this.lints.length === 0) return
     this._kclErrors = kclErrors
-    let diagnostics = kclErrorsToDiagnostics(kclErrors)
+    this.setDiagnosticsForCurrentErrors()
+    this._kclErrorsCallBack(kclErrors)
+  }
+
+  setDiagnosticsForCurrentErrors() {
+    let diagnostics = kclErrorsToDiagnostics(this.kclErrors)
     if (this.lints.length > 0) {
       diagnostics = diagnostics.concat(this.lints)
     }
     editorManager.setDiagnostics(diagnostics)
-    this._kclErrorsCallBack(kclErrors)
   }
 
   addKclErrors(kclErrors: KCLError[]) {

@@ -193,6 +193,10 @@ export const KclEditorPane = () => {
           if (_editorView === null) return
 
           editorManager.setEditorView(_editorView)
+
+          // On first load of this component, ensure we show the current errors
+          // in the editor.
+          kclManager.setDiagnosticsForCurrentErrors()
         }}
       />
     </div>
