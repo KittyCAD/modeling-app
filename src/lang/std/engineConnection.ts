@@ -13,6 +13,8 @@ import {
   createArtifactGraph,
 } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { exportMake } from 'lib/exportMake'
+import toast from 'react-hot-toast'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
@@ -28,6 +30,11 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
+}
+
+export enum ExportIntent {
+  Save = 'save',
+  Make = 'make',
 }
 
 type ClientMetrics = Models['ClientMetrics_type']
@@ -1153,6 +1160,12 @@ export class EngineCommandManager extends EventTarget {
     reject: (reason: any) => void
     commandId: string
   }
+  /**
+   * Export intent traxcks the intent of the export. If it is null there is no
+   * export in progress. Otherwise it is an enum value of the intent.
+   * Another export cannot be started if one is already in progress.
+   */
+  private _exportIntent: ExportIntent | null = null
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   resolveReady = () => {}
   /** Folks should realize that wait for ready does not get called _everytime_
@@ -1204,6 +1217,14 @@ export class EngineCommandManager extends EventTarget {
   disableWebRTC = false
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
+
+  set exportIntent(intent: ExportIntent | null) {
+    this._exportIntent = intent
+  }
+
+  get exportIntent() {
+    return this._exportIntent
+  }
 
   start({
     disableWebRTC = false,
@@ -1382,9 +1403,36 @@ export class EngineCommandManager extends EventTarget {
           // because in all other cases we send JSON strings. But in the case of
           // export we send a binary blob.
           // Pass this to our export function.
-          exportSave(event.data).then(() => {
-            this.pendingExport?.resolve(null)
-          }, this.pendingExport?.reject)
+          if (this.exportIntent === null) {
+            toast.error(
+              'Export intent was not set, but export data was received'
+            )
+            console.error(
+              'Export intent was not set, but export data was received'
+            )
+            return
+          }
+
+          switch (this.exportIntent) {
+            case ExportIntent.Save: {
+              exportSave(event.data).then(() => {
+                this.pendingExport?.resolve(null)
+              }, this.pendingExport?.reject)
+              break
+            }
+            case ExportIntent.Make: {
+              exportMake(event.data).then((result) => {
+                if (result) {
+                  this.pendingExport?.resolve(null)
+                } else {
+                  this.pendingExport?.reject('Failed to make export')
+                }
+              }, this.pendingExport?.reject)
+              break
+            }
+          }
+          // Set the export intent back to null.
+          this.exportIntent = null
           return
         }
 
@@ -1688,7 +1736,13 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
-        this.pendingExport = { resolve, reject, commandId: command.cmd_id }
+        this.pendingExport = {
+          resolve,
+          reject: () => {
+            this.exportIntent = null
+          },
+          commandId: command.cmd_id,
+        }
       })
       this.engineConnection?.send(command)
       return promise

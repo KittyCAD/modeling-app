@@ -52,17 +52,22 @@ export function createMachineCommand<
     return null
   } else if (commandConfig instanceof Array) {
     return commandConfig
-      .map((config) =>
-        createMachineCommand({
+      .map((config) => {
+        const recursiveCommandBarConfig: Partial<
+          StateMachineCommandSetConfig<T, S>
+        > = {
+          [type]: config,
+        }
+        return createMachineCommand({
           groupId,
           type,
           state,
           send,
           actor,
-          commandBarConfig: { [type]: config },
+          commandBarConfig: recursiveCommandBarConfig,
           onCancel,
         })
-      )
+      })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
   }
 
@@ -145,6 +150,7 @@ export function buildCommandArgument<
     required: arg.required,
     skip: arg.skip,
     machineActor,
+    valueSummary: arg.valueSummary,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

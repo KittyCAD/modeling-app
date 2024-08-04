@@ -9,6 +9,7 @@ import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { isTauri } from './isTauri'
+import { components } from './machine-api'
 
 // Get the app state from tauri.
 export async function getState(): Promise<ProjectState | undefined> {
@@ -24,6 +25,19 @@ export async function setState(state: ProjectState | undefined): Promise<void> {
     return
   }
   return await invoke('set_state', { state })
+}
+
+// List machines on the local network.
+export async function listMachines(): Promise<{
+  [key: string]: components['schemas']['Machine']
+}> {
+  let machines: string = await invoke<string>('list_machines')
+  return JSON.parse(machines)
+}
+
+// Get the machine-api ip address.
+export async function getMachineApiIp(): Promise<string | null> {
+  return await invoke<string | null>('get_machine_api_ip')
 }
 
 export async function renameProjectDirectory(
