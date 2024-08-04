@@ -8226,8 +8226,8 @@ test('Typing KCL errors induces a badge on the error logs pane button', async ({
   await u.closeDebugPanel()
 
   // Ensure no badge is present
-  const errorLogsButton = page.getByRole('button', { name: 'KCL Code pane' })
-  await expect(errorLogsButton).not.toContainText('notification')
+  const codePaneButton = page.getByRole('button', { name: 'KCL Code pane' })
+  await expect(codePaneButton).not.toContainText('notification')
 
   // Delete a character to break the KCL
   await u.openKclCodePanel()
@@ -8235,5 +8235,69 @@ test('Typing KCL errors induces a badge on the error logs pane button', async ({
   await page.keyboard.press('Backspace')
 
   // Ensure that a badge appears on the button
-  await expect(errorLogsButton).toContainText('notification')
+  await expect(codePaneButton).toContainText('notification')
+})
+
+test('Opening and closing the code pane will consistenly show error diagnostics', async ({
+  page,
+}) => {
+  const u = await getUtils(page)
+
+  // Load the app with the working starter code
+  await page.addInitScript((code) => {
+    localStorage.setItem('persistCode', code)
+  }, bracket)
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // Ensure we have no errors in the gutter.
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // Ensure no badge is present
+  const codePaneButton = page.getByRole('button', { name: 'KCL Code pane' })
+  await expect(codePaneButton).not.toContainText('notification')
+
+  // Delete a character to break the KCL
+  await u.openKclCodePanel()
+  await page.getByText('extrude(').click()
+  await page.keyboard.press('Backspace')
+
+  // Ensure that a badge appears on the button
+  await expect(codePaneButton).toContainText('notification')
+
+  // Ensure we have an error diagnostic.
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-error')
+  await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+  // Close the code pane
+  u.closeKclCodePanel()
+
+  await page.waitForTimeout(500)
+
+  // Ensure that a badge appears on the button
+  await expect(codePaneButton).toContainText('notification')
+  // Ensure we have no errors in the gutter.
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // Open the code pane
+  u.openKclCodePanel()
+
+  // Ensure that a badge appears on the button
+  await expect(codePaneButton).toContainText('notification')
+
+  // Ensure we have an error diagnostic.
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-error')
+  await expect(page.getByText('Unexpected token').first()).toBeVisible()
 })
