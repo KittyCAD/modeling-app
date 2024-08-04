@@ -806,6 +806,15 @@ class EngineConnection extends EventTarget {
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.type}`
             )
+            // Check if this was a pending export command.
+            if (
+              this.engineCommandManager.pendingExport?.commandId ===
+              message.request_id
+            ) {
+              // Reject the promise with the error.
+              this.engineCommandManager.pendingExport.reject(errorsString)
+              this.engineCommandManager.pendingExport = undefined
+            }
           } else {
             console.error(`Error from server:\n${errorsString}`)
           }
@@ -1142,6 +1151,7 @@ export class EngineCommandManager extends EventTarget {
   pendingExport?: {
     resolve: (a: null) => void
     reject: (reason: any) => void
+    commandId: string
   }
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   resolveReady = () => {}
@@ -1678,7 +1688,7 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
-        this.pendingExport = { resolve, reject }
+        this.pendingExport = { resolve, reject, commandId: command.cmd_id }
       })
       this.engineConnection?.send(command)
       return promise
