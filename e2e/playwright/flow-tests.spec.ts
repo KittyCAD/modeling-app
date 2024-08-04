@@ -8238,7 +8238,7 @@ test('Typing KCL errors induces a badge on the error logs pane button', async ({
   await expect(codePaneButton).toContainText('notification')
 })
 
-test('Opening and closing the code pane will consistenly show error diagnostics', async ({
+test('Opening and closing the code pane will consistently show error diagnostics', async ({
   page,
 }) => {
   const u = await getUtils(page)
