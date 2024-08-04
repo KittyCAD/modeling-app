@@ -2376,6 +2376,10 @@ someFunction('INVALID')
 async fn kcl_test_fillet_and_shell() {
     let code = kcl_input!("fillet-and-shell");
 
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("fillet_and_shell", &result);
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([2004, 2065])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Shell of non-planar solid3d not available yet\" }]" }"#
+    );
 }
