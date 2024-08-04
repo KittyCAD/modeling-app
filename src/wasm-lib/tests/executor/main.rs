@@ -2371,3 +2371,11 @@ someFunction('INVALID')
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_fillet_and_shell() {
+    let code = kcl_input!("fillet-and-shell");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("fillet_and_shell", &result);
+}
