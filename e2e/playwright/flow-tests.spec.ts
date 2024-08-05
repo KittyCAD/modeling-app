@@ -8176,7 +8176,7 @@ test('Sketch on face', async ({ page }) => {
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2.6, -1.25], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)_FAIL
   |> close(%)`)
 
   await u.openAndClearDebugPanel()
