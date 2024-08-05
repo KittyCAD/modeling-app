@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 13,
-            "name": "myArray"
+            "name": "myArray",
+            "digest": null
           },
           "init": {
             "type": "ArrayExpression",
@@ -34,7 +35,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 0,
-                "raw": "0"
+                "raw": "0",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -42,7 +44,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 1,
-                "raw": "1"
+                "raw": "1",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -50,7 +53,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 2,
-                "raw": "2"
+                "raw": "2",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -58,7 +62,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 3,
-                "raw": "3"
+                "raw": "3",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -66,7 +71,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 4,
-                "raw": "4"
+                "raw": "4",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -74,7 +80,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 5,
-                "raw": "5"
+                "raw": "5",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -82,7 +89,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 6,
-                "raw": "6"
+                "raw": "6",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -90,7 +98,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 7,
-                "raw": "7"
+                "raw": "7",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -98,7 +107,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 8,
-                "raw": "8"
+                "raw": "8",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -106,7 +116,8 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 9,
-                "raw": "9"
+                "raw": "9",
+                "digest": null
               },
               {
                 "type": "Literal",
@@ -114,17 +125,23 @@ expression: actual
                 "start": 17,
                 "end": 18,
                 "value": 10,
-                "raw": "10"
+                "raw": "10",
+                "digest": null
               }
-            ]
-          }
+            ],
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }

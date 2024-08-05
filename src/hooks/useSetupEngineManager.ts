@@ -4,7 +4,7 @@ import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
-import { useStore } from 'useStore'
+import { useAppState, useAppStream } from 'AppState'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -27,12 +27,8 @@ export function useSetupEngineManager(
     showScaleGrid: boolean
   }
 ) {
-  const { setIsStreamReady } = useStore((s) => ({
-    setIsStreamReady: s.setIsStreamReady,
-  }))
-
-  const streamWidth = streamRef?.current?.offsetWidth
-  const streamHeight = streamRef?.current?.offsetHeight
+  const { setAppState } = useAppState()
+  const { setMediaStream } = useAppStream()
 
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
@@ -42,56 +38,56 @@ export function useSetupEngineManager(
     engineCommandManager.pool = settings.pool
   }
 
-  const startEngineInstance = () => {
+  const startEngineInstance = (restart: boolean = false) => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
     const { width: quadWidth, height: quadHeight } = getDimensions(
-      streamWidth,
-      streamHeight
+      streamRef?.current?.offsetWidth ?? 0,
+      streamRef?.current?.offsetHeight ?? 0
     )
-    if (
-      !hasSetNonZeroDimensions.current &&
-      quadHeight &&
-      quadWidth &&
-      settings.modelingSend
-    ) {
-      engineCommandManager.start({
-        setMediaStream: (mediaStream) =>
-          settings.modelingSend({
-            type: 'Set context',
-            data: { mediaStream },
-          }),
-        setIsStreamReady,
-        width: quadWidth,
-        height: quadHeight,
-        executeCode: () => {
-          // We only want to execute the code here that we already have set.
-          // Nothing else.
-          return kclManager.executeCode(true, true)
+    engineCommandManager.start({
+      setMediaStream: (mediaStream) => setMediaStream(mediaStream),
+      setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
+      width: quadWidth,
+      height: quadHeight,
+      executeCode: () => {
+        // We only want to execute the code here that we already have set.
+        // Nothing else.
+        kclManager.isFirstRender = true
+        return kclManager.executeCode(true).then(() => {
+          kclManager.isFirstRender = false
+        })
+      },
+      token,
+      settings,
+      makeDefaultPlanes: () => {
+        return makeDefaultPlanes(kclManager.engineCommandManager)
+      },
+      modifyGrid: (hidden: boolean) => {
+        return modifyGrid(kclManager.engineCommandManager, hidden)
+      },
+    })
+    settings.modelingSend({
+      type: 'Set context',
+      data: {
+        streamDimensions: {
+          streamWidth: quadWidth,
+          streamHeight: quadHeight,
         },
-        token,
-        settings,
-        makeDefaultPlanes: () => {
-          return makeDefaultPlanes(kclManager.engineCommandManager)
-        },
-        modifyGrid: (hidden: boolean) => {
-          return modifyGrid(kclManager.engineCommandManager, hidden)
-        },
-      })
-      settings.modelingSend({
-        type: 'Set context',
-        data: {
-          streamDimensions: {
-            streamWidth: quadWidth,
-            streamHeight: quadHeight,
-          },
-        },
-      })
-      hasSetNonZeroDimensions.current = true
-    }
+      },
+    })
+    hasSetNonZeroDimensions.current = true
   }
 
-  useLayoutEffect(startEngineInstance, [
+  useLayoutEffect(() => {
+    const { width: quadWidth, height: quadHeight } = getDimensions(
+      streamRef?.current?.offsetWidth ?? 0,
+      streamRef?.current?.offsetHeight ?? 0
+    )
+    if (!hasSetNonZeroDimensions.current && quadHeight && quadWidth) {
+      startEngineInstance()
+    }
+  }, [
     streamRef?.current?.offsetWidth,
     streamRef?.current?.offsetHeight,
     settings.modelingSend,
@@ -100,8 +96,8 @@ export function useSetupEngineManager(
   useEffect(() => {
     const handleResize = deferExecution(() => {
       const { width, height } = getDimensions(
-        streamRef?.current?.offsetWidth,
-        streamRef?.current?.offsetHeight
+        streamRef?.current?.offsetWidth ?? 0,
+        streamRef?.current?.offsetHeight ?? 0
       )
       if (
         settings.modelingContext.store.streamDimensions.streamWidth !== width ||
@@ -124,10 +120,37 @@ export function useSetupEngineManager(
     }, 500)
 
     const onOnline = () => {
-      startEngineInstance()
+      startEngineInstance(true)
     }
 
+    const onVisibilityChange = () => {
+      if (window.document.visibilityState === 'visible') {
+        if (
+          !engineCommandManager.engineConnection?.isReady() &&
+          !engineCommandManager.engineConnection?.isConnecting()
+        ) {
+          startEngineInstance()
+        }
+      }
+    }
+    window.document.addEventListener('visibilitychange', onVisibilityChange)
+
+    const onAnyInput = () => {
+      if (
+        !engineCommandManager.engineConnection?.isReady() &&
+        !engineCommandManager.engineConnection?.isConnecting()
+      ) {
+        startEngineInstance()
+      }
+    }
+    window.document.addEventListener('keydown', onAnyInput)
+    window.document.addEventListener('mousemove', onAnyInput)
+    window.document.addEventListener('mousedown', onAnyInput)
+    window.document.addEventListener('scroll', onAnyInput)
+    window.document.addEventListener('touchstart', onAnyInput)
+
     const onOffline = () => {
+      kclManager.isFirstRender = true
       engineCommandManager.tearDown()
     }
 
@@ -135,14 +158,34 @@ export function useSetupEngineManager(
     window.addEventListener('offline', onOffline)
     window.addEventListener('resize', handleResize)
     return () => {
+      window.document.removeEventListener(
+        'visibilitychange',
+        onVisibilityChange
+      )
+      window.document.removeEventListener('keydown', onAnyInput)
+      window.document.removeEventListener('mousemove', onAnyInput)
+      window.document.removeEventListener('mousedown', onAnyInput)
+      window.document.removeEventListener('scroll', onAnyInput)
+      window.document.removeEventListener('touchstart', onAnyInput)
       window.removeEventListener('online', onOnline)
       window.removeEventListener('offline', onOffline)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+
+    // Engine relies on many settings so we should rebind events when it changes
+    // We have to list out the ones we care about because the settings object holds
+    // non-settings too...
+  }, [
+    settings.enableSSAO,
+    settings.highlightEdges,
+    settings.showScaleGrid,
+    settings.theme,
+    settings.pool,
+  ])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
+  const factorOf = 4
   const maxResolution = 2000
   const width = streamWidth ? streamWidth : 0
   const height = streamHeight ? streamHeight : 0
@@ -150,7 +193,7 @@ function getDimensions(streamWidth?: number, streamHeight?: number) {
     Math.min(maxResolution / width, maxResolution / height),
     1.0
   )
-  const quadWidth = Math.round((width * ratio) / 4) * 4
-  const quadHeight = Math.round((height * ratio) / 4) * 4
+  const quadWidth = Math.round((width * ratio) / factorOf) * factorOf
+  const quadHeight = Math.round((height * ratio) / factorOf) * factorOf
   return { width: quadWidth, height: quadHeight }
 }

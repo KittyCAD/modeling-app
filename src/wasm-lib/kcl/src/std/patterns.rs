@@ -87,7 +87,8 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
             fn_expr: transform.expr,
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: args.current_program_memory.clone(),
+            memory: *transform.memory,
+            dynamic_state: args.dynamic_state.clone(),
         },
         extr,
         &args,
@@ -116,7 +117,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %, 'tag1')
+///     |> circle([0, 0], 1, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -207,7 +208,7 @@ async fn make_transform<'a>(
         meta: vec![source_range.into()],
     });
     let transform_fn_args = vec![repetition_num];
-    let transform_fn_return = transform_function.call(transform_fn_args).await?.0;
+    let transform_fn_return = transform_function.call(transform_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];

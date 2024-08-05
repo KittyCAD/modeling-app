@@ -254,9 +254,27 @@ code {
   color: rgb(120, 120, 120, 0.8) !important;
 }
 
+.segment-length-label-text {
+  transform: translate(var(--x, 0), var(--y, 0));
+}
+
 @layer components {
   kbd.hotkey {
-    @apply font-mono text-xs inline-block px-1 py-0.5 rounded-sm;
+    @apply font-mono text-xs inline-block px-0.5 py-[2px] rounded;
+
+    /* This is the only place in our code where layout is impacted by theme.
+     * We may not want that later, if hotkeys are possibly visible 
+     * while switching theme, but more padding feels better in dark mode.
+     */
+    @apply dark:px-1;
+
+    @apply text-chalkboard-70 dark:text-chalkboard-40;
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
+    @apply border border-t-0 border-b-2 border-chalkboard-30 dark:border-chalkboard-80;
   }
+}
+
+#code-mirror-override .cm-scroller,
+#code-mirror-override .cm-editor {
+  height: 100% !important;
 }

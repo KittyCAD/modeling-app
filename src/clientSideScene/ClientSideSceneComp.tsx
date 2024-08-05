@@ -96,11 +96,13 @@ export const ClientSideScene = ({
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
+    canvas.appendChild(sceneInfra.labelRenderer.domElement)
     sceneInfra.animate()
     canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
     canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
     sceneInfra.setSend(send)
+    engineCommandManager.modelingSend = send
     return () => {
       canvas?.removeEventListener('mousemove', sceneInfra.onMouseMove)
       canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
@@ -573,10 +575,10 @@ const ConstraintSymbol = ({
             : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
-          editorManager.setHighlightRange(range)
+          editorManager.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          editorManager.setHighlightRange([0, 0])
+          editorManager.setHighlightRange([[0, 0]])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
@@ -716,7 +718,7 @@ export const CamDebugSettings = () => {
           if (camSettings.type === 'perspective') {
             sceneInfra.camControls.useOrthographicCamera()
           } else {
-            sceneInfra.camControls.usePerspectiveCamera()
+            sceneInfra.camControls.usePerspectiveCamera(true)
           }
         }}
       />

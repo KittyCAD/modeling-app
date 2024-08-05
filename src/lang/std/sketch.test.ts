@@ -211,7 +211,7 @@ describe('testing addTagForSketchOnFace', () => {
 `
     const code = genCode(originalLine)
     const ast = parse(code)
-    const programMemory = await enginelessExecutor(ast)
+    await enginelessExecutor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [
       sourceStart,
@@ -221,7 +221,7 @@ describe('testing addTagForSketchOnFace', () => {
     const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
     const sketchOnFaceRetVal = addTagForSketchOnFace(
       {
-        previousProgramMemory: programMemory,
+        // previousProgramMemory: programMemory, // redundant?
         pathToNode,
         node: ast,
       },

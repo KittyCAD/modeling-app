@@ -11,20 +11,20 @@ import {
   CommandArgument,
   CommandArgumentConfig,
   CommandConfig,
-  CommandSetConfig,
-  CommandSetSchema,
+  StateMachineCommandSetConfig,
+  StateMachineCommandSetSchema,
 } from './commandTypes'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 > {
   type: EventFrom<T>['type']
-  ownerMachine: T['id']
+  groupId: T['id']
   state: StateFrom<T>
   send: Function
   actor: InterpreterFrom<T>
-  commandBarConfig?: CommandSetConfig<T, S>
+  commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
 }
 
@@ -32,22 +32,44 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>
 >({
-  ownerMachine,
+  groupId,
   type,
   state,
   send,
   actor,
   commandBarConfig,
   onCancel,
-}: CreateMachineCommandProps<T, S>): Command<
-  T,
-  typeof type,
-  S[typeof type]
-> | null {
+}: CreateMachineCommandProps<T, S>):
+  | Command<T, typeof type, S[typeof type]>
+  | Command<T, typeof type, S[typeof type]>[]
+  | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
-  if (!commandConfig) return null
+  // There may be no command config for this event type,
+  // or there may be multiple commands to create.
+  if (!commandConfig) {
+    return null
+  } else if (commandConfig instanceof Array) {
+    return commandConfig
+      .map((config) => {
+        const recursiveCommandBarConfig: Partial<
+          StateMachineCommandSetConfig<T, S>
+        > = {
+          [type]: config,
+        }
+        return createMachineCommand({
+          groupId,
+          type,
+          state,
+          send,
+          actor,
+          commandBarConfig: recursiveCommandBarConfig,
+          onCancel,
+        })
+      })
+      .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
+  }
 
   // Hide commands based on platform by returning `null`
   // so the consumer can filter them out
@@ -62,8 +84,9 @@ export function createMachineCommand<
 
   const command: Command<T, typeof type, S[typeof type]> = {
     name: type,
-    ownerMachine: ownerMachine,
+    groupId,
     icon,
+    description: commandConfig.description,
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
       if (data !== undefined && data !== null) {
@@ -84,6 +107,10 @@ export function createMachineCommand<
     command.onCancel = onCancel
   }
 
+  if ('displayName' in commandConfig) {
+    command.displayName = commandConfig.displayName
+  }
+
   return command
 }
 
@@ -92,7 +119,7 @@ export function createMachineCommand<
 // bundled together into the args for a Command.
 function buildCommandArguments<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>,
+  S extends StateMachineCommandSetSchema<T>,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
 >(
   state: StateFrom<T>,
@@ -112,7 +139,7 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends CommandSetSchema<T> = CommandSetSchema<T>
+  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
@@ -123,6 +150,7 @@ export function buildCommandArgument<
     required: arg.required,
     skip: arg.skip,
     machineActor,
+    valueSummary: arg.valueSummary,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

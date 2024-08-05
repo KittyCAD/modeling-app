@@ -3,6 +3,7 @@
 use std::path::Path;
 
 use anyhow::Result;
+use convert_case::Casing;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -56,7 +57,10 @@ pub struct StdLibFnArg {
 impl StdLibFnArg {
     #[allow(dead_code)]
     pub fn get_type_string(&self) -> Result<(String, bool)> {
-        get_type_string_from_schema(&self.schema.clone())
+        match get_type_string_from_schema(&self.schema.clone()) {
+            Ok(r) => Ok(r),
+            Err(e) => anyhow::bail!("error getting type string for {}: {:#?}", self.type_, e),
+        }
     }
 
     pub fn get_autocomplete_string(&self) -> Result<String> {
@@ -69,6 +73,7 @@ impl StdLibFnArg {
             || self.type_ == "ExtrudeGroup"
             || self.type_ == "ExtrudeGroupSet"
             || self.type_ == "SketchSurface"
+            || self.type_ == "SketchSurfaceOrGroup"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         } else if self.type_ == "TagDeclarator" && self.required {
@@ -342,7 +347,9 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                     return Ok((Primitive::Uuid.to_string(), false));
                 } else if format == "double"
                     || format == "uint"
+                    || format == "int32"
                     || format == "int64"
+                    || format == "uint8"
                     || format == "uint32"
                     || format == "uint64"
                 {
@@ -359,6 +366,13 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
                         continue;
+                    }
+
+                    // Make sure none of the object properties are in snake case.
+                    // We want the language to be consistent.
+                    // This will fail in the docs generation and not at runtime.
+                    if !prop_name.is_case(convert_case::Case::Camel) {
+                        anyhow::bail!("expected camel case: {:#?}", prop_name);
                     }
 
                     if let Some(description) = get_description_string_from_schema(prop) {
@@ -486,13 +500,10 @@ pub fn get_autocomplete_snippet_from_schema(
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
-                } else if format == "double"
-                    || format == "uint"
-                    || format == "int64"
-                    || format == "uint32"
-                    || format == "uint64"
-                {
+                } else if format == "double" {
                     return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
+                } else if format == "uint" || format == "int64" || format == "uint32" || format == "uint64" {
+                    return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
                 }
@@ -869,6 +880,7 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_pattern_circular_3d() {
+        // We test this one specifically because it has ints and floats and strings.
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternCircular3D);
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
@@ -877,7 +889,7 @@ mod tests {
 	arcDegrees: ${0:3.14},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
-	repetitions: ${3:3.14},
+	repetitions: ${3:10},
 	rotateDuplicates: ${4:"string"},
 }, ${5:%})${}"#
         );
@@ -893,5 +905,12 @@ mod tests {
 	axis: ${1:"X"},
 }, ${2:%})${}"#
         );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_circle() {
+        let circle_fn: Box<dyn StdLibFn> = Box::new(crate::std::shapes::Circle);
+        let snippet = circle_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"circle([${0:3.14}, ${1:3.14}], ${2:3.14}, ${3:%})${}"#);
     }
 }

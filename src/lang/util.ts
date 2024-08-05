@@ -1,7 +1,7 @@
 import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
-import { ArtifactMap } from './std/engineConnection'
+import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
 import { err } from 'lib/trap'
 
@@ -33,7 +33,7 @@ export function updatePathToNodeFromMap(
   oldPath: PathToNode,
   pathToNodeMap: { [key: number]: PathToNode }
 ): PathToNode {
-  const updatedPathToNode = JSON.parse(JSON.stringify(oldPath))
+  const updatedPathToNode = structuredClone(oldPath)
   let max = 0
   Object.values(pathToNodeMap).forEach((path) => {
     const index = Number(path[1][0])
@@ -46,27 +46,29 @@ export function updatePathToNodeFromMap(
 }
 
 export function isCursorInSketchCommandRange(
-  artifactMap: ArtifactMap,
+  artifactGraph: ArtifactGraph,
   selectionRanges: Selections
 ): string | false {
-  const overlapingEntries: [string, ArtifactMap[string]][] = Object.entries(
-    artifactMap
-  ).filter(([id, artifact]: [string, ArtifactMap[string]]) =>
-    selectionRanges.codeBasedSelections.some(
-      (selection) =>
-        Array.isArray(selection?.range) &&
-        Array.isArray(artifact?.range) &&
-        isOverlap(selection.range, artifact.range) &&
-        (artifact.commandType === 'start_path' ||
-          artifact.commandType === 'extend_path' ||
-          artifact.commandType === 'close_path')
-    )
+  const overlappingEntries = filterArtifacts(
+    {
+      types: ['segment', 'path'],
+      predicate: (artifact) => {
+        return selectionRanges.codeBasedSelections.some(
+          (selection) =>
+            Array.isArray(selection?.range) &&
+            Array.isArray(artifact?.codeRef?.range) &&
+            isOverlap(selection.range, artifact.codeRef.range)
+        )
+      },
+    },
+    artifactGraph
   )
-  let result =
-    overlapingEntries.length && overlapingEntries[0][1].parentId
-      ? overlapingEntries[0][1].parentId
-      : overlapingEntries.find(
-          ([, artifact]) => artifact.commandType === 'start_path'
-        )?.[0] || false
-  return result
+  const firstEntry = [...overlappingEntries.values()]?.[0]
+  const parentId = firstEntry?.type === 'segment' ? firstEntry.pathId : false
+
+  return parentId
+    ? parentId
+    : [...overlappingEntries].find(
+        ([, artifact]) => artifact.type === 'path'
+      )?.[0] || false
 }

@@ -13,11 +13,17 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
+  CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
 
 jobs:
   check-format:
@@ -84,7 +90,38 @@ jobs:
 
       - run: yarn simpleserver:ci
 
-      - run: yarn test:nowatch
+      - name: Install Chromium Browser
+        run: yarn playwright install chromium --with-deps
+
+      - name: run unit tests
+        run: yarn test:nowatch
+        env:
+          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+
+      - name: check for changes
+        id: git-check
+        run: |
+            git add src/lang/std/artifactMapGraphs
+            if git status src/lang/std/artifactMapGraphs | grep -q "Changes to be committed"
+            then echo "modified=true" >> $GITHUB_OUTPUT
+            else echo "modified=false" >> $GITHUB_OUTPUT
+            fi
+      - name: Commit changes, if any
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          # TODO when webkit works on ubuntu remove the os part of the commit message
+          git commit -am "Look at this (photo)Graph *in the voice of Nickelback*" || true
+          git push
+          git push origin ${{ github.head_ref }}
+        
+
+
 
 
   prepare-json-files:
@@ -110,8 +147,14 @@ jobs:
           echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
             '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
+      - name: Set updater test version
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        run: |
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/test/last_update.json' \
+            '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+
       - uses: actions/upload-artifact@v3
-        if: github.event_name == 'schedule'
+        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
         with:
           path: |
             package.json
@@ -138,6 +181,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
+        if: github.event_name == 'schedule'
 
       - name: Copy updated .json files
         if: github.event_name == 'schedule'
@@ -375,6 +419,30 @@ jobs:
           VITE_KC_API_BASE_URL: ${{ env.BUILD_RELEASE == 'true' && 'https://api.zoo.dev' || 'https://api.dev.zoo.dev' }}
           E2E_TAURI_ENABLED: true
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
+
+      - uses: actions/download-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+
+      - name: Copy updated .json file for updater test
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        run: |
+          ls -l artifact
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
+          cat src-tauri/tauri.release.conf.json
+
+      - name: Build the app (release, updater test)
+        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
+        env:
+          TAURI_CONF_ARGS: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+          TAURI_BUNDLE_ARGS: "-b ${{ matrix.os == 'windows-latest' && 'msi' || 'dmg' }}"
+        run: "yarn tauri build ${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_BUNDLE_ARGS }} ${{ env.TAURI_ARGS_MACOS }}"
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' && matrix.os != 'ubuntu-latest' }}
+        with:
+          path: "${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg' || 'src-tauri/target/release/bundle/msi/*.msi' }}"
+          name: updater-test
+
 
   publish-apps-release:
     permissions:

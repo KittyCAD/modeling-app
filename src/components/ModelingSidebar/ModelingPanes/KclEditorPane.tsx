@@ -1,4 +1,3 @@
-import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -23,7 +22,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap } from '@codemirror/lint'
+import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -43,6 +42,7 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
+import CodeEditor from './CodeEditor'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -66,7 +66,7 @@ export const KclEditorPane = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const onlineCallback = () => kclManager.executeCode(true, true)
+    const onlineCallback = () => kclManager.executeCode(true)
     window.addEventListener('online', onlineCallback)
     return () => window.removeEventListener('online', onlineCallback)
   }, [])
@@ -185,15 +185,22 @@ export const KclEditorPane = () => {
       id="code-mirror-override"
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
-      <ReactCodeMirror
-        value={initialCode.current}
+      <CodeEditor
+        initialDocValue={initialCode.current}
         extensions={editorExtensions}
         theme={theme}
         onCreateEditor={(_editorView) => {
+          if (_editorView === null) return
+
           editorManager.setEditorView(_editorView)
+
+          // On first load of this component, ensure we show the current errors
+          // in the editor.
+          // Make sure we don't add them twice.
+          if (diagnosticCount(_editorView.state) === 0) {
+            kclManager.setDiagnosticsForCurrentErrors()
+          }
         }}
-        indentWithTab={false}
-        basicSetup={false}
       />
     </div>
   )

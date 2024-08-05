@@ -4,7 +4,13 @@ import type {
   CompletionResult,
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
-import { Facet, StateEffect, Extension, Transaction } from '@codemirror/state'
+import {
+  Facet,
+  StateEffect,
+  Extension,
+  Transaction,
+  Annotation,
+} from '@codemirror/state'
 import type {
   ViewUpdate,
   PluginValue,
@@ -12,6 +18,7 @@ import type {
   ViewPlugin,
 } from '@codemirror/view'
 import { EditorView, Tooltip } from '@codemirror/view'
+import { linter } from '@codemirror/lint'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -22,19 +29,13 @@ import {
 import { URI } from 'vscode-uri'
 
 import { LanguageServerClient } from '../client'
-import {
-  lspSemanticTokensEvent,
-  lspFormatCodeEvent,
-  relevantUpdate,
-} from './annotations'
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
-import { deferExecution, posToOffset, formatMarkdownContents } from './util'
-import { lspAutocompleteKeymapExt } from './autocomplete'
+import { posToOffset, formatMarkdownContents } from './util'
+import lspAutocompleteExt from './autocomplete'
 import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
-import lspLintExt from './lint'
 import lspSemanticTokensExt from './semantic-tokens'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
@@ -46,6 +47,17 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
+
+export enum LspAnnotation {
+  SemanticTokens = 'semantic-tokens',
+  FormatCode = 'format-code',
+  Diagnostics = 'diagnostics',
+}
+
+const lspEvent = Annotation.define<LspAnnotation>()
+export const lspSemanticTokensEvent = lspEvent.of(LspAnnotation.SemanticTokens)
+export const lspFormatCodeEvent = lspEvent.of(LspAnnotation.FormatCode)
+export const lspDiagnosticsEvent = lspEvent.of(LspAnnotation.Diagnostics)
 
 export interface LanguageServerOptions {
   // We assume this is the main project directory, we are currently working in.
@@ -59,6 +71,9 @@ export interface LanguageServerOptions {
   ) => void
 
   changesDelay?: number
+
+  doSemanticTokens?: boolean
+  doFoldingRanges?: boolean
 }
 
 export class LanguageServerPlugin implements PluginValue {
@@ -75,27 +90,20 @@ export class LanguageServerPlugin implements PluginValue {
     notification: LSP.NotificationMessage
   ) => void
 
-  private _defferer = deferExecution((code: string) => {
-    try {
-      // Update the state (not the editor) with the new code.
-      this.client.textDocumentDidChange({
-        textDocument: {
-          uri: this.getDocUri(),
-          version: this.documentVersion++,
-        },
-        contentChanges: [{ text: code }],
-      })
+  private doSemanticTokens: boolean = false
+  private doFoldingRanges: boolean = false
 
-      this.requestSemanticTokens()
-      this.updateFoldingRanges()
-    } catch (e) {
-      console.error(e)
-    }
-  }, this.changesDelay)
+  // When a doc update needs to be sent to the server, this holds the
+  // timeout handle for it. When null, the server has the up-to-date
+  // document.
+  private sendScheduled: number | null = null
 
   constructor(options: LanguageServerOptions, private view: EditorView) {
     this.client = options.client
     this.documentVersion = 0
+
+    this.doSemanticTokens = options.doSemanticTokens ?? false
+    this.doFoldingRanges = options.doFoldingRanges ?? false
 
     if (options.changesDelay) {
       this.changesDelay = options.changesDelay
@@ -131,19 +139,9 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   update(viewUpdate: ViewUpdate) {
-    const isRelevant = relevantUpdate(viewUpdate)
-    if (!isRelevant.overall) {
-      return
+    if (viewUpdate.docChanged) {
+      this.scheduleSendDoc()
     }
-
-    // If the doc didn't change we can return early.
-    if (!viewUpdate.docChanged) {
-      return
-    }
-
-    this.sendChange({
-      documentText: viewUpdate.state.doc.toString(),
-    })
   }
 
   destroy() {
@@ -168,16 +166,6 @@ export class LanguageServerPlugin implements PluginValue {
     this.updateFoldingRanges()
   }
 
-  async sendChange({ documentText }: { documentText: string }) {
-    if (!this.client.ready) return
-
-    this._defferer(documentText)
-  }
-
-  requestDiagnostics() {
-    this.sendChange({ documentText: this.getDocText() })
-  }
-
   async requestHoverTooltip(
     view: EditorView,
     { line, character }: { line: number; character: number }
@@ -188,7 +176,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({ documentText: this.getDocText() })
+    this.ensureDocSent()
     const result = await this.client.textDocumentHover({
       textDocument: { uri: this.getDocUri() },
       position: { line, character },
@@ -211,8 +199,46 @@ export class LanguageServerPlugin implements PluginValue {
     return { pos, end, create: (view) => ({ dom }), above: true }
   }
 
+  scheduleSendDoc() {
+    if (this.sendScheduled != null) window.clearTimeout(this.sendScheduled)
+    this.sendScheduled = window.setTimeout(
+      () => this.sendDoc(),
+      this.changesDelay
+    )
+  }
+
+  sendDoc() {
+    if (this.sendScheduled != null) {
+      window.clearTimeout(this.sendScheduled)
+      this.sendScheduled = null
+    }
+
+    if (!this.client.ready) return
+
+    try {
+      // Update the state (not the editor) with the new code.
+      this.client.textDocumentDidChange({
+        textDocument: {
+          uri: this.getDocUri(),
+          version: this.documentVersion++,
+        },
+        contentChanges: [{ text: this.view.state.doc.toString() }],
+      })
+
+      this.requestSemanticTokens()
+      this.updateFoldingRanges()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  ensureDocSent() {
+    if (this.sendScheduled != null) this.sendDoc()
+  }
+
   async getFoldingRanges(): Promise<LSP.FoldingRange[] | null> {
     if (
+      !this.doFoldingRanges ||
       !this.client.ready ||
       !this.client.getServerCapabilities().foldingRangeProvider
     )
@@ -267,13 +293,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.client.textDocumentDidChange({
-      textDocument: {
-        uri: this.getDocUri(),
-        version: this.documentVersion++,
-      },
-      contentChanges: [{ text: this.getDocText() }],
-    })
+    this.ensureDocSent()
 
     const result = await this.client.textDocumentFormatting({
       textDocument: { uri: this.getDocUri() },
@@ -284,19 +304,16 @@ export class LanguageServerPlugin implements PluginValue {
       },
     })
 
-    if (!result) return null
+    if (!result || !result.length) return null
 
-    for (let i = 0; i < result.length; i++) {
-      const { range, newText } = result[i]
-      this.view.dispatch({
-        changes: {
-          from: posToOffset(this.view.state.doc, range.start)!,
-          to: posToOffset(this.view.state.doc, range.end)!,
-          insert: newText,
-        },
-        annotations: [lspFormatCodeEvent, Transaction.addToHistory.of(true)],
-      })
-    }
+    this.view.dispatch({
+      changes: result.map(({ range, newText }) => ({
+        from: posToOffset(this.view.state.doc, range.start)!,
+        to: posToOffset(this.view.state.doc, range.end)!,
+        insert: newText,
+      })),
+      annotations: lspFormatCodeEvent,
+    })
   }
 
   async requestCompletion(
@@ -316,9 +333,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({
-      documentText: context.state.doc.toString(),
-    })
+    this.ensureDocSent()
 
     const result = await this.client.textDocumentCompletion({
       textDocument: { uri: this.getDocUri() },
@@ -441,6 +456,7 @@ export class LanguageServerPlugin implements PluginValue {
 
   async requestSemanticTokens() {
     if (
+      !this.doSemanticTokens ||
       !this.client.ready ||
       !this.client.getServerCapabilities().semanticTokensProvider
     ) {
@@ -552,12 +568,12 @@ export class LanguageServerPluginSpec
 {
   provide(plugin: ViewPlugin<LanguageServerPlugin>): Extension {
     return [
-      lspAutocompleteKeymapExt,
+      lspAutocompleteExt(plugin),
       lspFormatExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),
-      lspLintExt(),
       lspSemanticTokensExt(),
+      linter(null),
     ]
   }
 }

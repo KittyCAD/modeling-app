@@ -24,12 +24,15 @@ impl ProjectState {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_from_path(path: PathBuf) -> Result<ProjectState> {
         // Fix for "." path, which is the current directory.
-
         let source_path = if path == Path::new(".") {
             std::env::current_dir().map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
         } else {
             path
         };
+
+        // Url decode the path.
+        let source_path =
+            std::path::Path::new(&urlencoding::decode(&source_path.display().to_string())?.to_string()).to_path_buf();
 
         // If the path does not start with a slash, it is a relative path.
         // We need to convert it to an absolute path.
@@ -1082,6 +1085,56 @@ const model = import("model.obj")"#
                 "Error getting the extension of the file: `{}`",
                 tmp_project_dir.join("file").display()
             )
+        );
+
+        std::fs::remove_dir_all(tmp_project_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_project_state_new_from_path_explicit_open_file_with_space_kcl() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let tmp_project_dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&tmp_project_dir).unwrap();
+        std::fs::write(tmp_project_dir.join("i have a space.kcl"), vec![]).unwrap();
+
+        let state = super::ProjectState::new_from_path(tmp_project_dir.join("i have a space.kcl"))
+            .await
+            .unwrap();
+
+        assert_eq!(state.project.file.name, name);
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
+        assert_eq!(
+            state.current_file,
+            Some(tmp_project_dir.join("i have a space.kcl").display().to_string())
+        );
+        assert_eq!(
+            state.project.default_file,
+            tmp_project_dir.join("i have a space.kcl").display().to_string()
+        );
+
+        std::fs::remove_dir_all(tmp_project_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_project_state_new_from_path_explicit_open_file_with_space_kcl_url_encoded() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let tmp_project_dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&tmp_project_dir).unwrap();
+        std::fs::write(tmp_project_dir.join("i have a space.kcl"), vec![]).unwrap();
+
+        let state = super::ProjectState::new_from_path(tmp_project_dir.join("i%20have%20a%20space.kcl"))
+            .await
+            .unwrap();
+
+        assert_eq!(state.project.file.name, name);
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
+        assert_eq!(
+            state.current_file,
+            Some(tmp_project_dir.join("i have a space.kcl").display().to_string())
+        );
+        assert_eq!(
+            state.project.default_file,
+            tmp_project_dir.join("i have a space.kcl").display().to_string()
         );
 
         std::fs::remove_dir_all(tmp_project_dir).unwrap();

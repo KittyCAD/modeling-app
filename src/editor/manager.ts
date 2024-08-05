@@ -7,19 +7,19 @@ import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
 import {
-  forEachDiagnostic,
   Diagnostic,
+  forEachDiagnostic,
   setDiagnosticsEffect,
 } from '@codemirror/lint'
 
-const updateOutsideEditorAnnotation = Annotation.define<null>()
-export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(null)
+const updateOutsideEditorAnnotation = Annotation.define<boolean>()
+export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
 
-const modelingMachineAnnotation = Annotation.define<null>()
-export const modelingMachineEvent = modelingMachineAnnotation.of(null)
+const modelingMachineAnnotation = Annotation.define<boolean>()
+export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
-const setDiagnosticsAnnotation = Annotation.define<null>()
-export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(null)
+const setDiagnosticsAnnotation = Annotation.define<boolean>()
+export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
   return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
@@ -46,7 +46,7 @@ export default class EditorManager {
   private _convertToVariableEnabled: boolean = false
   private _convertToVariableCallback: () => void = () => {}
 
-  private _highlightRange: [number, number] = [0, 0]
+  private _highlightRange: Array<[number, number]> = [[0, 0]]
 
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
@@ -92,19 +92,21 @@ export default class EditorManager {
     return this._commandBarSend(eventInfo)
   }
 
-  get highlightRange(): [number, number] {
+  get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
 
-  setHighlightRange(selection: Selection['range']): void {
-    this._highlightRange = selection
-    const safeEnd = Math.min(
-      selection[1],
-      this._editorView?.state.doc.length || selection[1]
-    )
+  setHighlightRange(selections: Array<Selection['range']>): void {
+    this._highlightRange = selections
+
+    const selectionsWithSafeEnds = selections.map((s): [number, number] => {
+      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
+      return [s[0], safeEnd]
+    })
+
     if (this._editorView) {
       this._editorView.dispatch({
-        effects: addLineHighlight.of([selection[0], safeEnd]),
+        effects: addLineHighlight.of(selectionsWithSafeEnds),
         annotations: [
           updateOutsideEditorEvent,
           addLineHighlightEvent,
@@ -114,37 +116,61 @@ export default class EditorManager {
     }
   }
 
-  clearDiagnostics(): void {
-    this.setDiagnostics([])
-  }
-
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
+    // Clear out any existing diagnostics that are the same.
+    for (const diagnostic of diagnostics) {
+      for (const otherDiagnostic of diagnostics) {
+        if (diagnosticIsEqual(diagnostic, otherDiagnostic)) {
+          diagnostics = diagnostics.filter(
+            (d) => !diagnosticIsEqual(d, diagnostic)
+          )
+          diagnostics.push(diagnostic)
+          break
+        }
+      }
+    }
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
-      annotations: [setDiagnosticsEvent, Transaction.addToHistory.of(false)],
+      annotations: [
+        setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
     })
   }
 
-  addDiagnostics(diagnostics: Diagnostic[]): void {
+  scrollToFirstErrorDiagnosticIfExists() {
     if (!this._editorView) return
 
-    forEachDiagnostic(this._editorView.state, function (diag) {
-      diagnostics.push(diag)
-    })
-
-    const uniqueDiagnostics = new Set<Diagnostic>()
-    diagnostics.forEach((diagnostic) => {
-      for (const knownDiagnostic of uniqueDiagnostics.values()) {
-        if (diagnosticIsEqual(diagnostic, knownDiagnostic)) {
-          return
+    let firstDiagnosticPos: [number, number] | null = null
+    forEachDiagnostic(
+      this._editorView.state,
+      (d: Diagnostic, from: number, to: number) => {
+        if (!firstDiagnosticPos && d.severity === 'error') {
+          firstDiagnosticPos = [from, to]
         }
       }
-      uniqueDiagnostics.add(diagnostic)
-    })
+    )
 
-    this.setDiagnostics([...uniqueDiagnostics])
+    if (!firstDiagnosticPos) return
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.cursor(firstDiagnosticPos[0]),
+      ]),
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(firstDiagnosticPos[0], firstDiagnosticPos[1])
+        ),
+      ],
+      annotations: [
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
   }
 
   undo() {
@@ -222,11 +248,7 @@ export default class EditorManager {
       return
     }
 
-    const ignoreEvents: ModelingMachineEvent['type'][] = [
-      'Equip Line tool',
-      'Equip tangential arc to',
-      'Equip rectangle tool',
-    ]
+    const ignoreEvents: ModelingMachineEvent['type'][] = ['change tool']
 
     if (!this._modelingEvent) {
       return

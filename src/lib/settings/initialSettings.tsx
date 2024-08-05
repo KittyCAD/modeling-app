@@ -157,11 +157,22 @@ export function createSettings() {
         ),
       }),
       enableSSAO: new Setting<boolean>({
-        defaultValue: false,
+        defaultValue: true,
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
+      }),
+      /**
+       * Stream resource saving behavior toggle
+       */
+      streamIdleMode: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Toggle stream idling, saving bandwidth and battery',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',

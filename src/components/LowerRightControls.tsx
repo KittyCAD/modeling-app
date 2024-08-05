@@ -10,6 +10,7 @@ import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
+import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 
 export function LowerRightControls({
   children,
@@ -80,7 +81,9 @@ export function LowerRightControls({
             name="bug"
             className={`w-5 h-5 ${linkOverrideClassName}`}
           />
-          <Tooltip position="top">Report a bug</Tooltip>
+          <Tooltip position="top" contentClassName="text-xs">
+            Report a bug
+          </Tooltip>
         </a>
         <Link
           to={
@@ -93,8 +96,12 @@ export function LowerRightControls({
             name="settings"
             className={`w-5 h-5 ${linkOverrideClassName}`}
           />
-          <Tooltip position="top">Settings</Tooltip>
+          <span className="sr-only">Settings</span>
+          <Tooltip position="top" contentClassName="text-xs">
+            Settings
+          </Tooltip>
         </Link>
+        <NetworkMachineIndicator className={linkOverrideClassName} />
         <NetworkHealthIndicator />
         <HelpMenu />
       </menu>

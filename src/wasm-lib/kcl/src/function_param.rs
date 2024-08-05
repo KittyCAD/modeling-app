@@ -1,32 +1,29 @@
-use std::collections::HashMap;
-
 use schemars::JsonSchema;
 
 use crate::{
     ast::types::FunctionExpression,
     errors::KclError,
-    executor::{ExecutorContext, MemoryFunction, MemoryItem, Metadata, ProgramMemory, ProgramReturn},
+    executor::{DynamicState, ExecutorContext, MemoryFunction, MemoryItem, Metadata, ProgramMemory, ProgramReturn},
 };
 
 /// A function being used as a parameter into a stdlib function.
 pub struct FunctionParam<'a> {
     pub inner: &'a MemoryFunction,
     pub memory: ProgramMemory,
+    pub dynamic_state: DynamicState,
     pub fn_expr: Box<FunctionExpression>,
     pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
 }
 
 impl<'a> FunctionParam<'a> {
-    pub async fn call(
-        &self,
-        args: Vec<MemoryItem>,
-    ) -> Result<(Option<ProgramReturn>, HashMap<String, MemoryItem>), KclError> {
+    pub async fn call(&self, args: Vec<MemoryItem>) -> Result<Option<ProgramReturn>, KclError> {
         (self.inner)(
             args,
             self.memory.clone(),
             self.fn_expr.clone(),
             self.meta.clone(),
+            self.dynamic_state.clone(),
             self.ctx.clone(),
         )
         .await

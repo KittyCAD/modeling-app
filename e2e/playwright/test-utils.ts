@@ -1,5 +1,5 @@
-import { test, expect, Page, Download } from '@playwright/test'
-import { EngineCommand } from '../../src/lang/std/engineConnection'
+import { expect, Page, Download } from '@playwright/test'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
@@ -16,14 +16,14 @@ export const TEST_COLORS = {
 } as const
 
 async function waitForPageLoad(page: Page) {
-  // wait for 'Loading stream...' spinner
-  await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
-  await page
-    .getByTestId('loading')
-    .waitFor({ state: 'detached', timeout: 20_000 })
+  await expect(page.getByTestId('loading')).not.toBeAttached({
+    timeout: 20_000,
+  })
 
-  await page.getByTestId('start-sketch').waitFor()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
+    timeout: 20_000,
+  })
 }
 
 async function removeCurrentCode(page: Page) {
@@ -58,44 +58,45 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
 }
 
 async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  const paneLocator = page.getByTestId('code-pane-button')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
+  const isOpen = ariaSelected === 'true'
 
   if (!isOpen) {
     await paneLocator.click()
-    await paneLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function closeKclCodePanel(page: Page) {
-  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
-  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  const paneLocator = page.getByTestId('code-pane-button')
+  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
+  const isOpen = ariaSelected === 'true'
+
   if (isOpen) {
     await paneLocator.click()
-    await paneLocator
-      .and(page.locator(':not([aria-selected="true"])'))
-      .waitFor()
+    await expect(paneLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+  const debugLocator = page.getByTestId('debug-pane-button')
+  await expect(debugLocator).toBeVisible()
+  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
     await debugLocator.click()
-    await debugLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
   }
 }
 
 async function closeDebugPanel(page: Page) {
-  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+  const debugLocator = page.getByTestId('debug-pane-button')
+  await expect(debugLocator).toBeVisible()
+  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
   if (isOpen) {
     await debugLocator.click()
-    await debugLocator
-      .and(page.locator(':not([aria-selected="true"])'))
-      .waitFor()
+    await expect(debugLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
 }
 
@@ -232,6 +233,7 @@ export async function getUtils(page: Page) {
 
   return {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -264,7 +266,7 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox()
+        .boundingBox({ timeout: 5000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
@@ -311,9 +313,9 @@ export async function getUtils(page: Page) {
         fullPage: true,
       })
       const screenshot = await PNG.sync.read(buffer)
-      // most likely related to pixel density but the screenshots for webkit are 2x the size
-      // there might be a more robust way of doing this.
-      const pixMultiplier = browserType === 'webkit' ? 2 : 1
+      const pixMultiplier: number = await page.evaluate(
+        'window.devicePixelRatio'
+      )
       const index =
         (screenshot.width * coords.y * pixMultiplier +
           coords.x * pixMultiplier) *
@@ -376,11 +378,10 @@ export async function getUtils(page: Page) {
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      // Skip on non-Chromium browsers, since we need to use the CDP.
-      test.skip(
-        cdpSession === null,
-        'Network emulation is only supported in Chromium'
-      )
+      if (cdpSession === null) {
+        // Use a fail safe if we can't simulate disconnect (on Safari)
+        return page.evaluate('window.tearDown()')
+      }
 
       cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
     },
@@ -471,8 +472,11 @@ export const doExport = async (
   page: Page
 ): Promise<Paths> => {
   await page.getByRole('button', { name: APP_NAME }).click()
-  await expect(page.getByRole('button', { name: 'Export Part' })).toBeVisible()
-  await page.getByRole('button', { name: 'Export Part' }).click()
+  const exportMenuButton = page.getByRole('button', {
+    name: 'Export current part',
+  })
+  await expect(exportMenuButton).toBeVisible()
+  await exportMenuButton.click()
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar

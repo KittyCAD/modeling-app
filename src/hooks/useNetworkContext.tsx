@@ -1,11 +1,16 @@
 import { createContext, useContext } from 'react'
 import {
   ConnectingTypeGroup,
+  EngineConnectionStateType,
+  EngineConnectionState,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
 import { NetworkStatus, NetworkHealthState } from './useNetworkStatus'
 
 export const NetworkContext = createContext<NetworkStatus>({
+  immediateState: {
+    type: EngineConnectionStateType.Disconnected,
+  } as EngineConnectionState,
   hasIssues: undefined,
   overallState: NetworkHealthState.Disconnected,
   internetConnected: true,

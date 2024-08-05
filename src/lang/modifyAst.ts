@@ -243,6 +243,7 @@ export function mutateObjExpProp(
         value: updateWith,
         start: 0,
         end: 0,
+        digest: null,
       })
     }
   }
@@ -348,7 +349,6 @@ export function sketchOnExtrudedFace(
   node: Program,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  programMemory: ProgramMemory,
   cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -387,7 +387,6 @@ export function sketchOnExtrudedFace(
   if (cap === 'none') {
     const __tag = addTagForSketchOnFace(
       {
-        previousProgramMemory: programMemory,
         pathToNode: sketchPathToNode,
         node: _node,
       },
@@ -484,6 +483,7 @@ export function createLiteral(value: string | number): Literal {
     end: 0,
     value,
     raw: `${value}`,
+    digest: null,
   }
 }
 
@@ -492,6 +492,7 @@ export function createTagDeclarator(value: string): TagDeclarator {
     type: 'TagDeclarator',
     start: 0,
     end: 0,
+    digest: null,
     value,
   }
 }
@@ -501,6 +502,7 @@ export function createIdentifier(name: string): Identifier {
     type: 'Identifier',
     start: 0,
     end: 0,
+    digest: null,
     name,
   }
 }
@@ -510,6 +512,7 @@ export function createPipeSubstitution(): PipeSubstitution {
     type: 'PipeSubstitution',
     start: 0,
     end: 0,
+    digest: null,
   }
 }
 
@@ -525,10 +528,12 @@ export function createCallExpressionStdLib(
       type: 'Identifier',
       start: 0,
       end: 0,
+      digest: null,
       name,
     },
     optional: false,
     arguments: args,
+    digest: null,
   }
 }
 
@@ -544,10 +549,12 @@ export function createCallExpression(
       type: 'Identifier',
       start: 0,
       end: 0,
+      digest: null,
       name,
     },
     optional: false,
     arguments: args,
+    digest: null,
   }
 }
 
@@ -558,6 +565,7 @@ export function createArrayExpression(
     type: 'ArrayExpression',
     start: 0,
     end: 0,
+    digest: null,
     elements,
   }
 }
@@ -569,8 +577,9 @@ export function createPipeExpression(
     type: 'PipeExpression',
     start: 0,
     end: 0,
+    digest: null,
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: [] },
+    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
   }
 }
 
@@ -583,11 +592,13 @@ export function createVariableDeclaration(
     type: 'VariableDeclaration',
     start: 0,
     end: 0,
+    digest: null,
     declarations: [
       {
         type: 'VariableDeclarator',
         start: 0,
         end: 0,
+        digest: null,
         id: createIdentifier(varName),
         init,
       },
@@ -603,11 +614,13 @@ export function createObjectExpression(properties: {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
+    digest: null,
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
       key: createIdentifier(key),
+      digest: null,
       value,
     })),
   }
@@ -621,6 +634,7 @@ export function createUnaryExpression(
     type: 'UnaryExpression',
     start: 0,
     end: 0,
+    digest: null,
     operator,
     argument,
   }
@@ -635,6 +649,7 @@ export function createBinaryExpression([left, operator, right]: [
     type: 'BinaryExpression',
     start: 0,
     end: 0,
+    digest: null,
     operator,
     left,
     right,
@@ -710,7 +725,7 @@ export function moveValueIntoNewVariablePath(
     programMemory,
     pathToNode
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = structuredClone(ast)
   const boop = replacer(_node, variableName)
   if (trap(boop)) return { modifiedAst: ast }
 
@@ -742,7 +757,7 @@ export function moveValueIntoNewVariable(
     programMemory,
     sourceRange
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
 
@@ -767,7 +782,7 @@ export function deleteSegmentFromPipeExpression(
   code: string,
   pathToNode: PathToNode
 ): Program | Error {
-  let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
+  let _modifiedAst = structuredClone(modifiedAst)
 
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
@@ -884,7 +899,7 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Program | Error> {
-  const astClone = JSON.parse(JSON.stringify(ast))
+  const astClone = structuredClone(ast)
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
@@ -968,7 +983,7 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.root[sketchName] as SketchGroup
+          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict

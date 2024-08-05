@@ -16,6 +16,23 @@ pub enum LiteralValue {
     Bool(bool),
 }
 
+impl LiteralValue {
+    pub fn digestable_id(&self) -> Vec<u8> {
+        match self {
+            LiteralValue::IInteger(i) => i.to_ne_bytes().into(),
+            LiteralValue::Fractional(frac) => frac.to_ne_bytes().into(),
+            LiteralValue::String(st) => st.as_bytes().into(),
+            LiteralValue::Bool(b) => {
+                if *b {
+                    vec![1]
+                } else {
+                    vec![0]
+                }
+            }
+        }
+    }
+}
+
 impl From<Literal> for Value {
     fn from(literal: Literal) -> Self {
         Value::Literal(Box::new(literal))

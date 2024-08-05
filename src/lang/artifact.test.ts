@@ -16,7 +16,7 @@ const mySketch001 = startSketchOn('XY')
   // |> rx(45, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.root?.mySketch001
+    const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'SketchGroup',
       on: expect.any(Object),
@@ -66,7 +66,7 @@ const mySketch001 = startSketchOn('XY')
   |> extrude(2, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.root?.mySketch001
+    const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'ExtrudeGroup',
       id: expect.any(String),
@@ -146,7 +146,7 @@ const sk2 = startSketchOn('XY')
 `
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const geos = [programMemory?.root?.theExtrude, programMemory?.root?.sk2]
+    const geos = [programMemory?.get('theExtrude'), programMemory?.get('sk2')]
     expect(geos).toEqual([
       {
         type: 'ExtrudeGroup',
@@ -167,6 +167,7 @@ const sk2 = startSketchOn('XY')
               start: 114,
               type: 'TagDeclarator',
               value: 'p',
+              digest: null,
             },
             id: expect.any(String),
             sourceRange: [95, 117],
@@ -185,6 +186,18 @@ const sk2 = startSketchOn('XY')
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'SketchGroup',
+          tags: {
+            p: {
+              __meta: [
+                {
+                  sourceRange: [114, 116],
+                },
+              ],
+              type: 'TagIdentifier',
+              value: 'p',
+              info: expect.any(Object),
+            },
+          },
           value: [
             {
               type: 'ToPoint',
@@ -205,6 +218,7 @@ const sk2 = startSketchOn('XY')
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
+                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),
@@ -247,6 +261,7 @@ const sk2 = startSketchOn('XY')
               start: 417,
               type: 'TagDeclarator',
               value: 'o',
+              digest: null,
             },
             id: expect.any(String),
             sourceRange: [399, 420],
@@ -265,6 +280,18 @@ const sk2 = startSketchOn('XY')
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'SketchGroup',
+          tags: {
+            o: {
+              __meta: [
+                {
+                  sourceRange: [417, 419],
+                },
+              ],
+              type: 'TagIdentifier',
+              value: 'o',
+              info: expect.any(Object),
+            },
+          },
           value: [
             {
               type: 'ToPoint',
@@ -285,6 +312,7 @@ const sk2 = startSketchOn('XY')
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
+                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),

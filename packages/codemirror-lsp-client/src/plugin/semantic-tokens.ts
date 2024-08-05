@@ -4,7 +4,7 @@ import { EditorView, Decoration, DecorationSet } from '@codemirror/view'
 
 import { Tag, tags } from '@lezer/highlight'
 
-import { lspSemanticTokensEvent } from './annotations'
+import { lspSemanticTokensEvent } from './lsp'
 
 export interface SemanticToken {
   from: number

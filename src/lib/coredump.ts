@@ -1,4 +1,4 @@
-import { EngineCommandManager } from 'lang/std/engineConnection'
+import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
 import { isTauri } from 'lib/isTauri'
@@ -10,7 +10,6 @@ import {
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
-import React from 'react'
 import { VITE_KC_API_BASE_URL } from 'env'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
@@ -33,17 +32,14 @@ import { VITE_KC_API_BASE_URL } from 'env'
 // TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
-  htmlRef: React.RefObject<HTMLDivElement> | null
   token: string | undefined
   baseUrl: string = VITE_KC_API_BASE_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,
-    htmlRef: React.RefObject<HTMLDivElement> | null,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
-    this.htmlRef = htmlRef
     this.token = token
   }
 
@@ -73,31 +69,14 @@ export class CoreDumpManager {
   // Get the os information.
   getOsInfo(): Promise<string> {
     if (this.isTauri()) {
-      return tauriArch()
-        .catch((error: any) => {
-          throw new Error(`Error getting arch: ${error}`)
-        })
-        .then((arch: string) => {
-          return tauriPlatform()
-            .catch((error: any) => {
-              throw new Error(`Error getting platform: ${error}`)
-            })
-            .then((platform: string) => {
-              return tauriKernelVersion()
-                .catch((error: any) => {
-                  throw new Error(`Error getting kernel version: ${error}`)
-                })
-                .then((kernelVersion: string) => {
-                  const osinfo: OsInfo = {
-                    platform,
-                    arch,
-                    browser: 'tauri',
-                    version: kernelVersion,
-                  }
-                  return JSON.stringify(osinfo)
-                })
-            })
-        })
+      const osinfo: OsInfo = {
+        platform: tauriPlatform(),
+        arch: tauriArch(),
+        browser: 'tauri',
+        version: tauriKernelVersion(),
+      }
+      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+      // TODO: get rid of promises now that the tauri api doesn't require them anymore
     }
 
     const userAgent = window.navigator.userAgent || 'unknown browser'
@@ -163,16 +142,6 @@ export class CoreDumpManager {
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
     /**
-     * Deep clone a JavaScript Object
-     * - NOTE: this function throws on parse errors from things like circular references
-     * - It is also synchronous and could be more performant
-     * - There is a whole rabbit hole to explore here if you like.
-     * - This works for our use case.
-     * @param {object} obj - The object to clone.
-     */
-    const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
-
-    /**
      * Check if a function is private method
      */
     const isPrivateMethod = (key: string) => {
@@ -194,7 +163,7 @@ export class CoreDumpManager {
       // singletons
       engine_command_manager: {
         artifact_map: {},
-        command_logs: [],
+        command_logs: [] as CommandLog[],
         engine_connection: { state: { type: '' } },
         default_planes: {},
         scene_command_artifacts: {},
@@ -223,14 +192,14 @@ export class CoreDumpManager {
       // engine_command_manager
       debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
 
-      // artifact map - this.engineCommandManager.artifactMap
-      if (this.engineCommandManager?.artifactMap) {
+      // artifact map - this.engineCommandManager.artifactGraph
+      if (this.engineCommandManager?.artifactGraph) {
         debugLog(
           'CoreDump: Engine Command Manager artifact map',
-          this.engineCommandManager.artifactMap
+          this.engineCommandManager.artifactGraph
         )
-        clientState.engine_command_manager.artifact_map = deepClone(
-          this.engineCommandManager.artifactMap
+        clientState.engine_command_manager.artifact_map = structuredClone(
+          this.engineCommandManager.artifactGraph
         )
       }
 
@@ -240,7 +209,7 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager command logs',
           this.engineCommandManager.commandLogs
         )
-        clientState.engine_command_manager.command_logs = deepClone(
+        clientState.engine_command_manager.command_logs = structuredClone(
           this.engineCommandManager.commandLogs
         )
       }
@@ -251,7 +220,7 @@ export class CoreDumpManager {
           'CoreDump: Engine Command Manager default planes',
           this.engineCommandManager.defaultPlanes
         )
-        clientState.engine_command_manager.default_planes = deepClone(
+        clientState.engine_command_manager.default_planes = structuredClone(
           this.engineCommandManager.defaultPlanes
         )
       }
@@ -286,17 +255,6 @@ export class CoreDumpManager {
           this.engineCommandManager.outSequence
       }
 
-      // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
-      if (this.engineCommandManager?.sceneCommandArtifacts) {
-        debugLog(
-          'CoreDump: Engine Command Manager scene command artifacts',
-          this.engineCommandManager.sceneCommandArtifacts
-        )
-        clientState.engine_command_manager.scene_command_artifacts = deepClone(
-          this.engineCommandManager.sceneCommandArtifacts
-        )
-      }
-
       // KCL Manager - globalThis?.window?.kclManager
       const kclManager = (globalThis?.window as any)?.kclManager
       debugLog('CoreDump: kclManager', kclManager)
@@ -305,13 +263,15 @@ export class CoreDumpManager {
         // KCL Manager AST
         debugLog('CoreDump: KCL Manager AST', kclManager?.ast)
         if (kclManager?.ast) {
-          clientState.kcl_manager.ast = deepClone(kclManager.ast)
+          clientState.kcl_manager.ast = structuredClone(kclManager.ast)
         }
 
         // KCL Errors
         debugLog('CoreDump: KCL Errors', kclManager?.kclErrors)
         if (kclManager?.kclErrors) {
-          clientState.kcl_manager.kcl_errors = deepClone(kclManager.kclErrors)
+          clientState.kcl_manager.kcl_errors = structuredClone(
+            kclManager.kclErrors
+          )
         }
 
         // KCL isExecuting
@@ -323,13 +283,15 @@ export class CoreDumpManager {
         // KCL logs
         debugLog('CoreDump: KCL logs', kclManager?.logs)
         if (kclManager?.logs) {
-          ;(clientState.kcl_manager as any).logs = deepClone(kclManager.logs)
+          ;(clientState.kcl_manager as any).logs = structuredClone(
+            kclManager.logs
+          )
         }
 
         // KCL programMemory
         debugLog('CoreDump: KCL programMemory', kclManager?.programMemory)
         if (kclManager?.programMemory) {
-          ;(clientState.kcl_manager as any).programMemory = deepClone(
+          ;(clientState.kcl_manager as any).programMemory = structuredClone(
             kclManager.programMemory
           )
         }
@@ -384,7 +346,7 @@ export class CoreDumpManager {
         )
         if (sceneEntitiesManager?.activeSegments) {
           ;(clientState.scene_entities_manager as any).activeSegments =
-            deepClone(sceneEntitiesManager.activeSegments)
+            structuredClone(sceneEntitiesManager.activeSegments)
         }
       }
 
@@ -408,7 +370,7 @@ export class CoreDumpManager {
         editorManagerKeys.forEach((key: string) => {
           debugLog('CoreDump: Editor Manager', key, editorManager[key])
           try {
-            ;(clientState.editor_manager as any)[key] = deepClone(
+            ;(clientState.editor_manager as any)[key] = structuredClone(
               editorManager[key]
             )
           } catch (error) {
@@ -449,12 +411,11 @@ export class CoreDumpManager {
 
   // Return a data URL (png format) of the screenshot of the current page.
   screenshot(): Promise<string> {
-    return screenshot(this.htmlRef)
-      .then((screenshot: string) => {
-        return screenshot
-      })
-      .catch((error: any) => {
-        throw new Error(`Error getting screenshot: ${error}`)
-      })
+    return (
+      screenshot()
+        .then((screenshotStr: string) => screenshotStr)
+        // maybe rust should handle an error, but an empty string at least doesn't cause the core dump to fail entirely
+        .catch((error: any) => ``)
+    )
   }
 }

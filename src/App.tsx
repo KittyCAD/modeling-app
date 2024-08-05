@@ -1,8 +1,8 @@
-import { MouseEventHandler, useEffect, useRef } from 'react'
+import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import { EngineCommand } from './lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -25,7 +25,7 @@ import ModalContainer from 'react-modal-promise'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
-import { useStore } from 'useStore'
+import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -44,24 +44,19 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const { context } = useModelingContext()
-  const { setHtmlRef } = useStore((s) => ({
-    setHtmlRef: s.setHtmlRef,
-  }))
-
-  useEffect(() => {
-    setHtmlRef(ref)
-  }, [ref])
+  const { context, state } = useModelingContext()
 
   const { auth, settings } = useSettingsAuthContext()
   const token = auth?.context?.token
 
-  const coreDumpManager = new CoreDumpManager(engineCommandManager, ref, token)
+  const coreDumpManager = useMemo(
+    () => new CoreDumpManager(engineCommandManager, token),
+    []
+  )
 
   const {
     app: { onboardingStatus },
   } = settings.context
-  const { state } = useModelingContext()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -100,16 +95,16 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-    if (context.store?.buttonDownInStream === undefined) {
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'highlight_set_entity',
-          selected_at_window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    }
+    if (state.matches('idle.showPlanes')) return
+    if (context.store?.buttonDownInStream !== undefined) return
+    debounceSocketSend({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'highlight_set_entity',
+        selected_at_window: { x, y },
+      },
+      cmd_id: newCmdId,
+    })
   }
 
   return (
@@ -132,6 +127,7 @@ export function App() {
       <Stream />
       {/* <CamToggle /> */}
       <LowerRightControls coreDumpManager={coreDumpManager}>
+        <UnitsMenu />
         <Gizmo />
       </LowerRightControls>
     </div>

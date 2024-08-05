@@ -42,7 +42,6 @@ use tower_lsp::{
 use crate::{
     ast::types::{Value, VariableKind},
     executor::SourceRange,
-    lint::checks,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -232,7 +231,7 @@ impl crate::lsp::backend::Backend for Backend {
         // Lets update the ast.
         let parser = crate::parser::Parser::new(tokens.clone());
         let result = parser.ast();
-        let ast = match result {
+        let mut ast = match result {
             Ok(ast) => ast,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
@@ -242,6 +241,11 @@ impl crate::lsp::backend::Backend for Backend {
                 return;
             }
         };
+
+        // Here we will want to store the digest and compare, but for now
+        // we're doing this in a non-load-bearing capacity so we can remove
+        // this if it backfires and only hork the LSP.
+        ast.compute_digest();
 
         // Check if the ast changed.
         let ast_changed = match self.ast_map.get(&filename) {
@@ -268,11 +272,7 @@ impl crate::lsp::backend::Backend for Backend {
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
 
-            let discovered_findings = ast
-                .lint(checks::lint_variables)
-                .into_iter()
-                .flatten()
-                .collect::<Vec<_>>();
+            let discovered_findings = ast.lint_all().into_iter().flatten().collect::<Vec<_>>();
             self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
 

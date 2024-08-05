@@ -64,27 +64,27 @@ const part001 = startSketchOn('-XZ')
   |> angledLineToY({
         angle: topAng,
         to: totalHeightHalf,
-      }, %, 'seg04')
-  |> xLineTo(totalLen, %, 'seg03')
-  |> yLine(-armThick, %, 'seg01')
+      }, %, $seg04)
+  |> xLineTo(totalLen, %, $seg03)
+  |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg04'
+        intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
-      }, %, 'seg02')
-  |> xLineTo(segEndX('seg03', %) + 0, %)
-  |> yLine(-segLen('seg01', %), %)
+      }, %, $seg02)
+  |> xLineTo(segEndX(seg03, %) + 0, %)
+  |> yLine(-segLen(seg01, %), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
-        intersectTag: 'seg02'
+        intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`
@@ -431,9 +431,13 @@ test('Draft segments should look right', async ({ page, context }) => {
   |> line([7.25, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(code)
 
-  await page.getByRole('button', { name: 'Tangential Arc' }).click()
+  await page
+    .getByRole('button', { name: 'Tangential Arc', exact: true })
+    .click()
 
   await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
+
+  await page.waitForTimeout(300)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
@@ -473,8 +477,10 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   const startXPx = 600
 
   // Equip the rectangle tool
-  await page.getByRole('button', { name: 'Line' }).click()
-  await page.getByRole('button', { name: 'Rectangle' }).click()
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Corner rectangle', exact: true })
+    .click()
 
   // Draw the rectangle
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
@@ -533,7 +539,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> line([7.25, 0], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -543,7 +551,9 @@ test.describe('Client side scene scale should match engine scale', () => {
     await expect(u.codeLocator).toHaveText(code)
 
     // click tangential arc tool again to unequip it
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     // screen shot should show the sketch
@@ -632,7 +642,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> line([184.3, 0], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -641,7 +653,9 @@ test.describe('Client side scene scale should match engine scale', () => {
   |> tangentialArcTo([551.2, -62.01], %)`
     await expect(u.codeLocator).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page
+      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .click()
     await page.waitForTimeout(100)
 
     // screen shot should show the sketch
@@ -675,14 +689,14 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
       'persistCode',
       `const part001 = startSketchOn('-XZ')
   |> startProfileAt([1.4, 2.47], %)
-  |> line([9.31, 10.55], %, 'seg01')
+  |> line([9.31, 10.55], %, $seg01)
   |> line([11.91, -10.42], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
-const part002 = startSketchOn(part001, 'seg01')
+const part002 = startSketchOn(part001, seg01)
   |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
-  |> line([0, -7.79], %, 'seg02')
+  |> line([0, -7.79], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
 `
@@ -697,7 +711,7 @@ const part002 = startSketchOn(part001, 'seg01')
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(2)
+  ).toHaveCount(1, { timeout: 10_000 })
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
@@ -747,7 +761,7 @@ test('Zoom to fit on load - solid 2d', async ({ page, context }) => {
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(2)
+  ).toHaveCount(1)
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
@@ -784,7 +798,7 @@ test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
   // wait for execution done
   await expect(
     page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(2)
+  ).toHaveCount(1)
   await u.closeDebugPanel()
 
   // Wait for the second extrusion to appear
@@ -815,7 +829,7 @@ test.describe('Grid visibility', () => {
     // wait for execution done
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await u.closeDebugPanel()
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
@@ -863,7 +877,7 @@ test.describe('Grid visibility', () => {
     // wait for execution done
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await u.closeDebugPanel()
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished

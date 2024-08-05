@@ -29,7 +29,7 @@ const sketch001 = startSketchOn('XY')
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -71,19 +71,26 @@ const sketch001 = startSketchOn('XY')
 	// Chamfers or fillets on this extrude group.
 	filletOrChamfers: [{
 	// The engine id of the edge to fillet.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this fillet.
 	id: uuid,
 	radius: number,
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
 	type: "fillet",
 } |
 {
 	// The engine id of the edge to chamfer.
-	edge_id: uuid,
+	edgeId: uuid,
 	// The id of the engine command that called this chamfer.
 	id: uuid,
 	length: number,
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -96,7 +103,7 @@ const sketch001 = startSketchOn('XY')
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -106,6 +113,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -113,12 +121,16 @@ const sketch001 = startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -136,6 +148,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -149,6 +162,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -162,6 +176,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -177,6 +192,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -194,6 +210,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -215,6 +232,7 @@ const sketch001 = startSketchOn('XY')
 	sourceRange: [number, number],
 	// The tag.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -230,11 +248,44 @@ const sketch001 = startSketchOn('XY')
 	sourceRange: [number, number],
 	// The tag.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
 },
 	type: "extrudeArc",
+} |
+{
+	// The id for the chamfer surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "chamfer",
+} |
+{
+	// The id for the fillet surface.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The source range.
+	sourceRange: [number, number],
+	// The tag.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	type: "fillet",
 }],
 },
 	// The id of the face.
@@ -267,6 +318,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -274,12 +326,16 @@ const sketch001 = startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 },
+	// Tag identifiers that have been declared in this sketch group.
+	tags: {
+},
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -297,6 +353,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -310,6 +367,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -323,6 +381,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -338,6 +397,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,
@@ -355,6 +415,7 @@ const sketch001 = startSketchOn('XY')
 	from: [number, number],
 	// The tag of the path.
 	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
 	end: number,
 	start: number,
 	value: string,

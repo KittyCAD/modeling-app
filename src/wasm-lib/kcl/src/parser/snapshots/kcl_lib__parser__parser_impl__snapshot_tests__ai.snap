@@ -20,7 +20,8 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 11,
-            "name": "myBox"
+            "name": "myBox",
+            "digest": null
           },
           "init": {
             "type": "PipeExpression",
@@ -37,7 +38,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 14,
                   "end": 15,
-                  "name": "f"
+                  "name": "f",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -46,10 +48,12 @@ expression: actual
                     "start": 16,
                     "end": 17,
                     "value": 1,
-                    "raw": "1"
+                    "raw": "1",
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               },
               {
                 "type": "CallExpression",
@@ -60,7 +64,8 @@ expression: actual
                   "type": "Identifier",
                   "start": 22,
                   "end": 23,
-                  "name": "g"
+                  "name": "g",
+                  "digest": null
                 },
                 "arguments": [
                   {
@@ -69,30 +74,39 @@ expression: actual
                     "start": 24,
                     "end": 25,
                     "value": 2,
-                    "raw": "2"
+                    "raw": "2",
+                    "digest": null
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 27,
-                    "end": 28
+                    "end": 28,
+                    "digest": null
                   }
                 ],
-                "optional": false
+                "optional": false,
+                "digest": null
               }
             ],
             "nonCodeMeta": {
               "nonCodeNodes": {},
-              "start": []
-            }
-          }
+              "start": [],
+              "digest": null
+            },
+            "digest": null
+          },
+          "digest": null
         }
       ],
-      "kind": "const"
+      "kind": "const",
+      "digest": null
     }
   ],
   "nonCodeMeta": {
     "nonCodeNodes": {},
-    "start": []
-  }
+    "start": [],
+    "digest": null
+  },
+  "digest": null
 }

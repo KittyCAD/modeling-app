@@ -2,13 +2,18 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function UserMenu() {
   const { context } = useModelingContext()
+  const { auth } = useSettingsAuthContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)
   const [avatarErrored, setAvatarErrored] = useState(false)
-  const buttonDescription = !avatarErrored ? 'your avatar' : 'the menu button'
+
+  const user = auth?.context?.user
+  const errorOrNoImage = !user?.image || avatarErrored
+  const buttonDescription = errorOrNoImage ? 'the menu button' : 'your avatar'
 
   // Set up error handling for the user's avatar image,
   // so the onboarding text can be updated if it fails to load.
@@ -38,19 +43,13 @@ export default function UserMenu() {
           <h2 className="text-2xl font-bold">User Menu</h2>
           <p className="my-4">
             Click {buttonDescription} in the upper right to open the user menu.
-            You can change your settings, sign out, or request a feature.
+            You can change your user-level settings, sign out, or request a
+            feature.
           </p>
           <p className="my-4">
-            We only support global settings at the moment, but we are working to
-            implement{' '}
-            <a
-              href="https://github.com/KittyCAD/modeling-app/issues/1503"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              per-project settings
-            </a>{' '}
-            now.
+            Many settings can be set either a user or per-project level. User
+            settings will apply to all projects, while project settings will
+            only apply to the current project.
           </p>
         </section>
         <OnboardingButtons

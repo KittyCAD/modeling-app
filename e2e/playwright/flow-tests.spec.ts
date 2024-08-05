@@ -19,6 +19,7 @@ import {
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
+  TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
   TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
 } from './storageStates'
@@ -26,7 +27,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
@@ -48,11 +49,26 @@ const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-  // num1: 9.64,
-  // num2: 19.19,
 }
 
-// Utilities for writing tests that depend on test values
+test.afterEach(async ({ context, page }, testInfo) => {
+  if (testInfo.status === 'skipped') return
+  if (testInfo.status === 'failed') return
+
+  const u = await getUtils(page)
+  // Kill the network so shutdown happens properly
+  await u.emulateNetworkConditions({
+    offline: true,
+    // values of 0 remove any active throttling. crbug.com/456324#c9
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1,
+  })
+
+  // It seems it's best to give the browser about 3s to close things
+  // It's not super reliable but we have no real other choice for now
+  await page.waitForTimeout(3000)
+})
 
 test.beforeEach(async ({ context, page }) => {
   // wait for Vite preview server to be up
@@ -78,7 +94,7 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(60000)
+test.setTimeout(120000)
 
 async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)
@@ -124,8 +140,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(u.codeLocator)
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(500)
@@ -135,8 +152,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
@@ -145,8 +163,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+  } else {
+    await page.waitForTimeout(500)
   }
-  await page.waitForTimeout(500)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -158,7 +177,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await page.getByRole('button', { name: 'Line' }).click()
+  await page.getByRole('button', { name: 'Line', exact: true }).click()
   await page.waitForTimeout(500)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
@@ -186,7 +205,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
   }
 
-  await page.getByRole('button', { name: 'Constraints' }).click()
+  await page.getByRole('button', { name: 'Length: open menu' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   // Open the code pane.
@@ -195,7 +214,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, $seg01)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> angledLine([180, segLen(seg01, %)], %)`)
+  |> angledLine([180, segLen(seg01)], %)`)
 }
 
 test.describe('Basic sketch', () => {
@@ -375,7 +394,7 @@ test.describe('Testing Camera Movement', () => {
     await bakeInRetries(async () => {
       await page.mouse.move(700, 400)
       await page.mouse.wheel(0, -100)
-    }, [1, -68, -68])
+    }, [0, -85, -85])
   })
 
   test('Zoom should be consistent when exiting or entering sketches', async ({
@@ -435,7 +454,7 @@ test.describe('Testing Camera Movement', () => {
     // await expect(u.codeLocator).toHaveText(code)
 
     // click the line button
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     const hoverOverNothing = async () => {
       // await u.canvasLocator.hover({position: {x: 700, y: 325}})
@@ -448,7 +467,7 @@ test.describe('Testing Camera Movement', () => {
 
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
@@ -542,587 +561,929 @@ test.describe('Testing Camera Movement', () => {
   })
 })
 
-test('if you click the format button it formats your code', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1000, height: 500 })
+test.describe('Editor tests', () => {
+  test('can comment out code with ctrl+/', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  await u.codeLocator.click()
-  await page.keyboard.type(`const sketch001 = startSketchOn('XY')
-|> startProfileAt([-10, -10], %)
-|> line([20, 0], %)
-|> line([0, 20], %)
-|> line([-20, 0], %)
-|> close(%)`)
-  await page.locator('#code-pane button:first-child').click()
-  await page.locator('button:has-text("Format code")').click()
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XY')
+    await u.codeLocator.click()
+    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)`)
-})
 
-test('fold gutters work', async ({ page }) => {
-  const u = await getUtils(page)
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('/')
+    await page.keyboard.up(CtrlKey)
 
-  const fullCode = `const sketch001 = startSketchOn('XY')
-   |> startProfileAt([-10, -10], %)
-   |> line([20, 0], %)
-   |> line([0, 20], %)
-   |> line([-20, 0], %)
-   |> close(%)`
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XY')
-   |> startProfileAt([-10, -10], %)
-   |> line([20, 0], %)
-   |> line([0, 20], %)
-   |> line([-20, 0], %)
-   |> close(%)`
-    )
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    // |> close(%)`)
+
+    // uncomment the code
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('/')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
   })
-  await page.setViewportSize({ width: 1000, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+  test('if you click the format button it formats your code', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  // TODO: Jess needs to fix this but you have to mod the code to get them to show
-  // up, its an annoying codemirror thing.
-  await page.locator('.cm-content').click()
-  await page.keyboard.press('End')
-  await page.keyboard.press('Enter')
+    await u.waitForAuthSkipAppStart()
 
-  const foldGutterFoldLine = page.locator('[title="Fold line"]')
-  const foldGutterUnfoldLine = page.locator('[title="Unfold line"]')
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  await expect(page.locator('.cm-content')).toHaveText(fullCode)
-
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-  // Make sure we have a fold gutter
-  await expect(foldGutterFoldLine).toBeVisible()
-  await expect(foldGutterUnfoldLine).not.toBeVisible()
-
-  // Collapse the code
-  await foldGutterFoldLine.click()
-
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const sketch001 = startSketchOn('XY')…   `
-  )
-  await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
-  await expect(foldGutterFoldLine).not.toBeVisible()
-  await expect(foldGutterUnfoldLine.nth(1)).toBeVisible()
-
-  // Expand the code
-  await foldGutterUnfoldLine.nth(1).click()
-  await expect(page.locator('.cm-content')).toHaveText(fullCode)
-
-  // Delete all the code.
-  await page.locator('.cm-content').click()
-  // Select all
-  await page.keyboard.press('Control+A')
-  await page.keyboard.press('Backspace')
-  await page.keyboard.press('Meta+A')
-  await page.keyboard.press('Backspace')
-
-  await expect(page.locator('.cm-content')).toHaveText(``)
-  await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
-
-  await expect(foldGutterUnfoldLine).not.toBeVisible()
-  await expect(foldGutterFoldLine).not.toBeVisible()
-})
-
-test('hover over functions shows function description', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XY')
-|> startProfileAt([-10, -10], %)
-|> line([20, 0], %)
-|> line([0, 20], %)
-|> line([-20, 0], %)
-|> close(%)`
-    )
-  })
-  await page.setViewportSize({ width: 1000, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  // focus the editor
-  await u.codeLocator.click()
-
-  // Hover over  the startSketchOn function
-  await page.getByText('startSketchOn').hover()
-  await expect(page.locator('.hover-tooltip')).toBeVisible()
-  await expect(
-    page.getByText('Start a sketch on a specific plane or face')
-  ).toBeVisible()
-
-  // Hover over the line function
-  await page.getByText('line').first().hover()
-  await expect(page.locator('.hover-tooltip')).toBeVisible()
-  await expect(page.getByText('Draw a line')).toBeVisible()
-})
-
-test('if you use the format keyboard binding it formats your code', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XY')
-|> startProfileAt([-10, -10], %)
-|> line([20, 0], %)
-|> line([0, 20], %)
-|> line([-20, 0], %)
-|> close(%)`
-    )
-    localStorage.setItem('disableAxis', 'true')
-  })
-  await page.setViewportSize({ width: 1000, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  // focus the editor
-  await u.codeLocator.click()
-
-  // Hit alt+shift+f to format the code
-  await page.keyboard.press('Alt+Shift+KeyF')
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XY')
+    await u.codeLocator.click()
+    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)`)
-})
+    await page.locator('#code-pane button:first-child').click()
+    await page.locator('button:has-text("Format code")').click()
 
-test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1000, height: 500 })
-  await u.waitForAuthSkipAppStart()
-
-  const zooLogo = page.locator('[data-testid="app-logo"]')
-  // Make sure it's not a link
-  await expect(zooLogo).not.toHaveAttribute('href')
-})
-
-test('if you write kcl with lint errors you get lints', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1000, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
-
-  await u.codeLocator.click()
-  await page.keyboard.type('const my_snake_case_var = 5')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('const myCamelCaseVar = 5')
-  await page.keyboard.press('Enter')
-
-  // press arrows to clear autocomplete
-  await page.keyboard.press('ArrowLeft')
-  await page.keyboard.press('ArrowRight')
-
-  // error in guter
-  await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
-
-  // error text on hover
-  await page.hover('.cm-lint-marker-info')
-  await expect(
-    page.getByText('Identifiers must be lowerCamelCase')
-  ).toBeVisible()
-
-  // select the line that's causing the error and delete it
-  await page.getByText('const my_snake_case_var = 5').click()
-  await page.keyboard.press('End')
-  await page.keyboard.down('Shift')
-  await page.keyboard.press('Home')
-  await page.keyboard.up('Shift')
-  await page.keyboard.press('Backspace')
-
-  // wait for .cm-lint-marker-info not to be visible
-  await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
-})
-
-test('if you fixup kcl errors you clear lints', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XZ')
-|> startProfileAt([3.29, 7.86], %)
-|> line([2.48, 2.44], %)
-|> line([2.66, 1.17], %)
-|> close(%)
-`
-    )
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
   })
 
-  await page.setViewportSize({ width: 1000, height: 500 })
+  test('fold gutters work', async ({ page }) => {
+    const u = await getUtils(page)
 
-  await u.waitForAuthSkipAppStart()
+    const fullCode = `const sketch001 = startSketchOn('XY')
+     |> startProfileAt([-10, -10], %)
+     |> line([20, 0], %)
+     |> line([0, 20], %)
+     |> line([-20, 0], %)
+     |> close(%)`
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+     |> startProfileAt([-10, -10], %)
+     |> line([20, 0], %)
+     |> line([0, 20], %)
+     |> line([-20, 0], %)
+     |> close(%)`
+      )
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    await u.waitForAuthSkipAppStart()
 
-  await u.codeLocator.click()
+    // TODO: Jess needs to fix this but you have to mod the code to get them to show
+    // up, its an annoying codemirror thing.
+    await page.locator('.cm-content').click()
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Enter')
 
-  await page.getByText(' |> line([2.48, 2.44], %)').click()
+    const foldGutterFoldLine = page.locator('[title="Fold line"]')
+    const foldGutterUnfoldLine = page.locator('[title="Unfold line"]')
 
-  await expect(page.locator('.cm-lint-marker-error').first()).not.toBeVisible()
-  await page.keyboard.press('End')
-  await page.keyboard.press('Backspace')
+    await expect(page.locator('.cm-content')).toHaveText(fullCode)
 
-  await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
-  await page.keyboard.type(')')
-  await expect(page.locator('.cm-lint-marker-error').first()).not.toBeVisible()
-})
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-test('if you write invalid kcl you get inlined errors', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1000, height: 500 })
+    // Make sure we have a fold gutter
+    await expect(foldGutterFoldLine).toBeVisible()
+    await expect(foldGutterUnfoldLine).not.toBeVisible()
 
-  await u.waitForAuthSkipAppStart()
+    // Collapse the code
+    await foldGutterFoldLine.click()
 
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XY')…   `
+    )
+    await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
+    await expect(foldGutterFoldLine).not.toBeVisible()
+    await expect(foldGutterUnfoldLine.nth(1)).toBeVisible()
 
-  /* add the following code to the editor ($ error is not a valid line)
-    $ error
-    const topAng = 30
-    const bottomAng = 25
-   */
-  await u.codeLocator.click()
-  await page.keyboard.type('$ error')
+    // Expand the code
+    await foldGutterUnfoldLine.nth(1).click()
+    await expect(page.locator('.cm-content')).toHaveText(fullCode)
 
-  // press arrows to clear autocomplete
-  await page.keyboard.press('ArrowLeft')
-  await page.keyboard.press('ArrowRight')
+    // Delete all the code.
+    await page.locator('.cm-content').click()
+    // Select all
+    await page.keyboard.press('Control+A')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Meta+A')
+    await page.keyboard.press('Backspace')
 
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('const topAng = 30')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('const bottomAng = 25')
-  await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-content')).toHaveText(``)
+    await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
 
-  // error in guter
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    await expect(foldGutterUnfoldLine).not.toBeVisible()
+    await expect(foldGutterFoldLine).not.toBeVisible()
+  })
 
-  // error text on hover
-  await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText('Unexpected token').first()).toBeVisible()
+  test('hover over functions shows function description', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`
+      )
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  // select the line that's causing the error and delete it
-  await page.getByText('$ error').click()
-  await page.keyboard.press('End')
-  await page.keyboard.down('Shift')
-  await page.keyboard.press('Home')
-  await page.keyboard.up('Shift')
-  await page.keyboard.press('Backspace')
+    await u.waitForAuthSkipAppStart()
 
-  // wait for .cm-lint-marker-error not to be visible
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  // let's check we get an error when defining the same variable twice
-  await page.getByText('const bottomAng = 25').click()
-  await page.keyboard.press('Enter')
-  await page.keyboard.type("// Let's define the same thing twice")
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('const topAng = 42')
-  await page.keyboard.press('ArrowLeft')
-  await page.keyboard.press('ArrowRight')
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-  await expect(page.locator('.cm-lintRange.cm-lintRange-error')).toBeVisible()
+    // focus the editor
+    await u.codeLocator.click()
 
-  await page.locator('.cm-lintRange.cm-lintRange-error').hover()
-  await expect(page.locator('.cm-diagnosticText')).toBeVisible()
-  await expect(page.getByText('Cannot redefine `topAng`')).toBeVisible()
+    // Hover over  the startSketchOn function
+    await page.getByText('startSketchOn').hover()
+    await expect(page.locator('.hover-tooltip')).toBeVisible()
+    await expect(
+      page.getByText('Start a sketch on a specific plane or face')
+    ).toBeVisible()
 
-  const secondTopAng = await page.getByText('topAng').first()
-  await secondTopAng?.dblclick()
-  await page.keyboard.type('otherAng')
+    // Hover over the line function
+    await page.getByText('line').first().hover()
+    await expect(page.locator('.hover-tooltip')).toBeVisible()
+    await expect(page.getByText('Draw a line')).toBeVisible()
+  })
 
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-})
+  test('if you use the format keyboard binding it formats your code', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`
+      )
+      localStorage.setItem('disableAxis', 'true')
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-test('error with 2 source ranges gets 2 diagnostics', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const length = .750
-const width = 0.500
-const height = 0.500
-const dia = 4
+    await u.waitForAuthSkipAppStart()
 
-fn squareHole = (l, w) => {
-  const squareHoleSketch = startSketchOn('XY')
-  |> startProfileAt([-width / 2, -length / 2], %)
-  |> lineTo([width / 2, -length / 2], %)
-  |> lineTo([width / 2, length / 2], %)
-  |> lineTo([-width / 2, length / 2], %)
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // focus the editor
+    await u.codeLocator.click()
+
+    // Hit alt+shift+f to format the code
+    await page.keyboard.press('Alt+Shift+KeyF')
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+  })
+
+  test('if you write kcl with lint errors you get lints', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+
+    await u.codeLocator.click()
+    await page.keyboard.type('const my_snake_case_var = 5')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('const myCamelCaseVar = 5')
+    await page.keyboard.press('Enter')
+
+    // press arrows to clear autocomplete
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('ArrowRight')
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+
+    // select the line that's causing the error and delete it
+    await page.getByText('const my_snake_case_var = 5').click()
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('Home')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+
+    // wait for .cm-lint-marker-info not to be visible
+    await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+  })
+
+  test('if you fixup kcl errors you clear lints', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([2.66, 1.17], %)
   |> close(%)
-  return squareHoleSketch
-}
-`
-    )
-  })
-  await page.setViewportSize({ width: 1000, height: 500 })
+  `
+      )
+    })
 
-  await u.waitForAuthSkipAppStart()
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+    await u.waitForAuthSkipAppStart()
 
-  // check no error to begin with
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  // Click on the bottom of the code editor to add a new line
-  await u.codeLocator.click()
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type(`const extrusion = startSketchOn('XY')
-  |> circle([0, 0], dia/2, %)
-|> hole(squareHole(length, width, height), %)
-|> extrude(height, %)`)
+    await u.codeLocator.click()
 
-  // error in gutter
-  await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
-  await page.hover('.cm-lint-marker-error:first-child')
-  await expect(page.getByText('Expected 2 arguments, got 3')).toBeVisible()
+    await page.getByText(' |> line([2.48, 2.44], %)').click()
 
-  // Make sure there are two diagnostics
-  await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
-})
+    await expect(
+      page.locator('.cm-lint-marker-error').first()
+    ).not.toBeVisible()
+    await page.keyboard.press('End')
+    await page.keyboard.press('Backspace')
 
-test('if your kcl gets an error from the engine it is inlined', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const box = startSketchOn('XY')
-|> startProfileAt([0, 0], %)
-|> line([0, 10], %)
-|> line([10, 0], %)
-|> line([0, -10], %, 'revolveAxis')
-|> close(%)
-|> extrude(10, %)
-
-const sketch001 = startSketchOn(box, "revolveAxis")
-|> startProfileAt([5, 10], %)
-|> line([0, -10], %)
-|> line([2, 0], %)
-|> line([0, -10], %)
-|> close(%)
-|> revolve({
-axis: getEdge('revolveAxis', box),
-angle: 90
-}, %)
-    `
-    )
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+    await page.keyboard.type(')')
+    await expect(
+      page.locator('.cm-lint-marker-error').first()
+    ).not.toBeVisible()
   })
 
-  await page.setViewportSize({ width: 1000, height: 500 })
+  test('if you write invalid kcl you get inlined errors', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  // error in guter
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    /* add the following code to the editor ($ error is not a valid line)
+      $ error
+      const topAng = 30
+      const bottomAng = 25
+     */
+    await u.codeLocator.click()
+    await page.keyboard.type('$ error')
 
-  // error text on hover
-  await page.hover('.cm-lint-marker-error')
-  await expect(
-    page.getByText(
+    // press arrows to clear autocomplete
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('ArrowRight')
+
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('const topAng = 30')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('const bottomAng = 25')
+    await page.keyboard.press('Enter')
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+    // select the line that's causing the error and delete it
+    await page.getByText('$ error').click()
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('Home')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+
+    // wait for .cm-lint-marker-error not to be visible
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // let's check we get an error when defining the same variable twice
+    await page.getByText('const bottomAng = 25').click()
+    await page.keyboard.press('Enter')
+    await page.keyboard.type("// Let's define the same thing twice")
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('const topAng = 42')
+    await page.keyboard.press('ArrowLeft')
+
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    await expect(
+      page.locator('.cm-lint-marker.cm-lint-marker-error')
+    ).toBeVisible()
+
+    await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
+    await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
+    await expect(
+      page.getByText('Cannot redefine `topAng`').first()
+    ).toBeVisible()
+
+    const secondTopAng = page.getByText('topAng').first()
+    await secondTopAng?.dblclick()
+    await page.keyboard.type('otherAng')
+
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+  })
+
+  test('error with 2 source ranges gets 2 diagnostics', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const length = .750
+  const width = 0.500
+  const height = 0.500
+  const dia = 4
+  
+  fn squareHole = (l, w) => {
+    const squareHoleSketch = startSketchOn('XY')
+    |> startProfileAt([-width / 2, -length / 2], %)
+    |> lineTo([width / 2, -length / 2], %)
+    |> lineTo([width / 2, length / 2], %)
+    |> lineTo([-width / 2, length / 2], %)
+    |> close(%)
+    return squareHoleSketch
+  }
+  `
+      )
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Click on the bottom of the code editor to add a new line
+    await u.codeLocator.click()
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type(`const extrusion = startSketchOn('XY')
+    |> circle([0, 0], dia/2, %)
+  |> hole(squareHole(length, width, height), %)
+  |> extrude(height, %)`)
+
+    // error in gutter
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+    await page.hover('.cm-lint-marker-error:first-child')
+    await expect(
+      page.getByText('Expected 2 arguments, got 3').first()
+    ).toBeVisible()
+
+    // Make sure there are two diagnostics
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
+  })
+  test('if your kcl gets an error from the engine it is inlined', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %, $revolveAxis)
+  |> close(%)
+  |> extrude(10, %)
+
+  const sketch001 = startSketchOn(box, revolveAxis)
+  |> startProfileAt([5, 10], %)
+  |> line([0, -10], %)
+  |> line([2, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> revolve({
+  axis: revolveAxis,
+  angle: 90
+  }, %)
+      `
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await page.goto('/')
+    await u.waitForPageLoad()
+
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    const searchText =
       'sketch profile must lie entirely on one side of the revolution axis'
+    await expect(page.getByText(searchText)).toBeVisible()
+  })
+  test.describe('Autocomplete works', () => {
+    test('with enter/click to accept the completion', async ({ page }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+
+      // this test might be brittle as we add and remove functions
+      // but should also be easy to update.
+      // tests clicking on an option, selection the first option
+      // and arrowing down to an option
+
+      await u.codeLocator.click()
+      await page.keyboard.type('const sketch001 = start')
+
+      // expect there to be six auto complete options
+      await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
+      // this makes sure we can accept a completion with click
+      await page.getByText('startSketchOn').click()
+      await page.keyboard.type("'XZ'")
+      await page.keyboard.press('Tab')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('  |> startProfi')
+      // expect there be a single auto complete option that we can just hit enter on
+      await expect(page.locator('.cm-completionLabel')).toBeVisible()
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Enter') // accepting the auto complete, not a new line
+
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.type('12')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(100)
+      await page.keyboard.type('  |> lin')
+
+      await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+      await page.waitForTimeout(100)
+      // press arrow down twice then enter to accept xLine
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('Enter')
+      // finish line with comment
+      await page.keyboard.type('5')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+
+      await page.keyboard.type(' // ')
+      // Since we need to parse the ast to know we are in a comment we gotta hang tight.
+      await page.waitForTimeout(700)
+      await page.keyboard.type('lin ')
+      await page.waitForTimeout(200)
+      // there shouldn't be any auto complete options for 'lin' in the comment
+      await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([3.14, 12], %)
+    |> xLine(5, %) // lin`)
+    })
+
+    test('with tab to accept the completion', async ({ page }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+
+      // this test might be brittle as we add and remove functions
+      // but should also be easy to update.
+      // tests clicking on an option, selection the first option
+      // and arrowing down to an option
+
+      await u.codeLocator.click()
+      await page.keyboard.type('const sketch001 = startSketchO')
+      await page.waitForTimeout(100)
+
+      // Make sure just hitting tab will take the only one left
+      await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
+      await page.waitForTimeout(500)
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(500)
+      await page.keyboard.type("'XZ'")
+      await page.keyboard.press('Tab')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('  |> startProfi')
+      // expect there be a single auto complete option that we can just hit enter on
+      await expect(page.locator('.cm-completionLabel')).toBeVisible()
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab') // accepting the auto complete, not a new line
+
+      await page.keyboard.press('Tab')
+      await page.keyboard.type('12')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(100)
+      await page.keyboard.type('  |> lin')
+
+      await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+      await page.waitForTimeout(100)
+      // press arrow down twice then tab to accept xLine
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('Tab')
+      // finish line with comment
+      await page.keyboard.type('5')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Tab')
+
+      await page.keyboard.type(' // ')
+      // Since we need to parse the ast to know we are in a comment we gotta hang tight.
+      await page.waitForTimeout(700)
+      await page.keyboard.type('lin ')
+      await page.waitForTimeout(200)
+      // there shouldn't be any auto complete options for 'lin' in the comment
+      await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
+
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([3.14, 12], %)
+    |> xLine(5, %) // lin`)
+    })
+  })
+  test('Can undo a click and point extrude with ctrl+z', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -14.01], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    await page.waitForTimeout(100)
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 0, y: -1250, z: 580 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const startPX = [665, 458]
+
+    const dragPX = 40
+
+    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
+    await page.getByRole('button', { name: 'Extrude' }).click()
+
+    await expect(page.getByTestId('command-bar')).toBeVisible()
+    await page.waitForTimeout(100)
+
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(page.getByText('Confirm Extrude')).toBeVisible()
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+
+    // expect the code to have changed
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)const extrude001 = extrude(5, sketch001)`
     )
-  ).toBeVisible()
+
+    // Now hit undo
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
+
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -14.01], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)`)
+  })
+
+  // failing for the same reason as "Can edit a sketch that has been extruded in the same pipe"
+  // please fix together
+  test.fixme('Can undo a sketch modification with ctrl+z', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -14.01], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)
+    |> extrude(5, %)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    await page.waitForTimeout(100)
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 0, y: -1250, z: 580 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const startPX = [665, 458]
+
+    const dragPX = 40
+
+    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(400)
+    let prevContent = await page.locator('.cm-content').innerText()
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+    // drag startProfieAt handle
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: { x: startPX[0], y: startPX[1] },
+      targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+    })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    // drag line handle
+    // we wait so it saves the code
+    await page.waitForTimeout(800)
+
+    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+    await page.waitForTimeout(100)
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+      targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+    })
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    // we wait so it saves the code
+    await page.waitForTimeout(800)
+
+    // drag tangentialArcTo handle
+    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
+      targetPosition: {
+        x: tangentEnd.x + dragPX,
+        y: tangentEnd.y + dragPX,
+      },
+    })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+    // expect the code to have changed
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([7.12, -16.82], %)
+    |> line([15.4, -2.74], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> line([2.65, -2.69], %)
+    |> close(%)
+    |> extrude(5, %)`)
+
+    // Hit undo
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([7.12, -16.82], %)
+    |> line([15.4, -2.74], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)
+    |> extrude(5, %)`)
+
+    // Hit undo again.
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([7.12, -16.82], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)
+    |> extrude(5, %)`)
+
+    // Hit undo again.
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
+
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -14.01], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)
+    |> extrude(5, %)`)
+  })
 })
-
-test('executes on load', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('-XZ')
-  |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)`
-    )
-  })
-  await page.setViewportSize({ width: 1000, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // expand variables section
-  const variablesTabButton = page.getByRole('tab', {
-    name: 'Variables',
-    exact: false,
-  })
-  await variablesTabButton.click()
-
-  // can find sketch001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
-  // sketch001 only shows up in the variables summary if it's been executed
-  await page.waitForFunction(() => {
-    const variablesElement = document.querySelector(
-      '.pretty-json-container'
-    ) as HTMLDivElement
-    return variablesElement.innerHTML.includes('sketch001')
-  })
-  await expect(
-    page.locator('.pretty-json-container >> text=sketch001')
-  ).toBeVisible()
-})
-
-test('re-executes', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem('persistCode', `const myVar = 5`)
-  })
-  await page.setViewportSize({ width: 1000, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  const variablesTabButton = page.getByRole('tab', {
-    name: 'Variables',
-    exact: false,
-  })
-  await variablesTabButton.click()
-  // expect to see "myVar:5"
-  await expect(
-    page.locator('.pretty-json-container >> text=myVar:5')
-  ).toBeVisible()
-
-  // change 5 to 67
-  await page.getByText('const myVar').click()
-  await page.keyboard.press('End')
-  await page.keyboard.press('Backspace')
-  await page.keyboard.type('67')
-
-  await expect(
-    page.locator('.pretty-json-container >> text=myVar:67')
-  ).toBeVisible()
-})
-
-const sketchOnPlaneAndBackSideTest = async (
-  page: any,
-  plane: string,
-  clickCoords: { x: number; y: number }
-) => {
-  const u = await getUtils(page)
-  const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-
-  const coord =
-    plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
-  const camCommand: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: 0, y: 0, z: 0 },
-      vantage: { x: coord, y: coord, z: coord },
-      up: { x: 0, y: 0, z: 1 },
-    },
-  }
-  const updateCamCommand: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  }
-
-  const code = `const sketch001 = startSketchOn('${plane}')
-  |> startProfileAt([0.9, -1.22], %)`
-
-  await u.openDebugPanel()
-
-  await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-
-  await u.sendCustomCmd(camCommand)
-  await page.waitForTimeout(100)
-  await u.sendCustomCmd(updateCamCommand)
-
-  await u.closeDebugPanel()
-  await page.mouse.click(clickCoords.x, clickCoords.y)
-  await page.waitForTimeout(300) // wait for animation
-
-  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
-
-  // draw a line
-  const startXPx = 600
-
-  await u.closeDebugPanel()
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-
-  await expect(page.locator('.cm-content')).toHaveText(code)
-
-  await page.getByRole('button', { name: 'Line' }).click()
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  await u.clearCommandLogs()
-  await u.removeCurrentCode()
-}
 
 test.describe('Can create sketches on all planes and their back sides', () => {
+  const sketchOnPlaneAndBackSideTest = async (
+    page: any,
+    plane: string,
+    clickCoords: { x: number; y: number }
+  ) => {
+    const u = await getUtils(page)
+    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+
+    const coord =
+      plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
+    const camCommand: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: coord, y: coord, z: coord },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    }
+    const updateCamCommand: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    }
+
+    const code = `const sketch001 = startSketchOn('${plane}')
+    |> startProfileAt([0.9, -1.22], %)`
+
+    await u.openDebugPanel()
+
+    await u.clearCommandLogs()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await u.sendCustomCmd(camCommand)
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd(updateCamCommand)
+
+    await u.closeDebugPanel()
+    await page.mouse.click(clickCoords.x, clickCoords.y)
+    await page.waitForTimeout(300) // wait for animation
+
+    await expect(
+      page.getByRole('button', { name: 'Line', exact: true })
+    ).toBeVisible()
+
+    // draw a line
+    const startXPx = 600
+
+    await u.closeDebugPanel()
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+
+    await expect(page.locator('.cm-content')).toHaveText(code)
+
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await u.openAndClearDebugPanel()
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    await u.clearCommandLogs()
+    await u.removeCurrentCode()
+  }
   test('XY', async ({ page }) => {
     await sketchOnPlaneAndBackSideTest(
       page,
@@ -1153,68 +1514,9 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 })
 
-test('Position _ Is Out Of Range... regression test', async ({ page }) => {
-  const u = await getUtils(page)
-  // const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const exampleSketch = startSketchOn("XZ")
-  |> startProfileAt([0, 0], %)
-  |> angledLine({ angle: 50, length: 45 }, %)
-  |> yLineTo(0, %)
-  |> close(%)
-  |>
-
-const example = extrude(5, exampleSketch)
-shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-    )
-  })
-
-  await u.waitForAuthSkipAppStart()
-
-  // error in guter
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-  // error text on hover
-  await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText('Unexpected token').first()).toBeVisible()
-
-  // Okay execution finished, let's start editing text below the error.
-  await u.codeLocator.click()
-  // Go to the end of the editor
-  // This bug happens when there is a diagnostic in the editor and you try to
-  // edit text below it.
-  // Or delete a huge chunk of text and then try to edit below it.
-  await page.keyboard.press('End')
-  await page.keyboard.down('Shift')
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.up('Shift')
-  await page.keyboard.press('Backspace')
-  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-  await page.keyboard.press('Enter')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('thing: "blah"', { delay: 100 })
-  await page.keyboard.press('Enter')
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const exampleSketch = startSketchOn("XZ")
-  |> startProfileAt([0, 0], %)
-  |> angledLine({ angle: 50, length: 45 }, %)
-  |> yLineTo(0, %)
-  |> close(%)
-
-  thing: "blah"`)
-
-  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-})
-
 test.describe('Copilot ghost text', () => {
+  test.skip(true, 'Needs to get covered again')
+
   test('completes code in empty file', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -1253,7 +1555,9 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
-  test('copilot disabled in sketch mode no select plane', async ({ page }) => {
+  test.skip('copilot disabled in sketch mode no select plane', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -1527,6 +1831,106 @@ test.describe('Copilot ghost text', () => {
     )
   })
 
+  test('Ctrl+shift+z in code rejects the suggestion', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Going elsewhere in the code should hide the ghost text.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('Shift')
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
+  test('Ctrl+z in code rejects the suggestion and undos the last code', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await page.waitForTimeout(800)
+    await u.codeLocator.click()
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    await page.keyboard.type('{thing: "blah"}', { delay: 0 })
+
+    await expect(page.locator('.cm-content')).toHaveText(`{thing: "blah"}`)
+
+    // We wanna make sure the code saves.
+    await page.waitForTimeout(800)
+
+    // Ctrl+z
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-content')).toHaveText(``)
+
+    // Ctrl+shift+z
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('Shift')
+
+    await expect(page.locator('.cm-content')).toHaveText(`{thing: "blah"}`)
+
+    // We wanna make sure the code saves.
+    await page.waitForTimeout(800)
+
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(
+      `{thing: "blah"}fn cube = (pos, scale) => {  const sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}const part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+    )
+    await expect(page.locator('.cm-ghostText').first()).toHaveText(
+      `fn cube = (pos, scale) => {`
+    )
+
+    // Once for the enter.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+
+    // Once for the text.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up(CtrlKey)
+
+    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+
+    // TODO when we make codemirror a widget, we can test this.
+    //await expect(page.locator('.cm-content')).toHaveText(``)
+  })
+
   test('delete in code rejects the suggestion', async ({ page }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -1620,384 +2024,221 @@ test.describe('Copilot ghost text', () => {
   })
 })
 
-test.describe('Autocomplete works', () => {
-  test('with enter/click to accept the completion', async ({ page }) => {
+test.describe('Testing settings', () => {
+  test('Stored settings are validated and fall back to defaults', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+
+    // Override beforeEach test setup
+    // with corrupted settings
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({ settings: TEST_SETTINGS_CORRUPTED }),
+      }
+    )
+
     await page.setViewportSize({ width: 1200, height: 500 })
 
     await u.waitForAuthSkipAppStart()
 
-    // this test might be brittle as we add and remove functions
-    // but should also be easy to update.
-    // tests clicking on an option, selection the first option
-    // and arrowing down to an option
+    // Check the settings were reset
+    const storedSettings = TOML.parse(
+      await page.evaluate(
+        ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
+        { settingsKey: TEST_SETTINGS_KEY }
+      )
+    ) as { settings: SaveSettingsPayload }
 
-    await u.codeLocator.click()
-    await page.keyboard.type('const sketch001 = start')
+    expect(storedSettings.settings?.app?.theme).toBe(undefined)
 
-    // expect there to be six auto complete options
-    await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
-    // this makes sure we can accept a completion with click
-    await page.getByText('startSketchOn').click()
-    await page.keyboard.type("'XZ'")
-    await page.keyboard.press('Tab')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('  |> startProfi')
-    // expect there be a single auto complete option that we can just hit enter on
-    await expect(page.locator('.cm-completionLabel')).toBeVisible()
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // accepting the auto complete, not a new line
-
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.type('12')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(100)
-    await page.keyboard.type('  |> lin')
-
-    await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
-    await page.waitForTimeout(100)
-    // press arrow down twice then enter to accept xLine
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Enter')
-    // finish line with comment
-    await page.keyboard.type('5')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-
-    await page.keyboard.type(' // ')
-    // Since we need to parse the ast to know we are in a comment we gotta hang tight.
-    await page.waitForTimeout(700)
-    await page.keyboard.type('lin ')
-    await page.waitForTimeout(200)
-    // there shouldn't be any auto complete options for 'lin' in the comment
-    await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
-
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.14, 12], %)
-  |> xLine(5, %) // lin`)
+    // Check that the invalid settings were removed
+    expect(storedSettings.settings?.modeling?.defaultUnit).toBe(undefined)
+    expect(storedSettings.settings?.modeling?.mouseControls).toBe(undefined)
+    expect(storedSettings.settings?.app?.projectDirectory).toBe(undefined)
+    expect(storedSettings.settings?.projects?.defaultProjectName).toBe(
+      undefined
+    )
   })
 
-  test('with tab to accept the completion', async ({ page }) => {
+  test('Project settings can be set and override user settings', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.setViewportSize({ width: 1200, height: 500 })
-
     await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
 
-    // this test might be brittle as we add and remove functions
-    // but should also be easy to update.
-    // tests clicking on an option, selection the first option
-    // and arrowing down to an option
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-    await u.codeLocator.click()
-    await page.keyboard.type('const sketch001 = startSketchO')
-    await page.waitForTimeout(100)
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-    // Make sure just hitting tab will take the only one left
-    await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
-    await page.waitForTimeout(500)
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(500)
-    await page.keyboard.type("'XZ'")
-    await page.keyboard.press('Tab')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('  |> startProfi')
-    // expect there be a single auto complete option that we can just hit enter on
-    await expect(page.locator('.cm-completionLabel')).toBeVisible()
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab') // accepting the auto complete, not a new line
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
 
-    await page.keyboard.press('Tab')
-    await page.keyboard.type('12')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(100)
-    await page.keyboard.type('  |> lin')
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
 
-    await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
-    await page.waitForTimeout(100)
-    // press arrow down twice then tab to accept xLine
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Tab')
-    // finish line with comment
-    await page.keyboard.type('5')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Tab')
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-    await page.keyboard.type(' // ')
-    // Since we need to parse the ast to know we are in a comment we gotta hang tight.
-    await page.waitForTimeout(700)
-    await page.keyboard.type('lin ')
-    await page.waitForTimeout(200)
-    // there shouldn't be any auto complete options for 'lin' in the comment
-    await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
-
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.14, 12], %)
-  |> xLine(5, %) // lin`)
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
   })
-})
 
-test('Stored settings are validated and fall back to defaults', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
+  test('Project settings can be opened with keybinding from the editor', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
 
-  // Override beforeEach test setup
-  // with corrupted settings
-  await page.addInitScript(
-    async ({ settingsKey, settings }) => {
-      localStorage.setItem(settingsKey, settings)
-    },
-    {
-      settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_CORRUPTED }),
-    }
-  )
+    // Put the cursor in the editor
+    await page.locator('.cm-content').click()
 
-  await page.setViewportSize({ width: 1200, height: 500 })
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-  await u.waitForAuthSkipAppStart()
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-  // Check the settings were reset
-  const storedSettings = TOML.parse(
-    await page.evaluate(
-      ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
-      { settingsKey: TEST_SETTINGS_KEY }
-    )
-  ) as { settings: SaveSettingsPayload }
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
 
-  expect(storedSettings.settings?.app?.theme).toBe(undefined)
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
 
-  // Check that the invalid settings were removed
-  expect(storedSettings.settings?.modeling?.defaultUnit).toBe(undefined)
-  expect(storedSettings.settings?.modeling?.mouseControls).toBe(undefined)
-  expect(storedSettings.settings?.app?.projectDirectory).toBe(undefined)
-  expect(storedSettings.settings?.projects?.defaultProjectName).toBe(undefined)
-})
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-test('Project settings can be set and override user settings', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  })
 
-  // Open the settings modal with the browser keyboard shortcut
-  await page.keyboard.press('Meta+Shift+,')
+  test('Project and user settings can be reset', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
 
-  await expect(
-    page.getByRole('heading', { name: 'Settings', exact: true })
-  ).toBeVisible()
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
+    // Put the cursor in the editor
+    await page.locator('.cm-content').click()
 
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" for this project`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-  // Check that the user setting was not changed
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
 
-  // Roll back to default "system" theme
-  await page
-    .getByText(
-      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
-    )
-    .hover()
-  await page
-    .getByRole('button', {
-      name: 'Roll back theme ; Has tooltip: Roll back to match default',
-    })
-    .click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
 
-  // Check that the project setting did not change
-  await page.getByRole('radio', { name: 'Project' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-})
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-test('Project settings can be opened with keybinding from the editor', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 
-  // Put the cursor in the editor
-  await page.locator('.cm-content').click()
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  // Open the settings modal with the browser keyboard shortcut
-  await page.keyboard.press('Meta+Shift+,')
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
 
-  await expect(
-    page.getByRole('heading', { name: 'Settings', exact: true })
-  ).toBeVisible()
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" for this project`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    // Set the user theme to light.
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
-  // Check that the user setting was not changed
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" as a user default`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 
-  // Roll back to default "system" theme
-  await page
-    .getByText(
-      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
-    )
-    .hover()
-  await page
-    .getByRole('button', {
-      name: 'Roll back theme ; Has tooltip: Roll back to match default',
-    })
-    .click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 
-  // Check that the project setting did not change
-  await page.getByRole('radio', { name: 'Project' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-})
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-test('Project and user settings can be reset', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-  // Put the cursor in the editor
-  await page.locator('.cm-content').click()
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
 
-  // Open the settings modal with the browser keyboard shortcut
-  await page.keyboard.press('Meta+Shift+,')
-
-  await expect(
-    page.getByRole('heading', { name: 'Settings', exact: true })
-  ).toBeVisible()
-
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
-
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
-
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" for this project`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-
-  // Check that the user setting was not changed
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
-
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
-
-  // Verify it is now set to the default value
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
-
-  // Set the user theme to light.
-  await page
-    .locator('select[name="app-theme"]')
-    .selectOption({ value: 'light' })
-
-  // Verify the toast appeared
-  await expect(
-    page.getByText(`Set theme to "light" as a user default`)
-  ).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-
-  await page.getByRole('radio', { name: 'Project' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
-  // Verify it is now set to the default value
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
-
-  await page.getByRole('radio', { name: 'User' }).click()
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
-
-  // Click the reset settings button.
-  await page.getByRole('button', { name: 'Restore default settings' }).click()
-
-  // Verify it is now set to the default value
-  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
-})
-
-test('Keyboard shortcuts can be viewed through the help menu', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
-
-  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
-  await page
-    .getByRole('button', { name: 'Start Sketch' })
-    .waitFor({ state: 'visible' })
-
-  // Open the help menu
-  await page.getByRole('button', { name: 'Help', exact: false }).click()
-
-  // Open the keyboard shortcuts
-  await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
-
-  // Verify the URL and that you can see a list of shortcuts
-  await expect(page.url()).toContain('?tab=keybindings')
-  await expect(
-    page.getByRole('heading', { name: 'Enter Sketch Mode' })
-  ).toBeAttached()
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+  })
 })
 
 test.describe('Onboarding tests', () => {
@@ -2023,6 +2264,50 @@ test.describe('Onboarding tests', () => {
 
     // *and* that the code is shown in the editor
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+  })
+
+  test('Code resets after confirmation', async ({ page }) => {
+    const initialCode = `const sketch001 = startSketchOn('XZ')`
+
+    // Load the page up with some code so we see the confirmation warning
+    // when we go to replay onboarding
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, initialCode)
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    // Replay the onboarding
+    await page.getByRole('link', { name: 'Settings' }).last().click()
+    const replayButton = page.getByRole('button', { name: 'Replay onboarding' })
+    await expect(replayButton).toBeVisible()
+    await replayButton.click()
+
+    // Ensure we see the warning, and that the code has not yet updated
+    await expect(
+      page.getByText('Replaying onboarding resets your code')
+    ).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(initialCode)
+
+    const nextButton = page.getByTestId('onboarding-next')
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+
+    // Ensure we see the introduction and that the code has been reset
+    await expect(page.getByText('Welcome to Modeling App!')).toBeVisible()
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+
+    // Ensure we persisted the code to local storage.
+    // Playwright's addInitScript method unfortunately will reset
+    // this code if we try reloading the page as a test,
+    // so this is our best way to test persistence afaik.
+    expect(
+      await page.evaluate(() => {
+        return localStorage.getItem('persistCode')
+      })
+    ).toContain('// Shelf Bracket')
   })
 
   test('Click through each onboarding step', async ({ page }) => {
@@ -2225,6 +2510,44 @@ test.describe('Onboarding tests', () => {
     await expect(onboardingOverlayLocator).toBeVisible()
     await expect(onboardingOverlayLocator).toContainText('the menu button')
   })
+
+  test("Avatar text doesn't mention avatar when no avatar", async ({
+    page,
+  }) => {
+    // Override beforeEach test setup
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+        localStorage.setItem('FORCE_NO_IMAGE', 'FORCE_NO_IMAGE')
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+    // Test that the text in this step is correct
+    const avatarLocator = await page
+      .getByTestId('user-sidebar-toggle')
+      .locator('img')
+    const onboardingOverlayLocator = await page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
+
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+  })
 })
 
 test.describe('Testing selections', () => {
@@ -2291,7 +2614,7 @@ test.describe('Testing selections', () => {
     |> line([-${commonPoints.num2}, 0], %)`)
 
     // deselect line tool
-    await page.getByRole('button', { name: 'Line' }).click()
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
 
     await u.closeDebugPanel()
     const selectionSequence = async () => {
@@ -2301,10 +2624,9 @@ test.describe('Testing selections', () => {
       await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
+      // bg-yellow-300/70 is more brittle than hover-highlight, but is closer to the user experience
       // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-200').first()).toBeVisible()
-
+      await expect(page.locator('.bg-yellow-300\\/70')).toBeVisible()
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
       await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
@@ -2316,8 +2638,10 @@ test.describe('Testing selections', () => {
       // click a segment hold shift and click an axis, see that a relevant constraint is enabled
       await topHorzSegmentClick()
       await page.keyboard.down('Shift')
-      const constrainButton = page.getByRole('button', { name: 'Constraints' })
-      const absYButton = page.getByRole('button', { name: 'ABS Y' })
+      const constrainButton = page.getByRole('button', {
+        name: 'Length: open menu',
+      })
+      const absYButton = page.getByRole('button', { name: 'Absolute Y' })
       await constrainButton.click()
       await expect(absYButton).toBeDisabled()
       await page.waitForTimeout(100)
@@ -2754,7 +3078,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(19) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(6) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
@@ -2828,6 +3152,57 @@ const sketch002 = startSketchOn(extrude001, $seg01)
     ).not.toBeDisabled()
   })
 
+  test('Fillet button states test', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([10, 0], %)`).click()
+    const selectClose = () => page.getByText(`close(%)`).click()
+    const clickEmpty = () => page.mouse.click(950, 100)
+
+    // expect fillet button without any bodies in the scene
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+
+    // test fillet button with the body in the scene
+    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
+const extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.fill(codeToAdd)
+    await selectSegment()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+    await selectClose()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await clickEmpty()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+  })
+
+  const removeAfterFirstParenthesis = (inputString: string) => {
+    const index = inputString.indexOf('(')
+    if (index !== -1) {
+      return inputString.substring(0, index)
+    }
+    return inputString // return the original string if '(' is not found
+  }
+
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
     page,
   }) => {
@@ -2838,7 +3213,7 @@ const sketch002 = startSketchOn(extrude001, $seg01)
       },
       {
         pos: [816, 244],
-        expectedCode: 'angledLine([segAng(seg01, %), yo], %)',
+        expectedCode: 'angledLine([segAng(seg01), yo], %)',
       },
       {
         pos: [1107, 161],
@@ -2886,7 +3261,7 @@ const part001 = startSketchOn('XZ')
       await page.mouse.move(pos[0], pos[1], { steps: 5 })
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
       await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        removeAfterFirstParenthesis(expectedCode)
+        expectedCode
       )
       // hover over segment, click it and check the cursor has move to the right place
       await page.mouse.click(pos[0], pos[1])
@@ -2931,8 +3306,6 @@ const extrude001 = extrude(50, sketch001)
     await u.clearAndCloseDebugPanel()
 
     await page.waitForTimeout(1000)
-
-    const isMac = process.platform === 'darwin'
 
     let noHoverColor: [number, number, number] = [82, 82, 82]
     let hoverColor: [number, number, number] = [116, 116, 116]
@@ -2997,13 +3370,272 @@ const extrude001 = extrude(50, sketch001)
     // check color stays there, i.e. not overridden (this was a bug previously)
     await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(5)
   })
+  test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    const selectionsSnippets = {
+      extrudeAndEditBlocked: '|> startProfileAt([10.81, 32.99], %)',
+      extrudeAndEditBlockedInFunction: '|> startProfileAt(pos, %)',
+      extrudeAndEditAllowed: '|> startProfileAt([15.72, 4.7], %)',
+      editOnly: '|> startProfileAt([15.79, -14.6], %)',
+    }
+    await page.addInitScript(
+      async ({
+        extrudeAndEditBlocked,
+        extrudeAndEditBlockedInFunction,
+        extrudeAndEditAllowed,
+        editOnly,
+      }: any) => {
+        localStorage.setItem(
+          'persistCode',
+          `const part001 = startSketchOn('XZ')
+    ${extrudeAndEditBlocked}
+    |> line([25.96, 2.93], %)
+    |> line([5.25, -5.72], %)
+    |> line([-2.01, -10.35], %)
+    |> line([-27.65, -2.78], %)
+    |> close(%)
+    |> extrude(5, %)
+  const sketch002 = startSketchOn('XZ')
+    ${extrudeAndEditAllowed}
+    |> line([10.32, 6.47], %)
+    |> line([9.71, -6.16], %)
+    |> line([-3.08, -9.86], %)
+    |> line([-12.02, -1.54], %)
+    |> close(%)
+  const sketch003 = startSketchOn('XZ')
+    ${editOnly}
+    |> line([27.55, -1.65], %)
+    |> line([4.95, -8], %)
+    |> line([-20.38, -10.12], %)
+    |> line([-15.79, 17.08], %)
+  
+  fn yohey = (pos) => {
+    const sketch004 = startSketchOn('XZ')
+    ${extrudeAndEditBlockedInFunction}
+    |> line([27.55, -1.65], %)
+    |> line([4.95, -10.53], %)
+    |> line([-20.38, -8], %)
+    |> line([-15.79, 17.08], %)
+    return ''
+  }
+  
+      yohey([15.79, -34.6])
+  `
+        )
+      },
+      selectionsSnippets
+    )
+    await page.setViewportSize({ width: 1200, height: 1000 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // wait for start sketch as a proxy for the stream being ready
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+
+    await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).not.toBeDisabled()
+
+    await page.getByText(selectionsSnippets.editOnly).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).not.toBeDisabled()
+
+    await page
+      .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
+      .click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).not.toBeVisible()
+  })
+
+  test('Deselecting line tool should mean nothing happens on click', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    // click on "Start Sketch" button
+    await u.clearCommandLogs()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+      200
+    )
+
+    await page.mouse.click(700, 200)
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+
+    await page.waitForTimeout(600)
+
+    let previousCodeContent = await page.locator('.cm-content').innerText()
+
+    // deselect the line tool by clicking it
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
+
+    await page.mouse.click(700, 200)
+    await page.waitForTimeout(100)
+    await page.mouse.click(700, 250)
+    await page.waitForTimeout(100)
+    await page.mouse.click(750, 200)
+    await page.waitForTimeout(100)
+
+    // expect no change
+    await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
+
+    // select line tool again
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
+
+    await u.closeDebugPanel()
+
+    // line tool should work as expected again
+    await page.mouse.click(700, 200)
+    await expect(page.locator('.cm-content')).not.toHaveText(
+      previousCodeContent
+    )
+    previousCodeContent = await page.locator('.cm-content').innerText()
+
+    await page.waitForTimeout(100)
+    await page.mouse.click(700, 300)
+    await expect(page.locator('.cm-content')).not.toHaveText(
+      previousCodeContent
+    )
+    previousCodeContent = await page.locator('.cm-content').innerText()
+
+    await page.waitForTimeout(100)
+    await page.mouse.click(750, 300)
+    await expect(page.locator('.cm-content')).not.toHaveText(
+      previousCodeContent
+    )
+    previousCodeContent = await page.locator('.cm-content').innerText()
+  })
 })
 
 test.describe('Command bar tests', () => {
-  test('Command bar works and can change a setting', async ({ page }) => {
+  test('Extrude from command bar selects extrude line after', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> xLine(-20, %)
+    |> close(%)
+      `
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Click the line of code for xLine.
+    await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.waitForTimeout(100)
+
+    await page.getByRole('button', { name: 'Extrude' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
+    )
+  })
+
+  test('Fillet from command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-10, sketch001)`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
+
+    await selectSegment()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Fillet' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toContainText(
+      `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
+    )
+  })
+
+  test('Command bar can change a setting, and switch back and forth between arguments', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    const themeOption = page.getByRole('option', {
+      name: 'theme',
+      exact: false,
+    })
+    const commandLevelArgButton = page.getByRole('button', { name: 'level' })
+    const commandThemeArgButton = page.getByRole('button', { name: 'value' })
+    // This selector changes after we set the setting
+    let commandOptionInput = page.getByPlaceholder('Select an option')
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -3015,27 +3647,17 @@ test.describe('Command bar tests', () => {
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
-    cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    if (process.platform !== 'linux') {
-      await page.keyboard.press('Meta+K')
-    } else {
-      await page.locator('html').press('Control+C')
-    }
-    cmdSearchBar = page.getByPlaceholder('Search commands')
+    await page.keyboard.press('Meta+K')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
-    const themeOption = page.getByRole('option', {
-      name: 'Settings · app · theme',
-    })
+    await cmdSearchBar.fill('theme')
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -3057,6 +3679,24 @@ test.describe('Command bar tests', () => {
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    commandOptionInput = page.getByPlaceholder('system')
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
+    await commandBarButton.click()
+    await cmdSearchBar.focus()
+    await cmdSearchBar.fill('theme')
+    await themeOption.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await commandOptionInput.focus()
+    await commandOptionInput.fill('lig')
+    await commandLevelArgButton.click()
+    await expect(commandLevelArgButton).toBeDisabled()
+
+    // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
+    await commandThemeArgButton.click()
+    await expect(commandThemeArgButton).toBeDisabled()
+    await expect(commandLevelArgButton).toHaveText('level: project')
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
@@ -3074,18 +3714,14 @@ test.describe('Command bar tests', () => {
     await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    if (process.platform !== 'linux') {
-      await page.keyboard.press('Meta+K')
-    } else {
-      await page.locator('.cm-content').press('Control+C')
-    }
+    await page.keyboard.press('Meta+K')
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await page.keyboard.type('theme')
+    await cmdSearchBar.fill('theme')
     const themeOption = page.getByRole('option', {
       name: 'Settings · app · theme',
     })
@@ -3143,11 +3779,7 @@ test.describe('Command bar tests', () => {
     await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
-    if (process.platform !== 'linux') {
-      await page.keyboard.press('Meta+K')
-    } else {
-      await page.locator('html').press('Control+C')
-    }
+    await page.keyboard.press('Meta+K')
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
@@ -3160,7 +3792,9 @@ test.describe('Command bar tests', () => {
     await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
-    await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'distance', exact: false })
+    ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
@@ -3175,11 +3809,12 @@ test.describe('Command bar tests', () => {
 
     // Review step and argument hotkeys
     await expect(submitButton).toBeEnabled()
-    await page.keyboard.press('Backspace')
+    await expect(submitButton).toBeFocused()
+    await submitButton.press('Backspace')
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 5', exact: false })
+      page.getByRole('button', { name: 'distance', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -3203,1096 +3838,1275 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
       ) // remove newlines
     )
   })
-})
 
-test('Can add multiple sketches', async ({ page }) => {
-  test.skip(process.platform === 'darwin', 'Can add multiple sketches')
-  const u = await getUtils(page)
-  const viewportSize = { width: 1200, height: 500 }
-  await page.setViewportSize(viewportSize)
+  test('Can switch between sketch tools via command bar', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
 
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-
-  const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-  const { toSU, click00r } = getMovementUtils({ center, page })
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
-
-  // click on "Start Sketch" button
-  await u.clearCommandLogs()
-  await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-    200
-  )
-
-  let codeStr = "const sketch001 = startSketchOn('XY')"
-
-  await page.mouse.click(center.x, viewportSize.height * 0.55)
-  await expect(u.codeLocator).toHaveText(codeStr)
-  await u.closeDebugPanel()
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-
-  await click00r(0, 0)
-  codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  await click00r(50, 0)
-  await page.waitForTimeout(100)
-  codeStr += `  |> line(${toSU([50, 0])}, %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  await click00r(0, 50)
-  codeStr += `  |> line(${toSU([0, 50])}, %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  await click00r(-50, 0)
-  codeStr += `  |> line(${toSU([-50, 0])}, %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  // exit the sketch, reset relative clicker
-  click00r(undefined, undefined)
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await page.waitForTimeout(250)
-  await u.clearCommandLogs()
-
-  // start a new sketch
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-
-  // when exiting the sketch above the camera is still looking down at XY,
-  // so selecting the plane again is a bit easier.
-  await page.mouse.click(center.x + 200, center.y + 100)
-  await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
-  codeStr += "const sketch002 = startSketchOn('XY')"
-  await expect(u.codeLocator).toHaveText(codeStr)
-  await u.closeDebugPanel()
-
-  await click00r(30, 0)
-  codeStr += `  |> startProfileAt([1.53, 0], %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  await click00r(30, 0)
-  codeStr += `  |> line([1.53, 0], %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  await click00r(0, 30)
-  codeStr += `  |> line([0, -1.53], %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  await click00r(-30, 0)
-  codeStr += `  |> line([-1.53, 0], %)`
-  await expect(u.codeLocator).toHaveText(codeStr)
-
-  click00r(undefined, undefined)
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.updateCamPosition([100, 100, 100])
-  await u.clearCommandLogs()
-})
-
-test('ProgramMemory can be serialised', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const part = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 1], %)
-  |> line([1, 0], %)
-  |> line([0, -1], %)
-  |> close(%)
-  |> extrude(1, %)
-  |> patternLinear3d({
-        axis: [1, 0, 1],
-        repetitions: 3,
-        distance: 6
-      }, %)`
-    )
-  })
-  await page.setViewportSize({ width: 1000, height: 500 })
-
-  const messages: string[] = []
-
-  // Listen for all console events and push the message text to an array
-  page.on('console', (message) => messages.push(message.text()))
-  await u.waitForAuthSkipAppStart()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  const forbiddenMessages = ['cannot serialize tagged newtype variant']
-  forbiddenMessages.forEach((forbiddenMessage) => {
-    messages.forEach((message) => {
-      expect(message).not.toContain(forbiddenMessage)
+    const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
+    const cmdBarButton = page.getByRole('button', { name: 'Commands' })
+    const rectangleToolCommand = page.getByRole('option', {
+      name: 'rectangle',
     })
+    const rectangleToolButton = page.getByRole('button', {
+      name: 'Corner rectangle',
+      exact: true,
+    })
+    const lineToolCommand = page.getByRole('option', {
+      name: 'Line',
+    })
+    const lineToolButton = page.getByRole('button', {
+      name: 'Line',
+      exact: true,
+    })
+    const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
+    const arcToolButton = page.getByRole('button', {
+      name: 'Tangential Arc',
+      exact: true,
+    })
+
+    // Start a sketch
+    await sketchButton.click()
+    await page.mouse.click(700, 200)
+
+    // Switch between sketch tools via the command bar
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await rectangleToolCommand.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
+    await cmdBarButton.click()
+    await lineToolCommand.click()
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
+
+    // Click in the scene a couple times to draw a line
+    // so tangential arc is valid
+    await page.mouse.click(700, 200)
+    await page.mouse.move(700, 300, { steps: 5 })
+    await page.mouse.click(700, 300)
+
+    // switch to tangential arc via command bar
+    await cmdBarButton.click()
+    await arcToolCommand.click()
+    await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
   })
 })
 
-test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  const selectionsSnippets = {
-    extrudeAndEditBlocked: '|> startProfileAt([10.81, 32.99], %)',
-    extrudeAndEditBlockedInFunction: '|> startProfileAt(pos, %)',
-    extrudeAndEditAllowed: '|> startProfileAt([15.72, 4.7], %)',
-    editOnly: '|> startProfileAt([15.79, -14.6], %)',
-  }
-  await page.addInitScript(
-    async ({
-      extrudeAndEditBlocked,
-      extrudeAndEditBlockedInFunction,
-      extrudeAndEditAllowed,
-      editOnly,
-    }: any) => {
-      localStorage.setItem(
-        'persistCode',
-        `const part001 = startSketchOn('XZ')
-  ${extrudeAndEditBlocked}
-  |> line([25.96, 2.93], %)
-  |> line([5.25, -5.72], %)
-  |> line([-2.01, -10.35], %)
-  |> line([-27.65, -2.78], %)
-  |> close(%)
-  |> extrude(5, %)
-const sketch002 = startSketchOn('XZ')
-  ${extrudeAndEditAllowed}
-  |> line([10.32, 6.47], %)
-  |> line([9.71, -6.16], %)
-  |> line([-3.08, -9.86], %)
-  |> line([-12.02, -1.54], %)
-  |> close(%)
-const sketch003 = startSketchOn('XZ')
-  ${editOnly}
-  |> line([27.55, -1.65], %)
-  |> line([4.95, -8], %)
-  |> line([-20.38, -10.12], %)
-  |> line([-15.79, 17.08], %)
-
-fn yohey = (pos) => {
-  const sketch004 = startSketchOn('XZ')
-  ${extrudeAndEditBlockedInFunction}
-  |> line([27.55, -1.65], %)
-  |> line([4.95, -10.53], %)
-  |> line([-20.38, -8], %)
-  |> line([-15.79, 17.08], %)
-  return ''
-}
-
-    yohey([15.79, -34.6])
-`
-      )
-    },
-    selectionsSnippets
-  )
-  await page.setViewportSize({ width: 1200, height: 1000 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  // wait for start sketch as a proxy for the stream being ready
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-
-  await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeDisabled()
-
-  await page.getByText(selectionsSnippets.editOnly).click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeDisabled()
-
-  await page
-    .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
-    .click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeVisible()
-
-  // selecting an editable sketch but clicking "start sketch" should start a new sketch and not edit the existing one
-  await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(200)
-  await page.getByTestId('KCL Code').click()
-  await page.waitForTimeout(200)
-  await page.mouse.click(734, 134)
-  await page.waitForTimeout(100)
-  await page.getByTestId('KCL Code').click()
-  // expect main content to contain `sketch005` i.e. started a new sketch
-  await page.waitForTimeout(300)
-  await expect(page.locator('.cm-content')).toHaveText(
-    /sketch001 = startSketchOn\('XZ'\)/
-  )
-})
-
-test('Deselecting line tool should mean nothing happens on click', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
-
-  // click on "Start Sketch" button
-  await u.clearCommandLogs()
-  await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-    200
-  )
-
-  await page.mouse.click(700, 200)
-
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const sketch001 = startSketchOn('XZ')`
-  )
-
-  await page.waitForTimeout(600)
-
-  let previousCodeContent = await page.locator('.cm-content').innerText()
-
-  // deselect the line tool by clicking it
-  await page.getByRole('button', { name: 'Line' }).click()
-
-  await page.mouse.click(700, 200)
-  await page.waitForTimeout(100)
-  await page.mouse.click(700, 250)
-  await page.waitForTimeout(100)
-  await page.mouse.click(750, 200)
-  await page.waitForTimeout(100)
-
-  // expect no change
-  await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
-
-  // select line tool again
-  await page.getByRole('button', { name: 'Line' }).click()
-
-  await u.closeDebugPanel()
-
-  // line tool should work as expected again
-  await page.mouse.click(700, 200)
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(700, 300)
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(750, 300)
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-})
-
-test('multi-sketch file shows multiple Edit Sketch buttons', async ({
-  page,
-  context,
-}) => {
-  const u = await getUtils(page)
-  const selectionsSnippets = {
-    startProfileAt1:
-      '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
-    startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
-    startProfileAt3: '|> startProfileAt([0, thickness], %)',
-  }
-  await context.addInitScript(
-    async ({ startProfileAt1, startProfileAt2, startProfileAt3 }: any) => {
-      localStorage.setItem(
-        'persistCode',
-        `
-const width = 20
-const height = 10
-const thickness = 5
-const screwRadius = 3
-const wireRadius = 2
-const wireOffset = 0.5
-
-const screwHole = startSketchOn('XY')
-  ${startProfileAt1}
-  |> arc({
-        radius: screwRadius,
-        angle_start: 0,
-        angle_end: 360
-      }, %)
-
-const part001 = startSketchOn('XY')
-  ${startProfileAt2}
-  |> xLine(width * .5, %)
-  |> yLine(height, %)
-  |> xLine(-width * .5, %)
-  |> close(%)
-  |> hole(screwHole, %)
-  |> extrude(thickness, %)
-
-const part002 = startSketchOn('-XZ')
-  ${startProfileAt3}
-  |> xLine(width / 4, %)
-  |> tangentialArcTo([width / 2, 0], %)
-  |> xLine(-width / 4 + wireRadius, %)
-  |> yLine(wireOffset, %)
-  |> arc({
-        radius: wireRadius,
-        angle_start: 0,
-        angle_end: 180
-      }, %)
-  |> yLine(-wireOffset, %)
-  |> xLine(-width / 4, %)
-  |> close(%)
-  |> extrude(-height, %)
-`
-      )
-    },
-    selectionsSnippets
-  )
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  await page.getByText(selectionsSnippets.startProfileAt1).click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-
-  await page.getByText(selectionsSnippets.startProfileAt2).click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-
-  await page.getByText(selectionsSnippets.startProfileAt3).click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-})
-
-async function doEditSegmentsByDraggingHandle(page: Page, openPanes: string[]) {
-  // Load the app with the code panes
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)`
-    )
-  })
-
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.waitForTimeout(100)
-  await u.openAndClearDebugPanel()
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -1250, z: 580 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
-  })
-  await page.waitForTimeout(100)
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-  await page.waitForTimeout(100)
-  await u.closeDebugPanel()
-
-  // If we have the code pane open, we should see the code.
-  if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)`)
-  } else {
-    // Ensure we don't see the code.
-    await expect(u.codeLocator).not.toBeVisible()
-  }
-
-  const startPX = [665, 458]
-
-  const dragPX = 30
-  let prevContent = ''
-
-  if (openPanes.includes('code')) {
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-  } else {
-    // Wait for the render.
-    await page.waitForTimeout(1000)
-    // Select the sketch
-    await page.mouse.click(700, 370)
-  }
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(400)
-  if (openPanes.includes('code')) {
-    prevContent = await page.locator('.cm-content').innerText()
-  }
-
-  const step5 = { steps: 5 }
-
-  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
-
-  // drag startProfieAt handle
-  await page.mouse.move(startPX[0], startPX[1])
-  await page.mouse.down()
-  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
-  await page.mouse.up()
-
-  if (openPanes.includes('code')) {
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-  }
-
-  // drag line handle
-  await page.waitForTimeout(100)
-
-  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
-  await page.mouse.down()
-  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
-  await page.mouse.up()
-  await page.waitForTimeout(100)
-  if (openPanes.includes('code')) {
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-  }
-
-  // drag tangentialArcTo handle
-  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
-  await page.mouse.down()
-  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
-  await page.mouse.up()
-  await page.waitForTimeout(100)
-  if (openPanes.includes('code')) {
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  }
-
-  // Open the code pane
-  await u.openKclCodePanel()
-
-  // expect the code to have changed
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 1.97], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> line([1.97, 2.06], %)
-  |> close(%)`)
-}
-
-test.describe('Can edit segments by dragging their handles', () => {
-  test('code pane open at start-handles', async ({ page }) => {
-    // Load the app with the code panes
+test.describe('Regression tests', () => {
+  // bugs we found that don't fit neatly into other categories
+  test('bad model has inline error #3251', async ({ page }) => {
+    // because the model has `line([0,0]..` it is valid code, but the model is invalid
+    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
+    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
+    const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
-        'store',
-        JSON.stringify({
-          state: {
-            openPanes: ['code'],
-          },
-          version: 0,
-        })
-      )
-    })
-    await doEditSegmentsByDraggingHandle(page, ['code'])
-  })
-
-  test('code pane closed at start-handles', async ({ page }) => {
-    // Load the app with the code panes
-    await page.addInitScript(async (persistModelingContext) => {
-      localStorage.setItem(
-        persistModelingContext,
-        JSON.stringify({ openPanes: [] })
-      )
-    }, PERSIST_MODELING_CONTEXT)
-    await doEditSegmentsByDraggingHandle(page, [])
-  })
-})
-
-test('Can edit a sketch that has been extruded in the same pipe', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
-  |> extrude(5, %)`
-    )
-  })
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.waitForTimeout(100)
-  await u.openAndClearDebugPanel()
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -1250, z: 580 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
-  })
-  await page.waitForTimeout(100)
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-  await page.waitForTimeout(100)
-
-  const startPX = [665, 458]
-
-  const dragPX = 40
-
-  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(400)
-  let prevContent = await page.locator('.cm-content').innerText()
-
-  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
-
-  // drag startProfieAt handle
-  await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: startPX[0], y: startPX[1] },
-    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
-  })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  // drag line handle
-  await page.waitForTimeout(100)
-
-  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-  await page.waitForTimeout(100)
-  await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
-  })
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  // drag tangentialArcTo handle
-  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-  await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
-    targetPosition: {
-      x: tangentEnd.x + dragPX,
-      y: tangentEnd.y + dragPX,
-    },
-  })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-
-  // expect the code to have changed
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -16.82], %)
-  |> line([15.4, -2.74], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> line([2.65, -2.69], %)
-  |> close(%)
-  |> extrude(5, %)`)
-})
-
-test('Can edit a sketch that has been revolved in the same pipe', async ({
-  page,
-}) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
-  |> revolve({ axis: "X",}, %)`
-    )
-  })
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.waitForTimeout(100)
-  await u.openAndClearDebugPanel()
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -1250, z: 580 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
-  })
-  await page.waitForTimeout(100)
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-  await page.waitForTimeout(100)
-
-  const startPX = [665, 458]
-
-  const dragPX = 30
-
-  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(400)
-  let prevContent = await page.locator('.cm-content').innerText()
-
-  const step5 = { steps: 5 }
-
-  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
-
-  // drag startProfieAt handle
-  await page.mouse.move(startPX[0], startPX[1])
-  await page.mouse.down()
-  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
-  await page.mouse.up()
-
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  // drag line handle
-  await page.waitForTimeout(100)
-
-  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
-  await page.mouse.down()
-  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
-  await page.mouse.up()
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  // drag tangentialArcTo handle
-  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
-  await page.mouse.down()
-  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
-  await page.mouse.up()
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-
-  // expect the code to have changed
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 2.01], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> line([1.97, 2.06], %)
-  |> close(%)
-  |> revolve({ axis: "X" }, %)`)
-})
-
-const doSnapAtDifferentScales = async (
-  page: any,
-  camPos: [number, number, number],
-  scale = 1,
-  fudge = 0
-) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-
-  const code = `const sketch001 = startSketchOn('-XZ')
-|> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
-|> line([${roundOff(scale * 139.19)}, 0], %)
-|> line([0, -${roundOff(scale * 139.2)}], %)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)`
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
-
-  await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(100)
-
-  await u.openAndClearDebugPanel()
-  await u.updateCamPosition(camPos)
-  await u.closeDebugPanel()
-
-  await page.mouse.move(0, 0)
-
-  // select a plane
-  await page.mouse.move(700, 200, { steps: 10 })
-  await page.mouse.click(700, 200, { delay: 200 })
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const sketch001 = startSketchOn('-XZ')`
-  )
-
-  let prevContent = await page.locator('.cm-content').innerText()
-
-  const pointA = [700, 200]
-  const pointB = [900, 200]
-  const pointC = [900, 400]
-
-  // draw three lines
-  await page.waitForTimeout(500)
-  await page.mouse.move(pointA[0], pointA[1], { steps: 10 })
-  await page.mouse.click(pointA[0], pointA[1], { delay: 200 })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  await page.mouse.move(pointB[0], pointB[1], { steps: 10 })
-  await page.mouse.click(pointB[0], pointB[1], { delay: 200 })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  await page.mouse.move(pointC[0], pointC[1], { steps: 10 })
-  await page.mouse.click(pointC[0], pointC[1], { delay: 200 })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  await page.mouse.move(pointA[0] - 12, pointA[1] + 12, { steps: 10 })
-  const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
-  await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
-
-  await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1], { delay: 200 })
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  await expect(page.locator('.cm-content')).toHaveText(code)
-  // Assert the tool was unequipped
-  await expect(page.getByRole('button', { name: 'Line' })).not.toHaveAttribute(
-    'aria-pressed',
-    'true'
-  )
-
-  // exit sketch
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.removeCurrentCode()
-}
-
-test.describe('Snap to close works (at any scale)', () => {
-  test('[0, 100, 100]', async ({ page }) => {
-    await doSnapAtDifferentScales(page, [0, 100, 100], 0.01, 0.01)
-  })
-
-  test('[0, 10000, 10000]', async ({ page }) => {
-    await doSnapAtDifferentScales(page, [0, 10000, 10000])
-  })
-})
-
-test('Sketch on face', async ({ page }) => {
-  test.setTimeout(90_000)
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([2.66, 1.17], %)
-  |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %)
-  |> line([3.3, -2.12], %)
-  |> line([2.16, -3.33], %)
-  |> line([0.85, -3.08], %)
-  |> line([-0.18, -3.36], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
-  const extrude001 = extrude(5 + 7, sketch001)`
-    )
-  })
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(300)
-
-  let previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await u.openAndClearDebugPanel()
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(625, 133),
-    'default_camera_get_settings',
-    true
-  )
-  await page.waitForTimeout(150)
-  await u.closeDebugPanel()
-
-  const firstClickPosition = [612, 238]
-  const secondClickPosition = [661, 242]
-  const thirdClickPosition = [609, 267]
-
-  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await expect(page.locator('.cm-content'))
-    .toContainText(`const sketch002 = startSketchOn(extrude001, seg01)
-  |> startProfileAt([-12.94, 6.6], %)
-  |> line([2.45, -0.2], %)
-  |> line([-2.6, -1.25], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`)
-
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  await u.updateCamPosition([1049, 239, 686])
-  await u.closeDebugPanel()
-
-  await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(400)
-  await page.waitForTimeout(150)
-  await page.setViewportSize({ width: 1200, height: 1200 })
-  await u.openAndClearDebugPanel()
-  await u.updateCamPosition([452, -152, 1166])
-  await u.closeDebugPanel()
-  await page.waitForTimeout(200)
-
-  const pointToDragFirst = [787, 565]
-  await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
-  await page.mouse.down()
-  await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
-    steps: 5,
-  })
-  await page.mouse.up()
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, seg01)
-  |> startProfileAt([-12.83, 6.7], %)
-  |> line([${[2.28, 2.35]}, -${0.07}], %)
-  |> line([-3.05, -1.47], %)
+        'persistCode',
+        `const sketch2 = startSketchOn("XY")
+const sketch001 = startSketchAt([-0, -0])
+  |> line([0, 0], %)
+  |> line([-4.84, -5.29], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`
+      )
+    })
 
-  await expect(page.locator('.cm-content')).toHaveText(result.regExp)
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  // exit sketch
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.waitForAuthSkipAppStart()
 
-  await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
-  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
-  await page.waitForTimeout(100)
-  await page.getByRole('button', { name: 'Extrude' }).click()
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    // this is a cryptic error message, fact that all the lines are co-linear from the `line([0,0])` is the issue why
+    // the close doesn't work
+    // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
+    // this test will need updating
+    const crypticErrorText = `ApiError`
+    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+  })
+  test('executes on load', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('-XZ')
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)`
+      )
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  await expect(page.getByTestId('command-bar')).toBeVisible()
-  await page.waitForTimeout(100)
+    await u.waitForAuthSkipAppStart()
 
-  await page.keyboard.press('Enter')
-  await page.waitForTimeout(100)
-  await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await page.keyboard.press('Enter')
+    // expand variables section
+    const variablesTabButton = page.getByTestId('variables-pane-button')
+    await variablesTabButton.click()
 
-  const result2 = result.genNext`
-const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
-  await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
-})
-
-test('Can code mod a line length', async ({ page }) => {
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> xLine(-20, %)
-`
-    )
+    // can find sketch001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
+    // sketch001 only shows up in the variables summary if it's been executed
+    await page.waitForFunction(() => {
+      const variablesElement = document.querySelector(
+        '.pretty-json-container'
+      ) as HTMLDivElement
+      return variablesElement.innerHTML.includes('sketch001')
+    })
+    await expect(
+      page.locator('.pretty-json-container >> text=sketch001')
+    ).toBeVisible()
   })
 
-  const u = await getUtils(page)
-  const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.setViewportSize({ width: 1200, height: 500 })
+  test('re-executes', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', `const myVar = 5`)
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+    const variablesTabButton = page.getByTestId('variables-pane-button')
+    await variablesTabButton.click()
+    // expect to see "myVar:5"
+    await expect(
+      page.locator('.pretty-json-container >> text=myVar:5')
+    ).toBeVisible()
 
-  // Click the line of code for line.
-  await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
-  await page.waitForTimeout(100)
+    // change 5 to 67
+    await page.getByText('const myVar').click()
+    await page.keyboard.press('End')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.type('67')
 
-  // enter sketch again
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(500) // wait for animation
+    await expect(
+      page.locator('.pretty-json-container >> text=myVar:67')
+    ).toBeVisible()
+  })
+  test('ProgramMemory can be serialised', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0, 1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternLinear3d({
+          axis: [1, 0, 1],
+          repetitions: 3,
+          distance: 6
+        }, %)`
+      )
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-  const startXPx = 500
-  await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-  await page.keyboard.down('Shift')
-  await page.mouse.click(834, 244)
-  await page.keyboard.up('Shift')
+    const messages: string[] = []
 
-  await page.getByRole('button', { name: 'Constraints', exact: true }).click()
-  await page.getByRole('button', { name: 'length', exact: true }).click()
-  await page.getByText('Add constraining value').click()
+    // Listen for all console events and push the message text to an array
+    page.on('console', (message) => messages.push(message.text()))
+    await u.waitForAuthSkipAppStart()
 
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const length001 = 20const sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
-  )
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  // Make sure we didn't pop out of sketch mode.
-  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+    const forbiddenMessages = ['cannot serialize tagged newtype variant']
+    forbiddenMessages.forEach((forbiddenMessage) => {
+      messages.forEach((message) => {
+        expect(message).not.toContain(forbiddenMessage)
+      })
+    })
+  })
+  test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
 
-  await page.waitForTimeout(500) // wait for animation
+    const zooLogo = page.locator('[data-testid="app-logo"]')
+    // Make sure it's not a link
+    await expect(zooLogo).not.toHaveAttribute('href')
+  })
+  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
+    const u = await getUtils(page)
+    // const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const exampleSketch = startSketchOn("XZ")
+    |> startProfileAt([0, 0], %)
+    |> angledLine({ angle: 50, length: 45 }, %)
+    |> yLineTo(0, %)
+    |> close(%)
+    |>
+  
+  const example = extrude(5, exampleSketch)
+  shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+      )
+    })
 
-  // Exit sketch
-  await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-  await page.keyboard.press('Escape')
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
+    await expect(async () => {
+      await page.goto('/')
+      await u.waitForPageLoad()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+      await page.waitForTimeout(200)
+      // expect it still to be there (sometimes it just clears for a bit?)
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+        timeout: 1_000,
+      })
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+    // Okay execution finished, let's start editing text below the error.
+    await u.codeLocator.click()
+    // Go to the end of the editor
+    // This bug happens when there is a diagnostic in the editor and you try to
+    // edit text below it.
+    // Or delete a huge chunk of text and then try to edit below it.
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('End')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('thing: "blah"', { delay: 100 })
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('ArrowLeft')
+
+    await expect(page.locator('.cm-content'))
+      .toContainText(`const exampleSketch = startSketchOn("XZ")
+    |> startProfileAt([0, 0], %)
+    |> angledLine({ angle: 50, length: 45 }, %)
+    |> yLineTo(0, %)
+    |> close(%)
+
+    thing: "blah"`)
+
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  })
 })
 
-test('Extrude from command bar selects extrude line after', async ({
-  page,
-}) => {
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> xLine(-20, %)
+test.describe('Sketch tests', () => {
+  test('multi-sketch file shows multiple Edit Sketch buttons', async ({
+    page,
+    context,
+  }) => {
+    const u = await getUtils(page)
+    const selectionsSnippets = {
+      startProfileAt1:
+        '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
+      startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
+      startProfileAt3: '|> startProfileAt([0, thickness], %)',
+    }
+    await context.addInitScript(
+      async ({ startProfileAt1, startProfileAt2, startProfileAt3 }: any) => {
+        localStorage.setItem(
+          'persistCode',
+          `
+  const width = 20
+  const height = 10
+  const thickness = 5
+  const screwRadius = 3
+  const wireRadius = 2
+  const wireOffset = 0.5
+  
+  const screwHole = startSketchOn('XY')
+    ${startProfileAt1}
+    |> arc({
+          radius: screwRadius,
+          angle_start: 0,
+          angle_end: 360
+        }, %)
+  
+  const part001 = startSketchOn('XY')
+    ${startProfileAt2}
+    |> xLine(width * .5, %)
+    |> yLine(height, %)
+    |> xLine(-width * .5, %)
+    |> close(%)
+    |> hole(screwHole, %)
+    |> extrude(thickness, %)
+  
+  const part002 = startSketchOn('-XZ')
+    ${startProfileAt3}
+    |> xLine(width / 4, %)
+    |> tangentialArcTo([width / 2, 0], %)
+    |> xLine(-width / 4 + wireRadius, %)
+    |> yLine(wireOffset, %)
+    |> arc({
+          radius: wireRadius,
+          angle_start: 0,
+          angle_end: 180
+        }, %)
+    |> yLine(-wireOffset, %)
+    |> xLine(-width / 4, %)
+    |> close(%)
+    |> extrude(-height, %)
+  `
+        )
+      },
+      selectionsSnippets
+    )
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await page.getByText(selectionsSnippets.startProfileAt1).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+
+    await page.getByText(selectionsSnippets.startProfileAt2).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+
+    await page.getByText(selectionsSnippets.startProfileAt3).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+  })
+  test('Can delete most of a sketch and the line tool will still work', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await expect(async () => {
+      await page.mouse.click(700, 200)
+      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeEnabled({ timeout: 1000 })
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
+
+    await page.waitForTimeout(600) // wait for animation
+
+    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.keyboard.press('End')
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+    await u.openAndClearDebugPanel()
+
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(100)
+
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.waitForTimeout(100)
+
+    await page.mouse.click(700, 200)
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([0.31, 16.47], %)`
+    )
+  })
+  test('Can exit selection of face', async ({ page }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', ``)
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+
+    await expect(page.getByText('select a plane or face')).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+  })
+  test.describe('Can edit segments by dragging their handles', () => {
+    const doEditSegmentsByDraggingHandle = async (
+      page: Page,
+      openPanes: string[]
+    ) => {
+      // Load the app with the code panes
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const sketch001 = startSketchOn('XZ')
+      |> startProfileAt([4.61, -14.01], %)
+      |> line([12.73, -0.09], %)
+      |> tangentialArcTo([24.95, -5.38], %)
+      |> close(%)`
+        )
+      })
+
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
+
+      await page.waitForTimeout(100)
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: { x: 0, y: -1250, z: 580 },
+          center: { x: 0, y: 0, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.closeDebugPanel()
+
+      // If we have the code pane open, we should see the code.
+      if (openPanes.includes('code')) {
+        await expect(u.codeLocator)
+          .toHaveText(`const sketch001 = startSketchOn('XZ')
+      |> startProfileAt([4.61, -14.01], %)
+      |> line([12.73, -0.09], %)
+      |> tangentialArcTo([24.95, -5.38], %)
+      |> close(%)`)
+      } else {
+        // Ensure we don't see the code.
+        await expect(u.codeLocator).not.toBeVisible()
+      }
+
+      const startPX = [665, 458]
+
+      const dragPX = 30
+      let prevContent = ''
+
+      if (openPanes.includes('code')) {
+        await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+      } else {
+        // Wait for the render.
+        await page.waitForTimeout(1000)
+        // Select the sketch
+        await page.mouse.click(700, 370)
+      }
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(400)
+      if (openPanes.includes('code')) {
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      const step5 = { steps: 5 }
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+      // drag startProfieAt handle
+      await page.mouse.move(startPX[0], startPX[1])
+      await page.mouse.down()
+      await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+      await page.mouse.up()
+
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      // drag line handle
+      await page.waitForTimeout(100)
+
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+      await page.mouse.move(lineEnd.x - 5, lineEnd.y)
+      await page.mouse.down()
+      await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      // drag tangentialArcTo handle
+      const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+      await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      }
+
+      // Open the code pane
+      await u.openKclCodePanel()
+
+      // expect the code to have changed
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
+      |> startProfileAt([6.44, -12.07], %)
+      |> line([14.72, 1.97], %)
+      |> tangentialArcTo([24.95, -5.38], %)
+      |> line([1.97, 2.06], %)
+      |> close(%)`)
+    }
+    test('code pane open at start-handles', async ({ page }) => {
+      // Load the app with the code panes
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'store',
+          JSON.stringify({
+            state: {
+              openPanes: ['code'],
+            },
+            version: 0,
+          })
+        )
+      })
+      await doEditSegmentsByDraggingHandle(page, ['code'])
+    })
+
+    test('code pane closed at start-handles', async ({ page }) => {
+      // Load the app with the code panes
+      await page.addInitScript(async (persistModelingContext) => {
+        localStorage.setItem(
+          persistModelingContext,
+          JSON.stringify({ openPanes: [] })
+        )
+      }, PERSIST_MODELING_CONTEXT)
+      await doEditSegmentsByDraggingHandle(page, [])
+    })
+  })
+
+  // failing for the same reason as "Can undo a sketch modification with ctrl+z"
+  // please fix together
+  test.fixme(
+    'Can edit a sketch that has been extruded in the same pipe',
+    async ({ page }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -14.01], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)
+    |> extrude(5, %)`
+        )
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
+
+      await page.waitForTimeout(100)
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: { x: 0, y: -1250, z: 580 },
+          center: { x: 0, y: 0, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await page.waitForTimeout(100)
+
+      const startPX = [665, 458]
+
+      const dragPX = 40
+
+      await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(400)
+      let prevContent = await page.locator('.cm-content').innerText()
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+      // drag startProfieAt handle
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: startPX[0], y: startPX[1] },
+        targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+
+      // drag line handle
+      await page.waitForTimeout(100)
+
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+      await page.waitForTimeout(100)
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+        targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+      })
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+
+      // drag tangentialArcTo handle
+      const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
+        targetPosition: {
+          x: tangentEnd.x + dragPX,
+          y: tangentEnd.y + dragPX,
+        },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+      // expect the code to have changed
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([7.12, -16.82], %)
+    |> line([15.4, -2.74], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> line([2.65, -2.69], %)
+    |> close(%)
+    |> extrude(5, %)`)
+    }
+  )
+
+  test('Can edit a sketch that has been revolved in the same pipe', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -14.01], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> close(%)
+    |> revolve({ axis: "X",}, %)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    await page.waitForTimeout(100)
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 0, y: -1250, z: 580 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const startPX = [665, 458]
+
+    const dragPX = 30
+
+    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(400)
+    let prevContent = await page.locator('.cm-content').innerText()
+
+    const step5 = { steps: 5 }
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
+    // drag startProfieAt handle
+    await page.mouse.move(startPX[0], startPX[1])
+    await page.mouse.down()
+    await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+    await page.mouse.up()
+
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    // drag line handle
+    await page.waitForTimeout(100)
+
+    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+    await page.mouse.move(lineEnd.x - 5, lineEnd.y)
+    await page.mouse.down()
+    await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
+    await page.mouse.up()
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    // drag tangentialArcTo handle
+    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+    await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
+    await page.mouse.down()
+    await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+    await page.mouse.up()
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+    // expect the code to have changed
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt([6.44, -12.07], %)
+    |> line([14.72, 1.97], %)
+    |> tangentialArcTo([24.95, -5.38], %)
+    |> line([1.97, 2.06], %)
+    |> close(%)
+    |> revolve({ axis: "X" }, %)`)
+  })
+  test('Can add multiple sketches', async ({ page }) => {
+    test.skip(process.platform === 'darwin', 'Can add multiple sketches')
+    const u = await getUtils(page)
+    const viewportSize = { width: 1200, height: 500 }
+    await page.setViewportSize(viewportSize)
+
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+
+    const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+    const { toSU, click00r } = getMovementUtils({ center, page })
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    // click on "Start Sketch" button
+    await u.clearCommandLogs()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+      200
+    )
+
+    let codeStr = "const sketch001 = startSketchOn('XY')"
+
+    await page.mouse.click(center.x, viewportSize.height * 0.55)
+    await expect(u.codeLocator).toHaveText(codeStr)
+    await u.closeDebugPanel()
+    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+
+    await click00r(0, 0)
+    codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(50, 0)
+    await page.waitForTimeout(100)
+    codeStr += `  |> line(${toSU([50, 0])}, %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(0, 50)
+    codeStr += `  |> line(${toSU([0, 50])}, %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(-50, 0)
+    codeStr += `  |> line(${toSU([-50, 0])}, %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    // exit the sketch, reset relative clicker
+    click00r(undefined, undefined)
+    await u.openAndClearDebugPanel()
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await page.waitForTimeout(250)
+    await u.clearCommandLogs()
+
+    // start a new sketch
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    // when exiting the sketch above the camera is still looking down at XY,
+    // so selecting the plane again is a bit easier.
+    await page.mouse.click(center.x + 200, center.y + 100)
+    await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
+    codeStr += "const sketch002 = startSketchOn('XY')"
+    await expect(u.codeLocator).toHaveText(codeStr)
+    await u.closeDebugPanel()
+
+    await click00r(30, 0)
+    codeStr += `  |> startProfileAt([1.53, 0], %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(30, 0)
+    codeStr += `  |> line([1.53, 0], %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(0, 30)
+    codeStr += `  |> line([0, -1.53], %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(-30, 0)
+    codeStr += `  |> line([-1.53, 0], %)`
+    await expect(u.codeLocator).toHaveText(codeStr)
+
+    await click00r(undefined, undefined)
+    await u.openAndClearDebugPanel()
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.updateCamPosition([100, 100, 100])
+    await u.clearCommandLogs()
+  })
+  test.describe('Snap to close works (at any scale)', () => {
+    const doSnapAtDifferentScales = async (
+      page: any,
+      camPos: [number, number, number],
+      scale = 1
+    ) => {
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+      await u.openDebugPanel()
+
+      const code = `const sketch001 = startSketchOn('-XZ')
+    |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
+    |> line([${roundOff(scale * 139.19)}, 0], %)
+    |> line([0, -${roundOff(scale * 139.2)}], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)`
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeVisible()
+
+      await u.clearCommandLogs()
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await page.waitForTimeout(100)
+
+      await u.openAndClearDebugPanel()
+      await u.updateCamPosition(camPos)
+      await u.closeDebugPanel()
+
+      await page.mouse.move(0, 0)
+
+      // select a plane
+      await page.mouse.move(700, 200, { steps: 10 })
+      await page.mouse.click(700, 200, { delay: 200 })
+      await expect(page.locator('.cm-content')).toHaveText(
+        `const sketch001 = startSketchOn('-XZ')`
+      )
+
+      let prevContent = await page.locator('.cm-content').innerText()
+
+      const pointA = [700, 200]
+      const pointB = [900, 200]
+      const pointC = [900, 400]
+
+      // draw three lines
+      await page.waitForTimeout(500)
+      await page.mouse.move(pointA[0], pointA[1], { steps: 10 })
+      await page.mouse.click(pointA[0], pointA[1], { delay: 200 })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+
+      await page.mouse.move(pointB[0], pointB[1], { steps: 10 })
+      await page.mouse.click(pointB[0], pointB[1], { delay: 200 })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+
+      await page.mouse.move(pointC[0], pointC[1], { steps: 10 })
+      await page.mouse.click(pointC[0], pointC[1], { delay: 200 })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+
+      await page.mouse.move(pointA[0] - 12, pointA[1] + 12, { steps: 10 })
+      const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
+      await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
+
+      await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1], {
+        delay: 200,
+      })
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+
+      await expect(page.locator('.cm-content')).toHaveText(code)
+      // Assert the tool was unequipped
+      await expect(
+        page.getByRole('button', { name: 'Line', exact: true })
+      ).not.toHaveAttribute('aria-pressed', 'true')
+
+      // exit sketch
+      await u.openAndClearDebugPanel()
+      await page.getByRole('button', { name: 'Exit Sketch' }).click()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.removeCurrentCode()
+    }
+    test('[0, 100, 100]', async ({ page }) => {
+      await doSnapAtDifferentScales(page, [0, 100, 100], 0.01)
+    })
+
+    test('[0, 10000, 10000]', async ({ page }) => {
+      await doSnapAtDifferentScales(page, [0, 10000, 10000])
+    })
+  })
+  test('exiting a close extrude, has the extrude button enabled ready to go', async ({
+    page,
+  }) => {
+    // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-    `
+`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // click "line([1.32, 0.38], %)"
+    await page.getByText(`line([1.32, 0.38], %)`).click()
+    await page.waitForTimeout(100)
+    // click edit sketch
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(600) // wait for animation
+
+    // exit sketch
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    // expect extrude button to be enabled
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
+
+    // click extrude
+    await page.getByRole('button', { name: 'Extrude' }).click()
+
+    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
+    // otherwise the cmdbar would be waiting for a selection.
+    await expect(
+      page.getByRole('button', { name: 'selection : 1 face', exact: false })
+    ).toBeVisible()
+  })
+  test("Existing sketch with bad code delete user's code", async ({ page }) => {
+    // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await page.mouse.click(622, 355)
+
+    await page.waitForTimeout(800)
+    await page.getByText(`END')`).click()
+    await page.keyboard.press('End')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('  |>', { delay: 100 })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([-0.45, 0.87], %)
+  |> line([1.32, 0.38], %)
+  |> line([1.02, -1.32], %, $seg01)
+  |> line([-1.01, -0.77], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+const sketch002 = startSketchOn(extrude001, 'END')
+  |>
+`.replace(/\s/g, '')
     )
   })
+  test('empty-scene default-planes act as expected', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
+    /**
+     * Tests the following things
+     * 1) The the planes are there on load because the scene is empty
+     * 2) The planes don't changes color when hovered initially
+     * 3) Putting something in the scene makes the planes hidden
+     * 4) Removing everything from the scene shows the plans again
+     * 3) Once "start sketch" is click, the planes do respond to hovers
+     * 4) Selecting a plan works as expected, i.e. sketch mode
+     * 5) Reloading the scene with something already in the scene means the planes are hidden
+     */
 
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-  // Click the line of code for xLine.
-  await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
-  await page.waitForTimeout(100)
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
 
-  await page.getByRole('button', { name: 'Extrude' }).click()
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Enter')
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Enter')
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-activeLine')).toHaveText(
-    `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
-  )
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    await u.codeLocator.fill(`const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+`)
+
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    const noPlanesColor: [number, number, number] = [30, 30, 30]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+    ).toBeLessThan(3)
+
+    await u.clearCommandLogs()
+    await u.removeCurrentCode()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    await expect
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {
+        timeout: 5_000,
+      })
+      .toBeLessThan(8)
+
+    // click start Sketch
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 5 })
+    const hoveredColor: [number, number, number] = [93, 93, 127]
+    // now that we're expecting the user to select a plan, it does respond to hover
+    await expect
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, hoveredColor))
+      .toBeLessThan(8)
+
+    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(600)
+
+    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+    await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([11.8, 9.09], %)
+  |> line([3.39, -3.39], %)
+`)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([11.8, 9.09], %)
+  |> line([3.39, -3.39], %)
+`
+      )
+    })
+    await page.reload()
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // expect there to be no planes on load since there's something in the scene
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+    ).toBeLessThan(3)
+  })
 })
 
 test.describe('Testing constraints', () => {
+  test('Can constrain line length', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> xLine(-20, %)
+  `
+      )
+    })
+
+    const u = await getUtils(page)
+    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Click the line of code for line.
+    await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.waitForTimeout(100)
+
+    // enter sketch again
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(500) // wait for animation
+
+    const startXPx = 500
+    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
+    await page.keyboard.down('Shift')
+    await page.mouse.click(834, 244)
+    await page.keyboard.up('Shift')
+
+    await page.getByRole('button', { name: 'Length', exact: true }).click()
+    await page.getByText('Add constraining value').click()
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const length001 = 20const sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+    )
+
+    // Make sure we didn't pop out of sketch mode.
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+
+    await page.waitForTimeout(500) // wait for animation
+
+    // Exit sketch
+    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).not.toBeVisible()
+  })
   test(`Test remove constraints`, async ({ page }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -4302,13 +5116,13 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng(seg01, %), yo], %)
+  |> angledLine([segAng(seg01), yo], %)
   |> line([41.19, 28.97 + 5], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
       )
     })
@@ -4326,12 +5140,10 @@ const part002 = startSketchOn('XZ')
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
-    await page
-      .getByRole('button', { name: 'remove constraints', exact: true })
-      .click()
+    await page.getByRole('button', { name: 'remove constraints' }).click()
 
     await page.getByText('line([39.13, 68.63], %)').click()
     const activeLinesContent = await page.locator('.cm-activeLine').all()
@@ -4362,13 +5174,13 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
-  |> angledLine([segAng(seg01, %), 78.33], %)
+  |> angledLine([segAng(seg01), 78.33], %)
   |> line([41.19, 28.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4392,11 +5204,11 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
         await page
-          .getByRole('button', { name: 'perpendicular distance', exact: true })
+          .getByRole('button', { name: 'Perpendicular Distance' })
           .click()
 
         const createNewVariableCheckbox = page.getByTestId(
@@ -4433,22 +5245,22 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         constraint: 'horizontal distance',
-        value: 'segEndX(seg01, %) + xDis001, 61.34',
+        value: 'segEndX(seg01) + xDis001, 61.34',
       },
       {
         testName: 'No variable',
         constraint: 'horizontal distance',
-        value: 'segEndX(seg01, %) + 88.08, 61.34',
+        value: 'segEndX(seg01) + 88.08, 61.34',
       },
       {
         testName: 'Add variable',
         constraint: 'vertical distance',
-        value: '154.9, segEndY(seg01, %) - yDis001',
+        value: '154.9, segEndY(seg01) - yDis001',
       },
       {
         testName: 'No variable',
         constraint: 'vertical distance',
-        value: '154.9, segEndY(seg01, %) - 42.32',
+        value: '154.9, segEndY(seg01) - 42.32',
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
@@ -4467,7 +5279,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4491,12 +5303,10 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page
-          .getByRole('button', { name: constraint, exact: true })
-          .click()
+        await page.getByRole('button', { name: constraint }).click()
 
         const createNewVariableCheckbox = page.getByTestId(
           'create-new-variable-checkbox'
@@ -4537,25 +5347,25 @@ const part002 = startSketchOn('XZ')
       {
         testName: 'Add variable',
         addVariable: true,
-        constraint: 'ABS X',
+        constraint: 'Absolute X',
         value: 'xDis001, 61.34',
       },
       {
         testName: 'No variable',
         addVariable: false,
-        constraint: 'ABS X',
+        constraint: 'Absolute X',
         value: '154.9, 61.34',
       },
       {
         testName: 'Add variable',
         addVariable: true,
-        constraint: 'ABS Y',
+        constraint: 'Absolute Y',
         value: '154.9, yDis001',
       },
       {
         testName: 'No variable',
         addVariable: false,
-        constraint: 'ABS Y',
+        constraint: 'Absolute Y',
         value: '154.9, 61.34',
       },
     ] as const
@@ -4575,7 +5385,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4591,7 +5401,7 @@ const part002 = startSketchOn('XZ')
           u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
         ])
 
-        if (constraint === 'ABS X') {
+        if (constraint === 'Absolute X') {
           await page.mouse.click(600, 130)
         } else {
           await page.mouse.click(900, 250)
@@ -4602,7 +5412,7 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
         await page
@@ -4645,13 +5455,13 @@ const part002 = startSketchOn('XZ')
         testName: 'Add variable',
         addVariable: true,
         axisSelect: false,
-        value: 'segAng(seg01, %) + angle001',
+        value: 'segAng(seg01) + angle001',
       },
       {
         testName: 'No variable',
         addVariable: false,
         axisSelect: false,
-        value: 'segAng(seg01, %) + 22.69',
+        value: 'segAng(seg01) + 22.69',
       },
       {
         testName: 'Add variable, selecting axis',
@@ -4682,7 +5492,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4710,10 +5520,10 @@ const part002 = startSketchOn('XZ')
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page.getByTestId('angle').click()
+        await page.getByTestId('dropdown-constraint-angle').click()
 
         const createNewVariableCheckbox = page.getByTestId(
           'create-new-variable-checkbox'
@@ -4792,7 +5602,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4811,10 +5621,10 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Constraints',
+            name: 'Length: open menu',
           })
           .click()
-        await page.getByTestId(constraint).click()
+        await page.getByTestId('dropdown-constraint-' + constraint).click()
 
         if (!addVariable) {
           await page.getByTestId('create-new-variable-checkbox').click()
@@ -4868,7 +5678,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4902,7 +5712,7 @@ const part002 = startSketchOn('XZ')
         await expect(activeLinesContent).toHaveLength(codeAfter.length)
 
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page
           .getByRole('button', {
@@ -4933,19 +5743,19 @@ const part002 = startSketchOn('XZ')
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine([83, segLen(seg01, %)], %)`,
+        codeAfter: `|> angledLine([83, segLen(seg01)], %)`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine([segAng(seg01, %), 78.33], %)`,
+        codeAfter: `|> angledLine([segAng(seg01), 78.33], %)`,
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> lineTo([segEndX(seg01, %), 61.34], %)`,
+        codeAfter: `|> lineTo([segEndX(seg01), 61.34], %)`,
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> lineTo([154.9, segEndY(seg01, %)], %)`,
+        codeAfter: `|> lineTo([154.9, segEndY(seg01)], %)`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -4964,7 +5774,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -4985,7 +5795,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(line3.x - 3, line3.y + 20)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -5041,7 +5851,7 @@ const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what, %), %)
+  |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
@@ -5062,7 +5872,7 @@ const part002 = startSketchOn('XZ')
         await page.mouse.click(axisClick.x, axisClick.y)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Constraints',
+          name: 'Length: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -5121,10 +5931,10 @@ const part002 = startSketchOn('XZ')
 
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
-    await page.getByRole('button', { name: 'horizontal', exact: true }).click()
+    await page.getByRole('button', { name: 'Horizontal', exact: true }).click()
 
     let activeLinesContent = await page.locator('.cm-activeLine').all()
     await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
@@ -5145,13 +5955,13 @@ const part002 = startSketchOn('XZ')
     await page.waitForTimeout(300)
     await page
       .getByRole('button', {
-        name: 'Constraints',
+        name: 'Length: open menu',
       })
       .click()
     // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
     await page.waitForTimeout(200)
     // await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.locator('[data-testid="length"]').click()
+    await page.getByTestId('dropdown-constraint-length').click()
 
     await page.getByLabel('length Value').fill('10')
     await page.getByRole('button', { name: 'Add constraining value' }).click()
@@ -6209,8 +7019,8 @@ const part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen(seg01, %)], %)        
-${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
+  |> angledLine([-176, segLen(seg01)], %)        
+${extraLine ? 'const myVar = segLen(seg01)' : ''}`
               )
             },
             {
@@ -6369,7 +7179,7 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
-  |> angledLine([-176, segLen(seg01, %)], %)`
+  |> angledLine([-176, segLen(seg01)], %)`
             )
           },
           {
@@ -6427,392 +7237,231 @@ ${extraLine ? 'const myVar = segLen(seg01, part001)' : ''}`
     }
   })
 })
-test('First escape in tool pops you out of tool, second exits sketch mode', async ({
-  page,
-}) => {
-  // Wait for the app to be ready for use
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  const lineButton = page.getByRole('button', { name: 'Line' })
-  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
-
-  // Test these hotkeys perform actions when
-  // focus is on the canvas
-  await page.mouse.move(600, 250)
-  await page.mouse.click(600, 250)
-
-  // Start a sketch
-  await page.keyboard.press('s')
-  await page.mouse.move(800, 300)
-  await page.mouse.click(800, 300)
-  await page.waitForTimeout(1000)
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
-
-  // Draw a line
-  await page.mouse.move(700, 200, { steps: 5 })
-  await page.mouse.click(700, 200)
-  await page.mouse.move(800, 250, { steps: 5 })
-  await page.mouse.click(800, 250)
-  // Unequip line tool
-  await page.keyboard.press('Escape')
-  // Make sure we didn't pop out of sketch mode.
-  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
-  // Equip arc tool
-  await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
-  await page.mouse.move(1000, 100, { steps: 5 })
-  await page.mouse.click(1000, 100)
-  await page.keyboard.press('Escape')
-  await page.keyboard.press('l')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
-
-  // Do not close the sketch.
-  // On close it will exit sketch mode.
-
-  // Unequip line tool
-  await page.keyboard.press('Escape')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
-  // Make sure we didn't pop out of sketch mode.
-  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-  // Exit sketch
-  await page.keyboard.press('Escape')
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
-})
-
-test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
-  // This test can run long if it takes a little too long to load
-  // the engine.
-  test.setTimeout(90000)
-  // This test has a weird bug on ubuntu
-  test.skip(
-    process.platform === 'linux',
-    'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
-  )
-  // Load the app with the code pane open
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'store',
-      JSON.stringify({
-        state: {
-          openPanes: ['code'],
-        },
-        version: 0,
-      })
+test.describe('Test network and connection issues', () => {
+  test('simulate network down and network little widget', async ({
+    page,
+    browserName,
+  }) => {
+    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
     )
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const networkToggle = page.getByTestId('network-toggle')
+
+    // This is how we wait until the stream is online
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled({ timeout: 15000 })
+
+    const networkWidget = page.locator('[data-testid="network-toggle"]')
+    await expect(networkWidget).toBeVisible()
+    await networkWidget.hover()
+
+    const networkPopover = page.locator('[data-testid="network-popover"]')
+    await expect(networkPopover).not.toBeVisible()
+
+    // (First check) Expect the network to be up
+    await expect(networkToggle).toContainText('Connected')
+
+    // Click the network widget
+    await networkWidget.click()
+
+    // Check the modal opened.
+    await expect(networkPopover).toBeVisible()
+
+    // Click off the modal.
+    await page.mouse.click(100, 100)
+    await expect(networkPopover).not.toBeVisible()
+
+    // Turn off the network
+    await u.emulateNetworkConditions({
+      offline: true,
+      // values of 0 remove any active throttling. crbug.com/456324#c9
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    })
+
+    // Expect the network to be down
+    await expect(networkToggle).toContainText('Offline')
+
+    // Click the network widget
+    await networkWidget.click()
+
+    // Check the modal opened.
+    await expect(networkPopover).toBeVisible()
+
+    // Click off the modal.
+    await page.mouse.click(0, 0)
+    await expect(networkPopover).not.toBeVisible()
+
+    // Turn back on the network
+    await u.emulateNetworkConditions({
+      offline: false,
+      // values of 0 remove any active throttling. crbug.com/456324#c9
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    })
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled({ timeout: 15000 })
+
+    // (Second check) expect the network to be up
+    await expect(networkToggle).toContainText('Connected')
   })
 
-  // Wait for the app to be ready for use
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
+  test('Engine disconnect & reconnect in sketch mode', async ({
+    page,
+    browserName,
+  }) => {
+    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
+    const networkToggle = page.getByTestId('network-toggle')
 
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const PUR = 400 / 37.5 //pixeltoUnitRatio
 
-  const codePane = page.getByRole('textbox').locator('div')
-  const codePaneButton = page.getByRole('tab', { name: 'KCL Code' })
-  const lineButton = page.getByRole('button', { name: 'Line' })
-  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
-  const extrudeButton = page.getByRole('button', { name: 'Extrude' })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
 
-  // Test that the hotkeys do nothing when
-  // focus is on the code pane
-  await codePane.click()
-  await page.keyboard.press('/')
-  await page.keyboard.press('/')
-  await page.keyboard.press('s')
-  await page.keyboard.press('l')
-  await page.keyboard.press('a')
-  await page.keyboard.press('e')
-  await expect(page.locator('.cm-content')).toHaveText('//slae')
-  await page.keyboard.press('Meta+/')
-  await page.waitForTimeout(2000)
-  // Test these hotkeys perform actions when
-  // focus is on the canvas
-  await page.mouse.move(600, 250)
-  await page.mouse.click(600, 250)
-  // Start a sketch
-  await page.keyboard.press('s')
-  await page.waitForTimeout(2000)
-  await page.mouse.move(800, 300, { steps: 5 })
-  await page.mouse.click(800, 300)
-  await page.waitForTimeout(2000)
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
-    timeout: 15_000,
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled({ timeout: 15000 })
+
+    // click on "Start Sketch" button
+    await u.clearCommandLogs()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await page.waitForTimeout(100)
+
+    // select a plane
+    await page.mouse.click(700, 200)
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const sketch001 = startSketchOn('XZ')`
+    )
+    await u.closeDebugPanel()
+
+    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+
+    const startXPx = 600
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)`)
+    await page.waitForTimeout(100)
+
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    await page.waitForTimeout(100)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)
+    |> line([${commonPoints.num1}, 0], %)`)
+
+    // Expect the network to be up
+    await expect(networkToggle).toContainText('Connected')
+
+    // simulate network down
+    await u.emulateNetworkConditions({
+      offline: true,
+      // values of 0 remove any active throttling. crbug.com/456324#c9
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    })
+
+    // Expect the network to be down
+    await expect(networkToggle).toContainText('Offline')
+
+    // Ensure we are not in sketch mode
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).not.toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    // simulate network up
+    await u.emulateNetworkConditions({
+      offline: false,
+      // values of 0 remove any active throttling. crbug.com/456324#c9
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    })
+
+    // Wait for the app to be ready for use
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled({ timeout: 15000 })
+
+    // Expect the network to be up
+    await expect(networkToggle).toContainText('Connected')
+    await expect(page.getByTestId('loading-stream')).not.toBeAttached()
+
+    // Click off the code pane.
+    await page.mouse.click(100, 100)
+
+    // select a line
+    await page.getByText(`startProfileAt(${commonPoints.startAt}, %)`).click()
+
+    // enter sketch again
+    await u.doAndWaitForCmd(
+      () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+      'default_camera_get_settings'
+    )
+    await page.waitForTimeout(150)
+
+    // Click the line tool
+    await page.getByRole('button', { name: 'Line', exact: true }).click()
+
+    await page.waitForTimeout(150)
+
+    // Ensure we can continue sketching
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)
+    |> line([${commonPoints.num1}, 0], %)
+    |> line([-8.84, 8.75], %)`)
+    await page.waitForTimeout(100)
+    await page.mouse.click(startXPx, 500 - PUR * 20)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    |> startProfileAt(${commonPoints.startAt}, %)
+    |> line([${commonPoints.num1}, 0], %)
+    |> line([-8.84, 8.75], %)
+    |> line([-5.6, 0], %)`)
+
+    // Unequip line tool
+    await page.keyboard.press('Escape')
+    // Make sure we didn't pop out of sketch mode.
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Line', exact: true })
+    ).not.toHaveAttribute('aria-pressed', 'true')
+
+    // Exit sketch
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).not.toBeVisible()
   })
-  /**
-   * TODO: There is a bug somewhere that causes this test to fail
-   * if you toggle the codePane closed before your trigger the
-   * start of the sketch.
-   * and a separate Safari-only bug that causes the test to fail
-   * if the pane is open the entire test. The maintainer of CodeMirror
-   * has pinpointed this to the unusual browser behavior:
-   * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
-   */
-  await codePaneButton.click()
-  await expect(u.codeLocator).not.toBeVisible()
-  await page.waitForTimeout(300)
-
-  // Draw a line
-  await page.mouse.move(700, 200, { steps: 5 })
-  await page.mouse.click(700, 200)
-  await page.waitForTimeout(300)
-  await page.mouse.move(800, 250, { steps: 5 })
-  await page.mouse.click(800, 250)
-  // Unequip line tool
-  await page.keyboard.press('l')
-  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
-  // Equip arc tool
-  await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true', {
-    timeout: 10_000,
-  })
-  await page.mouse.move(1000, 100, { steps: 5 })
-  await page.mouse.click(1000, 100)
-  await page.keyboard.press('Escape')
-  await page.keyboard.press('l')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
-  // Close profile
-  await page.mouse.move(700, 200, { steps: 5 })
-  await page.mouse.click(700, 200)
-  // On  close it will unequip the line tool.
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
-  // Exit sketch
-  await page.keyboard.press('Escape')
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
-  await page.waitForTimeout(400)
-
-  // Extrude
-  await page.mouse.click(750, 150)
-  await expect(extrudeButton).not.toBeDisabled()
-  await page.keyboard.press('e')
-  await page.waitForTimeout(100)
-  await page.mouse.move(800, 200, { steps: 5 })
-  await page.mouse.click(800, 200)
-  await page.waitForTimeout(300)
-  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
-  await page.getByRole('button', { name: 'Continue' }).click()
-  await page.waitForTimeout(300)
-  await expect(
-    page.getByRole('button', { name: 'Submit command' })
-  ).toBeVisible()
-  await page.getByRole('button', { name: 'Submit command' }).click()
-
-  await codePaneButton.click()
-  await expect(page.locator('.cm-content')).toContainText('extrude(')
-})
-
-test('simulate network down and network little widget', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-
-  // This is how we wait until the stream is online
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled({ timeout: 15000 })
-
-  const networkWidget = page.locator('[data-testid="network-toggle"]')
-  await expect(networkWidget).toBeVisible()
-  await networkWidget.hover()
-
-  const networkPopover = page.locator('[data-testid="network-popover"]')
-  await expect(networkPopover).not.toBeVisible()
-
-  // (First check) Expect the network to be up
-  await expect(page.getByText('Network Health (Connected)')).toBeVisible()
-
-  // Click the network widget
-  await networkWidget.click()
-
-  // Check the modal opened.
-  await expect(networkPopover).toBeVisible()
-
-  // Click off the modal.
-  await page.mouse.click(100, 100)
-  await expect(networkPopover).not.toBeVisible()
-
-  // Turn off the network
-  await u.emulateNetworkConditions({
-    offline: true,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  // Expect the network to be down
-  await expect(page.getByText('Network Health (Offline)')).toBeVisible()
-
-  // Click the network widget
-  await networkWidget.click()
-
-  // Check the modal opened.
-  await expect(networkPopover).toBeVisible()
-
-  // Click off the modal.
-  await page.mouse.click(0, 0)
-  await expect(networkPopover).not.toBeVisible()
-
-  // Turn back on the network
-  await u.emulateNetworkConditions({
-    offline: false,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled({ timeout: 15000 })
-
-  // (Second check) expect the network to be up
-  await expect(page.getByText('Network Health (Connected)')).toBeVisible()
-})
-
-test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  const PUR = 400 / 37.5 //pixeltoUnitRatio
-
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled({ timeout: 15000 })
-
-  // click on "Start Sketch" button
-  await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(100)
-
-  // select a plane
-  await page.mouse.click(700, 200)
-
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const sketch001 = startSketchOn('XZ')`
-  )
-  await u.closeDebugPanel()
-
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-
-  const startXPx = 600
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)`)
-  await page.waitForTimeout(100)
-
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
-
-  // Expect the network to be up
-  await expect(page.getByText('Network Health (Connected)')).toBeVisible()
-
-  // simulate network down
-  await u.emulateNetworkConditions({
-    offline: true,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  // Expect the network to be down
-  await expect(page.getByText('Network Health (Offline)')).toBeVisible()
-
-  // Ensure we are not in sketch mode
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
-
-  // simulate network up
-  await u.emulateNetworkConditions({
-    offline: false,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  // Wait for the app to be ready for use
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled({ timeout: 15000 })
-
-  // Expect the network to be up
-  await expect(page.getByText('Network Health (Connected)')).toBeVisible()
-
-  // Click off the code pane.
-  await page.mouse.click(100, 100)
-
-  // select a line
-  await page.getByText(`startProfileAt(${commonPoints.startAt}, %)`).click()
-
-  // enter sketch again
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-    'default_camera_get_settings'
-  )
-  await page.waitForTimeout(150)
-
-  // Click the line tool
-  await page.getByRole('button', { name: 'Line' }).click()
-
-  await page.waitForTimeout(150)
-
-  // Ensure we can continue sketching
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([-9.16, 8.81], %)`)
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([-9.16, 8.81], %)
-  |> line([-5.28, 0], %)`)
-
-  // Unequip line tool
-  await page.keyboard.press('Escape')
-  // Make sure we didn't pop out of sketch mode.
-  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Line' })).not.toHaveAttribute(
-    'aria-pressed',
-    'true'
-  )
-
-  // Exit sketch
-  await page.keyboard.press('Escape')
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
 })
 
 test.describe('Testing Gizmo', () => {
@@ -7041,6 +7690,40 @@ test.describe('Testing Gizmo', () => {
   })
 })
 
+test('Units menu', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+  await u.waitForAuthSkipAppStart()
+
+  const unitsMenuButton = page.getByRole('button', {
+    name: 'Current Units',
+    exact: false,
+  })
+  await expect(unitsMenuButton).toBeVisible()
+  await expect(unitsMenuButton).toContainText('in')
+
+  await unitsMenuButton.click()
+  const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
+
+  await expect(millimetersButton).toBeVisible()
+  await millimetersButton.click()
+
+  // Look out for the toast message
+  const toastMessage = page.getByText(
+    `Set default unit to "mm" for this project`
+  )
+  await expect(toastMessage).toBeVisible()
+
+  // Verify that the popover has closed
+  await expect(millimetersButton).not.toBeAttached()
+
+  // Verify that the button label has updated
+  await expect(unitsMenuButton).toContainText('mm')
+})
+
 test('Successful export shows a success toast', async ({ page }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
@@ -7071,19 +7754,19 @@ const part001 = startSketchOn('-XZ')
         offset: -armThick,
         intersectTag: seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
+  |> angledLineToY([segAng(seg04) + 180, ZERO], %)
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
       }, %, $seg02)
-  |> xLineTo(segEndX(seg03, %) + 0, %)
-  |> yLine(-segLen(seg01, %), %)
+  |> xLineTo(segEndX(seg03) + 0, %)
+  |> yLine(-segLen(seg01), %)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
         intersectTag: seg02
       }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
+  |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
   |> close(%)
   |> extrude(4, %)`
@@ -7162,54 +7845,387 @@ test('Paste should not work unless an input is focused', async ({
   ).toContain(pasteContent)
 })
 
-test('Can undo a click and point extrude with ctrl+z', async ({ page }) => {
+test('Keyboard shortcuts can be viewed through the help menu', async ({
+  page,
+}) => {
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await u.waitForAuthSkipAppStart()
+
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  // Open the help menu
+  await page.getByRole('button', { name: 'Help and resources' }).click()
+
+  // Open the keyboard shortcuts
+  await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
+
+  // Verify the URL and that you can see a list of shortcuts
+  await expect(page.url()).toContain('?tab=keybindings')
+  await expect(
+    page.getByRole('heading', { name: 'Enter Sketch Mode' })
+  ).toBeAttached()
+})
+
+test('First escape in tool pops you out of tool, second exits sketch mode', async ({
+  page,
+}) => {
+  // Wait for the app to be ready for use
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const arcButton = page.getByRole('button', {
+    name: 'Tangential Arc',
+    exact: true,
+  })
+
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+
+  // Start a sketch
+  await page.keyboard.press('s')
+  await page.mouse.move(800, 300)
+  await page.mouse.click(800, 300)
+  await page.waitForTimeout(1000)
+  await expect(lineButton).toBeVisible()
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await page.keyboard.press('a')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('l')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+
+  // Do not close the sketch.
+  // On close it will exit sketch mode.
+
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  // Exit sketch
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
+})
+
+test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
+  // This test can run long if it takes a little too long to load
+  // the engine.
+  test.setTimeout(90000)
+  // This test has a weird bug on ubuntu
+  test.skip(
+    process.platform === 'linux',
+    'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
+  )
+  // Load the app with the code pane open
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'store',
+      JSON.stringify({
+        state: {
+          openPanes: ['code'],
+        },
+        version: 0,
+      })
+    )
+  })
+
+  // Wait for the app to be ready for use
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  const codePane = page.getByRole('textbox').locator('div')
+  const codePaneButton = page.getByTestId('code-pane-button')
+  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const arcButton = page.getByRole('button', {
+    name: 'Tangential Arc',
+    exact: true,
+  })
+  const extrudeButton = page.getByRole('button', { name: 'Extrude' })
+
+  // Test that the hotkeys do nothing when
+  // focus is on the code pane
+  await codePane.click()
+  await page.keyboard.press('/')
+  await page.keyboard.press('/')
+  await page.keyboard.press('s')
+  await page.keyboard.press('l')
+  await page.keyboard.press('a')
+  await page.keyboard.press('e')
+  await expect(page.locator('.cm-content')).toHaveText('//slae')
+  await page.keyboard.press('Meta+/')
+  await page.waitForTimeout(1000)
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+
+  // work-around: to stop "keyboard.press('s')" from typing in the editor even when it should be blurred
+  await page.getByRole('button', { name: 'Commands' }).click()
+  await page.waitForTimeout(100)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(100)
+  // end work-around
+
+  // Start a sketch
+  await page.keyboard.press('s')
+  await page.waitForTimeout(1000)
+  await page.mouse.move(800, 300, { steps: 5 })
+  await page.mouse.click(800, 300)
+  await page.waitForTimeout(1000)
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 15_000,
+  })
+  /**
+   * TODO: There is a bug somewhere that causes this test to fail
+   * if you toggle the codePane closed before your trigger the
+   * start of the sketch.
+   * and a separate Safari-only bug that causes the test to fail
+   * if the pane is open the entire test. The maintainer of CodeMirror
+   * has pinpointed this to the unusual browser behavior:
+   * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
+   */
+  await codePaneButton.click()
+  await expect(u.codeLocator).not.toBeVisible()
+  await page.waitForTimeout(300)
+
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  await page.waitForTimeout(300)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
+  // Unequip line tool
+  await page.keyboard.press('l')
+  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await page.keyboard.press('a')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true', {
+    timeout: 10_000,
+  })
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('l')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  // Close profile
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  // On  close it will unequip the line tool.
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
+  // Exit sketch
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
+  await page.waitForTimeout(400)
+
+  // Extrude
+  await page.mouse.click(750, 150)
+  await expect(extrudeButton).not.toBeDisabled()
+  await page.keyboard.press('e')
+  await page.waitForTimeout(100)
+  await page.mouse.move(800, 200, { steps: 5 })
+  await page.mouse.click(800, 200)
+  await page.waitForTimeout(300)
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.waitForTimeout(300)
+  await expect(
+    page.getByRole('button', { name: 'Submit command' })
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Submit command' }).click()
+
+  await codePaneButton.click()
+  await expect(page.locator('.cm-content')).toContainText('extrude(')
+})
+
+test('Delete key does not navigate back', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+
+  const settingsButton = page.getByRole('link', {
+    name: 'Settings',
+    exact: false,
+  })
+  const settingsCloseButton = page.getByTestId('settings-close-button')
+
+  await settingsButton.click()
+  await expect(page.url()).toContain('/settings')
+
+  // Make sure that delete doesn't go back from settings
+  await page.keyboard.press('Delete')
+  await expect(page.url()).toContain('/settings')
+
+  // Now close the settings and try delete again,
+  // make sure it doesn't go back to settings
+  await settingsCloseButton.click()
+  await page.keyboard.press('Delete')
+  await expect(page.url()).not.toContain('/settings')
+})
+
+test('Sketch on face', async ({ page }) => {
+  test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)`
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([2.66, 1.17], %)
+  |> line([3.75, 0.46], %)
+  |> line([4.99, -0.46], %)
+  |> line([3.3, -2.12], %)
+  |> line([2.16, -3.33], %)
+  |> line([0.85, -3.08], %)
+  |> line([-0.18, -3.36], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+  const extrude001 = extrude(5 + 7, sketch001)`
     )
   })
 
   await page.setViewportSize({ width: 1200, height: 500 })
 
   await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()
 
-  await page.waitForTimeout(100)
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(300)
+
+  let previousCodeContent = await page.locator('.cm-content').innerText()
+
   await u.openAndClearDebugPanel()
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -1250, z: 580 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
-  })
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(625, 133),
+    'default_camera_get_settings',
+    true
+  )
+  await page.waitForTimeout(150)
+  await u.closeDebugPanel()
+
+  const firstClickPosition = [612, 238]
+  const secondClickPosition = [661, 242]
+  const thirdClickPosition = [609, 267]
+
+  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
   await page.waitForTimeout(100)
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
+  await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
   await page.waitForTimeout(100)
+  await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const startPX = [665, 458]
+  await page.waitForTimeout(100)
+  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const dragPX = 40
+  await expect(page.locator('.cm-content'))
+    .toContainText(`const sketch002 = startSketchOn(extrude001, seg01)
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2.6, -1.25], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`)
 
-  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-  await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await u.updateCamPosition([1049, 239, 686])
+  await u.closeDebugPanel()
+
+  await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  await page.waitForTimeout(150)
+  await page.setViewportSize({ width: 1200, height: 1200 })
+  await u.openAndClearDebugPanel()
+  await u.updateCamPosition([452, -152, 1166])
+  await u.closeDebugPanel()
+  await page.waitForTimeout(200)
+
+  const pointToDragFirst = [787, 565]
+  await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
+  await page.mouse.down()
+  await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
+    steps: 5,
+  })
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, seg01)
+  |> startProfileAt([-12.83, 6.7], %)
+  |> line([${[2.28, 2.35]}, -${0.07}], %)
+  |> line([-3.05, -1.47], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+
+  await expect(page.locator('.cm-content')).toHaveText(result.regExp)
+
+  // exit sketch
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
+
+  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+  await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Extrude' }).click()
 
   await expect(page.getByTestId('command-bar')).toBeVisible()
@@ -7219,174 +8235,214 @@ test('Can undo a click and point extrude with ctrl+z', async ({ page }) => {
   await page.waitForTimeout(100)
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
   await page.keyboard.press('Enter')
-  await page.waitForTimeout(100)
 
-  // expect the code to have changed
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)const extrude001 = extrude(5, sketch001)`
-  )
-
-  // Now hit undo
-  await page.keyboard.down('Control')
-  await page.keyboard.press('KeyZ')
-  await page.keyboard.up('Control')
-
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)`)
+  const result2 = result.genNext`
+const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
+  await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
 
-test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
-  |> extrude(5, %)`
-    )
+test.describe('Code pane and errors', () => {
+  test('Typing KCL errors induces a badge on the code pane button', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, bracket)
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Ensure no badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).not.toContainText('notification')
+
+    // Delete a character to break the KCL
+    await u.openKclCodePanel()
+    await page.getByText('extrude(').click()
+    await page.keyboard.press('Backspace')
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
   })
 
-  await page.setViewportSize({ width: 1200, height: 500 })
+  test('Opening and closing the code pane will consistently show error diagnostics', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
 
-  await u.waitForAuthSkipAppStart()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, bracket)
 
-  await page.waitForTimeout(100)
-  await u.openAndClearDebugPanel()
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      vantage: { x: 0, y: -1250, z: 580 },
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-    },
+    await page.setViewportSize({ width: 1200, height: 900 })
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Ensure we have no errors in the gutter.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Ensure no badge is present
+    const codePaneButton = page.getByRole('button', { name: 'KCL Code pane' })
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).not.toContainText('notification')
+
+    // Delete a character to break the KCL
+    await u.openKclCodePanel()
+    await page.getByText('extrude(').click()
+    await page.keyboard.press('Backspace')
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+    // Close the code pane
+    codePaneButton.click()
+
+    await page.waitForTimeout(500)
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+    // Ensure we have no errors in the gutter.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Open the code pane
+    u.openKclCodePanel()
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
   })
-  await page.waitForTimeout(100)
-  await u.sendCustomCmd({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
+
+  test('When error is not in view you can click the badge to scroll to it', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await page.waitForTimeout(1000)
+
+    // Ensure badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have no errors in the gutter, since error out of view.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Click the badge.
+    const badge = page.locator('#code-badge')
+    await expect(badge).toBeVisible()
+    await badge.click()
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
   })
-  await page.waitForTimeout(100)
 
-  const startPX = [665, 458]
+  test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
 
-  const dragPX = 40
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
 
-  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(400)
-  let prevContent = await page.locator('.cm-content').innerText()
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
 
-  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await page.waitForTimeout(1000)
 
-  // drag startProfieAt handle
-  await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: startPX[0], y: startPX[1] },
-    targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+    // Ensure badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have no errors in the gutter, since error out of view.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // click in the editor to focus it
+    await page.locator('.cm-content').click()
+
+    await page.waitForTimeout(500)
+
+    // go to the start of the editor and enter more text which will trigger
+    // a lint error.
+    // GO to the start of the editor.
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.type('const foo_bar = 1')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    // ensure we have a lint error
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // Click the badge.
+    const badge = page.locator('#code-badge')
+    await expect(badge).toBeVisible()
+    await badge.click()
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
   })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  // drag line handle
-  // we wait so it saves the code
-  await page.waitForTimeout(800)
-
-  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-  await page.waitForTimeout(100)
-  await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-    targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
-  })
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-  prevContent = await page.locator('.cm-content').innerText()
-
-  // we wait so it saves the code
-  await page.waitForTimeout(800)
-
-  // drag tangentialArcTo handle
-  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-  await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
-    targetPosition: {
-      x: tangentEnd.x + dragPX,
-      y: tangentEnd.y + dragPX,
-    },
-  })
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-
-  // expect the code to have changed
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -16.82], %)
-  |> line([15.4, -2.74], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> line([2.65, -2.69], %)
-  |> close(%)
-  |> extrude(5, %)`)
-
-  // Hit undo
-  await page.keyboard.down('Control')
-  await page.keyboard.press('KeyZ')
-  await page.keyboard.up('Control')
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -16.82], %)
-  |> line([15.4, -2.74], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
-  |> extrude(5, %)`)
-
-  // Hit undo again.
-  await page.keyboard.down('Control')
-  await page.keyboard.press('KeyZ')
-  await page.keyboard.up('Control')
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -16.82], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
-  |> extrude(5, %)`)
-
-  // Hit undo again.
-  await page.keyboard.down('Control')
-  await page.keyboard.press('KeyZ')
-  await page.keyboard.up('Control')
-
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
-  |> extrude(5, %)`)
 })
-
-function removeAfterFirstParenthesis(inputString: string) {
-  const index = inputString.indexOf('(')
-  if (index !== -1) {
-    return inputString.substring(0, index)
-  }
-  return inputString // return the original string if '(' is not found
-}

@@ -6,20 +6,44 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { butName } from 'lib/cameraControls'
+import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
+import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { useAppStream } from 'AppState'
+import {
+  EngineConnectionStateType,
+  DisconnectingType,
+} from 'lang/std/engineConnection'
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isFirstRender, setIsFirstRender] = useState(kclManager.isFirstRender)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
-  const { overallState } = useNetworkContext()
+  const { mediaStream } = useAppStream()
+  const { overallState, immediateState } = useNetworkContext()
+  const [isFreezeFrame, setIsFreezeFrame] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const IDLE = settings.context.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  useEffect(() => {
+    if (
+      immediateState.type === EngineConnectionStateType.Disconnecting &&
+      immediateState.value.type === DisconnectingType.Pause
+    ) {
+      setIsPaused(true)
+    }
+    if (immediateState.type === EngineConnectionStateType.Connecting) {
+      setIsPaused(false)
+    }
+  }, [immediateState])
 
   // Linux has a default behavior to paste text on middle mouse up
   // This adds a listener to block that pasting if the click target
@@ -47,11 +71,100 @@ export const Stream = () => {
     globalThis?.window?.document?.addEventListener('paste', handlePaste, {
       capture: true,
     })
-    return () =>
+
+    const IDLE_TIME_MS = 1000 * 60 * 2
+    let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
+
+    const teardown = () => {
+      videoRef.current?.pause()
+      setIsFreezeFrame(true)
+      sceneInfra.modelingSend({ type: 'Cancel' })
+      // Give video time to pause
+      window.requestAnimationFrame(() => {
+        engineCommandManager.tearDown({ idleMode: true })
+      })
+    }
+
+    const onVisibilityChange = () => {
+      if (globalThis.window.document.visibilityState === 'hidden') {
+        clearTimeout(timeoutIdIdleA)
+        timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
+      } else if (!engineCommandManager.engineConnection?.isReady()) {
+        clearTimeout(timeoutIdIdleA)
+        engineCommandManager.engineConnection?.connect(true)
+      }
+    }
+
+    // Teardown everything if we go hidden or reconnect
+    if (IDLE) {
+      globalThis?.window?.document?.addEventListener(
+        'visibilitychange',
+        onVisibilityChange
+      )
+    }
+
+    let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
+
+    const onAnyInput = () => {
+      // Clear both timers
+      clearTimeout(timeoutIdIdleA)
+      clearTimeout(timeoutIdIdleB)
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    }
+
+    if (IDLE) {
+      globalThis?.window?.document?.addEventListener('keydown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousemove', onAnyInput)
+      globalThis?.window?.document?.addEventListener('mousedown', onAnyInput)
+      globalThis?.window?.document?.addEventListener('scroll', onAnyInput)
+      globalThis?.window?.document?.addEventListener('touchstart', onAnyInput)
+    }
+
+    if (IDLE) {
+      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+    }
+
+    return () => {
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
-  }, [])
+      if (IDLE) {
+        clearTimeout(timeoutIdIdleA)
+        clearTimeout(timeoutIdIdleB)
+
+        globalThis?.window?.document?.removeEventListener(
+          'visibilitychange',
+          onVisibilityChange
+        )
+        globalThis?.window?.document?.removeEventListener('keydown', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'mousemove',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener(
+          'mousedown',
+          onAnyInput
+        )
+        globalThis?.window?.document?.removeEventListener('scroll', onAnyInput)
+        globalThis?.window?.document?.removeEventListener(
+          'touchstart',
+          onAnyInput
+        )
+      }
+    }
+  }, [IDLE])
+
+  useEffect(() => {
+    setIsFirstRender(kclManager.isFirstRender)
+    if (!kclManager.isFirstRender)
+      setTimeout(() =>
+        // execute in the next event loop
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      )
+    setIsFreezeFrame(!kclManager.isFirstRender)
+  }, [kclManager.isFirstRender])
 
   useEffect(() => {
     if (
@@ -60,9 +173,25 @@ export const Stream = () => {
     )
       return
     if (!videoRef.current) return
-    if (!context.store?.mediaStream) return
-    videoRef.current.srcObject = context.store.mediaStream
-  }, [context.store?.mediaStream])
+    if (!mediaStream) return
+
+    // Do not immediately play the stream!
+    try {
+      videoRef.current.srcObject = mediaStream
+      videoRef.current.pause()
+    } catch (e) {
+      console.warn('Attempted to pause stream while play was still loading', e)
+    }
+
+    send({
+      type: 'Set context',
+      data: {
+        videoElement: videoRef.current,
+      },
+    })
+
+    setIsLoading(false)
+  }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
@@ -96,9 +225,9 @@ export const Stream = () => {
       },
     })
     if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
+    if (state.matches('idle.showPlanes')) return
 
-    if (!context.store?.didDragInStream && butName(e).left) {
+    if (!context.store?.didDragInStream && btnName(e).left) {
       sendSelectEventToEngine(
         e,
         videoRef.current,
@@ -159,17 +288,42 @@ export const Stream = () => {
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
-      {!isNetworkOkay && !isLoading && (
+      {isPaused && (
         <div className="text-center absolute inset-0">
-          <Loading>
-            <span data-testid="loading-stream">Stream disconnected...</span>
-          </Loading>
+          <div
+            className="flex flex-col items-center justify-center h-screen"
+            data-testid="paused"
+          >
+            <div className="border-primary border p-2 rounded-sm">
+              <svg
+                width="8"
+                height="12"
+                viewBox="0 0 8 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M2 12V0H0V12H2ZM8 12V0H6V12H8Z"
+                  fill="var(--primary)"
+                />
+              </svg>
+            </div>
+            <p className="text-base mt-2 text-primary bold">Paused</p>
+          </div>
         </div>
       )}
-      {isLoading && (
-        <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {(!isNetworkOkay || isLoading || isFirstRender) && !isFreezeFrame && (
+        <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Loading stream...</span>
+            {!isNetworkOkay && !isLoading ? (
+              <span data-testid="loading-stream">Stream disconnected...</span>
+            ) : !isLoading && isFirstRender ? (
+              <span data-testid="loading-stream">Building scene...</span>
+            ) : (
+              <span data-testid="loading-stream">Loading stream...</span>
+            )}
           </Loading>
         </div>
       )}
