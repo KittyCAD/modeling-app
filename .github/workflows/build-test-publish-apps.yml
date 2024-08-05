@@ -97,7 +97,9 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: "out/make/zip/darwin/*/*"
+          path: |
+            "out/make/zip/darwin/x64/*"
+            "out/make/zip/darwin/arm64/*"
 
 
   build-test-app-windows:
@@ -176,9 +178,57 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: "out/make/zip/darwin/*/*"
+          path: "out/make/*/*/*"
 
       # TODO: Run e2e tests
+
+
+  build-test-app-ubuntu:
+    needs: [prepare-json-files]
+    runs-on: ubuntu-22
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+        if: github.event_name == 'schedule'
+
+      - name: Copy updated .json files
+        if: github.event_name == 'schedule'
+        run: |
+          ls -l artifact
+          cp artifact/package.json package.json
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
+
+      - run: yarn install
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src/wasm-lib'
+
+      - name: Run build:wasm
+        run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
+
+      - name: Build the app for arm64
+        run: "yarn electron-forge make --arch arm64"
+
+      - name: Build the app for x64
+        run: "yarn electron-forge make --arch x64"
+
+      # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
+
+      # TODO: sign the app (and updater bundle potentially)
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: "out/make/*/*/*"
 
 
   publish-apps-release:
@@ -186,7 +236,7 @@ jobs:
     permissions:
       contents: write
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [prepare-json-files, build-test-app-macos, build-test-app-windows]
+    needs: [prepare-json-files, build-test-app-macos, build-test-app-windows, build-test-app-ubuntu]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
