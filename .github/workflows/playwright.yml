@@ -34,8 +34,13 @@ jobs:
               - 'src/wasm-lib/**'
 
   playwright-ubuntu:
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ubuntu-latest-8-cores
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -107,7 +112,7 @@ jobs:
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
       run: |
-        yarn playwright test --project="Google Chrome" --retries="3" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+        yarn playwright test --project="Google Chrome" --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -115,7 +120,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report-ubuntu-snapshot-${{ github.sha }}
+        name: playwright-report-ubuntu-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
@@ -149,7 +154,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report-ubuntu-${{ github.sha }}
+        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
     # if have previous run results, use them
@@ -157,7 +162,7 @@ jobs:
       if: always()
       continue-on-error: true
       with:
-        name: test-results-ubuntu-${{ github.sha }}
+        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
     - name: Run ubuntu/chrome flow (with retries)
       id: retry
@@ -166,7 +171,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts || true
+            yarn playwright test --project="Google Chrome" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -181,7 +186,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts || true
+                    yarn playwright test --project="Google Chrome" --last-failed --grep-invert=@snapshot || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
@@ -216,21 +221,26 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-ubuntu-${{ github.sha }}
+        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report-ubuntu-${{ github.sha }}
+        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
 
   playwright-macos:
-    timeout-minutes: 60
-    runs-on: macos-14-large
+    timeout-minutes: 30
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -306,7 +316,7 @@ jobs:
       if: ${{ always() }}
       continue-on-error: true
       with:
-        name: test-results-macos-${{ github.sha }}
+        name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
     - name: Run macos/safari flow (with retries)
       id: retry
@@ -315,7 +325,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts || true
+            yarn playwright test --project="webkit" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -330,7 +340,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
+                    yarn playwright test --project="webkit" --last-failed --grep-invert=@snapshot || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
@@ -360,14 +370,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: test-results-macos-${{ github.sha }}
+        name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: playwright-report-macos-${{ github.sha }}
+        name: playwright-report-macos-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
