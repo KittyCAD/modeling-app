@@ -1063,7 +1063,8 @@ export const modelingMachine = createMachine(
         sketchEnginePathId: '',
         sketchPlaneId: '',
       }),
-      'reset camera position': () => sceneInfra.camControls.resetCameraPosition(),
+      'reset camera position': () =>
+        sceneInfra.camControls.resetCameraPosition(),
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),
