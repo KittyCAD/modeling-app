@@ -734,12 +734,12 @@ const part002 = startSketchOn(part001, seg01)
 
     await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  // wait for execution done
-  await expect(
-    page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(1, { timeout: 10_000 })
-  await u.closeDebugPanel()
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(1, { timeout: 10_000 })
+    await u.closeDebugPanel()
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -790,12 +790,12 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  // wait for execution done
-  await expect(
-    page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(1)
-  await u.closeDebugPanel()
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(1)
+    await u.closeDebugPanel()
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -831,12 +831,12 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  // wait for execution done
-  await expect(
-    page.locator('[data-message-type="execution-done"]')
-  ).toHaveCount(1)
-  await u.closeDebugPanel()
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(1)
+    await u.closeDebugPanel()
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
