@@ -91,6 +91,7 @@ export function LowerRightControls({
               ? filePath + paths.SETTINGS
               : paths.HOME + paths.SETTINGS
           }
+          data-testid="settings-link"
         >
           <CustomIcon
             name="settings"
