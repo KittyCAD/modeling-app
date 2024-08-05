@@ -122,7 +122,9 @@ export type Artifact =
   | EdgeCutEdge
   | solid2D
 
-export type ArtifactGraph = Map<string, Artifact>
+export type ArtifactId = string
+
+export type ArtifactGraph = Map<ArtifactId, Artifact>
 
 export type EngineCommand = Models['WebSocketRequest_type']
 
@@ -149,7 +151,7 @@ export function createArtifactGraph({
   responseMap: ResponseMap
   ast: Program
 }) {
-  const myMap = new Map<string, Artifact>()
+  const myMap = new Map<ArtifactId, Artifact>()
 
   /** see docstring for {@link getArtifactsToUpdate} as to why this is needed */
   let currentPlaneId = ''
@@ -166,7 +168,7 @@ export function createArtifactGraph({
     const artifactsToUpdate = getArtifactsToUpdate({
       orderedCommand,
       responseMap,
-      getArtifact: (id: string) => myMap.get(id),
+      getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
       ast,
     })
@@ -224,11 +226,11 @@ export function getArtifactsToUpdate({
   orderedCommand: OrderedCommand
   responseMap: ResponseMap
   /** Passing in a getter because we don't wan this function to update the map directly */
-  getArtifact: (id: string) => Artifact | undefined
+  getArtifact: (id: ArtifactId) => Artifact | undefined
   currentPlaneId: string
   ast: Program
 }): Array<{
-  id: string
+  id: ArtifactId
   artifact: Artifact
 }> {
   const pathToNode = getNodePathFromSourceRange(ast, range)
@@ -514,7 +516,7 @@ export function filterArtifacts<T extends Artifact['type'][]>(
         (!predicate ||
           predicate(value as Extract<Artifact, { type: T[number] }>))
     )
-  ) as Map<string, Extract<Artifact, { type: T[number] }>>
+  ) as Map<ArtifactId, Extract<Artifact, { type: T[number] }>>
 }
 
 export function getArtifactsOfTypes<T extends Artifact['type'][]>(
@@ -528,7 +530,7 @@ export function getArtifactsOfTypes<T extends Artifact['type'][]>(
     predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
   },
   map: ArtifactGraph
-): Map<string, Extract<Artifact, { type: T[number] }>> {
+): Map<ArtifactId, Extract<Artifact, { type: T[number] }>> {
   return new Map(
     [...map].filter(
       ([key, value]) =>
@@ -537,7 +539,7 @@ export function getArtifactsOfTypes<T extends Artifact['type'][]>(
         (!predicate ||
           predicate(value as Extract<Artifact, { type: T[number] }>))
     )
-  ) as Map<string, Extract<Artifact, { type: T[number] }>>
+  ) as Map<ArtifactId, Extract<Artifact, { type: T[number] }>>
 }
 
 export function getArtifactOfTypes<T extends Artifact['type'][]>(
@@ -545,7 +547,7 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
     key,
     types,
   }: {
-    key: string
+    key: ArtifactId
     types: T
   },
   map: ArtifactGraph
@@ -718,7 +720,7 @@ export function getExtrudeEdgeCodeRef(
 }
 
 export function getExtrusionFromSuspectedExtrudeSurface(
-  id: string,
+  id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
   const artifact = getArtifactOfTypes(
@@ -733,7 +735,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
 }
 
 export function getExtrusionFromSuspectedPath(
-  id: string,
+  id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
   const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
