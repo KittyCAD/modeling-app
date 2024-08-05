@@ -185,7 +185,7 @@ jobs:
 
   build-test-app-ubuntu:
     needs: [prepare-json-files]
-    runs-on: ubuntu-22
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
