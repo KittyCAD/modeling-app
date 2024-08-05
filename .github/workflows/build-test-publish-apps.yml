@@ -102,13 +102,14 @@ jobs:
       - name: Build the app for x64
         run: "yarn electron-forge make --arch x64"
 
+      - name: List artifacts
+        run: "ls -R out/make"
+
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
       - uses: actions/upload-artifact@v3
         with:
-          path: |
-            "out/make/zip/darwin/x64/*"
-            "out/make/zip/darwin/arm64/*"
+          path: "out/make/*/*/*/*"
 
 
   build-test-app-windows:
@@ -183,6 +184,9 @@ jobs:
       - name: Build the app for arm64
         run: "yarn electron-forge make --arch arm64"
 
+      - name: List artifacts
+        run: "ls -R out/make"
+
       # TODO: sign the app (and updater bundle potentially)
 
       - uses: actions/upload-artifact@v3
@@ -230,6 +234,9 @@ jobs:
 
       - name: Build the app for x64
         run: "yarn electron-forge make --arch x64"
+
+      - name: List artifacts
+        run: "ls -R out/make"
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
