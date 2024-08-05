@@ -45,7 +45,10 @@ async fn setup(program: &str) -> (ExecutorContext, Program) {
 
 async fn run_fail(code: &str) -> KclError {
     let (ctx, program) = setup(code).await;
-    ctx.run(&program, None).await.unwrap_err()
+    let Err(e) = ctx.run(&program, None).await else {
+        panic!("Expected this KCL program to fail, but it (incorrectly) never threw an error.");
+    };
+    e
 }
 
 gen_test!(property_of_object);
@@ -69,4 +72,16 @@ gen_test_fail!(
 gen_test_fail!(
     invalid_member_object_prop,
     "semantic: Only arrays and objects can be indexed, but you're trying to index a boolean (true/false value)"
+);
+gen_test_fail!(
+    non_string_key_of_object,
+    "semantic: Only strings can be used as the property of an object, but you're using a number"
+);
+gen_test_fail!(
+    array_index_oob,
+    "undefined value: The array doesn't have any item at index 0"
+);
+gen_test_fail!(
+    object_prop_not_found,
+    "undefined value: Property 'age' not found in object"
 );

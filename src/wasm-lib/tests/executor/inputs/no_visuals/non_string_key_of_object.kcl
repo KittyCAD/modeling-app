@@ -1,0 +1,2 @@
+let obj = {key: 123}
+let num = obj[3]

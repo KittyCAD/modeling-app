@@ -2943,7 +2943,7 @@ impl MemberExpression {
                     }))
                 } else {
                     Err(KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Property {property} not found in object"),
+                        message: format!("Property '{property}' not found in object"),
                         source_ranges: vec![self.clone().into()],
                     }))
                 }
