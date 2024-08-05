@@ -34,13 +34,8 @@ jobs:
               - 'src/wasm-lib/**'
 
   playwright-ubuntu:
-    timeout-minutes: 30
+    timeout-minutes: 60
     runs-on: ubuntu-latest-8-cores
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -111,13 +106,19 @@ jobs:
     - name: build web
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
-      continue-on-error: true
       run: |
-        yarn playwright test --project="Google Chrome" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        yarn playwright test --project="Google Chrome" --retries="3" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-ubuntu-snapshot-${{ github.sha }}
+        path: playwright-report/
+        retention-days: 30
+        overwrite: true
     - name: Clean up test-results
       if: always()
       continue-on-error: true
@@ -148,7 +149,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-ubuntu-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
     # if have previous run results, use them
@@ -156,10 +157,54 @@ jobs:
       if: always()
       continue-on-error: true
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
-    - name: Run ubuntu/chrome flow
-      run: yarn playwright test --project="Google Chrome" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
+    - name: Run ubuntu/chrome flow (with retries)
+      id: retry
+      if: always()
+      run: |
+        if [[ ! -f "test-results/.last-run.json" ]]; then
+            # if no last run artifact, than run plawright normally
+            echo "run playwright normally"
+            yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts || true
+            # # send to axiom
+            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        fi
+
+        retry=1
+        max_retrys=4
+
+        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
+        while [[ $retry -le $max_retrys ]]; do
+            if [[ -f "test-results/.last-run.json" ]]; then
+                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+                if [[ $failed_tests -gt 0 ]]; then
+                    echo "retried=true" >>$GITHUB_OUTPUT
+                    echo "run playwright with last failed tests and retry $retry"
+                    yarn playwright test --project="Google Chrome" --last-failed e2e/playwright/flow-tests.spec.ts || true
+                    # send to axiom
+                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+                    retry=$((retry + 1))
+                else
+                    echo "retried=false" >>$GITHUB_OUTPUT
+                    exit 0
+                fi
+            else
+                echo "retried=false" >>$GITHUB_OUTPUT
+                exit 0
+            fi
+        done
+
+        echo "retried=false" >>$GITHUB_OUTPUT
+
+        if [[ -f "test-results/.last-run.json" ]]; then
+            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+            if [[ $failed_tests -gt 0 ]]; then
+                # if it still fails after 3 retrys, then fail the job
+                exit 1
+            fi
+        fi
+        exit 0
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -171,40 +216,21 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: |
-          test-results/
-          playwright-report/
+        name: test-results-ubuntu-${{ github.sha }}
+        path: test-results/
         retention-days: 30
         overwrite: true
-    - name: Run ubuntu/chrome flow (retry 1)
-      run: yarn playwright test --project="Google Chrome" --last-failed --pass-with-no-tests
-      env:
-        CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - name: send to axiom
-      if: always()
-      shell: bash
-      run: |
-        node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}-retry-1
-        path: |
-          test-results/
-          playwright-report/
+        name: playwright-report-ubuntu-${{ github.sha }}
+        path: playwright-report/
         retention-days: 30
         overwrite: true
 
   playwright-macos:
-    timeout-minutes: 30
-    runs-on: macos-14
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+    timeout-minutes: 60
+    runs-on: macos-14-large
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -280,34 +306,68 @@ jobs:
       if: ${{ always() }}
       continue-on-error: true
       with:
-        name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: test-results-macos-${{ github.sha }}
         path: test-results/
-    - name: Run macos/safari flow
-      run: yarn playwright test --project="webkit" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
-      env:
-        CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v4
-      if: ${{ always() }}
-      with:
-        name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: |
-          test-results/
-          playwright-report/
-        retention-days: 30
-        overwrite: true
-    - name: Run macos/safari flow (retry 1)
-      run: yarn playwright test --project="webkit" --last-failed --pass-with-no-tests
-      env:
-        CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v4
-      if: ${{ always() }}
-      with:
-        name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}-retry-1
-        path: |
-          test-results/
-          playwright-report/
-        retention-days: 30
-        overwrite: true
+    - name: Run macos/safari flow (with retries)
+      id: retry
+      if: always()
+      run: |
+        if [[ ! -f "test-results/.last-run.json" ]]; then
+            # if no last run artifact, than run plawright normally
+            echo "run playwright normally"
+            yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts || true
+            # # send to axiom
+            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+        fi
 
+        retry=1
+        max_retrys=4
+
+        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
+        while [[ $retry -le $max_retrys ]]; do
+            if [[ -f "test-results/.last-run.json" ]]; then
+                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+                if [[ $failed_tests -gt 0 ]]; then
+                    echo "retried=true" >>$GITHUB_OUTPUT
+                    echo "run playwright with last failed tests and retry $retry"
+                    yarn playwright test --project="webkit" --last-failed e2e/playwright/flow-tests.spec.ts || true
+                    # send to axiom
+                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
+                    retry=$((retry + 1))
+                else
+                    echo "retried=false" >>$GITHUB_OUTPUT
+                    exit 0
+                fi
+            else
+                echo "retried=false" >>$GITHUB_OUTPUT
+                exit 0
+            fi
+        done
+
+        echo "retried=false" >>$GITHUB_OUTPUT
+
+        if [[ -f "test-results/.last-run.json" ]]; then
+            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
+            if [[ $failed_tests -gt 0 ]]; then
+                # if it still fails after 3 retrys, then fail the job
+                exit 1
+            fi
+        fi
+        exit 0
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: test-results-macos-${{ github.sha }}
+        path: test-results/
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: playwright-report-macos-${{ github.sha }}
+        path: playwright-report/
+        retention-days: 30
+        overwrite: true
