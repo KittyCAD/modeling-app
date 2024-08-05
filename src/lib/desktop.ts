@@ -237,10 +237,8 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   return entry
 }
 
-export const getDefaultKclFileForDir = async (
-  projectDir: string,
-  file: FileEntry
-) => {
+export async function getDefaultKclFileForDir(projectDir: string,
+  file: FileEntry) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {
