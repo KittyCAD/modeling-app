@@ -63,7 +63,7 @@ export const sidebarPanes: SidebarPane[] = [
       },
       onClick: (e) => {
         e.preventDefault()
-        editorManager.scrollToFirstDiagnosticIfExists()
+        editorManager.scrollToFirstErrorDiagnosticIfExists()
       },
     },
   },

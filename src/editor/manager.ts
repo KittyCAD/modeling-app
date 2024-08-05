@@ -141,14 +141,14 @@ export default class EditorManager {
     })
   }
 
-  scrollToFirstDiagnosticIfExists() {
+  scrollToFirstErrorDiagnosticIfExists() {
     if (!this._editorView) return
 
     let firstDiagnosticPos: [number, number] | null = null
     forEachDiagnostic(
       this._editorView.state,
       (d: Diagnostic, from: number, to: number) => {
-        if (!firstDiagnosticPos) {
+        if (!firstDiagnosticPos && d.severity === 'error') {
           firstDiagnosticPos = [from, to]
         }
       }
@@ -161,7 +161,11 @@ export default class EditorManager {
       selection: EditorSelection.create([
         EditorSelection.cursor(firstDiagnosticPos[0]),
       ]),
-      effects: [EditorView.scrollIntoView(firstDiagnosticPos[0])],
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(firstDiagnosticPos[0], firstDiagnosticPos[1])
+        ),
+      ],
       annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),

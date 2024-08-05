@@ -337,7 +337,24 @@ fn svg = (surface, origin, depth) => {
     |> close(%)
     |> extrude(depth, %)
 
-  "thing";kajsnd;akjsnd
+const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %, $revolveAxis)
+  |> close(%)
+  |> extrude(10, %)
+
+  const sketch001 = startSketchOn(box, revolveAxis)
+  |> startProfileAt([5, 10], %)
+  |> line([0, -10], %)
+  |> line([2, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> revolve({
+  axis: revolveAxis,
+  angle: 90
+  }, %)
   return 0
 }
 

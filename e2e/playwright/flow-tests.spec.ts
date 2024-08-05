@@ -1020,7 +1020,7 @@ test.describe('Editor tests', () => {
   |> line([0, -10], %, $revolveAxis)
   |> close(%)
   |> extrude(10, %)
-  
+
   const sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
@@ -8366,6 +8366,83 @@ test.describe('Code pane and errors', () => {
     await badge.click()
 
     // Ensure we have an error diagnostic.
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
+  })
+
+  test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await page.waitForTimeout(1000)
+
+    // Ensure badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have no errors in the gutter, since error out of view.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // click in the editor to focus it
+    await page.locator('.cm-content').click()
+
+    await page.waitForTimeout(500)
+
+    // go to the start of the editor and enter more text which will trigger
+    // a lint error.
+    // GO to the start of the editor.
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.type('const foo_bar = 1')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    // ensure we have a lint error
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // Click the badge.
+    const badge = page.locator('#code-badge')
+    await expect(badge).toBeVisible()
+    await badge.click()
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
   })
 })
