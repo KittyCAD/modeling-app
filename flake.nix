@@ -57,6 +57,7 @@
             pkg-config
 
             nodejs_22
+            yarn
           ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
             libiconv 
             darwin.apple_sdk.frameworks.Security

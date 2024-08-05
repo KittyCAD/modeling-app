@@ -1,7 +1,9 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
+import { machineManager } from 'lib/machineManager'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -21,6 +23,9 @@ export type ModelingCommandSchema = {
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
+  }
+  Make: {
+    machine: components['schemas']['Machine']
   }
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
@@ -160,6 +165,36 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Make: {
+    hide: 'web',
+    displayName: 'Make',
+    description:
+      'Export the current part and send to a 3D printer on the network.',
+    icon: 'printer3d',
+    needsReview: true,
+    args: {
+      machine: {
+        inputType: 'options',
+        required: true,
+        valueSummary: (machine: components['schemas']['Machine']) =>
+          machine.model || machine.manufacturer,
+        options: () => {
+          return Object.entries(machineManager.machines).map(
+            ([hostname, machine]) => ({
+              name: `${machine.model || machine.manufacturer}, ${hostname}`,
+              isCurrent: false,
+              value: machine as components['schemas']['Machine'],
+            })
+          )
+        },
+        defaultValue: () => {
+          return Object.values(
+            machineManager.machines
+          )[0] as components['schemas']['Machine']
+        },
+      },
+    },
+  },
   Extrude: {
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
@@ -202,7 +237,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'default',
           'line-end',
           'line-mid',
-          'extrude-wall', // to fix: accespts only this selection type
+          'extrude-wall', // to fix: accepts only this selection type
+          'solid2D',
           'start-cap',
           'end-cap',
           'point',

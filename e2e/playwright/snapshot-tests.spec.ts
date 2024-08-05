@@ -68,7 +68,7 @@ const part001 = startSketchOn('-XZ')
         angle: topAng,
         to: totalHeightHalf,
       }, %, $seg04)
-  |> xLineTo(totalLen, %, $seg03')
+  |> xLineTo(totalLen, %, $seg03)
   |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
         angle: HALF_TURN,
@@ -716,14 +716,14 @@ test(
         'persistCode',
         `const part001 = startSketchOn('-XZ')
   |> startProfileAt([1.4, 2.47], %)
-  |> line([9.31, 10.55], %, 'seg01')
+  |> line([9.31, 10.55], %, $seg01)
   |> line([11.91, -10.42], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
-const part002 = startSketchOn(part001, 'seg01')
+const part002 = startSketchOn(part001, seg01)
   |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
-  |> line([0, -7.79], %, 'seg02')
+  |> line([0, -7.79], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
 `
@@ -734,12 +734,12 @@ const part002 = startSketchOn(part001, 'seg01')
 
     await u.waitForAuthSkipAppStart()
 
-    await u.openDebugPanel()
-    // wait for execution done
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
-    await u.closeDebugPanel()
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(1, { timeout: 10_000 })
+  await u.closeDebugPanel()
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -790,12 +790,12 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await u.openDebugPanel()
-    // wait for execution done
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
-    await u.closeDebugPanel()
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(1)
+  await u.closeDebugPanel()
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -831,12 +831,12 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await u.openDebugPanel()
-    // wait for execution done
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
-    await u.closeDebugPanel()
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(1)
+  await u.closeDebugPanel()
 
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
@@ -867,7 +867,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     // wait for execution done
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await u.closeDebugPanel()
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished
@@ -915,7 +915,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     // wait for execution done
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await u.closeDebugPanel()
     await u.closeKclCodePanel()
     // TODO: Find a way to truly know that the objects have finished

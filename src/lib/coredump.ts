@@ -192,14 +192,14 @@ export class CoreDumpManager {
       // engine_command_manager
       debugLog('CoreDump: engineCommandManager', this.engineCommandManager)
 
-      // artifact map - this.engineCommandManager.artifactMap
-      if (this.engineCommandManager?.artifactMap) {
+      // artifact map - this.engineCommandManager.artifactGraph
+      if (this.engineCommandManager?.artifactGraph) {
         debugLog(
           'CoreDump: Engine Command Manager artifact map',
-          this.engineCommandManager.artifactMap
+          this.engineCommandManager.artifactGraph
         )
         clientState.engine_command_manager.artifact_map = structuredClone(
-          this.engineCommandManager.artifactMap
+          this.engineCommandManager.artifactGraph
         )
       }
 
@@ -253,16 +253,6 @@ export class CoreDumpManager {
         )
         ;(clientState.engine_command_manager as any).out_sequence =
           this.engineCommandManager.outSequence
-      }
-
-      // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
-      if (this.engineCommandManager?.sceneCommandArtifacts) {
-        debugLog(
-          'CoreDump: Engine Command Manager scene command artifacts',
-          this.engineCommandManager.sceneCommandArtifacts
-        )
-        clientState.engine_command_manager.scene_command_artifacts =
-          structuredClone(this.engineCommandManager.sceneCommandArtifacts)
       }
 
       // KCL Manager - globalThis?.window?.kclManager

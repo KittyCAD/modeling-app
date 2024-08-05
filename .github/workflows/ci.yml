@@ -20,6 +20,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
 jobs:
   check-format:
     runs-on: 'ubuntu-latest'
@@ -85,7 +90,38 @@ jobs:
 
       - run: yarn simpleserver:ci
 
-      - run: yarn test:nowatch
+      - name: Install Chromium Browser
+        run: yarn playwright install chromium --with-deps
+
+      - name: run unit tests
+        run: yarn test:nowatch
+        env:
+          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+
+      - name: check for changes
+        id: git-check
+        run: |
+            git add src/lang/std/artifactMapGraphs
+            if git status src/lang/std/artifactMapGraphs | grep -q "Changes to be committed"
+            then echo "modified=true" >> $GITHUB_OUTPUT
+            else echo "modified=false" >> $GITHUB_OUTPUT
+            fi
+      - name: Commit changes, if any
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          # TODO when webkit works on ubuntu remove the os part of the commit message
+          git commit -am "Look at this (photo)Graph *in the voice of Nickelback*" || true
+          git push
+          git push origin ${{ github.head_ref }}
+        
+
+
 
 
   prepare-json-files:

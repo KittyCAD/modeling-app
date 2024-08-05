@@ -1,0 +1,49 @@
+name: generate machine-api types
+
+on:
+  pull_request:
+    paths:
+      - 'openapi/machine-api.json'
+      - '.github/workflows/generate-machine-api-types.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn generate:machine-api
+      - run: yarn fmt
+      - name: check for changes
+        id: git-check
+        run: |
+            git add .
+            if git status | grep -q "Changes to be committed"
+            then echo "modified=true" >> $GITHUB_OUTPUT
+            else echo "modified=false" >> $GITHUB_OUTPUT
+            fi
+      - name: Commit changes, if any
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git add .
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          git commit -am "New machine-api types" || true
+          git push
+          git push origin ${{ github.head_ref }}
+

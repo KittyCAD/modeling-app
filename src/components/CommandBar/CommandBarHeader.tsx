@@ -124,7 +124,11 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                           4
                         )
                       ) : typeof argValue === 'object' ? (
-                        JSON.stringify(argValue)
+                        arg.valueSummary ? (
+                          arg.valueSummary(argValue)
+                        ) : (
+                          JSON.stringify(argValue)
+                        )
                       ) : (
                         <em>{argValue}</em>
                       )
