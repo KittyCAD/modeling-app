@@ -21,6 +21,7 @@ layout: manual
 * [`arc`](kcl/arc)
 * [`asin`](kcl/asin)
 * [`assert`](kcl/assert)
+* [`assertEqual`](kcl/assertEqual)
 * [`assertGreaterThan`](kcl/assertGreaterThan)
 * [`assertGreaterThanOrEq`](kcl/assertGreaterThanOrEq)
 * [`assertLessThan`](kcl/assertLessThan)
