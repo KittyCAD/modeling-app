@@ -161,7 +161,11 @@ export default class EditorManager {
       selection: EditorSelection.create([
         EditorSelection.cursor(firstDiagnosticPos[0]),
       ]),
-      effects: [EditorView.scrollIntoView(firstDiagnosticPos[0])],
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(firstDiagnosticPos[0], firstDiagnosticPos[1])
+        ),
+      ],
       annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),

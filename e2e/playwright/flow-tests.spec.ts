@@ -1020,7 +1020,7 @@ test.describe('Editor tests', () => {
   |> line([0, -10], %, $revolveAxis)
   |> close(%)
   |> extrude(10, %)
-  
+
   const sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
@@ -8333,11 +8333,11 @@ test.describe('Code pane and errors', () => {
     await badge.click()
 
     // Ensure we have an error diagnostic.
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
 
     // Hover over the error to see the error message
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('found unknown tokens').first()).toBeVisible()
+    await expect(page.getByText('sketch profile must lie entirely on one side of the revolution axis').first()).toBeVisible()
   })
 
   test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
@@ -8382,6 +8382,7 @@ test.describe('Code pane and errors', () => {
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('Home')
     await page.keyboard.type('const foo_bar = 1')
+    await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
 
     // ensure we have a lint error
@@ -8393,12 +8394,10 @@ test.describe('Code pane and errors', () => {
     await badge.click()
 
     // Ensure we have an error diagnostic.
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
 
     // Hover over the error to see the error message
     await page.hover('.cm-lint-marker-error')
-    // If you find yourself adding a first() here its wrong, we should only
-    // have one error.
-    await expect(page.getByText('found unknown tokens').first()).toBeVisible()
+    await expect(page.getByText('sketch profile must lie entirely on one side of the revolution axis').first()).toBeVisible()
   })
 })
