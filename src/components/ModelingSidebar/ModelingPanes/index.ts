@@ -3,28 +3,32 @@ import {
   faBugSlash,
   faCode,
   faCodeCommit,
-  faExclamationCircle,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
-import { ReactNode } from 'react'
+import { MouseEventHandler, ReactNode } from 'react'
 import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { KclErrorsPane, LogsPane } from './LoggingPanes'
+import { LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
 import { useKclContext } from 'lang/KclProvider'
+import { editorManager } from 'lib/singletons'
 
 export type SidebarType =
   | 'code'
   | 'debug'
   | 'export'
   | 'files'
-  | 'kclErrors'
   | 'logs'
   | 'lspMessages'
   | 'variables'
+
+export interface BadgeInfo {
+  value: (props: PaneCallbackProps) => boolean | number
+  onClick?: MouseEventHandler<any>
+}
 
 /**
  * This interface can be extended as more context is needed for the panes
@@ -42,7 +46,7 @@ export type SidebarPane = {
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
   hideOnPlatform?: 'desktop' | 'web'
-  showBadge?: (props: PaneCallbackProps) => boolean | number
+  showBadge?: BadgeInfo
 }
 
 export const sidebarPanes: SidebarPane[] = [
@@ -53,6 +57,15 @@ export const sidebarPanes: SidebarPane[] = [
     Content: KclEditorPane,
     keybinding: 'Shift + C',
     Menu: KclEditorMenu,
+    showBadge: {
+      value: ({ kclContext }) => {
+        return kclContext.errors.length
+      },
+      onClick: (e) => {
+        e.preventDefault()
+        editorManager.scrollToFirstErrorDiagnosticIfExists()
+      },
+    },
   },
   {
     id: 'files',
@@ -77,14 +90,6 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faCodeCommit,
     Content: LogsPane,
     keybinding: 'Shift + L',
-  },
-  {
-    id: 'kclErrors',
-    title: 'KCL Errors',
-    icon: faExclamationCircle,
-    Content: KclErrorsPane,
-    keybinding: 'Shift + E',
-    showBadge: ({ kclContext }) => kclContext.errors.length,
   },
   {
     id: 'debug',

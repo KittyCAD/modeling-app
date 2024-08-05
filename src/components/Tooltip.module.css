@@ -57,7 +57,8 @@
   transition-delay: var(--_delay);
 }
 
-:is(:focus-visible) > .tooltipWrapper.withFocus {
+:is(:focus-visible) > .tooltipWrapper.withFocus,
+:focus-within > .tooltipWrapper.withFocus {
   visibility: visible;
   opacity: 1;
 }

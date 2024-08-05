@@ -6,7 +6,11 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
-import { Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import {
+  Diagnostic,
+  forEachDiagnostic,
+  setDiagnosticsEffect,
+} from '@codemirror/lint'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -42,7 +46,7 @@ export default class EditorManager {
   private _convertToVariableEnabled: boolean = false
   private _convertToVariableCallback: () => void = () => {}
 
-  private _highlightRange: [number, number] = [0, 0]
+  private _highlightRange: Array<[number, number]> = [[0, 0]]
 
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
@@ -88,19 +92,21 @@ export default class EditorManager {
     return this._commandBarSend(eventInfo)
   }
 
-  get highlightRange(): [number, number] {
+  get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
 
-  setHighlightRange(selection: Selection['range']): void {
-    this._highlightRange = selection
-    const safeEnd = Math.min(
-      selection[1],
-      this._editorView?.state.doc.length || selection[1]
-    )
+  setHighlightRange(selections: Array<Selection['range']>): void {
+    this._highlightRange = selections
+
+    const selectionsWithSafeEnds = selections.map((s): [number, number] => {
+      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
+      return [s[0], safeEnd]
+    })
+
     if (this._editorView) {
       this._editorView.dispatch({
-        effects: addLineHighlight.of([selection[0], safeEnd]),
+        effects: addLineHighlight.of(selectionsWithSafeEnds),
         annotations: [
           updateOutsideEditorEvent,
           addLineHighlightEvent,
@@ -129,6 +135,38 @@ export default class EditorManager {
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
         setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  scrollToFirstErrorDiagnosticIfExists() {
+    if (!this._editorView) return
+
+    let firstDiagnosticPos: [number, number] | null = null
+    forEachDiagnostic(
+      this._editorView.state,
+      (d: Diagnostic, from: number, to: number) => {
+        if (!firstDiagnosticPos && d.severity === 'error') {
+          firstDiagnosticPos = [from, to]
+        }
+      }
+    )
+
+    if (!firstDiagnosticPos) return
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.cursor(firstDiagnosticPos[0]),
+      ]),
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(firstDiagnosticPos[0], firstDiagnosticPos[1])
+        ),
+      ],
+      annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),
       ],
