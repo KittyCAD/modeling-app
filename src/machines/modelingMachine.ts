@@ -141,7 +141,12 @@ interface Store {
   openPanes: SidebarType[]
 }
 
-export type SketchTool = 'line' | 'tangentialArc' | 'rectangle' | 'circle' | 'none'
+export type SketchTool =
+  | 'line'
+  | 'tangentialArc'
+  | 'rectangle'
+  | 'circle'
+  | 'none'
 
 export type ModelingMachineEvent =
   | {
