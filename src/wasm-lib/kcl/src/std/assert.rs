@@ -78,13 +78,13 @@ pub async fn assert_gt(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "assertEqual",
 }]
-async fn inner_assert_eq(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
+async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
     _assert((right - left).abs() < epsilon, message, args).await
 }
 
-pub async fn assert_eq(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn assert_equal(args: Args) -> Result<MemoryItem, KclError> {
     let (left, right, epsilon, description): (f64, f64, f64, String) = args.get_data()?;
-    inner_assert_eq(left, right, epsilon, &description, &args).await?;
+    inner_assert_equal(left, right, epsilon, &description, &args).await?;
     args.make_null_user_val()
 }
 
