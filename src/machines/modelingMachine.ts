@@ -1705,7 +1705,10 @@ export function isEditingExistingSketch({
     (item) =>
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
-  return hasStartProfileAt && pipeExpression.body.length > 2
+  const hasCircle = pipeExpression.body.some(
+    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
 }
 
 export function canRectangleTool({
