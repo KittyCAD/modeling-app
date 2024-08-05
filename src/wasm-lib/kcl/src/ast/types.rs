@@ -2862,7 +2862,7 @@ impl MemberExpression {
                     // Actually evaluate memory to compute the property.
                     let prop = memory.get(&name, property_src)?;
                     let MemoryItem::UserVal(prop) = prop else {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: property_sr,
                             message: format!(
                                 "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
@@ -2876,17 +2876,17 @@ impl MemberExpression {
                                 .and_then(|x| usize::try_from(x).ok())
                                 .map(Property::Number)
                                 .ok_or_else(|| {
-                                    KclError::Syntax(KclErrorDetails {
+                                    KclError::Semantic(KclErrorDetails {
                                         source_ranges: property_sr,
                                         message: format!(
-                                            "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
                                         ),
                                     })
                                 })?
                         }
                         JValue::String(ref x) => Property::String(x.to_owned()),
                         _ => {
-                            return Err(KclError::Syntax(KclErrorDetails {
+                            return Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
                                 message: format!(
                                     "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
@@ -2903,7 +2903,7 @@ impl MemberExpression {
                         if let Ok(x) = u64::try_from(x) {
                             Property::Number(x.try_into().unwrap())
                         } else {
-                            return Err(KclError::Syntax(KclErrorDetails {
+                            return Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
                                 message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
                             }));
@@ -2911,7 +2911,7 @@ impl MemberExpression {
                     }
                     LiteralValue::String(s) => Property::String(s),
                     _ => {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: vec![self.into()],
                             message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
                         }));
