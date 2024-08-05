@@ -29,7 +29,7 @@ image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, features = ["clap"] }
 lazy_static = "1.5.0"
 mime_guess = "2.0.5"
-parse-display = "0.9.1"
+parse-display = "0.10.0"
 pyo3 = { version = "0.22.2", optional = true }
 reqwest = { version = "0.11.26", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
