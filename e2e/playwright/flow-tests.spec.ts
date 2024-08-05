@@ -3897,7 +3897,7 @@ test.describe('Regression tests', () => {
   test('bad model has inline error #3251', async ({ page }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
-    // Since the bad model also found as issue with the artifact graph, which in tern blocked teh editor diognostics
+    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
