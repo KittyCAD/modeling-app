@@ -8337,7 +8337,13 @@ test.describe('Code pane and errors', () => {
 
     // Hover over the error to see the error message
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('sketch profile must lie entirely on one side of the revolution axis').first()).toBeVisible()
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
   })
 
   test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
@@ -8386,7 +8392,7 @@ test.describe('Code pane and errors', () => {
     await page.keyboard.press('Enter')
 
     // ensure we have a lint error
-    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
     // Click the badge.
     const badge = page.locator('#code-badge')
@@ -8398,6 +8404,12 @@ test.describe('Code pane and errors', () => {
 
     // Hover over the error to see the error message
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('sketch profile must lie entirely on one side of the revolution axis').first()).toBeVisible()
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
   })
 })
