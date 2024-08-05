@@ -67,6 +67,27 @@ pub async fn assert_gt(args: Args) -> Result<MemoryItem, KclError> {
     args.make_null_user_val()
 }
 
+/// Check that a numerical value equals another at runtime,
+/// otherwise raise an error.
+///
+/// ```no_run
+/// let n = 1.0285
+/// let m = 1.0286
+/// assertEqual(n, m, 0.01, "n is within the given tolerance for m")
+/// ```
+#[stdlib {
+    name = "assertEqual",
+}]
+async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
+    _assert((right - left).abs() < epsilon, message, args).await
+}
+
+pub async fn assert_equal(args: Args) -> Result<MemoryItem, KclError> {
+    let (left, right, epsilon, description): (f64, f64, f64, String) = args.get_data()?;
+    inner_assert_equal(left, right, epsilon, &description, &args).await?;
+    args.make_null_user_val()
+}
+
 /// Check that a numerical value is greater than another at runtime,
 /// otherwise raise an error.
 ///

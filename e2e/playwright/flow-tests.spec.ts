@@ -2535,18 +2535,29 @@ test.describe('Onboarding tests', () => {
     await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
     // Test that the text in this step is correct
-    const avatarLocator = await page
-      .getByTestId('user-sidebar-toggle')
-      .locator('img')
-    const onboardingOverlayLocator = await page
+    const sidebar = page.getByTestId('user-sidebar-toggle')
+    const avatar = sidebar.locator('img')
+    const onboardingOverlayLocator = page
       .getByTestId('onboarding-content')
       .locator('div')
       .nth(1)
 
     // Expect the avatar to be visible and for the text to reference it
-    await expect(avatarLocator).not.toBeVisible()
+    await expect(avatar).not.toBeVisible()
     await expect(onboardingOverlayLocator).toBeVisible()
     await expect(onboardingOverlayLocator).toContainText('the menu button')
+
+    // Test we mention what else is in this menu for https://github.com/KittyCAD/modeling-app/issues/2939
+    // which doesn't deserver its own full test spun up
+    const userMenuFeatures = [
+      'manage your account',
+      'report a bug',
+      'request a feature',
+      'sign out',
+    ]
+    for (const feature of userMenuFeatures) {
+      await expect(onboardingOverlayLocator).toContainText(feature)
+    }
   })
 })
 

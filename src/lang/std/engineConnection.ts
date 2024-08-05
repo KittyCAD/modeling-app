@@ -2,7 +2,7 @@ import { Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
-import { deferExecution, uuidv4 } from 'lib/utils'
+import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
@@ -1899,15 +1899,10 @@ export class EngineCommandManager extends EventTarget {
     range: SourceRange,
     commandTypeToTarget: string
   ): string | undefined {
-    const values = Object.entries(this.artifactGraph)
-    for (const [id, data] of values) {
-      // // Our range selection seems to just select the cursor position, so either
-      // // of these can be right...
-      if (
-        (data.range[0] === range[0] || data.range[1] === range[1]) &&
-        data.type === commandTypeToTarget
-      )
-        return id
+    for (const [artifactId, artifact] of this.artifactGraph) {
+      if ('codeRef' in artifact && isOverlap(range, artifact.codeRef.range)) {
+        if (commandTypeToTarget === artifact.type) return artifactId
+      }
     }
     return undefined
   }
