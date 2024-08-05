@@ -94,6 +94,7 @@ jobs:
 
       # TODO: sign the app (and updater bundle potentially)
       - name: Add signing certificate
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
 
       - name: Build the app for arm64
@@ -188,8 +189,8 @@ jobs:
         run: "ls -R out/make"
 
       # TODO: sign the app (and updater bundle potentially)
-
       - name: Sign using signtool
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           THUMBPRINT: "F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D"
           FILE: "out\\make\\squirrel.windows\\arm64\\Zoo Modeling App-0.24.3 Setup.exe"

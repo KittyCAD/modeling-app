@@ -10,12 +10,12 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses'
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    osxSign: {},
-    osxNotarize: {
+    osxSign: process.env.BUILD_RELEASE === 'true' && {} || undefined,
+    osxNotarize: process.env.BUILD_RELEASE === 'true' && {
       appleId: process.env.APPLE_ID || '',
       appleIdPassword: process.env.APPLE_PASSWORD || '',
       teamId: process.env.APPLE_TEAM_ID || '',
-    },
+    } || undefined,
     executableName: 'zoo-modeling-app',
   },
   rebuildConfig: {},
