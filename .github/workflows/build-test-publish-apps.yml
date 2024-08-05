@@ -3,9 +3,6 @@ name: build-test-publish-apps
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - pierremtb/tauri-to-electron-ci
   release:
     types: [published]
   schedule:
