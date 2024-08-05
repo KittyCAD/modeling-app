@@ -293,7 +293,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         disabled: (state) =>
           state.matches('Sketch no face') ||
-          state.matches('Sketch.Rectangle tool.Awaiting second corner'),
+          state.matches('Sketch.Rectangle tool.Awaiting second corner') ||
+          state.matches('Sketch.Circle tool.Awaiting perimeter click'),
         title: 'Line',
         hotkey: (state) =>
           state.matches('Sketch.Line tool') ? ['Esc', 'L'] : 'L',
@@ -355,9 +356,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'circle-center',
-          onClick: () => console.error('Center circle not yet implemented'),
+          onClick: ({ modelingStateMatches, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingStateMatches('Sketch.Circle tool')
+                  ? 'circle'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
+          disabled: (state) =>
+            !canRectangleTool(state.context) &&
+            !state.matches('Sketch.Circle tool'),
           title: 'Center circle',
           showTitle: false,
           description: 'Start drawing a circle from its center',
@@ -367,6 +379,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               url: 'https://github.com/KittyCAD/modeling-app/issues/1501',
             },
           ],
+          hotkey: (state) =>
+            state.matches('Sketch.Circle tool') ? ['Esc', 'C'] : 'C',
+          isActive: (state) => state.matches('Sketch.Circle tool'),
         },
         {
           id: 'circle-three-points',
