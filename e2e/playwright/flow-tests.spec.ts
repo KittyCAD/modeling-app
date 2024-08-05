@@ -3894,6 +3894,39 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
 
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
+  test('bad model has inline error #3251', async ({ page }) => {
+    // because the model has `line([0,0]..` it is valid code, but the model is invalid
+    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
+    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch2 = startSketchOn("XY")
+const sketch001 = startSketchAt([-0, -0])
+  |> line([0, 0], %)
+  |> line([-4.84, -5.29], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    // this is a cryptic error message, fact that all the lines are co-linear from the `line([0,0])` is the issue why
+    // the close doesn't work
+    // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
+    // this test will need updating
+    const crypticErrorText = `ApiError`
+    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+  })
   test('executes on load', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
