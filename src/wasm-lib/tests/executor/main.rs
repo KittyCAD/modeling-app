@@ -1,8 +1,4 @@
-use anyhow::Result;
-use kcl_lib::{
-    executor::{ExecutorContext, ExecutorSettings},
-    settings::types::UnitLength,
-};
+use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
@@ -10,137 +6,93 @@ const MIN_DIFF: f64 = 0.99;
 
 // mod server;
 
-async fn new_context(units: UnitLength) -> Result<ExecutorContext> {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-    let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60));
-    let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60))
-        .connection_verbose(true)
-        .tcp_keepalive(std::time::Duration::from_secs(600))
-        .http1_only();
-
-    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-    // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        client.set_base_url(addr);
-    }
-
-    let ctx = ExecutorContext::new(
-        &client,
-        ExecutorSettings {
-            units,
-            highlight_edges: true,
-            enable_ssao: false,
-            show_grid: false,
-        },
-    )
-    .await?;
-    Ok(ctx)
+macro_rules! kcl_input {
+    ($file:literal) => {
+        include_str!(concat!("inputs/", $file, ".kcl"))
+    };
 }
 
-/// Executes a kcl program and takes a snapshot of the result.
-/// This returns the bytes of the snapshot.
-async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::DynamicImage> {
-    let ctx = new_context(units).await?;
-    let tokens = kcl_lib::token::lexer(code)?;
-    let parser = kcl_lib::parser::Parser::new(tokens);
-    let program = parser.ast()?;
-
-    let snapshot = ctx.execute_and_prepare_snapshot(&program).await?;
-
-    // Create a temporary file to write the output to.
-    let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
-    // Save the snapshot locally, to that temporary file.
-    std::fs::write(&output_file, snapshot.contents.0)?;
-    // Decode the snapshot, return it.
-    let img = image::io::Reader::open(output_file).unwrap().decode()?;
-    Ok(img)
+fn assert_out(test_name: &str, result: &image::DynamicImage) {
+    twenty_twenty::assert_image(format!("tests/executor/outputs/{test_name}.png"), result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face() {
-    let code = include_str!("inputs/sketch_on_face.kcl");
+async fn kcl_test_sketch_on_face() {
+    let code = kcl_input!("sketch_on_face");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, MIN_DIFF);
+    assert_out("sketch_on_face", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_riddle_small() {
-    let code = include_str!("inputs/riddle_small.kcl");
+async fn kcl_test_riddle_small() {
+    let code = kcl_input!("riddle_small");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/riddle_small.png", &result, MIN_DIFF);
+    assert_out("riddle_small", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_lego() {
-    let code = include_str!("inputs/lego.kcl");
+async fn kcl_test_lego() {
+    let code = kcl_input!("lego");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/lego.png", &result, MIN_DIFF);
+    assert_out("lego", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pipe_as_arg() {
-    let code = include_str!("inputs/pipe_as_arg.kcl");
+async fn kcl_test_computed_var() {
+    let code = kcl_input!("computed_var");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pipe_as_arg.png", &result, MIN_DIFF);
+    assert_out("computed_var", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pentagon_fillet_sugar() {
-    let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
+async fn kcl_test_pipe_as_arg() {
+    let code = kcl_input!("pipe_as_arg");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("pipe_as_arg", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_pentagon_fillet_sugar() {
+    let code = kcl_input!("pentagon_fillet_sugar");
     let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_sugar.png", &result, MIN_DIFF);
+    assert_out("pentagon_fillet_sugar", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_start() {
-    let code = include_str!("inputs/sketch_on_face_start.kcl");
+async fn kcl_test_sketch_on_face_start() {
+    let code = kcl_input!("sketch_on_face_start");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_start.png", &result, MIN_DIFF);
+    assert_out("sketch_on_face_start", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_mike_stress_lines() {
-    let code = include_str!("inputs/mike_stress_test.kcl");
+async fn kcl_test_mike_stress_lines() {
+    let code = kcl_input!("mike_stress_test");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/mike_stress_test.png", &result, MIN_DIFF);
+    assert_out("mike_stress_test", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_end() {
-    let code = include_str!("inputs/sketch_on_face_end.kcl");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_end.png", &result, MIN_DIFF);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_end_negative_extrude() {
-    let code = include_str!("inputs/sketch_on_face_end_negative_extrude.kcl");
+async fn kcl_test_sketch_on_face_end() {
+    let code = kcl_input!("sketch_on_face_end");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/sketch_on_face_end_negative_extrude.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("sketch_on_face_end", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_fillet_duplicate_tags() {
-    let code = include_str!("inputs/fillet_duplicate_tags.kcl");
+async fn kcl_test_sketch_on_face_end_negative_extrude() {
+    let code = kcl_input!("sketch_on_face_end_negative_extrude");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("sketch_on_face_end_negative_extrude", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_fillet_duplicate_tags() {
+    let code = kcl_input!("fillet_duplicate_tags");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
@@ -151,223 +103,81 @@ async fn serial_test_fillet_duplicate_tags() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_start() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing, thing2]}, %)
-"#;
-
+async fn kcl_test_basic_fillet_cube_start() {
+    let code = kcl_input!("basic_fillet_cube_start");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_start.png", &result, MIN_DIFF);
+    assert_out("basic_fillet_cube_start", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_end() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing, getOppositeEdge(thing)]}, %)
-
-"#;
-
+async fn kcl_test_basic_fillet_cube_end() {
+    let code = kcl_input!("basic_fillet_cube_end");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_end.png", &result, MIN_DIFF);
+    assert_out("basic_fillet_cube_end", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_close_opposite() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $thing2)
-    |> close(%, $thing3)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [thing3, getOppositeEdge(thing3)]}, %)
-
-"#;
+async fn kcl_test_basic_fillet_cube_close_opposite() {
+    let code = kcl_input!("basic_fillet_cube_close_opposite");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/basic_fillet_cube_close_opposite.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("basic_fillet_cube_close_opposite", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_next_adjacent() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %, $thing1)
-    |> line([0, -10], %, $thing2)
-    |> close(%, $thing3)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge(thing3)]}, %)
-"#;
+async fn kcl_test_basic_fillet_cube_next_adjacent() {
+    let code = kcl_input!("basic_fillet_cube_next_adjacent");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/basic_fillet_cube_next_adjacent.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("basic_fillet_cube_next_adjacent", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube_previous_adjacent() {
-    let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, 10], %, $thing)
-    |> line([10, 0], %, $thing1)
-    |> line([0, -10], %, $thing2)
-    |> close(%, $thing3)
-    |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge(thing3)]}, %)
-"#;
+async fn kcl_test_basic_fillet_cube_previous_adjacent() {
+    let code = kcl_input!("basic_fillet_cube_previous_adjacent");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/basic_fillet_cube_previous_adjacent.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("basic_fillet_cube_previous_adjacent", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_with_function_sketch() {
-    let code = r#"fn box = (h, l, w) => {
- const myBox = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
-
-  return myBox
-}
-
-const fnBox = box(3, 6, 10)
-"#;
-
+async fn kcl_test_execute_with_function_sketch() {
+    let code = kcl_input!("function_sketch");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, MIN_DIFF);
+    assert_out("function_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_with_function_sketch_with_position() {
-    let code = r#"fn box = (p, h, l, w) => {
- const myBox = startSketchOn('XY')
-    |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
-
-  return myBox
-}
-
-const thing = box([0,0], 3, 6, 10)"#;
+async fn kcl_test_execute_with_function_sketch_with_position() {
+    let code = kcl_input!("function_sketch_with_position");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/function_sketch_with_position.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("function_sketch_with_position", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_with_angled_line() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([4.83, 12.56], %)
-  |> line([15.1, 2.48], %)
-  |> line([3.15, -9.85], %, $seg01)
-  |> line([-15.17, -4.1], %)
-  |> angledLine([segAng(seg01), 12.35], %)
-  |> line([-13.02, 10.03], %)
-  |> close(%)
-  |> extrude(4, %)
-"#;
-
+async fn kcl_test_execute_with_angled_line() {
+    let code = kcl_input!("angled_line");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, MIN_DIFF);
+    assert_out("angled_line", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_parametric_example() {
-    let code = r#"const sigmaAllow = 35000 // psi
-const width = 9 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 6 // inches
-const FOS = 2
-
-const leg1 = 5 // inches
-const leg2 = 8 // inches
-const thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
-const bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, leg1], %)
-  |> line([leg2, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-leg2 + thickness, 0], %)
-  |> line([0, -leg1 + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-"#;
-
+async fn kcl_test_execute_parametric_example() {
+    let code = kcl_input!("parametric");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, MIN_DIFF);
+    assert_out("parametric", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_parametric_with_tan_arc_example() {
-    let code = r#"const sigmaAllow = 15000 // psi
-const width = 11 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 12 // inches
-const FOS = 2
-const thickness = sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))
-const filletR = thickness * 2
-const shelfMountL = 9
-const wallMountL = 8
-
-const bracket = startSketchAt([0, 0])
-  |> line([0, wallMountL], %)
-  |> tangentialArc({
-    radius: filletR,
-    offset: 90
-  }, %)
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL, 0], %)
-  |> tangentialArc({
-    radius: filletR - thickness,
-    offset: -90
-  }, %)
-  |> line([0, -wallMountL], %)
-  |> close(%)
-  |> extrude(width, %)
-"#;
-
+async fn kcl_test_execute_parametric_with_tan_arc_example() {
+    let code = kcl_input!("parametric_with_tan_arc");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, MIN_DIFF);
+    assert_out("parametric_with_tan_arc", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_engine_error_return() {
+async fn kcl_test_execute_engine_error_return() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
   |> line([10.50433, -1.19122], %)
@@ -386,180 +196,105 @@ async fn serial_test_execute_engine_error_return() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_i_shape() {
+async fn kcl_test_execute_i_shape() {
     // This is some code from lee that starts a pipe expression with a variable.
-    let code = include_str!("inputs/i_shape.kcl");
+    let code = kcl_input!("i_shape");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/i_shape.png", &result, MIN_DIFF);
+    assert_out("i_shape", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 #[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
-async fn serial_test_execute_pipes_on_pipes() {
-    let code = include_str!("inputs/pipes_on_pipes.kcl");
+async fn kcl_test_execute_pipes_on_pipes() {
+    let code = kcl_input!("pipes_on_pipes");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, MIN_DIFF);
+    assert_out("pipes_on_pipes", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_cylinder() {
-    let code = include_str!("inputs/cylinder.kcl");
+async fn kcl_test_execute_cylinder() {
+    let code = kcl_input!("cylinder");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cylinder.png", &result, MIN_DIFF);
+    assert_out("cylinder", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_execute_kittycad_svg() {
-    let code = include_str!("inputs/kittycad_svg.kcl");
+async fn kcl_test_execute_kittycad_svg() {
+    let code = kcl_input!("kittycad_svg");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, MIN_DIFF);
+    assert_out("kittycad_svg", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_member_expression_sketch_group() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-
-  return sg
-}
-
-const b1 = cube([0,0], 10)
-const b2 = cube([3,3], 4)
-    |> extrude(10, %)
-
-const pt1 = b1.value[0]
-const pt2 = b2.value[0]
-"#;
+async fn kcl_test_member_expression_sketch_group() {
+    let code = kcl_input!("member_expression_sketch_group");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/member_expression_sketch_group.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("member_expression_sketch_group", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_defaults() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0}, %)
-"#;
+async fn kcl_test_helix_defaults() {
+    let code = kcl_input!("helix_defaults");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/helix_defaults.png", &result, MIN_DIFF);
+    assert_out("helix_defaults", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_defaults_negative_extrude() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(-10, %)
-     |> helix({revolutions: 16, angle_start: 0}, %)
-"#;
+async fn kcl_test_helix_defaults_negative_extrude() {
+    let code = kcl_input!("helix_defaults_negative_extrude");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/helix_defaults_negative_extrude.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("helix_defaults_negative_extrude", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_ccw() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)
-"#;
+async fn kcl_test_helix_ccw() {
+    let code = kcl_input!("helix_ccw");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/helix_ccw.png", &result, MIN_DIFF);
+    assert_out("helix_ccw", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_helix_with_length() {
-    let code = r#"const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0, length: 3}, %)
-"#;
+async fn kcl_test_helix_with_length() {
+    let code = kcl_input!("helix_with_length");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/helix_with_length.png", &result, MIN_DIFF);
+    assert_out("helix_with_length", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_dimensions_match() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
+async fn kcl_test_dimensions_match() {
+    let code = kcl_input!("dimensions_match");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/dimensions_match.png", &result, MIN_DIFF);
+    assert_out("dimensions_match", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_close_arc() {
-    let code = r#"const center = [0,0]
-const radius = 40
-const height = 3
-
-const body = startSketchOn('XY')
-      |> startProfileAt([center[0]+radius, center[1]], %)
-      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
-      |> close(%)
-      |> extrude(height, %)
-"#;
+async fn kcl_test_close_arc() {
+    let code = kcl_input!("close_arc");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, MIN_DIFF);
+    assert_out("close_arc", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_negative_args() {
-    let code = r#"const width = 5
-const height = 10
-const length = 12
-
-fn box = (sk1, sk2, scale) => {
-  const boxSketch = startSketchOn('XY')
-    |> startProfileAt([sk1, sk2], %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
-  return boxSketch
-}
-
-box(0, 0, 5)
-box(10, 23, 8)
-let thing = box(-12, -15, 10)
-box(-20, -5, 10)"#;
+async fn kcl_test_negative_args() {
+    let code = kcl_input!("negative_args");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, MIN_DIFF);
+    assert_out("negative_args", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_tangential_arc() {
+async fn kcl_test_basic_tangential_arc() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc({radius: 5, offset: 90}, %)
@@ -568,11 +303,11 @@ async fn serial_test_basic_tangential_arc() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc.png", &result, MIN_DIFF);
+    assert_out("tangential_arc", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_tangential_arc_with_point() {
+async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
@@ -581,15 +316,11 @@ async fn serial_test_basic_tangential_arc_with_point() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/tangential_arc_with_point.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("tangential_arc_with_point", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_tangential_arc_to() {
+async fn kcl_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArcTo([-5, 15], %)
@@ -598,11 +329,11 @@ async fn serial_test_basic_tangential_arc_to() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_to.png", &result, MIN_DIFF);
+    assert_out("tangential_arc_to", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_different_planes_same_drawing() {
+async fn kcl_test_different_planes_same_drawing() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -625,15 +356,11 @@ let thing = box(-12, -15, 10, 'yz')
 box(-20, -5, 10, 'xy')"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/different_planes_same_drawing.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("different_planes_same_drawing", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_lots_of_planes() {
+async fn kcl_test_lots_of_planes() {
     let code = r#"const sigmaAllow = 15000 // psi
 const width = 11 // inch
 const p = 150 // Force on shelf - lbs
@@ -687,11 +414,11 @@ const part004 = startSketchOn('YZ')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, MIN_DIFF);
+    assert_out("lots_of_planes", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_holes() {
+async fn kcl_test_holes() {
     let code = r#"const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -704,7 +431,7 @@ async fn serial_test_holes() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/holes.png", &result, MIN_DIFF);
+    assert_out("holes", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -723,11 +450,11 @@ async fn optional_params() {
 const thing = other_circle([2, 2], 20)
 "#;
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/optional_params.png", &result, MIN_DIFF);
+    assert_out("optional_params", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_rounded_with_holes() {
+async fn kcl_test_rounded_with_holes() {
     let code = r#"fn tarc = (to, sketchGroup, tag?) => {
   return tangentialArcTo(to, sketchGroup, tag)
 }
@@ -759,19 +486,19 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/rounded_with_holes.png", &result, MIN_DIFF);
+    assert_out("rounded_with_holes", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_top_level_expression() {
+async fn kcl_test_top_level_expression() {
     let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/top_level_expression.png", &result, MIN_DIFF);
+    assert_out("top_level_expression", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_with_math() {
+async fn kcl_test_patterns_linear_basic_with_math() {
     let code = r#"const num = 12
 const distance = 5
 const part =  startSketchOn('XY')
@@ -781,15 +508,11 @@ const part =  startSketchOn('XY')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_linear_basic_with_math.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_linear_basic_with_math", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic() {
+async fn kcl_test_patterns_linear_basic() {
     let code = r#"const part =  startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
@@ -797,11 +520,11 @@ async fn serial_test_patterns_linear_basic() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic.png", &result, MIN_DIFF);
+    assert_out("patterns_linear_basic", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_3d() {
+async fn kcl_test_patterns_linear_basic_3d() {
     let code = r#"const part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
@@ -813,11 +536,11 @@ async fn serial_test_patterns_linear_basic_3d() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_3d.png", &result, MIN_DIFF);
+    assert_out("patterns_linear_basic_3d", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_negative_distance() {
+async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
@@ -825,15 +548,11 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_linear_basic_negative_distance.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_linear_basic_negative_distance", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_negative_axis() {
+async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
@@ -841,15 +560,11 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_linear_basic_negative_axis.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_linear_basic_negative_axis", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_holes() {
+async fn kcl_test_patterns_linear_basic_holes() {
     let code = r#"const circles = startSketchOn('XY')
     |> circle([5, 5], 1, %)
     |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
@@ -866,15 +581,11 @@ const rectangle = startSketchOn('XY')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_linear_basic_holes.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_linear_basic_holes", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_circular_basic_2d() {
+async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
@@ -882,15 +593,11 @@ async fn serial_test_patterns_circular_basic_2d() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_circular_basic_2d.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_circular_basic_2d", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_circular_basic_3d() {
+async fn kcl_test_patterns_circular_basic_3d() {
     let code = r#"const part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
@@ -902,15 +609,11 @@ async fn serial_test_patterns_circular_basic_3d() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_circular_basic_3d.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_circular_basic_3d", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_circular_3d_tilted_axis() {
+async fn kcl_test_patterns_circular_3d_tilted_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
@@ -922,15 +625,11 @@ async fn serial_test_patterns_circular_3d_tilted_axis() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/patterns_circular_3d_tilted_axis.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("patterns_circular_3d_tilted_axis", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_file_doesnt_exist() {
+async fn kcl_test_import_file_doesnt_exist() {
     let code = r#"const model = import("thing.obj")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -942,67 +641,63 @@ async fn serial_test_import_file_doesnt_exist() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_obj_with_mtl() {
+async fn kcl_test_import_obj_with_mtl() {
     let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl.png", &result, MIN_DIFF);
+    assert_out("import_obj_with_mtl", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_obj_with_mtl_units() {
+async fn kcl_test_import_obj_with_mtl_units() {
     let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/import_obj_with_mtl_units.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("import_obj_with_mtl_units", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_stl() {
+async fn kcl_test_import_stl() {
     let code = r#"const model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/import_stl.png", &result, MIN_DIFF);
+    assert_out("import_stl", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_gltf_with_bin() {
+async fn kcl_test_import_gltf_with_bin() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_with_bin.png", &result, MIN_DIFF);
+    assert_out("import_gltf_with_bin", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_gltf_embedded() {
+async fn kcl_test_import_gltf_embedded() {
     let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_embedded.png", &result, MIN_DIFF);
+    assert_out("import_gltf_embedded", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_glb() {
+async fn kcl_test_import_glb() {
     let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/import_glb.png", &result, MIN_DIFF);
+    assert_out("import_glb", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_glb_no_assign() {
+async fn kcl_test_import_glb_no_assign() {
     let code = r#"import("tests/executor/inputs/cube.glb")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/import_glb_no_assign.png", &result, MIN_DIFF);
+    assert_out("import_glb_no_assign", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_import_ext_doesnt_match() {
+async fn kcl_test_import_ext_doesnt_match() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -1014,7 +709,7 @@ async fn serial_test_import_ext_doesnt_match() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_mm() {
+async fn kcl_test_cube_mm() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1031,11 +726,11 @@ const myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cube_mm.png", &result, MIN_DIFF);
+    assert_out("cube_mm", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_cm() {
+async fn kcl_test_cube_cm() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1052,11 +747,11 @@ const myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cube_cm.png", &result, MIN_DIFF);
+    assert_out("cube_cm", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_m() {
+async fn kcl_test_cube_m() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1073,11 +768,11 @@ const myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::M).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cube_m.png", &result, MIN_DIFF);
+    assert_out("cube_m", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_in() {
+async fn kcl_test_cube_in() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1094,11 +789,11 @@ const myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::In).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cube_in.png", &result, MIN_DIFF);
+    assert_out("cube_in", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_ft() {
+async fn kcl_test_cube_ft() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1115,11 +810,11 @@ const myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Ft).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cube_ft.png", &result, MIN_DIFF);
+    assert_out("cube_ft", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_cube_yd() {
+async fn kcl_test_cube_yd() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1136,11 +831,11 @@ const myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Yd).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/cube_yd.png", &result, MIN_DIFF);
+    assert_out("cube_yd", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_sketch_on_arc_face() {
+async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
@@ -1173,7 +868,7 @@ const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_of_face() {
+async fn kcl_test_sketch_on_face_of_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1205,11 +900,11 @@ const part003 = startSketchOn(part002, "end")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_face.png", &result, MIN_DIFF);
+    assert_out("sketch_on_face_of_face", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_stdlib_kcl_error_right_code_path() {
+async fn kcl_test_stdlib_kcl_error_right_code_path() {
     let code = r#"const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1230,7 +925,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_circle() {
+async fn kcl_test_sketch_on_face_circle() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1250,11 +945,11 @@ const part002 = startSketchOn(part001, "end")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle.png", &result, MIN_DIFF);
+    assert_out("sketch_on_face_circle", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_circle_tagged() {
+async fn kcl_test_sketch_on_face_circle_tagged() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -1274,15 +969,11 @@ const part002 = startSketchOn(part001, "end")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/sketch_on_face_circle_tagged.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("sketch_on_face_circle_tagged", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_stdlib_kcl_error_circle() {
+async fn kcl_test_stdlib_kcl_error_circle() {
     let code = r#"// Mounting Plate
 // A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
 
@@ -1328,7 +1019,7 @@ const part = rectShape([0, 0], 20, 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_big_number_angle_to_match_length_x() {
+async fn kcl_test_big_number_angle_to_match_length_x() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01)
@@ -1341,15 +1032,11 @@ async fn serial_test_big_number_angle_to_match_length_x() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/big_number_angle_to_match_length_x.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("big_number_angle_to_match_length_x", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_big_number_angle_to_match_length_y() {
+async fn kcl_test_big_number_angle_to_match_length_y() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01)
@@ -1362,15 +1049,11 @@ async fn serial_test_big_number_angle_to_match_length_y() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/big_number_angle_to_match_length_y.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("big_number_angle_to_match_length_y", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve() {
+async fn kcl_test_simple_revolve() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1386,11 +1069,11 @@ async fn serial_test_simple_revolve() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/simple_revolve.png", &result, MIN_DIFF);
+    assert_out("simple_revolve", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_uppercase() {
+async fn kcl_test_simple_revolve_uppercase() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1406,11 +1089,11 @@ async fn serial_test_simple_revolve_uppercase() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_uppercase.png", &result, MIN_DIFF);
+    assert_out("simple_revolve_uppercase", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_negative() {
+async fn kcl_test_simple_revolve_negative() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1426,11 +1109,11 @@ async fn serial_test_simple_revolve_negative() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_negative.png", &result, MIN_DIFF);
+    assert_out("simple_revolve_negative", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_bad_angle_low() {
+async fn kcl_test_revolve_bad_angle_low() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1455,7 +1138,7 @@ async fn serial_test_revolve_bad_angle_low() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_bad_angle_high() {
+async fn kcl_test_revolve_bad_angle_high() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1480,7 +1163,7 @@ async fn serial_test_revolve_bad_angle_high() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_custom_angle() {
+async fn kcl_test_simple_revolve_custom_angle() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1496,15 +1179,11 @@ async fn serial_test_simple_revolve_custom_angle() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/simple_revolve_custom_angle.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("simple_revolve_custom_angle", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_custom_axis() {
+async fn kcl_test_simple_revolve_custom_axis() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1520,15 +1199,11 @@ async fn serial_test_simple_revolve_custom_axis() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/simple_revolve_custom_axis.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("simple_revolve_custom_axis", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_edge() {
+async fn kcl_test_revolve_on_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1548,11 +1223,11 @@ const sketch001 = startSketchOn(box, "end")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge.png", &result, MIN_DIFF);
+    assert_out("revolve_on_edge", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_edge_get_edge() {
+async fn kcl_test_revolve_on_edge_get_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1581,7 +1256,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_face_circle_edge() {
+async fn kcl_test_revolve_on_face_circle_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 20], %)
@@ -1599,15 +1274,11 @@ const sketch001 = startSketchOn(box, "END")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/revolve_on_face_circle_edge.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("revolve_on_face_circle_edge", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_face_circle() {
+async fn kcl_test_revolve_on_face_circle() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 20], %)
@@ -1625,11 +1296,11 @@ const sketch001 = startSketchOn(box, "END")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face_circle.png", &result, MIN_DIFF);
+    assert_out("revolve_on_face_circle", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_revolve_on_face() {
+async fn kcl_test_revolve_on_face() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -1651,11 +1322,11 @@ const sketch001 = startSketchOn(box, "end")
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face.png", &result, MIN_DIFF);
+    assert_out("revolve_on_face", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_revolve_circle() {
+async fn kcl_test_basic_revolve_circle() {
     let code = r#"const sketch001 = startSketchOn('XY')
   |> circle([15, 0], 5, %)
   |> revolve({
@@ -1665,11 +1336,11 @@ async fn serial_test_basic_revolve_circle() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/basic_revolve_circle.png", &result, MIN_DIFF);
+    assert_out("basic_revolve_circle", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_simple_revolve_sketch_on_edge() {
+async fn kcl_test_simple_revolve_sketch_on_edge() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
@@ -1692,15 +1363,11 @@ const part002 = startSketchOn(part001, 'end')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/simple_revolve_sketch_on_edge.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("simple_revolve_sketch_on_edge", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_plumbus_fillets() {
+async fn kcl_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
   const sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
@@ -1759,11 +1426,11 @@ const plumbus1 = circle1
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/plumbus_fillets.png", &result, MIN_DIFF);
+    assert_out("plumbus_fillets", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_empty_file_is_ok() {
+async fn kcl_test_empty_file_is_ok() {
     let code = r#""#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
@@ -1771,7 +1438,7 @@ async fn serial_test_empty_file_is_ok() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_member_expression_in_params() {
+async fn kcl_test_member_expression_in_params() {
     let code = r#"fn capScrew = (originStart, length, dia, capDia, capHeadLength) => {
   const screwHead = startSketchOn({
        plane: {
@@ -1797,15 +1464,11 @@ capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/member_expression_in_params.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("member_expression_in_params", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
+async fn kcl_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
@@ -1854,7 +1517,7 @@ const bracket = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_empty_start_sketch_on_string() {
+async fn kcl_test_error_empty_start_sketch_on_string() {
     let code = r#"const part001 = startSketchOn('-XZ')
   |> startProfileAt([75.75, 184.25], %)
   |> line([190.03, -118.13], %)
@@ -1878,7 +1541,7 @@ const secondSketch = startSketchOn(part001, '')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_user_function_wrong_args() {
+async fn kcl_test_error_user_function_wrong_args() {
     let code = r#"const length = .750
 const width = 0.500
 const height = 0.500
@@ -1909,7 +1572,7 @@ const extrusion = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_xz_plane() {
+async fn kcl_test_xz_plane() {
     let code = r#"const part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> lineTo([100, 100], %)
@@ -1919,11 +1582,11 @@ async fn serial_test_xz_plane() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/xz_plane.png", &result, MIN_DIFF);
+    assert_out("xz_plane", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_neg_xz_plane() {
+async fn kcl_test_neg_xz_plane() {
     let code = r#"const part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> lineTo([100, 100], %)
@@ -1933,11 +1596,11 @@ async fn serial_test_neg_xz_plane() {
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/neg_xz_plane.png", &result, MIN_DIFF);
+    assert_out("neg_xz_plane", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_linear_pattern3d_a_pattern() {
+async fn kcl_test_linear_pattern3d_a_pattern() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 2], %)
@@ -1960,15 +1623,11 @@ const pattn2 = patternLinear3d({
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/linear_pattern3d_a_pattern.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("linear_pattern3d_a_pattern", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_a_pattern() {
+async fn kcl_test_circular_pattern3d_a_pattern() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 2], %)
@@ -1987,15 +1646,11 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/circular_pattern3d_a_pattern.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("circular_pattern3d_a_pattern", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_array_of_sketches() {
+async fn kcl_test_array_of_sketches() {
     let code = r#"const plane001 = startSketchOn('XZ')
 
 const profile001 = plane001
@@ -2020,11 +1675,11 @@ extrude(10, sketch001)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/array_of_sketches.png", &result, MIN_DIFF);
+    assert_out("array_of_sketches", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_sketch_on_face_after_fillets_referencing_face() {
+async fn kcl_test_sketch_on_face_after_fillets_referencing_face() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
@@ -2083,15 +1738,11 @@ const sketch001 = startSketchOn(bracket, seg01)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/sketch_on_face_after_fillets_referencing_face.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("sketch_on_face_after_fillets_referencing_face", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_array_of_extrudes() {
+async fn kcl_test_circular_pattern3d_array_of_extrudes() {
     let code = r#"const plane001 = startSketchOn('XZ')
 
 const sketch001 = plane001
@@ -2123,15 +1774,11 @@ const pattn1 = patternLinear3d({
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/pattern3d_array_of_extrudes.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("pattern3d_array_of_extrudes", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_fillets_referencing_other_fillets() {
+async fn kcl_test_fillets_referencing_other_fillets() {
     let code = r#"// Z-Bracket
 
 // Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
@@ -2175,15 +1822,11 @@ const baseExtrusion = extrude(width, sketch001)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/fillets_referencing_other_fillets.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("fillets_referencing_other_fillets", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_chamfers_referencing_other_chamfers() {
+async fn kcl_test_chamfers_referencing_other_chamfers() {
     let code = r#"// Z-Bracket
 
 // Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
@@ -2227,15 +1870,11 @@ const baseExtrusion = extrude(width, sketch001)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/chamfers_referencing_other_chamfers.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("chamfers_referencing_other_chamfers", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_engine_error_source_range_on_last_command() {
+async fn kcl_test_engine_error_source_range_on_last_command() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
@@ -2259,7 +1898,7 @@ async fn serial_test_engine_error_source_range_on_last_command() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_linear_pattern3d_filleted_sketch() {
+async fn kcl_test_linear_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2286,15 +1925,11 @@ const pattn1 = patternLinear3d({
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/linear_pattern3d_filleted_sketch.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("linear_pattern3d_filleted_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_filleted_sketch() {
+async fn kcl_test_circular_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2317,15 +1952,11 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/circular_pattern3d_filleted_sketch.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("circular_pattern3d_filleted_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_circular_pattern3d_chamfered_sketch() {
+async fn kcl_test_circular_pattern3d_chamfered_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2348,15 +1979,11 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/circular_pattern3d_chamfered_sketch.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("circular_pattern3d_chamfered_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_tag_chamfer_with_more_than_one_edge_should_fail() {
+async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2386,8 +2013,8 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-// Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
-async fn serial_test_sketch_on_face_of_chamfer() {
+#[ignore] // Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
+async fn kcl_test_sketch_on_face_of_chamfer() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -2415,22 +2042,12 @@ const sketch001 = startSketchOn(part001, chamfer1)
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm).await;
-    /*twenty_twenty::assert_image(
-        "tests/executor/outputs/sketch_on_face_of_chamfer.png",
-        &result,
-        MIN_DIFF,
-    );*/
-
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([410, 441])], message: "Modeling command failed: []" }"#
-    );
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("sketch_on_face_of_chamfer", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_duplicate_tags_should_error() {
+async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle = (len) => {
   return startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
@@ -2457,68 +2074,56 @@ let p = triangle(200)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_global_tags() {
-    let code = include_str!("inputs/global-tags.kcl");
+async fn kcl_test_global_tags() {
+    let code = kcl_input!("global-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/global_tags.png", &result, MIN_DIFF);
+    assert_out("global_tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_extrude_inside_fn_with_tags() {
-    let code = include_str!("inputs/extrude-inside-fn-with-tags.kcl");
+async fn kcl_test_extrude_inside_fn_with_tags() {
+    let code = kcl_input!("extrude-inside-fn-with-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/extrude-inside-fn-with-tags.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("extrude-inside-fn-with-tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pattern_vase() {
-    let code = include_str!("inputs/pattern_vase.kcl");
+async fn kcl_test_pattern_vase() {
+    let code = kcl_input!("pattern_vase");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pattern_vase.png", &result, MIN_DIFF);
+    assert_out("pattern_vase", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_scoped_tags() {
-    let code = include_str!("inputs/scoped-tags.kcl");
+async fn kcl_test_scoped_tags() {
+    let code = kcl_input!("scoped-tags");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/scoped_tags.png", &result, MIN_DIFF);
+    assert_out("scoped_tags", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_order_sketch_extrude_in_order() {
-    let code = include_str!("inputs/order-sketch-extrude-in-order.kcl");
+async fn kcl_test_order_sketch_extrude_in_order() {
+    let code = kcl_input!("order-sketch-extrude-in-order");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/order-sketch-extrude-in-order.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("order-sketch-extrude-in-order", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_order_sketch_extrude_out_of_order() {
-    let code = include_str!("inputs/order-sketch-extrude-out-of-order.kcl");
+async fn kcl_test_order_sketch_extrude_out_of_order() {
+    let code = kcl_input!("order-sketch-extrude-out-of-order");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image(
-        "tests/executor/outputs/order-sketch-extrude-out-of-order.png",
-        &result,
-        MIN_DIFF,
-    );
+    assert_out("order-sketch-extrude-out-of-order", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_extrude_custom_plane() {
-    let code = include_str!("inputs/extrude-custom-plane.kcl");
+async fn kcl_test_extrude_custom_plane() {
+    let code = kcl_input!("extrude-custom-plane");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/extrude-custom-plane.png", &result, MIN_DIFF);
+    assert_out("extrude-custom-plane", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_arc_error_same_start_end() {
+async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn('XY')
   |> startProfileAt([10, 0], %)
   |> arc({
@@ -2544,7 +2149,7 @@ async fn serial_test_arc_error_same_start_end() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_x_90() {
+async fn kcl_test_angled_line_to_x_90() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 90, to: 10 }, %)
@@ -2564,7 +2169,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_x_270() {
+async fn kcl_test_angled_line_to_x_270() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 270, to: 10 }, %)
@@ -2584,7 +2189,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_y_0() {
+async fn kcl_test_angled_line_to_y_0() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 0, to: 20 }, %)
@@ -2604,7 +2209,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_to_y_180() {
+async fn kcl_test_angled_line_to_y_180() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 180, to: 20 }, %)
@@ -2624,7 +2229,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_x_length_90() {
+async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
@@ -2644,7 +2249,7 @@ const extrusion = extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_x_length_270() {
+async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
@@ -2664,7 +2269,7 @@ const extrusion = extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_y_length_0() {
+async fn kcl_test_angled_line_of_y_length_0() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
@@ -2686,7 +2291,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_y_length_180() {
+async fn kcl_test_angled_line_of_y_length_180() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
@@ -2708,7 +2313,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_angled_line_of_y_length_negative_180() {
+async fn kcl_test_angled_line_of_y_length_negative_180() {
     let code = r#"const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
@@ -2730,7 +2335,7 @@ const example = extrude(10, exampleSketch)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_inside_fn_also_has_source_range_of_call_site() {
+async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site() {
     let code = r#"fn someFunction = (something) => {
   startSketchOn(something)
 }
@@ -2747,7 +2352,7 @@ someFunction('INVALID')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
+async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
     let code = r#"fn someFunction = (something) => {
     fn someNestedFunction = (something2) => {
         startSketchOn(something2)
@@ -2764,5 +2369,17 @@ someFunction('INVALID')
     assert_eq!(
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_fillet_and_shell() {
+    let code = kcl_input!("fillet-and-shell");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([2004, 2065])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Shell of non-planar solid3d not available yet\" }]" }"#
     );
 }

@@ -19,6 +19,7 @@ import {
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_START,
   TEST_CODE_GIZMO,
+  TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
   TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
 } from './storageStates'
@@ -26,7 +27,7 @@ import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracket } from 'lib/exampleKcl'
 
@@ -459,7 +460,7 @@ test.describe('Testing Camera Movement', () => {
 
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     // hover over horizontal line
     await u.canvasLocator.hover({ position: { x: 800, y } })
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
@@ -1012,7 +1013,7 @@ test.describe('Editor tests', () => {
   |> line([0, -10], %, $revolveAxis)
   |> close(%)
   |> extrude(10, %)
-  
+
   const sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
@@ -2527,18 +2528,29 @@ test.describe('Onboarding tests', () => {
     await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
 
     // Test that the text in this step is correct
-    const avatarLocator = await page
-      .getByTestId('user-sidebar-toggle')
-      .locator('img')
-    const onboardingOverlayLocator = await page
+    const sidebar = page.getByTestId('user-sidebar-toggle')
+    const avatar = sidebar.locator('img')
+    const onboardingOverlayLocator = page
       .getByTestId('onboarding-content')
       .locator('div')
       .nth(1)
 
     // Expect the avatar to be visible and for the text to reference it
-    await expect(avatarLocator).not.toBeVisible()
+    await expect(avatar).not.toBeVisible()
     await expect(onboardingOverlayLocator).toBeVisible()
     await expect(onboardingOverlayLocator).toContainText('the menu button')
+
+    // Test we mention what else is in this menu for https://github.com/KittyCAD/modeling-app/issues/2939
+    // which doesn't deserver its own full test spun up
+    const userMenuFeatures = [
+      'manage your account',
+      'report a bug',
+      'request a feature',
+      'sign out',
+    ]
+    for (const feature of userMenuFeatures) {
+      await expect(onboardingOverlayLocator).toContainText(feature)
+    }
   })
 })
 
@@ -2616,10 +2628,9 @@ test.describe('Testing selections', () => {
       await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
       await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
+      // bg-yellow-300/70 is more brittle than hover-highlight, but is closer to the user experience
       // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-200').first()).toBeVisible()
-
+      await expect(page.locator('.bg-yellow-300\\/70')).toBeVisible()
       // check mousing off, than mousing onto another line
       await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
       await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
@@ -3071,7 +3082,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
 
     await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+    await expect(page.getByTestId('hover-highlight')).toHaveCount(6) // multiple lines
     await page.mouse.move(nothing[0], nothing[1])
     await page.waitForTimeout(100)
     await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
@@ -3887,6 +3898,39 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
 
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
+  test('bad model has inline error #3251', async ({ page }) => {
+    // because the model has `line([0,0]..` it is valid code, but the model is invalid
+    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
+    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch2 = startSketchOn("XY")
+const sketch001 = startSketchAt([-0, -0])
+  |> line([0, 0], %)
+  |> line([-4.84, -5.29], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    // this is a cryptic error message, fact that all the lines are co-linear from the `line([0,0])` is the issue why
+    // the close doesn't work
+    // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
+    // this test will need updating
+    const crypticErrorText = `ApiError`
+    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+  })
   test('executes on load', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -4172,12 +4216,15 @@ test.describe('Sketch tests', () => {
     await page.setViewportSize({ width: 1200, height: 500 })
 
     await u.waitForAuthSkipAppStart()
-    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
 
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeEnabled()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await expect(async () => {
+      await page.mouse.click(700, 200)
+      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeEnabled({ timeout: 1000 })
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
 
     await page.waitForTimeout(600) // wait for animation
 
@@ -4892,6 +4939,116 @@ const sketch002 = startSketchOn(extrude001, 'END')
   |>
 `.replace(/\s/g, '')
     )
+  })
+  test('empty-scene default-planes act as expected', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
+    /**
+     * Tests the following things
+     * 1) The the planes are there on load because the scene is empty
+     * 2) The planes don't changes color when hovered initially
+     * 3) Putting something in the scene makes the planes hidden
+     * 4) Removing everything from the scene shows the plans again
+     * 3) Once "start sketch" is click, the planes do respond to hovers
+     * 4) Selecting a plan works as expected, i.e. sketch mode
+     * 5) Reloading the scene with something already in the scene means the planes are hidden
+     */
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    await u.codeLocator.fill(`const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+`)
+
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    const noPlanesColor: [number, number, number] = [30, 30, 30]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+    ).toBeLessThan(3)
+
+    await u.clearCommandLogs()
+    await u.removeCurrentCode()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    await expect
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {
+        timeout: 5_000,
+      })
+      .toBeLessThan(8)
+
+    // click start Sketch
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 5 })
+    const hoveredColor: [number, number, number] = [93, 93, 127]
+    // now that we're expecting the user to select a plan, it does respond to hover
+    await expect
+      .poll(() => u.getGreatestPixDiff(XYPlanePoint, hoveredColor))
+      .toBeLessThan(8)
+
+    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(600)
+
+    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+    await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
+    await expect(u.codeLocator)
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([11.8, 9.09], %)
+  |> line([3.39, -3.39], %)
+`)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([11.8, 9.09], %)
+  |> line([3.39, -3.39], %)
+`
+      )
+    })
+    await page.reload()
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // expect there to be no planes on load since there's something in the scene
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+    ).toBeLessThan(3)
   })
 })
 
@@ -7283,15 +7440,15 @@ test.describe('Test network and connection issues', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
-    |> line([-9.16, 8.81], %)`)
+    |> line([-8.84, 8.75], %)`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
-    |> line([-9.16, 8.81], %)
-    |> line([-5.28, 0], %)`)
+    |> line([-8.84, 8.75], %)
+    |> line([-5.6, 0], %)`)
 
     // Unequip line tool
     await page.keyboard.press('Escape')
@@ -8086,4 +8243,210 @@ test('Sketch on face', async ({ page }) => {
   const result2 = result.genNext`
 const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
+})
+
+test.describe('Code pane and errors', () => {
+  test('Typing KCL errors induces a badge on the code pane button', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, bracket)
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Ensure no badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).not.toContainText('notification')
+
+    // Delete a character to break the KCL
+    await u.openKclCodePanel()
+    await page.getByText('extrude(').click()
+    await page.keyboard.press('Backspace')
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+  })
+
+  test('Opening and closing the code pane will consistently show error diagnostics', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, bracket)
+
+    await page.setViewportSize({ width: 1200, height: 900 })
+    await u.waitForAuthSkipAppStart()
+
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Ensure we have no errors in the gutter.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Ensure no badge is present
+    const codePaneButton = page.getByRole('button', { name: 'KCL Code pane' })
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).not.toContainText('notification')
+
+    // Delete a character to break the KCL
+    await u.openKclCodePanel()
+    await page.getByText('extrude(').click()
+    await page.keyboard.press('Backspace')
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+
+    // Close the code pane
+    codePaneButton.click()
+
+    await page.waitForTimeout(500)
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+    // Ensure we have no errors in the gutter.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Open the code pane
+    u.openKclCodePanel()
+
+    // Ensure that a badge appears on the button
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-error')
+    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+  })
+
+  test('When error is not in view you can click the badge to scroll to it', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await page.waitForTimeout(1000)
+
+    // Ensure badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have no errors in the gutter, since error out of view.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // Click the badge.
+    const badge = page.locator('#code-badge')
+    await expect(badge).toBeVisible()
+    await badge.click()
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
+  })
+
+  test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Load the app with the working starter code
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW)
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await page.waitForTimeout(1000)
+
+    // Ensure badge is present
+    const codePaneButtonHolder = page.locator('#code-button-holder')
+    await expect(codePaneButtonHolder).toContainText('notification')
+
+    // Ensure we have no errors in the gutter, since error out of view.
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    // click in the editor to focus it
+    await page.locator('.cm-content').click()
+
+    await page.waitForTimeout(500)
+
+    // go to the start of the editor and enter more text which will trigger
+    // a lint error.
+    // GO to the start of the editor.
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.type('const foo_bar = 1')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Enter')
+
+    // ensure we have a lint error
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // Click the badge.
+    const badge = page.locator('#code-badge')
+    await expect(badge).toBeVisible()
+    await badge.click()
+
+    // Ensure we have an error diagnostic.
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+
+    // Hover over the error to see the error message
+    await page.hover('.cm-lint-marker-error')
+    await expect(
+      page
+        .getByText(
+          'sketch profile must lie entirely on one side of the revolution axis'
+        )
+        .first()
+    ).toBeVisible()
+  })
 })

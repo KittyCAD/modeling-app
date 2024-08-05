@@ -10,6 +10,7 @@ import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
+import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 
 export function LowerRightControls({
   children,
@@ -100,6 +101,7 @@ export function LowerRightControls({
             Settings
           </Tooltip>
         </Link>
+        <NetworkMachineIndicator className={linkOverrideClassName} />
         <NetworkHealthIndicator />
         <HelpMenu />
       </menu>

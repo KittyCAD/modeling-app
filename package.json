@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.24.4",
+  "version": "0.24.8",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.17.0",
@@ -87,7 +87,8 @@
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json",
     "postinstall": "yarn xstate:typegen",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
-    "make:dev": "make dev"
+    "make:dev": "make dev",
+    "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts"
   },
   "prettier": {
     "trailingComma": "es5",
@@ -116,6 +117,7 @@
     "@tauri-apps/cli": "==2.0.0-beta.13",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^15.0.2",
+    "@types/d3-force": "^3.0.10",
     "@types/mocha": "^10.0.6",
     "@types/node": "^18.19.31",
     "@types/pixelmatch": "^5.2.6",
@@ -138,6 +140,7 @@
     "@wdio/spec-reporter": "^8.36.0",
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.19",
+    "d3-force": "^3.0.0",
     "eslint": "^8.57.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-css-modules": "^2.12.0",

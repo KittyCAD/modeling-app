@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import React, { createContext, useEffect, useRef } from 'react'
+import React, { createContext, useEffect, useMemo, useRef } from 'react'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -8,7 +8,12 @@ import {
   StateFrom,
   assign,
 } from 'xstate'
-import { SetSelections, modelingMachine } from 'machines/modelingMachine'
+import {
+  SetSelections,
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
@@ -23,6 +28,7 @@ import {
   editorManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -72,6 +78,7 @@ import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { ExportIntent } from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -99,6 +106,7 @@ export const ModelingMachineProvider = ({
   } = useSettingsAuthContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
+  const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
@@ -121,6 +129,13 @@ export const ModelingMachineProvider = ({
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine,
     {
+      context: {
+        ...modelingMachineDefaultContext,
+        store: {
+          ...modelingMachineDefaultContext.store,
+          ...persistedContext,
+        },
+      },
       actions: {
         'disable copilot': () => {
           editorManager.setCopilotEnabled(false)
@@ -142,7 +157,9 @@ export const ModelingMachineProvider = ({
             kclManager.executeCode().then(() => {
               if (engineCommandManager.engineConnection?.idleMode) return
 
-              store.videoElement?.play()
+              store.videoElement?.play().catch((e) => {
+                console.warn('Video playing was prevented', e)
+              })
             })
           })()
         },
@@ -336,8 +353,57 @@ export const ModelingMachineProvider = ({
 
           return {}
         }),
+        Make: async (_, event) => {
+          if (event.type !== 'Make' || TEST) return
+          // Check if we already have an export intent.
+          if (engineCommandManager.exportIntent) {
+            toast.error('Already exporting')
+            return
+          }
+          // Set the export intent.
+          engineCommandManager.exportIntent = ExportIntent.Make
+
+          console.log('making', event.data)
+          // Set the current machine.
+          machineManager.currentMachine = event.data.machine
+
+          const format: Models['OutputFormat_type'] = {
+            type: 'stl',
+            coords: {
+              forward: {
+                axis: 'y',
+                direction: 'negative',
+              },
+              up: {
+                axis: 'z',
+                direction: 'positive',
+              },
+            },
+            storage: 'ascii',
+            units: defaultUnit.current,
+            selection: { type: 'default_scene' },
+          }
+
+          toast.promise(
+            exportFromEngine({
+              format: format,
+            }),
+            {
+              loading: 'Starting print...',
+              success: 'Started print successfully',
+              error: 'Error while starting print',
+            }
+          )
+        },
         'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          if (engineCommandManager.exportIntent) {
+            toast.error('Already exporting')
+            return
+          }
+          // Set the export intent.
+          engineCommandManager.exportIntent = ExportIntent.Save
+
           console.log('exporting', event.data)
           const format = {
             ...event.data,
@@ -431,7 +497,7 @@ export const ModelingMachineProvider = ({
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactMap,
+            engineCommandManager.artifactGraph,
             selectionRanges
           )
         },
