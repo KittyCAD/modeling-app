@@ -16,7 +16,7 @@ const config: ForgeConfig = {
       appleIdPassword: process.env.APPLE_PASSWORD || '',
       teamId: process.env.APPLE_TEAM_ID || '',
     },
-    executableName: 'Zoo Modeling App',
+    executableName: 'zoo-modeling-app',
   },
   rebuildConfig: {},
   makers: [
