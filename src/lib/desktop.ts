@@ -67,7 +67,7 @@ export async function renameProjectDirectory(
       )
     )
   } catch (e) {
-    // Otherwise if it failed and the failure is "it doesnt exist" then rename it!
+    // Otherwise if it failed and the failure is "it doesn't exist" then rename it!
     if (e === 'ENOENT') {
       await window.electron.rename(projectPath, newPath)
       return newPath
@@ -253,10 +253,10 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   return entry
 }
 
-export const getDefaultKclFileForDir = async (
+export async function getDefaultKclFileForDir(
   projectDir: string,
   file: FileEntry
-) => {
+) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {

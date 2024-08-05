@@ -2,8 +2,13 @@
   "private": true,
   "name": "zoo-modeling-app",
   "productName": "Zoo Modeling App",
-  "description": "CAD",
   "version": "0.24.10",
+  "author": {
+    "name": "Zoo Corporation",
+    "email": "info@zoo.dev",
+    "url": "https://zoo.dev"
+  },
+  "description": "Edit CAD visually or with code",
   "main": ".vite/build/main.js",
   "license": "none",
   "dependencies": {
@@ -69,7 +74,6 @@
     "test": "vitest --mode development",
     "test:nowatch": "vitest run --mode development",
     "test:rust": "(cd src/wasm-lib && cargo test --all && cargo clippy --all --tests --benches)",
-    "test:e2e:tauri": "E2E_TAURI_ENABLED=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' wdio run wdio.conf.ts",
     "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages",
