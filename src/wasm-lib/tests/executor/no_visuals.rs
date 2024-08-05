@@ -62,3 +62,11 @@ gen_test_fail!(
     invalid_index_fractional,
     "semantic: Only strings or ints (>= 0) can be properties/indexes"
 );
+gen_test_fail!(
+    invalid_member_object,
+    "semantic: Only arrays and objects can be indexed, but you're trying to index a number"
+);
+gen_test_fail!(
+    invalid_member_object_prop,
+    "semantic: Only arrays and objects can be indexed, but you're trying to index a boolean (true/false value)"
+);
