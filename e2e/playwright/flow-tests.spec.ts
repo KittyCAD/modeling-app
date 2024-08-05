@@ -46,9 +46,9 @@ document.addEventListener('mousemove', (e) =>
 const deg = (Math.PI * 2) / 360
 
 const commonPoints = {
-  startAt: '[7.19, -9.7]',
-  num1: 7.25,
-  num2: 14.44,
+  startAt: '[0.75, -1.01]',
+  num1: 0.75,
+  num2: 1.5,
 }
 
 test.afterEach(async ({ context, page }, testInfo) => {
