@@ -22,7 +22,7 @@ macro_rules! gen_test_fail {
 }
 
 async fn run(code: &str) {
-    let (ctx, program) = setup(&code).await;
+    let (ctx, program) = setup(code).await;
 
     ctx.run(&program, None).await.unwrap();
 }
@@ -44,7 +44,7 @@ async fn setup(program: &str) -> (ExecutorContext, Program) {
 }
 
 async fn run_fail(code: &str) -> KclError {
-    let (ctx, program) = setup(&code).await;
+    let (ctx, program) = setup(code).await;
     ctx.run(&program, None).await.unwrap_err()
 }
 
