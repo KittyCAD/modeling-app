@@ -55,6 +55,13 @@ jobs:
   build-test-app-macos:
     needs: [prepare-json-files]
     runs-on: macos-14
+    env:
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -85,6 +92,10 @@ jobs:
       - name: Run build:wasm
         run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
 
+      # TODO: sign the app (and updater bundle potentially)
+      - name: Add signing certificate
+        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
+
       - name: Build the app for arm64
         run: "yarn electron-forge make"
 
@@ -92,8 +103,6 @@ jobs:
         run: "yarn electron-forge make --arch x64"
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
-
-      # TODO: sign the app (and updater bundle potentially)
 
       - uses: actions/upload-artifact@v3
         with:
