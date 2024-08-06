@@ -32,7 +32,7 @@ export function ProjectSearchBar({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
-    '^.',
+    'Ctrl+.',
     (event) => {
       event.preventDefault()
       inputRef.current?.focus()
