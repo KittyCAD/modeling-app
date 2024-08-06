@@ -61,3 +61,61 @@ export const bracketWidthConstantLine = findLineInExampleCode({
 export const bracketThicknessCalculationLine = findLineInExampleCode({
   searchText: 'const thickness',
 })
+
+export const gear = `// Gear
+// A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear.
+
+// Define constants
+const gearWidth = 3
+const gearScale = 20
+const toothScale = gearScale / 5
+const boreDiameter = 9
+const teethNumber = 14
+
+// Create the body of the gear with the hole in the center
+const body = startSketchOn('XY')
+  |> circle([0, 0], gearScale, %)
+  |> hole(circle([0, 0], boreDiameter, %), %)
+  |> extrude(gearWidth, %)
+
+// Define the function for a single tooth
+fn tooth = (toothSize) => {
+  const singleTooth = startSketchOn('XY')
+  |> startProfileAt([
+       0.0000000000 * toothSize,
+       5.0000000000 * toothSize
+     ], %)
+  |> line([
+       0.4900857016 * toothSize,
+       -0.0240763666 * toothSize
+     ], %)
+  |> line([
+       0.6804562304 * toothSize,
+       0.9087880491 * toothSize
+     ], %)
+  |> line([
+       0.5711661314 * toothSize,
+       -0.1430696680 * toothSize
+     ], %)
+  |> line([
+       0.1717090983 * toothSize,
+       -1.1222443518 * toothSize
+     ], %)
+  |> line([
+       0.4435665223 * toothSize,
+       -0.2097913408 * toothSize
+     ], %)
+  |> close(%)
+  |> extrude(gearWidth, %)
+  return singleTooth
+}
+
+// Extrude the first tooth and pattern around the z-axis
+const allGearTeeth = tooth(toothScale)
+  |> patternCircular3d({
+       arcDegrees: 360,
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: teethNumber,
+       rotateDuplicates: true
+     }, %)`

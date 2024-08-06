@@ -71,19 +71,23 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
-import {
-  ExportIntent,
+import { ExportIntent,
   EngineConnectionState,
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
+import { submitTextToCadPrompt } from 'lib/textToCad'
+import { isTauri } from 'lib/isTauri'
+import { useFileContext } from 'hooks/useFileContext'
+import { FILE_EXT } from 'lib/constants'
+import { ToastTextToCad } from './ToastTextToCad'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -109,6 +113,8 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const navigate = useNavigate()
+  const { context, send: fileMachineSend } = useFileContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -465,6 +471,58 @@ export const ModelingMachineProvider = ({
               loading: 'Exporting...',
               success: 'Exported successfully',
               error: 'Error while exporting',
+            }
+          )
+        },
+        'Submit to Text-to-CAD API': async (_, { data }) => {
+          const trimmedPrompt = data.prompt.trim()
+          if (!trimmedPrompt) return
+
+          const textToCadPromise = submitTextToCadPrompt(trimmedPrompt).then(
+            (value) => {
+              if (value instanceof Error) {
+                return Promise.reject(value)
+              }
+
+              const now = new Date().getTime()
+              const newFileName = `text-to-cad-${now}`
+
+              if (isTauri()) {
+                fileMachineSend({
+                  type: 'Create file',
+                  data: {
+                    name: newFileName,
+                    makeDir: false,
+                    content: value.outputs.kcl,
+                    silent: true,
+                  },
+                })
+              }
+
+              return {
+                ...value,
+                fileName: newFileName + FILE_EXT,
+              }
+            }
+          )
+
+          toast.promise(
+            textToCadPromise,
+            {
+              loading: 'Submitting to Text-to-CAD API...',
+              success: (value) => (
+                <ToastTextToCad
+                  data={value}
+                  navigate={navigate}
+                  context={context}
+                />
+              ),
+              error: 'Failed to submit to Text-to-CAD API',
+            },
+            {
+              success: {
+                duration: Infinity,
+              },
             }
           )
         },
