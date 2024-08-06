@@ -2,16 +2,19 @@ import { Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
-import { uuidv4 } from 'lib/utils'
+import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
-  ArtifactMap,
+  ArtifactGraph,
   EngineCommand,
   OrderedCommand,
   ResponseMap,
-  createArtifactMap,
-} from 'lang/std/artifactMap'
+  createArtifactGraph,
+} from 'lang/std/artifactGraph'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { exportMake } from 'lib/exportMake'
+import toast from 'react-hot-toast'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 10000
@@ -29,11 +32,10 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-/** This looks funny, I know. This is needed because node and the browser
- * disagree as to the type. In a browser it's a number, but in node it's a
- * "Timeout".
- */
-type IsomorphicTimeout = ReturnType<typeof setTimeout>
+export enum ExportIntent {
+  Save = 'save',
+  Make = 'make',
+}
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -285,8 +287,6 @@ class EngineConnection extends EventTarget {
     )
   }
 
-  private failedConnTimeout: IsomorphicTimeout | null
-
   readonly url: string
   private readonly token?: string
 
@@ -311,7 +311,6 @@ class EngineConnection extends EventTarget {
     this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
-    this.failedConnTimeout = null
 
     this.pingPongSpan = { ping: undefined, pong: undefined }
 
@@ -450,9 +449,11 @@ class EngineConnection extends EventTarget {
     }
 
     const createPeerConnection = () => {
-      this.pc = new RTCPeerConnection({
-        bundlePolicy: 'max-bundle',
-      })
+      if (!this.engineCommandManager.disableWebRTC) {
+        this.pc = new RTCPeerConnection({
+          bundlePolicy: 'max-bundle',
+        })
+      }
 
       // Other parts of the application expect pc to be initialized when firing.
       this.dispatchEvent(
@@ -464,7 +465,7 @@ class EngineConnection extends EventTarget {
       // Data channels MUST BE specified before SDP offers because requesting
       // them affects what our needs are!
       const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
-      this.pc.createDataChannel(DATACHANNEL_NAME_UMC)
+      this.pc?.createDataChannel?.(DATACHANNEL_NAME_UMC)
 
       this.state = {
         type: EngineConnectionStateType.Connecting,
@@ -497,7 +498,7 @@ class EngineConnection extends EventTarget {
           },
         })
       }
-      this.pc.addEventListener('icecandidate', this.onIceCandidate)
+      this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
 
       this.onIceCandidateError = (_event: Event) => {
         const event = _event as RTCPeerConnectionIceErrorEvent
@@ -505,7 +506,7 @@ class EngineConnection extends EventTarget {
           `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
         )
       }
-      this.pc.addEventListener('icecandidateerror', this.onIceCandidateError)
+      this.pc?.addEventListener?.('icecandidateerror', this.onIceCandidateError)
 
       // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
       // Event type: generic Event type...
@@ -539,7 +540,7 @@ class EngineConnection extends EventTarget {
             break
         }
       }
-      this.pc.addEventListener(
+      this.pc?.addEventListener?.(
         'connectionstatechange',
         this.onConnectionStateChange
       )
@@ -629,7 +630,7 @@ class EngineConnection extends EventTarget {
 
         this.mediaStream = mediaStream
       }
-      this.pc.addEventListener('track', this.onTrack)
+      this.pc?.addEventListener?.('track', this.onTrack)
 
       this.onDataChannel = (event) => {
         this.unreliableDataChannel = event.channel
@@ -720,7 +721,7 @@ class EngineConnection extends EventTarget {
           this.onDataChannelMessage
         )
       }
-      this.pc.addEventListener('datachannel', this.onDataChannel)
+      this.pc?.addEventListener?.('datachannel', this.onDataChannel)
     }
 
     const createWebSocketConnection = () => {
@@ -755,6 +756,11 @@ class EngineConnection extends EventTarget {
         // Send an initial ping
         this.send({ type: 'ping' })
         this.pingPongSpan.ping = new Date()
+        if (this.engineCommandManager.disableWebRTC) {
+          this.engineCommandManager
+            .initPlanes()
+            .then(() => this.engineCommandManager.resolveReady())
+        }
       }
       this.websocket.addEventListener('open', this.onWebSocketOpen)
 
@@ -802,11 +808,20 @@ class EngineConnection extends EventTarget {
             .join('\n')
           if (message.request_id) {
             const artifactThatFailed =
-              this.engineCommandManager.artifactMap[message.request_id]
+              this.engineCommandManager.artifactGraph.get(message.request_id)
             console.error(
               `Error in response to request ${message.request_id}:\n${errorsString}
   failed cmd type was ${artifactThatFailed?.type}`
             )
+            // Check if this was a pending export command.
+            if (
+              this.engineCommandManager.pendingExport?.commandId ===
+              message.request_id
+            ) {
+              // Reject the promise with the error.
+              this.engineCommandManager.pendingExport.reject(errorsString)
+              this.engineCommandManager.pendingExport = undefined
+            }
           } else {
             console.error(`Error from server:\n${errorsString}`)
           }
@@ -1088,8 +1103,10 @@ export enum EngineCommandManagerEvents {
  * of those commands. It also sets up and tears down the connection to the Engine
  * through the {@link EngineConnection} class.
  *
- * It also maintains an {@link artifactMap} that keeps track of the state of each
- * command, and the artifacts that have been generated by those commands.
+ * As commands are send their state is tracked in {@link pendingCommands} and clear as soon as we receive a response.
+ *
+ * Also all commands that are sent are kept track of in {@link orderedCommands} and their responses are kept in {@link responseMap}
+ * Both of these data structures are used to process the {@link artifactGraph}.
  */
 
 interface PendingMessage {
@@ -1102,17 +1119,10 @@ interface PendingMessage {
 }
 export class EngineCommandManager extends EventTarget {
   /**
-   * The artifactMap is a client-side representation of the commands that have been sent
-   * to the server-side geometry engine, and the state of their resulting artifacts.
-   *
-   * It is used to keep track of the state of each command, which can fail, succeed, or be
-   * pending.
-   *
-   * It is also used to keep track of our client's understanding of what is in the engine scene
-   * so that we can map to and from KCL code. Each artifact maintains a source range to the part
-   * of the KCL code that generated it.
+   * The artifactGraph is a client-side representation of the commands that have been sent
+   * see: src/lang/std/artifactGraph-README.md for a full explanation.
    */
-  artifactMap: ArtifactMap = {}
+  artifactGraph: ArtifactGraph = new Map()
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -1121,21 +1131,14 @@ export class EngineCommandManager extends EventTarget {
   } = {}
   /**
    * The orderedCommands array of all the the commands sent to the engine, un-folded from batches, and made into one long
-   * list of the individual commands, this is used to process all the commands into the artifactMap
+   * list of the individual commands, this is used to process all the commands into the artifactGraph
    */
   orderedCommands: Array<OrderedCommand> = []
   /**
-   * A map of the responses to the @this.orderedCommands, when processing the commands into the artifactMap, this response map allow
+   * A map of the responses to the {@link orderedCommands}, when processing the commands into the artifactGraph, this response map allow
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
-  /**
-   * The client-side representation of the scene command artifacts that have been sent to the server;
-   * that is, the *non-modeling* commands and corresponding artifacts.
-   *
-   * For modeling commands, see {@link artifactMap}.
-   */
-  sceneCommandArtifacts: ArtifactMap = {}
   /**
    * A counter that is incremented with each command sent over the *unreliable* channel to the engine.
    * This is compared to the latest received {@link inSequence} number to determine if we should ignore
@@ -1155,9 +1158,16 @@ export class EngineCommandManager extends EventTarget {
   pendingExport?: {
     resolve: (a: null) => void
     reject: (reason: any) => void
+    commandId: string
   }
+  /**
+   * Export intent traxcks the intent of the export. If it is null there is no
+   * export in progress. Otherwise it is an enum value of the intent.
+   * Another export cannot be started if one is already in progress.
+   */
+  private _exportIntent: ExportIntent | null = null
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
-  private resolveReady = () => {}
+  resolveReady = () => {}
   /** Folks should realize that wait for ready does not get called _everytime_
    *  the connection resets and restarts, it only gets called the first time.
    *
@@ -1204,9 +1214,20 @@ export class EngineCommandManager extends EventTarget {
   private onEngineConnectionNewTrack = ({
     detail,
   }: CustomEvent<NewTrackArgs>) => {}
+  disableWebRTC = false
+  modelingSend: ReturnType<typeof useModelingContext>['send'] =
+    (() => {}) as any
+
+  set exportIntent(intent: ExportIntent | null) {
+    this._exportIntent = intent
+  }
+
+  get exportIntent() {
+    return this._exportIntent
+  }
 
   start({
-    restart,
+    disableWebRTC = false,
     setMediaStream,
     setIsStreamReady,
     width,
@@ -1222,7 +1243,7 @@ export class EngineCommandManager extends EventTarget {
       showScaleGrid: false,
     },
   }: {
-    restart?: boolean
+    disableWebRTC?: boolean
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
@@ -1239,6 +1260,7 @@ export class EngineCommandManager extends EventTarget {
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
+    this.disableWebRTC = disableWebRTC
     this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
@@ -1381,9 +1403,36 @@ export class EngineCommandManager extends EventTarget {
           // because in all other cases we send JSON strings. But in the case of
           // export we send a binary blob.
           // Pass this to our export function.
-          exportSave(event.data).then(() => {
-            this.pendingExport?.resolve(null)
-          }, this.pendingExport?.reject)
+          if (this.exportIntent === null) {
+            toast.error(
+              'Export intent was not set, but export data was received'
+            )
+            console.error(
+              'Export intent was not set, but export data was received'
+            )
+            return
+          }
+
+          switch (this.exportIntent) {
+            case ExportIntent.Save: {
+              exportSave(event.data).then(() => {
+                this.pendingExport?.resolve(null)
+              }, this.pendingExport?.reject)
+              break
+            }
+            case ExportIntent.Make: {
+              exportMake(event.data).then((result) => {
+                if (result) {
+                  this.pendingExport?.resolve(null)
+                } else {
+                  this.pendingExport?.reject('Failed to make export')
+                }
+              }, this.pendingExport?.reject)
+              break
+            }
+          }
+          // Set the export intent back to null.
+          this.exportIntent = null
           return
         }
 
@@ -1549,7 +1598,6 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.artifactMap = {}
     this.orderedCommands = []
     this.responseMap = {}
     await this.initPlanes()
@@ -1688,7 +1736,13 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
-        this.pendingExport = { resolve, reject }
+        this.pendingExport = {
+          resolve,
+          reject: () => {
+            this.exportIntent = null
+          },
+          commandId: command.cmd_id,
+        }
       })
       this.engineConnection?.send(command)
       return promise
@@ -1718,15 +1772,11 @@ export class EngineCommandManager extends EventTarget {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
-    if (!this.engineConnection?.isReady()) {
+    if (!this.engineConnection?.isReady() && !this.disableWebRTC)
       return Promise.resolve()
-    }
-    if (id === undefined) {
-      return Promise.reject(new Error('id is undefined'))
-    }
-    if (rangeStr === undefined) {
+    if (id === undefined) return Promise.reject(new Error('id is undefined'))
+    if (rangeStr === undefined)
       return Promise.reject(new Error('rangeStr is undefined'))
-    }
     if (commandStr === undefined) {
       return Promise.reject(new Error('commandStr is undefined'))
     }
@@ -1784,32 +1834,35 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(message.command)
     return promise
   }
+
+  deferredArtifactPopulated = deferExecution((a?: null) => {
+    this.modelingSend({ type: 'Artifact graph populated' })
+  }, 200)
+  deferredArtifactEmptied = deferExecution((a?: null) => {
+    this.modelingSend({ type: 'Artifact graph emptied' })
+  }, 200)
+
   /**
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
    */
   async waitForAllCommands() {
     await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    this.artifactMap = createArtifactMap({
+    this.artifactGraph = createArtifactGraph({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
       ast: this.getAst(),
     })
+    if (this.artifactGraph.size) {
+      this.deferredArtifactEmptied(null)
+    } else {
+      this.deferredArtifactPopulated(null)
+    }
   }
-  private async initPlanes() {
+  async initPlanes() {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()
     this.defaultPlanes = planes
-
-    this.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) return
-        if (!planes) return
-        if (![planes.xy, planes.yz, planes.xz].includes(data.entity_id)) return
-        this.onPlaneSelectCallback(data.entity_id)
-      },
-    })
   }
   planesInitialized(): boolean {
     return (
@@ -1818,11 +1871,6 @@ export class EngineCommandManager extends EventTarget {
       this.defaultPlanes.yz !== '' &&
       this.defaultPlanes.xz !== ''
     )
-  }
-
-  onPlaneSelectCallback = (id: string) => {}
-  onPlaneSelected(callback: (id: string) => void) {
-    this.onPlaneSelectCallback = callback
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {
@@ -1851,15 +1899,10 @@ export class EngineCommandManager extends EventTarget {
     range: SourceRange,
     commandTypeToTarget: string
   ): string | undefined {
-    const values = Object.entries(this.artifactMap)
-    for (const [id, data] of values) {
-      // // Our range selection seems to just select the cursor position, so either
-      // // of these can be right...
-      if (
-        (data.range[0] === range[0] || data.range[1] === range[1]) &&
-        data.type === commandTypeToTarget
-      )
-        return id
+    for (const [artifactId, artifact] of this.artifactGraph) {
+      if ('codeRef' in artifact && isOverlap(range, artifact.codeRef.range)) {
+        if (commandTypeToTarget === artifact.type) return artifactId
+      }
     }
     return undefined
   }

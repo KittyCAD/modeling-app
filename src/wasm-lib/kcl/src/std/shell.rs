@@ -79,6 +79,11 @@ async fn inner_shell(
         }));
     }
 
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not do these for sketch on face, things will fail with face does not exist.
+    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+        .await?;
+
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::Solid3DShellFace {

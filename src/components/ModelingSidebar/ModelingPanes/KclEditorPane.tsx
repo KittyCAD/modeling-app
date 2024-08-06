@@ -22,7 +22,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap } from '@codemirror/lint'
+import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -193,6 +193,13 @@ export const KclEditorPane = () => {
           if (_editorView === null) return
 
           editorManager.setEditorView(_editorView)
+
+          // On first load of this component, ensure we show the current errors
+          // in the editor.
+          // Make sure we don't add them twice.
+          if (diagnosticCount(_editorView.state) === 0) {
+            kclManager.setDiagnosticsForCurrentErrors()
+          }
         }}
       />
     </div>

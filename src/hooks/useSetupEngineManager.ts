@@ -46,7 +46,6 @@ export function useSetupEngineManager(
       streamRef?.current?.offsetHeight ?? 0
     )
     engineCommandManager.start({
-      restart,
       setMediaStream: (mediaStream) => setMediaStream(mediaStream),
       setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
       width: quadWidth,

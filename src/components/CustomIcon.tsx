@@ -541,6 +541,16 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  printer3d: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16 5H4V7.5H7V7V6H8H9H10V7V7.5H16V5ZM17 7.5V8.5V15V16V17H16V16H15H14H6H5H4V17H3V16V15V8.5V7.5V5V4H4H16H17V5V7.5ZM4 8.5V15H5V13.5V13H5.5H14.5H15V13.5V15H16V8.5H10V9H9V10L8.5 10.5L8 10V9H7V8.5H4ZM14 14V15H6V14H14ZM8 7H9V8H8V7Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   polygon: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
