@@ -79,7 +79,7 @@ export const onboardingRoutes = [
 
 export function useDemoCode() {
   useEffect(() => {
-    if (!editorManager.editorView) return
+    if (!editorManager.editorView || codeManager.code === bracket) return
     setTimeout(async () => {
       codeManager.updateCodeStateEditor(bracket)
       kclManager.isFirstRender = true

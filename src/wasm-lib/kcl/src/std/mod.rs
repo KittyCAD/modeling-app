@@ -120,6 +120,7 @@ lazy_static! {
         Box::new(crate::std::math::ToRadians),
         Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
+        Box::new(crate::std::assert::AssertEqual),
         Box::new(crate::std::assert::AssertLessThan),
         Box::new(crate::std::assert::AssertGreaterThan),
         Box::new(crate::std::assert::AssertLessThanOrEq),

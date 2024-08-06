@@ -29,6 +29,13 @@ import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
+import {
+  getArtifactOfTypes,
+  getArtifactsOfTypes,
+  getCapCodeRef,
+  getSolid2dCodeRef,
+  getWallCodeRef,
+} from 'lang/std/artifactGraph'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -41,6 +48,7 @@ export type Selection = {
     | 'line-end'
     | 'line-mid'
     | 'extrude-wall'
+    | 'solid2D'
     | 'start-cap'
     | 'end-cap'
     | 'point'
@@ -55,15 +63,12 @@ export type Selections = {
   codeBasedSelections: Selection[]
 }
 
-export async function getEventForSelectWithPoint(
-  {
-    data,
-  }: Extract<
-    Models['OkModelingCmdResponse_type'],
-    { type: 'select_with_point' }
-  >,
-  { sketchEnginePathId }: { sketchEnginePathId?: string }
-): Promise<ModelingMachineEvent | null> {
+export async function getEventForSelectWithPoint({
+  data,
+}: Extract<
+  Models['OkModelingCmdResponse_type'],
+  { type: 'select_with_point' }
+>): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -79,68 +84,64 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  let _artifact = engineCommandManager.artifactMap[data.entity_id]
-  if (!_artifact) {
-    // This logic for getting the parent id is for solid2ds as in edit mode it return the face id
-    // but we don't recognise that in the artifact map because we store the path id when the path is
-    // created, the solid2d is implicitly created with the close stdlib function
-    // there's plans to get the faceId back from the solid2d creation
-    // https://github.com/KittyCAD/engine/issues/2094
-    // at which point we can add it to the artifact map and remove this logic
-    const resp = await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'entity_get_parent_id',
-        entity_id: data.entity_id,
-      },
-      cmd_id: uuidv4(),
-    })
-    const parentId =
-      resp?.success &&
-      resp?.resp?.type === 'modeling' &&
-      resp?.resp?.data?.modeling_response?.type === 'entity_get_parent_id'
-        ? resp?.resp?.data?.modeling_response?.data?.entity_id
-        : ''
-    const parentArtifact = engineCommandManager.artifactMap[parentId]
-    if (parentArtifact) {
-      _artifact = parentArtifact
-    }
-  }
-  const sourceRange = _artifact?.range
-  if (_artifact) {
-    if (_artifact.type === 'extrudeCap')
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: {
-            range: sourceRange,
-            type: _artifact?.cap === 'end' ? 'end-cap' : 'start-cap',
-          },
-        },
-      }
-    if (_artifact.type === 'extrudeWall')
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: { range: sourceRange, type: 'extrude-wall' },
-        },
-      }
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: sourceRange, type: 'default' },
-      },
-    }
-  } else {
-    // if we don't recognise the entity, select nothing
+  let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
+  if (!_artifact)
     return {
       type: 'Set selection',
       data: { selectionType: 'singleCodeCursor' },
     }
+  if (_artifact.type === 'solid2D') {
+    const codeRef = getSolid2dCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'solid2D' },
+      },
+    }
   }
+  if (_artifact.type === 'cap') {
+    const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          range: codeRef.range,
+          type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+        },
+      },
+    }
+  }
+  if (_artifact.type === 'wall') {
+    const codeRef = getWallCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'extrude-wall' },
+      },
+    }
+  }
+  if (_artifact.type === 'segment' || _artifact.type === 'path') {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: _artifact.codeRef.range, type: 'default' },
+      },
+    }
+  }
+  return null
 }
 
 export function getEventForSegmentSelection(
@@ -347,7 +348,7 @@ function resetAndSetEngineEntitySelectionCmds(
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
-    engineCommandManager.artifactMap,
+    engineCommandManager.artifactGraph,
     selectionRanges
   )
 }
@@ -499,11 +500,10 @@ function codeToIdSelections(
   return codeBasedSelections
     .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
-      const entriesWithOverlap = Object.entries(
-        engineCommandManager.artifactMap || {}
-      )
+      const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          return artifact.range && isOverlap(artifact.range, range)
+          if (!('codeRef' in artifact)) return false
+          return isOverlap(artifact.codeRef.range, range)
             ? {
                 artifact,
                 selection: { type, range, ...rest },
@@ -512,31 +512,73 @@ function codeToIdSelections(
             : false
         })
         .filter(Boolean)
+
+      /** TODO refactor
+       * selections in our app is a sourceRange plus some metadata
+       * The metadata is just a union type string of different types of artifacts or 3d features 'extrude-wall' 'segment' etc
+       * Because the source range is not enough to figure out what the user selected, so here we're using filtering through all the artifacts
+       * to find something that matches both the source range and the metadata.
+       *
+       * What we should migrate to is just storing what the user selected by what it matched in the artifactGraph it will simply the below a lot.
+       *
+       * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
+       * and most of the time we can expect the user to be clicking in the 3d scene instead.
+       */
       let bestCandidate
-      entriesWithOverlap.forEach((entry) => {
+      overlappingEntries.forEach((entry) => {
         if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
-        if (
-          type === 'start-cap' &&
-          entry.artifact.type === 'extrudeCap' &&
-          entry?.artifact?.cap === 'start'
-        ) {
-          bestCandidate = entry
+        if (type === 'solid2D' && entry.artifact.type === 'path') {
+          const solid = engineCommandManager.artifactGraph.get(
+            entry.artifact.solid2dId || ''
+          )
+          if (solid?.type !== 'solid2D') return
+          bestCandidate = {
+            artifact: solid,
+            selection: { type, range, ...rest },
+            id: entry.artifact.solid2dId,
+          }
+        }
+        if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
+          const wall = engineCommandManager.artifactGraph.get(
+            entry.artifact.surfaceId
+          )
+          if (wall?.type !== 'wall') return
+          bestCandidate = {
+            artifact: wall,
+            selection: { type, range, ...rest },
+            id: entry.artifact.surfaceId,
+          }
           return
         }
         if (
-          type === 'end-cap' &&
-          entry.artifact.type === 'extrudeCap' &&
-          entry?.artifact?.cap === 'end'
+          (type === 'end-cap' || type === 'start-cap') &&
+          entry.artifact.type === 'path'
         ) {
-          bestCandidate = entry
-          return
-        }
-        if (type === 'extrude-wall' && entry.artifact.type === 'extrudeWall') {
-          bestCandidate = entry
+          const extrusion = getArtifactOfTypes(
+            {
+              key: entry.artifact.extrusionId,
+              types: ['extrusion'],
+            },
+            engineCommandManager.artifactGraph
+          )
+          if (err(extrusion)) return
+          const caps = getArtifactsOfTypes(
+            { keys: extrusion.surfaceIds, types: ['cap'] },
+            engineCommandManager.artifactGraph
+          )
+          const cap = [...caps].find(
+            ([_, cap]) => cap.subType === (type === 'end-cap' ? 'end' : 'start')
+          )
+          if (!cap) return
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection: { type, range, ...rest },
+            id: cap[0],
+          }
           return
         }
       })

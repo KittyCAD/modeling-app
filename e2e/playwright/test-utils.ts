@@ -1,5 +1,5 @@
 import { expect, Page, Download } from '@playwright/test'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
@@ -14,6 +14,23 @@ export const TEST_COLORS = {
   YELLOW: [255, 255, 0] as TestColor,
   BLUE: [0, 0, 255] as TestColor,
 } as const
+
+async function waitForPageLoadWithRetry(page: Page) {
+  await expect(async () => {
+    await page.goto('/')
+    const errorMessage = 'App failed to load - 🔃 Retrying ...'
+    await expect(page.getByTestId('loading'), errorMessage).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' }),
+      errorMessage
+    ).toBeEnabled({
+      timeout: 20_000,
+    })
+  }).toPass({ timeout: 70_000, intervals: [1_000] })
+}
 
 async function waitForPageLoad(page: Page) {
   // wait for all spinners to be gone
@@ -218,9 +235,12 @@ async function waitForAuthAndLsp(page: Page) {
     }
     return false
   })
-
-  await page.goto('/')
-  await waitForPageLoad(page)
+  if (process.env.CI) {
+    await waitForPageLoadWithRetry(page)
+  } else {
+    await page.goto('/')
+    await waitForPageLoad(page)
+  }
 
   return waitForLspPromise
 }
@@ -234,6 +254,7 @@ export async function getUtils(page: Page) {
   return {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
+    waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -266,7 +287,7 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox()
+        .boundingBox({ timeout: 5000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px

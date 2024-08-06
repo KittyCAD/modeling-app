@@ -43,8 +43,8 @@ export default function UserMenu() {
           <h2 className="text-2xl font-bold">User Menu</h2>
           <p className="my-4">
             Click {buttonDescription} in the upper right to open the user menu.
-            You can change your user-level settings, sign out, or request a
-            feature.
+            You can change your user-level settings, sign out, report a bug,
+            manage your account, request a feature, and more.
           </p>
           <p className="my-4">
             Many settings can be set either a user or per-project level. User

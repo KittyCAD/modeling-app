@@ -1,0 +1,388 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`testing createArtifactGraph > code with an extrusion, fillet and sketch of face: > snapshot of the artifactGraph 1`] = `
+Map {
+  "UUID-0" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        43,
+        70,
+      ],
+    },
+    "pathIds": [
+      "UUID",
+    ],
+    "type": "plane",
+  },
+  "UUID-1" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        43,
+        70,
+      ],
+    },
+    "extrusionId": "UUID",
+    "planeId": "UUID",
+    "segIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
+    "solid2dId": "UUID",
+    "type": "path",
+  },
+  "UUID-2" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        76,
+        92,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-3" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        98,
+        125,
+      ],
+    },
+    "edgeCutId": "UUID",
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-4" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        131,
+        156,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-5" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        162,
+        209,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-6" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        215,
+        223,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "type": "segment",
+  },
+  "UUID-7" => {
+    "pathId": "UUID",
+    "type": "solid2D",
+  },
+  "UUID-8" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        243,
+        266,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
+    "type": "extrusion",
+  },
+  "UUID-9" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-10" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [
+      "UUID",
+    ],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-11" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-12" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-13" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "subType": "start",
+    "type": "cap",
+  },
+  "UUID-14" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "subType": "end",
+    "type": "cap",
+  },
+  "UUID-15" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        272,
+        311,
+      ],
+    },
+    "consumedEdgeId": "UUID",
+    "edgeIds": [],
+    "subType": "fillet",
+    "type": "edgeCut",
+  },
+  "UUID-16" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        368,
+        395,
+      ],
+    },
+    "extrusionId": "UUID",
+    "planeId": "UUID",
+    "segIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
+    "solid2dId": "UUID",
+    "type": "path",
+  },
+  "UUID-17" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        401,
+        416,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-18" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        422,
+        438,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-19" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        444,
+        491,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceId": "UUID",
+    "type": "segment",
+  },
+  "UUID-20" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        497,
+        505,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "type": "segment",
+  },
+  "UUID-21" => {
+    "pathId": "UUID",
+    "type": "solid2D",
+  },
+  "UUID-22" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        525,
+        546,
+      ],
+    },
+    "edgeIds": [],
+    "pathId": "UUID",
+    "surfaceIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
+    "type": "extrusion",
+  },
+  "UUID-23" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-24" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-25" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "segId": "UUID",
+    "type": "wall",
+  },
+  "UUID-26" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "subType": "start",
+    "type": "cap",
+  },
+  "UUID-27" => {
+    "edgeCutEdgeIds": [],
+    "extrusionId": "UUID",
+    "pathIds": [],
+    "subType": "end",
+    "type": "cap",
+  },
+}
+`;

@@ -2736,6 +2736,22 @@ const bracket = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_function_no_return() {
+        let ast = r#"fn test = (origin) => {
+  origin
+}
+
+test([0, 0])
+"#;
+        let result = parse_execute(ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"undefined value: KclErrorDetails { source_ranges: [SourceRange([10, 34])], message: "Result of user-defined function test is undefined" }"#.to_owned()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_doubly_nested_parens() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const width = 4 // inch

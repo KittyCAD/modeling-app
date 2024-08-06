@@ -91,12 +91,16 @@ export class KclManager {
   set kclErrors(kclErrors) {
     if (kclErrors === this._kclErrors && this.lints.length === 0) return
     this._kclErrors = kclErrors
-    let diagnostics = kclErrorsToDiagnostics(kclErrors)
+    this.setDiagnosticsForCurrentErrors()
+    this._kclErrorsCallBack(kclErrors)
+  }
+
+  setDiagnosticsForCurrentErrors() {
+    let diagnostics = kclErrorsToDiagnostics(this.kclErrors)
     if (this.lints.length > 0) {
       diagnostics = diagnostics.concat(this.lints)
     }
     editorManager.setDiagnostics(diagnostics)
-    this._kclErrorsCallBack(kclErrors)
   }
 
   addKclErrors(kclErrors: KCLError[]) {
@@ -224,6 +228,7 @@ export class KclManager {
 
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
     defaultSelectionFilter(programMemory, this.engineCommandManager)
+    await this.engineCommandManager.waitForAllCommands()
 
     if (zoomToFit) {
       let zoomObjectId: string | undefined = ''
@@ -234,6 +239,15 @@ export class KclManager {
         )
       }
 
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
+          padding: 0.1, // padding around the objects
+        },
+      })
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -300,24 +314,30 @@ export class KclManager {
     this._kclErrors = errors
     this._programMemory = programMemory
     if (updates !== 'artifactRanges') return
-    Object.entries(this.engineCommandManager.artifactMap).forEach(
+
+    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
+    // problem this solves, but either way we should strive to remove it.
+    Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
-        if (!artifact.pathToNode) return
+        if (!('codeRef' in artifact)) return
         const _node1 = getNodeFromPath<CallExpression>(
           this.ast,
-          artifact.pathToNode,
+          artifact.codeRef.pathToNode,
           'CallExpression'
         )
         if (err(_node1)) return
         const { node } = _node1
         if (node.type !== 'CallExpression') return
-        const [oldStart, oldEnd] = artifact.range
+        const [oldStart, oldEnd] = artifact.codeRef.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactMap[commandId].range = [
-          node.start,
-          node.end,
-        ]
+        this.engineCommandManager.artifactGraph.set(commandId, {
+          ...artifact,
+          codeRef: {
+            ...artifact.codeRef,
+            range: [node.start, node.end],
+          },
+        })
       }
     )
   }
