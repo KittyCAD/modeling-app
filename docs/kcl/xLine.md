@@ -1,10 +1,10 @@
 ---
 title: "xLine"
-excerpt: "Draw a line on the x-axis."
+excerpt: "Draw a line parallel to the X-axis, with the given length."
 layout: manual
 ---
 
-Draw a line on the x-axis.
+Draw a line parallel to the X-axis, with the given length.
 
 
 

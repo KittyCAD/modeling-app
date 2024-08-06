@@ -168,7 +168,9 @@ pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Draw a line to a point on the x-axis.
+/// Draw a line parallel to the X axis, that ends at the given X.
+/// E.g. if the previous line ended at (1, 1),
+/// then xLineTo(4) draws a line from (1, 1) to (4, 1)
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -214,7 +216,9 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Draw a line to a point on the y-axis.
+/// Draw a line parallel to the Y axis, that ends at the given Y.
+/// E.g. if the previous line ended at (1, 1),
+/// then yLineTo(4) draws a line from (1, 1) to (1, 4)
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
@@ -336,7 +340,7 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Draw a line on the x-axis.
+/// Draw a line parallel to the X-axis, with the given length.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -378,7 +382,7 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Draw a line on the y-axis.
+/// Draw a line parallel to the Y-axis, with the given length.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
