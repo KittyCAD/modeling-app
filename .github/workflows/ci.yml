@@ -89,16 +89,20 @@ jobs:
       - run: yarn build:wasm
 
       - run: yarn simpleserver:ci
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
 
       - name: Install Chromium Browser
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: yarn playwright install chromium --with-deps
 
       - name: run unit tests
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: yarn test:nowatch
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - name: check for changes
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         id: git-check
         run: |
             git add src/lang/std/artifactMapGraphs
@@ -107,7 +111,7 @@ jobs:
             else echo "modified=false" >> $GITHUB_OUTPUT
             fi
       - name: Commit changes, if any
-        if: steps.git-check.outputs.modified == 'true'
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' && steps.git-check.outputs.modified == 'true' }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
