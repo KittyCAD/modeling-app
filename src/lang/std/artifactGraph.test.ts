@@ -114,40 +114,44 @@ beforeAll(async () => {
   }
 
   // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
-  await engineCommandManager.start({
-    disableWebRTC: true,
-    token: VITE_KC_DEV_TOKEN,
-    // there does seem to be a minimum resolution, not sure what it is but 256 works ok.
-    width: 256,
-    height: 256,
-    makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
-    setMediaStream: () => {},
-    setIsStreamReady: () => {},
-    modifyGrid: async () => {},
+  await new Promise((resolve) => {
+    engineCommandManager.start({
+      disableWebRTC: true,
+      token: VITE_KC_DEV_TOKEN,
+      // there does seem to be a minimum resolution, not sure what it is but 256 works ok.
+      width: 256,
+      height: 256,
+      makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
+      setMediaStream: () => {},
+      setIsStreamReady: () => {},
+      modifyGrid: async () => {},
+      callbackOnEngineLiteConnect: async () => {
+        const cacheEntries = Object.entries(codeToWriteCacheFor) as [
+          CodeKey,
+          string
+        ][]
+        const cacheToWriteToFileTemp: Partial<CacheShape> = {}
+        for (const [codeKey, code] of cacheEntries) {
+          const ast = parse(code)
+          if (err(ast)) {
+            console.error(ast)
+            return Promise.reject(ast)
+          }
+          await kclManager.executeAst(ast)
+
+          cacheToWriteToFileTemp[codeKey] = {
+            orderedCommands: engineCommandManager.orderedCommands,
+            responseMap: engineCommandManager.responseMap,
+          }
+        }
+        const cache = JSON.stringify(cacheToWriteToFileTemp)
+
+        await fsp.mkdir(pathStart, { recursive: true })
+        await fsp.writeFile(fullPath, cache)
+        resolve()
+      }
+    })
   })
-
-  const cacheEntries = Object.entries(codeToWriteCacheFor) as [
-    CodeKey,
-    string
-  ][]
-  const cacheToWriteToFileTemp: Partial<CacheShape> = {}
-  for (const [codeKey, code] of cacheEntries) {
-    const ast = parse(code)
-    if (err(ast)) {
-      console.error(ast)
-      return Promise.reject(ast)
-    }
-    await kclManager.executeAst(ast)
-
-    cacheToWriteToFileTemp[codeKey] = {
-      orderedCommands: engineCommandManager.orderedCommands,
-      responseMap: engineCommandManager.responseMap,
-    }
-  }
-  const cache = JSON.stringify(cacheToWriteToFileTemp)
-
-  await fsp.mkdir(pathStart, { recursive: true })
-  await fsp.writeFile(fullPath, cache)
 }, 20_000)
 
 afterAll(() => {

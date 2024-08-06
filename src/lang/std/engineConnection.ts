@@ -1295,7 +1295,7 @@ export class EngineCommandManager extends EventTarget {
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     modifyGrid: (hidden: boolean) => Promise<void>
     settings?: SettingsViaQueryString
-  }): Promise<void> {
+  }) {
     if (callbackOnEngineLiteConnect) {
       this.startLite(callbackOnEngineLiteConnect)
       return
