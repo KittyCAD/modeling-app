@@ -1,10 +1,10 @@
 ---
 title: "yLine"
-excerpt: "Draw a line on the y-axis."
+excerpt: "Draw a line parallel to the Y-axis, with the given length."
 layout: manual
 ---
 
-Draw a line on the y-axis.
+Draw a line parallel to the Y-axis, with the given length.
 
 
 

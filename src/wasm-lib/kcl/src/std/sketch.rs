@@ -340,7 +340,7 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Draw a line on the x-axis.
+/// Draw a line parallel to the X-axis, with the given length.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -382,7 +382,7 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Draw a line on the y-axis.
+/// Draw a line parallel to the Y-axis, with the given length.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
