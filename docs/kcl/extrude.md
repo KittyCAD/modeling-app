@@ -1,12 +1,12 @@
 ---
 title: "extrude"
-excerpt: "Extrudes by a given amount."
+excerpt: "Extend a 2-dimensional sketch through a third dimension in order to"
 layout: manual
 ---
 
-Extrudes by a given amount.
+Extend a 2-dimensional sketch through a third dimension in order to
 
-
+create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
 ```js
 extrude(length: number, sketch_group_set: SketchGroupSet) -> ExtrudeGroupSet

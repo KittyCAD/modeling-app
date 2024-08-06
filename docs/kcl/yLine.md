@@ -1,12 +1,12 @@
 ---
 title: "yLine"
-excerpt: "Draw a line parallel to the Y-axis, with the given length."
+excerpt: "Draw a line relative to the current origin to a specified distance away"
 layout: manual
 ---
 
-Draw a line parallel to the Y-axis, with the given length.
+Draw a line relative to the current origin to a specified distance away
 
-
+from the current position along the 'y' axis.
 
 ```js
 yLine(length: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

@@ -1,12 +1,12 @@
 ---
 title: "lastSegX"
-excerpt: "Returns the last segment of x."
+excerpt: "Extract the 'x' axis value of the last line segment in the provided 2-d"
 layout: manual
 ---
 
-Returns the last segment of x.
+Extract the 'x' axis value of the last line segment in the provided 2-d
 
-
+sketch.
 
 ```js
 lastSegX(sketch_group: SketchGroup) -> number
@@ -19,7 +19,7 @@ const exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([20, 5], %)
-  |> line([0, lastSegX(%)], %)
+  |> line([lastSegX(%), 0], %)
   |> line([-15, 0], %)
   |> close(%)
 

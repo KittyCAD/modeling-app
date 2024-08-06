@@ -1,10 +1,10 @@
 ---
 title: "sin"
-excerpt: "Computes the sine of a number (in radians)."
+excerpt: "Compute the sine of a number (in radians)."
 layout: manual
 ---
 
-Computes the sine of a number (in radians).
+Compute the sine of a number (in radians).
 
 
 

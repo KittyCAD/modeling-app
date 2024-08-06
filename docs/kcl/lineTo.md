@@ -1,10 +1,10 @@
 ---
 title: "lineTo"
-excerpt: "Draw a line to a point."
+excerpt: "Draw a line from the current origin to some absolute (x, y) point."
 layout: manual
 ---
 
-Draw a line to a point.
+Draw a line from the current origin to some absolute (x, y) point.
 
 
 

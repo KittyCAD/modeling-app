@@ -1,10 +1,10 @@
 ---
 title: "segLen"
-excerpt: "Returns the length of the segment."
+excerpt: "Compute the length of the provided line segment."
 layout: manual
 ---
 
-Returns the length of the segment.
+Compute the length of the provided line segment.
 
 
 

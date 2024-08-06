@@ -1,10 +1,10 @@
 ---
 title: "startSketchAt"
-excerpt: "Start a sketch at a given point on the 'XY' plane."
+excerpt: "Start a new 2-dimensional sketch at a given point on the 'XY' plane."
 layout: manual
 ---
 
-Start a sketch at a given point on the 'XY' plane.
+Start a new 2-dimensional sketch at a given point on the 'XY' plane.
 
 
 
