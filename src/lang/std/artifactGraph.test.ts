@@ -458,6 +458,9 @@ async function GraphTheGraph(
   await page.waitForSelector('#plotly-graph')
   const element = await page.$('#plotly-graph')
 
+  // wait an extra bit for things to settle
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
   // @ts-ignore
   await element.screenshot({
     path: `./e2e/playwright/temp3.png`,
