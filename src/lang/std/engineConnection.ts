@@ -1,5 +1,5 @@
 import { Program, SourceRange } from 'lang/wasm'
-import { VITE_KC_API_WS_MODELING_URL } from 'env'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
@@ -489,7 +489,10 @@ class EngineConnection extends EventTarget {
             `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
           )
         }
-        this.pc?.addEventListener?.('icecandidateerror', this.onIceCandidateError)
+        this.pc?.addEventListener?.(
+          'icecandidateerror',
+          this.onIceCandidateError
+        )
 
         // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
         // Event type: generic Event type...
@@ -594,7 +597,8 @@ class EngineConnection extends EventTarget {
                       videoTrackReport.framesPerSecond || 0
                     client_metrics.rtc_freeze_count =
                       videoTrackReport.freezeCount || 0
-                    client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
+                    client_metrics.rtc_jitter_sec =
+                      videoTrackReport.jitter || 0.0
                     client_metrics.rtc_keyframes_decoded =
                       videoTrackReport.keyFramesDecoded || 0
                     client_metrics.rtc_total_freezes_duration_sec =
@@ -605,7 +609,8 @@ class EngineConnection extends EventTarget {
                       videoTrackReport.frameWidth || 0
                     client_metrics.rtc_packets_lost =
                       videoTrackReport.packetsLost || 0
-                    client_metrics.rtc_pli_count = videoTrackReport.pliCount || 0
+                    client_metrics.rtc_pli_count =
+                      videoTrackReport.pliCount || 0
                   } else if (videoTrackReport.type === 'transport') {
                     // videoTrackReport.bytesReceived,
                     // videoTrackReport.bytesSent,
@@ -647,7 +652,9 @@ class EngineConnection extends EventTarget {
             }
 
             // Everything is now connected.
-            this.state = { type: EngineConnectionStateType.ConnectionEstablished }
+            this.state = {
+              type: EngineConnectionStateType.ConnectionEstablished,
+            }
 
             this.engineCommandManager.inSequence = 1
 
@@ -707,7 +714,8 @@ class EngineConnection extends EventTarget {
           this.onDataChannelMessage = (event) => {
             const result: UnreliableResponses = JSON.parse(event.data)
             Object.values(
-              this.engineCommandManager.unreliableSubscriptions[result.type] || {}
+              this.engineCommandManager.unreliableSubscriptions[result.type] ||
+                {}
             ).forEach(
               // TODO: There is only one response that uses the unreliable channel atm,
               // highlight_set_entity, if there are more it's likely they will all have the same
@@ -774,7 +782,10 @@ class EngineConnection extends EventTarget {
           this.websocket?.removeEventListener('open', this.onWebSocketOpen)
           this.websocket?.removeEventListener('close', this.onWebSocketClose)
           this.websocket?.removeEventListener('error', this.onWebSocketError)
-          this.websocket?.removeEventListener('message', this.onWebSocketMessage)
+          this.websocket?.removeEventListener(
+            'message',
+            this.onWebSocketMessage
+          )
 
           window.removeEventListener(
             'use-network-status-ready',
@@ -813,7 +824,9 @@ class EngineConnection extends EventTarget {
             return
           }
 
-          const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+          const message: Models['WebSocketResponse_type'] = JSON.parse(
+            event.data
+          )
 
           if (!message.success) {
             const errorsString = message?.errors
@@ -1599,81 +1612,223 @@ export class EngineCommandManager extends EventTarget {
 
   // SHOULD ONLY BE USED FOR VITESTS
   startLite(callback: () => void) {
-    this.websocket = new WebSocket(this.url, [])
-    this.websocket.binaryType = 'arraybuffer'
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${256}&video_res_height=${256}`
+    console.log('SANITY CHECK!!!!!!!!!', this.engineConnection)
+    // if( !this.engineConnection ) {
+    //   return
+    // }
+    this.engineConnection = {} as EngineConnection
+    if (!this.engineConnection) return
+    this.engineConnection.websocket = new WebSocket(url, [])
+    this.engineConnection.websocket.binaryType = 'arraybuffer'
 
-    this.onWebSocketOpen = (event) => {
-      if (this.token) {
-        this.send({
-          type: 'headers',
-          headers: { Authorization: `Bearer ${this.token}` },
-        })
+    this.engineConnection.send = (a) => {
+      if (!this.engineConnection) return
+      console.log('YO what is being sent?', a)
+      this.engineConnection?.websocket.send(JSON.stringify(a))
+    }
+    this.engineConnection.onWebSocketOpen = (event) => {
+      console.log('WebSocket opened')
+      // if (this.engineConnection) {
+      // con
+      if (!this.engineConnection) return
+      this.engineConnection.send({
+        type: 'headers',
+        headers: { Authorization: `Bearer ${VITE_KC_DEV_TOKEN}` },
+      })
+      // }
+    }
+    this.engineConnection.tearDown = () => {}
+    this.engineConnection.websocket.addEventListener(
+      'open',
+      this.engineConnection.onWebSocketOpen
+    )
+    this.engineConnection.onWebSocketMessage = (event) => {
+      console.log('MSG!!!')
+      if (typeof event.data !== 'string') {
+        return
+      }
+
+      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      console.log('MSG!!!', message)
+
+      if (!message.success) {
+        const errorsString = message?.errors
+          ?.map((error) => {
+            return `  - ${error.error_code}: ${error.message}`
+          })
+          .join('\n')
+        if (message.request_id) {
+          const artifactThatFailed = this.artifactGraph.get(message.request_id)
+          console.error(
+            `Error in response to request ${message.request_id}:\n${errorsString}
+  failed cmd type was ${artifactThatFailed?.type}`
+          )
+          // Check if this was a pending export command.
+          if (this.pendingExport?.commandId === message.request_id) {
+            // Reject the promise with the error.
+            this.pendingExport.reject(errorsString)
+            this.pendingExport = undefined
+          }
+        } else {
+          console.error(`Error from server:\n${errorsString}`)
+        }
+
+        return
+      }
+
+      let resp = message.resp
+
+      // If there's no body to the response, we can bail here.
+      if (!resp || !resp.type) {
+        return
+      }
+
+      switch (resp.type) {
+        case 'pong':
+          break
+
+        // Only fires on successful authentication.
+        case 'ice_server_info':
+          callback()
+          break
+
+        case 'sdp_answer':
+          break
+
+        case 'trickle_ice':
+          break
+
+        case 'metrics_request':
+          break
       }
     }
-    this.websocket.addEventListener('open', this.onWebSocketOpen)
-    this.onWebSocketMessage = (event) => {
-        if (typeof event.data !== 'string') {
+    this.engineConnection.websocket.addEventListener(
+      'message',
+      this.engineConnection.onWebSocketMessage
+    )
+    this.engineConnection.websocket?.addEventListener('message', ((
+      event: MessageEvent
+    ) => {
+      if (event.data instanceof ArrayBuffer) {
+        // If the data is an ArrayBuffer, it's  the result of an export command,
+        // because in all other cases we send JSON strings. But in the case of
+        // export we send a binary blob.
+        // Pass this to our export function.
+        if (this.exportIntent === null) {
+          toast.error('Export intent was not set, but export data was received')
+          console.error(
+            'Export intent was not set, but export data was received'
+          )
           return
         }
 
-        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-
-        if (!message.success) {
-          const errorsString = message?.errors
-            ?.map((error) => {
-              return `  - ${error.error_code}: ${error.message}`
-            })
-            .join('\n')
-          if (message.request_id) {
-            const artifactThatFailed =
-              this.engineCommandManager.artifactGraph.get(message.request_id)
-            console.error(
-              `Error in response to request ${message.request_id}:\n${errorsString}
-  failed cmd type was ${artifactThatFailed?.type}`
-            )
-            // Check if this was a pending export command.
-            if (
-              this.engineCommandManager.pendingExport?.commandId ===
-              message.request_id
-            ) {
-              // Reject the promise with the error.
-              this.engineCommandManager.pendingExport.reject(errorsString)
-              this.engineCommandManager.pendingExport = undefined
-            }
-          } else {
-            console.error(`Error from server:\n${errorsString}`)
+        switch (this.exportIntent) {
+          case ExportIntent.Save: {
+            exportSave(event.data).then(() => {
+              this.pendingExport?.resolve(null)
+            }, this.pendingExport?.reject)
+            break
           }
-
-          return
+          case ExportIntent.Make: {
+            exportMake(event.data).then((result) => {
+              if (result) {
+                this.pendingExport?.resolve(null)
+              } else {
+                this.pendingExport?.reject('Failed to make export')
+              }
+            }, this.pendingExport?.reject)
+            break
+          }
         }
+        // Set the export intent back to null.
+        this.exportIntent = null
+        return
+      }
 
-        let resp = message.resp
+      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      const pending = this.pendingCommands[message.request_id || '']
+      console.log('YOOOO', pending, message)
 
-        // If there's no body to the response, we can bail here.
-        if (!resp || !resp.type) {
-          return
-        }
+      if (pending && !message.success) {
+        // handle bad case
+        pending.reject(`engine error: ${JSON.stringify(message.errors)}`)
+        delete this.pendingCommands[message.request_id || '']
+      }
+      if (
+        !(
+          pending &&
+          message.success &&
+          (message.resp.type === 'modeling' ||
+            message.resp.type === 'modeling_batch')
+        )
+      )
+        return
 
-        switch (resp.type) {
-          case 'pong':
-            break
+      if (
+        message.resp.type === 'modeling' &&
+        pending.command.type === 'modeling_cmd_req' &&
+        message.request_id
+      ) {
+        this.addCommandLog({
+          type: 'receive-reliable',
+          data: message.resp,
+          id: message?.request_id || '',
+          cmd_type: pending?.command?.cmd?.type,
+        })
 
-          // Only fires on successful authentication.
-          case 'ice_server_info':
-            callback()
-            break
+        const modelingResponse = message.resp.data.modeling_response
 
-          case 'sdp_answer':
-            break
+        Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
+          (callback) => callback(modelingResponse)
+        )
 
-          case 'trickle_ice':
-            break
+        this.responseMap[message.request_id] = message.resp
+      } else if (
+        message.resp.type === 'modeling_batch' &&
+        pending.command.type === 'modeling_cmd_batch_req'
+      ) {
+        let individualPendingResponses: {
+          [key: string]: Models['WebSocketRequest_type']
+        } = {}
+        pending.command.requests.forEach(({ cmd, cmd_id }) => {
+          individualPendingResponses[cmd_id] = {
+            type: 'modeling_cmd_req',
+            cmd,
+            cmd_id,
+          }
+        })
+        Object.entries(message.resp.data.responses).forEach(
+          ([commandId, response]) => {
+            if (!('response' in response)) return
+            const command = individualPendingResponses[commandId]
+            if (!command) return
+            if (command.type === 'modeling_cmd_req')
+              this.addCommandLog({
+                type: 'receive-reliable',
+                data: {
+                  type: 'modeling',
+                  data: {
+                    modeling_response: response.response,
+                  },
+                },
+                id: commandId,
+                cmd_type: command?.cmd?.type,
+              })
 
-          case 'metrics_request':
-            break
-        }
-    }
-    this.websocket.addEventListener('message', this.onWebSocketMessage)
+            this.responseMap[commandId] = {
+              type: 'modeling',
+              data: {
+                modeling_response: response.response,
+              },
+            }
+          }
+        )
+      }
+
+      pending.resolve([message])
+      delete this.pendingCommands[message.request_id || '']
+    }) as EventListener)
   }
 
   handleResize({
@@ -1706,19 +1861,19 @@ export class EngineCommandManager extends EventTarget {
         pending.reject('no connection to send on')
       }
 
-      this.engineConnection.removeEventListener(
+      this.engineConnection?.removeEventListener?.(
         EngineConnectionEvents.Opened,
         this.onEngineConnectionOpened
       )
-      this.engineConnection.removeEventListener(
+      this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.Closed,
         this.onEngineConnectionClosed
       )
-      this.engineConnection.removeEventListener(
+      this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.ConnectionStarted,
         this.onEngineConnectionStarted
       )
-      this.engineConnection.removeEventListener(
+      this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.NewTrack,
         this.onEngineConnectionNewTrack as EventListener
       )
@@ -1905,11 +2060,11 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<string | void> {
+    console.log('SANITY@@@@ sendModelingCommandFromWasm')
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
-    if (!this.engineConnection?.isReady())
-      return Promise.resolve()
+    if (!this.engineConnection?.isReady()) return Promise.resolve()
     if (id === undefined) return Promise.reject(new Error('id is undefined'))
     if (rangeStr === undefined)
       return Promise.reject(new Error('rangeStr is undefined'))
@@ -1967,6 +2122,7 @@ export class EngineCommandManager extends EventTarget {
         })
       })
     }
+    console.log('SANITY@@@@22222')
     this.engineConnection?.send(message.command)
     return promise
   }
