@@ -78,7 +78,12 @@ import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
-import { ExportIntent } from 'lang/std/engineConnection'
+import {
+  ExportIntent,
+  EngineConnectionState,
+  EngineConnectionStateType,
+  EngineConnectionEvents,
+} from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -154,7 +159,10 @@ export const ModelingMachineProvider = ({
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
             store.videoElement?.pause()
+
+            kclManager.isFirstRender = true
             kclManager.executeCode().then(() => {
+              kclManager.isFirstRender = false
               if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play().catch((e) => {
@@ -909,15 +917,19 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  useSetupEngineManager(streamRef, token, {
-    pool: pool,
-    theme: theme.current,
-    highlightEdges: highlightEdges.current,
-    enableSSAO: enableSSAO.current,
+  useSetupEngineManager(
+    streamRef,
     modelingSend,
-    modelingContext: modelingState.context,
-    showScaleGrid: showScaleGrid.current,
-  })
+    modelingState.context,
+    {
+      pool: pool,
+      theme: theme.current,
+      highlightEdges: highlightEdges.current,
+      enableSSAO: enableSSAO.current,
+      showScaleGrid: showScaleGrid.current,
+    },
+    token
+  )
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {
@@ -945,17 +957,25 @@ export const ModelingMachineProvider = ({
   }, [modelingState.context.selectionRanges])
 
   useEffect(() => {
-    const offlineCallback = () => {
+    const onConnectionStateChanged = ({ detail }: CustomEvent) => {
       // If we are in sketch mode we need to exit it.
       // TODO: how do i check if we are in a sketch mode, I only want to call
       // this then.
-      modelingSend({ type: 'Cancel' })
+      if (detail.type === EngineConnectionStateType.Disconnecting) {
+        modelingSend({ type: 'Cancel' })
+      }
     }
-    window.addEventListener('offline', offlineCallback)
+    engineCommandManager.engineConnection?.addEventListener(
+      EngineConnectionEvents.ConnectionStateChanged,
+      onConnectionStateChanged as EventListener
+    )
     return () => {
-      window.removeEventListener('offline', offlineCallback)
+      engineCommandManager.engineConnection?.removeEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChanged as EventListener
+      )
     }
-  }, [modelingSend])
+  }, [engineCommandManager.engineConnection, modelingSend])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

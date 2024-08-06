@@ -211,7 +211,6 @@ export class KclManager {
       type: string
     }
   ): Promise<void> {
-    await this?.engineCommandManager?.waitForReady
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
@@ -301,7 +300,6 @@ export class KclManager {
     codeManager.updateCodeEditor(newCode)
     // Write the file to disk.
     await codeManager.writeToFile()
-    await this?.engineCommandManager?.waitForReady
     this._ast = { ...newAst }
 
     const { logs, errors, programMemory } = await executeAst({

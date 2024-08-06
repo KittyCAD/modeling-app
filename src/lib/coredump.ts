@@ -63,7 +63,7 @@ export class CoreDumpManager {
 
   // Get the backend pool we've requested.
   pool(): string {
-    return this.engineCommandManager.pool || ''
+    return this.engineCommandManager.settings.pool || ''
   }
 
   // Get the os information.

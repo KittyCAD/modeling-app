@@ -11,21 +11,27 @@ import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAppStream } from 'AppState'
 import {
+  EngineCommandManagerEvents,
   EngineConnectionStateType,
   DisconnectingType,
 } from 'lang/std/engineConnection'
 
+enum StreamState {
+  Playing = 'playing',
+  Paused = 'paused',
+  Resuming = 'resuming',
+  Unset = 'unset',
+}
+
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [isFirstRender, setIsFirstRender] = useState(kclManager.isFirstRender)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
-  const [isFreezeFrame, setIsFreezeFrame] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
+  const [streamState, setStreamState] = useState(StreamState.Unset)
 
   const IDLE = settings.context.app.streamIdleMode.current
 
@@ -38,10 +44,7 @@ export const Stream = () => {
       immediateState.type === EngineConnectionStateType.Disconnecting &&
       immediateState.value.type === DisconnectingType.Pause
     ) {
-      setIsPaused(true)
-    }
-    if (immediateState.type === EngineConnectionStateType.Connecting) {
-      setIsPaused(false)
+      setStreamState(StreamState.Paused)
     }
   }, [immediateState])
 
@@ -76,8 +79,11 @@ export const Stream = () => {
     let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
 
     const teardown = () => {
+      // Already paused
+      if (streamState === StreamState.Paused) return
+
       videoRef.current?.pause()
-      setIsFreezeFrame(true)
+      setStreamState(StreamState.Paused)
       sceneInfra.modelingSend({ type: 'Cancel' })
       // Give video time to pause
       window.requestAnimationFrame(() => {
@@ -91,7 +97,7 @@ export const Stream = () => {
         timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
       } else if (!engineCommandManager.engineConnection?.isReady()) {
         clearTimeout(timeoutIdIdleA)
-        engineCommandManager.engineConnection?.connect(true)
+        setStreamState(StreamState.Resuming)
       }
     }
 
@@ -106,10 +112,15 @@ export const Stream = () => {
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
     const onAnyInput = () => {
-      // Clear both timers
-      clearTimeout(timeoutIdIdleA)
-      clearTimeout(timeoutIdIdleB)
-      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+      if (streamState === StreamState.Playing) {
+        // Clear both timers
+        clearTimeout(timeoutIdIdleA)
+        clearTimeout(timeoutIdIdleB)
+        timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+      }
+      if (streamState === StreamState.Paused) {
+        setStreamState(StreamState.Resuming)
+      }
     }
 
     if (IDLE) {
@@ -124,7 +135,27 @@ export const Stream = () => {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
+    const onSceneReady = () => {
+      kclManager.isFirstRender = true
+      setStreamState(StreamState.Playing)
+      kclManager.executeCode(true).then(() => {
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+        kclManager.isFirstRender = false
+      })
+    }
+
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.SceneReady,
+      onSceneReady
+    )
+
     return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.SceneReady,
+        onSceneReady
+      )
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
@@ -152,19 +183,7 @@ export const Stream = () => {
         )
       }
     }
-  }, [IDLE])
-
-  useEffect(() => {
-    setIsFirstRender(kclManager.isFirstRender)
-    if (!kclManager.isFirstRender)
-      setTimeout(() =>
-        // execute in the next event loop
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-      )
-    setIsFreezeFrame(!kclManager.isFirstRender)
-  }, [kclManager.isFirstRender])
+  }, [IDLE, streamState])
 
   useEffect(() => {
     if (
@@ -288,7 +307,8 @@ export const Stream = () => {
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
-      {isPaused && (
+      {(streamState === StreamState.Paused ||
+        streamState === StreamState.Resuming) && (
         <div className="text-center absolute inset-0">
           <div
             className="flex flex-col items-center justify-center h-screen"
@@ -310,16 +330,19 @@ export const Stream = () => {
                 />
               </svg>
             </div>
-            <p className="text-base mt-2 text-primary bold">Paused</p>
+            <p className="text-base mt-2 text-primary bold">
+              {streamState === StreamState.Paused && 'Paused'}
+              {streamState === StreamState.Resuming && 'Resuming'}
+            </p>
           </div>
         </div>
       )}
-      {(!isNetworkOkay || isLoading || isFirstRender) && !isFreezeFrame && (
+      {(!isNetworkOkay || isLoading || kclManager.isFirstRender) && (
         <div className="text-center absolute inset-0">
           <Loading>
-            {!isNetworkOkay && !isLoading ? (
+            {!isNetworkOkay && !isLoading && !kclManager.isFirstRender ? (
               <span data-testid="loading-stream">Stream disconnected...</span>
-            ) : !isLoading && isFirstRender ? (
+            ) : !isLoading && kclManager.isFirstRender ? (
               <span data-testid="loading-stream">Building scene...</span>
             ) : (
               <span data-testid="loading-stream">Loading stream...</span>

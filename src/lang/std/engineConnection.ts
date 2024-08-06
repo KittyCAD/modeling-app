@@ -15,9 +15,10 @@ import {
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
+import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 
 // TODO(paultag): This ought to be tweakable.
-const pingIntervalMs = 10000
+const pingIntervalMs = 1000
 
 function isHighlightSetEntity_type(
   data: any
@@ -322,13 +323,22 @@ class EngineConnection extends EventTarget {
 
       switch (this.state.type as EngineConnectionStateType) {
         case EngineConnectionStateType.ConnectionEstablished:
-          // If there was no reply to the last ping, report a timeout.
+          // If there was no reply to the last ping, report a timeout and
+          // teardown the connection.
           if (this.pingPongSpan.ping && !this.pingPongSpan.pong) {
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.PingPongChanged, {
                 detail: 'TIMEOUT',
               })
             )
+            this.state = {
+              type: EngineConnectionStateType.Disconnecting,
+              value: {
+                type: DisconnectingType.Timeout,
+              },
+            }
+            this.disconnectAll()
+
             // Otherwise check the time between was >= pingIntervalMs,
             // and if it was, then it's bad network health.
           } else if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
@@ -358,7 +368,10 @@ class EngineConnection extends EventTarget {
           break
         case EngineConnectionStateType.Disconnecting:
         case EngineConnectionStateType.Disconnected:
-          // Let other parts of the app handle the reconnect
+          // We will do reconnection elsewhere, because we basically need
+          // to destroy this EngineConnection, and this setInterval loop
+          // lives inside it. (lee) I might change this in the future so it's
+          // outside this class.
           break
         default:
           if (this.isConnecting()) break
@@ -369,7 +382,7 @@ class EngineConnection extends EventTarget {
       }
     }, pingIntervalMs)
 
-    this.connect()
+    this.connect(this.engineCommandManager.disableWebRTC ? true : false)
   }
 
   isConnecting() {
@@ -382,58 +395,29 @@ class EngineConnection extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     this.idleMode = opts?.idleMode ?? false
-    this.disconnectAll()
     clearInterval(this.pingIntervalId)
 
-    this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
-    this.pc?.removeEventListener('icecandidateerror', this.onIceCandidateError)
-    this.pc?.removeEventListener(
-      'connectionstatechange',
-      this.onConnectionStateChange
-    )
-    this.pc?.removeEventListener('track', this.onTrack)
+    if (opts?.idleMode) {
+      this.state = {
+        type: EngineConnectionStateType.Disconnecting,
+        value: {
+          type: DisconnectingType.Pause,
+        },
+      }
+    }
+    // Pass the state along
+    if (this.state.type === EngineConnectionStateType.Disconnecting) return
+    if (this.state.type === EngineConnectionStateType.Disconnected) return
 
-    this.unreliableDataChannel?.removeEventListener(
-      'open',
-      this.onDataChannelOpen
-    )
-    this.unreliableDataChannel?.removeEventListener(
-      'close',
-      this.onDataChannelClose
-    )
-    this.unreliableDataChannel?.removeEventListener(
-      'error',
-      this.onDataChannelError
-    )
-    this.unreliableDataChannel?.removeEventListener(
-      'message',
-      this.onDataChannelMessage
-    )
-    this.pc?.removeEventListener('datachannel', this.onDataChannel)
+    // Otherwise it's by default a "quit"
+    this.state = {
+      type: EngineConnectionStateType.Disconnecting,
+      value: {
+        type: DisconnectingType.Quit,
+      },
+    }
 
-    this.websocket?.removeEventListener('open', this.onWebSocketOpen)
-    this.websocket?.removeEventListener('close', this.onWebSocketClose)
-    this.websocket?.removeEventListener('error', this.onWebSocketError)
-    this.websocket?.removeEventListener('message', this.onWebSocketMessage)
-
-    window.removeEventListener(
-      'use-network-status-ready',
-      this.onNetworkStatusReady
-    )
-
-    this.state = opts?.idleMode
-      ? {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Pause,
-          },
-        }
-      : {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Quit,
-          },
-        }
+    this.disconnectAll()
   }
 
   /**
@@ -523,8 +507,19 @@ class EngineConnection extends EventTarget {
               })
             )
             break
+          case 'disconnected':
           case 'failed':
-            this.disconnectAll()
+            this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
+            this.pc?.removeEventListener(
+              'icecandidateerror',
+              this.onIceCandidateError
+            )
+            this.pc?.removeEventListener(
+              'connectionstatechange',
+              this.onConnectionStateChange
+            )
+            this.pc?.removeEventListener('track', this.onTrack)
+
             this.state = {
               type: EngineConnectionStateType.Disconnecting,
               value: {
@@ -535,6 +530,7 @@ class EngineConnection extends EventTarget {
                 },
               },
             }
+            this.disconnectAll()
             break
           default:
             break
@@ -666,17 +662,32 @@ class EngineConnection extends EventTarget {
         )
 
         this.onDataChannelClose = (event) => {
+          this.unreliableDataChannel?.removeEventListener(
+            'open',
+            this.onDataChannelOpen
+          )
+          this.unreliableDataChannel?.removeEventListener(
+            'close',
+            this.onDataChannelClose
+          )
+          this.unreliableDataChannel?.removeEventListener(
+            'error',
+            this.onDataChannelError
+          )
+          this.unreliableDataChannel?.removeEventListener(
+            'message',
+            this.onDataChannelMessage
+          )
+          this.pc?.removeEventListener('datachannel', this.onDataChannel)
           this.disconnectAll()
-          this.finalizeIfAllConnectionsClosed()
         }
+
         this.unreliableDataChannel?.addEventListener(
           'close',
           this.onDataChannelClose
         )
 
         this.onDataChannelError = (event) => {
-          this.disconnectAll()
-
           this.state = {
             type: EngineConnectionStateType.Disconnecting,
             value: {
@@ -687,6 +698,7 @@ class EngineConnection extends EventTarget {
               },
             },
           }
+          this.disconnectAll()
         }
         this.unreliableDataChannel?.addEventListener(
           'error',
@@ -757,22 +769,33 @@ class EngineConnection extends EventTarget {
         this.send({ type: 'ping' })
         this.pingPongSpan.ping = new Date()
         if (this.engineCommandManager.disableWebRTC) {
-          this.engineCommandManager
-            .initPlanes()
-            .then(() => this.engineCommandManager.resolveReady())
+          this.engineCommandManager.initPlanes().then(() => {
+            this.dispatchEvent(
+              new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+                detail: this.engineCommandManager.engineConnection,
+              })
+            )
+          })
         }
       }
       this.websocket.addEventListener('open', this.onWebSocketOpen)
 
       this.onWebSocketClose = (event) => {
+        this.websocket?.removeEventListener('open', this.onWebSocketOpen)
+        this.websocket?.removeEventListener('close', this.onWebSocketClose)
+        this.websocket?.removeEventListener('error', this.onWebSocketError)
+        this.websocket?.removeEventListener('message', this.onWebSocketMessage)
+
+        window.removeEventListener(
+          'use-network-status-ready',
+          this.onNetworkStatusReady
+        )
+
         this.disconnectAll()
-        this.finalizeIfAllConnectionsClosed()
       }
       this.websocket.addEventListener('close', this.onWebSocketClose)
 
       this.onWebSocketError = (event) => {
-        this.disconnectAll()
-
         this.state = {
           type: EngineConnectionStateType.Disconnecting,
           value: {
@@ -783,6 +806,8 @@ class EngineConnection extends EventTarget {
             },
           },
         }
+
+        this.disconnectAll()
       }
       this.websocket.addEventListener('error', this.onWebSocketError)
 
@@ -933,7 +958,6 @@ class EngineConnection extends EventTarget {
               })
               .catch((err: Error) => {
                 // The local description is invalid, so there's no point continuing.
-                this.disconnectAll()
                 this.state = {
                   type: EngineConnectionStateType.Disconnecting,
                   value: {
@@ -944,6 +968,7 @@ class EngineConnection extends EventTarget {
                     },
                   },
                 }
+                this.disconnectAll()
               })
             break
 
@@ -1027,6 +1052,9 @@ class EngineConnection extends EventTarget {
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   send(message: Models['WebSocketRequest_type']) {
+    // Not connected, don't send anything
+    if (this.websocket?.readyState === 3) return
+
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.websocket?.send(
@@ -1034,18 +1062,35 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
-    this.websocket?.close()
-    this.unreliableDataChannel?.close()
-    this.pc?.close()
+    if (this.websocket?.readyState === 1) {
+      this.websocket?.close()
+    }
+    if (this.unreliableDataChannel?.readyState === 'open') {
+      this.unreliableDataChannel?.close()
+    }
+    if (this.pc?.connectionState === 'connected') {
+      this.pc?.close()
+    }
 
     this.webrtcStatsCollector = undefined
-  }
-  finalizeIfAllConnectionsClosed() {
-    const allClosed =
-      this.websocket?.readyState === 3 &&
-      this.pc?.connectionState === 'closed' &&
+
+    // Already triggered
+    if (this.state.type === EngineConnectionStateType.Disconnected) return
+
+    const closedPc = !this.pc || this.pc?.connectionState === 'closed'
+    const closedUDC =
+      !this.unreliableDataChannel ||
       this.unreliableDataChannel?.readyState === 'closed'
-    if (allClosed) {
+
+    // Do not check when timing out because websockets take forever to
+    // report their disconnected state.
+    const closedWS =
+      (this.state.type === EngineConnectionStateType.Disconnecting &&
+        this.state.value.type === DisconnectingType.Timeout) ||
+      !this.websocket ||
+      this.websocket?.readyState === 3
+
+    if (closedPc && closedUDC && closedWS) {
       // Do not notify the rest of the program that we have cut off anything.
       this.state = { type: EngineConnectionStateType.Disconnected }
     }
@@ -1093,7 +1138,11 @@ export type CommandLog =
     }
 
 export enum EngineCommandManagerEvents {
+  // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
+
+  // the whole scene is ready (settings loaded)
+  SceneReady = 'scene-ready',
 }
 
 /**
@@ -1151,7 +1200,6 @@ export class EngineCommandManager extends EventTarget {
    * any out-of-order late responses in the unreliable channel.
    */
   inSequence = 1
-  pool?: string
   engineConnection?: EngineConnection
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
@@ -1160,6 +1208,8 @@ export class EngineCommandManager extends EventTarget {
     reject: (reason: any) => void
     commandId: string
   }
+  settings: SettingsViaQueryString
+
   /**
    * Export intent traxcks the intent of the export. If it is null there is no
    * export in progress. Otherwise it is an enum value of the intent.
@@ -1167,15 +1217,6 @@ export class EngineCommandManager extends EventTarget {
    */
   private _exportIntent: ExportIntent | null = null
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
-  resolveReady = () => {}
-  /** Folks should realize that wait for ready does not get called _everytime_
-   *  the connection resets and restarts, it only gets called the first time.
-   *
-   *  Be careful what you put here.
-   */
-  waitForReady: Promise<void> = new Promise((resolve) => {
-    this.resolveReady = resolve
-  })
 
   subscriptions: {
     [event: string]: {
@@ -1188,11 +1229,19 @@ export class EngineCommandManager extends EventTarget {
     }
   } = {} as any
 
-  constructor(pool?: string) {
+  constructor(settings?: SettingsViaQueryString) {
     super()
 
     this.engineConnection = undefined
-    this.pool = pool
+    this.settings = settings
+      ? settings
+      : {
+          pool: null,
+          theme: Themes.Dark,
+          highlightEdges: true,
+          enableSSAO: true,
+          showScaleGrid: false,
+        }
   }
 
   private _camControlsCameraChange = () => {}
@@ -1232,11 +1281,11 @@ export class EngineCommandManager extends EventTarget {
     setIsStreamReady,
     width,
     height,
-    executeCode,
     token,
     makeDefaultPlanes,
     modifyGrid,
     settings = {
+      pool: null,
       theme: Themes.Dark,
       highlightEdges: true,
       enableSSAO: true,
@@ -1248,17 +1297,14 @@ export class EngineCommandManager extends EventTarget {
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
-    executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     modifyGrid: (hidden: boolean) => Promise<void>
-    settings?: {
-      theme: Themes
-      highlightEdges: boolean
-      enableSSAO: boolean
-      showScaleGrid: boolean
-    }
+    settings?: SettingsViaQueryString
   }) {
+    if (settings) {
+      this.settings = settings
+    }
     this.makeDefaultPlanes = makeDefaultPlanes
     this.disableWebRTC = disableWebRTC
     this.modifyGrid = modifyGrid
@@ -1275,8 +1321,10 @@ export class EngineCommandManager extends EventTarget {
       return
     }
 
-    const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
-    const pool = this.pool === undefined ? '' : `&pool=${this.pool}`
+    const additionalSettings = this.settings.enableSSAO
+      ? '&post_effect=ssao'
+      : ''
+    const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
@@ -1300,12 +1348,12 @@ export class EngineCommandManager extends EventTarget {
         cmd_id: uuidv4(),
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(settings.theme),
+          color: getThemeColorForEngine(this.settings.theme),
         },
       })
 
       // Sets the default line colors
-      const opposingTheme = getOppositeTheme(settings.theme)
+      const opposingTheme = getOppositeTheme(this.settings.theme)
       this.sendSceneCommand({
         cmd_id: uuidv4(),
         type: 'modeling_cmd_req',
@@ -1321,7 +1369,7 @@ export class EngineCommandManager extends EventTarget {
         cmd_id: uuidv4(),
         cmd: {
           type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
-          hidden: !settings.highlightEdges,
+          hidden: !this.settings.highlightEdges,
         },
       })
 
@@ -1338,13 +1386,19 @@ export class EngineCommandManager extends EventTarget {
       // We want modify the grid first because we don't want it to flash.
       // Ideally these would already be default hidden in engine (TODO do
       // that) https://github.com/KittyCAD/engine/issues/2282
-      this.modifyGrid(!settings.showScaleGrid)?.then(async () => {
+      this.modifyGrid(!this.settings.showScaleGrid)?.then(async () => {
         await this.initPlanes()
-        this.resolveReady()
         setIsStreamReady(true)
-        await executeCode()
+
+        // Other parts of the application should use this to react on scene ready.
+        this.dispatchEvent(
+          new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+            detail: this.engineConnection,
+          })
+        )
       })
     }
+
     this.engineConnection.addEventListener(
       EngineConnectionEvents.Opened,
       this.onEngineConnectionOpened
@@ -1569,6 +1623,10 @@ export class EngineCommandManager extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     if (this.engineConnection) {
+      for (const pending of Object.values(this.pendingCommands)) {
+        pending.reject('tearDown')
+      }
+
       this.engineConnection.removeEventListener(
         EngineConnectionEvents.Opened,
         this.onEngineConnectionOpened
@@ -1587,7 +1645,6 @@ export class EngineCommandManager extends EventTarget {
       )
 
       this.engineConnection?.tearDown(opts)
-      this.engineConnection = undefined
 
       // Our window.tearDown assignment causes this case to happen which is
       // only really for tests.
@@ -1874,6 +1931,17 @@ export class EngineCommandManager extends EventTarget {
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {
+    if (this.engineConnection === undefined) return
+
+    // Can't send commands if there's no connection
+    if (
+      this.engineConnection.state.type ===
+        EngineConnectionStateType.Disconnecting ||
+      this.engineConnection.state.type ===
+        EngineConnectionStateType.Disconnected
+    )
+      return
+
     return await this.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
