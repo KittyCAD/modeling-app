@@ -58,10 +58,12 @@ export type Selection =
         | 'line'
         | 'arc'
         | 'all'
+      artifactId?: ArtifactId
       range: SourceRange
     }
   | {
       type: 'opposite-edgeCut' | 'adjacent-edgeCut' | 'base-edgeCut'
+      artifactId?: ArtifactId
       range: SourceRange
       // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
       secondaryRange: SourceRange
@@ -108,7 +110,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'solid2D' },
+        selection: {
+          artifactId: data.entity_id,
+          range: codeRef.range,
+          type: 'solid2D',
+        },
       },
     }
   }
@@ -120,6 +126,7 @@ export async function getEventForSelectWithPoint({
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
+          artifactId: data.entity_id,
           range: codeRef.range,
           type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
         },
@@ -136,7 +143,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'extrude-wall' },
+        selection: {
+          artifactId: data.entity_id,
+          range: codeRef.range,
+          type: 'extrude-wall',
+        },
       },
     }
   }
@@ -145,7 +156,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: _artifact.codeRef.range, type: 'default' },
+        selection: {
+          artifactId: data.entity_id,
+          range: _artifact.codeRef.range,
+          type: 'default',
+        },
       },
     }
   }
@@ -807,16 +822,18 @@ export function updateSelections(
         selection?.type === 'opposite-edgeCut'
       )
         return {
+          artifactId: selection?.artifactId,
           range: [node.start, node.end],
           type: selection?.type,
           secondaryRange: selection?.secondaryRange,
         }
       return {
+        artifactId: selection?.artifactId,
         range: [node.start, node.end],
         type: selection?.type,
       }
     })
-    .filter((x?: Selection) => x !== undefined) as Selection[]
+    .filter((x?: Selection) => x !== undefined)
 
   return {
     codeBasedSelections:
