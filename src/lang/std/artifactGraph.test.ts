@@ -458,8 +458,6 @@ async function GraphTheGraph(
   await page.waitForSelector('#plotly-graph')
   const element = await page.$('#plotly-graph')
 
-  // wait an extra bit for things to settle
-  await new Promise((resolve) => setTimeout(resolve, 500))
 
   // @ts-ignore
   await element.screenshot({
@@ -469,24 +467,37 @@ async function GraphTheGraph(
   await browser.close()
 
   const img1Path = path.resolve(`./src/lang/std/artifactMapGraphs/${imageName}`)
-  const img2Path = path.resolve('./e2e/playwright/temp3.png')
-
+  // chop the top 30 pixels off the image
   const img1 = PNG.sync.read(fs.readFileSync(img1Path))
+  const img1Data = new Uint8Array(img1.data)
+  const img1DataChopped = img1Data.slice(30 * img1.width * 4)
+  img1.data = Buffer.from(img1DataChopped)
+
+
+  const img2Path = path.resolve('./e2e/playwright/temp3.png')
   const img2 = PNG.sync.read(fs.readFileSync(img2Path))
+  // const img1Data = new Uint8Array(img1.data)
+  // const img2Data = new Uint8Array(img2.data)
+  // img1.data = Buffer.from(img1Data)
+
 
   const { width, height } = img1
   const diff = new PNG({ width, height })
 
-  const numDiffPixels = pixelmatch(
-    img1.data,
-    img2.data,
-    diff.data,
-    width,
-    height,
-    { threshold: 0.1 }
-  )
+  const imageSizeDifferent = img1.data.length !== img2.data.length
+  let numDiffPixels = 0
+  if (!imageSizeDifferent) {
+    numDiffPixels = pixelmatch(
+      img1.data,
+      img2.data,
+      diff.data,
+      width,
+      height,
+      { threshold: 0.1 }
+    )
+  }
 
-  if (numDiffPixels > 10) {
+  if (numDiffPixels > 10 || imageSizeDifferent) {
     console.warn('numDiffPixels', numDiffPixels)
     // write file out to final place
     fs.writeFileSync(
