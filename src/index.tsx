@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import { Toaster } from 'react-hot-toast'
+import toast, { resolveValue, ToastBar, Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -14,6 +14,7 @@ import {
   createUpdaterRestartModal,
 } from 'components/UpdaterRestartModal'
 import { AppStreamProvider } from 'AppState'
+import { CustomIcon } from 'components/CustomIcon'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -34,6 +35,7 @@ root.render(
         toastOptions={{
           style: {
             borderRadius: '3px',
+            maxInlineSize: 'min(480px, 100%)',
           },
           className:
             'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
@@ -48,7 +50,28 @@ root.render(
                 : 1500,
           },
         }}
-      />
+      >
+        {(t) => (
+          <ToastBar toast={t}>
+            {({ icon, message }) => (
+              <>
+                {icon}
+                {resolveValue(message, t)}
+                {t.duration === Infinity && t.type !== 'loading' && (
+                  <button className="border-none p-0 m-0">
+                    <CustomIcon
+                      name="close"
+                      className="w-5 h-5"
+                      onClick={() => toast.dismiss(t.id)}
+                    />
+                    <span className="sr-only">Close</span>
+                  </button>
+                )}
+              </>
+            )}
+          </ToastBar>
+        )}
+      </Toaster>
       <ModalContainer />
     </AppStreamProvider>
   </HotkeysProvider>
