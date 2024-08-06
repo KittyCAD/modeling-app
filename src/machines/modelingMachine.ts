@@ -1070,7 +1070,7 @@ export const modelingMachine = createMachine(
           cmd: {
             type: 'default_camera_look_at',
             center: { x: 0, y: 0, z: 0 },
-            vantage: { x: 0, y: -1254, z: 627 },
+            vantage: { x: 0, y: -1250, z: 580 },
             up: { x: 0, y: 0, z: 1 },
           },
         }),
