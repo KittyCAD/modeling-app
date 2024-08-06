@@ -458,7 +458,6 @@ async function GraphTheGraph(
   await page.waitForSelector('#plotly-graph')
   const element = await page.$('#plotly-graph')
 
-
   // @ts-ignore
   await element.screenshot({
     path: `./e2e/playwright/temp3.png`,
@@ -473,13 +472,8 @@ async function GraphTheGraph(
   const img1DataChopped = img1Data.slice(30 * img1.width * 4)
   img1.data = Buffer.from(img1DataChopped)
 
-
   const img2Path = path.resolve('./e2e/playwright/temp3.png')
   const img2 = PNG.sync.read(fs.readFileSync(img2Path))
-  // const img1Data = new Uint8Array(img1.data)
-  // const img2Data = new Uint8Array(img2.data)
-  // img1.data = Buffer.from(img1Data)
-
 
   const { width, height } = img1
   const diff = new PNG({ width, height })
@@ -487,14 +481,9 @@ async function GraphTheGraph(
   const imageSizeDifferent = img1.data.length !== img2.data.length
   let numDiffPixels = 0
   if (!imageSizeDifferent) {
-    numDiffPixels = pixelmatch(
-      img1.data,
-      img2.data,
-      diff.data,
-      width,
-      height,
-      { threshold: 0.1 }
-    )
+    numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, {
+      threshold: 0.1,
+    })
   }
 
   if (numDiffPixels > 10 || imageSizeDifferent) {
