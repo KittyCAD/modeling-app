@@ -84,7 +84,11 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import { Selections, getEventForSegmentSelection } from 'lib/selections'
+import {
+  Selection,
+  Selections,
+  getEventForSegmentSelection,
+} from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
@@ -98,6 +102,11 @@ import {
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import {
+  ArtifactGraph,
+  ArtifactId,
+  getPlaneOrFaceFromSelection,
+} from 'lang/std/artifactGraph'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1762,6 +1771,33 @@ export function getParentGroup(
   return null
 }
 
+export async function planeOrFaceFromSelection({
+  artifactGraph,
+  selection,
+}: {
+  artifactGraph: ArtifactGraph
+  selection: Selection
+}): Promise<{
+  id: ArtifactId
+  faceDetails: Models['GetSketchModePlane_type']
+} | null> {
+  // If the selection doesn't have an artifactId associated with it, we can't
+  // do it.
+  if (!selection.artifactId) return null
+
+  const planeOrFace = getPlaneOrFaceFromSelection(
+    selection.artifactId,
+    artifactGraph
+  )
+  if (!planeOrFace) return null
+  if (planeOrFace?.type === 'plane') {
+    const faceDetails = await getFaceDetails(planeOrFace.id)
+    return { id: planeOrFace.id, faceDetails }
+  }
+  // TODO: Handle wall or cap artifact.
+  return null
+}
+
 export function sketchGroupFromPathToNode({
   pathToNode,
   ast,
@@ -1827,11 +1863,51 @@ export function getSketchQuaternion(
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
 export async function getSketchOrientationDetails(
+  artifactGraph: ArtifactGraph,
+  selection: Selection,
   sketchPathToNode: PathToNode
 ): Promise<{
-  quat: Quaternion
-  sketchDetails: SketchDetails & { faceId?: string }
+  sketchDetails: {
+    zAxis: [number, number, number]
+    yAxis: [number, number, number]
+    origin: [number, number, number]
+    faceId: string
+  }
 }> {
+  const plane = await planeOrFaceFromSelection({
+    artifactGraph,
+    selection,
+  })
+  if (plane) {
+    const details = plane.faceDetails
+    console.warn('Found plane', plane)
+    const zAxis: [number, number, number] = [
+      details.z_axis.x,
+      details.z_axis.y,
+      details.z_axis.z,
+    ]
+    const yAxis: [number, number, number] = [
+      details.y_axis.x,
+      details.y_axis.y,
+      details.y_axis.z,
+    ]
+    const origin: [number, number, number] = [
+      details.origin.x,
+      details.origin.y,
+      details.origin.z,
+    ]
+    return {
+      sketchDetails: {
+        zAxis,
+        yAxis,
+        origin,
+        faceId: plane.id,
+      },
+    }
+  }
+
+  // We couldn't find the plane or face, so try to look at the AST, and find it
+  // through there.
   const sketchGroup = sketchGroupFromPathToNode({
     pathToNode: sketchPathToNode,
     ast: kclManager.ast,
@@ -1843,9 +1919,7 @@ export async function getSketchOrientationDetails(
   if (sketchGroup.on.type === 'plane') {
     const zAxis = sketchGroup?.on.zAxis
     return {
-      quat: getQuaternionFromZAxis(massageFormats(zAxis)),
       sketchDetails: {
-        sketchPathToNode,
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
         yAxis: [
           sketchGroup.on.yAxis.x,
@@ -1864,14 +1938,8 @@ export async function getSketchOrientationDetails(
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       return Promise.reject('face info')
     const { z_axis, y_axis, origin } = faceInfo
-    const quaternion = quaternionFromUpNForward(
-      new Vector3(y_axis.x, y_axis.y, y_axis.z),
-      new Vector3(z_axis.x, z_axis.y, z_axis.z)
-    )
     return {
-      quat: quaternion,
       sketchDetails: {
-        sketchPathToNode,
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],

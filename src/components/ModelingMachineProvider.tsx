@@ -589,12 +589,17 @@ export const ModelingMachineProvider = ({
           }
         },
         'animate-to-sketch': async ({ selectionRanges }) => {
-          const sourceRange = selectionRanges.codeBasedSelections[0].range
+          const selection = selectionRanges.codeBasedSelections[0]
+          const sourceRange = selection.range
           const sketchPathToNode = getNodePathFromSourceRange(
             kclManager.ast,
             sourceRange
           )
-          const info = await getSketchOrientationDetails(sketchPathToNode || [])
+          const info = await getSketchOrientationDetails(
+            engineCommandManager.artifactGraph,
+            selection,
+            sketchPathToNode || []
+          )
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             info?.sketchDetails?.faceId || ''

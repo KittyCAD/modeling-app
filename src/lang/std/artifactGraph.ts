@@ -226,7 +226,7 @@ function mergeArtifacts(
  * It does not mutate the map directly, but returns an array of artifacts to update
  *
  * @param currentPlaneId is only needed for `start_path` commands because this command does not have a pathId
- * instead it relies on the id used with the `enable_sketch_mode` command, so this much be kept track of
+ * instead it relies on the id used with the `enable_sketch_mode` command, so this must be kept track of
  * outside of this function. It would be good to update the `start_path` command to include the planeId so we
  * can remove this.
  */
@@ -712,4 +712,34 @@ export function getExtrusionFromSuspectedPath(
     { key: path.extrusionId, types: ['extrusion'] },
     artifactGraph
   )
+}
+
+/**
+ * Get the plane or face from a selection.
+ *
+ * TODO: Handle sketch on face.
+ */
+export function getPlaneOrFaceFromSelection(
+  id: ArtifactId,
+  artifactGraph: ArtifactGraph
+): PlaneArtifactRich | null {
+  const selection = artifactGraph.get(id)
+  if (!selection) return null
+  if (selection.type === 'solid2D') {
+    const path = artifactGraph.get(selection.pathId)
+    if (path?.type !== 'path') return null
+    const plane = artifactGraph.get(path.planeId)
+    if (plane?.type !== 'plane') return null
+    return expandPlane(plane, artifactGraph)
+  } else if (selection.type === 'wall' || selection.type === 'cap') {
+    const extrusion = artifactGraph.get(selection.extrusionId)
+    if (extrusion?.type !== 'extrusion') return null
+    const path = artifactGraph.get(extrusion.pathId)
+    if (path?.type !== 'path') return null
+    const plane = artifactGraph.get(path.planeId)
+    // TODO: For sketch on face, this won't be a plane.
+    if (plane?.type !== 'plane') return null
+    return expandPlane(plane, artifactGraph)
+  }
+  return null
 }

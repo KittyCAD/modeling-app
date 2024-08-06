@@ -30,6 +30,7 @@ import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
 import {
+  ArtifactId,
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
@@ -56,6 +57,7 @@ export type Selection = {
     | 'line'
     | 'arc'
     | 'all'
+  artifactId?: ArtifactId
   range: SourceRange
 }
 export type Selections = {
@@ -100,7 +102,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'solid2D' },
+        selection: {
+          artifactId: data.entity_id,
+          range: codeRef.range,
+          type: 'solid2D',
+        },
       },
     }
   }
@@ -112,6 +118,7 @@ export async function getEventForSelectWithPoint({
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
+          artifactId: data.entity_id,
           range: codeRef.range,
           type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
         },
@@ -128,7 +135,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'extrude-wall' },
+        selection: {
+          artifactId: data.entity_id,
+          range: codeRef.range,
+          type: 'extrude-wall',
+        },
       },
     }
   }
@@ -137,7 +148,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: _artifact.codeRef.range, type: 'default' },
+        selection: {
+          artifactId: data.entity_id,
+          range: _artifact.codeRef.range,
+          type: 'default',
+        },
       },
     }
   }
@@ -642,9 +657,12 @@ export function updateSelections(
       const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
+      const prevCodeBasedSelection =
+        prevSelectionRanges.codeBasedSelections[Number(index)]
       return {
+        artifactId: prevCodeBasedSelection?.artifactId,
         range: [node.start, node.end],
-        type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+        type: prevCodeBasedSelection?.type,
       }
     })
     .filter((x?: Selection) => x !== undefined) as Selection[]
