@@ -229,6 +229,7 @@ class EngineConnection extends EventTarget {
   unreliableDataChannel?: RTCDataChannel
   mediaStream?: MediaStream
   idleMode: boolean = false
+  promise?: Promise<void>
 
   onIceCandidate = function (
     this: RTCPeerConnection,
@@ -376,13 +377,12 @@ class EngineConnection extends EventTarget {
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping)
-            this.connect(this.engineCommandManager.disableWebRTC ? true : false)
+          if (!this.pingPongSpan.ping) this.connect()
           break
       }
     }, pingIntervalMs)
 
-    this.connect(this.engineCommandManager.disableWebRTC ? true : false)
+    this.promise = this.connect()
   }
 
   isConnecting() {
@@ -427,618 +427,611 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect(reconnecting?: boolean) {
-    if (this.isConnecting() || this.isReady()) {
-      return
-    }
+  connect(reconnecting?: boolean): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.isConnecting() || this.isReady()) {
+        return
+      }
 
-    const createPeerConnection = () => {
-      if (!this.engineCommandManager.disableWebRTC) {
+      const createPeerConnection = () => {
         this.pc = new RTCPeerConnection({
           bundlePolicy: 'max-bundle',
         })
-      }
 
-      // Other parts of the application expect pc to be initialized when firing.
-      this.dispatchEvent(
-        new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
-          detail: this,
-        })
-      )
+        // Other parts of the application expect pc to be initialized when firing.
+        this.dispatchEvent(
+          new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
+            detail: this,
+          })
+        )
 
-      // Data channels MUST BE specified before SDP offers because requesting
-      // them affects what our needs are!
-      const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
-      this.pc?.createDataChannel?.(DATACHANNEL_NAME_UMC)
-
-      this.state = {
-        type: EngineConnectionStateType.Connecting,
-        value: {
-          type: ConnectingType.DataChannelRequested,
-          value: DATACHANNEL_NAME_UMC,
-        },
-      }
-
-      this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
-        if (event.candidate === null) {
-          return
-        }
+        // Data channels MUST BE specified before SDP offers because requesting
+        // them affects what our needs are!
+        const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
+        this.pc?.createDataChannel?.(DATACHANNEL_NAME_UMC)
 
         this.state = {
           type: EngineConnectionStateType.Connecting,
           value: {
-            type: ConnectingType.ICECandidateReceived,
+            type: ConnectingType.DataChannelRequested,
+            value: DATACHANNEL_NAME_UMC,
           },
         }
 
-        // Request a candidate to use
-        this.send({
-          type: 'trickle_ice',
-          candidate: {
-            candidate: event.candidate.candidate,
-            sdpMid: event.candidate.sdpMid || undefined,
-            sdpMLineIndex: event.candidate.sdpMLineIndex || undefined,
-            usernameFragment: event.candidate.usernameFragment || undefined,
-          },
-        })
-      }
-      this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
+        this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
+          if (event.candidate === null) {
+            return
+          }
 
-      this.onIceCandidateError = (_event: Event) => {
-        const event = _event as RTCPeerConnectionIceErrorEvent
-        console.warn(
-          `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
+          this.state = {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.ICECandidateReceived,
+            },
+          }
+
+          // Request a candidate to use
+          this.send({
+            type: 'trickle_ice',
+            candidate: {
+              candidate: event.candidate.candidate,
+              sdpMid: event.candidate.sdpMid || undefined,
+              sdpMLineIndex: event.candidate.sdpMLineIndex || undefined,
+              usernameFragment: event.candidate.usernameFragment || undefined,
+            },
+          })
+        }
+        this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
+
+        this.onIceCandidateError = (_event: Event) => {
+          const event = _event as RTCPeerConnectionIceErrorEvent
+          console.warn(
+            `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
+          )
+        }
+        this.pc?.addEventListener?.('icecandidateerror', this.onIceCandidateError)
+
+        // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
+        // Event type: generic Event type...
+        this.onConnectionStateChange = (event: any) => {
+          console.log('connectionstatechange: ' + event.target?.connectionState)
+          switch (event.target?.connectionState) {
+            // From what I understand, only after have we done the ICE song and
+            // dance is it safest to connect the video tracks / stream
+            case 'connected':
+              // Let the browser attach to the video stream now
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.NewTrack, {
+                  detail: { conn: this, mediaStream: this.mediaStream! },
+                })
+              )
+              break
+            case 'disconnected':
+            case 'failed':
+              this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
+              this.pc?.removeEventListener(
+                'icecandidateerror',
+                this.onIceCandidateError
+              )
+              this.pc?.removeEventListener(
+                'connectionstatechange',
+                this.onConnectionStateChange
+              )
+              this.pc?.removeEventListener('track', this.onTrack)
+
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
+                  value: {
+                    error: ConnectionError.ICENegotiate,
+                    context: event,
+                  },
+                },
+              }
+              this.disconnectAll()
+              break
+            default:
+              break
+          }
+        }
+        this.pc?.addEventListener?.(
+          'connectionstatechange',
+          this.onConnectionStateChange
         )
-      }
-      this.pc?.addEventListener?.('icecandidateerror', this.onIceCandidateError)
 
-      // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
-      // Event type: generic Event type...
-      this.onConnectionStateChange = (event: any) => {
-        console.log('connectionstatechange: ' + event.target?.connectionState)
-        switch (event.target?.connectionState) {
-          // From what I understand, only after have we done the ICE song and
-          // dance is it safest to connect the video tracks / stream
-          case 'connected':
-            // Let the browser attach to the video stream now
-            this.dispatchEvent(
-              new CustomEvent(EngineConnectionEvents.NewTrack, {
-                detail: { conn: this, mediaStream: this.mediaStream! },
+        this.onTrack = (event) => {
+          const mediaStream = event.streams[0]
+
+          this.state = {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.TrackReceived,
+            },
+          }
+
+          this.webrtcStatsCollector = (): Promise<WebRTCClientMetrics> => {
+            return new Promise((resolve, reject) => {
+              if (mediaStream.getVideoTracks().length !== 1) {
+                reject(new Error('too many video tracks to report'))
+                return
+              }
+
+              let videoTrack = mediaStream.getVideoTracks()[0]
+              void this.pc?.getStats(videoTrack).then((videoTrackStats) => {
+                let client_metrics: WebRTCClientMetrics = {
+                  rtc_frames_decoded: 0,
+                  rtc_frames_dropped: 0,
+                  rtc_frames_received: 0,
+                  rtc_frames_per_second: 0,
+                  rtc_freeze_count: 0,
+                  rtc_jitter_sec: 0.0,
+                  rtc_keyframes_decoded: 0,
+                  rtc_total_freezes_duration_sec: 0.0,
+                  rtc_frame_height: 0,
+                  rtc_frame_width: 0,
+                  rtc_packets_lost: 0,
+                  rtc_pli_count: 0,
+                  rtc_pause_count: 0,
+                  rtc_total_pauses_duration_sec: 0.0,
+                }
+
+                // TODO(paultag): Since we can technically have multiple WebRTC
+                // video tracks (even if the Server doesn't at the moment), we
+                // ought to send stats for every video track(?), and add the stream
+                // ID into it.  This raises the cardinality of collected metrics
+                // when/if we do, but for now, just report the one stream.
+
+                videoTrackStats.forEach((videoTrackReport) => {
+                  if (videoTrackReport.type === 'inbound-rtp') {
+                    client_metrics.rtc_frames_decoded =
+                      videoTrackReport.framesDecoded || 0
+                    client_metrics.rtc_frames_dropped =
+                      videoTrackReport.framesDropped || 0
+                    client_metrics.rtc_frames_received =
+                      videoTrackReport.framesReceived || 0
+                    client_metrics.rtc_frames_per_second =
+                      videoTrackReport.framesPerSecond || 0
+                    client_metrics.rtc_freeze_count =
+                      videoTrackReport.freezeCount || 0
+                    client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
+                    client_metrics.rtc_keyframes_decoded =
+                      videoTrackReport.keyFramesDecoded || 0
+                    client_metrics.rtc_total_freezes_duration_sec =
+                      videoTrackReport.totalFreezesDuration || 0
+                    client_metrics.rtc_frame_height =
+                      videoTrackReport.frameHeight || 0
+                    client_metrics.rtc_frame_width =
+                      videoTrackReport.frameWidth || 0
+                    client_metrics.rtc_packets_lost =
+                      videoTrackReport.packetsLost || 0
+                    client_metrics.rtc_pli_count = videoTrackReport.pliCount || 0
+                  } else if (videoTrackReport.type === 'transport') {
+                    // videoTrackReport.bytesReceived,
+                    // videoTrackReport.bytesSent,
+                  }
+                })
+                resolve(client_metrics)
               })
-            )
-            break
-          case 'disconnected':
-          case 'failed':
-            this.pc?.removeEventListener('icecandidate', this.onIceCandidate)
-            this.pc?.removeEventListener(
-              'icecandidateerror',
-              this.onIceCandidateError
-            )
-            this.pc?.removeEventListener(
-              'connectionstatechange',
-              this.onConnectionStateChange
-            )
-            this.pc?.removeEventListener('track', this.onTrack)
+            })
+          }
 
+          // The app is eager to use the MediaStream; as soon as onNewTrack is
+          // called, the following sequence happens:
+          // EngineConnection.onNewTrack -> StoreState.setMediaStream ->
+          // Stream.tsx reacts to mediaStream change, setting a video element.
+          // We wait until connectionstatechange changes to "connected"
+          // to pass it to the rest of the application.
+
+          this.mediaStream = mediaStream
+        }
+        this.pc?.addEventListener?.('track', this.onTrack)
+
+        this.onDataChannel = (event) => {
+          this.unreliableDataChannel = event.channel
+
+          this.state = {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.DataChannelConnecting,
+              value: event.channel.label,
+            },
+          }
+
+          this.onDataChannelOpen = (event) => {
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.DataChannelEstablished,
+              },
+            }
+
+            // Everything is now connected.
+            this.state = { type: EngineConnectionStateType.ConnectionEstablished }
+
+            this.engineCommandManager.inSequence = 1
+
+            this.dispatchEvent(
+              new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
+            )
+          }
+          this.unreliableDataChannel?.addEventListener(
+            'open',
+            this.onDataChannelOpen
+          )
+
+          this.onDataChannelClose = (event) => {
+            this.unreliableDataChannel?.removeEventListener(
+              'open',
+              this.onDataChannelOpen
+            )
+            this.unreliableDataChannel?.removeEventListener(
+              'close',
+              this.onDataChannelClose
+            )
+            this.unreliableDataChannel?.removeEventListener(
+              'error',
+              this.onDataChannelError
+            )
+            this.unreliableDataChannel?.removeEventListener(
+              'message',
+              this.onDataChannelMessage
+            )
+            this.pc?.removeEventListener('datachannel', this.onDataChannel)
+            this.disconnectAll()
+          }
+
+          this.unreliableDataChannel?.addEventListener(
+            'close',
+            this.onDataChannelClose
+          )
+
+          this.onDataChannelError = (event) => {
             this.state = {
               type: EngineConnectionStateType.Disconnecting,
               value: {
                 type: DisconnectingType.Error,
                 value: {
-                  error: ConnectionError.ICENegotiate,
+                  error: ConnectionError.DataChannelError,
                   context: event,
                 },
               },
             }
             this.disconnectAll()
-            break
-          default:
-            break
-        }
-      }
-      this.pc?.addEventListener?.(
-        'connectionstatechange',
-        this.onConnectionStateChange
-      )
-
-      this.onTrack = (event) => {
-        const mediaStream = event.streams[0]
-
-        this.state = {
-          type: EngineConnectionStateType.Connecting,
-          value: {
-            type: ConnectingType.TrackReceived,
-          },
-        }
-
-        this.webrtcStatsCollector = (): Promise<WebRTCClientMetrics> => {
-          return new Promise((resolve, reject) => {
-            if (mediaStream.getVideoTracks().length !== 1) {
-              reject(new Error('too many video tracks to report'))
-              return
-            }
-
-            let videoTrack = mediaStream.getVideoTracks()[0]
-            void this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-              let client_metrics: WebRTCClientMetrics = {
-                rtc_frames_decoded: 0,
-                rtc_frames_dropped: 0,
-                rtc_frames_received: 0,
-                rtc_frames_per_second: 0,
-                rtc_freeze_count: 0,
-                rtc_jitter_sec: 0.0,
-                rtc_keyframes_decoded: 0,
-                rtc_total_freezes_duration_sec: 0.0,
-                rtc_frame_height: 0,
-                rtc_frame_width: 0,
-                rtc_packets_lost: 0,
-                rtc_pli_count: 0,
-                rtc_pause_count: 0,
-                rtc_total_pauses_duration_sec: 0.0,
-              }
-
-              // TODO(paultag): Since we can technically have multiple WebRTC
-              // video tracks (even if the Server doesn't at the moment), we
-              // ought to send stats for every video track(?), and add the stream
-              // ID into it.  This raises the cardinality of collected metrics
-              // when/if we do, but for now, just report the one stream.
-
-              videoTrackStats.forEach((videoTrackReport) => {
-                if (videoTrackReport.type === 'inbound-rtp') {
-                  client_metrics.rtc_frames_decoded =
-                    videoTrackReport.framesDecoded || 0
-                  client_metrics.rtc_frames_dropped =
-                    videoTrackReport.framesDropped || 0
-                  client_metrics.rtc_frames_received =
-                    videoTrackReport.framesReceived || 0
-                  client_metrics.rtc_frames_per_second =
-                    videoTrackReport.framesPerSecond || 0
-                  client_metrics.rtc_freeze_count =
-                    videoTrackReport.freezeCount || 0
-                  client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
-                  client_metrics.rtc_keyframes_decoded =
-                    videoTrackReport.keyFramesDecoded || 0
-                  client_metrics.rtc_total_freezes_duration_sec =
-                    videoTrackReport.totalFreezesDuration || 0
-                  client_metrics.rtc_frame_height =
-                    videoTrackReport.frameHeight || 0
-                  client_metrics.rtc_frame_width =
-                    videoTrackReport.frameWidth || 0
-                  client_metrics.rtc_packets_lost =
-                    videoTrackReport.packetsLost || 0
-                  client_metrics.rtc_pli_count = videoTrackReport.pliCount || 0
-                } else if (videoTrackReport.type === 'transport') {
-                  // videoTrackReport.bytesReceived,
-                  // videoTrackReport.bytesSent,
-                }
-              })
-              resolve(client_metrics)
-            })
-          })
-        }
-
-        // The app is eager to use the MediaStream; as soon as onNewTrack is
-        // called, the following sequence happens:
-        // EngineConnection.onNewTrack -> StoreState.setMediaStream ->
-        // Stream.tsx reacts to mediaStream change, setting a video element.
-        // We wait until connectionstatechange changes to "connected"
-        // to pass it to the rest of the application.
-
-        this.mediaStream = mediaStream
-      }
-      this.pc?.addEventListener?.('track', this.onTrack)
-
-      this.onDataChannel = (event) => {
-        this.unreliableDataChannel = event.channel
-
-        this.state = {
-          type: EngineConnectionStateType.Connecting,
-          value: {
-            type: ConnectingType.DataChannelConnecting,
-            value: event.channel.label,
-          },
-        }
-
-        this.onDataChannelOpen = (event) => {
-          this.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.DataChannelEstablished,
-            },
           }
-
-          // Everything is now connected.
-          this.state = { type: EngineConnectionStateType.ConnectionEstablished }
-
-          this.engineCommandManager.inSequence = 1
-
-          this.dispatchEvent(
-            new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
-          )
-        }
-        this.unreliableDataChannel?.addEventListener(
-          'open',
-          this.onDataChannelOpen
-        )
-
-        this.onDataChannelClose = (event) => {
-          this.unreliableDataChannel?.removeEventListener(
-            'open',
-            this.onDataChannelOpen
-          )
-          this.unreliableDataChannel?.removeEventListener(
-            'close',
-            this.onDataChannelClose
-          )
-          this.unreliableDataChannel?.removeEventListener(
+          this.unreliableDataChannel?.addEventListener(
             'error',
             this.onDataChannelError
           )
-          this.unreliableDataChannel?.removeEventListener(
+
+          this.onDataChannelMessage = (event) => {
+            const result: UnreliableResponses = JSON.parse(event.data)
+            Object.values(
+              this.engineCommandManager.unreliableSubscriptions[result.type] || {}
+            ).forEach(
+              // TODO: There is only one response that uses the unreliable channel atm,
+              // highlight_set_entity, if there are more it's likely they will all have the same
+              // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+              // per unreliable subscription.
+              (callback) => {
+                if (
+                  result.type === 'highlight_set_entity' &&
+                  result?.data?.sequence &&
+                  result?.data.sequence > this.engineCommandManager.inSequence
+                ) {
+                  this.engineCommandManager.inSequence = result.data.sequence
+                  callback(result)
+                } else if (result.type !== 'highlight_set_entity') {
+                  callback(result)
+                }
+              }
+            )
+          }
+          this.unreliableDataChannel.addEventListener(
             'message',
             this.onDataChannelMessage
           )
-          this.pc?.removeEventListener('datachannel', this.onDataChannel)
-          this.disconnectAll()
+        }
+        this.pc?.addEventListener?.('datachannel', this.onDataChannel)
+      }
+
+      const createWebSocketConnection = () => {
+        this.state = {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.WebSocketConnecting,
+          },
         }
 
-        this.unreliableDataChannel?.addEventListener(
-          'close',
-          this.onDataChannelClose
-        )
+        this.websocket = new WebSocket(this.url, [])
+        this.websocket.binaryType = 'arraybuffer'
 
-        this.onDataChannelError = (event) => {
+        this.onWebSocketOpen = (event) => {
+          this.state = {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.WebSocketOpen,
+            },
+          }
+
+          // This is required for when KCMA is running stand-alone / within Tauri.
+          // Otherwise when run in a browser, the token is sent implicitly via
+          // the Cookie header.
+          if (this.token) {
+            this.send({
+              type: 'headers',
+              headers: { Authorization: `Bearer ${this.token}` },
+            })
+          }
+
+          // Send an initial ping
+          this.send({ type: 'ping' })
+          this.pingPongSpan.ping = new Date()
+        }
+        this.websocket.addEventListener('open', this.onWebSocketOpen)
+
+        this.onWebSocketClose = (event) => {
+          this.websocket?.removeEventListener('open', this.onWebSocketOpen)
+          this.websocket?.removeEventListener('close', this.onWebSocketClose)
+          this.websocket?.removeEventListener('error', this.onWebSocketError)
+          this.websocket?.removeEventListener('message', this.onWebSocketMessage)
+
+          window.removeEventListener(
+            'use-network-status-ready',
+            this.onNetworkStatusReady
+          )
+
+          this.disconnectAll()
+        }
+        this.websocket.addEventListener('close', this.onWebSocketClose)
+
+        this.onWebSocketError = (event) => {
           this.state = {
             type: EngineConnectionStateType.Disconnecting,
             value: {
               type: DisconnectingType.Error,
               value: {
-                error: ConnectionError.DataChannelError,
+                error: ConnectionError.WebSocketError,
                 context: event,
               },
             },
           }
+
           this.disconnectAll()
         }
-        this.unreliableDataChannel?.addEventListener(
-          'error',
-          this.onDataChannelError
-        )
+        this.websocket.addEventListener('error', this.onWebSocketError)
 
-        this.onDataChannelMessage = (event) => {
-          const result: UnreliableResponses = JSON.parse(event.data)
-          Object.values(
-            this.engineCommandManager.unreliableSubscriptions[result.type] || {}
-          ).forEach(
-            // TODO: There is only one response that uses the unreliable channel atm,
-            // highlight_set_entity, if there are more it's likely they will all have the same
-            // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-            // per unreliable subscription.
-            (callback) => {
+        this.onWebSocketMessage = (event) => {
+          // In the EngineConnection, we're looking for messages to/from
+          // the server that relate to the ICE handshake, or WebRTC
+          // negotiation. There may be other messages (including ArrayBuffer
+          // messages) that are intended for the GUI itself, so be careful
+          // when assuming we're the only consumer or that all messages will
+          // be carefully formatted here.
+
+          if (typeof event.data !== 'string') {
+            return
+          }
+
+          const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+
+          if (!message.success) {
+            const errorsString = message?.errors
+              ?.map((error) => {
+                return `  - ${error.error_code}: ${error.message}`
+              })
+              .join('\n')
+            if (message.request_id) {
+              const artifactThatFailed =
+                this.engineCommandManager.artifactGraph.get(message.request_id)
+              console.error(
+                `Error in response to request ${message.request_id}:\n${errorsString}
+    failed cmd type was ${artifactThatFailed?.type}`
+              )
+              // Check if this was a pending export command.
               if (
-                result.type === 'highlight_set_entity' &&
-                result?.data?.sequence &&
-                result?.data.sequence > this.engineCommandManager.inSequence
+                this.engineCommandManager.pendingExport?.commandId ===
+                message.request_id
               ) {
-                this.engineCommandManager.inSequence = result.data.sequence
-                callback(result)
-              } else if (result.type !== 'highlight_set_entity') {
-                callback(result)
+                // Reject the promise with the error.
+                this.engineCommandManager.pendingExport.reject(errorsString)
+                this.engineCommandManager.pendingExport = undefined
               }
-            }
-          )
-        }
-        this.unreliableDataChannel.addEventListener(
-          'message',
-          this.onDataChannelMessage
-        )
-      }
-      this.pc?.addEventListener?.('datachannel', this.onDataChannel)
-    }
-
-    const createWebSocketConnection = () => {
-      this.state = {
-        type: EngineConnectionStateType.Connecting,
-        value: {
-          type: ConnectingType.WebSocketConnecting,
-        },
-      }
-
-      this.websocket = new WebSocket(this.url, [])
-      this.websocket.binaryType = 'arraybuffer'
-
-      this.onWebSocketOpen = (event) => {
-        this.state = {
-          type: EngineConnectionStateType.Connecting,
-          value: {
-            type: ConnectingType.WebSocketOpen,
-          },
-        }
-
-        // This is required for when KCMA is running stand-alone / within Tauri.
-        // Otherwise when run in a browser, the token is sent implicitly via
-        // the Cookie header.
-        if (this.token) {
-          this.send({
-            type: 'headers',
-            headers: { Authorization: `Bearer ${this.token}` },
-          })
-        }
-
-        // Send an initial ping
-        this.send({ type: 'ping' })
-        this.pingPongSpan.ping = new Date()
-        if (this.engineCommandManager.disableWebRTC) {
-          this.engineCommandManager.initPlanes().then(() => {
-            this.dispatchEvent(
-              new CustomEvent(EngineCommandManagerEvents.SceneReady, {
-                detail: this.engineCommandManager.engineConnection,
-              })
-            )
-          })
-        }
-      }
-      this.websocket.addEventListener('open', this.onWebSocketOpen)
-
-      this.onWebSocketClose = (event) => {
-        this.websocket?.removeEventListener('open', this.onWebSocketOpen)
-        this.websocket?.removeEventListener('close', this.onWebSocketClose)
-        this.websocket?.removeEventListener('error', this.onWebSocketError)
-        this.websocket?.removeEventListener('message', this.onWebSocketMessage)
-
-        window.removeEventListener(
-          'use-network-status-ready',
-          this.onNetworkStatusReady
-        )
-
-        this.disconnectAll()
-      }
-      this.websocket.addEventListener('close', this.onWebSocketClose)
-
-      this.onWebSocketError = (event) => {
-        this.state = {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Error,
-            value: {
-              error: ConnectionError.WebSocketError,
-              context: event,
-            },
-          },
-        }
-
-        this.disconnectAll()
-      }
-      this.websocket.addEventListener('error', this.onWebSocketError)
-
-      this.onWebSocketMessage = (event) => {
-        // In the EngineConnection, we're looking for messages to/from
-        // the server that relate to the ICE handshake, or WebRTC
-        // negotiation. There may be other messages (including ArrayBuffer
-        // messages) that are intended for the GUI itself, so be careful
-        // when assuming we're the only consumer or that all messages will
-        // be carefully formatted here.
-
-        if (typeof event.data !== 'string') {
-          return
-        }
-
-        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-
-        if (!message.success) {
-          const errorsString = message?.errors
-            ?.map((error) => {
-              return `  - ${error.error_code}: ${error.message}`
-            })
-            .join('\n')
-          if (message.request_id) {
-            const artifactThatFailed =
-              this.engineCommandManager.artifactGraph.get(message.request_id)
-            console.error(
-              `Error in response to request ${message.request_id}:\n${errorsString}
-  failed cmd type was ${artifactThatFailed?.type}`
-            )
-            // Check if this was a pending export command.
-            if (
-              this.engineCommandManager.pendingExport?.commandId ===
-              message.request_id
-            ) {
-              // Reject the promise with the error.
-              this.engineCommandManager.pendingExport.reject(errorsString)
-              this.engineCommandManager.pendingExport = undefined
-            }
-          } else {
-            console.error(`Error from server:\n${errorsString}`)
-          }
-
-          const firstError = message?.errors[0]
-          if (firstError.error_code === 'auth_token_invalid') {
-            this.state = {
-              type: EngineConnectionStateType.Disconnecting,
-              value: {
-                type: DisconnectingType.Error,
-                value: {
-                  error: ConnectionError.BadAuthToken,
-                  context: firstError.message,
-                },
-              },
-            }
-            this.disconnectAll()
-          }
-          return
-        }
-
-        let resp = message.resp
-
-        // If there's no body to the response, we can bail here.
-        if (!resp || !resp.type) {
-          return
-        }
-
-        switch (resp.type) {
-          case 'pong':
-            this.pingPongSpan.pong = new Date()
-            break
-          case 'ice_server_info':
-            let ice_servers = resp.data?.ice_servers
-
-            // Now that we have some ICE servers it makes sense
-            // to start initializing the RTCPeerConnection. RTCPeerConnection
-            // will begin the ICE process.
-            createPeerConnection()
-
-            this.state = {
-              type: EngineConnectionStateType.Connecting,
-              value: {
-                type: ConnectingType.PeerConnectionCreated,
-              },
-            }
-
-            // No ICE servers can be valid in a local dev. env.
-            if (ice_servers?.length === 0) {
-              console.warn('No ICE servers')
-              this.pc?.setConfiguration({
-                bundlePolicy: 'max-bundle',
-              })
             } else {
-              // When we set the Configuration, we want to always force
-              // iceTransportPolicy to 'relay', since we know the topology
-              // of the ICE/STUN/TUN server and the engine. We don't wish to
-              // talk to the engine in any configuration /other/ than relay
-              // from a infra POV.
-              this.pc?.setConfiguration({
-                bundlePolicy: 'max-bundle',
-                iceServers: ice_servers,
-                iceTransportPolicy: 'relay',
-              })
+              console.error(`Error from server:\n${errorsString}`)
             }
 
-            this.state = {
-              type: EngineConnectionStateType.Connecting,
-              value: {
-                type: ConnectingType.ICEServersSet,
-              },
-            }
-
-            // We have an ICE Servers set now. We just setConfiguration, so let's
-            // start adding things we care about to the PeerConnection and let
-            // ICE negotiation happen in the background. Everything from here
-            // until the end of this function is setup of our end of the
-            // PeerConnection and waiting for events to fire our callbacks.
-
-            // Add a transceiver to our SDP offer
-            this.pc?.addTransceiver('video', {
-              direction: 'recvonly',
-            })
-
-            // Create a session description offer based on our local environment
-            // that we will send to the remote end. The remote will send back
-            // what it supports via sdp_answer.
-            this.pc
-              ?.createOffer()
-              .then((offer: RTCSessionDescriptionInit) => {
-                this.state = {
-                  type: EngineConnectionStateType.Connecting,
+            const firstError = message?.errors[0]
+            if (firstError.error_code === 'auth_token_invalid') {
+              this.state = {
+                type: EngineConnectionStateType.Disconnecting,
+                value: {
+                  type: DisconnectingType.Error,
                   value: {
-                    type: ConnectingType.SetLocalDescription,
+                    error: ConnectionError.BadAuthToken,
+                    context: firstError.message,
                   },
-                }
-                return this.pc?.setLocalDescription(offer).then(() => {
-                  this.send({
-                    type: 'sdp_offer',
-                    offer: offer as Models['RtcSessionDescription_type'],
-                  })
+                },
+              }
+              this.disconnectAll()
+            }
+            return
+          }
+
+          let resp = message.resp
+
+          // If there's no body to the response, we can bail here.
+          if (!resp || !resp.type) {
+            return
+          }
+
+          switch (resp.type) {
+            case 'pong':
+              this.pingPongSpan.pong = new Date()
+              break
+
+            // Only fires on successful authentication.
+            case 'ice_server_info':
+              let ice_servers = resp.data?.ice_servers
+
+              // Now that we have some ICE servers it makes sense
+              // to start initializing the RTCPeerConnection. RTCPeerConnection
+              // will begin the ICE process.
+              createPeerConnection()
+
+              this.state = {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.PeerConnectionCreated,
+                },
+              }
+
+              // No ICE servers can be valid in a local dev. env.
+              if (ice_servers?.length === 0) {
+                console.warn('No ICE servers')
+                this.pc?.setConfiguration({
+                  bundlePolicy: 'max-bundle',
+                })
+              } else {
+                // When we set the Configuration, we want to always force
+                // iceTransportPolicy to 'relay', since we know the topology
+                // of the ICE/STUN/TUN server and the engine. We don't wish to
+                // talk to the engine in any configuration /other/ than relay
+                // from a infra POV.
+                this.pc?.setConfiguration({
+                  bundlePolicy: 'max-bundle',
+                  iceServers: ice_servers,
+                  iceTransportPolicy: 'relay',
+                })
+              }
+
+              this.state = {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.ICEServersSet,
+                },
+              }
+
+              // We have an ICE Servers set now. We just setConfiguration, so let's
+              // start adding things we care about to the PeerConnection and let
+              // ICE negotiation happen in the background. Everything from here
+              // until the end of this function is setup of our end of the
+              // PeerConnection and waiting for events to fire our callbacks.
+
+              // Add a transceiver to our SDP offer
+              this.pc?.addTransceiver('video', {
+                direction: 'recvonly',
+              })
+
+              // Create a session description offer based on our local environment
+              // that we will send to the remote end. The remote will send back
+              // what it supports via sdp_answer.
+              this.pc
+                ?.createOffer()
+                .then((offer: RTCSessionDescriptionInit) => {
                   this.state = {
                     type: EngineConnectionStateType.Connecting,
                     value: {
-                      type: ConnectingType.OfferedSdp,
+                      type: ConnectingType.SetLocalDescription,
                     },
                   }
+                  return this.pc?.setLocalDescription(offer).then(() => {
+                    this.send({
+                      type: 'sdp_offer',
+                      offer: offer as Models['RtcSessionDescription_type'],
+                    })
+                    this.state = {
+                      type: EngineConnectionStateType.Connecting,
+                      value: {
+                        type: ConnectingType.OfferedSdp,
+                      },
+                    }
+                  })
+                })
+                .catch((err: Error) => {
+                  // The local description is invalid, so there's no point continuing.
+                  this.state = {
+                    type: EngineConnectionStateType.Disconnecting,
+                    value: {
+                      type: DisconnectingType.Error,
+                      value: {
+                        error: ConnectionError.LocalDescriptionInvalid,
+                        context: err,
+                      },
+                    },
+                  }
+                  this.disconnectAll()
+                })
+              break
+
+            case 'sdp_answer':
+              let answer = resp.data?.answer
+              if (!answer || answer.type === 'unspecified') {
+                return
+              }
+
+              this.state = {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.ReceivedSdp,
+                },
+              }
+
+              // As soon as this is set, RTCPeerConnection tries to
+              // establish a connection.
+              // @ts-ignore
+              // Have to ignore because dom.ts doesn't have the right type
+              void this.pc?.setRemoteDescription(answer)
+
+              this.state = {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.SetRemoteDescription,
+                },
+              }
+
+              this.state = {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.WebRTCConnecting,
+                },
+              }
+              break
+
+            case 'trickle_ice':
+              let candidate = resp.data?.candidate
+              void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
+              break
+
+            case 'metrics_request':
+              if (this.webrtcStatsCollector === undefined) {
+                // TODO: Error message here?
+                return
+              }
+              void this.webrtcStatsCollector().then((client_metrics) => {
+                this.send({
+                  type: 'metrics_response',
+                  metrics: client_metrics,
                 })
               })
-              .catch((err: Error) => {
-                // The local description is invalid, so there's no point continuing.
-                this.state = {
-                  type: EngineConnectionStateType.Disconnecting,
-                  value: {
-                    type: DisconnectingType.Error,
-                    value: {
-                      error: ConnectionError.LocalDescriptionInvalid,
-                      context: err,
-                    },
-                  },
-                }
-                this.disconnectAll()
-              })
-            break
-
-          case 'sdp_answer':
-            let answer = resp.data?.answer
-            if (!answer || answer.type === 'unspecified') {
-              return
-            }
-
-            this.state = {
-              type: EngineConnectionStateType.Connecting,
-              value: {
-                type: ConnectingType.ReceivedSdp,
-              },
-            }
-
-            // As soon as this is set, RTCPeerConnection tries to
-            // establish a connection.
-            // @ts-ignore
-            // Have to ignore because dom.ts doesn't have the right type
-            void this.pc?.setRemoteDescription(answer)
-
-            this.state = {
-              type: EngineConnectionStateType.Connecting,
-              value: {
-                type: ConnectingType.SetRemoteDescription,
-              },
-            }
-
-            this.state = {
-              type: EngineConnectionStateType.Connecting,
-              value: {
-                type: ConnectingType.WebRTCConnecting,
-              },
-            }
-            break
-
-          case 'trickle_ice':
-            let candidate = resp.data?.candidate
-            void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
-            break
-
-          case 'metrics_request':
-            if (this.webrtcStatsCollector === undefined) {
-              // TODO: Error message here?
-              return
-            }
-            void this.webrtcStatsCollector().then((client_metrics) => {
-              this.send({
-                type: 'metrics_response',
-                metrics: client_metrics,
-              })
-            })
-            break
+              break
+          }
         }
+        this.websocket.addEventListener('message', this.onWebSocketMessage)
       }
-      this.websocket.addEventListener('message', this.onWebSocketMessage)
-    }
 
-    if (reconnecting) {
-      createWebSocketConnection()
-    } else {
-      this.onNetworkStatusReady = () => {
+      if (reconnecting) {
         createWebSocketConnection()
+      } else {
+        this.onNetworkStatusReady = () => {
+          createWebSocketConnection()
+        }
+        window.addEventListener(
+          'use-network-status-ready',
+          this.onNetworkStatusReady
+        )
       }
-      window.addEventListener(
-        'use-network-status-ready',
-        this.onNetworkStatusReady
-      )
-    }
+    })
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
@@ -1263,7 +1256,6 @@ export class EngineCommandManager extends EventTarget {
   private onEngineConnectionNewTrack = ({
     detail,
   }: CustomEvent<NewTrackArgs>) => {}
-  disableWebRTC = false
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
 
@@ -1276,7 +1268,6 @@ export class EngineCommandManager extends EventTarget {
   }
 
   start({
-    disableWebRTC = false,
     setMediaStream,
     setIsStreamReady,
     width,
@@ -1291,8 +1282,11 @@ export class EngineCommandManager extends EventTarget {
       enableSSAO: true,
       showScaleGrid: false,
     },
+    // When passed, use a completely separate connecting code path that simply
+    // opens a websocket and this is a function that is called when connected.
+    callbackOnEngineLiteConnect,
   }: {
-    disableWebRTC?: boolean
+    callbackOnEngineLiteConnect?: () => void
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
@@ -1301,12 +1295,16 @@ export class EngineCommandManager extends EventTarget {
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     modifyGrid: (hidden: boolean) => Promise<void>
     settings?: SettingsViaQueryString
-  }) {
+  }): Promise<void> {
+    if (callbackOnEngineLiteConnect) {
+      this.startLite(callbackOnEngineLiteConnect)
+      return
+    }
+
     if (settings) {
       this.settings = settings
     }
     this.makeDefaultPlanes = makeDefaultPlanes
-    this.disableWebRTC = disableWebRTC
     this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
@@ -1338,7 +1336,7 @@ export class EngineCommandManager extends EventTarget {
       })
     )
 
-    this.onEngineConnectionOpened = () => {
+    this.onEngineConnectionOpened = async () => {
       // Set the stream background color
       // This takes RGBA values from 0-1
       // So we convert from the conventional 0-255 found in Figma
@@ -1595,6 +1593,87 @@ export class EngineCommandManager extends EventTarget {
       EngineConnectionEvents.ConnectionStarted,
       this.onEngineConnectionStarted
     )
+
+    return
+  }
+
+  // SHOULD ONLY BE USED FOR VITESTS
+  startLite(callback: () => void) {
+    this.websocket = new WebSocket(this.url, [])
+    this.websocket.binaryType = 'arraybuffer'
+
+    this.onWebSocketOpen = (event) => {
+      if (this.token) {
+        this.send({
+          type: 'headers',
+          headers: { Authorization: `Bearer ${this.token}` },
+        })
+      }
+    }
+    this.websocket.addEventListener('open', this.onWebSocketOpen)
+    this.onWebSocketMessage = (event) => {
+        if (typeof event.data !== 'string') {
+          return
+        }
+
+        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+
+        if (!message.success) {
+          const errorsString = message?.errors
+            ?.map((error) => {
+              return `  - ${error.error_code}: ${error.message}`
+            })
+            .join('\n')
+          if (message.request_id) {
+            const artifactThatFailed =
+              this.engineCommandManager.artifactGraph.get(message.request_id)
+            console.error(
+              `Error in response to request ${message.request_id}:\n${errorsString}
+  failed cmd type was ${artifactThatFailed?.type}`
+            )
+            // Check if this was a pending export command.
+            if (
+              this.engineCommandManager.pendingExport?.commandId ===
+              message.request_id
+            ) {
+              // Reject the promise with the error.
+              this.engineCommandManager.pendingExport.reject(errorsString)
+              this.engineCommandManager.pendingExport = undefined
+            }
+          } else {
+            console.error(`Error from server:\n${errorsString}`)
+          }
+
+          return
+        }
+
+        let resp = message.resp
+
+        // If there's no body to the response, we can bail here.
+        if (!resp || !resp.type) {
+          return
+        }
+
+        switch (resp.type) {
+          case 'pong':
+            break
+
+          // Only fires on successful authentication.
+          case 'ice_server_info':
+            callback()
+            break
+
+          case 'sdp_answer':
+            break
+
+          case 'trickle_ice':
+            break
+
+          case 'metrics_request':
+            break
+        }
+    }
+    this.websocket.addEventListener('message', this.onWebSocketMessage)
   }
 
   handleResize({
@@ -1624,7 +1703,7 @@ export class EngineCommandManager extends EventTarget {
   tearDown(opts?: { idleMode: boolean }) {
     if (this.engineConnection) {
       for (const pending of Object.values(this.pendingCommands)) {
-        pending.reject('tearDown')
+        pending.reject('no connection to send on')
       }
 
       this.engineConnection.removeEventListener(
@@ -1829,7 +1908,7 @@ export class EngineCommandManager extends EventTarget {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
-    if (!this.engineConnection?.isReady() && !this.disableWebRTC)
+    if (!this.engineConnection?.isReady())
       return Promise.resolve()
     if (id === undefined) return Promise.reject(new Error('id is undefined'))
     if (rangeStr === undefined)
