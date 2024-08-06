@@ -1,12 +1,15 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { TEST_SETTINGS_KEY, TEST_SETTINGS_ONBOARDING_START, TEST_SETTINGS_ONBOARDING_EXPORT, TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING, TEST_SETTINGS_ONBOARDING_USER_MENU } from './storageStates'
+import {
+  TEST_SETTINGS_KEY,
+  TEST_SETTINGS_ONBOARDING_START,
+  TEST_SETTINGS_ONBOARDING_EXPORT,
+  TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
+  TEST_SETTINGS_ONBOARDING_USER_MENU,
+} from './storageStates'
 import * as TOML from '@iarna/toml'
 
 test.beforeEach(async ({ context, page }) => {

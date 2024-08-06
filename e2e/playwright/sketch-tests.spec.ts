@@ -2,9 +2,10 @@ import { test, expect, Page } from '@playwright/test'
 
 import {
   getMovementUtils,
-  getUtils,  
-  PERSIST_MODELING_CONTEXT,  
-  setup, tearDown,
+  getUtils,
+  PERSIST_MODELING_CONTEXT,
+  setup,
+  tearDown,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 

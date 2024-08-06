@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'

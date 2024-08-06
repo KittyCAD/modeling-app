@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)

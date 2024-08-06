@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
 

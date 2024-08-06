@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 
 test.beforeEach(async ({ context, page }) => {
@@ -13,7 +10,6 @@ test.beforeEach(async ({ context, page }) => {
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
-
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({

@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  commonPoints,
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { commonPoints, getUtils, setup, tearDown } from './test-utils'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'

@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-} from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
 

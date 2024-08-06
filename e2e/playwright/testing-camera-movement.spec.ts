@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown, } from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)

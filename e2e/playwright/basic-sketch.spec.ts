@@ -2,9 +2,10 @@ import { test, expect, Page } from '@playwright/test'
 import {
   getUtils,
   TEST_COLORS,
-  setup, tearDown,
+  setup,
+  tearDown,
   commonPoints,
-  PERSIST_MODELING_CONTEXT
+  PERSIST_MODELING_CONTEXT,
 } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
@@ -16,7 +17,6 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test.setTimeout(120000)
-
 
 async function doBasicSketch(page: Page, openPanes: string[]) {
   const u = await getUtils(page)

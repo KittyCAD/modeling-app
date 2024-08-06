@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  getUtils,  
-  setup, tearDown,
-  TEST_COLORS,
-} from './test-utils'
+import { getUtils, setup, tearDown, TEST_COLORS } from './test-utils'
 import { XOR } from 'lib/utils'
 
 test.beforeEach(async ({ context, page }) => {

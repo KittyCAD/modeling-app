@@ -2,10 +2,11 @@ import { test, expect } from '@playwright/test'
 
 import {
   doExport,
-  getUtils,  
-  makeTemplate,  
-  metaModifier,  
-  setup, tearDown,
+  getUtils,
+  makeTemplate,
+  metaModifier,
+  setup,
+  tearDown,
 } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {

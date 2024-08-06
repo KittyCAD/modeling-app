@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown, } from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -14,7 +14,7 @@ test.describe('Editor tests', () => {
   test('can comment out code with ctrl+/', async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1000, height: 500 })
-    
+
     await u.waitForAuthSkipAppStart()
     const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 

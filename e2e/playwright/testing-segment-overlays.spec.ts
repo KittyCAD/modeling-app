@@ -1,11 +1,6 @@
 import { test, expect, Page } from '@playwright/test'
 
-import {
-  deg,
-  getUtils,  
-  setup, tearDown,
-  wiggleMove,
-} from './test-utils'
+import { deg, getUtils, setup, tearDown, wiggleMove } from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { uuidv4 } from 'lib/utils'
 
