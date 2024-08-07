@@ -3636,7 +3636,6 @@ dependencies = [
  "kittycad",
  "pretty_assertions",
  "reqwest",
- "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "tokio",
