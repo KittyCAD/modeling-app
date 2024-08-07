@@ -1681,7 +1681,7 @@ async fn inner_tangential_arc(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
-    // next set of lines is some undocumented voodoo from get_tangential_arc_to_info 
+    // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
     let tangent_info = sketch_group.get_tangential_info_from_paths(); //this function desperately needs some documentation
     let tan_previous_point = if tangent_info.is_center {
         get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
@@ -1695,17 +1695,24 @@ async fn inner_tangential_arc(
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // Calculate the end point from the angle and radius.
 
-            let previous_end_tangent = Angle::from_degrees(tan_previous_point);
+            let tan_previous_angle = f64::atan2(tan_previous_point[1] - from.x, tan_previous_point[0] - from.y);
+            let previous_end_tangent = Angle::from_degrees(tan_previous_angle);
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
-            if (offset > 0) {// CCW turn 
-                tangent_to_arc__start_angle = -90 // 
-            } else {// CW turn 
-                tangent_to_arc__start_angle = 90 } // 
+            let offset_degrees = *offset;
+            let tangent_to_arc_start_angle = if offset_degrees > 0.0 {
+                // CCW turn
+                Angle::from_degrees(-90.0)
+            } else {
+                // CW turn
+                Angle::from_degrees(90.0)
+            };
             // may need some logic and / or modulo on the various angle values to prevent them from going "backwards"
             // but the above logic *should* capture that behavior
-            let start_angle = previous_end_tangent+tangent_to_arc_start_angle+Angle::from_degrees(0.0);
-            let end_angle = start_angle+Angle::from_degrees(*offset);
+            // TODO: impl Add for Angle to simplify this.
+            let start_angle =
+                Angle::from_degrees(previous_end_tangent.degrees() + tangent_to_arc_start_angle.degrees());
+            let end_angle = Angle::from_degrees(start_angle.degrees() + offset_degrees);
             let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
 
             args.batch_modeling_cmd(
