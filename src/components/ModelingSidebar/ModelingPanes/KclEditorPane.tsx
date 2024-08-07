@@ -64,6 +64,13 @@ export const KclEditorPane = () => {
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const onlineCallback = () => kclManager.executeCode(true)
+    window.addEventListener('online', onlineCallback)
+    return () => window.removeEventListener('online', onlineCallback)
+  }, [])
+
   // Since these already exist in the editor, we don't need to define them
   // with the wrapper.
   useHotkeys('mod+z', (e) => {

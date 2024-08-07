@@ -104,7 +104,6 @@ export const fileLoader: LoaderFunction = async ({
     // the file system and not the editor.
     codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
-
     // We don't want to call await on execute code since we don't want to block the UI
     kclManager.executeCode(true)
 

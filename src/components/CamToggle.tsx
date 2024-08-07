@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { EngineCommandManagerEvents } from 'lang/std/engineConnection'
 import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { throttle, isReducedMotion } from 'lib/utils'
 
@@ -14,12 +13,9 @@ export const CamToggle = () => {
   const [enableRotate, setEnableRotate] = useState(true)
 
   useEffect(() => {
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.SceneReady,
-      async () => {
-        sceneInfra.camControls.dollyZoom(fov)
-      }
-    )
+    engineCommandManager.waitForReady.then(async () => {
+      sceneInfra.camControls.dollyZoom(fov)
+    })
   }, [])
 
   const toggleCamera = () => {

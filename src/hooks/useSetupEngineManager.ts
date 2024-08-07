@@ -4,30 +4,29 @@ import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
 import { useAppState, useAppStream } from 'AppState'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import {
-  EngineConnectionStateType,
-  EngineConnectionEvents,
-  DisconnectingType,
-} from 'lang/std/engineConnection'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
-  modelingSend: ReturnType<typeof useModelingContext>['send'],
-  modelingContext: ReturnType<typeof useModelingContext>['context'],
+  token?: string,
   settings = {
     pool: null,
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
+    modelingSend: (() => {}) as any,
+    modelingContext: {} as any,
     showScaleGrid: false,
-  } as SettingsViaQueryString,
-  token?: string
+  } as {
+    pool: string | null
+    theme: Themes
+    highlightEdges: boolean
+    enableSSAO: boolean
+    modelingSend: ReturnType<typeof useModelingContext>['send']
+    modelingContext: ReturnType<typeof useModelingContext>['context']
+    showScaleGrid: boolean
+  }
 ) {
-  const networkContext = useNetworkContext()
-  const { pingPongHealth, immediateState } = networkContext
   const { setAppState } = useAppState()
   const { setMediaStream } = useAppStream()
 
@@ -36,10 +35,10 @@ export function useSetupEngineManager(
   if (settings.pool) {
     // override the pool param (?pool=) to request a specific engine instance
     // from a particular pool.
-    engineCommandManager.settings.pool = settings.pool
+    engineCommandManager.pool = settings.pool
   }
 
-  const startEngineInstance = () => {
+  const startEngineInstance = (restart: boolean = false) => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
     const { width: quadWidth, height: quadHeight } = getDimensions(
@@ -51,6 +50,14 @@ export function useSetupEngineManager(
       setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
       width: quadWidth,
       height: quadHeight,
+      executeCode: () => {
+        // We only want to execute the code here that we already have set.
+        // Nothing else.
+        kclManager.isFirstRender = true
+        return kclManager.executeCode(true).then(() => {
+          kclManager.isFirstRender = false
+        })
+      },
       token,
       settings,
       makeDefaultPlanes: () => {
@@ -60,7 +67,7 @@ export function useSetupEngineManager(
         return modifyGrid(kclManager.engineCommandManager, hidden)
       },
     })
-    modelingSend({
+    settings.modelingSend({
       type: 'Set context',
       data: {
         streamDimensions: {
@@ -83,26 +90,8 @@ export function useSetupEngineManager(
   }, [
     streamRef?.current?.offsetWidth,
     streamRef?.current?.offsetHeight,
-    modelingSend,
+    settings.modelingSend,
   ])
-
-  useEffect(() => {
-    if (pingPongHealth === 'TIMEOUT') {
-      engineCommandManager.tearDown()
-    }
-  }, [pingPongHealth])
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (immediateState.type === EngineConnectionStateType.Disconnected) {
-        engineCommandManager.engineConnection = undefined
-        startEngineInstance()
-      }
-    }, 3000)
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [immediateState])
 
   useEffect(() => {
     const handleResize = deferExecution(() => {
@@ -111,14 +100,14 @@ export function useSetupEngineManager(
         streamRef?.current?.offsetHeight ?? 0
       )
       if (
-        modelingContext.store.streamDimensions.streamWidth !== width ||
-        modelingContext.store.streamDimensions.streamHeight !== height
+        settings.modelingContext.store.streamDimensions.streamWidth !== width ||
+        settings.modelingContext.store.streamDimensions.streamHeight !== height
       ) {
         engineCommandManager.handleResize({
           streamWidth: width,
           streamHeight: height,
         })
-        modelingSend({
+        settings.modelingSend({
           type: 'Set context',
           data: {
             streamDimensions: {
@@ -131,7 +120,7 @@ export function useSetupEngineManager(
     }, 500)
 
     const onOnline = () => {
-      startEngineInstance()
+      startEngineInstance(true)
     }
 
     const onVisibilityChange = () => {
@@ -147,18 +136,10 @@ export function useSetupEngineManager(
     window.document.addEventListener('visibilitychange', onVisibilityChange)
 
     const onAnyInput = () => {
-      const isEngineNotReadyOrConnecting =
+      if (
         !engineCommandManager.engineConnection?.isReady() &&
         !engineCommandManager.engineConnection?.isConnecting()
-
-      const conn = engineCommandManager.engineConnection
-
-      const isStreamPaused =
-        conn?.state.type === EngineConnectionStateType.Disconnecting &&
-        conn?.state.value.type === DisconnectingType.Pause
-
-      if (isEngineNotReadyOrConnecting || isStreamPaused) {
-        engineCommandManager.engineConnection = undefined
+      ) {
         startEngineInstance()
       }
     }
@@ -169,6 +150,7 @@ export function useSetupEngineManager(
     window.document.addEventListener('touchstart', onAnyInput)
 
     const onOffline = () => {
+      kclManager.isFirstRender = true
       engineCommandManager.tearDown()
     }
 

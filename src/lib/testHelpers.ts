@@ -1,8 +1,5 @@
 import { Program, ProgramMemory, _executor, SourceRange } from '../lang/wasm'
-import {
-  EngineCommandManager,
-  EngineCommandManagerEvents,
-} from 'lang/std/engineConnection'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
@@ -85,6 +82,7 @@ export async function enginelessExecutor(
     setIsStreamReady: () => {},
     setMediaStream: () => {},
   }) as any as EngineCommandManager
+  await mockEngineCommandManager.waitForReady
   mockEngineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, mockEngineCommandManager, true)
   await mockEngineCommandManager.waitForAllCommands()
@@ -101,6 +99,7 @@ export async function executor(
     setMediaStream: () => {},
     width: 0,
     height: 0,
+    executeCode: () => {},
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
     },
@@ -108,21 +107,9 @@ export async function executor(
       return new Promise((resolve) => resolve())
     },
   })
-
-  return new Promise((resolve) => {
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.SceneReady,
-      async () => {
-        engineCommandManager.startNewSession()
-        const programMemory = await _executor(
-          ast,
-          pm,
-          engineCommandManager,
-          false
-        )
-        await engineCommandManager.waitForAllCommands()
-        Promise.resolve(programMemory)
-      }
-    )
-  })
+  await engineCommandManager.waitForReady
+  engineCommandManager.startNewSession()
+  const programMemory = await _executor(ast, pm, engineCommandManager, false)
+  await engineCommandManager.waitForAllCommands()
+  return programMemory
 }

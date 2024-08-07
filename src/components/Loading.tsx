@@ -47,7 +47,7 @@ const Loading = ({ children }: React.PropsWithChildren) => {
         onConnectionStateChange as EventListener
       )
     }
-  }, [engineCommandManager, engineCommandManager.engineConnection])
+  }, [])
 
   useEffect(() => {
     // Don't set long loading time if there's a more severe error
