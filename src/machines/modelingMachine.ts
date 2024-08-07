@@ -366,7 +366,7 @@ export const modelingMachine = createMachine(
               'Artifact graph emptied': 'hidePlanes',
             },
 
-            entry: 'show default planes',
+            entry: ['show default planes', 'reset camera position'],
           },
         },
 
@@ -1063,6 +1063,17 @@ export const modelingMachine = createMachine(
         sketchEnginePathId: '',
         sketchPlaneId: '',
       }),
+      'reset camera position': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_look_at',
+            center: { x: 0, y: 0, z: 0 },
+            vantage: { x: 0, y: -1250, z: 580 },
+            up: { x: 0, y: 0, z: 1 },
+          },
+        }),
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),

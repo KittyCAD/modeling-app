@@ -1,12 +1,12 @@
 ---
 title: "patternLinear3d"
-excerpt: "A linear pattern on a 3D model."
+excerpt: "Repeat a 3-dimensional solid along a linear path, with a dynamic amount"
 layout: manual
 ---
 
-A linear pattern on a 3D model.
+Repeat a 3-dimensional solid along a linear path, with a dynamic amount
 
-
+of distance between each repetition, some specified number of times.
 
 ```js
 patternLinear3d(data: LinearPattern3dData, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]

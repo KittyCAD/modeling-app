@@ -120,6 +120,7 @@ lazy_static! {
         Box::new(crate::std::math::ToRadians),
         Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
+        Box::new(crate::std::assert::AssertEqual),
         Box::new(crate::std::assert::AssertLessThan),
         Box::new(crate::std::assert::AssertGreaterThan),
         Box::new(crate::std::assert::AssertLessThanOrEq),
@@ -211,14 +212,14 @@ pub enum FunctionKind {
     UserDefined,
 }
 
-/// Returns the length of the given leg.
+/// Compute the length of the given leg.
 pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the length of the given leg.
+/// Compute the length of the given leg.
 ///
 /// ```no_run
 /// legLen(5, 3)
@@ -231,14 +232,14 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
     (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
 }
 
-/// Returns the angle of the given leg for x.
+/// Compute the angle of the given leg for x.
 pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the angle of the given leg for x.
+/// Compute the angle of the given leg for x.
 ///
 /// ```no_run
 /// legAngX(5, 3)
@@ -251,14 +252,14 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
 }
 
-/// Returns the angle of the given leg for y.
+/// Compute the angle of the given leg for y.
 pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the angle of the given leg for y.
+/// Compute the angle of the given leg for y.
 ///
 /// ```no_run
 /// legAngY(5, 3)

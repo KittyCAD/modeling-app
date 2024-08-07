@@ -1,12 +1,12 @@
 ---
 title: "circle"
-excerpt: "Sketch a circle."
+excerpt: "Construct a 2-dimensional circle, of the specified radius, centered at"
 layout: manual
 ---
 
-Sketch a circle.
+Construct a 2-dimensional circle, of the specified radius, centered at
 
-
+the provided (x, y) origin point.
 
 ```js
 circle(center: [number], radius: number, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: TagDeclarator) -> SketchGroup

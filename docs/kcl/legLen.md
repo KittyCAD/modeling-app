@@ -1,10 +1,10 @@
 ---
 title: "legLen"
-excerpt: "Returns the length of the given leg."
+excerpt: "Compute the length of the given leg."
 layout: manual
 ---
 
-Returns the length of the given leg.
+Compute the length of the given leg.
 
 
 

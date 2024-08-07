@@ -1,10 +1,10 @@
 ---
 title: "ln"
-excerpt: "Computes the natural logarithm of the number."
+excerpt: "Compute the natural logarithm of the number."
 layout: manual
 ---
 
-Computes the natural logarithm of the number.
+Compute the natural logarithm of the number.
 
 
 

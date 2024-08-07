@@ -6,8 +6,8 @@ layout: manual
 
 Import a CAD file.
 
-For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.
-Import paths are relative to the current project directory. This only works in the desktop app not in browser.
+For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit of measurement is millimeters. Alternatively you may specify the unit by passing your desired measurement unit in the options parameter. When importing a GLTF file, the bin file will be imported as well. Import paths are relative to the current project directory.
+Note: The import command currently only works when using the native Modeling App.
 
 ```js
 import(file_path: String, options?: ImportFormat) -> ImportedGeometry

@@ -1,10 +1,10 @@
 ---
 title: "log2"
-excerpt: "Computes the base 2 logarithm of the number."
+excerpt: "Compute the base 2 logarithm of the number."
 layout: manual
 ---
 
-Computes the base 2 logarithm of the number.
+Compute the base 2 logarithm of the number.
 
 
 

@@ -1,10 +1,10 @@
 ---
 title: "tan"
-excerpt: "Computes the tangent of a number (in radians)."
+excerpt: "Compute the tangent of a number (in radians)."
 layout: manual
 ---
 
-Computes the tangent of a number (in radians).
+Compute the tangent of a number (in radians).
 
 
 

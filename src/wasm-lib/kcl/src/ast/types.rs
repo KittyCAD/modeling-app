@@ -2862,7 +2862,7 @@ impl MemberExpression {
                     // Actually evaluate memory to compute the property.
                     let prop = memory.get(&name, property_src)?;
                     let MemoryItem::UserVal(prop) = prop else {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: property_sr,
                             message: format!(
                                 "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
@@ -2876,17 +2876,17 @@ impl MemberExpression {
                                 .and_then(|x| usize::try_from(x).ok())
                                 .map(Property::Number)
                                 .ok_or_else(|| {
-                                    KclError::Syntax(KclErrorDetails {
+                                    KclError::Semantic(KclErrorDetails {
                                         source_ranges: property_sr,
                                         message: format!(
-                                            "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
                                         ),
                                     })
                                 })?
                         }
                         JValue::String(ref x) => Property::String(x.to_owned()),
                         _ => {
-                            return Err(KclError::Syntax(KclErrorDetails {
+                            return Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
                                 message: format!(
                                     "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
@@ -2903,7 +2903,7 @@ impl MemberExpression {
                         if let Ok(x) = u64::try_from(x) {
                             Property::Number(x.try_into().unwrap())
                         } else {
-                            return Err(KclError::Syntax(KclErrorDetails {
+                            return Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
                                 message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
                             }));
@@ -2911,7 +2911,7 @@ impl MemberExpression {
                     }
                     LiteralValue::String(s) => Property::String(s),
                     _ => {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: vec![self.into()],
                             message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
                         }));
@@ -2943,7 +2943,7 @@ impl MemberExpression {
                     }))
                 } else {
                     Err(KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Property {property} not found in object"),
+                        message: format!("Property '{property}' not found in object"),
                         source_ranges: vec![self.clone().into()],
                     }))
                 }
@@ -2978,10 +2978,13 @@ impl MemberExpression {
                 ),
                 source_ranges: vec![self.clone().into()],
             })),
-            (_, _) => Err(KclError::Semantic(KclErrorDetails {
-                message: "Only arrays and objects can be indexed".to_owned(),
-                source_ranges: vec![self.clone().into()],
-            })),
+            (being_indexed, _) => {
+                let t = human_friendly_type(being_indexed);
+                Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
+                    source_ranges: vec![self.clone().into()],
+                }))
+            }
         }
     }
 
@@ -4094,6 +4097,17 @@ impl ConstraintLevels {
         }
 
         source_ranges
+    }
+}
+
+fn human_friendly_type(j: JValue) -> &'static str {
+    match j {
+        JValue::Null => "null",
+        JValue::Bool(_) => "boolean (true/false value)",
+        JValue::Number(_) => "number",
+        JValue::String(_) => "string (text)",
+        JValue::Array(_) => "array (list)",
+        JValue::Object(_) => "object",
     }
 }
 

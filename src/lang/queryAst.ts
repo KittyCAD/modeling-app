@@ -791,6 +791,7 @@ export function isSingleCursorInPipe(
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const nodeTypes = pathToNode.map(([, type]) => type)
   if (nodeTypes.includes('FunctionExpression')) return false
+  if (!nodeTypes.includes('VariableDeclaration')) return false
   if (nodeTypes.includes('PipeExpression')) return true
   return false
 }
