@@ -1,12 +1,12 @@
 ---
 title: "tangentialArcTo"
-excerpt: "Draw an arc."
+excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
 layout: manual
 ---
 
-Draw an arc.
+Starting at the current sketch's origin, draw a curved line segment along
 
-
+some part of an imaginary circle until it reaches the desired (x, y) coordinates.
 
 ```js
 tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

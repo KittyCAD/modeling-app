@@ -49,7 +49,11 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::ExtrudeGroup(extrude_group))
 }
 
-/// Create fillets on tagged paths.
+/// Blend a transitional edge along a tagged path, smoothing the sharp edge.
+///
+/// Fillet is similar in function and use to a chamfer, except
+/// a chamfer will cut a sharp transition along an edge while fillet
+/// will smoothly blend the transition.
 ///
 /// ```no_run
 /// const width = 20

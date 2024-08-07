@@ -471,30 +471,45 @@ async function GraphTheGraph(
 
   await browser.close()
 
-  const img1Path = path.resolve(`./src/lang/std/artifactMapGraphs/${imageName}`)
-  const img2Path = path.resolve('./e2e/playwright/temp3.png')
+  const originalImgPath = path.resolve(
+    `./src/lang/std/artifactMapGraphs/${imageName}`
+  )
+  // chop the top 30 pixels off the image
+  const originalImg = PNG.sync.read(fs.readFileSync(originalImgPath))
+  // const img1Data = new Uint8Array(img1.data)
+  // const img1DataChopped = img1Data.slice(30 * img1.width * 4)
+  // img1.data = Buffer.from(img1DataChopped)
 
-  const img1 = PNG.sync.read(fs.readFileSync(img1Path))
-  const img2 = PNG.sync.read(fs.readFileSync(img2Path))
+  const newImagePath = path.resolve('./e2e/playwright/temp3.png')
+  const newImage = PNG.sync.read(fs.readFileSync(newImagePath))
+  const newImageData = new Uint8Array(newImage.data)
+  const newImageDataChopped = newImageData.slice(30 * newImage.width * 4)
+  newImage.data = Buffer.from(newImageDataChopped)
 
-  const { width, height } = img1
+  const { width, height } = originalImg
   const diff = new PNG({ width, height })
 
-  const numDiffPixels = pixelmatch(
-    img1.data,
-    img2.data,
-    diff.data,
-    width,
-    height,
-    { threshold: 0.1 }
-  )
+  const imageSizeDifferent = originalImg.data.length !== newImage.data.length
+  let numDiffPixels = 0
+  if (!imageSizeDifferent) {
+    numDiffPixels = pixelmatch(
+      originalImg.data,
+      newImage.data,
+      diff.data,
+      width,
+      height,
+      {
+        threshold: 0.1,
+      }
+    )
+  }
 
-  if (numDiffPixels > 10) {
+  if (numDiffPixels > 10 || imageSizeDifferent) {
     console.warn('numDiffPixels', numDiffPixels)
     // write file out to final place
     fs.writeFileSync(
       `src/lang/std/artifactMapGraphs/${imageName}`,
-      PNG.sync.write(img2)
+      PNG.sync.write(newImage)
     )
   }
 }

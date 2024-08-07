@@ -110,6 +110,17 @@ Note that these became separate apps on Macos, so make sure you open the right o
 
 <img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
 
+## Checking out commits / Bisecting
+
+Which commands from setup are one off vs need to be run every time?
+
+The following will need to be run when checking out a new commit and guarantees the build is not stale:
+```bash
+yarn install
+yarn build:wasm-dev # or yarn build:wasm for slower but more production-like build
+yarn start # or yarn build:local && yarn serve for slower but more production-like build
+```
+
 ## Before submitting a PR
 
 Before you submit a contribution PR to this repo, please ensure that:

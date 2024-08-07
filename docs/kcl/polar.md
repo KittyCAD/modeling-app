@@ -1,12 +1,12 @@
 ---
 title: "polar"
-excerpt: "Convert from polar/sphere coordinates to cartesian coordinates."
+excerpt: "Convert polar/sphere (azimuth, elevation, distance) coordinates to"
 layout: manual
 ---
 
-Convert from polar/sphere coordinates to cartesian coordinates.
+Convert polar/sphere (azimuth, elevation, distance) coordinates to
 
-
+cartesian (x/y/z grid) coordinates.
 
 ```js
 polar(data: PolarCoordsData) -> [number]

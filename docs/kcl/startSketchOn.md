@@ -1,10 +1,10 @@
 ---
 title: "startSketchOn"
-excerpt: "Start a sketch on a specific plane or face."
+excerpt: "Start a new 2-dimensional sketch on a specific plane or face."
 layout: manual
 ---
 
-Start a sketch on a specific plane or face.
+Start a new 2-dimensional sketch on a specific plane or face.
 
 
 

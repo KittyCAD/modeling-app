@@ -1,12 +1,12 @@
 ---
 title: "patternTransform"
-excerpt: "A linear pattern on a 3D solid."
+excerpt: "Repeat a 3-dimensional solid by successively applying a transformation (such"
 layout: manual
 ---
 
-A linear pattern on a 3D solid.
+Repeat a 3-dimensional solid by successively applying a transformation (such
 
-Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
+as rotation, scale, translation, visibility) on each repetition.
 
 ```js
 patternTransform(num_repetitions: u32, transform_function: FunctionParam, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]

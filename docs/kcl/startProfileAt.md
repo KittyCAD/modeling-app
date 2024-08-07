@@ -1,10 +1,10 @@
 ---
 title: "startProfileAt"
-excerpt: "Start a profile at a given point."
+excerpt: "Start a new profile at a given point."
 layout: manual
 ---
 
-Start a profile at a given point.
+Start a new profile at a given point.
 
 
 
