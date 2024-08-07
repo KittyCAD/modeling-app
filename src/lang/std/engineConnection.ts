@@ -18,7 +18,7 @@ import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 
 // TODO(paultag): This ought to be tweakable.
-const pingIntervalMs = 1000
+const pingIntervalMs = 5_000
 
 function isHighlightSetEntity_type(
   data: any
