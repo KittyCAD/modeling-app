@@ -591,15 +591,20 @@ export class SceneEntities {
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
       sketchPathToNode || [],
-      'VariableDeclaration'
-    )
+      ['VariableDeclaration', 'ExpressionStatement']
+    ) as { node: { type: string } } | Error
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
+    const variableDeclarationName = (_node1.node.type === 'VariableDeclaration') ?
+      (_node1.node as VariableDeclaration).declarations[0]?.id?.name || '' :
+      ''
 
-    const sg = kclManager.programMemory.get(
+    const sgMemItem = kclManager.programMemory.get(
       variableDeclarationName
-    ) as SketchGroup
+    )
+    if (sgMemItem?.type !== 'SketchGroup') {
+      return Promise.reject(new Error('SketchGroup not found in programMemory'))
+    }
+    const sg: SketchGroup = sgMemItem
     const lastSeg = sg.value.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
