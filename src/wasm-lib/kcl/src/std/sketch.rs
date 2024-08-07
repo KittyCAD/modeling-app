@@ -1681,14 +1681,31 @@ async fn inner_tangential_arc(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
+    // next set of lines is some undocumented voodoo from get_tangential_arc_to_info 
+    let tangent_info = sketch_group.get_tangential_info_from_paths(); //this function desperately needs some documentation
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
 
     let id = uuid::Uuid::new_v4();
 
     let to = match &data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // Calculate the end point from the angle and radius.
-            let end_angle = Angle::from_degrees(*offset);
-            let start_angle = Angle::from_degrees(0.0);
+
+            let previous_end_tangent = Angle::from_degrees(tan_previous_point);
+            // make sure the arc center is on the correct side to guarantee deterministic behavior
+            // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
+            if (offset > 0) {// CCW turn 
+                tangent_to_arc__start_angle = -90 // 
+            } else {// CW turn 
+                tangent_to_arc__start_angle = 90 } // 
+            // may need some logic and / or modulo on the various angle values to prevent them from going "backwards"
+            // but the above logic *should* capture that behavior
+            let start_angle = previous_end_tangent+tangent_to_arc_start_angle+Angle::from_degrees(0.0);
+            let end_angle = start_angle+Angle::from_degrees(*offset);
             let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
 
             args.batch_modeling_cmd(
@@ -1713,8 +1730,6 @@ async fn inner_tangential_arc(
             *to
         }
     };
-
-    let to = [from.x + to[0], from.y + to[1]];
 
     let current_path = Path::TangentialArc {
         base: BasePath {
