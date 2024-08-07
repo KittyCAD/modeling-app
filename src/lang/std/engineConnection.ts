@@ -531,7 +531,8 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect(reconnecting?: boolean) {
+  connect(reconnecting?: boolean): Promise<void> {
+    return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
         return
       }
@@ -915,85 +916,26 @@ class EngineConnection extends EventTarget {
         }
         this.websocket.addEventListener('error', this.onWebSocketError)
 
-       this.onWebSocketMessage = (event) => {
-        // In the EngineConnection, we're looking for messages to/from
-        // the server that relate to the ICE handshake, or WebRTC
-        // negotiation. There may be other messages (including ArrayBuffer
-        // messages) that are intended for the GUI itself, so be careful
-        // when assuming we're the only consumer or that all messages will
-        // be carefully formatted here.
+        this.onWebSocketMessage = (event) => {
+          // In the EngineConnection, we're looking for messages to/from
+          // the server that relate to the ICE handshake, or WebRTC
+          // negotiation. There may be other messages (including ArrayBuffer
+          // messages) that are intended for the GUI itself, so be careful
+          // when assuming we're the only consumer or that all messages will
+          // be carefully formatted here.
 
-        if (typeof event.data !== 'string') {
-          return
-        }
-
-        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-
-        if (!message.success) {
-          const errorsString = message?.errors
-            ?.map((error) => {
-              return `  - ${error.error_code}: ${error.message}`
-            })
-            .join('\n')
-          if (message.request_id) {
-            const artifactThatFailed =
-              this.engineCommandManager.artifactMap[message.request_id]
-            console.error(
-              `Error in response to request ${message.request_id}:\n${errorsString}
-  failed cmd type was ${artifactThatFailed?.type}`
-            )
-          } else {
-            console.error(`Error from server:\n${errorsString}`)
+          if (typeof event.data !== 'string') {
+            return
           }
 
-          const firstError = message?.errors[0]
-          if (firstError.error_code === 'auth_token_invalid') {
-            this.state = {
-              type: EngineConnectionStateType.Disconnecting,
-              value: {
-                type: DisconnectingType.Error,
-                value: {
-                  error: ConnectionError.BadAuthToken,
-                  context: firstError.message,
-                },
-              },
-            }
-            this.disconnectAll()
-          }
-          return
-        }
+          const message: Models['WebSocketResponse_type'] = JSON.parse(
+            event.data
+          )
 
-        let resp = message.resp
-
-        // If there's no body to the response, we can bail here.
-        if (!resp || !resp.type) {
-          return
-        }
-
-        switch (resp.type) {
-          case 'pong':
-            this.pingPongSpan.pong = new Date()
-            break
-          case 'ice_server_info':
-            let ice_servers = resp.data?.ice_servers
-
-            // Now that we have some ICE servers it makes sense
-            // to start initializing the RTCPeerConnection. RTCPeerConnection
-            // will begin the ICE process.
-            createPeerConnection()
-
-            this.state = {
-              type: EngineConnectionStateType.Connecting,
-              value: {
-                type: ConnectingType.PeerConnectionCreated,
-              },
-            }
-
-            // No ICE servers can be valid in a local dev. env.
-            if (ice_servers?.length === 0) {
-              console.warn('No ICE servers')
-              this.pc?.setConfiguration({
-                bundlePolicy: 'max-bundle',
+          if (!message.success) {
+            const errorsString = message?.errors
+              ?.map((error) => {
+                return `  - ${error.error_code}: ${error.message}`
               })
               .join('\n')
             if (message.request_id) {
@@ -1206,6 +1148,7 @@ class EngineConnection extends EventTarget {
           this.onNetworkStatusReady
         )
       }
+    })
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!

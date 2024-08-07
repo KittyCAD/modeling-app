@@ -25,4 +25,5 @@ export const VITE_KC_DEV_TOKEN = import.meta.env.VITE_KC_DEV_TOKEN as
 export const TEST = import.meta.env.TEST
 // @ts-ignore
 export const DEV = import.meta.env.DEV
+// @ts-ignore
 export const CI = import.meta.env.CI

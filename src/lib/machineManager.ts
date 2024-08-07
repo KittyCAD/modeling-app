@@ -1,6 +1,6 @@
 import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
-import { getMachineApiIp, listMachines } from './tauri'
+import { getMachineApiIp, listMachines } from './desktop'
 
 export class MachineManager {
   private _isDesktop: boolean = isDesktop()

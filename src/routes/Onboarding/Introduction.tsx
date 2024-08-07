@@ -3,7 +3,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewProject } from 'lib/tauriFS'
+import { createAndOpenNewProject } from 'lib/desktopFS'
 import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { paths } from 'lib/paths'
@@ -17,9 +17,7 @@ import { useState } from 'react'
 import { createNewProjectDirectory, listProjects } from 'lib/desktop'
 import { IndexLoaderData } from 'lib/types'
 import { useFileContext } from 'hooks/useFileContext'
-import { paths } from 'lib/paths'
 import { useLspContext } from 'components/LspProvider'
-import { useState } from 'react'
 
 /**
  * Show either a welcome screen or a warning screen
