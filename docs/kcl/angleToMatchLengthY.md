@@ -257,6 +257,10 @@ const extrusion = extrude(5, sketch001)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -462,6 +466,10 @@ const extrusion = extrude(5, sketch001)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
