@@ -2731,6 +2731,12 @@ let c = !!true
 let d = !returnTrue()
 
 assert(!false, "expected to pass")
+
+fn check = (x) => {
+  assert(!x, "expected argument to be false")
+  return true
+}
+check(false)
 "#;
         let mem = parse_execute(ast).await.unwrap();
         assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
