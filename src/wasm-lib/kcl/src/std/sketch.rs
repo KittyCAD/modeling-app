@@ -1688,6 +1688,10 @@ async fn inner_tangential_arc(
     } else {
         tangent_info.center_or_tangent_point
     };
+    println!(
+        "JORDAN: tan_previous_point = ({:.3}, {:.3})",
+        tan_previous_point[0], tan_previous_point[1]
+    );
 
     let id = uuid::Uuid::new_v4();
 
@@ -1695,8 +1699,11 @@ async fn inner_tangential_arc(
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // Calculate the end point from the angle and radius.
 
-            let tan_previous_angle = f64::atan2(tan_previous_point[1] - from.x, tan_previous_point[0] - from.y);
-            let previous_end_tangent = Angle::from_degrees(tan_previous_angle);
+            let tan_previous_angle = dbg!(f64::atan2(
+                tan_previous_point[1] - from.y,
+                tan_previous_point[0] - from.x,
+            ));
+            let previous_end_tangent = dbg!(Angle::from_degrees(tan_previous_angle));
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
             let offset_degrees = *offset;
@@ -1715,6 +1722,11 @@ async fn inner_tangential_arc(
             let end_angle = Angle::from_degrees(start_angle.degrees() + offset_degrees);
             let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
 
+            println!("JORDAN: the tanArc");
+            println!("\tends at ({:.3}, {:.3})", to.x, to.y);
+            println!("\tstarts at ({:.3}, {:.3})", from.x, from.y);
+            println!("\tstart angle {:.3}", start_angle.degrees());
+            println!("\tend angle {:.3}", end_angle.degrees());
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::ExtendPath {
