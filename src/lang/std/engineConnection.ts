@@ -1443,7 +1443,7 @@ export class EngineCommandManager extends EventTarget {
       callbackOnEngineLiteConnect,
     })
 
-    // Nothing more to do when using a lite engine initializiation
+    // Nothing more to do when using a lite engine initialization
     if (callbackOnEngineLiteConnect) return
 
     this.dispatchEvent(
