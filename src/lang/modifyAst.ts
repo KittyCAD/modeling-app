@@ -18,6 +18,7 @@ import {
   ProgramMemory,
   SourceRange,
   SketchGroup,
+  ExpressionStatement,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -82,15 +83,22 @@ export function addStartProfileAt(
   const _node1 = getNodeFromPath<VariableDeclaration>(
     node,
     pathToNode,
-    'VariableDeclaration'
-  )
+    ['VariableDeclaration', 'ExpressionStatement']
+  ) as { node: { type: string } } | Error
   if (err(_node1)) return _node1
-  const variableDeclaration = _node1.node
-  if (variableDeclaration.type !== 'VariableDeclaration') {
-    return new Error('variableDeclaration.init.type !== PipeExpression')
-  }
   const _node = { ...node }
-  const init = variableDeclaration.declarations[0].init
+  let expr: Value
+  let variableDeclaration: VariableDeclaration | undefined
+  if (_node1.node.type === 'VariableDeclaration') {
+    const node: VariableDeclaration = _node1.node as VariableDeclaration
+    variableDeclaration = node
+    expr = node.declarations[0].init
+  } else if (_node1.node.type === 'ExpressionStatement') {
+    const node: ExpressionStatement = _node1.node as ExpressionStatement
+    expr = node.expression
+  } else {
+    return new Error(`Unrecognized node type ${_node1.node.type}`)
+  }
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createArrayExpression([
       createLiteral(roundOff(at[0])),
@@ -98,11 +106,11 @@ export function addStartProfileAt(
     ]),
     createPipeSubstitution(),
   ])
-  if (init.type === 'PipeExpression') {
-    init.body.splice(1, 0, startProfileAt)
-  } else {
+  if (expr.type === 'PipeExpression') {
+    expr.body.splice(1, 0, startProfileAt)
+  } else if (variableDeclaration) {
     variableDeclaration.declarations[0].init = createPipeExpression([
-      init,
+      expr,
       startProfileAt,
     ])
   }
