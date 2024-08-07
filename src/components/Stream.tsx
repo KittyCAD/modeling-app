@@ -166,18 +166,6 @@ export const Stream = () => {
     setIsFreezeFrame(!kclManager.isFirstRender)
   }, [kclManager.isFirstRender])
 
-  // HOT FIX: for https://github.com/KittyCAD/modeling-app/pull/3250
-  // TODO review if there's a better way to play the stream again.
-  useEffect(() => {
-    if (!kclManager.isFirstRender)
-      setTimeout(() =>
-        // execute in the next event loop
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-      )
-  }, [kclManager.isFirstRender])
-
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
