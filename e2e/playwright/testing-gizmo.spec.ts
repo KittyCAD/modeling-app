@@ -235,7 +235,7 @@ test.describe('Testing Gizmo', () => {
         testCase.expectedCameraTarget.z.toString()
       ),
     ])
-    
+
     // Now test the popover menu.
     // It has the same click handlers, so we can just
     // test that it opens and contains the same content.
@@ -244,6 +244,6 @@ test.describe('Testing Gizmo', () => {
     })
     await expect(gizmoPopoverButton).toBeVisible()
     await gizmoPopoverButton.click()
-    await expect(buttonToTest).toBeVisible()    
+    await expect(buttonToTest).toBeVisible()
   })
 })
