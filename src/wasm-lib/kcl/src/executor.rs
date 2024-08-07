@@ -2720,7 +2720,7 @@ const bracket = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_unary_operator_not() {
+    async fn test_unary_operator_not_succeeds() {
         let ast = r#"
 fn returnTrue = () => { return !false }
 const t = true
@@ -2729,32 +2729,134 @@ let notTrue = !t
 let notFalse = !f
 let c = !!true
 let d = !returnTrue()
-// Yup, this is null.
-let myNull = 0 / 0
-let notNull = !myNull
-let notZero = !0
-let notEmptyString = !""
-let obj = { a: 1 }
-let notMember = !obj.a
-// TODO: Add these tests back in when we support these types.
-// let notNan = !NaN
-// let notEmptyArray = ![]
-// let notEmptyObject = !{}
-// let notFunction = !() => { return 1 }
-// let notTag = !$myTag
-// let notPipe = !(1 |> 2)
-// fn identity = (x) => { return x }
-// let notPipeSub = 1 |> identity(!%)
+
+assert(!false, "expected to pass")
 "#;
         let mem = parse_execute(ast).await.unwrap();
         assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
         assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
         assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
         assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
-        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notNull"));
-        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notZero"));
-        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notEmptyString"));
-        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notMember"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_on_non_bool_fails() {
+        let code1 = r#"
+// Yup, this is null.
+let myNull = 0 / 0
+let notNull = !myNull
+"#;
+        assert_eq!(
+            parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: null".to_owned(),
+                source_ranges: vec![SourceRange([56, 63])],
+            })
+        );
+
+        let code2 = "let notZero = !0";
+        assert_eq!(
+            parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 0".to_owned(),
+                source_ranges: vec![SourceRange([14, 16])],
+            })
+        );
+
+        let code3 = r#"
+let notEmptyString = !""
+"#;
+        assert_eq!(
+            parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: \"\"".to_owned(),
+                source_ranges: vec![SourceRange([22, 25])],
+            })
+        );
+
+        let code4 = r#"
+let obj = { a: 1 }
+let notMember = !obj.a
+"#;
+        assert_eq!(
+            parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 1".to_owned(),
+                source_ranges: vec![SourceRange([36, 42])],
+            })
+        );
+
+        let code5 = "let notArray = ![]";
+        assert_eq!(
+            parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([15, 16])],
+            })
+        );
+
+        let code6 = "let notObject = !{}";
+        assert_eq!(
+            parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([16, 17])],
+            })
+        );
+
+        let code7 = "let notFunction = !() => { return 1 }";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([18, 19])],
+            })
+        );
+
+        let code8 = "let notTag = !$myTag";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([13, 14])],
+            })
+        );
+
+        let code9 = "let notPipe = !(1 |> 2)";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([14, 15])],
+            })
+        );
+
+        let code10 = "
+fn identity = (x) => { return x }
+let notPipeSub = 1 |> identity(!%))";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([54, 56])],
+            })
+        );
+
+        // TODO: Add these tests when we support these types.
+        // let notNan = !NaN
+        // let notInfinity = !Infinity
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -3198,15 +3198,15 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
-/// Convert JSON value to bool.  Everything is true except for null and false.
-pub fn json_to_bool(j: &serde_json::Value) -> bool {
+/// JSON value as bool.  If it isn't a bool, returns None.
+pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
     match j {
-        JValue::Null => false,
-        JValue::Bool(b) => *b,
-        JValue::Number(_) => true,
-        JValue::String(_) => true,
-        JValue::Array(_) => true,
-        JValue::Object(_) => true,
+        JValue::Null => None,
+        JValue::Bool(b) => Some(*b),
+        JValue::Number(_) => None,
+        JValue::String(_) => None,
+        JValue::Array(_) => None,
+        JValue::Object(_) => None,
     }
 }
 
@@ -3356,7 +3356,13 @@ impl UnaryExpression {
                 .get_result(memory, dynamic_state, pipe_info, ctx)
                 .await?
                 .get_json_value()?;
-            let negated = !json_to_bool(&value);
+            let Some(bool_value) = json_as_bool(&value) else {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot apply unary operator ! to non-boolean value: {}", value),
+                    source_ranges: vec![self.into()],
+                }));
+            };
+            let negated = !bool_value;
             return Ok(MemoryItem::UserVal(UserVal {
                 value: serde_json::Value::Bool(negated),
                 meta: vec![Metadata {
