@@ -1,12 +1,14 @@
 ---
 title: "arc"
-excerpt: "Draw an arc."
+excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
 layout: manual
 ---
 
-Draw an arc.
+Starting at the current sketch's origin, draw a curved line segment along
 
-
+an imaginary circle of the specified radius.
+The arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.
+Unless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.
 
 ```js
 arc(data: ArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -52,7 +54,7 @@ const exampleSketch = startSketchOn('XZ')
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -126,7 +128,7 @@ const exampleSketch = startSketchOn('XZ')
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -464,7 +466,7 @@ const exampleSketch = startSketchOn('XZ')
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -538,7 +540,7 @@ const exampleSketch = startSketchOn('XZ')
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

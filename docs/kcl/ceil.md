@@ -1,10 +1,10 @@
 ---
 title: "ceil"
-excerpt: "Computes the smallest integer greater than or equal to a number."
+excerpt: "Compute the smallest integer greater than or equal to a number."
 layout: manual
 ---
 
-Computes the smallest integer greater than or equal to a number.
+Compute the smallest integer greater than or equal to a number.
 
 
 

@@ -1,10 +1,10 @@
 ---
 title: "angleToMatchLengthX"
-excerpt: "Returns the angle to match the given length for x."
+excerpt: "Compute the angle (in degrees) in o"
 layout: manual
 ---
 
-Returns the angle to match the given length for x.
+Compute the angle (in degrees) in o
 
 
 
@@ -124,7 +124,7 @@ const extrusion = extrude(5, sketch001)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -198,7 +198,7 @@ const extrusion = extrude(5, sketch001)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

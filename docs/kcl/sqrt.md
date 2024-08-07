@@ -1,10 +1,10 @@
 ---
 title: "sqrt"
-excerpt: "Computes the square root of a number."
+excerpt: "Compute the square root of a number."
 layout: manual
 ---
 
-Computes the square root of a number.
+Compute the square root of a number.
 
 
 

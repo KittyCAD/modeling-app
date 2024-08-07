@@ -23,7 +23,9 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
     Ok(result.into())
 }
 
-/// Extrudes by a given amount.
+/// Extend a 2-dimensional sketch through a third dimension in order to
+/// create new 3-dimensional volume, or if extruded into an existing volume,
+/// cut into an existing solid.
 ///
 /// ```no_run
 /// const example = startSketchOn('XZ')

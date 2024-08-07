@@ -1,12 +1,12 @@
 ---
 title: "angledLineOfXLength"
-excerpt: "Draw an angled line of a given x length."
+excerpt: "Create a line segment from the current 2-dimensional sketch origin"
 layout: manual
 ---
 
-Draw an angled line of a given x length.
+Create a line segment from the current 2-dimensional sketch origin
 
-
+along some angle (in degrees) for some relative length in the 'x' dimension.
 
 ```js
 angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -42,7 +42,7 @@ const extrusion = extrude(10, sketch001)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -116,7 +116,7 @@ const extrusion = extrude(10, sketch001)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -454,7 +454,7 @@ const extrusion = extrude(10, sketch001)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -528,7 +528,7 @@ const extrusion = extrude(10, sketch001)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

@@ -1,10 +1,10 @@
 ---
 title: "startProfileAt"
-excerpt: "Start a profile at a given point."
+excerpt: "Start a new profile at a given point."
 layout: manual
 ---
 
-Start a profile at a given point.
+Start a new profile at a given point.
 
 
 
@@ -129,7 +129,7 @@ const example = extrude(5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -411,7 +411,7 @@ const example = extrude(5, exampleSketch)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -485,7 +485,7 @@ const example = extrude(5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

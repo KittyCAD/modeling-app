@@ -1,12 +1,12 @@
 ---
 title: "shell"
-excerpt: "Shell a solid."
+excerpt: "Remove volume from a 3-dimensional shape such that a wall of the"
 layout: manual
 ---
 
-Shell a solid.
+Remove volume from a 3-dimensional shape such that a wall of the
 
-
+provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
 ```js
 shell(data: ShellData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
@@ -169,7 +169,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -560,7 +560,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {

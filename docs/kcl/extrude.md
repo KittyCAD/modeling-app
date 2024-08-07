@@ -1,12 +1,12 @@
 ---
 title: "extrude"
-excerpt: "Extrudes by a given amount."
+excerpt: "Extend a 2-dimensional sketch through a third dimension in order to"
 layout: manual
 ---
 
-Extrudes by a given amount.
+Extend a 2-dimensional sketch through a third dimension in order to
 
-
+create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
 ```js
 extrude(length: number, sketch_group_set: SketchGroupSet) -> ExtrudeGroupSet
@@ -67,7 +67,7 @@ const example = extrude(10, exampleSketch)
 * `sketch_group_set`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -141,7 +141,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -511,7 +511,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {

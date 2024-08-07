@@ -1,12 +1,12 @@
 ---
 title: "fillet"
-excerpt: "Create fillets on tagged paths."
+excerpt: "Blend a transitional edge along a tagged path, smoothing the sharp edge."
 layout: manual
 ---
 
-Create fillets on tagged paths.
+Blend a transitional edge along a tagged path, smoothing the sharp edge.
 
-
+Fillet is similar in function and use to a chamfer, except a chamfer will cut a sharp transition along an edge while fillet will smoothly blend the transition.
 
 ```js
 fillet(data: FilletData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> ExtrudeGroup
@@ -181,7 +181,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -581,7 +581,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {

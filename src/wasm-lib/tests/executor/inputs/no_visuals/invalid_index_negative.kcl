@@ -1,0 +1,3 @@
+let arr = [1, 2, 3]
+let i = -1
+let x = arr[i]

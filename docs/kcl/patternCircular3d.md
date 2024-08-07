@@ -1,12 +1,12 @@
 ---
 title: "patternCircular3d"
-excerpt: "A circular pattern on a 3D model."
+excerpt: "Repeat a 3-dimensional solid some number of times along a partial or"
 layout: manual
 ---
 
-A circular pattern on a 3D model.
+Repeat a 3-dimensional solid some number of times along a partial or
 
-
+complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orentation of the solid with respect to the center of the circle is maintained.
 
 ```js
 patternCircular3d(data: CircularPattern3dData, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]
@@ -87,7 +87,7 @@ const example = extrude(-5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {

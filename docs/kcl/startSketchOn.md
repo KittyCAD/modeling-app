@@ -1,10 +1,10 @@
 ---
 title: "startSketchOn"
-excerpt: "Start a sketch on a specific plane or face."
+excerpt: "Start a new 2-dimensional sketch on a specific plane or face."
 layout: manual
 ---
 
-Start a sketch on a specific plane or face.
+Start a new 2-dimensional sketch on a specific plane or face.
 
 
 
@@ -198,7 +198,7 @@ const a1 = startSketchOn({
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -610,7 +610,7 @@ const a1 = startSketchOn({
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {

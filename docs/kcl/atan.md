@@ -1,10 +1,10 @@
 ---
 title: "atan"
-excerpt: "Computes the arctangent of a number (in radians)."
+excerpt: "Compute the arctangent of a number (in radians)."
 layout: manual
 ---
 
-Computes the arctangent of a number (in radians).
+Compute the arctangent of a number (in radians).
 
 
 

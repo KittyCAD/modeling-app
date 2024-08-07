@@ -176,6 +176,7 @@ const FileTreeItem = ({
       )
       codeManager.writeToFile()
 
+      // Prevent seeing the model built one piece at a time when changing files
       kclManager.isFirstRender = true
       kclManager.executeCode(true).then(() => {
         kclManager.isFirstRender = false

@@ -1,12 +1,12 @@
 ---
 title: "yLineTo"
-excerpt: "Draw a line to a point on the y-axis."
+excerpt: "Draw a line parallel to the Y axis, that ends at the given Y."
 layout: manual
 ---
 
-Draw a line to a point on the y-axis.
+Draw a line parallel to the Y axis, that ends at the given Y.
 
-
+E.g. if the previous line ended at (1, 1), then yLineTo(4) draws a line from (1, 1) to (1, 4)
 
 ```js
 yLineTo(to: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -32,7 +32,7 @@ const example = extrude(5, exampleSketch)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -106,7 +106,7 @@ const example = extrude(5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -444,7 +444,7 @@ const example = extrude(5, exampleSketch)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -518,7 +518,7 @@ const example = extrude(5, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

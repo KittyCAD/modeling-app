@@ -1,6 +1,6 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { useCallback, useMemo } from 'react'
+import { MouseEventHandler, useCallback, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
@@ -12,13 +12,21 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { useKclContext } from 'lang/KclProvider'
+import { machineManager } from 'lib/machineManager'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
 }
 
+interface BadgeInfoComputed {
+  value: number | boolean
+  onClick?: MouseEventHandler<any>
+}
+
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const { commandBarSend } = useCommandsContext()
+  const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
   const { send, context } = useModelingContext()
@@ -43,7 +51,30 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           data: { name: 'Export', groupId: 'modeling' },
         }),
     },
+    {
+      id: 'make',
+      title: 'Make part',
+      icon: 'printer3d',
+      iconClassName: '!p-0',
+      keybinding: 'Ctrl + Shift + M',
+      action: async () => {
+        commandBarSend({
+          type: 'Find and select command',
+          data: { name: 'Make', groupId: 'modeling' },
+        })
+      },
+      hide: () => machineManager.machineCount() === 0,
+      hideOnPlatform: 'web',
+    },
   ]
+  const filteredActions: SidebarAction[] = sidebarActions.filter(
+    (action) =>
+      (!action.hide || (action.hide instanceof Function && !action.hide())) &&
+      (!action.hideOnPlatform ||
+        (isTauri()
+          ? action.hideOnPlatform === 'web'
+          : action.hideOnPlatform === 'desktop'))
+  )
 
   //   // Filter out the debug panel if it's not supposed to be shown
   //   // TODO: abstract out for allowing user to configure which panes to show
@@ -61,6 +92,18 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       ),
     [sidebarPanes, showDebugPanel.current]
   )
+
+  const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
+    return filteredPanes.reduce((acc, pane) => {
+      if (pane.showBadge) {
+        acc[pane.id] = {
+          value: pane.showBadge.value({ kclContext }),
+          onClick: pane.showBadge.onClick,
+        }
+      }
+      return acc
+    }, {} as Record<SidebarType, BadgeInfoComputed>)
+  }, [kclContext.errors])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -120,26 +163,34 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                 paneIsOpen={context.store?.openPanes.includes(pane.id)}
                 onClick={() => togglePane(pane.id)}
                 aria-pressed={context.store?.openPanes.includes(pane.id)}
+                showBadge={paneBadgeMap[pane.id]}
               />
             ))}
           </ul>
-          <hr className="w-full border-chalkboard-20 dark:border-chalkboard-80" />
-          <ul id="sidebar-actions" className="w-fit p-2 flex flex-col gap-2">
-            {sidebarActions.map((action) => (
-              <ModelingPaneButton
-                key={action.id}
-                paneConfig={{
-                  id: action.id,
-                  title: action.title,
-                  icon: action.icon,
-                  keybinding: action.keybinding,
-                  iconClassName: action.iconClassName,
-                  iconSize: 'md',
-                }}
-                onClick={action.action}
-              />
-            ))}
-          </ul>
+          {filteredActions.length > 0 && (
+            <>
+              <hr className="w-full border-chalkboard-20 dark:border-chalkboard-80" />
+              <ul
+                id="sidebar-actions"
+                className="w-fit p-2 flex flex-col gap-2"
+              >
+                {filteredActions.map((action) => (
+                  <ModelingPaneButton
+                    key={action.id}
+                    paneConfig={{
+                      id: action.id,
+                      title: action.title,
+                      icon: action.icon,
+                      keybinding: action.keybinding,
+                      iconClassName: action.iconClassName,
+                      iconSize: 'md',
+                    }}
+                    onClick={action.action}
+                  />
+                ))}
+              </ul>
+            </>
+          )}
         </ul>
         <ul
           id="pane-section"
@@ -186,12 +237,14 @@ interface ModelingPaneButtonProps
   }
   onClick: () => void
   paneIsOpen?: boolean
+  showBadge?: BadgeInfoComputed
 }
 
 function ModelingPaneButton({
   paneConfig,
   onClick,
   paneIsOpen,
+  showBadge,
   ...props
 }: ModelingPaneButtonProps) {
   useHotkeys(paneConfig.keybinding, onClick, {
@@ -199,42 +252,68 @@ function ModelingPaneButton({
   })
 
   return (
-    <button
-      className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
-      onClick={onClick}
-      name={paneConfig.title}
-      data-testid={paneConfig.id + '-pane-button'}
-      {...props}
-    >
-      <ActionIcon
-        icon={paneConfig.icon}
-        className={'p-1 ' + paneConfig.iconClassName || ''}
-        size={paneConfig.iconSize || 'sm'}
-        iconClassName={
-          paneIsOpen
-            ? ' !text-chalkboard-10'
-            : '!text-chalkboard-80 dark:!text-chalkboard-30'
-        }
-        bgClassName={
-          'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
-        }
-      />
-      <span className="sr-only">
-        {paneConfig.title}
-        {paneIsOpen !== undefined ? ` pane` : ''}
-      </span>
-      <Tooltip
-        position="right"
-        contentClassName="max-w-none flex items-center gap-4"
-        hoverOnly
+    <div id={paneConfig.id + '-button-holder'}>
+      <button
+        className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
+        onClick={onClick}
+        name={paneConfig.title}
+        data-testid={paneConfig.id + '-pane-button'}
+        {...props}
       >
-        <span className="flex-1">
+        <ActionIcon
+          icon={paneConfig.icon}
+          className={'p-1 ' + paneConfig.iconClassName || ''}
+          size={paneConfig.iconSize || 'sm'}
+          iconClassName={
+            paneIsOpen
+              ? ' !text-chalkboard-10'
+              : '!text-chalkboard-80 dark:!text-chalkboard-30'
+          }
+          bgClassName={
+            'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
+          }
+        />
+        <span className="sr-only">
           {paneConfig.title}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
-        <kbd className="hotkey text-xs capitalize">{paneConfig.keybinding}</kbd>
-      </Tooltip>
-    </button>
+        <Tooltip
+          position="right"
+          contentClassName="max-w-none flex items-center gap-4"
+          hoverOnly
+        >
+          <span className="flex-1">
+            {paneConfig.title}
+            {paneIsOpen !== undefined ? ` pane` : ''}
+          </span>
+          <kbd className="hotkey text-xs capitalize">
+            {paneConfig.keybinding}
+          </kbd>
+        </Tooltip>
+      </button>
+      {!!showBadge?.value && (
+        <p
+          id={`${paneConfig.id}-badge`}
+          className={
+            'absolute m-0 p-0 top-1 right-0 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+          }
+          onClick={showBadge.onClick}
+          title={`Click to view ${showBadge.value} notification${
+            Number(showBadge.value) > 1 ? 's' : ''
+          }`}
+        >
+          <span className="sr-only">&nbsp;has&nbsp;</span>
+          {typeof showBadge.value === 'number' ? (
+            <span>{showBadge.value}</span>
+          ) : (
+            <span className="sr-only">a</span>
+          )}
+          <span className="sr-only">
+            &nbsp;notification{Number(showBadge.value) > 1 ? 's' : ''}
+          </span>
+        </p>
+      )}
+    </div>
   )
 }
 
@@ -246,4 +325,5 @@ export type SidebarAction = {
   keybinding: string
   action: () => void
   hideOnPlatform?: 'desktop' | 'web'
+  hide?: boolean | (() => boolean)
 }

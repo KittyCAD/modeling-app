@@ -1,12 +1,12 @@
 ---
 title: "angledLineToY"
-excerpt: "Draw an angled line to a given y coordinate."
+excerpt: "Create a line segment from the current 2-dimensional sketch origin"
 layout: manual
 ---
 
-Draw an angled line to a given y coordinate.
+Create a line segment from the current 2-dimensional sketch origin
 
-
+along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension.
 
 ```js
 angledLineToY(data: AngledLineToData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -41,7 +41,7 @@ const example = extrude(10, exampleSketch)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -115,7 +115,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -453,7 +453,7 @@ const example = extrude(10, exampleSketch)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -527,7 +527,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

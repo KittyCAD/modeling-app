@@ -18,7 +18,7 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the segment end of x.
+/// Compute the ending point of the provided line segment along the 'x' axis.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -54,7 +54,7 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the segment end of y.
+/// Compute the ending point of the provided line segment along the 'y' axis.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -91,14 +91,15 @@ pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the last segment of x.
+/// Extract the 'x' axis value of the last line segment in the provided 2-d
+/// sketch.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
-///   |> line([0, lastSegX(%)], %)
+///   |> line([lastSegX(%), 0], %)
 ///   |> line([-15, 0], %)
 ///   |> close(%)
 ///
@@ -133,7 +134,8 @@ pub async fn last_segment_y(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the last segment of y.
+/// Extract the 'y' axis value of the last line segment in the provided 2-d
+/// sketch.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
@@ -174,7 +176,7 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the length of the segment.
+/// Compute the length of the provided line segment.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
@@ -220,7 +222,7 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the angle of the segment.
+/// Compute the angle (in degrees) of the provided line segment.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -259,7 +261,7 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the angle to match the given length for x.
+/// Compute the angle (in degrees) in o
 ///
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')

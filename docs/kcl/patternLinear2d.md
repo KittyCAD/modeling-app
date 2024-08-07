@@ -1,12 +1,12 @@
 ---
 title: "patternLinear2d"
-excerpt: "A linear pattern on a 2D sketch."
+excerpt: "Repeat a 2-dimensional sketch along some dimension, with a dynamic amount"
 layout: manual
 ---
 
-A linear pattern on a 2D sketch.
+Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 
-
+of distance between each repetition, some specified number of times.
 
 ```js
 patternLinear2d(data: LinearPattern2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
@@ -44,7 +44,7 @@ const example = extrude(1, exampleSketch)
 * `sketch_group_set`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -118,7 +118,7 @@ const example = extrude(1, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

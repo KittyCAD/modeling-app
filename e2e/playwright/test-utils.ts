@@ -1,5 +1,11 @@
-import { expect, Page, Download } from '@playwright/test'
-import { EngineCommand } from 'lang/std/artifactMap'
+import {
+  expect,
+  Page,
+  Download,
+  TestInfo,
+  BrowserContext,
+} from '@playwright/test'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
@@ -7,6 +13,10 @@ import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
 import { APP_NAME } from 'lib/constants'
+import waitOn from 'wait-on'
+import { secrets } from './secrets'
+import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
+import * as TOML from '@iarna/toml'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -14,6 +24,33 @@ export const TEST_COLORS = {
   YELLOW: [255, 255, 0] as TestColor,
   BLUE: [0, 0, 255] as TestColor,
 } as const
+
+export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
+
+export const deg = (Math.PI * 2) / 360
+
+export const commonPoints = {
+  startAt: '[7.19, -9.7]',
+  num1: 7.25,
+  num2: 14.44,
+}
+
+async function waitForPageLoadWithRetry(page: Page) {
+  await expect(async () => {
+    await page.goto('/')
+    const errorMessage = 'App failed to load - 🔃 Retrying ...'
+    await expect(page.getByTestId('loading'), errorMessage).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' }),
+      errorMessage
+    ).toBeEnabled({
+      timeout: 20_000,
+    })
+  }).toPass({ timeout: 70_000, intervals: [1_000] })
+}
 
 async function waitForPageLoad(page: Page) {
   // wait for all spinners to be gone
@@ -221,9 +258,12 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-
-  await page.goto('/')
-  await waitForPageLoad(page)
+  if (process.env.CI) {
+    await waitForPageLoadWithRetry(page)
+  } else {
+    await page.goto('/')
+    await waitForPageLoad(page)
+  }
 
   return waitForLspPromise
 }
@@ -237,6 +277,7 @@ export async function getUtils(page: Page) {
   return {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
+    waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -269,7 +310,7 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox()
+        .boundingBox({ timeout: 5000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
@@ -545,3 +586,46 @@ export const doExport = async (
  * Gets the appropriate modifier key for the platform.
  */
 export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
+
+export async function tearDown(page: Page, testInfo: TestInfo) {
+  if (testInfo.status === 'skipped') return
+  if (testInfo.status === 'failed') return
+
+  const u = await getUtils(page)
+  // Kill the network so shutdown happens properly
+  await u.emulateNetworkConditions({
+    offline: true,
+    // values of 0 remove any active throttling. crbug.com/456324#c9
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1,
+  })
+
+  // It seems it's best to give the browser about 3s to close things
+  // It's not super reliable but we have no real other choice for now
+  await page.waitForTimeout(3000)
+}
+
+export async function setup(context: BrowserContext, page: Page) {
+  // wait for Vite preview server to be up
+  await waitOn({
+    resources: ['tcp:3000'],
+    timeout: 5000,
+  })
+
+  await context.addInitScript(
+    async ({ token, settingsKey, settings }) => {
+      localStorage.setItem('TOKEN_PERSIST_KEY', token)
+      localStorage.setItem('persistCode', ``)
+      localStorage.setItem(settingsKey, settings)
+      localStorage.setItem('playwright', 'true')
+    },
+    {
+      token: secrets.token,
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+    }
+  )
+  // kill animations, speeds up tests and reduced flakiness
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+}

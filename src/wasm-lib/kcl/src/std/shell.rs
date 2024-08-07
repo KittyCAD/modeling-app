@@ -31,7 +31,9 @@ pub async fn shell(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::ExtrudeGroup(extrude_group))
 }
 
-/// Shell a solid.
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains, taking volume starting at the provided
+/// face, leaving it open in that direction.
 ///
 /// ```no_run
 /// const firstSketch = startSketchOn('XY')
@@ -76,6 +78,11 @@ async fn inner_shell(
             source_ranges: vec![args.source_range],
         }));
     }
+
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not do these for sketch on face, things will fail with face does not exist.
+    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+        .await?;
 
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),

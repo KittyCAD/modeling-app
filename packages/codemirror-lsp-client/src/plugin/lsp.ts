@@ -17,8 +17,8 @@ import type {
   PluginSpec,
   ViewPlugin,
 } from '@codemirror/view'
-import { setDiagnosticsEffect } from '@codemirror/lint'
 import { EditorView, Tooltip } from '@codemirror/view'
+import { linter } from '@codemirror/lint'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -573,6 +573,7 @@ export class LanguageServerPluginSpec
       lspHoverExt(plugin),
       lspIndentExt(),
       lspSemanticTokensExt(),
+      linter(null),
     ]
   }
 }

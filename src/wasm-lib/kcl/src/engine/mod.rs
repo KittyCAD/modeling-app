@@ -45,7 +45,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<DefaultPlanes, crate::errors::KclError>;
 
     /// Helpers to be called after clearing a scene.
-    /// (These really only apply to wasm for now.
+    /// (These really only apply to wasm for now).
     async fn clear_scene_post_hook(
         &self,
         source_range: crate::executor::SourceRange,

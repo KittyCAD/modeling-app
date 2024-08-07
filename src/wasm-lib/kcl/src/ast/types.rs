@@ -23,8 +23,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
-        TagEngineInfo, TagIdentifier, UserVal,
+        BodyType, DynamicState, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange,
+        StatementKind, TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -918,6 +918,7 @@ impl BinaryPart {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -928,10 +929,16 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, pipe_info, ctx).await
+                binary_expression
+                    .get_result(memory, dynamic_state, pipe_info, ctx)
+                    .await
             }
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await,
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await,
+            BinaryPart::CallExpression(call_expression) => {
+                call_expression.execute(memory, dynamic_state, pipe_info, ctx).await
+            }
+            BinaryPart::UnaryExpression(unary_expression) => {
+                unary_expression.get_result(memory, dynamic_state, pipe_info, ctx).await
+            }
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
@@ -1311,6 +1318,7 @@ impl CallExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -1323,7 +1331,14 @@ impl CallExpression {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
             let result = ctx
-                .arg_into_mem_item(arg, memory, pipe_info, &metadata, StatementKind::Expression)
+                .arg_into_mem_item(
+                    arg,
+                    memory,
+                    dynamic_state,
+                    pipe_info,
+                    &metadata,
+                    StatementKind::Expression,
+                )
                 .await?;
             fn_args.push(result);
         }
@@ -1331,7 +1346,8 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
+                let args =
+                    crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone(), dynamic_state.clone());
                 let mut result = func.std_lib_fn()(args).await?;
 
                 // If the return result is a sketch group or extrude group, we want to update the
@@ -1376,6 +1392,7 @@ impl CallExpression {
 
                                 let mut info = info.clone();
                                 info.surface = Some(value.clone());
+                                info.sketch_group = extrude_group.id;
                                 t.info = Some(info);
 
                                 memory.update_tag(&tag.name, t.clone())?;
@@ -1384,9 +1401,15 @@ impl CallExpression {
                                 extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
                             }
                         }
+
+                        // Find the stale sketch group in memory and update it.
+                        if let Some(current_env) = memory.environments.get_mut(memory.current_env.index()) {
+                            current_env.update_sketch_group_tags(&extrude_group.sketch_group);
+                        }
                     }
                     _ => {}
                 }
+
                 Ok(result)
             }
             FunctionKind::Std(func) => {
@@ -1433,9 +1456,14 @@ impl CallExpression {
                     }
                 }
 
+                let mut fn_dynamic_state = dynamic_state.clone();
+
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match ctx.inner_execute(&p, &mut fn_memory, BodyType::Block).await {
+                let results = match ctx
+                    .inner_execute(&p, &mut fn_memory, &mut fn_dynamic_state, BodyType::Block)
+                    .await
+                {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
@@ -1456,15 +1484,24 @@ impl CallExpression {
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
-                let result = func.call_fn(fn_args, ctx.clone()).await.map_err(|e| {
-                    // Add the call expression to the source ranges.
-                    e.add_source_ranges(vec![self.into()])
-                })?;
+                let fn_dynamic_state = dynamic_state.merge(memory);
+                let result = func
+                    .call_fn(fn_args, &fn_dynamic_state, ctx.clone())
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        e.add_source_ranges(vec![self.into()])
+                    })?;
 
                 let result = result.ok_or_else(|| {
+                    let mut source_ranges: Vec<SourceRange> = vec![self.into()];
+                    // We want to send the source range of the original function.
+                    if let MemoryItem::Function { meta, .. } = func {
+                        source_ranges = meta.iter().map(|m| m.source_range).collect();
+                    };
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of user-defined function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
+                        source_ranges,
                     })
                 })?;
                 let result = result.get_value()?;
@@ -2295,6 +2332,7 @@ impl ArrayExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -2310,13 +2348,29 @@ impl ArrayExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
+                    binary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
                 }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::CallExpression(call_expression) => {
+                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::ArrayExpression(array_expression) => {
+                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::PipeExpression(pipe_expression) => {
+                    pipe_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -2465,6 +2519,7 @@ impl ObjectExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
@@ -2479,13 +2534,29 @@ impl ObjectExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
+                    binary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
                 }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::CallExpression(call_expression) => {
+                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::ArrayExpression(array_expression) => {
+                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Value::PipeExpression(pipe_expression) => {
+                    pipe_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
                 Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -2763,31 +2834,94 @@ impl MemberExpression {
     }
 
     pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let property_name = match &self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
+        #[derive(Debug)]
+        enum Property {
+            Number(usize),
+            String(String),
+        }
+
+        impl Property {
+            fn type_name(&self) -> &'static str {
+                match self {
+                    Property::Number(_) => "number",
+                    Property::String(_) => "string",
+                }
+            }
+        }
+
+        let property_src: SourceRange = self.property.clone().into();
+        let property_sr = vec![property_src];
+
+        let property: Property = match self.property.clone() {
+            LiteralIdentifier::Identifier(identifier) => {
+                let name = identifier.name;
+                if !self.computed {
+                    // Treat the property as a literal
+                    Property::String(name.to_string())
+                } else {
+                    // Actually evaluate memory to compute the property.
+                    let prop = memory.get(&name, property_src)?;
+                    let MemoryItem::UserVal(prop) = prop else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges: property_sr,
+                            message: format!(
+                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                            ),
+                        }));
+                    };
+                    match prop.value {
+                        JValue::Number(ref num) => {
+                            num
+                                .as_u64()
+                                .and_then(|x| usize::try_from(x).ok())
+                                .map(Property::Number)
+                                .ok_or_else(|| {
+                                    KclError::Semantic(KclErrorDetails {
+                                        source_ranges: property_sr,
+                                        message: format!(
+                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
+                                        ),
+                                    })
+                                })?
+                        }
+                        JValue::String(ref x) => Property::String(x.to_owned()),
+                        _ => {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!(
+                                    "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
+                                ),
+                            }));
+                        }
+                    }
+                }
+            }
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::IInteger(x) if x >= 0 => return self.get_result_array(memory, x as usize),
                     LiteralValue::IInteger(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
-                            source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                        if let Ok(x) = u64::try_from(x) {
+                            Property::Number(x.try_into().unwrap())
+                        } else {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                            }));
+                        }
                     }
-                    LiteralValue::Fractional(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                    LiteralValue::String(s) => Property::String(s),
+                    _ => {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                            message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                        }));
                     }
-                    LiteralValue::String(s) => s,
-                    LiteralValue::Bool(b) => b.to_string(),
                 }
             }
         };
 
         let object = match &self.object {
+            // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
             MemberObject::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
@@ -2797,25 +2931,60 @@ impl MemberExpression {
 
         let object_json = object.get_json_value()?;
 
-        if let serde_json::Value::Object(map) = object_json {
-            if let Some(value) = map.get(&property_name) {
-                Ok(MemoryItem::UserVal(UserVal {
-                    value: value.clone(),
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }))
-            } else {
-                Err(KclError::UndefinedValue(KclErrorDetails {
-                    message: format!("Property {} not found in object", property_name),
+        // Check the property and object match -- e.g. ints for arrays, strs for objects.
+        match (object_json, property) {
+            (JValue::Object(map), Property::String(property)) => {
+                if let Some(value) = map.get(&property) {
+                    Ok(MemoryItem::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Property '{property}' not found in object"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Object(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only strings can be used as the property of an object, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (JValue::Array(arr), Property::Number(index)) => {
+                let value_of_arr: Option<&JValue> = arr.get(index);
+                if let Some(value) = value_of_arr {
+                    Ok(MemoryItem::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("The array doesn't have any item at index {index}"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Array(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only integers >= 0 can be used as the index of an array, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (being_indexed, _) => {
+                let t = human_friendly_type(being_indexed);
+                Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("MemberExpression object is not an object: {:?}", object),
-                source_ranges: vec![self.clone().into()],
-            }))
         }
     }
 
@@ -2947,11 +3116,20 @@ impl BinaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
-        let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+        let left_json_value = self
+            .left
+            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .await?
+            .get_json_value()?;
+        let right_json_value = self
+            .right
+            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .await?
+            .get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -3156,13 +3334,14 @@ impl UnaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, pipe_info, ctx)
+                .get_result(memory, dynamic_state, pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
@@ -3333,10 +3512,11 @@ impl PipeExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
+        execute_pipe_body(memory, dynamic_state, &self.body, pipe_info, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -3350,6 +3530,7 @@ impl PipeExpression {
 #[async_recursion::async_recursion]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
+    dynamic_state: &DynamicState,
     body: &[Value],
     pipe_info: &PipeInfo,
     source_range: SourceRange,
@@ -3370,7 +3551,14 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .arg_into_mem_item(first, memory, pipe_info, &meta, StatementKind::Expression)
+        .arg_into_mem_item(
+            first,
+            memory,
+            dynamic_state,
+            pipe_info,
+            &meta,
+            StatementKind::Expression,
+        )
         .await?;
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -3381,9 +3569,15 @@ async fn execute_pipe_body(
     for expression in body {
         let output = match expression {
             Value::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &new_pipe_info, ctx).await?
+                binary_expression
+                    .get_result(memory, dynamic_state, &new_pipe_info, ctx)
+                    .await?
             }
-            Value::CallExpression(call_expression) => call_expression.execute(memory, &new_pipe_info, ctx).await?,
+            Value::CallExpression(call_expression) => {
+                call_expression
+                    .execute(memory, dynamic_state, &new_pipe_info, ctx)
+                    .await?
+            }
             Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
             _ => {
                 // Return an error this should not happen.
@@ -3876,6 +4070,17 @@ impl ConstraintLevels {
         }
 
         source_ranges
+    }
+}
+
+fn human_friendly_type(j: JValue) -> &'static str {
+    match j {
+        JValue::Null => "null",
+        JValue::Bool(_) => "boolean (true/false value)",
+        JValue::Number(_) => "number",
+        JValue::String(_) => "string (text)",
+        JValue::Array(_) => "array (list)",
+        JValue::Object(_) => "object",
     }
 }
 

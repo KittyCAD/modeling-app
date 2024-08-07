@@ -88,6 +88,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
             memory: *transform.memory,
+            dynamic_state: args.dynamic_state.clone(),
         },
         extr,
         &args,
@@ -96,8 +97,8 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
 }
 
-/// A linear pattern on a 3D solid.
-/// Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
+/// Repeat a 3-dimensional solid by successively applying a transformation (such
+/// as rotation, scale, translation, visibility) on each repetition.
 ///
 /// ```no_run
 /// // Parameters
@@ -318,7 +319,8 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(sketch_groups.into())
 }
 
-/// A linear pattern on a 2D sketch.
+/// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -384,7 +386,8 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(extrude_groups.into())
 }
 
-/// A linear pattern on a 3D model.
+/// Repeat a 3-dimensional solid along a linear path, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -582,7 +585,10 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(sketch_groups.into())
 }
 
-/// A circular pattern on a 2D sketch.
+/// Repeat a 2-dimensional sketch some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orentation of the
+/// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -644,7 +650,10 @@ pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(extrude_groups.into())
 }
 
-/// A circular pattern on a 3D model.
+/// Repeat a 3-dimensional solid some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orentation of the
+/// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')

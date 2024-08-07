@@ -1,12 +1,12 @@
 ---
 title: "xLine"
-excerpt: "Draw a line on the x-axis."
+excerpt: "Draw a line relative to the current origin to a specified distance away"
 layout: manual
 ---
 
-Draw a line on the x-axis.
+Draw a line relative to the current origin to a specified distance away
 
-
+from the current position along the 'x' axis.
 
 ```js
 xLine(length: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -36,7 +36,7 @@ const example = extrude(10, exampleSketch)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -110,7 +110,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,
@@ -448,7 +448,7 @@ const example = extrude(10, exampleSketch)
 `SketchGroup` - A sketch group is a collection of paths.
 ```js
 {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: {
@@ -522,7 +522,7 @@ const example = extrude(10, exampleSketch)
 	id: uuid,
 	// The sketch group.
 	sketchGroup: {
-	// The id of the sketch group.
+	// The id of the sketch group (this will change when the engine's reference to it changes.
 	id: uuid,
 	// What the sketch is on (can be a plane or a face).
 	on: SketchSurface,

@@ -1,0 +1,16 @@
+// This tests computed properties. 
+
+const arr = [0, 0, 0, 10]
+const i = 3
+const ten = arr[i]
+
+assertEqual(ten, 10, 0.000001, "oops")
+
+const p = "foo"
+const obj = {
+  foo: 1,
+  bar: 0,
+}
+const one = obj[p]
+
+assertEqual(one, 1, 0.0000001, "oops")
