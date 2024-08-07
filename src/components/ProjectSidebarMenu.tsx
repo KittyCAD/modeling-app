@@ -149,7 +149,7 @@ function ProjectMenuPopover({
         {
           id: 'make',
           Element: 'button',
-          className: !isTauri() ? 'hidden' : '',
+          className: !isDesktop() ? 'hidden' : '',
           children: (
             <>
               <span>Make current part</span>

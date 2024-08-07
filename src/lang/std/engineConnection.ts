@@ -531,8 +531,7 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect(reconnecting?: boolean): Promise<void> {
-    return new Promise((resolve) => {
+  connect(reconnecting?: boolean) {
       if (this.isConnecting() || this.isReady()) {
         return
       }
@@ -916,80 +915,7 @@ class EngineConnection extends EventTarget {
         }
         this.websocket.addEventListener('error', this.onWebSocketError)
 
-        this.onWebSocketMessage = (event) => {
-          // In the EngineConnection, we're looking for messages to/from
-          // the server that relate to the ICE handshake, or WebRTC
-          // negotiation. There may be other messages (including ArrayBuffer
-          // messages) that are intended for the GUI itself, so be careful
-          // when assuming we're the only consumer or that all messages will
-          // be carefully formatted here.
-
-          if (typeof event.data !== 'string') {
-            return
-          }
-
-          const message: Models['WebSocketResponse_type'] = JSON.parse(
-            event.data
-          )
-
-    const createWebSocketConnection = () => {
-      this.state = {
-        type: EngineConnectionStateType.Connecting,
-        value: {
-          type: ConnectingType.WebSocketConnecting,
-        },
-      }
-
-      this.websocket = new WebSocket(this.url, [])
-      this.websocket.binaryType = 'arraybuffer'
-
-      this.onWebSocketOpen = (event) => {
-        this.state = {
-          type: EngineConnectionStateType.Connecting,
-          value: {
-            type: ConnectingType.WebSocketOpen,
-          },
-        }
-
-        // This is required for when KCMA is running stand-alone / within desktop.
-        // Otherwise when run in a browser, the token is sent implicitly via
-        // the Cookie header.
-        if (this.token) {
-          this.send({
-            type: 'headers',
-            headers: { Authorization: `Bearer ${this.token}` },
-          })
-        }
-
-        // Send an initial ping
-        this.send({ type: 'ping' })
-        this.pingPongSpan.ping = new Date()
-      }
-      this.websocket.addEventListener('open', this.onWebSocketOpen)
-
-      this.onWebSocketClose = (event) => {
-        this.disconnectAll()
-        this.finalizeIfAllConnectionsClosed()
-      }
-      this.websocket.addEventListener('close', this.onWebSocketClose)
-
-      this.onWebSocketError = (event) => {
-        this.disconnectAll()
-
-        this.state = {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Error,
-            value: {
-              error: ConnectionError.WebSocketError,
-              context: event,
-            },
-          },
-        }
-      }
-      this.websocket.addEventListener('error', this.onWebSocketError)
-
-      this.onWebSocketMessage = (event) => {
+       this.onWebSocketMessage = (event) => {
         // In the EngineConnection, we're looking for messages to/from
         // the server that relate to the ICE handshake, or WebRTC
         // negotiation. There may be other messages (including ArrayBuffer
@@ -1280,7 +1206,6 @@ class EngineConnection extends EventTarget {
           this.onNetworkStatusReady
         )
       }
-    })
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!

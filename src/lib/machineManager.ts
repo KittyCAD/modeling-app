@@ -1,9 +1,9 @@
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
 import { getMachineApiIp, listMachines } from './tauri'
 
 export class MachineManager {
-  private _isTauri: boolean = isTauri()
+  private _isDesktop: boolean = isDesktop()
   private _machines: {
     [key: string]: components['schemas']['Machine']
   } = {}
@@ -11,7 +11,7 @@ export class MachineManager {
   private _currentMachine: components['schemas']['Machine'] | null = null
 
   constructor() {
-    if (!this._isTauri) {
+    if (!this._isDesktop) {
       return
     }
 
@@ -19,7 +19,7 @@ export class MachineManager {
   }
 
   start() {
-    if (!this._isTauri) {
+    if (!this._isDesktop) {
       return
     }
 
@@ -53,7 +53,7 @@ export class MachineManager {
   }
 
   private async updateMachines(): Promise<void> {
-    if (!this._isTauri) {
+    if (!this._isDesktop) {
       return
     }
 
@@ -62,7 +62,7 @@ export class MachineManager {
   }
 
   private async updateMachineApiIp(): Promise<void> {
-    if (!this._isTauri) {
+    if (!this._isDesktop) {
       return
     }
 

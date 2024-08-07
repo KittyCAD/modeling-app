@@ -71,7 +71,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     (action) =>
       (!action.hide || (action.hide instanceof Function && !action.hide())) &&
       (!action.hideOnPlatform ||
-        (isTauri()
+        (isDesktop()
           ? action.hideOnPlatform === 'web'
           : action.hideOnPlatform === 'desktop'))
   )
