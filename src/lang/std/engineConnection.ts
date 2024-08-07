@@ -297,7 +297,9 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval>
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
+  60_000)
+  isUsingConnectionLite: boolean = false
 
   constructor({
     engineCommandManager,
@@ -315,14 +317,13 @@ class EngineConnection extends EventTarget {
     this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
+    this.pingPongSpan = { ping: undefined, pong: undefined }
 
     if (callbackOnEngineLiteConnect) {
       this.connectLite(callbackOnEngineLiteConnect)
+      this.isUsingConnectionLite = true
       return
     }
-
-
-    this.pingPongSpan = { ping: undefined, pong: undefined }
 
     // Without an interval ping, our connection will timeout.
     // If this.idleMode is true we skip this logic so only reconnect
@@ -396,19 +397,15 @@ class EngineConnection extends EventTarget {
   // SHOULD ONLY BE USED FOR VITESTS
   connectLite(callback: () => void) {
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${256}&video_res_height=${256}`
-    console.log('SANITY CHECK!!!!!!!!!', this.engineConnection)
 
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
 
     this.send = (a) => {
-      console.log('YO what is being sent?', a)
+      if (!this.websocket) return
       this.websocket.send(JSON.stringify(a))
     }
     this.onWebSocketOpen = (event) => {
-      console.log('WebSocket opened')
-      // if (this.engineConnection) {
-      // con
       this.send({
         type: 'headers',
         headers: { Authorization: `Bearer ${VITE_KC_DEV_TOKEN}` },
@@ -416,62 +413,13 @@ class EngineConnection extends EventTarget {
       // }
     }
     this.tearDown = () => {}
-    this.websocket.addEventListener(
-      'open',
-      this.onWebSocketOpen
-    )
+    this.websocket.addEventListener('open', this.onWebSocketOpen)
 
-    this.websocket?.addEventListener('message', ((
-      event: MessageEvent
-    ) => {
-      console.log('HIIIIIIIIIIII', event)
-      if (event.data instanceof ArrayBuffer) {
-        // If the data is an ArrayBuffer, it's  the result of an export command,
-        // because in all other cases we send JSON strings. But in the case of
-        // export we send a binary blob.
-        // Pass this to our export function.
-        if (this.exportIntent === null) {
-          toast.error('Export intent was not set, but export data was received')
-          console.error(
-            'Export intent was not set, but export data was received'
-          )
-          console.log("OOOOOOOOOOOOO")
-          return
-        }
-
-        switch (this.exportIntent) {
-          case ExportIntent.Save: {
-            console.log("exportSave")
-            exportSave(event.data).then(() => {
-              this.pendingExport?.resolve(null)
-            }, this.pendingExport?.reject)
-            break
-          }
-          case ExportIntent.Make: {
-            console.log("exportMake")
-            exportMake(event.data).then((result) => {
-              if (result) {
-                this.pendingExport?.resolve(null)
-              } else {
-                this.pendingExport?.reject('Failed to make export')
-              }
-            }, this.pendingExport?.reject)
-            break
-          }
-        }
-        // Set the export intent back to null.
-            console.log("exportINtent = null")
-        this.exportIntent = null
-        return
-      }
-
-      console.log('OKKKKKKKKKKKKK')
+    this.websocket?.addEventListener('message', ((event: MessageEvent) => {
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-      console.log('NOOOOOOOO', message)
-      console.log('NOOOOOOOO2', message.request_id)
-      console.log('NOOOOOOOO3', this.engineCommandManager.pendingCommands)
-      const pending = this.engineCommandManager.pendingCommands[message.request_id || '']
-      console.log('YOOOO', pending, message)
+      const pending =
+        this.engineCommandManager.pendingCommands[message.request_id || '']
+      if (!('resp' in message)) return
 
       let resp = message.resp
 
@@ -488,23 +436,8 @@ class EngineConnection extends EventTarget {
         case 'ice_server_info':
           callback()
           return
-          break
-
-        case 'sdp_answer':
-          break
-
-        case 'trickle_ice':
-          break
-
-        case 'metrics_request':
-          break
       }
 
-      if (pending && !message.success) {
-        // handle bad case
-        pending.reject(`engine error: ${JSON.stringify(message.errors)}`)
-        delete this.engineCommandManager.pendingCommands[message.request_id || '']
-      }
       if (
         !(
           pending &&
@@ -520,20 +453,7 @@ class EngineConnection extends EventTarget {
         pending.command.type === 'modeling_cmd_req' &&
         message.request_id
       ) {
-        this.addCommandLog({
-          type: 'receive-reliable',
-          data: message.resp,
-          id: message?.request_id || '',
-          cmd_type: pending?.command?.cmd?.type,
-        })
-
-        const modelingResponse = message.resp.data.modeling_response
-
-        Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
-          (callback) => callback(modelingResponse)
-        )
-
-        this.responseMap[message.request_id] = message.resp
+        this.engineCommandManager.responseMap[message.request_id] = message.resp
       } else if (
         message.resp.type === 'modeling_batch' &&
         pending.command.type === 'modeling_cmd_batch_req'
@@ -554,24 +474,12 @@ class EngineConnection extends EventTarget {
             const command = individualPendingResponses[commandId]
             if (!command) return
             if (command.type === 'modeling_cmd_req')
-              this.addCommandLog({
-                type: 'receive-reliable',
+              this.engineCommandManager.responseMap[commandId] = {
+                type: 'modeling',
                 data: {
-                  type: 'modeling',
-                  data: {
-                    modeling_response: response.response,
-                  },
+                  modeling_response: response.response,
                 },
-                id: commandId,
-                cmd_type: command?.cmd?.type,
-              })
-
-            this.responseMap[commandId] = {
-              type: 'modeling',
-              data: {
-                modeling_response: response.response,
-              },
-            }
+              }
           }
         )
       }
@@ -1532,7 +1440,7 @@ export class EngineCommandManager extends EventTarget {
       engineCommandManager: this,
       url,
       token,
-      callbackOnEngineLiteConnect
+      callbackOnEngineLiteConnect,
     })
 
     // Nothing more to do when using a lite engine initializiation
@@ -1805,7 +1713,6 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
-
   handleResize({
     streamWidth,
     streamHeight,
@@ -2035,17 +1942,17 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<string | void> {
-    console.log('SANITY@@@@ sendModelingCommandFromWasm')
-    if (this.engineConnection === undefined) {
+    if (this.engineConnection === undefined) return Promise.resolve()
+    if (
+      !this.engineConnection?.isReady() &&
+      !this.engineConnection.isUsingConnectionLite
+    )
       return Promise.resolve()
-    }
-    if (!this.engineConnection?.isReady()) return Promise.resolve()
     if (id === undefined) return Promise.reject(new Error('id is undefined'))
     if (rangeStr === undefined)
       return Promise.reject(new Error('rangeStr is undefined'))
-    if (commandStr === undefined) {
+    if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    }
     const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =
@@ -2097,7 +2004,6 @@ export class EngineCommandManager extends EventTarget {
         })
       })
     }
-    console.log('SANITY@@@@22222')
     this.engineConnection?.send(message.command)
     return promise
   }

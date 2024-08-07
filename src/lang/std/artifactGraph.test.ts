@@ -141,7 +141,6 @@ beforeAll(async () => {
             return Promise.reject(ast)
           }
           const result = await kclManager.executeAst(ast)
-          console.log('result', result)
 
           cacheToWriteToFileTemp[codeKey] = {
             orderedCommands: engineCommandManager.orderedCommands,
@@ -152,7 +151,7 @@ beforeAll(async () => {
 
         await fsp.mkdir(pathStart, { recursive: true })
         await fsp.writeFile(fullPath, cache)
-        resolve()
+        resolve(true)
       },
     })
   })
