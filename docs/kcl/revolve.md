@@ -1,12 +1,12 @@
 ---
 title: "revolve"
-excerpt: "Revolve a sketch around an axis."
+excerpt: "Rotate a sketch around some provided axis, creating a solid from its extent."
 layout: manual
 ---
 
-Revolve a sketch around an axis.
+Rotate a sketch around some provided axis, creating a solid from its extent.
 
-
+This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional sketch. However, unlike extrude, this creates a solid by using the extent of the sketch as its revolved around an axis rather than using the extent of the sketch linearly translated through a third dimension.
 
 ```js
 revolve(data: RevolveData, sketch_group: SketchGroup) -> ExtrudeGroup

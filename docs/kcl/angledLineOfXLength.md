@@ -1,12 +1,12 @@
 ---
 title: "angledLineOfXLength"
-excerpt: "Draw an angled line of a given x length."
+excerpt: "Create a line segment from the current 2-dimensional sketch origin"
 layout: manual
 ---
 
-Draw an angled line of a given x length.
+Create a line segment from the current 2-dimensional sketch origin
 
-
+along some angle (in degrees) for some relative length in the 'x' dimension.
 
 ```js
 angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

@@ -1,10 +1,10 @@
 ---
 title: "abs"
-excerpt: "Computes the absolute value of a number."
+excerpt: "Compute the absolute value of a number."
 layout: manual
 ---
 
-Computes the absolute value of a number.
+Compute the absolute value of a number.
 
 
 

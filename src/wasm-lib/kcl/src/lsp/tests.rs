@@ -837,7 +837,7 @@ async fn test_kcl_lsp_on_hover() {
 
     // Check the hover.
     if let Some(hover) = hover {
-        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string() }));
+        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a new 2-dimensional sketch on a specific plane or face.".to_string() }));
     } else {
         panic!("Expected hover");
     }

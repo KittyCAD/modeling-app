@@ -1,10 +1,10 @@
 ---
 title: "min"
-excerpt: "Computes the minimum of the given arguments."
+excerpt: "Compute the minimum of the given arguments."
 layout: manual
 ---
 
-Computes the minimum of the given arguments.
+Compute the minimum of the given arguments.
 
 
 
