@@ -140,7 +140,7 @@ test.describe('Testing Gizmo', () => {
     })
   }
 
-  test('Context menu', async ({ page }) => {
+  test('Context menu and popover menu', async ({ page }) => {
     const testCase = {
       testDescription: 'Right view',
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
@@ -235,5 +235,15 @@ test.describe('Testing Gizmo', () => {
         testCase.expectedCameraTarget.z.toString()
       ),
     ])
+    
+    // Now test the popover menu.
+    // It has the same click handlers, so we can just
+    // test that it opens and contains the same content.
+    const gizmoPopoverButton = page.getByRole('button', {
+      name: 'view settings',
+    })
+    await expect(gizmoPopoverButton).toBeVisible()
+    await gizmoPopoverButton.click()
+    await expect(buttonToTest).toBeVisible()    
   })
 })
