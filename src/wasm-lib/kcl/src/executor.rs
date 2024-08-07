@@ -2792,68 +2792,76 @@ let notMember = !obj.a
             })
         );
 
-        let code5 = "let notArray = ![]";
+        let code5 = "
+let a = []
+let notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
-            // TODO: We don't currently parse this, but we should.  It should be
-            // a runtime error instead.
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token".to_owned(),
-                source_ranges: vec![SourceRange([15, 16])],
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: []".to_owned(),
+                source_ranges: vec![SourceRange([27, 29])],
             })
         );
 
-        let code6 = "let notObject = !{}";
+        let code6 = "
+let x = {}
+let notObject = !x";
         assert_eq!(
             parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
-            // TODO: We don't currently parse this, but we should.  It should be
-            // a runtime error instead.
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token".to_owned(),
-                source_ranges: vec![SourceRange([16, 17])],
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: {}".to_owned(),
+                source_ranges: vec![SourceRange([28, 30])],
             })
         );
 
-        let code7 = "let notFunction = !() => { return 1 }";
-        assert_eq!(
-            // TODO: We don't currently parse this, but we should.  It should be
-            // a runtime error instead.
-            parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap(),
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token".to_owned(),
-                source_ranges: vec![SourceRange([18, 19])],
-            })
-        );
+        let code7 = "
+fn x = () => { return 1 }
+let notFunction = !x";
+        let fn_err = parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(fn_err
+            .message()
+            .starts_with("Cannot apply unary operator ! to non-boolean value: "));
 
-        let code8 = "let notTag = !$myTag";
-        assert_eq!(
-            // TODO: We don't currently parse this, but we should.  It should be
-            // a runtime error instead.
-            parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap(),
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token".to_owned(),
-                source_ranges: vec![SourceRange([13, 14])],
-            })
-        );
+        let code8 = "
+let myTagDeclarator = $myTag
+let notTagDeclarator = !myTagDeclarator";
+        let tag_declarator_err = parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(tag_declarator_err
+            .message()
+            .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","));
 
-        let code9 = "let notPipe = !(1 |> 2)";
+        let code9 = "
+let myTagDeclarator = $myTag
+let notTagIdentifier = !myTag";
+        let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(tag_identifier_err
+            .message()
+            .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","));
+
+        let code10 = "let notPipe = !(1 |> 2)";
         assert_eq!(
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
-            parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token".to_owned(),
                 source_ranges: vec![SourceRange([14, 15])],
             })
         );
 
-        let code10 = "
+        let code11 = "
 fn identity = (x) => { return x }
 let notPipeSub = 1 |> identity(!%))";
         assert_eq!(
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
-            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token".to_owned(),
                 source_ranges: vec![SourceRange([54, 56])],
