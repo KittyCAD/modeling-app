@@ -358,7 +358,7 @@ export const modelingMachine = createMachine(
               'Artifact graph populated': 'showPlanes',
             },
 
-            entry: 'hide default planes',
+            entry: ['hide default planes', 'zoom to fit'],
           },
 
           showPlanes: {
@@ -1063,6 +1063,16 @@ export const modelingMachine = createMachine(
         sketchEnginePathId: '',
         sketchPlaneId: '',
       }),
+      'zoom to fit': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            padding: 0.1,
+            object_ids: [],
+          },
+        }),
       'reset camera position': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
