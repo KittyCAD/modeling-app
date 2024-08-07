@@ -185,6 +185,8 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
+  // HOT FIX: for https://github.com/KittyCAD/modeling-app/pull/3250
+  // TODO review if there's a better way to play the stream again.
   useEffect(() => {
     if (!kclManager.isFirstRender)
       setTimeout(() =>
