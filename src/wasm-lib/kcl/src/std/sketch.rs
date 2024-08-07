@@ -1695,7 +1695,7 @@ async fn inner_tangential_arc(
 
     let id = uuid::Uuid::new_v4();
 
-    let to = match data {
+    let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
             let offset = Angle::from_degrees(offset);
@@ -1708,7 +1708,8 @@ async fn inner_tangential_arc(
             ));
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
-            let tangent_to_arc_start_angle = if offset.degrees() > 0.0 {
+            let ccw = offset.degrees() > 0.0;
+            let tangent_to_arc_start_angle = if ccw {
                 // CCW turn
                 Angle::from_degrees(-90.0)
             } else {
@@ -1720,7 +1721,7 @@ async fn inner_tangential_arc(
             // TODO: impl Add for Angle to simplify this.
             let start_angle = previous_end_tangent + tangent_to_arc_start_angle;
             let end_angle = start_angle + offset;
-            let (_, to) = arc_center_and_end(from, start_angle, end_angle, radius);
+            let (center, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
             println!("JORDAN: the tanArc");
             println!("\tends at ({:.3}, {:.3})", to.x, to.y);
@@ -1735,15 +1736,20 @@ async fn inner_tangential_arc(
                 },
             )
             .await?;
-            to.into()
+            (center, to.into(), ccw)
         }
         TangentialArcData::Point(to) => {
             args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &to)).await?;
-            to
+            // TODO: Figure out these calculations.
+            let ccw = false;
+            let center = Point2d { x: 0.0, y: 0.0 };
+            (center, to, ccw)
         }
     };
 
     let current_path = Path::TangentialArc {
+        ccw,
+        center: center.into(),
         base: BasePath {
             from: from.into(),
             to,
