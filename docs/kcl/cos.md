@@ -1,10 +1,10 @@
 ---
 title: "cos"
-excerpt: "Computes the cosine of a number (in radians)."
+excerpt: "Compute the cosine of a number (in radians)."
 layout: manual
 ---
 
-Computes the cosine of a number (in radians).
+Compute the cosine of a number (in radians).
 
 
 

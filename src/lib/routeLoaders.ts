@@ -104,8 +104,12 @@ export const fileLoader: LoaderFunction = async ({
     // the file system and not the editor.
     codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
+
     // We don't want to call await on execute code since we don't want to block the UI
-    kclManager.executeCode(true)
+    kclManager.isFirstRender = true
+    kclManager.executeCode(true).then(() => {
+      kclManager.isFirstRender = false
+    })
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations

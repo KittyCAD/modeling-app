@@ -1,12 +1,12 @@
 ---
 title: "chamfer"
-excerpt: "Create chamfers on tagged paths."
+excerpt: "Cut a straight transitional edge along a tagged path."
 layout: manual
 ---
 
-Create chamfers on tagged paths.
+Cut a straight transitional edge along a tagged path.
 
-
+Chamfer is similar in function and use to a fillet, except a fillet will blend the transition along an edge, rather than cut a sharp, straight transitional edge.
 
 ```js
 chamfer(data: ChamferData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> ExtrudeGroup

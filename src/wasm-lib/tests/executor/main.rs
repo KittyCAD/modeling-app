@@ -4,7 +4,7 @@ use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
 /// i.e. how different the current model snapshot can be from the previous saved one.
 const MIN_DIFF: f64 = 0.99;
 
-// mod server;
+mod no_visuals;
 
 macro_rules! kcl_input {
     ($file:literal) => {

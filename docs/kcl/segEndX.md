@@ -1,10 +1,10 @@
 ---
 title: "segEndX"
-excerpt: "Returns the segment end of x."
+excerpt: "Compute the ending point of the provided line segment along the 'x' axis."
 layout: manual
 ---
 
-Returns the segment end of x.
+Compute the ending point of the provided line segment along the 'x' axis.
 
 
 

@@ -1,12 +1,12 @@
 ---
 title: "patternLinear2d"
-excerpt: "A linear pattern on a 2D sketch."
+excerpt: "Repeat a 2-dimensional sketch along some dimension, with a dynamic amount"
 layout: manual
 ---
 
-A linear pattern on a 2D sketch.
+Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 
-
+of distance between each repetition, some specified number of times.
 
 ```js
 patternLinear2d(data: LinearPattern2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]

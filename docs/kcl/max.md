@@ -1,10 +1,10 @@
 ---
 title: "max"
-excerpt: "Computes the maximum of the given arguments."
+excerpt: "Compute the maximum of the given arguments."
 layout: manual
 ---
 
-Computes the maximum of the given arguments.
+Compute the maximum of the given arguments.
 
 
 

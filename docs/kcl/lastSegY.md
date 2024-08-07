@@ -1,12 +1,12 @@
 ---
 title: "lastSegY"
-excerpt: "Returns the last segment of y."
+excerpt: "Extract the 'y' axis value of the last line segment in the provided 2-d"
 layout: manual
 ---
 
-Returns the last segment of y.
+Extract the 'y' axis value of the last line segment in the provided 2-d
 
-
+sketch.
 
 ```js
 lastSegY(sketch_group: SketchGroup) -> number

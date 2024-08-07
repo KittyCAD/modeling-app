@@ -1,12 +1,12 @@
 ---
 title: "xLineTo"
-excerpt: "Draw a line to a point on the x-axis."
+excerpt: "Draw a line parallel to the X axis, that ends at the given X."
 layout: manual
 ---
 
-Draw a line to a point on the x-axis.
+Draw a line parallel to the X axis, that ends at the given X.
 
-
+E.g. if the previous line ended at (1, 1), then xLineTo(4) draws a line from (1, 1) to (4, 1)
 
 ```js
 xLineTo(to: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

@@ -1,10 +1,10 @@
 ---
 title: "legAngX"
-excerpt: "Returns the angle of the given leg for x."
+excerpt: "Compute the angle of the given leg for x."
 layout: manual
 ---
 
-Returns the angle of the given leg for x.
+Compute the angle of the given leg for x.
 
 
 

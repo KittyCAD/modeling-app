@@ -1,10 +1,10 @@
 ---
 title: "floor"
-excerpt: "Computes the largest integer less than or equal to a number."
+excerpt: "Compute the largest integer less than or equal to a number."
 layout: manual
 ---
 
-Computes the largest integer less than or equal to a number.
+Compute the largest integer less than or equal to a number.
 
 
 

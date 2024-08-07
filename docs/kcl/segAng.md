@@ -1,10 +1,10 @@
 ---
 title: "segAng"
-excerpt: "Returns the angle of the segment."
+excerpt: "Compute the angle (in degrees) of the provided line segment."
 layout: manual
 ---
 
-Returns the angle of the segment.
+Compute the angle (in degrees) of the provided line segment.
 
 
 

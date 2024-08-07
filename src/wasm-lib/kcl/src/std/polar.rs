@@ -26,7 +26,8 @@ pub async fn polar(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64_array(result.to_vec())
 }
 
-/// Convert from polar/sphere coordinates to cartesian coordinates.
+/// Convert polar/sphere (azimuth, elevation, distance) coordinates to
+/// cartesian (x/y/z grid) coordinates.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
