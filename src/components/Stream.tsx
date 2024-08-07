@@ -186,6 +186,16 @@ export const Stream = () => {
   }, [IDLE, streamState])
 
   useEffect(() => {
+    if (!kclManager.isFirstRender)
+      setTimeout(() =>
+        // execute in the next event loop
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      )
+  }, [kclManager.isFirstRender])
+
+  useEffect(() => {
     if (
       typeof window === 'undefined' ||
       typeof RTCPeerConnection === 'undefined'
