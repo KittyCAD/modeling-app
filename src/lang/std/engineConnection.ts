@@ -1,5 +1,5 @@
 import { Program, SourceRange } from 'lang/wasm'
-import { VITE_KC_API_WS_MODELING_URL } from 'env'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
@@ -297,24 +297,33 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval>
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
+  60_000)
+  isUsingConnectionLite: boolean = false
 
   constructor({
     engineCommandManager,
     url,
     token,
+    callbackOnEngineLiteConnect,
   }: {
     engineCommandManager: EngineCommandManager
     url: string
     token?: string
+    callbackOnEngineLiteConnect?: () => void
   }) {
     super()
 
     this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
-
     this.pingPongSpan = { ping: undefined, pong: undefined }
+
+    if (callbackOnEngineLiteConnect) {
+      this.connectLite(callbackOnEngineLiteConnect)
+      this.isUsingConnectionLite = true
+      return
+    }
 
     // Without an interval ping, our connection will timeout.
     // If this.idleMode is true we skip this logic so only reconnect
@@ -382,7 +391,102 @@ class EngineConnection extends EventTarget {
       }
     }, pingIntervalMs)
 
-    this.promise = this.connect()
+    this.connect()
+  }
+
+  // SHOULD ONLY BE USED FOR VITESTS
+  connectLite(callback: () => void) {
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${256}&video_res_height=${256}`
+
+    this.websocket = new WebSocket(url, [])
+    this.websocket.binaryType = 'arraybuffer'
+
+    this.send = (a) => {
+      if (!this.websocket) return
+      this.websocket.send(JSON.stringify(a))
+    }
+    this.onWebSocketOpen = (event) => {
+      this.send({
+        type: 'headers',
+        headers: { Authorization: `Bearer ${VITE_KC_DEV_TOKEN}` },
+      })
+      // }
+    }
+    this.tearDown = () => {}
+    this.websocket.addEventListener('open', this.onWebSocketOpen)
+
+    this.websocket?.addEventListener('message', ((event: MessageEvent) => {
+      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      const pending =
+        this.engineCommandManager.pendingCommands[message.request_id || '']
+      if (!('resp' in message)) return
+
+      let resp = message.resp
+
+      // If there's no body to the response, we can bail here.
+      if (!resp || !resp.type) {
+        return
+      }
+
+      switch (resp.type) {
+        case 'pong':
+          break
+
+        // Only fires on successful authentication.
+        case 'ice_server_info':
+          callback()
+          return
+      }
+
+      if (
+        !(
+          pending &&
+          message.success &&
+          (message.resp.type === 'modeling' ||
+            message.resp.type === 'modeling_batch')
+        )
+      )
+        return
+
+      if (
+        message.resp.type === 'modeling' &&
+        pending.command.type === 'modeling_cmd_req' &&
+        message.request_id
+      ) {
+        this.engineCommandManager.responseMap[message.request_id] = message.resp
+      } else if (
+        message.resp.type === 'modeling_batch' &&
+        pending.command.type === 'modeling_cmd_batch_req'
+      ) {
+        let individualPendingResponses: {
+          [key: string]: Models['WebSocketRequest_type']
+        } = {}
+        pending.command.requests.forEach(({ cmd, cmd_id }) => {
+          individualPendingResponses[cmd_id] = {
+            type: 'modeling_cmd_req',
+            cmd,
+            cmd_id,
+          }
+        })
+        Object.entries(message.resp.data.responses).forEach(
+          ([commandId, response]) => {
+            if (!('response' in response)) return
+            const command = individualPendingResponses[commandId]
+            if (!command) return
+            if (command.type === 'modeling_cmd_req')
+              this.engineCommandManager.responseMap[commandId] = {
+                type: 'modeling',
+                data: {
+                  modeling_response: response.response,
+                },
+              }
+          }
+        )
+      }
+
+      pending.resolve([message])
+      delete this.engineCommandManager.pendingCommands[message.request_id || '']
+    }) as EventListener)
   }
 
   isConnecting() {
@@ -489,7 +593,10 @@ class EngineConnection extends EventTarget {
             `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
           )
         }
-        this.pc?.addEventListener?.('icecandidateerror', this.onIceCandidateError)
+        this.pc?.addEventListener?.(
+          'icecandidateerror',
+          this.onIceCandidateError
+        )
 
         // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
         // Event type: generic Event type...
@@ -594,7 +701,8 @@ class EngineConnection extends EventTarget {
                       videoTrackReport.framesPerSecond || 0
                     client_metrics.rtc_freeze_count =
                       videoTrackReport.freezeCount || 0
-                    client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
+                    client_metrics.rtc_jitter_sec =
+                      videoTrackReport.jitter || 0.0
                     client_metrics.rtc_keyframes_decoded =
                       videoTrackReport.keyFramesDecoded || 0
                     client_metrics.rtc_total_freezes_duration_sec =
@@ -605,7 +713,8 @@ class EngineConnection extends EventTarget {
                       videoTrackReport.frameWidth || 0
                     client_metrics.rtc_packets_lost =
                       videoTrackReport.packetsLost || 0
-                    client_metrics.rtc_pli_count = videoTrackReport.pliCount || 0
+                    client_metrics.rtc_pli_count =
+                      videoTrackReport.pliCount || 0
                   } else if (videoTrackReport.type === 'transport') {
                     // videoTrackReport.bytesReceived,
                     // videoTrackReport.bytesSent,
@@ -647,7 +756,9 @@ class EngineConnection extends EventTarget {
             }
 
             // Everything is now connected.
-            this.state = { type: EngineConnectionStateType.ConnectionEstablished }
+            this.state = {
+              type: EngineConnectionStateType.ConnectionEstablished,
+            }
 
             this.engineCommandManager.inSequence = 1
 
@@ -707,7 +818,8 @@ class EngineConnection extends EventTarget {
           this.onDataChannelMessage = (event) => {
             const result: UnreliableResponses = JSON.parse(event.data)
             Object.values(
-              this.engineCommandManager.unreliableSubscriptions[result.type] || {}
+              this.engineCommandManager.unreliableSubscriptions[result.type] ||
+                {}
             ).forEach(
               // TODO: There is only one response that uses the unreliable channel atm,
               // highlight_set_entity, if there are more it's likely they will all have the same
@@ -774,7 +886,10 @@ class EngineConnection extends EventTarget {
           this.websocket?.removeEventListener('open', this.onWebSocketOpen)
           this.websocket?.removeEventListener('close', this.onWebSocketClose)
           this.websocket?.removeEventListener('error', this.onWebSocketError)
-          this.websocket?.removeEventListener('message', this.onWebSocketMessage)
+          this.websocket?.removeEventListener(
+            'message',
+            this.onWebSocketMessage
+          )
 
           window.removeEventListener(
             'use-network-status-ready',
@@ -813,7 +928,9 @@ class EngineConnection extends EventTarget {
             return
           }
 
-          const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+          const message: Models['WebSocketResponse_type'] = JSON.parse(
+            event.data
+          )
 
           if (!message.success) {
             const errorsString = message?.errors
@@ -1296,11 +1413,6 @@ export class EngineCommandManager extends EventTarget {
     modifyGrid: (hidden: boolean) => Promise<void>
     settings?: SettingsViaQueryString
   }) {
-    if (callbackOnEngineLiteConnect) {
-      this.startLite(callbackOnEngineLiteConnect)
-      return
-    }
-
     if (settings) {
       this.settings = settings
     }
@@ -1328,7 +1440,11 @@ export class EngineCommandManager extends EventTarget {
       engineCommandManager: this,
       url,
       token,
+      callbackOnEngineLiteConnect,
     })
+
+    // Nothing more to do when using a lite engine initializiation
+    if (callbackOnEngineLiteConnect) return
 
     this.dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
@@ -1597,85 +1713,6 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
-  // SHOULD ONLY BE USED FOR VITESTS
-  startLite(callback: () => void) {
-    this.websocket = new WebSocket(this.url, [])
-    this.websocket.binaryType = 'arraybuffer'
-
-    this.onWebSocketOpen = (event) => {
-      if (this.token) {
-        this.send({
-          type: 'headers',
-          headers: { Authorization: `Bearer ${this.token}` },
-        })
-      }
-    }
-    this.websocket.addEventListener('open', this.onWebSocketOpen)
-    this.onWebSocketMessage = (event) => {
-        if (typeof event.data !== 'string') {
-          return
-        }
-
-        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-
-        if (!message.success) {
-          const errorsString = message?.errors
-            ?.map((error) => {
-              return `  - ${error.error_code}: ${error.message}`
-            })
-            .join('\n')
-          if (message.request_id) {
-            const artifactThatFailed =
-              this.engineCommandManager.artifactGraph.get(message.request_id)
-            console.error(
-              `Error in response to request ${message.request_id}:\n${errorsString}
-  failed cmd type was ${artifactThatFailed?.type}`
-            )
-            // Check if this was a pending export command.
-            if (
-              this.engineCommandManager.pendingExport?.commandId ===
-              message.request_id
-            ) {
-              // Reject the promise with the error.
-              this.engineCommandManager.pendingExport.reject(errorsString)
-              this.engineCommandManager.pendingExport = undefined
-            }
-          } else {
-            console.error(`Error from server:\n${errorsString}`)
-          }
-
-          return
-        }
-
-        let resp = message.resp
-
-        // If there's no body to the response, we can bail here.
-        if (!resp || !resp.type) {
-          return
-        }
-
-        switch (resp.type) {
-          case 'pong':
-            break
-
-          // Only fires on successful authentication.
-          case 'ice_server_info':
-            callback()
-            break
-
-          case 'sdp_answer':
-            break
-
-          case 'trickle_ice':
-            break
-
-          case 'metrics_request':
-            break
-        }
-    }
-    this.websocket.addEventListener('message', this.onWebSocketMessage)
-  }
-
   handleResize({
     streamWidth,
     streamHeight,
@@ -1706,19 +1743,19 @@ export class EngineCommandManager extends EventTarget {
         pending.reject('no connection to send on')
       }
 
-      this.engineConnection.removeEventListener(
+      this.engineConnection?.removeEventListener?.(
         EngineConnectionEvents.Opened,
         this.onEngineConnectionOpened
       )
-      this.engineConnection.removeEventListener(
+      this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.Closed,
         this.onEngineConnectionClosed
       )
-      this.engineConnection.removeEventListener(
+      this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.ConnectionStarted,
         this.onEngineConnectionStarted
       )
-      this.engineConnection.removeEventListener(
+      this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.NewTrack,
         this.onEngineConnectionNewTrack as EventListener
       )
@@ -1905,17 +1942,17 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<string | void> {
-    if (this.engineConnection === undefined) {
-      return Promise.resolve()
-    }
-    if (!this.engineConnection?.isReady())
+    if (this.engineConnection === undefined) return Promise.resolve()
+    if (
+      !this.engineConnection?.isReady() &&
+      !this.engineConnection.isUsingConnectionLite
+    )
       return Promise.resolve()
     if (id === undefined) return Promise.reject(new Error('id is undefined'))
     if (rangeStr === undefined)
       return Promise.reject(new Error('rangeStr is undefined'))
-    if (commandStr === undefined) {
+    if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    }
     const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =

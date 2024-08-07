@@ -14,7 +14,10 @@ import {
 } from './artifactGraph'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
-import { EngineCommandManagerEvents, EngineConnectionEvents } from 'lang/std/engineConnection'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionEvents,
+} from 'lang/std/engineConnection'
 import { CI, VITE_KC_DEV_TOKEN } from 'env'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -116,7 +119,7 @@ beforeAll(async () => {
   // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      disableWebRTC: true,
+      // disableWebRTC: true,
       token: VITE_KC_DEV_TOKEN,
       // there does seem to be a minimum resolution, not sure what it is but 256 works ok.
       width: 256,
@@ -137,7 +140,7 @@ beforeAll(async () => {
             console.error(ast)
             return Promise.reject(ast)
           }
-          await kclManager.executeAst(ast)
+          const result = await kclManager.executeAst(ast)
 
           cacheToWriteToFileTemp[codeKey] = {
             orderedCommands: engineCommandManager.orderedCommands,
@@ -148,8 +151,8 @@ beforeAll(async () => {
 
         await fsp.mkdir(pathStart, { recursive: true })
         await fsp.writeFile(fullPath, cache)
-        resolve()
-      }
+        resolve(true)
+      },
     })
   })
 }, 20_000)
