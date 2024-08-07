@@ -1688,10 +1688,6 @@ async fn inner_tangential_arc(
     } else {
         tangent_info.center_or_tangent_point
     };
-    println!(
-        "JORDAN: tan_previous_point = ({:.3}, {:.3})",
-        tan_previous_point[0], tan_previous_point[1]
-    );
 
     let id = uuid::Uuid::new_v4();
 
@@ -1718,16 +1714,10 @@ async fn inner_tangential_arc(
             };
             // may need some logic and / or modulo on the various angle values to prevent them from going "backwards"
             // but the above logic *should* capture that behavior
-            // TODO: impl Add for Angle to simplify this.
             let start_angle = previous_end_tangent + tangent_to_arc_start_angle;
             let end_angle = start_angle + offset;
             let (center, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
-            println!("JORDAN: the tanArc");
-            println!("\tends at ({:.3}, {:.3})", to.x, to.y);
-            println!("\tstarts at ({:.3}, {:.3})", from.x, from.y);
-            println!("\tstart angle {:.3}", start_angle.degrees());
-            println!("\tend angle {:.3}", end_angle.degrees());
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::ExtendPath {
