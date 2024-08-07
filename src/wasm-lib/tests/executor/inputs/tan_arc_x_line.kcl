@@ -1,8 +1,8 @@
-let startX = 2
-let startY = 2
-let angleOffset = 45
+let startX = 0
+let startY = 0
+let angleOffset = 135
 let r = 1
-let angleStart = 70
+let angleStart = 110
 
 startSketchOn('XY')
   |> startProfileAt([startX, startY], %)
@@ -14,20 +14,12 @@ startSketchOn('XY')
        offset: angleOffset,
        radius: r,
      }, %, $arc1)
+  |> tangentialArc({
+  offset: angleOffset,
+  radius: 0.5*r,
+     }, %, $arc2)
+  |> tangentialArc({
+  offset: -angleOffset,
+  radius: 0.5*r,
+}, %, $arc3)
   |> xLineTo(1, %)
-
-let arc1_end_x = segEndX(arc1)
-let arc1_end_y = segEndY(arc1)
-let arc1_end_angle = segAng(arc1)
-
-let debugSketch = startSketchOn("XY")
-  |> startProfileAt([arc1_end_x, arc1_end_y], %)
-  |> angledLine({ angle: arc1_end_angle, length: 1 }, %)
-
-let debugSketch2 = startSketchOn("XY")
-  |> startProfileAt([startX, startY], %)
-  |> arc({
-    angleStart: 180,
-    angleEnd: 180 - angleOffset,
-    radius: r,
-  }, %)
