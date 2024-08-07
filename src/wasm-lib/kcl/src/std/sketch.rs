@@ -1681,42 +1681,65 @@ async fn inner_tangential_arc(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
+    // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
+    let tangent_info = sketch_group.get_tangential_info_from_paths(); //this function desperately needs some documentation
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
 
     let id = uuid::Uuid::new_v4();
 
-    let to = match &data {
+    let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
+            // KCL stdlib types use degrees.
+            let offset = Angle::from_degrees(offset);
+
             // Calculate the end point from the angle and radius.
-            let end_angle = Angle::from_degrees(*offset);
-            let start_angle = Angle::from_degrees(0.0);
-            let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
+            // atan2 outputs radians.
+            let previous_end_tangent = Angle::from_radians(f64::atan2(
+                from.y - tan_previous_point[1],
+                from.x - tan_previous_point[0],
+            ));
+            // make sure the arc center is on the correct side to guarantee deterministic behavior
+            // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
+            let ccw = offset.degrees() > 0.0;
+            let tangent_to_arc_start_angle = if ccw {
+                // CCW turn
+                Angle::from_degrees(-90.0)
+            } else {
+                // CW turn
+                Angle::from_degrees(90.0)
+            };
+            // may need some logic and / or modulo on the various angle values to prevent them from going "backwards"
+            // but the above logic *should* capture that behavior
+            let start_angle = previous_end_tangent + tangent_to_arc_start_angle;
+            let end_angle = start_angle + offset;
+            let (center, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::ExtendPath {
                     path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArc {
-                        radius: *radius,
-                        offset: Angle {
-                            unit: kittycad::types::UnitAngle::Degrees,
-                            value: *offset,
-                        },
-                    },
+                    segment: kittycad::types::PathSegment::TangentialArc { radius, offset },
                 },
             )
             .await?;
-            to.into()
+            (center, to.into(), ccw)
         }
         TangentialArcData::Point(to) => {
-            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
-
-            *to
+            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &to)).await?;
+            // TODO: Figure out these calculations.
+            let ccw = false;
+            let center = Point2d { x: 0.0, y: 0.0 };
+            (center, to, ccw)
         }
     };
 
-    let to = [from.x + to[0], from.y + to[1]];
-
     let current_path = Path::TangentialArc {
+        ccw,
+        center: center.into(),
         base: BasePath {
             from: from.into(),
             to,
