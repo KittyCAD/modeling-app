@@ -1703,8 +1703,8 @@ async fn inner_tangential_arc(
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.
             let previous_end_tangent = Angle::from_radians(f64::atan2(
-                tan_previous_point[1] - from.y,
-                tan_previous_point[0] - from.x,
+                from.y - tan_previous_point[1],
+                from.x - tan_previous_point[0],
             ));
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
