@@ -1695,10 +1695,12 @@ async fn inner_tangential_arc(
 
     let id = uuid::Uuid::new_v4();
 
-    let to = match &data {
+    let to = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
-            // Calculate the end point from the angle and radius.
+            // KCL stdlib types use degrees.
+            let offset = Angle::from_degrees(offset);
 
+            // Calculate the end point from the angle and radius.
             let tan_previous_angle = dbg!(f64::atan2(
                 tan_previous_point[1] - from.y,
                 tan_previous_point[0] - from.x,
@@ -1706,8 +1708,7 @@ async fn inner_tangential_arc(
             let previous_end_tangent = dbg!(Angle::from_degrees(tan_previous_angle));
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
-            let offset_degrees = *offset;
-            let tangent_to_arc_start_angle = if offset_degrees > 0.0 {
+            let tangent_to_arc_start_angle = if offset.degrees() > 0.0 {
                 // CCW turn
                 Angle::from_degrees(-90.0)
             } else {
@@ -1717,10 +1718,9 @@ async fn inner_tangential_arc(
             // may need some logic and / or modulo on the various angle values to prevent them from going "backwards"
             // but the above logic *should* capture that behavior
             // TODO: impl Add for Angle to simplify this.
-            let start_angle =
-                Angle::from_degrees(previous_end_tangent.degrees() + tangent_to_arc_start_angle.degrees());
-            let end_angle = Angle::from_degrees(start_angle.degrees() + offset_degrees);
-            let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
+            let start_angle = previous_end_tangent + tangent_to_arc_start_angle;
+            let end_angle = start_angle + offset;
+            let (_, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
             println!("JORDAN: the tanArc");
             println!("\tends at ({:.3}, {:.3})", to.x, to.y);
@@ -1731,22 +1731,15 @@ async fn inner_tangential_arc(
                 id,
                 ModelingCmd::ExtendPath {
                     path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArc {
-                        radius: *radius,
-                        offset: Angle {
-                            unit: kittycad::types::UnitAngle::Degrees,
-                            value: *offset,
-                        },
-                    },
+                    segment: kittycad::types::PathSegment::TangentialArc { radius, offset },
                 },
             )
             .await?;
             to.into()
         }
         TangentialArcData::Point(to) => {
-            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
-
-            *to
+            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &to)).await?;
+            to
         }
     };
 
