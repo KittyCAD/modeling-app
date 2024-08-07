@@ -1,12 +1,12 @@
 ---
 title: "angledLineToX"
-excerpt: "Draw an angled line to a given x coordinate."
+excerpt: "Create a line segment from the current 2-dimensional sketch origin"
 layout: manual
 ---
 
-Draw an angled line to a given x coordinate.
+Create a line segment from the current 2-dimensional sketch origin
 
-
+along some angle (in degrees) for some length, ending at the provided value in the 'x' dimension.
 
 ```js
 angledLineToX(data: AngledLineToData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

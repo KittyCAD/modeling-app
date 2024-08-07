@@ -1,12 +1,12 @@
 ---
 title: "xLine"
-excerpt: "Draw a line parallel to the X-axis, with the given length."
+excerpt: "Draw a line relative to the current origin to a specified distance away"
 layout: manual
 ---
 
-Draw a line parallel to the X-axis, with the given length.
+Draw a line relative to the current origin to a specified distance away
 
-
+from the current position along the 'x' axis.
 
 ```js
 xLine(length: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

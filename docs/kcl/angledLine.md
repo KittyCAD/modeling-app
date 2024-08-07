@@ -1,12 +1,12 @@
 ---
 title: "angledLine"
-excerpt: "Draw an angled line."
+excerpt: "Draw a line segment relative to the current origin using the polar"
 layout: manual
 ---
 
-Draw an angled line.
+Draw a line segment relative to the current origin using the polar
 
-
+measure of some angle and distance.
 
 ```js
 angledLine(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

@@ -1,12 +1,12 @@
 ---
 title: "line"
-excerpt: "Draw a line."
+excerpt: "Draw a line relative to the current origin to a specified (x, y) away"
 layout: manual
 ---
 
-Draw a line.
+Draw a line relative to the current origin to a specified (x, y) away
 
-
+from the current position.
 
 ```js
 line(delta: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

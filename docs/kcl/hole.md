@@ -1,10 +1,10 @@
 ---
 title: "hole"
-excerpt: "Use a sketch to cut a hole in another sketch."
+excerpt: "Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch."
 layout: manual
 ---
 
-Use a sketch to cut a hole in another sketch.
+Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 
 

@@ -1,12 +1,12 @@
 ---
 title: "close"
-excerpt: "Close the current sketch."
+excerpt: "Construct a line segment from the current origin back to the profile's"
 layout: manual
 ---
 
-Close the current sketch.
+Construct a line segment from the current origin back to the profile's
 
-
+origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 
 ```js
 close(sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

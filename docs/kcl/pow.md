@@ -1,10 +1,10 @@
 ---
 title: "pow"
-excerpt: "Computes the number to a power."
+excerpt: "Compute the number to a power."
 layout: manual
 ---
 
-Computes the number to a power.
+Compute the number to a power.
 
 
 

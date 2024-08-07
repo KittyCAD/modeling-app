@@ -1,12 +1,12 @@
 ---
 title: "angledLineThatIntersects"
-excerpt: "Draw an angled line that intersects with a given line."
+excerpt: "Draw an angled line from the current origin, constructing a line segment"
 layout: manual
 ---
 
-Draw an angled line that intersects with a given line.
+Draw an angled line from the current origin, constructing a line segment
 
-
+such that the newly created line intersects the desired target line segment.
 
 ```js
 angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup

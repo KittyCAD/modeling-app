@@ -742,7 +742,9 @@ test.describe('Editor tests', () => {
     await page.getByText('startSketchOn').hover()
     await expect(page.locator('.hover-tooltip')).toBeVisible()
     await expect(
-      page.getByText('Start a sketch on a specific plane or face')
+      page.getByText(
+        'Start a new 2-dimensional sketch on a specific plane or face'
+      )
     ).toBeVisible()
 
     // Hover over the line function

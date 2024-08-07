@@ -1,10 +1,10 @@
 ---
 title: "asin"
-excerpt: "Computes the arcsine of a number (in radians)."
+excerpt: "Compute the arcsine of a number (in radians)."
 layout: manual
 ---
 
-Computes the arcsine of a number (in radians).
+Compute the arcsine of a number (in radians).
 
 
 
