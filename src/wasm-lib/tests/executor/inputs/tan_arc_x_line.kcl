@@ -1,0 +1,7 @@
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> tangentialArc({
+       offset: (180 / pi()) * 2,
+       radius: 1,
+     }, %)
+  |> xLineTo(2.5, %)
