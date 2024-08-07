@@ -2820,9 +2820,13 @@ let notFunction = !x";
         let fn_err = parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
-        assert!(fn_err
-            .message()
-            .starts_with("Cannot apply unary operator ! to non-boolean value: "));
+        assert!(
+            fn_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: "),
+            "Actual error: {:?}",
+            fn_err
+        );
 
         let code8 = "
 let myTagDeclarator = $myTag
@@ -2830,9 +2834,13 @@ let notTagDeclarator = !myTagDeclarator";
         let tag_declarator_err = parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
-        assert!(tag_declarator_err
-            .message()
-            .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","));
+        assert!(
+            tag_declarator_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","),
+            "Actual error: {:?}",
+            tag_declarator_err
+        );
 
         let code9 = "
 let myTagDeclarator = $myTag
@@ -2840,9 +2848,13 @@ let notTagIdentifier = !myTag";
         let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
-        assert!(tag_identifier_err
-            .message()
-            .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","));
+        assert!(
+            tag_identifier_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","),
+            "Actual error: {:?}",
+            tag_identifier_err
+        );
 
         let code10 = "let notPipe = !(1 |> 2)";
         assert_eq!(
