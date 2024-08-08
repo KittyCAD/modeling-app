@@ -15,6 +15,10 @@ import {
   EngineConnectionStateType,
   DisconnectingType,
 } from 'lang/std/engineConnection'
+import { useFileContext } from 'hooks/useFileContext'
+import { useRouteLoaderData } from 'react-router-dom'
+import { paths } from 'lib/paths'
+import { IndexLoaderData } from 'lib/types'
 
 enum StreamState {
   Playing = 'playing',
@@ -32,12 +36,46 @@ export const Stream = () => {
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
+  const { file } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   const IDLE = settings.context.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  /**
+   * Execute code and show a "building scene message"
+   * in Stream.tsx in the meantime.
+   *
+   * I would like for this to live somewhere more central,
+   * but it seems to me that we need the video element ref
+   * to be able to play the video after the code has been
+   * executed. If we can find a way to do this from a more
+   * central place, we can move this code there.
+   */
+  async function executeCodeAndPlayStream() {
+    kclManager.isFirstRender = true
+    kclManager.executeCode(true).then(() => {
+      videoRef.current?.play().catch((e) => {
+        console.warn('Video playing was prevented', e, videoRef.current)
+      })
+      kclManager.isFirstRender = false
+      setStreamState(StreamState.Playing)
+    })
+  }
+
+  /**
+   * Subscribe to execute code when the file changes
+   * but only if the scene is already ready.
+   * See onSceneReady for the initial scene setup.
+   */
+  useEffect(() => {
+    if (engineCommandManager.engineConnection?.isReady() && file?.path) {
+      console.log('execute on file change')
+      executeCodeAndPlayStream()
+    }
+  }, [file?.path])
 
   useEffect(() => {
     if (
@@ -135,26 +173,19 @@ export const Stream = () => {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
-    const onSceneReady = () => {
-      kclManager.isFirstRender = true
-      setStreamState(StreamState.Playing)
-      kclManager.executeCode(true).then(() => {
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-        kclManager.isFirstRender = false
-      })
-    }
-
+    /**
+     * Add a listener to execute code and play the stream
+     * on initial stream setup.
+     */
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
-      onSceneReady
+      executeCodeAndPlayStream
     )
 
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
-        onSceneReady
+        executeCodeAndPlayStream
       )
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
@@ -185,16 +216,18 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
-  // HOT FIX: for https://github.com/KittyCAD/modeling-app/pull/3250
-  // TODO review if there's a better way to play the stream again.
+  /**
+   * Play the vid
+   */
   useEffect(() => {
-    if (!kclManager.isFirstRender)
+    if (!kclManager.isFirstRender) {
       setTimeout(() =>
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
       )
+    }
   }, [kclManager.isFirstRender])
 
   useEffect(() => {
