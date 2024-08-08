@@ -755,7 +755,8 @@ const part001 = startSketchOn('XZ')
       await clickConstrained({
         hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([3.14 + 13, -3.14], false, %)',
+        expectBeforeUnconstrained:
+          'tangentialArcTo([3.14 + 13, -3.14], false, %)',
         expectAfterUnconstrained: 'tangentialArcTo([16.14, -3.14], false, %)',
         expectFinal: 'tangentialArcTo([xAbs001, -3.14], false, %)',
         ang: ang + 180,
@@ -766,8 +767,10 @@ const part001 = startSketchOn('XZ')
       await clickUnconstrained({
         hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([xAbs001, -3.14], false, %)',
-        expectAfterUnconstrained: 'tangentialArcTo([xAbs001, yAbs001], false, %)',
+        expectBeforeUnconstrained:
+          'tangentialArcTo([xAbs001, -3.14], false, %)',
+        expectAfterUnconstrained:
+          'tangentialArcTo([xAbs001, yAbs001], false, %)',
         expectFinal: 'tangentialArcTo([xAbs001, -3.14], false, %)',
         ang: ang + 180,
         steps: 10,
