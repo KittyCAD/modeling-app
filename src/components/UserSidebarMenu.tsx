@@ -2,7 +2,7 @@ import { Popover, Transition } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo, useState } from 'react'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { Models } from '@kittycad/lib'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
@@ -39,9 +39,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           ),
           'data-testid': 'user-settings',
           onClick: () => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS_USER
-              : paths.HOME + paths.SETTINGS_USER
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_USER
+              : PATHS.HOME + PATHS.SETTINGS_USER
             navigate(targetPath)
           },
         },
@@ -50,9 +50,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           children: 'Keyboard shortcuts',
           onClick: () => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS_KEYBINDINGS
-              : paths.HOME + paths.SETTINGS_KEYBINDINGS
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_KEYBINDINGS
+              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
             navigate(targetPath)
           },
         },

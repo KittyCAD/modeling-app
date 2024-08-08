@@ -24,7 +24,7 @@ type OnboardingPaths = {
 
 const SETTINGS = '/settings' as const
 
-export const paths = {
+export const PATHS = {
   INDEX: '/',
   HOME: '/home',
   FILE: '/file',
