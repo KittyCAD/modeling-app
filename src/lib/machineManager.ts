@@ -1,12 +1,13 @@
 import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
-import { getMachineApiIp, listMachines } from './desktop'
+
+export type MachinesListing = {
+  [key: string]: components['schemas']['Machine']
+}
 
 export class MachineManager {
   private _isDesktop: boolean = isDesktop()
-  private _machines: {
-    [key: string]: components['schemas']['Machine']
-  } = {}
+  private _machines: MachinesListing = {}
   private _machineApiIp: string | null = null
   private _currentMachine: components['schemas']['Machine'] | null = null
 
@@ -24,15 +25,21 @@ export class MachineManager {
     }
 
     // Start a background job to update the machines every ten seconds.
-    setInterval(() => {
-      this.updateMachineApiIp()
-      this.updateMachines()
-    }, 10000)
+    // If MDNS is already watching, this timeout will wait until it's done to trigger the
+    // finding again.
+    let timeoutId = undefined
+    const timeoutLoop = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(async () => {
+        await this.updateMachineApiIp()
+        await this.updateMachines()
+        timeoutLoop()
+      }, 10000)
+    }
+    timeoutLoop()
   }
 
-  get machines(): {
-    [key: string]: components['schemas']['Machine']
-  } {
+  get machines(): MachinesListing {
     return this._machines
   }
 
@@ -57,7 +64,7 @@ export class MachineManager {
       return
     }
 
-    this._machines = await listMachines()
+    this._machines = await window.electron.listMachines()
     console.log('Machines:', this._machines)
   }
 
@@ -66,7 +73,7 @@ export class MachineManager {
       return
     }
 
-    this._machineApiIp = await getMachineApiIp()
+    this._machineApiIp = await window.electron.getMachineApiIp()
   }
 }
 

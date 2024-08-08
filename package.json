@@ -35,6 +35,7 @@
     "@tweenjs/tween.js": "^23.1.1",
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
+    "bonjour-service": "^1.2.1",
     "codemirror": "^6.0.1",
     "decamelize": "^6.0.0",
     "electron-squirrel-startup": "^1.0.1",

@@ -2,6 +2,8 @@ import { ipcRenderer, contextBridge } from 'electron'
 import path from 'path'
 import fs from 'node:fs/promises'
 import packageJson from '../../package.json'
+import { components } from 'lib/machine-api'
+import { MachinesListing } from 'lib/machineManager'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -35,6 +37,18 @@ const exposeProcessEnv = (varName: string) => {
     },
   }
 }
+
+// We could probably do this from the renderer side, but I fear CORS will
+// bite our butts.
+const listMachines = async (): Promise<MachinesListing> => {
+  const machineApi = await ipcRenderer.invoke('find_machine_api')
+  if (!machineApi) return {}
+
+  return fetch(`http://${machineApi}/machines`).then((resp) => resp.json())
+}
+
+const getMachineApiIp = async (): Promise<String | null> =>
+  ipcRenderer.invoke('find_machine_api')
 
 import('@kittycad/lib').then((kittycad) => {
   contextBridge.exposeInMainWorld('electron', {
@@ -70,5 +84,7 @@ import('@kittycad/lib').then((kittycad) => {
     kittycad: {
       users: kittycad.users,
     },
+    listMachines,
+    getMachineApiIp,
   })
 })

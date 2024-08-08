@@ -23,23 +23,6 @@ const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 
-// List machines on the local network.
-export async function listMachines(): Promise<{
-  [key: string]: components['schemas']['Machine']
-}> {
-  console.log("STUB")
-  return {}
-  // let machines: string = await invoke<string>('list_machines')
-  // return JSON.parse(machines)
-}
-
-// Get the machine-api ip address.
-export async function getMachineApiIp(): Promise<string | null> {
-  console.log("STUB")
-  return null
-  // return await invoke<string | null>('get_machine_api_ip')
-}
-
 export async function renameProjectDirectory(
   projectPath: string,
   newName: string

@@ -6,6 +6,7 @@ import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
 import fs from 'node:fs/promises'
 import { Issuer } from 'openid-client'
+import { Bonjour, Service } from 'bonjour-service'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -72,6 +73,10 @@ app.on('window-all-closed', () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
+// For now there is no good reason to separate these out to another file(s)
+// There is just not enough code to warrant it and further abstracts everything
+// which is already quite abstracted
+
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
@@ -136,4 +141,23 @@ ipcMain.handle('login', async (event, host) => {
   const tokenSet = await handle.poll()
 
   return tokenSet.access_token
+})
+
+const SERVICE_NAME = '_machine-api._tcp.local.'
+
+ipcMain.handle('find_machine_api', () => {
+  const timeoutAfterMs = 5000
+  return new Promise((resolve, reject) => {
+    // if it takes too long reject this promise
+    setTimeout(() => resolve(null), timeoutAfterMs)
+    const bonjourEt = new Bonjour({}, (error: Error) => {
+      console.log('An issue with Bonjour services was encountered!')
+      console.error(error)
+      resolve(null)
+    })
+    console.log('Looking for machine API...')
+    bonjourEt.find({ type: SERVICE_NAME }, (service: Service) => {
+      resolve(service.fqdn)
+    })
+  })
 })

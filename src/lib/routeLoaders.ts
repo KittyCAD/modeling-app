@@ -83,7 +83,8 @@ export const fileLoader: LoaderFunction = async (
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
-    const { project_name, project_path, current_file_name, current_file_path } = projectPathData
+    const { project_name, project_path, current_file_name, current_file_path } =
+      projectPathData
 
     const urlObj = new URL(routerData.request.url)
     let code = ''

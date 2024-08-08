@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'path'
 import { dialog, shell } from 'electron'
 import kittycad from '@kittycad/lib'
+import { MachinesListing } from 'lib/machineManager'
 
 export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
@@ -34,6 +35,8 @@ export interface IElectronAPI {
     }
   }
   kittycad
+  listMachines: () => Promise<MachinesListing>
+  getMachineApiIp: () => Promise<string | null>
 }
 
 declare global {
