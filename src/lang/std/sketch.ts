@@ -812,6 +812,7 @@ export const tangentialArcTo: SketchLineHelper = {
     }
     const newLine = createCallExpression('tangentialArcTo', [
       createArrayExpression([toX, toY]),
+      createLiteral(false),
       createPipeSubstitution(),
     ])
     if (pipe.type === 'PipeExpression') {

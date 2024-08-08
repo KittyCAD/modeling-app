@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, Face, GeoMeta, KclValue, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, TagEngineInfo, TagIdentifier, UserVal,
+        SketchGroupSet, SketchSurface, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -1775,32 +1775,12 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
     }
 }
 
-fn too_few_args(source_range: SourceRange) -> KclError {
-    KclError::Syntax(KclErrorDetails {
-        source_ranges: vec![source_range],
-        message: "too few arguments".to_owned(),
-    })
-}
-
-fn get_arg<I: Iterator>(it: &mut I, src: SourceRange) -> Result<I::Item, KclError> {
-    it.next().ok_or_else(|| too_few_args(src))
-}
-
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
-    let src = args.source_range;
+    let (to, relative, sketch_group, tag): ([f64; 2], bool, SketchGroup, Option<TagDeclarator>) =
+        super::args::FromArgs::from_args(&args, 0)?;
 
-    // Get arguments to function call
-    let mut it = args.args.iter();
-    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
-    let sketch_group: SketchGroup = get_arg(&mut it, src)?.get_json()?;
-    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
-        memory_item.get_json_opt()?
-    } else {
-        None
-    };
-
-    let new_sketch_group = inner_tangential_arc_to(to, sketch_group, tag, args).await?;
+    let new_sketch_group = inner_tangential_arc_to(to, relative, sketch_group, tag, args).await?;
     Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
@@ -1826,6 +1806,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
 }]
 async fn inner_tangential_arc_to(
     to: [f64; 2],
+    relative: bool,
     sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
@@ -1840,12 +1821,20 @@ async fn inner_tangential_arc_to(
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
-        arc_end_point: to,
+        arc_end_point: if relative {
+            [to_x + from.x, to_y + from.y]
+        } else {
+            [to_x, to_y]
+        },
         tan_previous_point,
         obtuse: true,
     });
 
-    let delta = [to_x - from.x, to_y - from.y];
+    let delta = if relative {
+        [to_x, to_y]
+    } else {
+        [to_x - from.x, to_y - from.y]
+    };
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
