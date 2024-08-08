@@ -1787,7 +1787,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
 ///     angle: 60,
 ///     length: 10,
 ///   }, %)
-///   |> tangentialArcTo([15, 15], %)
+///   |> tangentialArcTo([15, 15], false, %)
 ///   |> line([10, -15], %)
 ///   |> close(%)
 ///
