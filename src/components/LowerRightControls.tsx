@@ -88,7 +88,7 @@ export function LowerRightControls({
         <Link
           to={
             location.pathname.includes(paths.FILE)
-              ? (filePath + paths.SETTINGS + '?tab=project')
+              ? filePath + paths.SETTINGS + '?tab=project'
               : paths.HOME + paths.SETTINGS
           }
         >
