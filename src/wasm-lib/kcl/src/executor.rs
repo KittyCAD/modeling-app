@@ -25,6 +25,7 @@ use crate::{
 pub struct ProgramMemory {
     pub environments: Vec<Environment>,
     pub current_env: EnvironmentRef,
+    // TODO: Move the return value to DynamicState.
     #[serde(rename = "return")]
     pub return_: Option<ProgramReturn>,
 }
@@ -214,14 +215,20 @@ impl Environment {
 /// Dynamic state that depends on the dynamic flow of the program, like the call
 /// stack.  If the language had exceptions, for example, you could store the
 /// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, ts_rs::TS, JsonSchema)]
 pub struct DynamicState {
+    /// The output of the program.
+    pub output: ProgramOutput,
     pub extrude_group_ids: Vec<ExtrudeGroupLazyIds>,
 }
 
 impl DynamicState {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn into_parts(self) -> (ProgramOutput, Vec<ExtrudeGroupLazyIds>) {
+        (self.output, self.extrude_group_ids)
     }
 
     #[must_use]
@@ -378,6 +385,53 @@ impl From<Vec<Box<ExtrudeGroup>>> for MemoryItem {
             MemoryItem::ExtrudeGroups { value: eg }
         }
     }
+}
+
+/// The result of executing a program.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Execution {
+    /// The output of the program.
+    pub output: ProgramOutput,
+    /// Memory after execution.  Right now this is used for everything.  But the
+    /// hope is that we'll transition to using ProgramOutput, and this will be
+    /// used *only* for debug UIs.
+    pub memory: ProgramMemory,
+}
+
+impl Execution {
+    pub fn new(output: ProgramOutput, memory: ProgramMemory) -> Self {
+        Self { output, memory }
+    }
+
+    pub fn from_dynamic_state(dynamic_state: DynamicState, memory: ProgramMemory) -> Self {
+        Self::new(ProgramOutput::from(dynamic_state), memory)
+    }
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ProgramOutput {
+    artifacts: HashMap<uuid::Uuid, Artifact>,
+}
+
+impl From<DynamicState> for ProgramOutput {
+    fn from(dynamic_state: DynamicState) -> Self {
+        dynamic_state.into_parts().0
+    }
+}
+
+/// An artifact is anything that can be output by the program that has a UUID.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Artifact {
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
+    // Plane(Box<Plane>),
+    // Face(Box<Face>),
 }
 
 /// A geometry.
@@ -1704,7 +1758,7 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
-    ) -> Result<ProgramMemory, KclError> {
+    ) -> Result<Execution, KclError> {
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
@@ -1727,10 +1781,13 @@ impl ExecutorContext {
             &mut dynamic_state,
             crate::executor::BodyType::Root,
         )
-        .await
+        .await?;
+        Ok(Execution::from_dynamic_state(dynamic_state, memory))
     }
 
     /// Execute an AST's program.
+    ///
+    /// There is no return value since the arguments are mutated.
     #[async_recursion]
     pub(crate) async fn inner_execute(
         &self,
@@ -1738,7 +1795,7 @@ impl ExecutorContext {
         memory: &mut ProgramMemory,
         dynamic_state: &mut DynamicState,
         body_type: BodyType,
-    ) -> Result<ProgramMemory, KclError> {
+    ) -> Result<(), KclError> {
         let pipe_info = PipeInfo::default();
 
         // Iterate over the body of the program.
@@ -1830,7 +1887,7 @@ impl ExecutorContext {
                 .await?;
         }
 
-        Ok(memory.clone())
+        Ok(())
     }
 
     pub async fn arg_into_mem_item<'a>(
@@ -1874,16 +1931,15 @@ impl ExecutorContext {
                             body_memory.current_env = body_env;
                             let mut fn_memory = assign_args_to_params(&function_expression, args, body_memory)?;
 
-                            let result = ctx
-                                .inner_execute(
-                                    &function_expression.body,
-                                    &mut fn_memory,
-                                    &mut dynamic_state,
-                                    BodyType::Block,
-                                )
-                                .await?;
+                            ctx.inner_execute(
+                                &function_expression.body,
+                                &mut fn_memory,
+                                &mut dynamic_state,
+                                BodyType::Block,
+                            )
+                            .await?;
 
-                            Ok(result.return_)
+                            Ok(fn_memory.return_)
                         })
                     },
                 );
@@ -2068,9 +2124,9 @@ mod tests {
             settings: Default::default(),
             is_mock: true,
         };
-        let memory = ctx.run(&program, None).await?;
+        let execution = ctx.run(&program, None).await?;
 
-        Ok(memory)
+        Ok(execution.memory)
     }
 
     #[tokio::test(flavor = "multi_thread")]

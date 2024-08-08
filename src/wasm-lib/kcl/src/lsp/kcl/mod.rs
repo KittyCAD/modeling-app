@@ -591,8 +591,8 @@ impl Backend {
         // Clear the scene, before we execute so it's not fugly as shit.
         executor_ctx.engine.clear_scene(SourceRange::default()).await?;
 
-        let memory = match executor_ctx.run(ast, None).await {
-            Ok(memory) => memory,
+        let execution = match executor_ctx.run(ast, None).await {
+            Ok(execution) => execution,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());
                 self.add_to_diagnostics(params, &[err], false).await;
@@ -603,11 +603,11 @@ impl Backend {
             }
         };
 
-        self.memory_map.insert(params.uri.to_string(), memory.clone());
+        self.memory_map.insert(params.uri.to_string(), execution.memory.clone());
 
         // Send the notification to the client that the memory was updated.
         self.client
-            .send_notification::<custom_notifications::MemoryUpdated>(memory)
+            .send_notification::<custom_notifications::MemoryUpdated>(execution.memory)
             .await;
 
         Ok(())

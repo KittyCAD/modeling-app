@@ -1460,7 +1460,7 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match ctx
+                match ctx
                     .inner_execute(&p, &mut fn_memory, &mut fn_dynamic_state, BodyType::Block)
                     .await
                 {
@@ -1471,7 +1471,7 @@ impl CallExpression {
                         return Err(err.override_source_ranges(vec![self.into()]));
                     }
                 };
-                let out = results.return_;
+                let out = fn_memory.return_;
                 let result = out.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of stdlib function {} is undefined", fn_name),
