@@ -74,7 +74,7 @@ export const Stream = () => {
       console.log('execute on file change')
       executeCodeAndPlayStream()
     }
-  }, [file?.path])
+  }, [file?.path, engineCommandManager.engineConnection])
 
   useEffect(() => {
     if (
