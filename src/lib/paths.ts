@@ -22,11 +22,16 @@ type OnboardingPaths = {
   [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
 }
 
+const SETTINGS = '/settings' as const
+
 export const paths = {
   INDEX: '/',
   HOME: '/home',
   FILE: '/file',
-  SETTINGS: '/settings',
+  SETTINGS,
+  SETTINGS_USER: `${SETTINGS}?tab=user` as const,
+  SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
+  SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
   ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
 } as const
