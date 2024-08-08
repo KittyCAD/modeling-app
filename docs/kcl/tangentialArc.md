@@ -1,12 +1,12 @@
 ---
 title: "tangentialArc"
-excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
+excerpt: "Draw a curved line segment along some part of an imaginary circle of the specified radius."
 layout: manual
 ---
 
-Starting at the current sketch's origin, draw a curved line segment along
+Draw a curved line segment along some part of an imaginary circle of the specified radius.
 
-some part of an imaginary circle of the specified radius.
+If `relative` is true, the curve starts at the end of the previous path segment (i.e. the location of the "pen" which draws these lines). If `relative` is false, starts from the current sketch's origin.
 The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.
 
 ```js

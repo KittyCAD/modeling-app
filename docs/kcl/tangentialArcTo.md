@@ -18,7 +18,7 @@ tangentialArcTo(to: [number], relative: bool, sketch_group: SketchGroup, tag?: T
 const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 60, length: 10 }, %)
-  |> tangentialArcTo([15, 15], %)
+  |> tangentialArcTo([15, 15], false, %)
   |> line([10, -15], %)
   |> close(%)
 
