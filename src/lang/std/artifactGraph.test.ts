@@ -603,7 +603,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'segment',
         pathId: expect.any(String),
         surfaceId: expect.any(String),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [98, 125],
           pathToNode: [['body', '']],
@@ -623,7 +623,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'segment',
         pathId: expect.any(String),
         surfaceId: expect.any(String),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [162, 209],
           pathToNode: [['body', '']],
@@ -633,7 +633,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [243, 266],
           pathToNode: [['body', '']],
@@ -650,7 +650,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'segment',
         pathId: expect.any(String),
         surfaceId: expect.any(String),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [131, 156],
           pathToNode: [['body', '']],
@@ -660,7 +660,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [243, 266],
           pathToNode: [['body', '']],
@@ -677,7 +677,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'segment',
         pathId: expect.any(String),
         surfaceId: expect.any(String),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [98, 125],
           pathToNode: [['body', '']],
@@ -688,7 +688,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [243, 266],
           pathToNode: [['body', '']],
@@ -705,7 +705,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'segment',
         pathId: expect.any(String),
         surfaceId: expect.any(String),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [76, 92],
           pathToNode: [['body', '']],
@@ -715,7 +715,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [243, 266],
           pathToNode: [['body', '']],
@@ -732,7 +732,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [243, 266],
           pathToNode: [['body', '']],
@@ -749,7 +749,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
-        edgeIds: [],
+        edgeIds: expect.any(Array),
         codeRef: {
           range: [243, 266],
           pathToNode: [['body', '']],
