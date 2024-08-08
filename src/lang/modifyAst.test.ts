@@ -584,7 +584,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         intersectTag: a,
         offset: 0 + 0
       }, %)
-  |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+  |> tangentialArcTo([3.14 + 0, 13.14 + 0], false, %)`
     test.each([
       [' line([3 + 0, 4], %)', 'arrayIndex', 1],
       [
@@ -626,7 +626,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         'objectProperty',
         'offset',
       ],
-      ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
+      ['tangentialArcTo([3.14 + 0, 13.14], false, %)', 'arrayIndex', 1],
     ])('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = parse(code)
       if (err(ast)) throw ast

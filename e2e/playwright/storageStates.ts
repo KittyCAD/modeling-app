@@ -82,7 +82,7 @@ export const TEST_CODE_GIZMO = `const part001 = startSketchOn('XZ')
   intersectTag: a,
   offset: 0
 }, %)
-|> tangentialArcTo([13.14 + 0, 13.14], %)
+|> tangentialArcTo([13.14 + 0, 13.14], false, %)
 |> close(%)
 |> extrude(5 + 7, %)
 `

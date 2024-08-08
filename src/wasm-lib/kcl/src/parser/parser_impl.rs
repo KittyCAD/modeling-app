@@ -3152,7 +3152,7 @@ mod snapshot_tests {
         a,
         r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
+    |> tangentialArcTo([-5, 5], true, %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#

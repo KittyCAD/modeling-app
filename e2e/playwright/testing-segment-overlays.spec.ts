@@ -200,7 +200,7 @@ test.describe('Testing segment overlays', () => {
           intersectTag: a,
           offset: 9
         }, %)
-    |> tangentialArcTo([5 + 3.14 + 13, 20 + 3.14], %)
+    |> tangentialArcTo([5 + 3.14 + 13, 20 + 3.14], false, %)
         `
         )
       })
@@ -438,7 +438,7 @@ const part001 = startSketchOn('XZ')
           intersectTag: a,
           offset: 9
         }, %)
-    |> tangentialArcTo([3.14 + 13, 3.14], %)
+    |> tangentialArcTo([3.14 + 13, 3.14], false, %)
         `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -566,7 +566,7 @@ const part001 = startSketchOn('XZ')
           intersectTag: a,
           offset: 9
         }, %)
-    |> tangentialArcTo([3.14 + 13, 1.14], %)
+    |> tangentialArcTo([3.14 + 13, 1.14], false, %)
         `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -722,7 +722,7 @@ const part001 = startSketchOn('XZ')
           intersectTag: a,
           offset: 9
         }, %)
-    |> tangentialArcTo([3.14 + 13, -3.14], %)
+    |> tangentialArcTo([3.14 + 13, -3.14], false, %)
         `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -755,9 +755,9 @@ const part001 = startSketchOn('XZ')
       await clickConstrained({
         hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([3.14 + 13, -3.14], %)',
-        expectAfterUnconstrained: 'tangentialArcTo([16.14, -3.14], %)',
-        expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+        expectBeforeUnconstrained: 'tangentialArcTo([3.14 + 13, -3.14], false, %)',
+        expectAfterUnconstrained: 'tangentialArcTo([16.14, -3.14], false, %)',
+        expectFinal: 'tangentialArcTo([xAbs001, -3.14], false, %)',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="12"]',
@@ -766,9 +766,9 @@ const part001 = startSketchOn('XZ')
       await clickUnconstrained({
         hoverPos: { x: tangentialArcTo.x, y: tangentialArcTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'tangentialArcTo([xAbs001, -3.14], %)',
-        expectAfterUnconstrained: 'tangentialArcTo([xAbs001, yAbs001], %)',
-        expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+        expectBeforeUnconstrained: 'tangentialArcTo([xAbs001, -3.14], false, %)',
+        expectAfterUnconstrained: 'tangentialArcTo([xAbs001, yAbs001], false, %)',
+        expectFinal: 'tangentialArcTo([xAbs001, -3.14], false, %)',
         ang: ang + 180,
         steps: 10,
         locator: '[data-overlay-toolbar-index="12"]',
@@ -835,7 +835,7 @@ const part001 = startSketchOn('XZ')
        intersectTag: a,
        offset: 9
      }, %)
-  |> tangentialArcTo([3.14 + 13, 1.14], %)
+  |> tangentialArcTo([3.14 + 13, 1.14], false, %)
         `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -866,7 +866,7 @@ const part001 = startSketchOn('XZ')
       let ang = await u.getAngle(`[data-overlay-index="${12}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], %)',
+        codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], false, %)',
         stdLibFnName: 'tangentialArcTo',
         ang: ang + 180,
         steps: 6,
