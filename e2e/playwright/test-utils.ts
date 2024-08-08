@@ -314,6 +314,7 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
+<<<<<<< HEAD
 export async function getUtils(page: Page, test_?: typeof test) {
   if (!test) {
     console.warn(
@@ -321,6 +322,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
     )
   }
 
+||||||| parent of 1f27643b (Merge main)
+export async function getUtils(page: Page) {
+=======
+export async function getUtils(page: Page) {
+>>>>>>> 1f27643b (Merge main)
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
   const cdpSession =

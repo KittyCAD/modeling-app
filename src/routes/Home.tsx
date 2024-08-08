@@ -42,7 +42,12 @@ import { Project } from 'lib/project'
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+<<<<<<< HEAD
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
+||||||| parent of 1f27643b (Merge main)
+  useRefreshSettings(paths.HOME + 'SETTINGS')
+=======
+>>>>>>> 1f27643b (Merge main)
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
@@ -60,7 +65,14 @@ const Home = () => {
     e.preventDefault()
   })
   useHotkeys(
+<<<<<<< HEAD
     isDesktop() ? 'mod+,' : 'shift+mod+,',
+||||||| parent of 1f27643b (Merge main)
+    isTauri() ? 'mod+,' : 'shift+mod+,',
+    () => navigate(paths.HOME + paths.SETTINGS),
+=======
+    isTauri() ? 'mod+,' : 'shift+mod+,',
+>>>>>>> 1f27643b (Merge main)
     () => navigate(PATHS.HOME + PATHS.SETTINGS),
     {
       splitKey: '|',
@@ -280,8 +292,14 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <Link
+<<<<<<< HEAD
               data-testid="project-directory-settings-link"
               to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+||||||| parent of 1f27643b (Merge main)
+              to="settings?tab=user#projectDirectory"
+=======
+              to={`${PATHS.SETTINGS_USER}#projectDirectory`}
+>>>>>>> 1f27643b (Merge main)
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >
               {settings.app.projectDirectory.current}

@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 import type { IndexLoaderData } from 'lib/types'
+||||||| parent of 1f27643b (Merge main)
+import type { FileEntry, IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
+=======
+import type { FileEntry, IndexLoaderData } from 'lib/types'
+>>>>>>> 1f27643b (Merge main)
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
@@ -476,10 +483,16 @@ export const FileTreeInner = ({
   }, [documentHasFocus])
 
   return (
+<<<<<<< HEAD
     <div
       className="overflow-auto pb-12 absolute inset-0"
       data-testid="file-pane-scroll-container"
     >
+||||||| parent of 1f27643b (Merge main)
+    <div className="overflow-auto max-h-full pb-12">
+=======
+    <div className="overflow-auto pb-12 absolute inset-0">
+>>>>>>> 1f27643b (Merge main)
       <ul
         className="m-0 p-0 text-sm"
         onClickCapture={(e) => {

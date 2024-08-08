@@ -3,8 +3,16 @@ import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
+<<<<<<< HEAD
 import { PATHS } from 'lib/paths'
 import { createAndOpenNewProject } from 'lib/desktopFS'
+||||||| parent of 1f27643b (Merge main)
+import { createAndOpenNewProject } from 'lib/tauriFS'
+import { paths } from 'lib/paths'
+=======
+import { createAndOpenNewProject } from 'lib/tauriFS'
+import { PATHS } from 'lib/paths'
+>>>>>>> 1f27643b (Merge main)
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'

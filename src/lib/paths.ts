@@ -25,6 +25,7 @@ type OnboardingPaths = {
 
 const SETTINGS = '/settings' as const
 
+<<<<<<< HEAD
 export type ProjectRoute = {
   projectName: string | null
   projectPath: string
@@ -32,6 +33,10 @@ export type ProjectRoute = {
   currentFilePath: string | null
 }
 
+||||||| parent of 1f27643b (Merge main)
+export const paths = {
+=======
+>>>>>>> 1f27643b (Merge main)
 export const PATHS = {
   INDEX: '/',
   HOME: '/home',

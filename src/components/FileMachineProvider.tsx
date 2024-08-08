@@ -53,10 +53,18 @@ export const FileMachineProvider = ({
         if (event.data && 'name' in event.data) {
           commandBarSend({ type: 'Close' })
           navigate(
+<<<<<<< HEAD
             `..${PATHS.FILE}/${encodeURIComponent(
               context.selectedDirectory +
                 window.electron.path.sep +
                 event.data.name
+||||||| parent of 1f27643b (Merge main)
+            `${paths.FILE}/${encodeURIComponent(
+              context.selectedDirectory + sep() + event.data.name
+=======
+            `${PATHS.FILE}/${encodeURIComponent(
+              context.selectedDirectory + sep() + event.data.name
+>>>>>>> 1f27643b (Merge main)
             )}`
           )
         } else if (
@@ -65,7 +73,13 @@ export const FileMachineProvider = ({
           event.data.path.endsWith(FILE_EXT)
         ) {
           // Don't navigate to newly created directories
+<<<<<<< HEAD
           navigate(`..${PATHS.FILE}/${encodeURIComponent(event.data.path)}`)
+||||||| parent of 1f27643b (Merge main)
+          navigate(`${paths.FILE}/${encodeURIComponent(event.data.path)}`)
+=======
+          navigate(`${PATHS.FILE}/${encodeURIComponent(event.data.path)}`)
+>>>>>>> 1f27643b (Merge main)
         }
       },
       addFileToRenamingQueue: assign({
@@ -198,13 +212,29 @@ export const FileMachineProvider = ({
 
         if (oldPath === file.path && project?.path) {
           // If we just renamed the current file, navigate to the new path
+<<<<<<< HEAD
           navigate(`..${PATHS.FILE}/${encodeURIComponent(newPath)}`)
+||||||| parent of 1f27643b (Merge main)
+          navigate(paths.FILE + '/' + encodeURIComponent(newPath))
+=======
+          navigate(PATHS.FILE + '/' + encodeURIComponent(newPath))
+>>>>>>> 1f27643b (Merge main)
         } else if (file?.path.includes(oldPath)) {
           // If we just renamed a directory that the current file is in, navigate to the new path
           navigate(
+<<<<<<< HEAD
             `..${PATHS.FILE}/${encodeURIComponent(
               file.path.replace(oldPath, newPath)
             )}`
+||||||| parent of 1f27643b (Merge main)
+            paths.FILE +
+              '/' +
+              encodeURIComponent(file.path.replace(oldPath, newDirPath))
+=======
+            PATHS.FILE +
+              '/' +
+              encodeURIComponent(file.path.replace(oldPath, newDirPath))
+>>>>>>> 1f27643b (Merge main)
           )
         }
 
@@ -260,7 +290,13 @@ export const FileMachineProvider = ({
             file?.path.includes(event.data.path)) &&
           project?.path
         ) {
+<<<<<<< HEAD
           navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
+||||||| parent of 1f27643b (Merge main)
+          navigate(paths.FILE + '/' + encodeURIComponent(project.path))
+=======
+          navigate(PATHS.FILE + '/' + encodeURIComponent(project.path))
+>>>>>>> 1f27643b (Merge main)
         }
 
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${

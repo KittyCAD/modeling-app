@@ -15,8 +15,16 @@ import { SettingsFieldInput } from './SettingsFieldInput'
 import { getInitialDefaultDir } from 'lib/desktop'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
+<<<<<<< HEAD
 import { PATHS } from 'lib/paths'
 import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
+||||||| parent of 1f27643b (Merge main)
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
+import { paths } from 'lib/paths'
+=======
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
+import { PATHS } from 'lib/paths'
+>>>>>>> 1f27643b (Merge main)
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
@@ -45,12 +53,20 @@ export const AllSettingsFields = forwardRef(
             location.pathname
               .replace(PATHS.FILE + '/', '')
               .replace(PATHS.SETTINGS, '')
+<<<<<<< HEAD
               .slice(
                 0,
                 decodeURI(location.pathname).lastIndexOf(
                   window.electron.path.sep
                 )
               )
+||||||| parent of 1f27643b (Merge main)
+              .replace(paths.FILE + '/', '')
+              .replace(paths.SETTINGS, '')
+              .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
+=======
+              .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
+>>>>>>> 1f27643b (Merge main)
           )
         : undefined
 

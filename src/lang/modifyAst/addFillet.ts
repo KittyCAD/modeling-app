@@ -4,7 +4,12 @@ import {
   ObjectExpression,
   PathToNode,
   Program,
+<<<<<<< HEAD
   ProgramMemory,
+||||||| parent of 1f27643b (Merge main)
+  Value,
+=======
+>>>>>>> 1f27643b (Merge main)
   Expr,
   VariableDeclaration,
   VariableDeclarator,
@@ -159,7 +164,15 @@ export function addFillet(
   ast: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
+<<<<<<< HEAD
   radius: Expr = createLiteral(5)
+||||||| parent of 1f27643b (Merge main)
+  radius = createLiteral(5) as Value
+  // shouldPipe = false, // TODO: Implement this feature
+=======
+  radius = createLiteral(5) as Expr
+  // shouldPipe = false, // TODO: Implement this feature
+>>>>>>> 1f27643b (Merge main)
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // Clone AST to ensure safe mutations
   const astClone = structuredClone(ast)

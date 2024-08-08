@@ -15,7 +15,14 @@ import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
+<<<<<<< HEAD
 import { FileEntry } from 'lib/project'
+||||||| parent of 1f27643b (Merge main)
+import { paths } from 'lib/paths'
+import { FileEntry } from 'lib/types'
+=======
+import { FileEntry } from 'lib/types'
+>>>>>>> 1f27643b (Merge main)
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
   KclWorkerOptions,

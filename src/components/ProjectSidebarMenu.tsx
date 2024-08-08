@@ -2,7 +2,14 @@ import { Popover, Transition } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
+<<<<<<< HEAD
 import { isDesktop } from '../lib/isDesktop'
+||||||| parent of 1f27643b (Merge main)
+import { paths } from 'lib/paths'
+import { isTauri } from '../lib/isTauri'
+=======
+import { isTauri } from '../lib/isTauri'
+>>>>>>> 1f27643b (Merge main)
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo } from 'react'
 import { Logo } from './Logo'

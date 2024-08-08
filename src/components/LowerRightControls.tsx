@@ -93,7 +93,15 @@ export function LowerRightControls({
         <Link
           to={
             location.pathname.includes(PATHS.FILE)
+<<<<<<< HEAD
               ? filePath + PATHS.SETTINGS + '?tab=project'
+||||||| parent of 1f27643b (Merge main)
+            location.pathname.includes(paths.FILE)
+              ? filePath + paths.SETTINGS + '?tab=project'
+              : paths.HOME + paths.SETTINGS
+=======
+              ? filePath + PATHS.SETTINGS_PROJECT
+>>>>>>> 1f27643b (Merge main)
               : PATHS.HOME + PATHS.SETTINGS
           }
           data-testid="settings-link"

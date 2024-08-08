@@ -33,8 +33,18 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
+<<<<<<< HEAD
   playwright-chrome:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 40 }}
+||||||| parent of 1f27643b (Merge main)
+  playwright-ubuntu:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest-8-cores
+=======
+  playwright-ubuntu:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+>>>>>>> 1f27643b (Merge main)
     strategy:
       fail-fast: false
       matrix:

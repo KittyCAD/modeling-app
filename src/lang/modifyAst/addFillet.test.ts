@@ -256,6 +256,14 @@ const runFilletTest = async (
     return new Error('Path to extrude node not found')
   }
 
+<<<<<<< HEAD
+||||||| parent of 1f27643b (Merge main)
+  // const radius = createLiteral(5) as Value
+
+=======
+  // const radius = createLiteral(5) as Expr
+
+>>>>>>> 1f27643b (Merge main)
   const result = addFillet(ast, pathToSegmentNode, pathToExtrudeNode, radius)
   if (err(result)) {
     return result

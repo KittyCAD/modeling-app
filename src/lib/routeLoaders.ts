@@ -1,7 +1,15 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
+<<<<<<< HEAD
 import { getProjectMetaByRouteId, PATHS } from './paths'
 import { isDesktop } from './isDesktop'
+||||||| parent of 1f27643b (Merge main)
+import { isTauri } from './isTauri'
+import { getProjectMetaByRouteId, paths } from './paths'
+=======
+import { isTauri } from './isTauri'
+import { getProjectMetaByRouteId, PATHS } from './paths'
+>>>>>>> 1f27643b (Merge main)
 import { BROWSER_PATH } from 'lib/paths'
 import {
   BROWSER_FILE_NAME,
@@ -10,6 +18,15 @@ import {
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
+<<<<<<< HEAD
+||||||| parent of 1f27643b (Merge main)
+import { sep } from '@tauri-apps/api/path'
+import { readTextFile } from '@tauri-apps/plugin-fs'
+import { codeManager, kclManager } from 'lib/singletons'
+=======
+import { sep } from '@tauri-apps/api/path'
+import { readTextFile } from '@tauri-apps/plugin-fs'
+>>>>>>> 1f27643b (Merge main)
 import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
@@ -86,6 +103,7 @@ export const fileLoader: LoaderFunction = async (
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
+<<<<<<< HEAD
     const urlObj = new URL(routerData.request.url)
     let code = ''
 
@@ -120,8 +138,50 @@ export const fileLoader: LoaderFunction = async (
       // the file system and not the editor.
       codeManager.updateCurrentFilePath(currentFilePath)
       codeManager.updateCodeStateEditor(code)
+||||||| parent of 1f27643b (Merge main)
+    if (!current_file_name || !current_file_path || !project_name) {
+      return redirect(
+        `${paths.FILE}/${encodeURIComponent(
+          `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
+        )}`
+      )
+=======
+    if (!current_file_name || !current_file_path || !project_name) {
+      return redirect(
+        `${PATHS.FILE}/${encodeURIComponent(
+          `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
+        )}`
+      )
+>>>>>>> 1f27643b (Merge main)
     }
 
+<<<<<<< HEAD
+||||||| parent of 1f27643b (Merge main)
+    // TODO: PROJECT_ENTRYPOINT is hardcoded
+    // until we support setting a project's entrypoint file
+    const code = await readTextFile(current_file_path)
+
+    // Update both the state and the editor's code.
+    // We explicitly do not write to the file here since we are loading from
+    // the file system and not the editor.
+    codeManager.updateCurrentFilePath(current_file_path)
+    codeManager.updateCodeStateEditor(code)
+
+    // We don't want to call await on execute code since we don't want to block the UI
+    kclManager.executeCode(true)
+
+=======
+    // TODO: PROJECT_ENTRYPOINT is hardcoded
+    // until we support setting a project's entrypoint file
+    const code = await readTextFile(current_file_path)
+
+    // Update both the state and the editor's code.
+    // We explicitly do not write to the file here since we are loading from
+    // the file system and not the editor.
+    codeManager.updateCurrentFilePath(current_file_path)
+    codeManager.updateCodeStateEditor(code)
+
+>>>>>>> 1f27643b (Merge main)
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
     fileSystemManager.dir = projectPath
@@ -181,7 +241,14 @@ export const fileLoader: LoaderFunction = async (
 export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
+<<<<<<< HEAD
   if (!isDesktop()) {
+||||||| parent of 1f27643b (Merge main)
+  if (!isTauri()) {
+    return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+=======
+  if (!isTauri()) {
+>>>>>>> 1f27643b (Merge main)
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   const { configuration } = await loadAndValidateSettings()

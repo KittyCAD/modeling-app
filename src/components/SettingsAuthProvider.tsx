@@ -1,5 +1,12 @@
 import { useMachine } from '@xstate/react'
+<<<<<<< HEAD
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
+||||||| parent of 1f27643b (Merge main)
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { paths } from 'lib/paths'
+=======
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+>>>>>>> 1f27643b (Merge main)
 import { PATHS } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
@@ -302,7 +309,14 @@ export const SettingsAuthProviderBase = ({
         logout()
       },
       goToIndexPage: () => {
+<<<<<<< HEAD
         if (location.pathname.includes(PATHS.SIGN_IN)) {
+||||||| parent of 1f27643b (Merge main)
+        if (window.location.pathname.includes(paths.SIGN_IN)) {
+          navigate(paths.INDEX)
+=======
+        if (window.location.pathname.includes(PATHS.SIGN_IN)) {
+>>>>>>> 1f27643b (Merge main)
           navigate(PATHS.INDEX)
         }
       },

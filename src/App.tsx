@@ -28,6 +28,12 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
+<<<<<<< HEAD
+||||||| parent of 1f27643b (Merge main)
+  useRefreshSettings(paths.FILE + 'SETTINGS')
+=======
+  useRefreshSettings(PATHS.FILE + 'SETTINGS')
+>>>>>>> 1f27643b (Merge main)
   const { project, file } = useLoaderData() as IndexLoaderData
   useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
@@ -62,7 +68,14 @@ export function App() {
     e.preventDefault()
   })
   useHotkeyWrapper(
+<<<<<<< HEAD
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
+||||||| parent of 1f27643b (Merge main)
+    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
+    () => navigate(filePath + paths.SETTINGS),
+=======
+    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
+>>>>>>> 1f27643b (Merge main)
     () => navigate(filePath + PATHS.SETTINGS),
     {
       splitKey: '|',

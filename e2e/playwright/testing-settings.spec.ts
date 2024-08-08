@@ -77,7 +77,17 @@ test.describe('Testing settings', () => {
       exact: true,
     })
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
+<<<<<<< HEAD
+||||||| parent of 1f27643b (Merge main)
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
+=======
 
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
+>>>>>>> 1f27643b (Merge main)
+
+<<<<<<< HEAD
     // Open the settings modal with the browser keyboard shortcut
     await page.keyboard.press('ControlOrMeta+Shift+,')
 
@@ -128,7 +138,58 @@ test.describe('Testing settings', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
+||||||| parent of 1f27643b (Merge main)
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
 
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  })
+
+  test('Project settings can be opened with keybinding from the editor', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
+=======
+    await expect(headingLocator).toBeVisible()
+    await page.locator('#showDebugPanel').getByText('OffOn').click()
+>>>>>>> 1f27643b (Merge main)
+
+<<<<<<< HEAD
     await test.step('Open keybindings settings', async () => {
       // Open the settings modal with the browser keyboard shortcut
       await page.keyboard.press('ControlOrMeta+Shift+,')
@@ -141,7 +202,31 @@ test.describe('Testing settings', () => {
     // Go to the hotkey for Command Palette.
     const commandPalette = page.getByText('Toggle Command Palette')
     await commandPalette.scrollIntoViewIfNeeded()
+||||||| parent of 1f27643b (Merge main)
+    // Put the cursor in the editor
+    await page.locator('.cm-content').click()
 
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
+
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
+=======
+    // Close it and open again with keyboard shortcut, while KCL editor is focused
+    // Put the cursor in the editor
+    await test.step('Open settings with keyboard shortcut', async () => {
+      await page.getByTestId('settings-close-button').click()
+      await page.locator('.cm-content').click()
+      await page.keyboard.press('Meta+Shift+,')
+      await expect(headingLocator).toBeVisible()
+    })
+>>>>>>> 1f27643b (Merge main)
+
+<<<<<<< HEAD
     // The heading is above it and should be in view now.
     const commandPaletteHeading = page.getByRole('heading', {
       name: 'Command Palette',
@@ -150,6 +235,63 @@ test.describe('Testing settings', () => {
     const hotkey = commandPaletteHeading.locator('+ div kbd')
     const text = process.platform === 'darwin' ? 'Command+K' : 'Control+K'
     await expect(hotkey).toHaveText(text)
+||||||| parent of 1f27643b (Merge main)
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+=======
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set show debug panel to "false" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(paneButtonLocator).not.toBeVisible()
+
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(inputLocator).toBeChecked()
+
+    // Roll back to default of "off"
+    await await page
+      .getByText('show debug panelRoll back show debug panelRoll back to match')
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back show debug panel',
+      })
+      .click()
+    await expect(inputLocator).not.toBeChecked()
+
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(
+      page.locator('input[name="modeling-showDebugPanel"]')
+    ).not.toBeChecked()
+>>>>>>> 1f27643b (Merge main)
   })
 
   test('Project and user settings can be reset', async ({ page }) => {
@@ -186,6 +328,7 @@ test.describe('Testing settings', () => {
 
       // Set project-level value to 50
       await themeColorSetting.fill(settingValues.project)
+<<<<<<< HEAD
 
       // Set user-level value to 120
       await userSettingsTab.click()
@@ -375,7 +518,14 @@ test.describe('Testing settings', () => {
     await page
       .getByRole('button', { name: 'Start Sketch' })
       .waitFor({ state: 'visible' })
+||||||| parent of 1f27643b (Merge main)
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
+=======
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
 
     // Open the settings modal with lower-right button
@@ -383,13 +533,39 @@ test.describe('Testing settings', () => {
     await expect(
       page.getByRole('heading', { name: 'Settings', exact: true })
     ).toBeVisible()
+||||||| parent of 1f27643b (Merge main)
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+=======
+      // Set user-level value to 120
+      await userSettingsTab.click()
+      await themeColorSetting.fill(settingValues.user)
+      await projectSettingsTab.click()
+    })
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
     const resetButton = page.getByRole('button', {
       name: 'Restore default settings',
     })
     // Default unit should be mm
     await resetButton.click()
+||||||| parent of 1f27643b (Merge main)
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+=======
+    await test.step('Reset project settings', async () => {
+      // Click the reset settings button.
+      await resetButton.click()
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
     await test.step('Change modeling default unit within project tab', async () => {
       const changeUnitOfMeasureInProjectTab = async (unitOfMeasure: string) => {
         await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
@@ -409,7 +585,15 @@ test.describe('Testing settings', () => {
       await changeUnitOfMeasureInProjectTab('cm')
       await changeUnitOfMeasureInProjectTab('m')
     })
+||||||| parent of 1f27643b (Merge main)
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
+=======
+      // Verify it is now set to the inherited user value
+      await expect(themeColorSetting).toHaveValue(settingValues.default)
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
     // Go to the user tab
     await userSettingsTab.click()
     await test.step('Change modeling default unit within user tab', async () => {
@@ -431,11 +615,33 @@ test.describe('Testing settings', () => {
       await changeUnitOfMeasureInUserTab('cm')
       await changeUnitOfMeasureInUserTab('m')
     })
+||||||| parent of 1f27643b (Merge main)
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+=======
+      // Check that the user setting also rolled back
+      await userSettingsTab.click()
+      await expect(themeColorSetting).toHaveValue(settingValues.default)
+      await projectSettingsTab.click()
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
     // Close settings
     const settingsCloseButton = page.getByTestId('settings-close-button')
     await settingsCloseButton.click()
+||||||| parent of 1f27643b (Merge main)
+    // Set the user theme to light.
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
+=======
+      // Set project-level value to 50 again to test the user-level reset
+      await themeColorSetting.fill(settingValues.project)
+      await userSettingsTab.click()
+    })
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
     await test.step('Change modeling default unit within command bar', async () => {
       const commands = page.getByRole('button', { name: 'Commands' })
       const changeUnitOfMeasureInCommandBar = async (unitOfMeasure: string) => {
@@ -445,13 +651,36 @@ test.describe('Testing settings', () => {
           'Settings · modeling · default unit'
         )
         await settingsModelingDefaultUnitCommand.click()
+||||||| parent of 1f27643b (Merge main)
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" as a user default`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+=======
+    await test.step('Reset user settings', async () => {
+      // Change the setting and click the reset settings button.
+      await themeColorSetting.fill(settingValues.user)
+      await resetButton.click()
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
         const commandOption = page.getByRole('option', {
           name: unitOfMeasure,
           exact: true,
         })
         await commandOption.click()
+||||||| parent of 1f27643b (Merge main)
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+=======
+      // Verify it is now set to the default value
+      await expect(themeColorSetting).toHaveValue(settingValues.default)
+>>>>>>> 1f27643b (Merge main)
 
+<<<<<<< HEAD
         const toastMessage = page.getByText(
           `Set default unit to "${unitOfMeasure}" for this project`
         )
@@ -491,6 +720,25 @@ test.describe('Testing settings', () => {
       await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
       await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
       await changeUnitOfMeasureInGizmo('m', 'Meters')
+||||||| parent of 1f27643b (Merge main)
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    // Click the reset settings button.
+    await page.getByRole('button', { name: 'Restore default settings' }).click()
+
+    // Verify it is now set to the default value
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+=======
+      // Check that the project setting also changed
+      await projectSettingsTab.click()
+      await expect(themeColorSetting).toHaveValue(settingValues.default)
+>>>>>>> 1f27643b (Merge main)
     })
   })
 })

@@ -76,13 +76,27 @@ const router = createRouter([
               // Redirect to the file if we have a file path.
               if (projectStartupFile.length > 0) {
                 return redirect(
+<<<<<<< HEAD
                   PATHS.FILE + '/' + encodeURIComponent(projectStartupFile)
+||||||| parent of 1f27643b (Merge main)
+                  paths.FILE + '/' + encodeURIComponent(appState.current_file)
+=======
+                  PATHS.FILE + '/' + encodeURIComponent(appState.current_file)
+>>>>>>> 1f27643b (Merge main)
                 )
               }
             }
           }
 
+<<<<<<< HEAD
           return onDesktop
+||||||| parent of 1f27643b (Merge main)
+          return inTauri
+            ? redirect(paths.HOME)
+            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+=======
+          return inTauri
+>>>>>>> 1f27643b (Merge main)
             ? redirect(PATHS.HOME)
             : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
         },
