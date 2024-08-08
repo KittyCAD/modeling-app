@@ -15,7 +15,6 @@ import {
   EngineConnectionStateType,
   DisconnectingType,
 } from 'lang/std/engineConnection'
-import { useFileContext } from 'hooks/useFileContext'
 import { useRouteLoaderData } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
