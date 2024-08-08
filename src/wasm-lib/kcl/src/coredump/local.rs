@@ -47,7 +47,7 @@ impl CoreDump for CoreDumper {
         })
     }
 
-    fn is_tauri(&self) -> Result<bool> {
+    fn is_desktop(&self) -> Result<bool> {
         Ok(false)
     }
 

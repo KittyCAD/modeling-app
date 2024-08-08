@@ -8,6 +8,7 @@ export function err<T>(value: ExcludeErr<T> | Error): value is Error {
     return false
   }
 
+  console.error(value)
   return true
 }
 

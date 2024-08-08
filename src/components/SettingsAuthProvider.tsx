@@ -21,7 +21,7 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
@@ -341,7 +341,7 @@ export default SettingsAuthProvider
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   return (
-    !isTauri() &&
+    !isDesktop() &&
     fetch(withBaseUrl('/logout'), {
       method: 'POST',
       credentials: 'include',

@@ -1,12 +1,14 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
-import { getUser as getUserTauri } from 'lib/tauri'
+import { getUser as getUserDesktop } from 'lib/desktop'
 
 const SKIP_AUTH =
+  // @ts-ignore
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
+
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
   name: 'Test User',
@@ -123,7 +125,7 @@ async function getUser(context: UserContext) {
     'Content-Type': 'application/json',
   }
 
-  if (!token && isTauri()) return Promise.reject(new Error('No token found'))
+  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${context.token}`
 
   if (SKIP_AUTH) {
@@ -138,7 +140,7 @@ async function getUser(context: UserContext) {
     }
   }
 
-  const userPromise = !isTauri()
+  const userPromise = !isDesktop()
     ? fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -146,7 +148,7 @@ async function getUser(context: UserContext) {
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : getUserTauri(context.token, VITE_KC_API_BASE_URL)
+    : getUserDesktop(context.token ?? '', VITE_KC_API_BASE_URL)
 
   const user = await userPromise
 
@@ -164,7 +166,7 @@ async function getUser(context: UserContext) {
 }
 
 function getCookie(cname: string): string | null {
-  if (isTauri()) {
+  if (isDesktop()) {
     return null
   }
 

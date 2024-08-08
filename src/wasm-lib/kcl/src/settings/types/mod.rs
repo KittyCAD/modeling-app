@@ -969,7 +969,7 @@ color = 1567.4"#;
 
         assert_eq!(project.file.name, project_name);
         assert_eq!(
-            project.file.path,
+       project.file.path,
             settings
                 .settings
                 .project
@@ -1019,7 +1019,7 @@ color = 1567.4"#;
 
         assert_eq!(project.file.name, project_name);
         assert_eq!(
-            project.file.path,
+       project.file.path,
             settings
                 .settings
                 .project

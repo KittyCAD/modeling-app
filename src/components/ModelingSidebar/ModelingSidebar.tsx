@@ -7,7 +7,7 @@ import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
 import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -71,7 +71,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     (action) =>
       (!action.hide || (action.hide instanceof Function && !action.hide())) &&
       (!action.hideOnPlatform ||
-        (isTauri()
+        (isDesktop()
           ? action.hideOnPlatform === 'web'
           : action.hideOnPlatform === 'desktop'))
   )
@@ -86,7 +86,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       ).filter(
         (pane) =>
           !pane.hideOnPlatform ||
-          (isTauri()
+          (isDesktop()
             ? pane.hideOnPlatform === 'web'
             : pane.hideOnPlatform === 'desktop')
       ),
