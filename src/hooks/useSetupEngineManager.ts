@@ -105,6 +105,8 @@ export function useSetupEngineManager(
   }, [immediateState])
 
   useEffect(() => {
+    engineCommandManager.settings.theme = settings.theme
+
     const handleResize = deferExecution(() => {
       const { width, height } = getDimensions(
         streamRef?.current?.offsetWidth ?? 0,
