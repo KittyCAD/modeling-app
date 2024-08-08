@@ -90,9 +90,9 @@ export function HelpMenu(props: React.PropsWithChildren) {
           as="button"
           onClick={() => {
             const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=keybindings')
+              ? filePath + paths.SETTINGS_KEYBINDINGS
+              : paths.HOME + paths.SETTINGS_KEYBINDINGS
+            navigate(targetPath)
           }}
         >
           Keyboard shortcuts

@@ -117,9 +117,9 @@ function ProjectMenuPopover({
           ),
           onClick: () => {
             const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=project')
+              ? filePath + paths.SETTINGS_PROJECT
+              : paths.HOME + paths.SETTINGS_PROJECT
+            navigate(targetPath)
           },
         },
         'break',

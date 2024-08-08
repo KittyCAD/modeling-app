@@ -40,9 +40,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           'data-testid': 'user-settings',
           onClick: () => {
             const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=user')
+              ? filePath + paths.SETTINGS_USER
+              : paths.HOME + paths.SETTINGS_USER
+            navigate(targetPath)
           },
         },
         {
@@ -51,9 +51,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           children: 'Keyboard shortcuts',
           onClick: () => {
             const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=keybindings')
+              ? filePath + paths.SETTINGS_KEYBINDINGS
+              : paths.HOME + paths.SETTINGS_KEYBINDINGS
+            navigate(targetPath)
           },
         },
         {
