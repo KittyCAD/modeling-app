@@ -6,6 +6,7 @@ export const klcHighlight = styleTags({
   'true false': t.bool,
   nil: t.null,
   'AddOp MultOp ExpOp': t.arithmeticOperator,
+  BangOp: t.logicOperator,
   CompOp: t.logicOperator,
   'Equals Arrow': t.definitionOperator,
   PipeOperator: t.controlOperator,
