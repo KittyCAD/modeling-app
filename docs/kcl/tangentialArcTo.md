@@ -9,7 +9,7 @@ Starting at the current sketch's origin, draw a curved line segment along
 some part of an imaginary circle until it reaches the desired (x, y) coordinates.
 
 ```js
-tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+tangentialArcTo(to: [number], relative: bool, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
 ```
 
 ### Examples
@@ -30,6 +30,7 @@ const example = extrude(10, exampleSketch)
 ### Arguments
 
 * `to`: `[number]` (REQUIRED)
+* `relative`: `bool` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {

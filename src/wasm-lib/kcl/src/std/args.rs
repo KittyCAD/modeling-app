@@ -5,7 +5,7 @@ use serde::de::DeserializeOwned;
 
 use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
 use crate::{
-    ast::types::{parse_json_number_as_f64, TagDeclarator},
+    ast::types::{parse_json_number_as_f64, KclNone, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
         DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata,
@@ -479,11 +479,15 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
+        if let Some(_kcl_none) = KclNone::from_mem_item(arg) {
+            return Ok(None);
+        }
         let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Argument at index {i} was supposed to be type {} but wasn't",
-                    type_name::<T>()
+                    "Argument at index {i} was supposed to be type {} but wasn't, it was {:?}",
+                    type_name::<T>(),
+                    arg,
                 ),
                 source_ranges: vec![args.source_range],
             }));
@@ -615,6 +619,7 @@ impl_from_arg_via_json!(u32);
 impl_from_arg_via_json!(u64);
 impl_from_arg_via_json!(f64);
 impl_from_arg_via_json!(bool);
+impl_from_arg_via_json!(KclNone);
 
 impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
