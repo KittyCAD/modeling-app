@@ -61,7 +61,7 @@ test.describe('Sketch tests', () => {
   const part002 = startSketchOn('-XZ')
     ${startProfileAt3}
     |> xLine(width / 4, %)
-    |> tangentialArcTo([width / 2, 0], %)
+    |> tangentialArcTo([width / 2, 0], false, %)
     |> xLine(-width / 4 + wireRadius, %)
     |> yLine(wireOffset, %)
     |> arc({
@@ -115,7 +115,7 @@ test.describe('Sketch tests', () => {
         `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -5.38], %)`
+  |> tangentialArcTo([24.95, -5.38], false, %)`
       )
     })
 
@@ -125,7 +125,7 @@ test.describe('Sketch tests', () => {
 
     await expect(async () => {
       await page.mouse.click(700, 200)
-      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await page.getByText('tangentialArcTo([24.95, -5.38], false, %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 1000 })
@@ -134,7 +134,7 @@ test.describe('Sketch tests', () => {
 
     await page.waitForTimeout(600) // wait for animation
 
-    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.getByText('tangentialArcTo([24.95, -5.38], false, %)').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -193,7 +193,7 @@ test.describe('Sketch tests', () => {
           `const sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
       |> line([12.73, -0.09], %)
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArcTo([24.95, -5.38], false, %)
       |> close(%)`
         )
       })
@@ -235,7 +235,7 @@ test.describe('Sketch tests', () => {
           .toHaveText(`const sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
       |> line([12.73, -0.09], %)
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArcTo([24.95, -5.38], false, %)
       |> close(%)`)
       } else {
         // Ensure we don't see the code.
@@ -312,7 +312,7 @@ test.describe('Sketch tests', () => {
         .toHaveText(`const sketch001 = startSketchOn('XZ')
       |> startProfileAt([6.44, -12.07], %)
       |> line([14.72, 1.97], %)
-      |> tangentialArcTo([24.95, -5.38], %)
+      |> tangentialArcTo([24.95, -5.38], false, %)
       |> line([1.97, 2.06], %)
       |> close(%)`)
     }
@@ -354,7 +354,7 @@ test.describe('Sketch tests', () => {
         `const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -0.38], %)
+    |> tangentialArcTo([24.95, -0.38], false, %)
     |> close(%)
     |> extrude(5, %)`
       )
@@ -441,7 +441,7 @@ test.describe('Sketch tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -12.68], %)
   |> line([15.39, -2.78], %)
-  |> tangentialArcTo([27.6, -3.05], %)
+  |> tangentialArcTo([27.6, -3.05], false, %)
   |> close(%)
   |> extrude(5, %)
 `)
@@ -457,7 +457,7 @@ test.describe('Sketch tests', () => {
         `const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)
     |> revolve({ axis: "X",}, %)`
       )
@@ -543,7 +543,7 @@ test.describe('Sketch tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([6.44, -12.07], %)
     |> line([14.72, 1.97], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> line([1.97, 2.06], %)
     |> close(%)
     |> revolve({ axis: "X" }, %)`)
