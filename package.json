@@ -13,7 +13,7 @@
     "@csstools/postcss-oklab-function": "^3.0.16",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
