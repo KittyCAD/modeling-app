@@ -1754,7 +1754,7 @@ impl ExecutorContext {
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         let var_name = declaration.id.name.to_string();
-                        let source_range: SourceRange = declaration.init.clone().into();
+                        let source_range = SourceRange::from(&declaration.init);
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
