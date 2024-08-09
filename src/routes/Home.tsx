@@ -16,7 +16,7 @@ import Loading from 'components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -39,11 +39,12 @@ import {
   listProjects,
   renameProjectDirectory,
 } from 'lib/tauri'
+import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  useRefreshSettings(paths.HOME + 'SETTINGS')
+  useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
@@ -62,7 +63,7 @@ const Home = () => {
   })
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(paths.HOME + paths.SETTINGS),
+    () => navigate(PATHS.HOME + PATHS.SETTINGS),
     {
       splitKey: '|',
     }
@@ -90,7 +91,7 @@ const Home = () => {
             null
           )
           commandBarSend({ type: 'Close' })
-          navigate(`${paths.FILE}/${encodeURIComponent(projectPath)}`)
+          navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
         }
       },
       toastSuccess: (_, event) => toast.success((event.data || '') + ''),
@@ -154,6 +155,7 @@ const Home = () => {
   })
   const { projects } = state.context
   const [searchParams, setSearchParams] = useSearchParams()
+  const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
@@ -206,8 +208,8 @@ const Home = () => {
       <AppHeader showToolbar={false} />
       <div className="w-full flex flex-col overflow-hidden max-w-5xl px-4 mx-auto mt-24 lg:px-2">
         <section>
-          <div className="flex justify-between items-baseline select-none">
-            <div className="flex gap-8 items-baseline">
+          <div className="flex justify-between items-center select-none">
+            <div className="flex gap-8 items-center">
               <h1 className="text-3xl font-bold">Your Projects</h1>
               <ActionButton
                 Element="button"
@@ -225,6 +227,7 @@ const Home = () => {
               </ActionButton>
             </div>
             <div className="flex gap-2 items-center">
+              <ProjectSearchBar setQuery={setQuery} />
               <small>Sort by</small>
               <ActionButton
                 Element="button"
@@ -273,7 +276,7 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <Link
-              to="settings?tab=user#projectDirectory"
+              to={`${PATHS.SETTINGS_USER}#projectDirectory`}
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >
               {settings.app.projectDirectory.current}
@@ -289,9 +292,9 @@ const Home = () => {
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>
-              {projects.length > 0 ? (
+              {searchResults.length > 0 ? (
                 <ul className="grid w-full grid-cols-4 gap-4">
-                  {projects.sort(getSortFunction(sort)).map((project) => (
+                  {searchResults.sort(getSortFunction(sort)).map((project) => (
                     <ProjectCard
                       key={project.name}
                       project={project}
@@ -302,7 +305,10 @@ const Home = () => {
                 </ul>
               ) : (
                 <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
-                  No Projects found, ready to make your first one?
+                  No Projects found
+                  {projects.length === 0
+                    ? ', ready to make your first one?'
+                    : ` with the search term "${query}"`}
                 </p>
               )}
             </>

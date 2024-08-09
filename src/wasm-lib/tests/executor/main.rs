@@ -4,7 +4,7 @@ use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
 /// i.e. how different the current model snapshot can be from the previous saved one.
 const MIN_DIFF: f64 = 0.99;
 
-// mod server;
+mod no_visuals;
 
 macro_rules! kcl_input {
     ($file:literal) => {
@@ -32,10 +32,24 @@ async fn kcl_test_riddle_small() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_tan_arc_x_line() {
+    let code = kcl_input!("tan_arc_x_line");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("tan_arc_x_line", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_lego() {
     let code = kcl_input!("lego");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("lego", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_computed_var() {
+    let code = kcl_input!("computed_var");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("computed_var", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2362,5 +2376,17 @@ someFunction('INVALID')
     assert_eq!(
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_fillet_and_shell() {
+    let code = kcl_input!("fillet-and-shell");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([2004, 2065])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Shell of non-planar solid3d not available yet\" }]" }"#
     );
 }

@@ -1494,9 +1494,14 @@ impl CallExpression {
                     })?;
 
                 let result = result.ok_or_else(|| {
+                    let mut source_ranges: Vec<SourceRange> = vec![self.into()];
+                    // We want to send the source range of the original function.
+                    if let MemoryItem::Function { meta, .. } = func {
+                        source_ranges = meta.iter().map(|m| m.source_range).collect();
+                    };
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of user-defined function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
+                        source_ranges,
                     })
                 })?;
                 let result = result.get_value()?;
@@ -2829,31 +2834,94 @@ impl MemberExpression {
     }
 
     pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let property_name = match &self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
+        #[derive(Debug)]
+        enum Property {
+            Number(usize),
+            String(String),
+        }
+
+        impl Property {
+            fn type_name(&self) -> &'static str {
+                match self {
+                    Property::Number(_) => "number",
+                    Property::String(_) => "string",
+                }
+            }
+        }
+
+        let property_src: SourceRange = self.property.clone().into();
+        let property_sr = vec![property_src];
+
+        let property: Property = match self.property.clone() {
+            LiteralIdentifier::Identifier(identifier) => {
+                let name = identifier.name;
+                if !self.computed {
+                    // Treat the property as a literal
+                    Property::String(name.to_string())
+                } else {
+                    // Actually evaluate memory to compute the property.
+                    let prop = memory.get(&name, property_src)?;
+                    let MemoryItem::UserVal(prop) = prop else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges: property_sr,
+                            message: format!(
+                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                            ),
+                        }));
+                    };
+                    match prop.value {
+                        JValue::Number(ref num) => {
+                            num
+                                .as_u64()
+                                .and_then(|x| usize::try_from(x).ok())
+                                .map(Property::Number)
+                                .ok_or_else(|| {
+                                    KclError::Semantic(KclErrorDetails {
+                                        source_ranges: property_sr,
+                                        message: format!(
+                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
+                                        ),
+                                    })
+                                })?
+                        }
+                        JValue::String(ref x) => Property::String(x.to_owned()),
+                        _ => {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!(
+                                    "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
+                                ),
+                            }));
+                        }
+                    }
+                }
+            }
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::IInteger(x) if x >= 0 => return self.get_result_array(memory, x as usize),
                     LiteralValue::IInteger(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
-                            source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                        if let Ok(x) = u64::try_from(x) {
+                            Property::Number(x.try_into().unwrap())
+                        } else {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                            }));
+                        }
                     }
-                    LiteralValue::Fractional(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                    LiteralValue::String(s) => Property::String(s),
+                    _ => {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                            message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                        }));
                     }
-                    LiteralValue::String(s) => s,
-                    LiteralValue::Bool(b) => b.to_string(),
                 }
             }
         };
 
         let object = match &self.object {
+            // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
             MemberObject::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
@@ -2863,25 +2931,60 @@ impl MemberExpression {
 
         let object_json = object.get_json_value()?;
 
-        if let serde_json::Value::Object(map) = object_json {
-            if let Some(value) = map.get(&property_name) {
-                Ok(MemoryItem::UserVal(UserVal {
-                    value: value.clone(),
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }))
-            } else {
-                Err(KclError::UndefinedValue(KclErrorDetails {
-                    message: format!("Property {} not found in object", property_name),
+        // Check the property and object match -- e.g. ints for arrays, strs for objects.
+        match (object_json, property) {
+            (JValue::Object(map), Property::String(property)) => {
+                if let Some(value) = map.get(&property) {
+                    Ok(MemoryItem::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Property '{property}' not found in object"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Object(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only strings can be used as the property of an object, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (JValue::Array(arr), Property::Number(index)) => {
+                let value_of_arr: Option<&JValue> = arr.get(index);
+                if let Some(value) = value_of_arr {
+                    Ok(MemoryItem::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("The array doesn't have any item at index {index}"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Array(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only integers >= 0 can be used as the index of an array, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (being_indexed, _) => {
+                let t = human_friendly_type(being_indexed);
+                Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("MemberExpression object is not an object: {:?}", object),
-                source_ranges: vec![self.clone().into()],
-            }))
         }
     }
 
@@ -3967,6 +4070,17 @@ impl ConstraintLevels {
         }
 
         source_ranges
+    }
+}
+
+fn human_friendly_type(j: JValue) -> &'static str {
+    match j {
+        JValue::Null => "null",
+        JValue::Bool(_) => "boolean (true/false value)",
+        JValue::Number(_) => "number",
+        JValue::String(_) => "string (text)",
+        JValue::Array(_) => "array (list)",
+        JValue::Object(_) => "object",
     }
 }
 

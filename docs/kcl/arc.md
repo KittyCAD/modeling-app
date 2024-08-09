@@ -1,12 +1,14 @@
 ---
 title: "arc"
-excerpt: "Draw an arc."
+excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
 layout: manual
 ---
 
-Draw an arc.
+Starting at the current sketch's origin, draw a curved line segment along
 
-
+an imaginary circle of the specified radius.
+The arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.
+Unless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.
 
 ```js
 arc(data: ArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -181,6 +183,10 @@ const exampleSketch = startSketchOn('XZ')
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -386,6 +392,10 @@ const exampleSketch = startSketchOn('XZ')
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -593,6 +603,10 @@ const exampleSketch = startSketchOn('XZ')
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -798,6 +812,10 @@ const exampleSketch = startSketchOn('XZ')
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

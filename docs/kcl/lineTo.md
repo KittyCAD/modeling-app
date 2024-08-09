@@ -1,10 +1,10 @@
 ---
 title: "lineTo"
-excerpt: "Draw a line to a point."
+excerpt: "Draw a line from the current origin to some absolute (x, y) point."
 layout: manual
 ---
 
-Draw a line to a point.
+Draw a line from the current origin to some absolute (x, y) point.
 
 
 
@@ -162,6 +162,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -367,6 +371,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -574,6 +582,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -779,6 +791,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

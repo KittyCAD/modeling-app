@@ -30,7 +30,8 @@ pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
-/// Sketch a circle.
+/// Construct a 2-dimensional circle, of the specified radius, centered at
+/// the provided (x, y) origin point.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("-XZ")

@@ -1,10 +1,10 @@
 ---
 title: "angleToMatchLengthX"
-excerpt: "Returns the angle to match the given length for x."
+excerpt: "Compute the angle (in degrees) in o"
 layout: manual
 ---
 
-Returns the angle to match the given length for x.
+Compute the angle (in degrees) in o
 
 
 
@@ -253,6 +253,10 @@ const extrusion = extrude(5, sketch001)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -458,6 +462,10 @@ const extrusion = extrude(5, sketch001)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

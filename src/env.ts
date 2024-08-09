@@ -12,3 +12,4 @@ export const VITE_KC_DEV_TOKEN = import.meta.env.VITE_KC_DEV_TOKEN as
   | undefined
 export const TEST = import.meta.env.TEST
 export const DEV = import.meta.env.DEV
+export const CI = import.meta.env.CI

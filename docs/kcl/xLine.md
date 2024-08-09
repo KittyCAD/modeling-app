@@ -1,12 +1,12 @@
 ---
 title: "xLine"
-excerpt: "Draw a line on the x-axis."
+excerpt: "Draw a line relative to the current origin to a specified distance away"
 layout: manual
 ---
 
-Draw a line on the x-axis.
+Draw a line relative to the current origin to a specified distance away
 
-
+from the current position along the 'x' axis.
 
 ```js
 xLine(length: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -165,6 +165,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -370,6 +374,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -577,6 +585,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -782,6 +794,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

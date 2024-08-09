@@ -111,6 +111,10 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   skip?: boolean
+  /** For showing a summary display of the current value, such as in
+   *  the command bar's header
+   */
+  valueSummary?: (value: OutputType) => string
 } & (
   | {
       inputType: 'options'
@@ -172,6 +176,10 @@ export type CommandArgument<
       ) => boolean)
   skip?: boolean
   machineActor: InterpreterFrom<T>
+  /** For showing a summary display of the current value, such as in
+   *  the command bar's header
+   */
+  valueSummary?: (value: OutputType) => string
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>

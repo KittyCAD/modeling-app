@@ -10,6 +10,7 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -18,11 +19,12 @@ export default defineConfig({
   /* Do not retry */
   retries: process.env.CI ? 0 : 0,
   /* Different amount of parallelism on CI and local. */
-  workers: process.env.CI ? 4 : 4,
+  workers: process.env.CI ? 1 : 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     [process.env.CI ? 'dot' : 'list'],
     ['json', { outputFile: './test-results/report.json' }],
+    ['html'],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -31,6 +33,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
+    actionTimeout: 15000,
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */

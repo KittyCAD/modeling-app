@@ -1,12 +1,12 @@
 ---
 title: "patternCircular2d"
-excerpt: "A circular pattern on a 2D sketch."
+excerpt: "Repeat a 2-dimensional sketch some number of times along a partial or"
 layout: manual
 ---
 
-A circular pattern on a 2D sketch.
+Repeat a 2-dimensional sketch some number of times along a partial or
 
-
+complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orentation of the solid with respect to the center of the circle is maintained.
 
 ```js
 patternCircular2d(data: CircularPattern2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
@@ -180,6 +180,10 @@ const example = extrude(1, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -386,6 +390,10 @@ const example = extrude(1, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

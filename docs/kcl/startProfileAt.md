@@ -1,10 +1,10 @@
 ---
 title: "startProfileAt"
-excerpt: "Start a profile at a given point."
+excerpt: "Start a new profile at a given point."
 layout: manual
 ---
 
-Start a profile at a given point.
+Start a new profile at a given point.
 
 
 
@@ -241,6 +241,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -540,6 +544,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -745,6 +753,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

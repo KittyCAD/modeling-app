@@ -1,12 +1,12 @@
 ---
 title: "yLineTo"
-excerpt: "Draw a line to a point on the y-axis."
+excerpt: "Draw a line parallel to the Y axis, that ends at the given Y."
 layout: manual
 ---
 
-Draw a line to a point on the y-axis.
+Draw a line parallel to the Y axis, that ends at the given Y.
 
-
+E.g. if the previous line ended at (1, 1), then yLineTo(4) draws a line from (1, 1) to (1, 4)
 
 ```js
 yLineTo(to: number, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -161,6 +161,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -366,6 +370,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -573,6 +581,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -778,6 +790,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

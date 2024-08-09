@@ -1,7 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { isTauri } from '../lib/isTauri'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo } from 'react'
@@ -12,6 +12,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
 import { engineCommandManager } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
@@ -62,7 +63,7 @@ function AppLogoLink({
         // Clear the scene and end the session.
         engineCommandManager.endSession()
       }}
-      to={paths.HOME}
+      to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
     >
       <Logo className={logoClassName} />
@@ -90,12 +91,14 @@ function ProjectMenuPopover({
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commandBarState.context.commands.find(
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
+  const machineCount = machineManager.machineCount()
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -113,10 +116,10 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=project')
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_PROJECT
+              : PATHS.HOME + PATHS.SETTINGS_PROJECT
+            navigate(targetPath)
           },
         },
         'break',
@@ -142,6 +145,32 @@ function ProjectMenuPopover({
               type: 'Find and select command',
               data: exportCommandInfo,
             }),
+        },
+        'break',
+        {
+          id: 'make',
+          Element: 'button',
+          className: !isTauri() ? 'hidden' : '',
+          children: (
+            <>
+              <span>Make current part</span>
+              {!findCommand(makeCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(makeCommandInfo) || machineCount === 0,
+          onClick: () => {
+            commandBarSend({
+              type: 'Find and select command',
+              data: makeCommandInfo,
+            })
+          },
         },
         'break',
         {

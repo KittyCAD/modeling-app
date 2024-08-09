@@ -1,12 +1,12 @@
 ---
 title: "profileStartY"
-excerpt: ""
+excerpt: "Extract the provided 2-dimensional sketch group's profile's origin's 'y'"
 layout: manual
 ---
 
+Extract the provided 2-dimensional sketch group's profile's origin's 'y'
 
-
-
+value.
 
 ```js
 profileStartY(sketch_group: SketchGroup) -> number
@@ -157,6 +157,10 @@ const sketch001 = startSketchOn('XY')
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -362,6 +366,10 @@ const sketch001 = startSketchOn('XY')
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

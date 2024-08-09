@@ -1,12 +1,12 @@
 ---
 title: "angledLineToY"
-excerpt: "Draw an angled line to a given y coordinate."
+excerpt: "Create a line segment from the current 2-dimensional sketch origin"
 layout: manual
 ---
 
-Draw an angled line to a given y coordinate.
+Create a line segment from the current 2-dimensional sketch origin
 
-
+along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension.
 
 ```js
 angledLineToY(data: AngledLineToData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -170,6 +170,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -375,6 +379,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -582,6 +590,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -787,6 +799,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

@@ -1,12 +1,12 @@
 ---
 title: "close"
-excerpt: "Close the current sketch."
+excerpt: "Construct a line segment from the current origin back to the profile's"
 layout: manual
 ---
 
-Close the current sketch.
+Construct a line segment from the current origin back to the profile's
 
-
+origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 
 ```js
 close(sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -171,6 +171,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -376,6 +380,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -583,6 +591,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -788,6 +800,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

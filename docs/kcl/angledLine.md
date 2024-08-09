@@ -1,12 +1,12 @@
 ---
 title: "angledLine"
-excerpt: "Draw an angled line."
+excerpt: "Draw a line segment relative to the current origin using the polar"
 layout: manual
 ---
 
-Draw an angled line.
+Draw a line segment relative to the current origin using the polar
 
-
+measure of some angle and distance.
 
 ```js
 angledLine(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -172,6 +172,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -377,6 +381,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -584,6 +592,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -789,6 +801,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

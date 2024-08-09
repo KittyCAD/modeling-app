@@ -1,10 +1,10 @@
 ---
 title: "startSketchOn"
-excerpt: "Start a sketch on a specific plane or face."
+excerpt: "Start a new 2-dimensional sketch on a specific plane or face."
 layout: manual
 ---
 
-Start a sketch on a specific plane or face.
+Start a new 2-dimensional sketch on a specific plane or face.
 
 
 
@@ -310,6 +310,10 @@ const a1 = startSketchOn({
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -722,6 +726,10 @@ const a1 = startSketchOn({
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

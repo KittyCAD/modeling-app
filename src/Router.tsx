@@ -20,7 +20,7 @@ import { WasmErrBanner } from 'components/WasmErrBanner'
 import { CommandBar } from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import {
   fileLoader,
   homeLoader,
@@ -46,7 +46,7 @@ import { coreDump } from 'lang/wasm'
 const router = createBrowserRouter([
   {
     loader: settingsLoader,
-    id: paths.INDEX,
+    id: PATHS.INDEX,
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: paths.INDEX,
+        path: PATHS.INDEX,
         loader: async () => {
           const inTauri = isTauri()
           if (inTauri) {
@@ -81,21 +81,21 @@ const router = createBrowserRouter([
               // Redirect to the file if we have a file path.
               if (appState.current_file) {
                 return redirect(
-                  paths.FILE + '/' + encodeURIComponent(appState.current_file)
+                  PATHS.FILE + '/' + encodeURIComponent(appState.current_file)
                 )
               }
             }
           }
 
           return inTauri
-            ? redirect(paths.HOME)
-            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+            ? redirect(PATHS.HOME)
+            : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
         },
       },
       {
         loader: fileLoader,
-        id: paths.FILE,
-        path: paths.FILE + '/:id',
+        id: PATHS.FILE,
+        path: PATHS.FILE + '/:id',
         element: (
           <Auth>
             <FileMachineProvider>
@@ -112,7 +112,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            id: paths.FILE + 'SETTINGS',
+            id: PATHS.FILE + 'SETTINGS',
             loader: settingsLoader,
             children: [
               {
@@ -121,11 +121,11 @@ const router = createBrowserRouter([
                 element: <></>,
               },
               {
-                path: makeUrlPathRelative(paths.SETTINGS),
+                path: makeUrlPathRelative(PATHS.SETTINGS),
                 element: <Settings />,
               },
               {
-                path: makeUrlPathRelative(paths.ONBOARDING.INDEX),
+                path: makeUrlPathRelative(PATHS.ONBOARDING.INDEX),
                 element: <Onboarding />,
                 children: onboardingRoutes,
               },
@@ -134,7 +134,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: paths.HOME,
+        path: PATHS.HOME,
         element: (
           <Auth>
             <Outlet />
@@ -142,24 +142,24 @@ const router = createBrowserRouter([
             <CommandBar />
           </Auth>
         ),
-        id: paths.HOME,
+        id: PATHS.HOME,
         loader: homeLoader,
         children: [
           {
             index: true,
             element: <></>,
-            id: paths.HOME + 'SETTINGS',
+            id: PATHS.HOME + 'SETTINGS',
             loader: settingsLoader,
           },
           {
-            path: makeUrlPathRelative(paths.SETTINGS),
+            path: makeUrlPathRelative(PATHS.SETTINGS),
             loader: settingsLoader,
             element: <Settings />,
           },
         ],
       },
       {
-        path: paths.SIGN_IN,
+        path: PATHS.SIGN_IN,
         element: <SignIn />,
       },
     ],

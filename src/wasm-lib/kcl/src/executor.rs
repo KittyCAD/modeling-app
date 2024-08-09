@@ -1017,6 +1017,11 @@ impl SketchGroup {
             };
         };
         match path {
+            Path::TangentialArc { center, ccw, .. } => GetTangentialInfoFromPathsResult {
+                center_or_tangent_point: *center,
+                is_center: true,
+                ccw: *ccw,
+            },
             Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
                 center_or_tangent_point: *center,
                 is_center: true,
@@ -1346,6 +1351,11 @@ pub enum Path {
     TangentialArc {
         #[serde(flatten)]
         base: BasePath,
+        /// the arc's center
+        #[ts(type = "[number, number]")]
+        center: [f64; 2],
+        /// arc's direction
+        ccw: bool,
     },
     /// A path that is horizontal.
     Horizontal {
@@ -1378,7 +1388,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
-            Path::TangentialArc { base } => base.geo_meta.id,
+            Path::TangentialArc { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1389,7 +1399,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base.tag.clone(),
             Path::Base { base } => base.tag.clone(),
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
-            Path::TangentialArc { base } => base.tag.clone(),
+            Path::TangentialArc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1400,7 +1410,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base,
             Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
-            Path::TangentialArc { base } => base,
+            Path::TangentialArc { base, .. } => base,
         }
     }
 
@@ -1411,7 +1421,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => Some(base),
             Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
-            Path::TangentialArc { base } => Some(base),
+            Path::TangentialArc { base, .. } => Some(base),
         }
     }
 }
@@ -2733,6 +2743,22 @@ const bracket = startSketchOn('XY')
   |> line([-leg2 + thickness, 0], %)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_function_no_return() {
+        let ast = r#"fn test = (origin) => {
+  origin
+}
+
+test([0, 0])
+"#;
+        let result = parse_execute(ast).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"undefined value: KclErrorDetails { source_ranges: [SourceRange([10, 34])], message: "Result of user-defined function test is undefined" }"#.to_owned()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

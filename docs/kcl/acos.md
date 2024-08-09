@@ -1,10 +1,10 @@
 ---
 title: "acos"
-excerpt: "Computes the arccosine of a number (in radians)."
+excerpt: "Compute the arccosine of a number (in radians)."
 layout: manual
 ---
 
-Computes the arccosine of a number (in radians).
+Compute the arccosine of a number (in radians).
 
 
 

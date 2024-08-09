@@ -2,14 +2,14 @@ import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
@@ -28,7 +28,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
-  useRefreshSettings(paths.FILE + 'SETTINGS')
+  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -63,7 +63,7 @@ export function App() {
   })
   useHotkeyWrapper(
     [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
-    () => navigate(filePath + paths.SETTINGS),
+    () => navigate(filePath + PATHS.SETTINGS),
     {
       splitKey: '|',
     }
@@ -95,16 +95,16 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-    if (context.store?.buttonDownInStream === undefined) {
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'highlight_set_entity',
-          selected_at_window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    }
+    if (state.matches('idle.showPlanes')) return
+    if (context.store?.buttonDownInStream !== undefined) return
+    debounceSocketSend({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'highlight_set_entity',
+        selected_at_window: { x, y },
+      },
+      cmd_id: newCmdId,
+    })
   }
 
   return (

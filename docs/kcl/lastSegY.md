@@ -1,12 +1,12 @@
 ---
 title: "lastSegY"
-excerpt: "Returns the last segment of y."
+excerpt: "Extract the 'y' axis value of the last line segment in the provided 2-d"
 layout: manual
 ---
 
-Returns the last segment of y.
+Extract the 'y' axis value of the last line segment in the provided 2-d
 
-
+sketch.
 
 ```js
 lastSegY(sketch_group: SketchGroup) -> number
@@ -162,6 +162,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -367,6 +371,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

@@ -1,12 +1,12 @@
 ---
 title: "bezierCurve"
-excerpt: "Draw a bezier curve."
+excerpt: "Draw a smooth, continuous, curved line segment from the current origin to"
 layout: manual
 ---
 
-Draw a bezier curve.
+Draw a smooth, continuous, curved line segment from the current origin to
 
-
+the desired (x, y), using a number of control points to shape the curve's shape.
 
 ```js
 bezierCurve(data: BezierData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -176,6 +176,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -381,6 +385,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -588,6 +596,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -793,6 +805,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

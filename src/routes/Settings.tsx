@@ -2,7 +2,7 @@ import { ActionButton } from '../components/ActionButton'
 import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { Fragment, useEffect, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
@@ -22,9 +22,9 @@ export const APP_VERSION = isTauri()
 export const Settings = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
+  const close = () => navigate(location.pathname.replace(PATHS.SETTINGS, ''))
   const location = useLocation()
-  const isFileSettings = location.pathname.includes(paths.FILE)
+  const isFileSettings = location.pathname.includes(PATHS.FILE)
   const searchParamTab =
     (searchParams.get('tab') as SettingsLevel | 'keybindings') ??
     (isFileSettings ? 'project' : 'user')

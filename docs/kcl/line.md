@@ -1,12 +1,12 @@
 ---
 title: "line"
-excerpt: "Draw a line."
+excerpt: "Draw a line relative to the current origin to a specified (x, y) away"
 layout: manual
 ---
 
-Draw a line.
+Draw a line relative to the current origin to a specified (x, y) away
 
-
+from the current position.
 
 ```js
 line(delta: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -175,6 +175,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -380,6 +384,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -587,6 +595,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -792,6 +804,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

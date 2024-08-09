@@ -1,7 +1,7 @@
 import { APP_VERSION } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import { HelpMenu } from './HelpMenu'
 import { Link, useLocation } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
+import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
 
 function InteractionSequenceInfo() {
@@ -98,9 +99,9 @@ export function LowerRightControls({
         </a>
         <Link
           to={
-            location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
+            location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_PROJECT
+              : PATHS.HOME + PATHS.SETTINGS
           }
         >
           <CustomIcon
@@ -112,6 +113,7 @@ export function LowerRightControls({
             Settings
           </Tooltip>
         </Link>
+        <NetworkMachineIndicator className={linkOverrideClassName} />
         <NetworkHealthIndicator />
         <HelpMenu />
       </menu>

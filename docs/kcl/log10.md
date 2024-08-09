@@ -1,10 +1,10 @@
 ---
 title: "log10"
-excerpt: "Computes the base 10 logarithm of the number."
+excerpt: "Compute the base 10 logarithm of the number."
 layout: manual
 ---
 
-Computes the base 10 logarithm of the number.
+Compute the base 10 logarithm of the number.
 
 
 

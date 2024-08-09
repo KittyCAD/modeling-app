@@ -8,12 +8,13 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
-import { paths } from './paths'
+import { PATHS } from './paths'
 import {
   createNewProjectDirectory,
   listProjects,
   readAppSettingsFile,
 } from './tauri'
+import { engineCommandManager } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -116,9 +117,23 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewProject(
+export async function createAndOpenNewProject({
+  onProjectOpen,
+  navigate,
+}: {
+  onProjectOpen: (
+    project: {
+      name: string | null
+      path: string | null
+    } | null,
+    file: FileEntry | null
+  ) => void
   navigate: (path: string) => void
-) {
+}) {
+  // Clear the scene and end the session.
+  engineCommandManager.endSession()
+
+  // Create a new project with the onboarding project name
   const configuration = await readAppSettingsFile()
   const projects = await listProjects(configuration)
   const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
@@ -126,6 +141,24 @@ export async function createAndOpenNewProject(
     ONBOARDING_PROJECT_NAME,
     nextIndex
   )
-  const newFile = await createNewProjectDirectory(name, bracket, configuration)
-  navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
+  const newProject = await createNewProjectDirectory(
+    name,
+    bracket,
+    configuration
+  )
+
+  // Prep the LSP and navigate to the onboarding start
+  onProjectOpen(
+    {
+      name: newProject.name,
+      path: newProject.path,
+    },
+    null
+  )
+  navigate(
+    `${PATHS.FILE}/${encodeURIComponent(newProject.default_file)}${
+      PATHS.ONBOARDING.INDEX
+    }`
+  )
+  return newProject
 }

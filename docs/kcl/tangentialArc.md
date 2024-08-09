@@ -1,12 +1,13 @@
 ---
 title: "tangentialArc"
-excerpt: "Draw an arc."
+excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
 layout: manual
 ---
 
-Draw an arc.
+Starting at the current sketch's origin, draw a curved line segment along
 
-
+some part of an imaginary circle of the specified radius.
+The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.
 
 ```js
 tangentialArc(data: TangentialArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
@@ -171,6 +172,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -376,6 +381,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -583,6 +592,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -788,6 +801,10 @@ const example = extrude(10, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.

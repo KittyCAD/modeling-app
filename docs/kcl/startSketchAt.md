@@ -1,10 +1,10 @@
 ---
 title: "startSketchAt"
-excerpt: "Start a sketch at a given point on the 'XY' plane."
+excerpt: "Start a new 2-dimensional sketch at a given point on the 'XY' plane."
 layout: manual
 ---
 
-Start a sketch at a given point on the 'XY' plane.
+Start a new 2-dimensional sketch at a given point on the 'XY' plane.
 
 
 
@@ -188,6 +188,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -393,6 +397,10 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
