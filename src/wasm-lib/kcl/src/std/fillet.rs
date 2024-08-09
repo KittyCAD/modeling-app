@@ -191,7 +191,7 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
     name = "getOppositeEdge",
 }]
 async fn inner_get_opposite_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = args.get_tag_engine_info(&tag)?;
@@ -268,7 +268,7 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
     name = "getNextAdjacentEdge",
 }]
 async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = args.get_tag_engine_info(&tag)?;
@@ -350,7 +350,7 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
     name = "getPreviousAdjacentEdge",
 }]
 async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(Uuid::new_v4());
     }
     let tagged_path = args.get_tag_engine_info(&tag)?;
