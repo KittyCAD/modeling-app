@@ -1758,7 +1758,7 @@ impl ExecutorContext {
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
-                            .arg_into_mem_item(
+                            .eval_expression(
                                 &declaration.init,
                                 memory,
                                 dynamic_state,
@@ -1805,7 +1805,7 @@ impl ExecutorContext {
         metadata: &Metadata,
     ) -> Result<PartialExecution, KclError> {
         let value = self
-            .arg_into_mem_item(
+            .eval_expression(
                 exp,
                 memory,
                 dynamic_state,
@@ -1819,7 +1819,7 @@ impl ExecutorContext {
         })
     }
 
-    pub async fn arg_into_mem_item<'a>(
+    pub async fn eval_expression<'a>(
         &self,
         init: &Expr,
         memory: &mut ProgramMemory,

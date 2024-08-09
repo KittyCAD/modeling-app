@@ -1332,7 +1332,7 @@ impl CallExpression {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
             let result = ctx
-                .arg_into_mem_item(
+                .eval_expression(
                     arg,
                     memory,
                     dynamic_state,
@@ -3549,7 +3549,7 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .arg_into_mem_item(
+        .eval_expression(
             first,
             memory,
             dynamic_state,
