@@ -8,7 +8,7 @@ use std::{
 };
 
 const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
-const NEED_PLANES: bool = false;
+const NEED_PLANES: bool = true;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
