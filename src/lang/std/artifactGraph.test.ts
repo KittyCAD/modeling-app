@@ -251,7 +251,7 @@ describe('testing createArtifactGraph', () => {
       // of the edges refers to a non-existent node, the graph will throw.
       // further more we can check that each edge is bi-directional, if it's not
       // by checking the arrow heads going both ways, on the graph.
-      await GraphTheGraph(theMap, 1400, 1400, 'exampleCode1.png')
+      await GraphTheGraph(theMap, 2000, 2000, 'exampleCode1.png')
     }, 20000)
   })
 })
@@ -275,7 +275,7 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
       // of the edges refers to a non-existent node, the graph will throw.
       // further more we can check that each edge is bi-directional, if it's not
       // by checking the arrow heads going both ways, on the graph.
-      await GraphTheGraph(theMap, 2500, 2500, 'sketchOnFaceOnFaceEtc.png')
+      await GraphTheGraph(theMap, 3000, 3000, 'sketchOnFaceOnFaceEtc.png')
     }, 20000)
   })
 })
