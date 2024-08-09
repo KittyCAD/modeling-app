@@ -354,7 +354,7 @@ impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]
-pub struct PartialExecution {
+pub struct ExecutionOutcome {
     pub return_value: Option<KclValue>,
 }
 
@@ -1803,7 +1803,7 @@ impl ExecutorContext {
         dynamic_state: &mut DynamicState,
         pipe_info: &PipeInfo,
         metadata: &Metadata,
-    ) -> Result<PartialExecution, KclError> {
+    ) -> Result<ExecutionOutcome, KclError> {
         let value = self
             .eval_expression(
                 exp,
@@ -1814,7 +1814,7 @@ impl ExecutorContext {
                 StatementKind::Expression,
             )
             .await?;
-        Ok(PartialExecution {
+        Ok(ExecutionOutcome {
             return_value: Some(value),
         })
     }
