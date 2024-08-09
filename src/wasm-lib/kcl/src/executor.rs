@@ -1800,7 +1800,7 @@ impl ExecutorContext {
         &self,
         exp: &Expr,
         memory: &mut ProgramMemory,
-        dynamic_state: &mut DynamicState,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         metadata: &Metadata,
     ) -> Result<ExecutionOutcome, KclError> {
