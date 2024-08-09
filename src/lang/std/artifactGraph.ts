@@ -86,8 +86,7 @@ interface CapArtifact {
   extrusionId: string
   pathIds: Array<string>
 }
-
-interface ExtrudeEdge {
+export interface ExtrudeEdge {
   type: 'extrudeEdge'
   segId: string
   extrusionId: string
@@ -449,8 +448,8 @@ export function getArtifactsToUpdate({
           type: 'extrudeEdge',
           subType:
             cmd.type === 'solid3d_get_prev_adjacent_edge'
-              ? 'opposite'
-              : 'adjacent',
+              ? 'adjacent'
+              : 'opposite',
           segId: cmd.edge_id,
           extrusionId: path.extrusionId,
         },

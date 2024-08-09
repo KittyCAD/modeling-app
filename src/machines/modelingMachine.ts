@@ -1197,6 +1197,11 @@ export const modelingMachine = createMachine(
           ast,
           pathToSegmentNode,
           pathToExtrudeNode,
+          selection.codeBasedSelections[0].type === 'opposite-edge'
+            ? 'oppositeEdge'
+            : selection.codeBasedSelections[0].type === 'adjacent-edge'
+            ? 'adjacentEdge'
+            : 'default',
           'variableName' in radius
             ? radius.variableIdentifierAst
             : radius.valueAst
@@ -1206,7 +1211,8 @@ export const modelingMachine = createMachine(
         const { modifiedAst, pathToFilletNode } = addFilletResult
 
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: pathToFilletNode,
+          // TODO fix and re-enable
+          // focusPath: pathToFilletNode,
         })
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)

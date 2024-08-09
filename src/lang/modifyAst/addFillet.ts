@@ -35,6 +35,7 @@ export function addFillet(
   node: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
+  edgeType: 'oppositeEdge' | 'adjacentEdge' | 'default',
   radius = createLiteral(5) as Value
   // shouldPipe = false, // TODO: Implement this feature
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
@@ -84,10 +85,18 @@ export function addFillet(
    */
 
   // Create the fillet call expression in one line
+
+  let tagCall: Value = createIdentifier(tag)
+  if (edgeType === 'oppositeEdge') {
+    tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
+  } else if (edgeType === 'adjacentEdge') {
+    tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
+  }
+
   const filletCall = createCallExpressionStdLib('fillet', [
     createObjectExpression({
       radius: radius,
-      tags: createArrayExpression([createIdentifier(tag)]),
+      tags: createArrayExpression([tagCall]),
     }),
     createPipeSubstitution(),
   ])
@@ -178,11 +187,13 @@ export function addFillet(
     extrudeDeclarator.init = createPipeExpression([extrudeInit, filletCall])
     return {
       modifiedAst: _node,
-      pathToFilletNode: getPathToNodeOfFilletLiteral(
-        pathToExtrudeNode,
-        extrudeDeclarator,
-        tag
-      ),
+      pathToFilletNode: [],
+      // TODO fix and re-enable this
+      // pathToFilletNode: getPathToNodeOfFilletLiteral(
+      //   pathToExtrudeNode,
+      //   extrudeDeclarator,
+      //   tag
+      // ),
     }
   } else if (extrudeInit.type === 'PipeExpression') {
     // 2. fillet case
