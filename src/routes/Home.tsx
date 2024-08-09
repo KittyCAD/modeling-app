@@ -16,7 +16,7 @@ import Loading from 'components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -44,7 +44,7 @@ import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  useRefreshSettings(paths.HOME + 'SETTINGS')
+  useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
@@ -63,7 +63,7 @@ const Home = () => {
   })
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(paths.HOME + paths.SETTINGS),
+    () => navigate(PATHS.HOME + PATHS.SETTINGS),
     {
       splitKey: '|',
     }
@@ -91,7 +91,7 @@ const Home = () => {
             null
           )
           commandBarSend({ type: 'Close' })
-          navigate(`${paths.FILE}/${encodeURIComponent(projectPath)}`)
+          navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
         }
       },
       toastSuccess: (_, event) => toast.success((event.data || '') + ''),
@@ -276,7 +276,7 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <Link
-              to="settings?tab=user#projectDirectory"
+              to={`${PATHS.SETTINGS_USER}#projectDirectory`}
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >
               {settings.app.projectDirectory.current}

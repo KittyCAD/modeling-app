@@ -32,6 +32,13 @@ async fn kcl_test_riddle_small() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_tan_arc_x_line() {
+    let code = kcl_input!("tan_arc_x_line");
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("tan_arc_x_line", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_lego() {
     let code = kcl_input!("lego");
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();

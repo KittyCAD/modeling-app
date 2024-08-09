@@ -1,7 +1,7 @@
 import { APP_VERSION } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import { HelpMenu } from './HelpMenu'
 import { Link, useLocation } from 'react-router-dom'
@@ -87,9 +87,9 @@ export function LowerRightControls({
         </a>
         <Link
           to={
-            location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
+            location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_PROJECT
+              : PATHS.HOME + PATHS.SETTINGS
           }
         >
           <CustomIcon

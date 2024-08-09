@@ -304,6 +304,10 @@ let vase = layer()
 	type: "TangentialArcTo",
 } |
 {
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
