@@ -1,6 +1,6 @@
 import { useRouteLoaderData } from 'react-router-dom'
 import { useSettingsAuthContext } from './useSettingsAuthContext'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { settings } from 'lib/settings/initialSettings'
 import { useEffect } from 'react'
 
@@ -10,7 +10,7 @@ import { useEffect } from 'react'
  * in conjunction with additional uses of settingsLoader further down the router tree.
  * @param routeId - The id defined in Router.tsx to load the settings from.
  */
-export function useRefreshSettings(routeId: string = paths.INDEX) {
+export function useRefreshSettings(routeId: string = PATHS.INDEX) {
   const ctx = useSettingsAuthContext()
   const routeData = useRouteLoaderData(routeId) as typeof settings
 

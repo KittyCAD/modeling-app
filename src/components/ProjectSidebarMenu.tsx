@@ -1,7 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { isTauri } from '../lib/isTauri'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo } from 'react'
@@ -63,7 +63,7 @@ function AppLogoLink({
         // Clear the scene and end the session.
         engineCommandManager.endSession()
       }}
-      to={paths.HOME}
+      to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
     >
       <Logo className={logoClassName} />
@@ -116,10 +116,10 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=project')
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_PROJECT
+              : PATHS.HOME + PATHS.SETTINGS_PROJECT
+            navigate(targetPath)
           },
         },
         'break',

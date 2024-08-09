@@ -16,7 +16,7 @@ import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
 import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { sep } from '@tauri-apps/api/path'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
@@ -44,8 +44,8 @@ export const AllSettingsFields = forwardRef(
       isFileSettings && isTauri()
         ? decodeURI(
             location.pathname
-              .replace(paths.FILE + '/', '')
-              .replace(paths.SETTINGS, '')
+              .replace(PATHS.FILE + '/', '')
+              .replace(PATHS.SETTINGS, '')
               .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
           )
         : undefined
@@ -70,7 +70,7 @@ export const AllSettingsFields = forwardRef(
           if (isFileSettings) {
             // If we're in a project, first navigate to the onboarding start here
             // so we can trigger the warning screen if necessary
-            navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
+            navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
           } else {
             // If we're in the global settings, create a new project and navigate
             // to the onboarding start in that project

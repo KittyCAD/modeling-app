@@ -1,6 +1,6 @@
 import { ActionIcon, ActionIconProps } from './ActionIcon'
 import React, { ForwardedRef, forwardRef } from 'react'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import type { LinkProps } from 'react-router-dom'
 
@@ -82,7 +82,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
       return (
         <Link
           ref={ref as ForwardedRef<HTMLAnchorElement>}
-          to={to || paths.INDEX}
+          to={to || PATHS.INDEX}
           className={classNames}
           {...rest}
         >
@@ -105,7 +105,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
       return (
         <Link
           ref={ref as ForwardedRef<HTMLAnchorElement>}
-          to={to || paths.INDEX}
+          to={to || PATHS.INDEX}
           className={classNames}
           {...rest}
           target="_blank"

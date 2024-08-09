@@ -9,7 +9,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
@@ -28,7 +28,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
-  useRefreshSettings(paths.FILE + 'SETTINGS')
+  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -63,7 +63,7 @@ export function App() {
   })
   useHotkeyWrapper(
     [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
-    () => navigate(filePath + paths.SETTINGS),
+    () => navigate(filePath + PATHS.SETTINGS),
     {
       splitKey: '|',
     }

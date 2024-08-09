@@ -1,7 +1,7 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import React, { createContext } from 'react'
 import { toast } from 'react-hot-toast'
 import {
@@ -38,7 +38,7 @@ export const FileMachineProvider = ({
 }) => {
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
-  const { project, file } = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   const [state, send] = useMachine(fileMachine, {
     context: {
@@ -50,7 +50,7 @@ export const FileMachineProvider = ({
         if (event.data && 'name' in event.data) {
           commandBarSend({ type: 'Close' })
           navigate(
-            `${paths.FILE}/${encodeURIComponent(
+            `${PATHS.FILE}/${encodeURIComponent(
               context.selectedDirectory + sep() + event.data.name
             )}`
           )
@@ -60,7 +60,7 @@ export const FileMachineProvider = ({
           event.data.path.endsWith(FILE_EXT)
         ) {
           // Don't navigate to newly created directories
-          navigate(`${paths.FILE}/${encodeURIComponent(event.data.path)}`)
+          navigate(`${PATHS.FILE}/${encodeURIComponent(event.data.path)}`)
         }
       },
       addFileToRenamingQueue: assign({
@@ -130,11 +130,11 @@ export const FileMachineProvider = ({
 
         if (oldPath === file?.path && project?.path) {
           // If we just renamed the current file, navigate to the new path
-          navigate(paths.FILE + '/' + encodeURIComponent(newPath))
+          navigate(PATHS.FILE + '/' + encodeURIComponent(newPath))
         } else if (file?.path.includes(oldPath)) {
           // If we just renamed a directory that the current file is in, navigate to the new path
           navigate(
-            paths.FILE +
+            PATHS.FILE +
               '/' +
               encodeURIComponent(file.path.replace(oldPath, newDirPath))
           )
@@ -169,7 +169,7 @@ export const FileMachineProvider = ({
             file?.path.includes(event.data.path)) &&
           project?.path
         ) {
-          navigate(paths.FILE + '/' + encodeURIComponent(project.path))
+          navigate(PATHS.FILE + '/' + encodeURIComponent(project.path))
         }
 
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${

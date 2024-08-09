@@ -14,7 +14,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { FileEntry } from 'lib/types'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
@@ -260,7 +260,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     if (redirect) {
-      navigate(paths.HOME)
+      navigate(PATHS.HOME)
     }
   }
 

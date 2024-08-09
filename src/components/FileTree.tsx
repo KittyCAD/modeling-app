@@ -1,5 +1,5 @@
 import type { FileEntry, IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
@@ -187,7 +187,7 @@ const FileTreeItem = ({
       onFileOpen(fileOrDir.path, project?.path || null)
 
       // Open kcl files
-      navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
+      navigate(`${PATHS.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
     onNavigateToFile?.()
   }
@@ -447,7 +447,7 @@ export const FileTreeInner = ({
 }: {
   onNavigateToFile?: () => void
 }) => {
-  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
   const documentHasFocus = useDocumentHasFocus()
