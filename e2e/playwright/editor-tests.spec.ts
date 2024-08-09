@@ -648,7 +648,7 @@ test.describe('Editor tests', () => {
         `const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)`
       )
     })
@@ -701,7 +701,7 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)const extrude001 = extrude(5, sketch001)`
+      `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], false, %)  |> close(%)const extrude001 = extrude(5, sketch001)`
     )
 
     // Now hit undo
@@ -714,7 +714,7 @@ test.describe('Editor tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)`)
   })
 
@@ -728,7 +728,7 @@ test.describe('Editor tests', () => {
         `const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)
     |> extrude(5, %)`
       )
@@ -819,7 +819,7 @@ test.describe('Editor tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([7.12, -16.82], %)
     |> line([15.4, -2.74], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> line([2.65, -2.69], %)
     |> close(%)
     |> extrude(5, %)`)
@@ -833,7 +833,7 @@ test.describe('Editor tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([7.12, -16.82], %)
     |> line([15.4, -2.74], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)
     |> extrude(5, %)`)
 
@@ -846,7 +846,7 @@ test.describe('Editor tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([7.12, -16.82], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)
     |> extrude(5, %)`)
 
@@ -860,7 +860,7 @@ test.describe('Editor tests', () => {
       .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -5.38], false, %)
     |> close(%)
     |> extrude(5, %)`)
   })

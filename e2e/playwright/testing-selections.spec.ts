@@ -476,7 +476,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
           intersectTag: a,
           offset: 0
         }, %)
-    |> tangentialArcTo([13.14 + 0, 13.14], %)
+    |> tangentialArcTo([13.14 + 0, 13.14], false, %)
     |> close(%)
     |> extrude(5 + 7, %)
   `
@@ -680,7 +680,7 @@ const extrude001 = extrude(10, sketch001)`
       },
       {
         pos: [1107, 161],
-        expectedCode: 'tangentialArcTo([167.95, -28.85], %)',
+        expectedCode: 'tangentialArcTo([167.95, -28.85], false, %)',
       },
     ] as const
     await page.addInitScript(

@@ -317,7 +317,7 @@ async fn kcl_test_basic_tangential_arc() {
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
+    |> tangentialArcTo([-5, 5], true, %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
@@ -330,7 +330,7 @@ async fn kcl_test_basic_tangential_arc_with_point() {
 async fn kcl_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArcTo([-5, 15], %)
+    |> tangentialArcTo([-5, 15], false, %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
@@ -463,7 +463,7 @@ const thing = other_circle([2, 2], 20)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_rounded_with_holes() {
     let code = r#"fn tarc = (to, sketchGroup, tag?) => {
-  return tangentialArcTo(to, sketchGroup, tag)
+  return tangentialArcTo(to, false, sketchGroup, tag)
 }
 
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
@@ -1530,7 +1530,7 @@ async fn kcl_test_error_empty_start_sketch_on_string() {
   |> line([190.03, -118.13], %)
   |> line([-33.38, -202.86], %)
   |> line([-315.86, -64.2], %)
-  |> tangentialArcTo([-147.66, 121.34], %)
+  |> tangentialArcTo([-147.66, 121.34], false, %)
   |> close(%)
   |> extrude(100, %)
 

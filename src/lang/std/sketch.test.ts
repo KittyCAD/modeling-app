@@ -270,7 +270,7 @@ describe('testing getConstraintInfo', () => {
     intersectTag: 'a',
     offset: 0
   }, %)
-  |> tangentialArcTo([3.14, 13.14], %)`
+  |> tangentialArcTo([3.14, 13.14], false, %)`
     const ast = parse(code)
     test.each([
       [
@@ -629,7 +629,7 @@ describe('testing getConstraintInfo', () => {
          intersectTag: 'a',
          offset: 0
        }, %)
-    |> tangentialArcTo([3.14, 13.14], %)`
+    |> tangentialArcTo([3.14, 13.14], false, %)`
     const ast = parse(code)
     test.each([
       [
@@ -783,7 +783,7 @@ describe('testing getConstraintInfo', () => {
          intersectTag: 'a',
          offset: 0 + 0
        }, %)
-    |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+    |> tangentialArcTo([3.14 + 0, 13.14 + 0], false, %)`
     const ast = parse(code)
     test.each([
       [

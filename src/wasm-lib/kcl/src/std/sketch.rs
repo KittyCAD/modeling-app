@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, TagEngineInfo, TagIdentifier, UserVal,
+        SketchGroupSet, SketchSurface, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -1634,8 +1634,6 @@ pub enum TangentialArcData {
         /// Offset of the arc, in degrees.
         offset: f64,
     },
-    /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-    Point([f64; 2]),
 }
 
 /// Draw a tangential arc.
@@ -1647,8 +1645,11 @@ pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-/// Starting at the current sketch's origin, draw a curved line segment along
-/// some part of an imaginary circle of the specified radius.
+/// Draw a curved line segment along some part of an imaginary circle of the specified radius.
+///
+/// If `relative` is true, the curve starts at the end of the previous path segment
+/// (i.e. the location of the "pen" which draws these lines). If `relative` is false,
+/// starts from the current sketch's origin.
 ///
 /// The arc is constructed such that the last line segment is placed tangent
 /// to the imaginary circle of the specified radius. The resulting arc is the
@@ -1728,13 +1729,6 @@ async fn inner_tangential_arc(
             .await?;
             (center, to.into(), ccw)
         }
-        TangentialArcData::Point(to) => {
-            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &to)).await?;
-            // TODO: Figure out these calculations.
-            let ccw = false;
-            let center = Point2d { x: 0.0, y: 0.0 };
-            (center, to, ccw)
-        }
     };
 
     let current_path = Path::TangentialArc {
@@ -1775,32 +1769,13 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
     }
 }
 
-fn too_few_args(source_range: SourceRange) -> KclError {
-    KclError::Syntax(KclErrorDetails {
-        source_ranges: vec![source_range],
-        message: "too few arguments".to_owned(),
-    })
-}
-
-fn get_arg<I: Iterator>(it: &mut I, src: SourceRange) -> Result<I::Item, KclError> {
-    it.next().ok_or_else(|| too_few_args(src))
-}
-
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
-    let src = args.source_range;
-
     // Get arguments to function call
-    let mut it = args.args.iter();
-    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
-    let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
-    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
-        memory_item.get_json_opt()?
-    } else {
-        None
-    };
+    let (to, relative, sketch_group, tag): ([f64; 2], bool, Box<SketchGroup>, Option<TagDeclarator>) =
+        super::args::FromArgs::from_args(&args, 0)?;
 
-    let new_sketch_group = inner_tangential_arc_to(to, sketch_group, tag, args).await?;
+    let new_sketch_group = inner_tangential_arc_to(to, relative, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
@@ -1815,7 +1790,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 ///     angle: 60,
 ///     length: 10,
 ///   }, %)
-///   |> tangentialArcTo([15, 15], %)
+///   |> tangentialArcTo([15, 15], false, %)
 ///   |> line([10, -15], %)
 ///   |> close(%)
 ///
@@ -1826,6 +1801,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_tangential_arc_to(
     to: [f64; 2],
+    relative: bool,
     sketch_group: Box<SketchGroup>,
     tag: Option<TagDeclarator>,
     args: Args,
@@ -1845,9 +1821,13 @@ async fn inner_tangential_arc_to(
         obtuse: true,
     });
 
-    let delta = [to_x - from.x, to_y - from.y];
+    let to = if relative {
+        [to_x, to_y]
+    } else {
+        [to_x - from.x, to_y - from.y]
+    };
     let id = uuid::Uuid::new_v4();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
+    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &to)).await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
