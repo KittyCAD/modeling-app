@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from '../ActionButton'
 import { FILE_EXT } from 'lib/constants'
@@ -79,7 +79,7 @@ function ProjectCard({
     >
       <Link
         data-testid="project-link"
-        to={`${paths.FILE}/${encodeURIComponent(project.default_file)}`}
+        to={`${PATHS.FILE}/${encodeURIComponent(project.default_file)}`}
         className="flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 group-hover:!hue-rotate-0 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80 group-hover:!divide-primary"
       >
         {/* <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
