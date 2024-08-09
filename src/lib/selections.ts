@@ -30,9 +30,11 @@ import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
 import {
+  ExtrudeEdge,
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
+  getExtrudeEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -56,6 +58,8 @@ export type Selection = {
     | 'line'
     | 'arc'
     | 'all'
+    | 'opposite-edge'
+    | 'adjacent-edge'
   range: SourceRange
 }
 export type Selections = {
@@ -85,6 +89,7 @@ export async function getEventForSelectWithPoint({
     }
   }
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
+  console.log('entity id', data.entity_id)
   if (!_artifact)
     return {
       type: 'Set selection',
@@ -138,6 +143,27 @@ export async function getEventForSelectWithPoint({
       data: {
         selectionType: 'singleCodeCursor',
         selection: { range: _artifact.codeRef.range, type: 'default' },
+      },
+    }
+  }
+  if (_artifact.type === 'extrudeEdge') {
+    const codeRef = getExtrudeEdgeCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    console.log('codeRef', codeRef)
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          range: codeRef.range,
+          type:
+            _artifact.subType === 'adjacent'
+              ? 'adjacent-edge'
+              : 'opposite-edge',
+        },
       },
     }
   }
@@ -530,6 +556,25 @@ function codeToIdSelections(
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
+        }
+        if (
+          (type === 'opposite-edge' || type === 'adjacent-edge') &&
+          entry.artifact.type === 'segment'
+        ) {
+          const tweakedType: ExtrudeEdge['subType'] =
+            type === 'opposite-edge' ? 'opposite' : 'adjacent'
+          const edgeArtifact = [
+            ...getArtifactsOfTypes(
+              { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+              engineCommandManager.artifactGraph
+            ),
+          ].find(([_, edge]) => edge.subType === tweakedType)
+          if (!edgeArtifact) return
+          bestCandidate = {
+            artifact: edgeArtifact[1],
+            selection: { type, range, ...rest },
+            id: edgeArtifact[0],
+          }
         }
         if (type === 'solid2D' && entry.artifact.type === 'path') {
           const solid = engineCommandManager.artifactGraph.get(

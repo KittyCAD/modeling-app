@@ -58,7 +58,10 @@ Map {
         92,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -77,7 +80,10 @@ Map {
       ],
     },
     "edgeCutId": "UUID",
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -95,7 +101,10 @@ Map {
         156,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -113,7 +122,10 @@ Map {
         209,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -152,7 +164,16 @@ Map {
         266,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceIds": [
       "UUID",
@@ -209,6 +230,54 @@ Map {
     "type": "cap",
   },
   "UUID-15" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-16" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
+  },
+  "UUID-17" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-18" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
+  },
+  "UUID-19" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-20" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
+  },
+  "UUID-21" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-22" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
+  },
+  "UUID-23" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -226,7 +295,7 @@ Map {
     "subType": "fillet",
     "type": "edgeCut",
   },
-  "UUID-16" => {
+  "UUID-24" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -250,7 +319,7 @@ Map {
     "solid2dId": "UUID",
     "type": "path",
   },
-  "UUID-17" => {
+  "UUID-25" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -263,12 +332,15 @@ Map {
         416,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
   },
-  "UUID-18" => {
+  "UUID-26" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -281,12 +353,15 @@ Map {
         438,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
   },
-  "UUID-19" => {
+  "UUID-27" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -299,12 +374,15 @@ Map {
         491,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
   },
-  "UUID-20" => {
+  "UUID-28" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -321,11 +399,11 @@ Map {
     "pathId": "UUID",
     "type": "segment",
   },
-  "UUID-21" => {
+  "UUID-29" => {
     "pathId": "UUID",
     "type": "solid2D",
   },
-  "UUID-22" => {
+  "UUID-30" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -338,7 +416,14 @@ Map {
         546,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceIds": [
       "UUID",
@@ -349,40 +434,76 @@ Map {
     ],
     "type": "extrusion",
   },
-  "UUID-23" => {
+  "UUID-31" => {
     "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
-  "UUID-24" => {
+  "UUID-32" => {
     "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
-  "UUID-25" => {
+  "UUID-33" => {
     "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
     "type": "wall",
   },
-  "UUID-26" => {
+  "UUID-34" => {
     "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
     "type": "cap",
   },
-  "UUID-27" => {
+  "UUID-35" => {
     "edgeCutEdgeIds": [],
     "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",
     "type": "cap",
+  },
+  "UUID-36" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-37" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
+  },
+  "UUID-38" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-39" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
+  },
+  "UUID-40" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "opposite",
+    "type": "extrudeEdge",
+  },
+  "UUID-41" => {
+    "extrusionId": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
+    "type": "extrudeEdge",
   },
 }
 `;
