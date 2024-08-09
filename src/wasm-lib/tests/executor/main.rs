@@ -903,7 +903,7 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but wasn't" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but found String" }"#,
     );
 }
 
@@ -1425,7 +1425,7 @@ const secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but wasn't" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found String" }"#
     );
 }
 
@@ -2236,7 +2236,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found String" }"#
     );
 }
 
@@ -2257,7 +2257,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found String" }"#
     );
 }
 

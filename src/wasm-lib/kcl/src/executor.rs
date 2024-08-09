@@ -311,6 +311,31 @@ impl KclValue {
             _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
         }
     }
+
+    /// Human readable type name used in error messages.  Should not be relied
+    /// on for program logic.
+    pub(crate) fn display_type_name(&self) -> &'static str {
+        match self {
+            KclValue::UserVal(u) => match u.value {
+                JValue::Null => "Null",
+                JValue::Bool(_) => "Bool",
+                JValue::Number(_) => "Number",
+                JValue::String(_) => "String",
+                JValue::Array(_) => "Array",
+                JValue::Object(_) => "Object",
+            },
+            KclValue::TagDeclarator(_) => "TagDeclarator",
+            KclValue::TagIdentifier(_) => "TagIdentifier",
+            KclValue::SketchGroup(_) => "SketchGroup",
+            KclValue::SketchGroups { .. } => "SketchGroups",
+            KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
+            KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
+            KclValue::ImportedGeometry(_) => "ImportedGeometry",
+            KclValue::Function { .. } => "Function",
+            KclValue::Plane(_) => "Plane",
+            KclValue::Face(_) => "Face",
+        }
+    }
 }
 
 impl From<SketchGroupSet> for KclValue {
@@ -2351,6 +2376,29 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // https://github.com/KittyCAD/modeling-app/issues/3338
+    async fn test_object_member_starting_pipeline() {
+        let ast = r#"
+fn test2 = () => {
+  return {
+    thing: startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, 1], %)
+      |> line([1, 0], %)
+      |> line([0, -1], %)
+      |> close(%)
+  }
+}
+
+const x2 = test2()
+
+x2.thing
+  |> extrude(10, %)
 "#;
         parse_execute(ast).await.unwrap();
     }
