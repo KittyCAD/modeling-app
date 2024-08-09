@@ -8,7 +8,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
-import { paths } from './paths'
+import { PATHS } from './paths'
 import {
   createNewProjectDirectory,
   listProjects,
@@ -156,8 +156,8 @@ export async function createAndOpenNewProject({
     null
   )
   navigate(
-    `${paths.FILE}/${encodeURIComponent(newProject.default_file)}${
-      paths.ONBOARDING.INDEX
+    `${PATHS.FILE}/${encodeURIComponent(newProject.default_file)}${
+      PATHS.ONBOARDING.INDEX
     }`
   )
   return newProject

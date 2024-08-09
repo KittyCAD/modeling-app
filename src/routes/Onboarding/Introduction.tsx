@@ -11,7 +11,7 @@ import { APP_NAME } from 'lib/constants'
 import { useState } from 'react'
 import { useLspContext } from 'components/LspProvider'
 import { IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
 
 /**
@@ -51,7 +51,7 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
 function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
   const navigate = useNavigate()
   const dismiss = useDismiss()
-  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { context: fileContext } = useFileContext()
   const { onProjectClose, onProjectOpen } = useLspContext()
 

@@ -2,7 +2,7 @@ import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
 import { login } from 'lib/tauri'
@@ -75,7 +75,7 @@ const SignIn = () => {
           <ActionButton
             Element="link"
             to={`${VITE_KC_SITE_BASE_URL}${
-              paths.SIGN_IN
+              PATHS.SIGN_IN
             }?callbackUrl=${encodeURIComponent(
               typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
