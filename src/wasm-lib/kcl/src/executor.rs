@@ -351,6 +351,11 @@ impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
     }
 }
 
+#[derive(Debug, Default, Clone, PartialEq)]
+pub struct PartialExecution {
+    pub return_value: Option<KclValue>,
+}
+
 /// A geometry.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1716,11 +1721,9 @@ impl ExecutorContext {
         for statement in &program.body {
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
-                    if let Expr::PipeExpression(pipe_expr) = &expression_statement.expression {
-                        pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                    } else if let Expr::CallExpression(call_expr) = &expression_statement.expression {
-                        call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                    }
+                    // Discard return value.
+                    self.execute_expression(memory, dynamic_state, &pipe_info, &expression_statement.expression)
+                        .await?;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
@@ -1741,51 +1744,12 @@ impl ExecutorContext {
                         memory.add(&var_name, memory_item, source_range)?;
                     }
                 }
-                BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
-                    Expr::BinaryExpression(bin_expr) => {
-                        let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::UnaryExpression(unary_expr) => {
-                        let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::Identifier(identifier) => {
-                        let value = memory.get(&identifier.name, identifier.into())?.clone();
-                        memory.return_ = Some(value);
-                    }
-                    Expr::Literal(literal) => {
-                        memory.return_ = Some(literal.into());
-                    }
-                    Expr::TagDeclarator(tag) => {
-                        memory.return_ = Some(tag.into());
-                    }
-                    Expr::ArrayExpression(array_expr) => {
-                        let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::ObjectExpression(obj_expr) => {
-                        let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::CallExpression(call_expr) => {
-                        let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::MemberExpression(member_expr) => {
-                        let result = member_expr.get_result(memory)?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::PipeExpression(pipe_expr) => {
-                        let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::PipeSubstitution(_) => {}
-                    Expr::FunctionExpression(_) => {}
-                    Expr::None(none) => {
-                        memory.return_ = Some(KclValue::from(none));
-                    }
-                },
+                BodyItem::ReturnStatement(return_statement) => {
+                    let execution = self
+                        .execute_expression(memory, dynamic_state, &pipe_info, &return_statement.argument)
+                        .await?;
+                    memory.return_ = execution.return_value;
+                }
             }
         }
 
@@ -1802,6 +1766,63 @@ impl ExecutorContext {
         }
 
         Ok(memory.clone())
+    }
+
+    #[async_recursion]
+    pub(crate) async fn execute_expression(
+        &self,
+        memory: &mut ProgramMemory,
+        dynamic_state: &mut DynamicState,
+        pipe_info: &PipeInfo,
+        exp: &Expr,
+    ) -> Result<PartialExecution, KclError> {
+        let mut execution = PartialExecution::default();
+        match exp {
+            Expr::BinaryExpression(bin_expr) => {
+                let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
+                execution.return_value = Some(result);
+            }
+            Expr::UnaryExpression(unary_expr) => {
+                let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
+                execution.return_value = Some(result);
+            }
+            Expr::Identifier(identifier) => {
+                let value = memory.get(&identifier.name, identifier.into())?.clone();
+                execution.return_value = Some(value);
+            }
+            Expr::Literal(literal) => {
+                execution.return_value = Some(literal.into());
+            }
+            Expr::TagDeclarator(tag) => {
+                execution.return_value = Some(tag.into());
+            }
+            Expr::ArrayExpression(array_expr) => {
+                let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
+                execution.return_value = Some(result);
+            }
+            Expr::ObjectExpression(obj_expr) => {
+                let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
+                execution.return_value = Some(result);
+            }
+            Expr::CallExpression(call_expr) => {
+                let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
+                execution.return_value = Some(result);
+            }
+            Expr::MemberExpression(member_expr) => {
+                let result = member_expr.get_result(memory)?;
+                execution.return_value = Some(result);
+            }
+            Expr::PipeExpression(pipe_expr) => {
+                let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
+                execution.return_value = Some(result);
+            }
+            Expr::PipeSubstitution(_) => {}
+            Expr::FunctionExpression(_) => {}
+            Expr::None(none) => {
+                execution.return_value = Some(KclValue::from(none));
+            }
+        }
+        Ok(execution)
     }
 
     pub async fn arg_into_mem_item<'a>(
