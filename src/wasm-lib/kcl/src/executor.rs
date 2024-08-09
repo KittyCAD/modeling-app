@@ -1829,8 +1829,8 @@ impl ExecutorContext {
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
         let item = match init {
-            Expr::None(none) => none.into(),
-            Expr::Literal(literal) => literal.into(),
+            Expr::None(none) => KclValue::from(none),
+            Expr::Literal(literal) => KclValue::from(literal),
             Expr::TagDeclarator(tag) => tag.execute(memory).await?,
             Expr::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
