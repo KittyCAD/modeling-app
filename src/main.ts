@@ -2,9 +2,11 @@
 // template that ElectronJS provides.
 
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell, protocol, net } from 'electron'
 import path from 'path'
+import url from 'url'
 import fs from 'node:fs/promises'
+import fss from 'node:fs'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 
@@ -17,8 +19,8 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     autoHideMenuBar: true,
     show: false,
-    width: 800,
-    height: 600,
+    width: 1800,
+    height: 1200,
     webPreferences: {
       nodeIntegration: false, // do not give the application implicit system access
       contextIsolation: true, // expose system functions in preload
@@ -37,7 +39,7 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    splashWindow.loadFile(`splash.html`)
+    splashWindow.loadFile('public/splash.html')
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
     splashWindow.loadFile(
@@ -159,5 +161,19 @@ ipcMain.handle('find_machine_api', () => {
     bonjourEt.find({ type: SERVICE_NAME }, (service: Service) => {
       resolve(service.fqdn)
     })
+  })
+})
+
+app.whenReady().then(() => {
+  protocol.handle('file', (request) => {
+    const filePath = request.url.slice('file://'.length)
+    const maybeAbsolutePath = path.join(__dirname, filePath)
+    const bypassCustomProtocolHandlers = true
+    if (fss.existsSync(maybeAbsolutePath)) {
+      console.log(`Intercepted local-asbolute path ${filePath}, rebuilt it as ${maybeAbsolutePath}`)
+      return net.fetch(url.pathToFileURL(maybeAbsolutePath).toString(), { bypassCustomProtocolHandlers })
+    }
+    console.log(`Default fetch to ${filePath}`)
+    return net.fetch(request.url, { bypassCustomProtocolHandlers })
   })
 })
