@@ -1,31 +1,22 @@
-import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
-import { gear } from './exampleKcl'
+import { Models } from '@kittycad/lib'
+import { VITE_KC_API_BASE_URL } from 'env'
 
 export async function submitTextToCadPrompt(
   prompt: string
-): Promise<TextToCad_type | Error> {
-  // TODO: Replace this with a real API call
-  //   const response = await fetch('https://api.example.com/text-to-cad', {
-  //   method: 'POST',
-  //   body: JSON.stringify({ prompt }),
-  // })
-  const response: Response = await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ok: true,
-        json: async () => ({
-          outputs: {
-            kcl: gear,
-          },
-        }),
-      } as Response)
-    }, 4000)
-  })
+): Promise<Models['TextToCad_type'] | Error> {
+  const body: Models['TextToCadCreateBody_type'] = { prompt }
+  const response = await fetch(
+    VITE_KC_API_BASE_URL + '/ai/text-to-cad/gltf?kcl=true',
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }
+  )
 
   if (!response.ok) {
-    return new Error('Failed to convert text to CAD')
+    return new Error('Failed to request text-to-cad endpoint')
   }
 
-  const data = (await response.json()) as TextToCad_type | Error
+  const data = (await response.json()) as Models['TextToCad_type'] | Error
   return data
 }
