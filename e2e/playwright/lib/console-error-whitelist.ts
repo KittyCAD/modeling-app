@@ -1,5 +1,5 @@
 export const isErrorWhitelisted = (exception: Error) => {
-  // due to the way webkit/Google Chrome report errors, it was
+  // due to the way webkit/Google Chrome report errors, it was necessary
   // to whitelist similar errors separately for each project
   let whitelist: {
     name: string
