@@ -1,16 +1,157 @@
 export const isErrorWhitelisted = (exception: Error) => {
+  // due to the way webkit/Google Chrome report errors, it was
+  // to whitelist similar errors separately for each project
   let whitelist: {
     name: string
     message: string
     stack: string
     foundInSpec: string
+    project: 'webkit' | 'Google Chrome'
   }[] = [
+    {
+      name: 'Unhandled Promise Rejection',
+      message:
+        '{"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}',
+      stack: `Unhandled Promise Rejection: {"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: \`JsValue(undefined)\`"}
+    at unknown (http://localhost:3000/src/lang/std/engineConnection.ts:1245:26)`,
+      foundInSpec:
+        'e2e/playwright/onboarding-tests.spec.ts Click through each onboarding step',
+      project: 'webkit',
+    },
     {
       name: '"{"kind"',
       message:
         '"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}"',
       stack: '',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
+      project: 'Google Chrome',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: "TypeError: null is not an object (evaluating 'sg.value')",
+      stack: `Unhandled Promise Rejection: TypeError: null is not an object (evaluating 'sg.value')
+    at unknown (http://localhost:3000/src/clientSideScene/sceneEntities.ts:466:23)
+    at unknown (http://localhost:3000/src/clientSideScene/sceneEntities.ts:454:32)
+    at set up draft line without teardown (http://localhost:3000/src/machines/modelingMachine.ts:983:47)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1877:24)
+    at handleAction (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1064:26)
+    at processBlock (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1087:36)
+    at map ([native code]:0:0)
+    at resolveActions (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1109:49)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:3639:37)
+    at provide (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1117:18)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:2452:30)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1831:43)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1659:17)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1643:19)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=0de2e74f:1829:33)
+    at unknown (http://localhost:3000/src/clientSideScene/sceneEntities.ts:263:19)`,
+      foundInSpec: `e2e/playwright/testing-camera-movement.spec.ts Zoom should be consistent when exiting or entering sketches`,
+      project: 'webkit',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: 'false',
+      stack: `Unhandled Promise Rejection: false
+    at unknown (http://localhost:3000/src/clientSideScene/ClientSideSceneComp.tsx:455:78)`,
+      foundInSpec: `e2e/playwright/testing-segment-overlays.spec.ts line-[tagOutsideSketch]`,
+      project: 'webkit',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: `null is not an object (evaluating 'programMemory.get(variableDeclarationName).value')`,
+      stack: `Unhandled Promise Rejection: TypeError: null is not an object (evaluating 'programMemory.get(variableDeclarationName).value')
+    at unknown (http://localhost:3000/src/machines/modelingMachine.ts:911:49)`,
+      foundInSpec: `e2e/playwright/testing-camera-movement.spec.ts Zoom should be consistent when exiting or entering sketches`,
+      project: 'webkit',
+    },
+    {
+      name: 'TypeError',
+      message: `null is not an object (evaluating 'gl.getShaderPrecisionFormat(gl.VERTEX_SHADER, gl.HIGH_FLOAT).precision')`,
+      stack: `TypeError: null is not an object (evaluating 'gl.getShaderPrecisionFormat(gl.VERTEX_SHADER, gl.HIGH_FLOAT).precision')
+    at getMaxPrecision (http://localhost:3000/node_modules/.vite/deps/chunk-DEEFU7IG.js?v=d328572b:9557:71)
+    at WebGLCapabilities (http://localhost:3000/node_modules/.vite/deps/chunk-DEEFU7IG.js?v=d328572b:9570:39)
+    at initGLContext (http://localhost:3000/node_modules/.vite/deps/chunk-DEEFU7IG.js?v=d328572b:16993:43)
+    at WebGLRenderer (http://localhost:3000/node_modules/.vite/deps/chunk-DEEFU7IG.js?v=d328572b:17024:18)
+    at SceneInfra (http://localhost:3000/src/clientSideScene/sceneInfra.ts:185:38)
+    at module code (http://localhost:3000/src/lib/singletons.ts:14:41)`,
+      foundInSpec: `e2e/playwright/testing-segment-overlays.spec.ts angledLineToX`,
+      project: 'webkit',
+    },
+    {
+      name: '',
+      message: 'undefined',
+      stack: '',
+      foundInSpec: `e2e/playwright/sketch-tests.spec.ts Existing sketch with bad code delete user's code`,
+      project: 'Google Chrome',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: 'undefined',
+      stack: '',
+      foundInSpec: `e2e/playwright/sketch-tests.spec.ts Existing sketch with bad code delete user's code`,
+      project: 'webkit',
+    },
+    {
+      name: 'Fetch API cannot load https',
+      message: '/api.dev.zoo.dev/logout due to access control checks.',
+      stack: `Fetch API cannot load https://api.dev.zoo.dev/logout due to access control checks.
+    at goToSignInPage (http://localhost:3000/src/components/SettingsAuthProvider.tsx:229:15)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1877:24)
+    at handleAction (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1064:26)
+    at processBlock (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1087:36)
+    at map (:1:11)
+    at resolveActions (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1109:49)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:3639:37)
+    at provide (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1117:18)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:2452:30)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1831:43)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1659:17)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1643:19)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:1829:33)
+    at unknown (http://localhost:3000/node_modules/.vite/deps/chunk-6FRHHHSJ.js?v=d328572b:2601:23)`,
+      foundInSpec:
+        'e2e/playwright/testing-selections.spec.ts Solids should be select and deletable',
+      project: 'webkit',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: 'ReferenceError: Cannot access uninitialized variable.',
+      stack: `Unhandled Promise Rejection: ReferenceError: Cannot access uninitialized variable.
+    at setDiagnosticsForCurrentErrors (http://localhost:3000/src/lang/KclSingleton.ts:90:18)
+    at kclErrors (http://localhost:3000/src/lang/KclSingleton.ts:82:40)
+    at safeParse (http://localhost:3000/src/lang/KclSingleton.ts:150:9)
+    at unknown (http://localhost:3000/src/lang/KclSingleton.ts:113:32)`,
+      foundInSpec:
+        'e2e/playwright/testing-segment-overlays.spec.ts angledLineToX',
+      project: 'webkit',
+    },
+    {
+      name: '',
+      message: 'sketchGroup not found',
+      stack: '',
+      foundInSpec:
+        'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',
+      project: 'Google Chrome',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: 'sketchGroup not found',
+      stack: `Unhandled Promise Rejection: sketchGroup not found
+    at unknown (http://localhost:3000/src/machines/modelingMachine.ts:911:49)`,
+      foundInSpec:
+        'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',
+      project: 'webkit',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message:
+        'engine error: [{"error_code":"bad_request","message":"Cannot set the camera position with these values"}]',
+      stack:
+        'Unhandled Promise Rejection: engine error: [{"error_code":"bad_request","message":"Cannot set the camera position with these values"}]',
+      foundInSpec:
+        'e2e/playwright/testing-camera-movement.spec.ts Zoom should be consistent when exiting or entering sketches',
+      project: 'webkit',
     },
     {
       name: 'engine error',
@@ -19,6 +160,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       foundInSpec:
         'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
+      project: 'Google Chrome',
     },
     {
       name: '',
@@ -26,6 +168,7 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       foundInSpec:
         'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
+      project: 'Google Chrome',
     },
     {
       name: 'RangeError',
@@ -40,6 +183,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     at DOMObserver.flush (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6621:17)
     at MutationObserver.<anonymous> (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6322:14)`,
       foundInSpec: 'e2e/playwright/editor-tests.spec.ts fold gutters work',
+      project: 'Google Chrome',
     },
   ]
 
