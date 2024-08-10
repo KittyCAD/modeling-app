@@ -227,7 +227,7 @@ export const AllSettingsFields = forwardRef(
           </h2>
           <div className="text-sm mb-12">
             <p>
-              {/* This uses a Vite plugin, set in vite.config.ts
+              {/* This uses a Vite plugin, set in vite.config.mts
                   to inject the version from package.json */}
               App version {APP_VERSION}.{' '}
               <a
