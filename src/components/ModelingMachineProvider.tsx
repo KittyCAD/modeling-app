@@ -487,13 +487,21 @@ export const ModelingMachineProvider = ({
               const now = new Date().getTime()
               const newFileName = `text-to-cad-${now}`
 
+              if (
+                value.code === undefined ||
+                !value.code ||
+                value.code.length === 0
+              ) {
+                return Promise.reject(new Error('No KCL code returned'))
+              }
+
               if (isTauri()) {
                 fileMachineSend({
                   type: 'Create file',
                   data: {
                     name: newFileName,
                     makeDir: false,
-                    content: value.outputs.kcl,
+                    content: value.code,
                     silent: true,
                   },
                 })
