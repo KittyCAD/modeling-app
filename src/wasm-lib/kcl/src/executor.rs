@@ -353,11 +353,6 @@ impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
-pub struct ExecutionOutcome {
-    pub return_value: Option<KclValue>,
-}
-
 /// A geometry.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1741,15 +1736,15 @@ impl ExecutorContext {
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
                     // Discard return value.
-                    let _execution = self
-                        .execute_expression(
-                            &expression_statement.expression,
-                            memory,
-                            dynamic_state,
-                            &pipe_info,
-                            &metadata,
-                        )
-                        .await?;
+                    self.eval_expression(
+                        &expression_statement.expression,
+                        memory,
+                        dynamic_state,
+                        &pipe_info,
+                        &metadata,
+                        StatementKind::Expression,
+                    )
+                    .await?;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
@@ -1772,10 +1767,17 @@ impl ExecutorContext {
                 }
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
-                    let execution = self
-                        .execute_expression(&return_statement.argument, memory, dynamic_state, &pipe_info, &metadata)
+                    let value = self
+                        .eval_expression(
+                            &return_statement.argument,
+                            memory,
+                            dynamic_state,
+                            &pipe_info,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
                         .await?;
-                    memory.return_ = execution.return_value;
+                    memory.return_ = Some(value);
                 }
             }
         }
@@ -1793,30 +1795,6 @@ impl ExecutorContext {
         }
 
         Ok(memory.clone())
-    }
-
-    #[async_recursion]
-    pub(crate) async fn execute_expression(
-        &self,
-        exp: &Expr,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
-        pipe_info: &PipeInfo,
-        metadata: &Metadata,
-    ) -> Result<ExecutionOutcome, KclError> {
-        let value = self
-            .eval_expression(
-                exp,
-                memory,
-                dynamic_state,
-                pipe_info,
-                metadata,
-                StatementKind::Expression,
-            )
-            .await?;
-        Ok(ExecutionOutcome {
-            return_value: Some(value),
-        })
     }
 
     pub async fn eval_expression<'a>(
