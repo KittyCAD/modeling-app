@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { test } from './lib/base-fixture'
+import { expect } from '@playwright/test'
 
 import { commonPoints, getUtils, setup, tearDown } from './test-utils'
 import { Coords2d } from 'lang/std/sketch'

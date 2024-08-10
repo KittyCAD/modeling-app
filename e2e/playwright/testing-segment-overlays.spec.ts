@@ -1,4 +1,5 @@
-import { test, expect, Page } from '@playwright/test'
+import { test } from './lib/base-fixture'
+import { expect, Page } from '@playwright/test'
 
 import { deg, getUtils, setup, tearDown, wiggleMove } from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'

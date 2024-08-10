@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { test } from './lib/base-fixture'
+import { expect } from '@playwright/test'
 import { secrets } from './secrets'
 import { Paths, doExport, getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
