@@ -62,3 +62,4 @@ Mac_App_Distribution.provisionprofile
 *.tsbuildinfo
 
 venv
+.nyc_output/*
