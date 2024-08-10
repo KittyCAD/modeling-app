@@ -212,8 +212,8 @@ jobs:
         exit 0
       env:
         CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-        COLLECT_CONSOLE_ERRORS: true
     - name: send to axiom
       if: always()
       shell: bash
@@ -367,8 +367,8 @@ jobs:
         exit 0
       env:
         CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-        COLLECT_CONSOLE_ERRORS: true
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:

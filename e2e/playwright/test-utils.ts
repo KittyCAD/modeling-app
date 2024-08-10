@@ -636,10 +636,20 @@ export async function setup(
       return
     }
 
-    // only set this env var if you want to collect console errors
-    // this can be configured in the GH workflow.  This should be set to false by default
-    if (process.env.COLLECT_CONSOLE_ERRORS) {
-      // this will be uploaded as part of an upload artifact in GH
+    // only set this env var to false if you want to collect console errors
+    // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
+    // unwhitelisted console errors are detected).
+    if (
+      !process.env.CI || // This will enabled always - locally
+      (process.env.CI && process.env.FAIL_ON_CONSOLE_ERRORS) // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
+    ) {
+      // use expect to prevent page from closing and not cleaning up
+      expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
+        
+        *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+        `).toEqual('Console error detected')
+    } else {
+      // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
       fsp
         .appendFile(
           './test-results/exceptions.txt',
@@ -658,12 +668,6 @@ export async function setup(
         .catch((err) => {
           console.error(err)
         })
-    } else {
-      // use expect to prevent page from closing and not cleaning up
-      expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-        
-        *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
-        `).toEqual('Console error detected')
     }
   })
   // kill animations, speeds up tests and reduced flakiness
