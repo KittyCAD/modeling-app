@@ -177,7 +177,7 @@ jobs:
         fi
 
         retry=1
-        max_retrys=4
+        max_retrys=0
 
         # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
         while [[ $retry -le $max_retrys ]]; do
@@ -332,7 +332,7 @@ jobs:
         fi
 
         retry=1
-        max_retrys=4
+        max_retrys=0
 
         # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
         while [[ $retry -le $max_retrys ]]; do
