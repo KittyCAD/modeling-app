@@ -9,8 +9,8 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -601,7 +601,7 @@ test.describe('Sketch tests', () => {
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
-    click00r(undefined, undefined)
+    await click00r(undefined, undefined)
     await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')

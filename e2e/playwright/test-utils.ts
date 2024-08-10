@@ -17,6 +17,7 @@ import waitOn from 'wait-on'
 import { secrets } from './secrets'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { isErrorWhitelisted } from './lib/console-error-whitelist'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -427,7 +428,7 @@ export async function getUtils(page: Page) {
         return page.evaluate('window.tearDown()')
       }
 
-      cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+      await cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
     },
   }
 }
@@ -606,7 +607,11 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   await page.waitForTimeout(3000)
 }
 
-export async function setup(context: BrowserContext, page: Page) {
+export async function setup(
+  context: BrowserContext,
+  page: Page,
+  testInfo?: TestInfo
+) {
   // wait for Vite preview server to be up
   await waitOn({
     resources: ['tcp:3000'],
@@ -626,6 +631,41 @@ export async function setup(context: BrowserContext, page: Page) {
       settings: TOML.stringify({ settings: TEST_SETTINGS }),
     }
   )
+  page.on('pageerror', (exception) => {
+    if (isErrorWhitelisted(exception)) {
+      return
+    }
+
+    // only set this env var if you want to collect console errors
+    // this can be configured in the GH workflow.  This should be set to false by default
+    if (process.env.COLLECT_CONSOLE_ERRORS) {
+      // this will be uploaded as part of an upload artifact in GH
+      fsp
+        .appendFile(
+          './test-results/exceptions.txt',
+          [
+            '~~~',
+            `triggered_by_test:${
+              testInfo?.file + ' ' + (testInfo?.title || ' ')
+            }`,
+            `name:${exception.name}`,
+            `message:${exception.message}`,
+            `stack:${exception.stack}`,
+            `project:${testInfo?.project.name}`,
+            '~~~',
+          ].join('\n')
+        )
+        .catch((err) => {
+          console.error(err)
+        })
+    } else {
+      // use expect to prevent page from closing and not cleaning up
+      expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
+        
+        *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+        `).toEqual('Console error detected')
+    }
+  })
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 }

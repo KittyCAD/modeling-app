@@ -4,8 +4,8 @@ import { deg, getUtils, setup, tearDown, wiggleMove } from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { uuidv4 } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
