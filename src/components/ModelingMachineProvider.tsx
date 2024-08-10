@@ -388,7 +388,8 @@ export const ModelingMachineProvider = ({
               },
             },
             storage: 'ascii',
-            units: defaultUnit.current,
+            // Convert all units to mm since that is what the slicer expects.
+            units: 'mm',
             selection: { type: 'default_scene' },
           }
 
