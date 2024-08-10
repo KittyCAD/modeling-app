@@ -78,7 +78,8 @@ import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
-import { ExportIntent,
+import {
+  ExportIntent,
   EngineConnectionState,
   EngineConnectionStateType,
   EngineConnectionEvents,

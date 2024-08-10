@@ -1,6 +1,6 @@
 import { useFileContext } from 'hooks/useFileContext'
 import { isTauri } from 'lib/isTauri'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
 import { sep } from '@tauri-apps/api/path'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
@@ -26,7 +26,7 @@ export function ToastTextToCad({
           className="flex-none p-2"
           onClick={() => {
             navigate(
-              `${paths.FILE}/${encodeURIComponent(
+              `${PATHS.FILE}/${encodeURIComponent(
                 `${context.project.path}${sep()}${data.fileName}`
               )}`
             )
