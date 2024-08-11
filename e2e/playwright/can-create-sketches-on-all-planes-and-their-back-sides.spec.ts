@@ -1,5 +1,4 @@
-import { test } from './lib/base-fixture'
-import { expect } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { getUtils, setup, tearDown } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'

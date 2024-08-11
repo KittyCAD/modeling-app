@@ -8,6 +8,8 @@ import {
 import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
 import fsp from 'fs/promises'
+import * as fs from 'fs'
+import * as path from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
@@ -17,6 +19,7 @@ import waitOn from 'wait-on'
 import { secrets } from './secrets'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { uuidv4 } from 'lib/utils'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -601,6 +604,16 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
     uploadThroughput: -1,
   })
 
+  if (process.env.GENERATE_PLAYWRIGHT_COVERAGE) {
+    for (const activePage of page.context().pages()) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activePage.evaluate(() =>
+        (window as any).collectIstanbulCoverage(
+          JSON.stringify((window as any).__coverage__)
+        )
+      )
+    }
+  }
   // It seems it's best to give the browser about 3s to close things
   // It's not super reliable but we have no real other choice for now
   await page.waitForTimeout(3000)
@@ -626,6 +639,34 @@ export async function setup(context: BrowserContext, page: Page) {
       settings: TOML.stringify({ settings: TEST_SETTINGS }),
     }
   )
+
+  if (process.env.GENERATE_PLAYWRIGHT_COVERAGE) {
+    await context.addInitScript(() =>
+      window.addEventListener('beforeunload', () =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).collectIstanbulCoverage(
+          JSON.stringify((window as any).__coverage__)
+        )
+      )
+    )
+    const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output')
+    await fsp.mkdir(istanbulCLIOutput, { recursive: true })
+    await context.exposeFunction(
+      'collectIstanbulCoverage',
+      (coverageJSON: string) => {
+        if (coverageJSON) {
+          fs.writeFileSync(
+            path.join(
+              istanbulCLIOutput,
+              `playwright_coverage_${uuidv4()}.json`
+            ),
+            coverageJSON
+          )
+        }
+      }
+    )
+  }
+
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 }

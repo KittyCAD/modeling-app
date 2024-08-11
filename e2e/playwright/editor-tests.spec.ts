@@ -1,5 +1,4 @@
-import { test } from './lib/base-fixture'
-import { expect } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { uuidv4 } from 'lib/utils'
 import { getUtils, setup, tearDown } from './test-utils'
 
