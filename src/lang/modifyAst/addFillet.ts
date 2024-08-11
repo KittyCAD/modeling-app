@@ -49,13 +49,13 @@ export function applyFilletToSelection(
   const { ast } = astResult
 
   // 2. get path
-  const getPathForSelectionResult = getPathForSelection(
+  const getPathToExtrudeForSegmentSelectionResult = getPathToExtrudeForSegmentSelection(
     ast,
     selection,
     kclManager
   )
-  if (err(getPathForSelectionResult)) return getPathForSelectionResult
-  const { pathToSegmentNode, pathToExtrudeNode } = getPathForSelectionResult
+  if (err(getPathToExtrudeForSegmentSelectionResult)) return getPathToExtrudeForSegmentSelectionResult
+  const { pathToSegmentNode, pathToExtrudeNode } = getPathToExtrudeForSegmentSelectionResult
 
   // 3. add fillet
   const addFilletResult = addFillet(
@@ -95,7 +95,7 @@ function getAst(
   }
 }
 
-function getPathForSelection(
+export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selections,
   kclManager: KclManager
