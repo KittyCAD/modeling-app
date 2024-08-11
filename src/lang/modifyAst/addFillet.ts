@@ -3,7 +3,6 @@ import {
   CallExpression,
   ObjectExpression,
   PathToNode,
-  PipeExpression,
   Program,
   Value,
   VariableDeclaration,
@@ -29,8 +28,115 @@ import {
   getTagFromCallExpression,
   sketchLineHelperMap,
 } from '../std/sketch'
-import { err } from 'lib/trap'
+import { err, trap } from 'lib/trap'
 import { Selections, canFilletSelection } from 'lib/selections'
+import { KclCommandValue } from 'lib/commandTypes'
+import { KclManager } from 'lang/KclSingleton'
+import { getExtrusionFromSuspectedPath } from 'lang/std/artifactGraph'
+import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
+
+/**
+ * Apply Fillet To Selection
+ */
+
+export function applyFilletToSelection(
+  selection: Selections,
+  radius: KclCommandValue
+): void | Error {
+  // 1. get AST
+  const astResult = getAst(kclManager, radius)
+  if (err(astResult)) return astResult
+  const { ast } = astResult
+
+  // 2. get path
+  const getPathForSelectionResult = getPathForSelection(
+    ast,
+    selection,
+    kclManager
+  )
+  if (err(getPathForSelectionResult)) return getPathForSelectionResult
+  const { pathToSegmentNode, pathToExtrudeNode } = getPathForSelectionResult
+
+  // 3. add fillet
+  const addFilletResult = addFillet(
+    ast,
+    pathToSegmentNode,
+    pathToExtrudeNode,
+    'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
+  )
+  if (trap(addFilletResult)) return addFilletResult
+  const { modifiedAst, pathToFilletNode } = addFilletResult
+
+  // 4. update ast
+  updateAstAndFocus(modifiedAst, pathToFilletNode)
+}
+
+function getAst(
+  kclManager: KclManager,
+  radius: KclCommandValue
+): { ast: Program } | Error {
+  let ast = kclManager.ast
+
+  try {
+    // Validate and update AST
+    if (
+      'variableName' in radius &&
+      radius.variableName &&
+      radius.insertIndex !== undefined
+    ) {
+      const newBody = [...ast.body]
+      newBody.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
+      ast.body = newBody
+    }
+
+    return { ast }
+  } catch (error) {
+    return new Error(`Failed to handle AST: ${(error as Error).message}`)
+  }
+}
+
+function getPathForSelection(
+  ast: Program,
+  selection: Selections,
+  kclManager: KclManager
+): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
+  const pathToSegmentNode = getNodePathFromSourceRange(
+    ast,
+    selection.codeBasedSelections[0].range
+  )
+
+  const varDecNode = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToSegmentNode,
+    'VariableDeclaration'
+  )
+  if (err(varDecNode)) return varDecNode
+  const sketchVar = varDecNode.node.declarations[0].id.name
+  const sketchGroup = kclManager.programMemory.get(sketchVar)
+  if (sketchGroup?.type !== 'SketchGroup')
+    return new Error('Invalid sketch group type')
+  const extrusion = getExtrusionFromSuspectedPath(
+    sketchGroup.id,
+    engineCommandManager.artifactGraph
+  )
+  const pathToExtrudeNode = err(extrusion)
+    ? []
+    : getNodePathFromSourceRange(ast, extrusion.codeRef.range)
+
+  return { pathToSegmentNode, pathToExtrudeNode }
+}
+
+async function updateAstAndFocus(
+  modifiedAst: Program,
+  pathToFilletNode: PathToNode
+) {
+  const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+    focusPath: pathToFilletNode,
+  })
+  if (updatedAst?.selections) {
+    editorManager.selectRange(updatedAst?.selections)
+  }
+}
 
 /**
  * Add Fillet
