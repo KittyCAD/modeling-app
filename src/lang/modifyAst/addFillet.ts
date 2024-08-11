@@ -3,6 +3,7 @@ import {
   CallExpression,
   ObjectExpression,
   PathToNode,
+  PipeExpression,
   Program,
   Value,
   VariableDeclaration,
@@ -31,23 +32,35 @@ import {
 import { err } from 'lib/trap'
 import { Selections, canFilletSelection } from 'lib/selections'
 
+/**
+ * Add Fillet
+ */
+
 export function addFillet(
   node: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
   radius = createLiteral(5) as Value
-  // shouldPipe = false, // TODO: Implement this feature
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // clone ast to make mutations safe
   let _node = structuredClone(node)
 
-  /**
-   * Add Tag to the Segment Expression
-   */
+  // Tag sketch segment
+  const taggedSegment = tagSketchSegment(_node, pathToSegmentNode)
+  if (err(taggedSegment)) return taggedSegment
+  const { tag } = taggedSegment
 
-  // Find the specific sketch segment to tag with the new tag
+  // Create and insert fillet
+  const filletCall = createFilletCall(radius, tag)
+  return insertFilletCall(filletCall, _node, tag, pathToExtrudeNode)
+}
+
+function tagSketchSegment(
+  node: Program,
+  pathToSegmentNode: PathToNode
+): { tag: string } | Error {
   const sketchSegmentChunk = getNodeFromPath(
-    _node,
+    node,
     pathToSegmentNode,
     'CallExpression'
   )
@@ -64,120 +77,101 @@ export function addFillet(
   // Add tag to the sketch segment or use existing tag
   const taggedSegment = addTagForSketchOnFace(
     {
-      // previousProgramMemory: programMemory,
       pathToNode: pathToSegmentNode,
-      node: _node,
+      node: node,
     },
     sketchSegmentNode.callee.name
   )
-  if (err(taggedSegment)) return taggedSegment
-  const { tag } = taggedSegment
 
-  /**
-   * Find Extrude Expression automatically
-   */
+  return taggedSegment
+}
 
-  // 1. Get the sketch name
-
-  /**
-   * Add Fillet to the Extrude expression
-   */
-
-  // Create the fillet call expression in one line
-  const filletCall = createCallExpressionStdLib('fillet', [
+function createFilletCall(radius: Value, tag: string): CallExpression {
+  return createCallExpressionStdLib('fillet', [
     createObjectExpression({
       radius: radius,
       tags: createArrayExpression([createIdentifier(tag)]),
     }),
     createPipeSubstitution(),
   ])
+}
 
+function insertFilletCall(
+  filletCall: CallExpression,
+  node: Program,
+  tag: string,
+  pathToExtrudeNode: PathToNode
+): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // Locate the extrude call
-  const extrudeChunk = getNodeFromPath<VariableDeclaration>(
-    _node,
+  const locatedExtrudeCall = locateExtrudeCall(node, pathToExtrudeNode)
+  if (err(locatedExtrudeCall)) return locatedExtrudeCall
+
+  // determine if extrude is in a PipeExpression or CallExpression
+  const { extrudeDeclarator, extrudeInit } = locatedExtrudeCall
+
+  // Insert the fillet call based on the type of extrude
+  return handleExtrudeType(
+    node,
+    extrudeDeclarator,
+    extrudeInit,
+    filletCall,
+    pathToExtrudeNode,
+    tag
+  )
+}
+
+function locateExtrudeCall(
+  node: Program,
+  pathToExtrudeNode: PathToNode
+): { extrudeDeclarator: VariableDeclarator; extrudeInit: Value } | Error {
+  const extrudeChunk = getNodeFromPath(
+    node,
     pathToExtrudeNode,
     'VariableDeclaration'
   )
   if (err(extrudeChunk)) return extrudeChunk
-  const { node: extrudeVarDecl } = extrudeChunk
 
+  const { node: extrudeVarDecl } = extrudeChunk as {
+    node: VariableDeclaration
+  }
   const extrudeDeclarator = extrudeVarDecl.declarations[0]
-  const extrudeInit = extrudeDeclarator.init
+  if (!extrudeDeclarator) {
+    return new Error('Extrude Declarator not found.')
+  }
+
+  const extrudeInit = extrudeDeclarator?.init
+  if (!extrudeInit) {
+    return new Error('Extrude Init not found.')
+  }
 
   if (
-    !extrudeDeclarator ||
-    (extrudeInit.type !== 'CallExpression' &&
-      extrudeInit.type !== 'PipeExpression')
+    extrudeInit.type !== 'CallExpression' &&
+    extrudeInit.type !== 'PipeExpression'
   ) {
-    return new Error('Extrude PipeExpression / CallExpression not found.')
+    return new Error('Extrude must be a PipeExpression or CallExpression')
   }
 
-  // determine if extrude is in a PipeExpression or CallExpression
+  const extrudeExpressionType = extrudeInit.type
 
+  return { extrudeDeclarator, extrudeInit }
+}
+
+function handleExtrudeType(
+  node: Program,
+  extrudeDeclarator: VariableDeclarator,
+  extrudeInit: Value,
+  filletCall: CallExpression,
+  pathToExtrudeNode: PathToNode,
+  tag: string
+): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // CallExpression - no fillet
   // PipeExpression - fillet exists
-
-  const getPathToNodeOfFilletLiteral = (
-    pathToExtrudeNode: PathToNode,
-    extrudeDeclarator: VariableDeclarator,
-    tag: string
-  ): PathToNode => {
-    let pathToFilletObj: any
-    let inFillet = false
-    traverse(extrudeDeclarator.init, {
-      enter(node, path) {
-        if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-          inFillet = true
-        }
-        if (inFillet && node.type === 'ObjectExpression') {
-          const hasTag = node.properties.some((prop) => {
-            const isTagProp = prop.key.name === 'tags'
-            if (isTagProp && prop.value.type === 'ArrayExpression') {
-              return prop.value.elements.some(
-                (element) =>
-                  element.type === 'Identifier' && element.name === tag
-              )
-            }
-            return false
-          })
-          if (!hasTag) return false
-          pathToFilletObj = path
-          node.properties.forEach((prop, index) => {
-            if (prop.key.name === 'radius') {
-              pathToFilletObj.push(
-                ['properties', 'ObjectExpression'],
-                [index, 'index'],
-                ['value', 'Property']
-              )
-            }
-          })
-        }
-      },
-      leave(node) {
-        if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-          inFillet = false
-        }
-      },
-    })
-    let indexOfPipeExpression = pathToExtrudeNode.findIndex(
-      (path) => path[1] === 'PipeExpression'
-    )
-    indexOfPipeExpression =
-      indexOfPipeExpression === -1
-        ? pathToExtrudeNode.length
-        : indexOfPipeExpression
-
-    return [
-      ...pathToExtrudeNode.slice(0, indexOfPipeExpression),
-      ...pathToFilletObj,
-    ]
-  }
 
   if (extrudeInit.type === 'CallExpression') {
     // 1. no fillet case
     extrudeDeclarator.init = createPipeExpression([extrudeInit, filletCall])
     return {
-      modifiedAst: _node,
+      modifiedAst: node,
       pathToFilletNode: getPathToNodeOfFilletLiteral(
         pathToExtrudeNode,
         extrudeDeclarator,
@@ -186,9 +180,6 @@ export function addFillet(
     }
   } else if (extrudeInit.type === 'PipeExpression') {
     // 2. fillet case
-
-    // there are 2 options here:
-
     const existingFilletCall = extrudeInit.body.find((node) => {
       return node.type === 'CallExpression' && node.callee.name === 'fillet'
     })
@@ -198,25 +189,12 @@ export function addFillet(
     }
 
     // check if the existing fillet has the same tag as the new fillet
-    let filletTag = null
-    if (existingFilletCall.arguments[0].type === 'ObjectExpression') {
-      const properties = (existingFilletCall.arguments[0] as ObjectExpression)
-        .properties
-      const tagsProperty = properties.find((prop) => prop.key.name === 'tags')
-      if (tagsProperty && tagsProperty.value.type === 'ArrayExpression') {
-        const elements = (tagsProperty.value as ArrayExpression).elements
-        if (elements.length > 0 && elements[0].type === 'Identifier') {
-          filletTag = elements[0].name
-        }
-      }
-    } else {
-      return new Error('Expected an ObjectExpression node')
-    }
+    const filletTag = getFilletTag(existingFilletCall)
 
     if (filletTag !== tag) {
       extrudeInit.body.push(filletCall)
       return {
-        modifiedAst: _node,
+        modifiedAst: node,
         pathToFilletNode: getPathToNodeOfFilletLiteral(
           pathToExtrudeNode,
           extrudeDeclarator,
@@ -230,6 +208,89 @@ export function addFillet(
 
   return new Error('Unsupported extrude type.')
 }
+
+function getPathToNodeOfFilletLiteral(
+  pathToExtrudeNode: PathToNode,
+  extrudeDeclarator: VariableDeclarator,
+  tag: string
+): PathToNode {
+  let pathToFilletObj: any
+  let inFillet = false
+
+  traverse(extrudeDeclarator.init, {
+    enter(node, path) {
+      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
+        inFillet = true
+      }
+      if (inFillet && node.type === 'ObjectExpression') {
+        if (!hasTag(node, tag)) return false
+        pathToFilletObj = getPathToRadiusLiteral(node, path)
+      }
+    },
+    leave(node) {
+      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
+        inFillet = false
+      }
+    },
+  })
+  let indexOfPipeExpression = pathToExtrudeNode.findIndex(
+    (path) => path[1] === 'PipeExpression'
+  )
+
+  indexOfPipeExpression =
+    indexOfPipeExpression === -1
+      ? pathToExtrudeNode.length
+      : indexOfPipeExpression
+
+  return [
+    ...pathToExtrudeNode.slice(0, indexOfPipeExpression),
+    ...pathToFilletObj,
+  ]
+}
+
+function hasTag(node: ObjectExpression, tag: string): boolean {
+  return node.properties.some((prop) => {
+    if (prop.key.name === 'tags' && prop.value.type === 'ArrayExpression') {
+      return prop.value.elements.some(
+        (element) => element.type === 'Identifier' && element.name === tag
+      )
+    }
+    return false
+  })
+}
+
+function getPathToRadiusLiteral(node: ObjectExpression, path: any): any {
+  let pathToFilletObj = path
+  node.properties.forEach((prop, index) => {
+    if (prop.key.name === 'radius') {
+      pathToFilletObj.push(
+        ['properties', 'ObjectExpression'],
+        [index, 'index'],
+        ['value', 'Property']
+      )
+    }
+  })
+  return pathToFilletObj
+}
+
+function getFilletTag(existingFilletCall: CallExpression): string | null {
+  if (existingFilletCall.arguments[0].type === 'ObjectExpression') {
+    const properties = (existingFilletCall.arguments[0] as ObjectExpression)
+      .properties
+    const tagsProperty = properties.find((prop) => prop.key.name === 'tags')
+    if (tagsProperty && tagsProperty.value.type === 'ArrayExpression') {
+      const elements = (tagsProperty.value as ArrayExpression).elements
+      if (elements.length > 0 && elements[0].type === 'Identifier') {
+        return elements[0].name
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * Button states
+ */
 
 export const hasValidFilletSelection = ({
   selectionRanges,
