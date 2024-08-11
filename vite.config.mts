@@ -62,7 +62,7 @@ const config = defineConfig({
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
     },
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer(), ...(process.env.USE_BABEL_PLUGIN_ISTANBUL
+  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer(), ...(process.env.GENERATE_PLAYWRIGHT_COVERAGE
     ? [
         IstanbulPlugin({
           include: "src/*",

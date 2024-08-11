@@ -213,6 +213,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        GENERATE_PLAYWRIGHT_COVERAGE: true
     - name: send to axiom
       if: always()
       shell: bash
@@ -230,6 +231,13 @@ jobs:
       with:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-coverage-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: .nyc_output/
         retention-days: 30
         overwrite: true
 
@@ -367,6 +375,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        GENERATE_PLAYWRIGHT_COVERAGE: true        
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
@@ -381,3 +390,50 @@ jobs:
         path: playwright-report/
         retention-days: 30
         overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: playwright-coverage-macos-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: .nyc_output/
+        retention-days: 30
+        overwrite: true
+        
+        
+  # only run this job after all shards above have completed
+  # TBC: do we want to separate coverage reports by OS?
+  # the Job below combines both chrome and webkit coverage reports
+  merge-coverage-reports:
+    # Merge reports after playwright-tests, even if some shards have failed
+    if: ${{ !cancelled() }}
+    needs: [playwright-ubuntu, playwright-macos]
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - uses: KittyCAD/action-install-cli@main
+    - name: Install dependencies
+      run: yarn
+
+    - name: Download coverage reports from GitHub Actions Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: .all_coverage_reports
+        pattern: playwright-coverage*
+        merge-multiple: true
+
+    - name: Merge all coverage reports from all shards into a single json report
+      run: npx nyc merge .all_coverage_reports ./.nyc_output/coverage.json
+        
+    - name: Generate HTML coverage report
+      run: npx nyc report --reporter=html || true      
+
+    - name: Upload Convertage HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-${{ github.sha }}
+        path: coverage
+        retention-days: 14
