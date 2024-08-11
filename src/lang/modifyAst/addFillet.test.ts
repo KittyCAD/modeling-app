@@ -9,6 +9,7 @@ import {
 } from '../wasm'
 import {
   addFillet,
+  getPathToExtrudeForSegmentSelection,
   hasValidFilletSelection,
   isTagUsedInFillet,
 } from './addFillet'
@@ -16,9 +17,70 @@ import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
+import { KclManager } from 'lang/KclSingleton'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 
 beforeAll(async () => {
   await initPromise // Initialize the WASM environment before running tests
+})
+
+const runGetPathToExtrudeForSegmentSelectionTest = async (
+  code: string,
+  segmentSnippet: string
+) => {
+
+  // ast
+  const astOrError = parse(code)
+  if (err(astOrError)) {
+    return new Error('AST not found')
+  }
+  const ast = astOrError as Program
+
+  // selectionRanges
+  const segmentRange: [number, number] = [
+    code.indexOf(segmentSnippet),
+    code.indexOf(segmentSnippet) + segmentSnippet.length,
+  ]
+  const selection: Selections = {
+    codeBasedSelections: [
+      {
+        range: segmentRange,
+        type: 'default',
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // kclManager ???
+  const kclManager = new KclManager(engineCommandManager)
+  kclManager.programMemory.set('sketch001', { id: 'sketch001', type: 'SketchGroup' })
+  console.log(' /// kclManager ', kclManager)
+
+  // getPathForSelection
+  const result = getPathToExtrudeForSegmentSelection(
+    ast,
+    selection,
+    kclManager
+  )
+  console.log( ' /// result ', result)
+}
+
+describe('Testing getPathForSelection', () => {
+  it('should return the correct paths for a valid selection and extrusion', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)`
+    const segmentSnippet = `line([20, 0], %)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code, 
+      segmentSnippet
+    )
+  })
 })
 
 const runFilletTest = async (
@@ -56,8 +118,6 @@ const runFilletTest = async (
   if (err(pathToExtrudeNode)) {
     return new Error('Path to extrude node not found')
   }
-
-  // const radius = createLiteral(5) as Value
 
   const result = addFillet(ast, pathToSegmentNode, pathToExtrudeNode, radius)
   if (err(result)) {
