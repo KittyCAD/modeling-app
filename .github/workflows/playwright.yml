@@ -1,7 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - ryanrosello-og/playwright-test-coverage
   pull_request:
     branches: [ main ]
 
@@ -375,7 +377,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-        GENERATE_PLAYWRIGHT_COVERAGE: true        
+        GENERATE_PLAYWRIGHT_COVERAGE: true
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
@@ -397,8 +399,8 @@ jobs:
         path: .nyc_output/
         retention-days: 30
         overwrite: true
-        
-        
+
+
   # only run this job after all shards above have completed
   # TBC: do we want to separate coverage reports by OS?
   # the Job below combines both chrome and webkit coverage reports
@@ -427,9 +429,9 @@ jobs:
 
     - name: Merge all coverage reports from all shards into a single json report
       run: npx nyc merge .all_coverage_reports ./.nyc_output/coverage.json
-        
+
     - name: Generate HTML coverage report
-      run: npx nyc report --reporter=html || true      
+      run: npx nyc report --reporter=html || true
 
     - name: Upload Convertage HTML report
       uses: actions/upload-artifact@v4
