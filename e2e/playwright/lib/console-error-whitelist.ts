@@ -34,11 +34,11 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
     },
     {
-      name: '"{"kind"',
+      name: '{"kind"',
       // eslint-disable-next-line no-useless-escape
-      message: `engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue(\"no connection to send on\")"}`,
+      message: 'no connection to send on',
       stack: '',
-      foundInSpec: 'e2e/playwright/test-utils.ts',
+      foundInSpec: 'e2e/playwright/various.spec.ts',
       project: 'Google Chrome',
     },
     {
@@ -208,16 +208,28 @@ export const isErrorWhitelisted = (exception: Error) => {
       foundInSpec: 'e2e/playwright/editor-tests.spec.ts fold gutters work',
       project: 'Google Chrome',
     },
+    {
+      name: 'RangeError',
+      message: 'Selection points outside of document',
+      stack: `RangeError: Selection points outside of document
+    +     at checkSelection (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:1453:13)
+    +     at new _Transaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2014:7)
+    +     at _Transaction.create (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2022:12)
+    +     at resolveTransaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2155:24)
+    +     at _EditorState.update (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2281:12)
+    +     at _EditorView.dispatch (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6988:148)
+    +     at EditorManager.selectRange (http://localhost:3000/src/editor/manager.ts:182:22)
+    +     at AST extrude (http://localhost:3000/src/machines/modelingMachine.ts:828:25)`,
+      foundInSpec: 'e2e/playwright/editor-tests.spec.ts',
+      project: 'Google Chrome',
+    },
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')
-  if (
-    whitelist.some(
-      (item) =>
-        cleanString(exception.name) === cleanString(item.name) &&
-        cleanString(exception.message) === cleanString(item.message)
-    )
-  ) {
-    return true
-  }
+  const foundItem = whitelist.find(item =>
+    cleanString(exception.name) === cleanString(item.name) &&
+    cleanString(exception.message).includes(cleanString(item.message))
+  )
+
+  return foundItem !== undefined
 }

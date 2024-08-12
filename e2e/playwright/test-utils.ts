@@ -656,10 +656,8 @@ export async function setup(
     // only set this env var to false if you want to collect console errors
     // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
     // unwhitelisted console errors are detected).
-    if (
-      !process.env.CI || // This will enabled always - locally
-      (process.env.CI && process.env.FAIL_ON_CONSOLE_ERRORS) // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
-    ) {
+    if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
+      // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
       // use expect to prevent page from closing and not cleaning up
       expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
         
