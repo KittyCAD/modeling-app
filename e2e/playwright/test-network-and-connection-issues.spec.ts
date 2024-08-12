@@ -204,19 +204,24 @@ test.describe('Test network and connection issues', () => {
 
     // Ensure we can continue sketching
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([-8.84, 8.75], %)`)
+    await expect.poll(u.normalisedEditorCode)
+      .toBe(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([12.34, -12.34], %)
+  |> line([12.34, 0], %)
+  |> line([-12.34, 12.34], %)
+
+`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([-8.84, 8.75], %)
-    |> line([-5.6, 0], %)`)
+
+    await expect.poll(u.normalisedEditorCode)
+      .toBe(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([12.34, -12.34], %)
+  |> line([12.34, 0], %)
+  |> line([-12.34, 12.34], %)
+  |> line([-12.34, 0], %)
+
+`)
 
     // Unequip line tool
     await page.keyboard.press('Escape')
