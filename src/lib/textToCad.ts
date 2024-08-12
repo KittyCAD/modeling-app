@@ -18,9 +18,6 @@ export async function submitTextToCadPrompt(
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
   const body: Models['TextToCadCreateBody_type'] = { prompt }
-  const headers: { [key: string]: string } = {
-    'Content-Type': 'application/json',
-  }
   const response = await fetch(
     VITE_KC_API_BASE_URL + '/ai/text-to-cad/gltf?kcl=true',
     {
