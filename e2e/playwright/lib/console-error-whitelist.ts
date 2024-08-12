@@ -226,9 +226,10 @@ export const isErrorWhitelisted = (exception: Error) => {
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')
-  const foundItem = whitelist.find(item =>
-    cleanString(exception.name) === cleanString(item.name) &&
-    cleanString(exception.message).includes(cleanString(item.message))
+  const foundItem = whitelist.find(
+    (item) =>
+      cleanString(exception.name) === cleanString(item.name) &&
+      cleanString(exception.message).includes(cleanString(item.message))
   )
 
   return foundItem !== undefined
