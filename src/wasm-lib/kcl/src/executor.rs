@@ -241,12 +241,12 @@ impl DynamicState {
         }
     }
 
-    pub fn fillet_or_chamfer_ids_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<uuid::Uuid> {
+    pub fn edge_cut_ids_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<uuid::Uuid> {
         self.extrude_group_ids
             .iter()
             .flat_map(|eg| {
                 if eg.sketch_group_id == sketch_group_id {
-                    eg.fillet_or_chamfers.clone()
+                    eg.edge_cuts.clone()
                 } else {
                     Vec::new()
                 }
@@ -1029,15 +1029,15 @@ pub struct ExtrudeGroup {
     pub end_cap_id: Option<uuid::Uuid>,
     /// Chamfers or fillets on this extrude group.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub fillet_or_chamfers: Vec<FilletOrChamfer>,
+    pub edge_cuts: Vec<EdgeCut>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
 
 impl ExtrudeGroup {
-    pub(crate) fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
-        self.fillet_or_chamfers.iter().map(|foc| foc.id()).collect()
+    pub(crate) fn get_all_edge_cut_ids(&self) -> Vec<uuid::Uuid> {
+        self.edge_cuts.iter().map(|foc| foc.id()).collect()
     }
 }
 
@@ -1049,7 +1049,7 @@ pub struct ExtrudeGroupLazyIds {
     pub sketch_group_id: uuid::Uuid,
     /// Chamfers or fillets on this extrude group.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub fillet_or_chamfers: Vec<uuid::Uuid>,
+    pub edge_cuts: Vec<uuid::Uuid>,
 }
 
 impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
@@ -1057,7 +1057,7 @@ impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
         Self {
             extrude_group_id: eg.id,
             sketch_group_id: eg.sketch_group.id,
-            fillet_or_chamfers: eg.fillet_or_chamfers.iter().map(|foc| foc.id()).collect(),
+            edge_cuts: eg.edge_cuts.iter().map(|foc| foc.id()).collect(),
         }
     }
 }
@@ -1066,7 +1066,7 @@ impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum FilletOrChamfer {
+pub enum EdgeCut {
     /// A fillet.
     Fillet {
         /// The id of the engine command that called this fillet.
@@ -1089,25 +1089,25 @@ pub enum FilletOrChamfer {
     },
 }
 
-impl FilletOrChamfer {
+impl EdgeCut {
     pub fn id(&self) -> uuid::Uuid {
         match self {
-            FilletOrChamfer::Fillet { id, .. } => *id,
-            FilletOrChamfer::Chamfer { id, .. } => *id,
+            EdgeCut::Fillet { id, .. } => *id,
+            EdgeCut::Chamfer { id, .. } => *id,
         }
     }
 
     pub fn edge_id(&self) -> uuid::Uuid {
         match self {
-            FilletOrChamfer::Fillet { edge_id, .. } => *edge_id,
-            FilletOrChamfer::Chamfer { edge_id, .. } => *edge_id,
+            EdgeCut::Fillet { edge_id, .. } => *edge_id,
+            EdgeCut::Chamfer { edge_id, .. } => *edge_id,
         }
     }
 
     pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
-            FilletOrChamfer::Fillet { tag, .. } => *tag.clone(),
-            FilletOrChamfer::Chamfer { tag, .. } => *tag.clone(),
+            EdgeCut::Fillet { tag, .. } => *tag.clone(),
+            EdgeCut::Chamfer { tag, .. } => *tag.clone(),
         }
     }
 }

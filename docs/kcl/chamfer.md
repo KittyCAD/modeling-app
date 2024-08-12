@@ -144,10 +144,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```js
 {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -175,6 +173,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -218,10 +218,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 {
 	// The extrude group the face is on.
 	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -249,6 +247,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -548,10 +548,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```js
 {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -579,6 +577,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -622,10 +622,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 {
 	// The extrude group the face is on.
 	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -653,6 +651,8 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.

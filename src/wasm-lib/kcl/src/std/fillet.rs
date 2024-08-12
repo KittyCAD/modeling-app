@@ -10,9 +10,7 @@ use uuid::Uuid;
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{
-        ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal,
-    },
+    executor::{EdgeCut, ExtrudeGroup, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal},
     std::Args,
 };
 
@@ -100,7 +98,7 @@ async fn inner_fillet(
     }
 
     let mut extrude_group = extrude_group.clone();
-    let mut fillet_or_chamfers = Vec::new();
+    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -120,7 +118,7 @@ async fn inner_fillet(
         )
         .await?;
 
-        fillet_or_chamfers.push(FilletOrChamfer::Fillet {
+        edge_cuts.push(EdgeCut::Fillet {
             id,
             edge_id,
             radius: data.radius,
@@ -139,7 +137,7 @@ async fn inner_fillet(
         }
     }
 
-    extrude_group.fillet_or_chamfers = fillet_or_chamfers;
+    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }
