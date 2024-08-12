@@ -1479,8 +1479,6 @@ impl CallExpression {
                         source_ranges: vec![self.into()],
                     })
                 })?;
-
-                let result = result.get_value()?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
@@ -1505,7 +1503,6 @@ impl CallExpression {
                         source_ranges,
                     })
                 })?;
-                let result = result.get_value()?;
 
                 Ok(result)
             }

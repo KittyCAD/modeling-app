@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use crate::{
     ast::types::FunctionExpression,
     errors::KclError,
-    executor::{DynamicState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory, ProgramReturn},
+    executor::{DynamicState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory},
 };
 
 /// A function being used as a parameter into a stdlib function.
@@ -17,7 +17,7 @@ pub struct FunctionParam<'a> {
 }
 
 impl<'a> FunctionParam<'a> {
-    pub async fn call(&self, args: Vec<KclValue>) -> Result<Option<ProgramReturn>, KclError> {
+    pub async fn call(&self, args: Vec<KclValue>) -> Result<Option<KclValue>, KclError> {
         (self.inner)(
             args,
             self.memory.clone(),

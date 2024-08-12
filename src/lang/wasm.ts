@@ -21,7 +21,6 @@ import init, {
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
-import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
 import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
@@ -159,7 +158,7 @@ function emptyEnvironment(): Environment {
 interface RawProgramMemory {
   environments: Environment[]
   currentEnv: EnvironmentRef
-  return: ProgramReturn | null
+  return: KclValue | null
 }
 
 /**
@@ -170,7 +169,7 @@ interface RawProgramMemory {
 export class ProgramMemory {
   private environments: Environment[]
   private currentEnv: EnvironmentRef
-  private return: ProgramReturn | null
+  private return: KclValue | null
 
   /**
    * Empty memory doesn't include prelude definitions.
@@ -186,7 +185,7 @@ export class ProgramMemory {
   constructor(
     environments: Environment[] = [emptyEnvironment()],
     currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
-    returnVal: ProgramReturn | null = null
+    returnVal: KclValue | null = null
   ) {
     this.environments = environments
     this.currentEnv = currentEnv
