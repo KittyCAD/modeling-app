@@ -1,6 +1,6 @@
 extern crate alloc;
 use kcl_lib::ast::types::{
-    BodyItem, Identifier, Literal, LiteralValue, NonCodeMeta, Program, Value, VariableDeclaration, VariableDeclarator,
+    BodyItem, Expr, Identifier, Literal, LiteralValue, NonCodeMeta, Program, VariableDeclaration, VariableDeclarator,
     VariableKind,
 };
 use kcl_macros::parse;
@@ -24,7 +24,7 @@ fn basic() {
                     name: "y".to_owned(),
                     digest: None,
                 },
-                init: Value::Literal(Box::new(Literal {
+                init: Expr::Literal(Box::new(Literal {
                     start: 10,
                     end: 11,
                     value: LiteralValue::IInteger(4),

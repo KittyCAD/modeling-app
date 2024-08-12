@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Value, ProgramMemory } from '../lang/wasm'
+import { parse, BinaryPart, Expr, ProgramMemory } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -86,7 +86,7 @@ export function useCalc({
   initialVariableName?: string
 }): {
   inputRef: React.RefObject<HTMLInputElement>
-  valueNode: Value | null
+  valueNode: Expr | null
   calcResult: string
   prevVariables: PrevVariable<unknown>[]
   newVariableName: string
@@ -105,7 +105,7 @@ export function useCalc({
     insertIndex: 0,
     bodyPath: [],
   })
-  const [valueNode, setValueNode] = useState<Value | null>(null)
+  const [valueNode, setValueNode] = useState<Expr | null>(null)
   const [calcResult, setCalcResult] = useState('NAN')
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)

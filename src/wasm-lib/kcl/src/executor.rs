@@ -11,7 +11,7 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, KclNone, Program, TagDeclarator, Value},
+    ast::types::{BodyItem, Expr, FunctionExpression, KclNone, Program, TagDeclarator},
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -1745,9 +1745,9 @@ impl ExecutorContext {
         for statement in &program.body {
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
-                    if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
+                    if let Expr::PipeExpression(pipe_expr) = &expression_statement.expression {
                         pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                    } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
+                    } else if let Expr::CallExpression(call_expr) = &expression_statement.expression {
                         call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
                     }
                 }
@@ -1771,47 +1771,47 @@ impl ExecutorContext {
                     }
                 }
                 BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
-                    Value::BinaryExpression(bin_expr) => {
+                    Expr::BinaryExpression(bin_expr) => {
                         let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::UnaryExpression(unary_expr) => {
+                    Expr::UnaryExpression(unary_expr) => {
                         let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::Identifier(identifier) => {
+                    Expr::Identifier(identifier) => {
                         let value = memory.get(&identifier.name, identifier.into())?.clone();
                         memory.return_ = Some(ProgramReturn::Value(value));
                     }
-                    Value::Literal(literal) => {
+                    Expr::Literal(literal) => {
                         memory.return_ = Some(ProgramReturn::Value(literal.into()));
                     }
-                    Value::TagDeclarator(tag) => {
+                    Expr::TagDeclarator(tag) => {
                         memory.return_ = Some(ProgramReturn::Value(tag.into()));
                     }
-                    Value::ArrayExpression(array_expr) => {
+                    Expr::ArrayExpression(array_expr) => {
                         let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::ObjectExpression(obj_expr) => {
+                    Expr::ObjectExpression(obj_expr) => {
                         let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::CallExpression(call_expr) => {
+                    Expr::CallExpression(call_expr) => {
                         let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::MemberExpression(member_expr) => {
+                    Expr::MemberExpression(member_expr) => {
                         let result = member_expr.get_result(memory)?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::PipeExpression(pipe_expr) => {
+                    Expr::PipeExpression(pipe_expr) => {
                         let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
                         memory.return_ = Some(ProgramReturn::Value(result));
                     }
-                    Value::PipeSubstitution(_) => {}
-                    Value::FunctionExpression(_) => {}
-                    Value::None(none) => {
+                    Expr::PipeSubstitution(_) => {}
+                    Expr::FunctionExpression(_) => {}
+                    Expr::None(none) => {
                         memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
                     }
                 },
@@ -1835,7 +1835,7 @@ impl ExecutorContext {
 
     pub async fn arg_into_mem_item<'a>(
         &self,
-        init: &Value,
+        init: &Expr,
         memory: &mut ProgramMemory,
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
@@ -1843,19 +1843,19 @@ impl ExecutorContext {
         statement_kind: StatementKind<'a>,
     ) -> Result<MemoryItem, KclError> {
         let item = match init {
-            Value::None(none) => none.into(),
-            Value::Literal(literal) => literal.into(),
-            Value::TagDeclarator(tag) => tag.execute(memory).await?,
-            Value::Identifier(identifier) => {
+            Expr::None(none) => none.into(),
+            Expr::Literal(literal) => literal.into(),
+            Expr::TagDeclarator(tag) => tag.execute(memory).await?,
+            Expr::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
-            Value::BinaryExpression(binary_expression) => {
+            Expr::BinaryExpression(binary_expression) => {
                 binary_expression
                     .get_result(memory, dynamic_state, pipe_info, self)
                     .await?
             }
-            Value::FunctionExpression(function_expression) => {
+            Expr::FunctionExpression(function_expression) => {
                 let mem_func = force_memory_function(
                     |args: Vec<MemoryItem>,
                      memory: ProgramMemory,
@@ -1897,15 +1897,15 @@ impl ExecutorContext {
                     memory: Box::new(memory.clone()),
                 }
             }
-            Value::CallExpression(call_expression) => {
+            Expr::CallExpression(call_expression) => {
                 call_expression.execute(memory, dynamic_state, pipe_info, self).await?
             }
-            Value::PipeExpression(pipe_expression) => {
+            Expr::PipeExpression(pipe_expression) => {
                 pipe_expression
                     .get_result(memory, dynamic_state, pipe_info, self)
                     .await?
             }
-            Value::PipeSubstitution(pipe_substitution) => match statement_kind {
+            Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
                 StatementKind::Declaration { name } => {
                     let message = format!(
                         "you cannot declare variable {name} as %, because % can only be used in function calls"
@@ -1926,16 +1926,16 @@ impl ExecutorContext {
                     }
                 },
             },
-            Value::ArrayExpression(array_expression) => {
+            Expr::ArrayExpression(array_expression) => {
                 array_expression.execute(memory, dynamic_state, pipe_info, self).await?
             }
-            Value::ObjectExpression(object_expression) => {
+            Expr::ObjectExpression(object_expression) => {
                 object_expression
                     .execute(memory, dynamic_state, pipe_info, self)
                     .await?
             }
-            Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-            Value::UnaryExpression(unary_expression) => {
+            Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+            Expr::UnaryExpression(unary_expression) => {
                 unary_expression
                     .get_result(memory, dynamic_state, pipe_info, self)
                     .await?

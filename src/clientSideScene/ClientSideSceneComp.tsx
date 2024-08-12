@@ -26,7 +26,7 @@ import {
   PathToNode,
   Program,
   SourceRange,
-  Value,
+  Expr,
   parse,
   recast,
 } from 'lang/wasm'
@@ -550,7 +550,7 @@ const ConstraintSymbol = ({
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Value>(kclManager.ast, pathToNode),
+    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
