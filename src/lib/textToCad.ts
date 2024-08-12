@@ -10,6 +10,7 @@ export async function submitTextToCadPrompt(
     {
       method: 'POST',
       body: JSON.stringify(body),
+      credentials: 'include',
     }
   )
 
