@@ -12,7 +12,7 @@ import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { sep } from '@tauri-apps/api/path'
 import { readTextFile } from '@tauri-apps/plugin-fs'
-import { codeManager, kclManager } from 'lib/singletons'
+import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
   getProjectInfo,
@@ -104,9 +104,6 @@ export const fileLoader: LoaderFunction = async ({
     // the file system and not the editor.
     codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
-
-    // We don't want to call await on execute code since we don't want to block the UI
-    kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
