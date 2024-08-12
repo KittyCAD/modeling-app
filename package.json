@@ -31,7 +31,7 @@
     "@tauri-apps/plugin-shell": "^2.0.0-beta.7",
     "@tauri-apps/plugin-updater": "^2.0.0-beta.6",
     "@ts-stack/markdown": "^1.5.0",
-    "@tweenjs/tween.js": "^23.1.1",
+    "@tweenjs/tween.js": "^25.0.0",
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
     "codemirror": "^6.0.1",
