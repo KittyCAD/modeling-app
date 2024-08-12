@@ -21,7 +21,7 @@ mod test_examples_line_to {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_line_to0() {
+    async fn kcl_test_example_line_to0() {
         let code = "This is another code block.\nyes sirrr.\nlineTo";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
@@ -54,7 +54,7 @@ mod test_examples_line_to {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_line_to1() {
+    async fn kcl_test_example_line_to1() {
         let code = "This is code.\nIt does other shit.\nlineTo";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
