@@ -48,7 +48,7 @@ fn boxed_import(
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
             > + Send,
     >,
 > {

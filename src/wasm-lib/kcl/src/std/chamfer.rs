@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ChamferSurface, ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, GeoMeta, MemoryItem},
+    executor::{ChamferSurface, ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, GeoMeta, KclValue},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -27,12 +27,12 @@ pub struct ChamferData {
 }
 
 /// Create chamfers on tagged paths.
-pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
     let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
 /// Cut a straight transitional edge along a tagged path.

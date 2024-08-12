@@ -23,7 +23,7 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, DynamicState, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange,
+        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SourceRange,
         StatementKind, TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
@@ -922,7 +922,7 @@ impl BinaryPart {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
@@ -1322,10 +1322,10 @@ impl CallExpression {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let fn_name = self.callee.name.clone();
 
-        let mut fn_args: Vec<MemoryItem> = Vec::with_capacity(self.arguments.len());
+        let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
 
         for arg in &self.arguments {
             let metadata = Metadata {
@@ -1356,12 +1356,12 @@ impl CallExpression {
                 // TODO: This could probably be done in a better way, but as of now this was my only idea
                 // and it works.
                 match result {
-                    MemoryItem::SketchGroup(ref sketch_group) => {
+                    KclValue::SketchGroup(ref sketch_group) => {
                         for (_, tag) in sketch_group.tags.iter() {
                             memory.update_tag(&tag.value, tag.clone())?;
                         }
                     }
-                    MemoryItem::ExtrudeGroup(ref mut extrude_group) => {
+                    KclValue::ExtrudeGroup(ref mut extrude_group) => {
                         for value in &extrude_group.value {
                             if let Some(tag) = value.get_tag() {
                                 // Get the past tag and update it.
@@ -1448,7 +1448,7 @@ impl CallExpression {
                     } else {
                         fn_memory.add(
                             &param.identifier.name,
-                            MemoryItem::UserVal(UserVal {
+                            KclValue::UserVal(UserVal {
                                 value: serde_json::value::Value::Null,
                                 meta: Default::default(),
                             }),
@@ -1497,7 +1497,7 @@ impl CallExpression {
                 let result = result.ok_or_else(|| {
                     let mut source_ranges: Vec<SourceRange> = vec![self.into()];
                     // We want to send the source range of the original function.
-                    if let MemoryItem::Function { meta, .. } = func {
+                    if let KclValue::Function { meta, .. } = func {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
                     KclError::UndefinedValue(KclErrorDetails {
@@ -1972,9 +1972,9 @@ impl Literal {
     }
 }
 
-impl From<Literal> for MemoryItem {
+impl From<Literal> for KclValue {
     fn from(literal: Literal) -> Self {
-        MemoryItem::UserVal(UserVal {
+        KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
@@ -1983,9 +1983,9 @@ impl From<Literal> for MemoryItem {
     }
 }
 
-impl From<&Box<Literal>> for MemoryItem {
+impl From<&Box<Literal>> for KclValue {
     fn from(literal: &Box<Literal>) -> Self {
-        MemoryItem::UserVal(UserVal {
+        KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
@@ -2067,15 +2067,15 @@ impl From<Box<TagDeclarator>> for Vec<SourceRange> {
     }
 }
 
-impl From<&Box<TagDeclarator>> for MemoryItem {
+impl From<&Box<TagDeclarator>> for KclValue {
     fn from(tag: &Box<TagDeclarator>) -> Self {
-        MemoryItem::TagDeclarator(tag.clone())
+        KclValue::TagDeclarator(tag.clone())
     }
 }
 
-impl From<&TagDeclarator> for MemoryItem {
+impl From<&TagDeclarator> for KclValue {
     fn from(tag: &TagDeclarator) -> Self {
-        MemoryItem::TagDeclarator(Box::new(tag.clone()))
+        KclValue::TagDeclarator(Box::new(tag.clone()))
     }
 }
 
@@ -2152,8 +2152,8 @@ impl TagDeclarator {
         }
     }
 
-    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
+    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<KclValue, KclError> {
+        let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
             info: None,
             meta: vec![Metadata {
@@ -2336,7 +2336,7 @@ impl ArrayExpression {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
@@ -2391,7 +2391,7 @@ impl ArrayExpression {
             results.push(result);
         }
 
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value: results.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -2523,7 +2523,7 @@ impl ObjectExpression {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
             let result = match &property.value {
@@ -2576,7 +2576,7 @@ impl ObjectExpression {
             object.insert(property.key.name.clone(), result.get_json_value()?);
         }
 
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -2801,7 +2801,7 @@ impl MemberExpression {
         None
     }
 
-    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<MemoryItem, KclError> {
+    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<KclValue, KclError> {
         let array = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
             MemberObject::Identifier(identifier) => {
@@ -2814,7 +2814,7 @@ impl MemberExpression {
 
         if let serde_json::Value::Array(array) = array_json {
             if let Some(value) = array.get(index) {
-                Ok(MemoryItem::UserVal(UserVal {
+                Ok(KclValue::UserVal(UserVal {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
@@ -2834,7 +2834,7 @@ impl MemberExpression {
         }
     }
 
-    pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
+    pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<KclValue, KclError> {
         #[derive(Debug)]
         enum Property {
             Number(usize),
@@ -2862,7 +2862,7 @@ impl MemberExpression {
                 } else {
                     // Actually evaluate memory to compute the property.
                     let prop = memory.get(&name, property_src)?;
-                    let MemoryItem::UserVal(prop) = prop else {
+                    let KclValue::UserVal(prop) = prop else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: property_sr,
                             message: format!(
@@ -2936,7 +2936,7 @@ impl MemberExpression {
         match (object_json, property) {
             (JValue::Object(map), Property::String(property)) => {
                 if let Some(value) = map.get(&property) {
-                    Ok(MemoryItem::UserVal(UserVal {
+                    Ok(KclValue::UserVal(UserVal {
                         value: value.clone(),
                         meta: vec![Metadata {
                             source_range: self.into(),
@@ -2959,7 +2959,7 @@ impl MemberExpression {
             (JValue::Array(arr), Property::Number(index)) => {
                 let value_of_arr: Option<&JValue> = arr.get(index);
                 if let Some(value) = value_of_arr {
-                    Ok(MemoryItem::UserVal(UserVal {
+                    Ok(KclValue::UserVal(UserVal {
                         value: value.clone(),
                         meta: vec![Metadata {
                             source_range: self.into(),
@@ -3120,7 +3120,7 @@ impl BinaryExpression {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let left_json_value = self
             .left
             .get_result(memory, dynamic_state, pipe_info, ctx)
@@ -3139,7 +3139,7 @@ impl BinaryExpression {
                 parse_json_value_as_string(&right_json_value),
             ) {
                 let value = serde_json::Value::String(format!("{}{}", left, right));
-                return Ok(MemoryItem::UserVal(UserVal {
+                return Ok(KclValue::UserVal(UserVal {
                     value,
                     meta: vec![Metadata {
                         source_range: self.into(),
@@ -3160,7 +3160,7 @@ impl BinaryExpression {
             BinaryOperator::Pow => (left.powf(right)).into(),
         };
 
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value,
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -3338,7 +3338,7 @@ impl UnaryExpression {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let num = parse_json_number_as_f64(
             &self
                 .argument
@@ -3347,7 +3347,7 @@ impl UnaryExpression {
                 .get_json_value()?,
             self.into(),
         )?;
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value: (-(num)).into(),
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -3516,7 +3516,7 @@ impl PipeExpression {
         dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         execute_pipe_body(memory, dynamic_state, &self.body, pipe_info, self.into(), ctx).await
     }
 
@@ -3536,7 +3536,7 @@ async fn execute_pipe_body(
     pipe_info: &PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
-) -> Result<MemoryItem, KclError> {
+) -> Result<KclValue, KclError> {
     let mut body = body.iter();
     let first = body.next().ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {

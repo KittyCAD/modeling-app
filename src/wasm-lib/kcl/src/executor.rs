@@ -46,7 +46,7 @@ impl ProgramMemory {
     }
 
     /// Add to the program memory in the current scope.
-    pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
+    pub fn add(&mut self, key: &str, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         if self.environments[self.current_env.index()].contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine `{}`", key),
@@ -60,14 +60,14 @@ impl ProgramMemory {
     }
 
     pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
-        self.environments[self.current_env.index()].insert(tag.to_string(), MemoryItem::TagIdentifier(Box::new(value)));
+        self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
 
         Ok(())
     }
 
     /// Get a value from the program memory.
     /// Return Err if not found.
-    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
+    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
         let mut env_ref = self.current_env;
         loop {
             let env = &self.environments[env_ref.index()];
@@ -97,7 +97,7 @@ impl ProgramMemory {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                        KclValue::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -128,7 +128,7 @@ impl EnvironmentRef {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 pub struct Environment {
-    bindings: HashMap<String, MemoryItem>,
+    bindings: HashMap<String, KclValue>,
     parent: Option<EnvironmentRef>,
 }
 
@@ -139,28 +139,28 @@ impl Environment {
             bindings: HashMap::from([
                 (
                     "ZERO".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(0)),
                         meta: Default::default(),
                     }),
                 ),
                 (
                     "QUARTER_TURN".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(90)),
                         meta: Default::default(),
                     }),
                 ),
                 (
                     "HALF_TURN".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(180)),
                         meta: Default::default(),
                     }),
                 ),
                 (
                     "THREE_QUARTER_TURN".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(270)),
                         meta: Default::default(),
                     }),
@@ -177,7 +177,7 @@ impl Environment {
         }
     }
 
-    pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
+    pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
         self.bindings.get(key).ok_or_else(|| {
             KclError::UndefinedValue(KclErrorDetails {
                 message: format!("memory item key `{}` is not defined", key),
@@ -186,7 +186,7 @@ impl Environment {
         })
     }
 
-    pub fn insert(&mut self, key: String, value: MemoryItem) {
+    pub fn insert(&mut self, key: String, value: KclValue) {
         self.bindings.insert(key, value);
     }
 
@@ -200,7 +200,7 @@ impl Environment {
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            if let MemoryItem::SketchGroup(ref mut sketch_group) = val {
+            if let KclValue::SketchGroup(ref mut sketch_group) = val {
                 if sketch_group.original_id == sg.original_id {
                     for tag in sg.tags.iter() {
                         sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
@@ -234,7 +234,7 @@ impl DynamicState {
     pub fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let MemoryItem::ExtrudeGroup(eg) = item {
+                if let KclValue::ExtrudeGroup(eg) = item {
                     self.extrude_group_ids.push(ExtrudeGroupLazyIds::from(eg.as_ref()));
                 }
             }
@@ -260,7 +260,7 @@ impl DynamicState {
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ProgramReturn {
     Arguments,
-    Value(MemoryItem),
+    Value(KclValue),
 }
 
 impl From<ProgramReturn> for Vec<SourceRange> {
@@ -273,7 +273,7 @@ impl From<ProgramReturn> for Vec<SourceRange> {
 }
 
 impl ProgramReturn {
-    pub fn get_value(&self) -> Result<MemoryItem, KclError> {
+    pub fn get_value(&self) -> Result<KclValue, KclError> {
         match self {
             ProgramReturn::Value(v) => Ok(v.clone()),
             ProgramReturn::Arguments => Err(KclError::Semantic(KclErrorDetails {
@@ -288,7 +288,7 @@ impl ProgramReturn {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum MemoryItem {
+pub enum KclValue {
     UserVal(UserVal),
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(Box<TagDeclarator>),
@@ -314,12 +314,12 @@ pub enum MemoryItem {
     },
 }
 
-impl MemoryItem {
+impl KclValue {
     pub(crate) fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
         match self {
-            MemoryItem::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
-            MemoryItem::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
-            MemoryItem::UserVal(value) => {
+            KclValue::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
+            KclValue::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
+            KclValue::UserVal(value) => {
                 let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
                 Ok(sg.into())
@@ -330,9 +330,9 @@ impl MemoryItem {
 
     pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
         match self {
-            MemoryItem::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
-            MemoryItem::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
-            MemoryItem::UserVal(value) => {
+            KclValue::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
+            KclValue::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
+            KclValue::UserVal(value) => {
                 let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
                 Ok(eg.into())
@@ -342,40 +342,40 @@ impl MemoryItem {
     }
 }
 
-impl From<SketchGroupSet> for MemoryItem {
+impl From<SketchGroupSet> for KclValue {
     fn from(sg: SketchGroupSet) -> Self {
         match sg {
-            SketchGroupSet::SketchGroup(sg) => MemoryItem::SketchGroup(sg),
-            SketchGroupSet::SketchGroups(sgs) => MemoryItem::SketchGroups { value: sgs },
+            SketchGroupSet::SketchGroup(sg) => KclValue::SketchGroup(sg),
+            SketchGroupSet::SketchGroups(sgs) => KclValue::SketchGroups { value: sgs },
         }
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for MemoryItem {
+impl From<Vec<Box<SketchGroup>>> for KclValue {
     fn from(sg: Vec<Box<SketchGroup>>) -> Self {
         if sg.len() == 1 {
-            MemoryItem::SketchGroup(sg[0].clone())
+            KclValue::SketchGroup(sg[0].clone())
         } else {
-            MemoryItem::SketchGroups { value: sg }
+            KclValue::SketchGroups { value: sg }
         }
     }
 }
 
-impl From<ExtrudeGroupSet> for MemoryItem {
+impl From<ExtrudeGroupSet> for KclValue {
     fn from(eg: ExtrudeGroupSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => MemoryItem::ExtrudeGroup(eg),
-            ExtrudeGroupSet::ExtrudeGroups(egs) => MemoryItem::ExtrudeGroups { value: egs },
+            ExtrudeGroupSet::ExtrudeGroup(eg) => KclValue::ExtrudeGroup(eg),
+            ExtrudeGroupSet::ExtrudeGroups(egs) => KclValue::ExtrudeGroups { value: egs },
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for MemoryItem {
+impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
     fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
         if eg.len() == 1 {
-            MemoryItem::ExtrudeGroup(eg[0].clone())
+            KclValue::ExtrudeGroup(eg[0].clone())
         } else {
-            MemoryItem::ExtrudeGroups { value: eg }
+            KclValue::ExtrudeGroups { value: eg }
         }
     }
 }
@@ -679,7 +679,7 @@ impl std::hash::Hash for TagIdentifier {
 
 pub type MemoryFunction =
     fn(
-        s: Vec<MemoryItem>,
+        s: Vec<KclValue>,
         memory: ProgramMemory,
         expression: Box<FunctionExpression>,
         metadata: Vec<Metadata>,
@@ -689,7 +689,7 @@ pub type MemoryFunction =
 
 fn force_memory_function<
     F: Fn(
-        Vec<MemoryItem>,
+        Vec<KclValue>,
         ProgramMemory,
         Box<FunctionExpression>,
         Vec<Metadata>,
@@ -702,33 +702,33 @@ fn force_memory_function<
     f
 }
 
-impl From<MemoryItem> for Vec<SourceRange> {
-    fn from(item: MemoryItem) -> Self {
+impl From<KclValue> for Vec<SourceRange> {
+    fn from(item: KclValue) -> Self {
         match item {
-            MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::TagDeclarator(t) => t.into(),
-            MemoryItem::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::SketchGroups { value } => value
+            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::TagDeclarator(t) => t.into(),
+            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::SketchGroups { value } => value
                 .iter()
                 .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
                 .collect(),
-            MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeGroups { value } => value
+            KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::ExtrudeGroups { value } => value
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
-            MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
 
-impl MemoryItem {
+impl KclValue {
     pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
-        if let MemoryItem::UserVal(user_val) = self {
+        if let KclValue::UserVal(user_val) = self {
             Ok(user_val.value.clone())
         } else {
             serde_json::to_value(self).map_err(|err| {
@@ -775,7 +775,7 @@ impl MemoryItem {
     }
 
     pub fn as_user_val(&self) -> Option<&UserVal> {
-        if let MemoryItem::UserVal(x) = self {
+        if let KclValue::UserVal(x) = self {
             Some(x)
         } else {
             None
@@ -797,7 +797,7 @@ impl MemoryItem {
 
     /// If this value is of type function, return it.
     pub fn get_function(&self) -> Option<FnAsArg<'_>> {
-        let MemoryItem::Function {
+        let KclValue::Function {
             func,
             expression,
             memory,
@@ -817,8 +817,8 @@ impl MemoryItem {
     /// Get a tag identifier from a memory item.
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
-            MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
-            MemoryItem::UserVal(_) => {
+            KclValue::TagIdentifier(t) => Ok(*t.clone()),
+            KclValue::UserVal(_) => {
                 if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
                     Ok(identifier)
                 } else {
@@ -838,7 +838,7 @@ impl MemoryItem {
     /// Get a tag declarator from a memory item.
     pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
         match self {
-            MemoryItem::TagDeclarator(t) => Ok(*t.clone()),
+            KclValue::TagDeclarator(t) => Ok(*t.clone()),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -849,7 +849,7 @@ impl MemoryItem {
     /// Get an optional tag from a memory item.
     pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
         match self {
-            MemoryItem::TagDeclarator(t) => Ok(Some(*t.clone())),
+            KclValue::TagDeclarator(t) => Ok(Some(*t.clone())),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -861,11 +861,11 @@ impl MemoryItem {
     /// If it's not a function, return Err.
     pub async fn call_fn(
         &self,
-        args: Vec<MemoryItem>,
+        args: Vec<KclValue>,
         dynamic_state: &DynamicState,
         ctx: ExecutorContext,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        let MemoryItem::Function {
+        let KclValue::Function {
             func,
             expression,
             memory: closure_memory,
@@ -1518,7 +1518,7 @@ impl ExtrudeSurface {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PipeInfo {
-    pub previous_results: Option<MemoryItem>,
+    pub previous_results: Option<KclValue>,
 }
 
 impl PipeInfo {
@@ -1812,7 +1812,7 @@ impl ExecutorContext {
                     Expr::PipeSubstitution(_) => {}
                     Expr::FunctionExpression(_) => {}
                     Expr::None(none) => {
-                        memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
+                        memory.return_ = Some(ProgramReturn::Value(KclValue::from(none)));
                     }
                 },
             }
@@ -1841,7 +1841,7 @@ impl ExecutorContext {
         pipe_info: &PipeInfo,
         metadata: &Metadata,
         statement_kind: StatementKind<'a>,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let item = match init {
             Expr::None(none) => none.into(),
             Expr::Literal(literal) => literal.into(),
@@ -1857,7 +1857,7 @@ impl ExecutorContext {
             }
             Expr::FunctionExpression(function_expression) => {
                 let mem_func = force_memory_function(
-                    |args: Vec<MemoryItem>,
+                    |args: Vec<KclValue>,
                      memory: ProgramMemory,
                      function_expression: Box<FunctionExpression>,
                      _metadata: Vec<Metadata>,
@@ -1890,7 +1890,7 @@ impl ExecutorContext {
                 // Cloning memory here is crucial for semantics so that we close
                 // over variables.  Variables defined lexically later shouldn't
                 // be available to the function body.
-                MemoryItem::Function {
+                KclValue::Function {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],
                     func: Some(mem_func),
@@ -1992,7 +1992,7 @@ impl ExecutorContext {
 /// Returns Err if too few/too many arguments were given for the function.
 fn assign_args_to_params(
     function_expression: &FunctionExpression,
-    args: Vec<MemoryItem>,
+    args: Vec<KclValue>,
     mut fn_memory: ProgramMemory,
 ) -> Result<ProgramMemory, KclError> {
     let num_args = function_expression.number_of_args();
@@ -2030,7 +2030,7 @@ fn assign_args_to_params(
                 };
                 fn_memory.add(
                     &param.identifier.name,
-                    MemoryItem::from(&none),
+                    KclValue::from(&none),
                     (&param.identifier).into(),
                 )?;
             } else {
@@ -2823,8 +2823,8 @@ let w = f() + f()
     #[test]
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
-        fn mem(number: usize) -> MemoryItem {
-            MemoryItem::UserVal(UserVal {
+        fn mem(number: usize) -> KclValue {
+            KclValue::UserVal(UserVal {
                 value: number.into(),
                 meta: Default::default(),
             })
@@ -2853,7 +2853,7 @@ let w = f() + f()
                 digest: None,
             }
         }
-        fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
+        fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
             let mut program_memory = ProgramMemory::new();
             for (name, item) in items {
                 program_memory
@@ -2886,7 +2886,7 @@ let w = f() + f()
                 vec![],
                 Ok(additional_program_memory(&[(
                     "x".to_owned(),
-                    MemoryItem::from(&KclNone::default()),
+                    KclValue::from(&KclNone::default()),
                 )])),
             ),
             (
@@ -2904,7 +2904,7 @@ let w = f() + f()
                 vec![mem(1)],
                 Ok(additional_program_memory(&[
                     ("x".to_owned(), mem(1)),
-                    ("y".to_owned(), MemoryItem::from(&KclNone::default())),
+                    ("y".to_owned(), KclValue::from(&KclNone::default())),
                 ])),
             ),
             (
@@ -2951,7 +2951,7 @@ let w = f() + f()
 
     #[test]
     fn test_serialize_memory_item() {
-        let mem = MemoryItem::ExtrudeGroups {
+        let mem = KclValue::ExtrudeGroups {
             value: Default::default(),
         };
         let json = serde_json::to_string(&mem).unwrap();

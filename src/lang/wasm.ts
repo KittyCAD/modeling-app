@@ -23,7 +23,7 @@ import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
 import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
-import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
+import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
@@ -81,7 +81,7 @@ export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
-export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
+export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
@@ -140,7 +140,7 @@ export const parse = (code: string | Error): Program | Error => {
 export type PathToNode = [string | number, string][]
 
 interface Memory {
-  [key: string]: MemoryItem
+  [key: string]: KclValue
 }
 
 type EnvironmentRef = number
@@ -215,7 +215,7 @@ export class ProgramMemory {
     return false
   }
 
-  get(name: string): MemoryItem | null {
+  get(name: string): KclValue | null {
     let envRef = this.currentEnv
     while (true) {
       const env = this.environments[envRef]
@@ -230,7 +230,7 @@ export class ProgramMemory {
     return null
   }
 
-  set(name: string, value: MemoryItem): Error | null {
+  set(name: string, value: KclValue): Error | null {
     if (this.environments.length === 0) {
       return new Error('No environment to set memory in')
     }
@@ -240,14 +240,14 @@ export class ProgramMemory {
   }
 
   /**
-   * Returns a new ProgramMemory with only `MemoryItem`s that pass the
+   * Returns a new ProgramMemory with only `KclValue`s that pass the
    * predicate.  Values are deep copied.
    *
    * Note: Return value of the returned ProgramMemory is always null.
    */
   filterVariables(
     keepPrelude: boolean,
-    predicate: (value: MemoryItem) => boolean
+    predicate: (value: KclValue) => boolean
   ): ProgramMemory | Error {
     const environments: Environment[] = []
     for (const [i, env] of this.environments.entries()) {
@@ -290,8 +290,8 @@ export class ProgramMemory {
    *
    * This should only be used to display in the MemoryPane UI.
    */
-  visibleEntries(): Map<string, MemoryItem> {
-    const map = new Map<string, MemoryItem>()
+  visibleEntries(): Map<string, KclValue> {
+    const map = new Map<string, KclValue>()
     let envRef = this.currentEnv
     while (true) {
       const env = this.environments[envRef]
