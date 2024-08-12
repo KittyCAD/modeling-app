@@ -151,11 +151,12 @@ test.describe('Sketch tests', () => {
 
     await page.mouse.click(700, 200)
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> line([0.31, 16.47], %)`
-    )
+    await expect.poll(u.normalisedEditorCode)
+      .toBe(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([12.34, -12.34], %)
+  |> line([-12.34, 12.34], %)
+
+`)
   })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes
