@@ -5,6 +5,7 @@ use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
 const MIN_DIFF: f64 = 0.99;
 
 mod no_visuals;
+mod visuals;
 
 macro_rules! kcl_input {
     ($file:literal) => {
@@ -17,87 +18,6 @@ fn assert_out(test_name: &str, result: &image::DynamicImage) {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face() {
-    let code = kcl_input!("sketch_on_face");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_riddle_small() {
-    let code = kcl_input!("riddle_small");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("riddle_small", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_tan_arc_x_line() {
-    let code = kcl_input!("tan_arc_x_line");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("tan_arc_x_line", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_lego() {
-    let code = kcl_input!("lego");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("lego", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_computed_var() {
-    let code = kcl_input!("computed_var");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("computed_var", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_pipe_as_arg() {
-    let code = kcl_input!("pipe_as_arg");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("pipe_as_arg", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_pentagon_fillet_sugar() {
-    let code = kcl_input!("pentagon_fillet_sugar");
-    let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
-    assert_out("pentagon_fillet_sugar", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_start() {
-    let code = kcl_input!("sketch_on_face_start");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_start", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_mike_stress_lines() {
-    let code = kcl_input!("mike_stress_test");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("mike_stress_test", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_end() {
-    let code = kcl_input!("sketch_on_face_end");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_end", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_end_negative_extrude() {
-    let code = kcl_input!("sketch_on_face_end_negative_extrude");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_end_negative_extrude", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
@@ -107,44 +27,6 @@ async fn kcl_test_fillet_duplicate_tags() {
         result.err().unwrap().to_string(),
         r#"type: KclErrorDetails { source_ranges: [SourceRange([203, 249])], message: "Duplicate tags are not allowed." }"#,
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_start() {
-    let code = kcl_input!("basic_fillet_cube_start");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_start", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_end() {
-    let code = kcl_input!("basic_fillet_cube_end");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_end", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_close_opposite() {
-    let code = kcl_input!("basic_fillet_cube_close_opposite");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_close_opposite", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_next_adjacent() {
-    let code = kcl_input!("basic_fillet_cube_next_adjacent");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_next_adjacent", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_previous_adjacent() {
-    let code = kcl_input!("basic_fillet_cube_previous_adjacent");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_previous_adjacent", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
