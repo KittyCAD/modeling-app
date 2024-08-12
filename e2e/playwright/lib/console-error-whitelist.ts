@@ -27,6 +27,21 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
     },
     {
+      name: '',
+      message: 'false',
+      stack: '',
+      foundInSpec: 'e2e/playwright/testing-segment-overlays.spec.ts',
+      project: 'Google Chrome',
+    },
+    {
+      name: '"{"kind"',
+      // eslint-disable-next-line no-useless-escape
+      message: `engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue(\"no connection to send on\")"}`,
+      stack: '',
+      foundInSpec: 'e2e/playwright/test-utils.ts',
+      project: 'Google Chrome',
+    },
+    {
       name: 'Unhandled Promise Rejection',
       message: "TypeError: null is not an object (evaluating 'sg.value')",
       stack: `Unhandled Promise Rejection: TypeError: null is not an object (evaluating 'sg.value')
@@ -55,6 +70,14 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: `Unhandled Promise Rejection: false
     at unknown (http://localhost:3000/src/clientSideScene/ClientSideSceneComp.tsx:455:78)`,
       foundInSpec: `e2e/playwright/testing-segment-overlays.spec.ts line-[tagOutsideSketch]`,
+      project: 'webkit',
+    },
+    {
+      name: 'Unhandled Promise Rejection',
+      message: `TypeError: null is not an object (evaluating 'programMemory.get(variableDeclarationName).value')`,
+      stack: `    +  stack:Unhandled Promise Rejection: TypeError: null is not an object (evaluating 'programMemory.get(variableDeclarationName).value')
+    +     at unknown (http://localhost:3000/src/machines/modelingMachine.ts:911:49)`,
+      foundInSpec: `e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts`,
       project: 'webkit',
     },
     {
