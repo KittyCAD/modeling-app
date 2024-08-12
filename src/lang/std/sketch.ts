@@ -8,7 +8,7 @@ import {
   PipeExpression,
   CallExpression,
   VariableDeclarator,
-  Value,
+  Expr,
   Literal,
   VariableDeclaration,
   Identifier,
@@ -72,8 +72,8 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 
 export function createFirstArg(
   sketchFn: ToolTip,
-  val: Value | [Value, Value] | [Value, Value, Value]
-): Value | Error {
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+): Expr | Error {
   if (Array.isArray(val)) {
     if (
       [
@@ -338,7 +338,7 @@ export const lineTo: SketchLineHelper = {
     if (err(nodeMeta)) return nodeMeta
     const { node: pipe } = nodeMeta
 
-    const newVals: [Value, Value] = [
+    const newVals: [Expr, Expr] = [
       createLiteral(roundOff(to[0], 2)),
       createLiteral(roundOff(to[1], 2)),
     ]
@@ -1839,7 +1839,7 @@ export function getTagFromCallExpression(
   return new Error(`"${callExp.callee.name}" is not a sketch line helper`)
 }
 
-function isAngleLiteral(lineArugement: Value): boolean {
+function isAngleLiteral(lineArugement: Expr): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
@@ -1907,8 +1907,8 @@ export function getXComponent(
 
 function getFirstArgValuesForXYFns(callExpression: CallExpression):
   | {
-      val: [Value, Value]
-      tag?: Value
+      val: [Expr, Expr]
+      tag?: Expr
     }
   | Error {
   // used for lineTo, line
@@ -1929,8 +1929,8 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression):
 
 function getFirstArgValuesForAngleFns(callExpression: CallExpression):
   | {
-      val: [Value, Value]
-      tag?: Value
+      val: [Expr, Expr]
+      tag?: Expr
     }
   | Error {
   // used for angledLine, angledLineOfXLength, angledLineToX, angledLineOfYLength, angledLineToY
@@ -1957,8 +1957,8 @@ function getFirstArgValuesForAngleFns(callExpression: CallExpression):
 }
 
 function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
-  val: Value
-  tag?: Value
+  val: Expr
+  tag?: Expr
 } {
   // used for xLine, yLine, xLineTo, yLineTo
   const firstArg = callExpression.arguments[0]
@@ -1988,8 +1988,8 @@ const getAngledLineThatIntersects = (
   callExp: CallExpression
 ):
   | {
-      val: [Value, Value, Value]
-      tag?: Value
+      val: [Expr, Expr, Expr]
+      tag?: Expr
     }
   | Error => {
   const firstArg = callExp.arguments[0]
@@ -2011,8 +2011,8 @@ const getAngledLineThatIntersects = (
 
 export function getFirstArg(callExp: CallExpression):
   | {
-      val: Value | [Value, Value] | [Value, Value, Value]
-      tag?: Value
+      val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+      tag?: Expr
     }
   | Error {
   const name = callExp?.callee?.name

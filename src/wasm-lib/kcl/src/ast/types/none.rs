@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     ast::types::ConstraintLevel,
-    executor::{MemoryItem, SourceRange, UserVal},
+    executor::{KclValue, SourceRange, UserVal},
 };
 
 /// KCL value for an optional parameter which was not given an argument.
@@ -37,10 +37,10 @@ impl From<&KclNone> for UserVal {
     }
 }
 
-impl From<&KclNone> for MemoryItem {
+impl From<&KclNone> for KclValue {
     fn from(none: &KclNone) -> Self {
         let val = UserVal::from(none);
-        MemoryItem::UserVal(val)
+        KclValue::UserVal(val)
     }
 }
 

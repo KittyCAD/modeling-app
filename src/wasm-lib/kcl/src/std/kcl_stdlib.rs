@@ -4,7 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, Program, Value},
+    ast::types::{BodyItem, Expr, FunctionExpression, Program},
     docs::{StdLibFn, StdLibFnData},
     token::lexer,
 };
@@ -89,7 +89,7 @@ pub fn extract_function(source: &str) -> Option<(Program, Box<FunctionExpression
     let BodyItem::ExpressionStatement(expr) = src.body.last()? else {
         panic!("expected expression statement");
     };
-    let Value::FunctionExpression(function) = expr.expression.clone() else {
+    let Expr::FunctionExpression(function) = expr.expression.clone() else {
         panic!("expected function expr");
     };
     Some((src, function))

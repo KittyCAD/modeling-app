@@ -724,7 +724,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.21"
+version = "0.1.22"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1397,7 +1397,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "anyhow",
  "approx",
@@ -1467,7 +1467,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.4"
+version = "0.1.6"
 dependencies = [
  "anyhow",
  "hyper",
@@ -1480,9 +1480,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.10"
+version = "0.3.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d798c82f6e62d786fca0a7ec073675bbe9550c885efb99390d2701ca557ec69"
+checksum = "7bc87dcc307aa8c8dd56a6f022da1cbdf13a0a1e2abacb9ca9f897118a75596d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2622,9 +2622,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.122"
+version = "1.0.124"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "784b6203951c57ff748476b126ccb5e8e2959a5c19e5c617ab1956be3dbc68da"
+checksum = "66ad62847a56b3dba58cc891acd13884b9c61138d330c0d7b6181713d4fce38d"
 dependencies = [
  "indexmap 2.2.5",
  "itoa",

@@ -7,7 +7,7 @@ import {
   InterpreterFrom,
 } from 'xstate'
 import { Selection } from './selections'
-import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
+import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
@@ -20,7 +20,7 @@ const INPUT_TYPES = [
   'boolean',
 ] as const
 export interface KclExpression {
-  valueAst: Value
+  valueAst: Expr
   valueText: string
   valueCalculated: string
 }
