@@ -26,7 +26,7 @@ pub struct ProgramMemory {
     pub environments: Vec<Environment>,
     pub current_env: EnvironmentRef,
     #[serde(rename = "return")]
-    pub return_: Option<ProgramReturn>,
+    pub return_: Option<KclValue>,
 }
 
 impl ProgramMemory {
@@ -252,35 +252,6 @@ impl DynamicState {
                 }
             })
             .collect::<Vec<_>>()
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum ProgramReturn {
-    Arguments,
-    Value(KclValue),
-}
-
-impl From<ProgramReturn> for Vec<SourceRange> {
-    fn from(item: ProgramReturn) -> Self {
-        match item {
-            ProgramReturn::Arguments => Default::default(),
-            ProgramReturn::Value(v) => v.into(),
-        }
-    }
-}
-
-impl ProgramReturn {
-    pub fn get_value(&self) -> Result<KclValue, KclError> {
-        match self {
-            ProgramReturn::Value(v) => Ok(v.clone()),
-            ProgramReturn::Arguments => Err(KclError::Semantic(KclErrorDetails {
-                message: "Cannot get value from arguments".to_owned(),
-                source_ranges: self.clone().into(),
-            })),
-        }
     }
 }
 
@@ -685,7 +656,7 @@ pub type MemoryFunction =
         metadata: Vec<Metadata>,
         dynamic_state: DynamicState,
         ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
 
 fn force_memory_function<
     F: Fn(
@@ -695,7 +666,7 @@ fn force_memory_function<
         Vec<Metadata>,
         DynamicState,
         ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>,
 >(
     f: F,
 ) -> F {
@@ -864,7 +835,7 @@ impl KclValue {
         args: Vec<KclValue>,
         dynamic_state: &DynamicState,
         ctx: ExecutorContext,
-    ) -> Result<Option<ProgramReturn>, KclError> {
+    ) -> Result<Option<KclValue>, KclError> {
         let KclValue::Function {
             func,
             expression,
@@ -1773,46 +1744,46 @@ impl ExecutorContext {
                 BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                     Expr::BinaryExpression(bin_expr) => {
                         let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::UnaryExpression(unary_expr) => {
                         let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::Identifier(identifier) => {
                         let value = memory.get(&identifier.name, identifier.into())?.clone();
-                        memory.return_ = Some(ProgramReturn::Value(value));
+                        memory.return_ = Some(value);
                     }
                     Expr::Literal(literal) => {
-                        memory.return_ = Some(ProgramReturn::Value(literal.into()));
+                        memory.return_ = Some(literal.into());
                     }
                     Expr::TagDeclarator(tag) => {
-                        memory.return_ = Some(ProgramReturn::Value(tag.into()));
+                        memory.return_ = Some(tag.into());
                     }
                     Expr::ArrayExpression(array_expr) => {
                         let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::ObjectExpression(obj_expr) => {
                         let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::CallExpression(call_expr) => {
                         let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::MemberExpression(member_expr) => {
                         let result = member_expr.get_result(memory)?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::PipeExpression(pipe_expr) => {
                         let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
+                        memory.return_ = Some(result);
                     }
                     Expr::PipeSubstitution(_) => {}
                     Expr::FunctionExpression(_) => {}
                     Expr::None(none) => {
-                        memory.return_ = Some(ProgramReturn::Value(KclValue::from(none)));
+                        memory.return_ = Some(KclValue::from(none));
                     }
                 },
             }

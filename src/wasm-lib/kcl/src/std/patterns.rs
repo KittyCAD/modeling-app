@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, ProgramReturn, SketchGroup,
-        SketchGroupSet, SourceRange, UserVal,
+        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
+        SourceRange, UserVal,
     },
     function_param::FunctionParam,
     std::{types::Uint, Args},
@@ -218,12 +218,6 @@ async fn make_transform<'a>(
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let ProgramReturn::Value(transform_fn_return) = transform_fn_return else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Transform function must return a value".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
-    };
     let KclValue::UserVal(transform) = transform_fn_return else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Transform function must return a transform object".to_string(),
