@@ -268,6 +268,18 @@ async function waitForAuthAndLsp(page: Page) {
   return waitForLspPromise
 }
 
+export function normaliseKclNumbers(code: string, ignoreZero = true): string {
+  const numberRegexp = /(?<!\w)-?\b\d+(\.\d+)?\b(?!\w)/g
+  const replaceNumber = (number: string) => {
+    if (ignoreZero && (number === '0' || number === '-0')) return number
+    const sign = number.startsWith('-') ? '-' : ''
+    return `${sign}12.34`
+  }
+  const replaceNumbers = (text: string) =>
+    text.replace(numberRegexp, replaceNumber)
+  return replaceNumbers(code)
+}
+
 export async function getUtils(page: Page) {
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
@@ -330,6 +342,11 @@ export async function getUtils(page: Page) {
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    normalisedEditorCode: async () => {
+      const code = await page.locator('.cm-content').innerText()
+      return normaliseKclNumbers(code)
+    },
+    normalisedCode: (code: string) => normaliseKclNumbers(code),
     canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
