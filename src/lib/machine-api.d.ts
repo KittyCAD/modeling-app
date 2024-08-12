@@ -110,7 +110,7 @@ export interface components {
       /** @description The reason of the info command. */
       reason?: components['schemas']['Reason'] | null
       /** @description The result of the info command. */
-      result: components['schemas']['Result']
+      result?: components['schemas']['Result'] | null
       /** @description The sequence id. */
       sequence_id: components['schemas']['SequenceId']
     } & {
