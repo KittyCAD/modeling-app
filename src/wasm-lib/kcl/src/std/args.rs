@@ -131,16 +131,13 @@ impl Args {
                     self.current_program_memory
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
-                        .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                        .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(
-                    self.dynamic_state
-                        .fillet_or_chamfer_ids_on_sketch_group(sketch_group_id),
-                );
+                ids.extend(self.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
                 traversed_sketch_groups.push(sketch_group_id);
             }
 
-            ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
+            ids.extend(extrude_group.get_all_edge_cut_ids());
         }
 
         // We can return early if there are no fillets or chamfers.

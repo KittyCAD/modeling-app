@@ -251,7 +251,7 @@ pub(crate) async fn do_post_extrude(
         height: length,
         start_cap_id,
         end_cap_id,
-        fillet_or_chamfers: vec![],
+        edge_cuts: vec![],
         meta: sketch_group.meta,
     }))
 }
