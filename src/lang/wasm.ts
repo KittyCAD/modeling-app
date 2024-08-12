@@ -39,7 +39,7 @@ import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
-export type { Value } from '../wasm-lib/kcl/bindings/Value'
+export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
 export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
 export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'

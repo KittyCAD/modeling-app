@@ -266,7 +266,7 @@ impl Program {
 
     /// Returns a value that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
+    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
@@ -389,7 +389,7 @@ impl Program {
             };
 
             // Check if we have a function expression.
-            if let Some(Value::FunctionExpression(ref mut function_expression)) = &mut value {
+            if let Some(Expr::FunctionExpression(ref mut function_expression)) = &mut value {
                 // Check if the params to the function expression contain the position.
                 for param in &mut function_expression.params {
                     let param_source_range: SourceRange = (&param.identifier).into();
@@ -444,7 +444,7 @@ impl Program {
     }
 
     /// Replace a value with the new value, use the source range for matching the exact value.
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
             match item {
                 BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
@@ -570,11 +570,12 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
+/// An expression can be evaluated to yield a single KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum Value {
+pub enum Expr {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
     TagDeclarator(Box<TagDeclarator>),
@@ -590,22 +591,22 @@ pub enum Value {
     None(KclNone),
 }
 
-impl Value {
+impl Expr {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
-            Value::Literal(lit) => lit.compute_digest(),
-            Value::Identifier(id) => id.compute_digest(),
-            Value::TagDeclarator(tag) => tag.compute_digest(),
-            Value::BinaryExpression(be) => be.compute_digest(),
-            Value::FunctionExpression(fe) => fe.compute_digest(),
-            Value::CallExpression(ce) => ce.compute_digest(),
-            Value::PipeExpression(pe) => pe.compute_digest(),
-            Value::PipeSubstitution(ps) => ps.compute_digest(),
-            Value::ArrayExpression(ae) => ae.compute_digest(),
-            Value::ObjectExpression(oe) => oe.compute_digest(),
-            Value::MemberExpression(me) => me.compute_digest(),
-            Value::UnaryExpression(ue) => ue.compute_digest(),
-            Value::None(_) => {
+            Expr::Literal(lit) => lit.compute_digest(),
+            Expr::Identifier(id) => id.compute_digest(),
+            Expr::TagDeclarator(tag) => tag.compute_digest(),
+            Expr::BinaryExpression(be) => be.compute_digest(),
+            Expr::FunctionExpression(fe) => fe.compute_digest(),
+            Expr::CallExpression(ce) => ce.compute_digest(),
+            Expr::PipeExpression(pe) => pe.compute_digest(),
+            Expr::PipeSubstitution(ps) => ps.compute_digest(),
+            Expr::ArrayExpression(ae) => ae.compute_digest(),
+            Expr::ObjectExpression(oe) => oe.compute_digest(),
+            Expr::MemberExpression(me) => me.compute_digest(),
+            Expr::UnaryExpression(ue) => ue.compute_digest(),
+            Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
                 hasher.finalize().into()
@@ -615,19 +616,19 @@ impl Value {
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         match &self {
-            Value::BinaryExpression(bin_exp) => bin_exp.recast(options),
-            Value::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
-            Value::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
-            Value::MemberExpression(mem_exp) => mem_exp.recast(),
-            Value::Literal(literal) => literal.recast(),
-            Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
-            Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
-            Value::Identifier(ident) => ident.name.to_string(),
-            Value::TagDeclarator(tag) => tag.recast(),
-            Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
-            Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
-            Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
-            Value::None(_) => {
+            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
+            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::MemberExpression(mem_exp) => mem_exp.recast(),
+            Expr::Literal(literal) => literal.recast(),
+            Expr::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
+            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::Identifier(ident) => ident.name.to_string(),
+            Expr::TagDeclarator(tag) => tag.recast(),
+            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
+            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
         }
@@ -656,78 +657,78 @@ impl Value {
     // Get the non code meta for the value.
     pub fn get_non_code_meta(&self) -> Option<&NonCodeMeta> {
         match self {
-            Value::BinaryExpression(_bin_exp) => None,
-            Value::ArrayExpression(_array_exp) => None,
-            Value::ObjectExpression(_obj_exp) => None,
-            Value::MemberExpression(_mem_exp) => None,
-            Value::Literal(_literal) => None,
-            Value::FunctionExpression(_func_exp) => None,
-            Value::CallExpression(_call_exp) => None,
-            Value::Identifier(_ident) => None,
-            Value::TagDeclarator(_tag) => None,
-            Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
-            Value::UnaryExpression(_unary_exp) => None,
-            Value::PipeSubstitution(_pipe_substitution) => None,
-            Value::None(_none) => None,
+            Expr::BinaryExpression(_bin_exp) => None,
+            Expr::ArrayExpression(_array_exp) => None,
+            Expr::ObjectExpression(_obj_exp) => None,
+            Expr::MemberExpression(_mem_exp) => None,
+            Expr::Literal(_literal) => None,
+            Expr::FunctionExpression(_func_exp) => None,
+            Expr::CallExpression(_call_exp) => None,
+            Expr::Identifier(_ident) => None,
+            Expr::TagDeclarator(_tag) => None,
+            Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
+            Expr::UnaryExpression(_unary_exp) => None,
+            Expr::PipeSubstitution(_pipe_substitution) => None,
+            Expr::None(_none) => None,
         }
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         if source_range == self.clone().into() {
             *self = new_value;
             return;
         }
 
         match self {
-            Value::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
-            Value::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
-            Value::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
-            Value::MemberExpression(_) => {}
-            Value::Literal(_) => {}
-            Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
-            Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
-            Value::Identifier(_) => {}
-            Value::TagDeclarator(_) => {}
-            Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
-            Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
-            Value::PipeSubstitution(_) => {}
-            Value::None(_) => {}
+            Expr::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
+            Expr::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
+            Expr::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
+            Expr::MemberExpression(_) => {}
+            Expr::Literal(_) => {}
+            Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
+            Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
+            Expr::Identifier(_) => {}
+            Expr::TagDeclarator(_) => {}
+            Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
+            Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
+            Expr::PipeSubstitution(_) => {}
+            Expr::None(_) => {}
         }
     }
 
     pub fn start(&self) -> usize {
         match self {
-            Value::Literal(literal) => literal.start(),
-            Value::Identifier(identifier) => identifier.start(),
-            Value::TagDeclarator(tag) => tag.start(),
-            Value::BinaryExpression(binary_expression) => binary_expression.start(),
-            Value::FunctionExpression(function_expression) => function_expression.start(),
-            Value::CallExpression(call_expression) => call_expression.start(),
-            Value::PipeExpression(pipe_expression) => pipe_expression.start(),
-            Value::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
-            Value::ArrayExpression(array_expression) => array_expression.start(),
-            Value::ObjectExpression(object_expression) => object_expression.start(),
-            Value::MemberExpression(member_expression) => member_expression.start(),
-            Value::UnaryExpression(unary_expression) => unary_expression.start(),
-            Value::None(none) => none.start,
+            Expr::Literal(literal) => literal.start(),
+            Expr::Identifier(identifier) => identifier.start(),
+            Expr::TagDeclarator(tag) => tag.start(),
+            Expr::BinaryExpression(binary_expression) => binary_expression.start(),
+            Expr::FunctionExpression(function_expression) => function_expression.start(),
+            Expr::CallExpression(call_expression) => call_expression.start(),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.start(),
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
+            Expr::ArrayExpression(array_expression) => array_expression.start(),
+            Expr::ObjectExpression(object_expression) => object_expression.start(),
+            Expr::MemberExpression(member_expression) => member_expression.start(),
+            Expr::UnaryExpression(unary_expression) => unary_expression.start(),
+            Expr::None(none) => none.start,
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            Value::Literal(literal) => literal.end(),
-            Value::Identifier(identifier) => identifier.end(),
-            Value::TagDeclarator(tag) => tag.end(),
-            Value::BinaryExpression(binary_expression) => binary_expression.end(),
-            Value::FunctionExpression(function_expression) => function_expression.end(),
-            Value::CallExpression(call_expression) => call_expression.end(),
-            Value::PipeExpression(pipe_expression) => pipe_expression.end(),
-            Value::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
-            Value::ArrayExpression(array_expression) => array_expression.end(),
-            Value::ObjectExpression(object_expression) => object_expression.end(),
-            Value::MemberExpression(member_expression) => member_expression.end(),
-            Value::UnaryExpression(unary_expression) => unary_expression.end(),
-            Value::None(none) => none.end,
+            Expr::Literal(literal) => literal.end(),
+            Expr::Identifier(identifier) => identifier.end(),
+            Expr::TagDeclarator(tag) => tag.end(),
+            Expr::BinaryExpression(binary_expression) => binary_expression.end(),
+            Expr::FunctionExpression(function_expression) => function_expression.end(),
+            Expr::CallExpression(call_expression) => call_expression.end(),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.end(),
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
+            Expr::ArrayExpression(array_expression) => array_expression.end(),
+            Expr::ObjectExpression(object_expression) => object_expression.end(),
+            Expr::MemberExpression(member_expression) => member_expression.end(),
+            Expr::UnaryExpression(unary_expression) => unary_expression.end(),
+            Expr::None(none) => none.end,
         }
     }
 
@@ -735,82 +736,82 @@ impl Value {
     /// This is really recursive so keep that in mind.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
-            Value::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
-            Value::FunctionExpression(function_expression) => {
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
+            Expr::FunctionExpression(function_expression) => {
                 function_expression.get_hover_value_for_position(pos, code)
             }
-            Value::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
-            Value::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
-            Value::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
-            Value::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
-            Value::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
-            Value::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
+            Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
+            Expr::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
+            Expr::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
             // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
-            Value::None(_) => None,
-            Value::Literal(_) => None,
-            Value::Identifier(_) => None,
-            Value::TagDeclarator(_) => None,
+            Expr::None(_) => None,
+            Expr::Literal(_) => None,
+            Expr::Identifier(_) => None,
+            Expr::TagDeclarator(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
-            Value::PipeSubstitution(_) => None,
+            Expr::PipeSubstitution(_) => None,
         }
     }
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
-            Value::Literal(_literal) => {}
-            Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
-            Value::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
-            Value::BinaryExpression(ref mut binary_expression) => {
+            Expr::Literal(_literal) => {}
+            Expr::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Expr::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
+            Expr::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
-            Value::FunctionExpression(_function_identifier) => {}
-            Value::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
-            Value::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
-            Value::PipeSubstitution(_) => {}
-            Value::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
-            Value::ObjectExpression(ref mut object_expression) => {
+            Expr::FunctionExpression(_function_identifier) => {}
+            Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeSubstitution(_) => {}
+            Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Expr::ObjectExpression(ref mut object_expression) => {
                 object_expression.rename_identifiers(old_name, new_name)
             }
-            Value::MemberExpression(ref mut member_expression) => {
+            Expr::MemberExpression(ref mut member_expression) => {
                 member_expression.rename_identifiers(old_name, new_name)
             }
-            Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
-            Value::None(_) => {}
+            Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            Expr::None(_) => {}
         }
     }
 
     /// Get the constraint level for a value type.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
-            Value::Literal(literal) => literal.get_constraint_level(),
-            Value::Identifier(identifier) => identifier.get_constraint_level(),
-            Value::TagDeclarator(tag) => tag.get_constraint_level(),
-            Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
+            Expr::Literal(literal) => literal.get_constraint_level(),
+            Expr::Identifier(identifier) => identifier.get_constraint_level(),
+            Expr::TagDeclarator(tag) => tag.get_constraint_level(),
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
-            Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
-            Value::CallExpression(call_expression) => call_expression.get_constraint_level(),
-            Value::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
-            Value::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
+            Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
+            Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
+            Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
                 source_ranges: vec![pipe_substitution.into()],
             },
-            Value::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
-            Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
-            Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
-            Value::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
-            Value::None(none) => none.get_constraint_level(),
+            Expr::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
+            Expr::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
+            Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            Expr::None(none) => none.get_constraint_level(),
         }
     }
 }
 
-impl From<Value> for SourceRange {
-    fn from(value: Value) -> Self {
+impl From<Expr> for SourceRange {
+    fn from(value: Expr) -> Self {
         Self([value.start(), value.end()])
     }
 }
 
-impl From<&Value> for SourceRange {
-    fn from(value: &Value) -> Self {
+impl From<&Expr> for SourceRange {
+    fn from(value: &Expr) -> Self {
         Self([value.start(), value.end()])
     }
 }
@@ -864,7 +865,7 @@ impl BinaryPart {
         }
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         match self {
             BinaryPart::Literal(_) => {}
             BinaryPart::Identifier(_) => {}
@@ -1224,7 +1225,7 @@ impl NonCodeMeta {
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
-    pub expression: Value,
+    pub expression: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -1245,7 +1246,7 @@ pub struct CallExpression {
     pub start: usize,
     pub end: usize,
     pub callee: Identifier,
-    pub arguments: Vec<Value>,
+    pub arguments: Vec<Expr>,
     pub optional: bool,
 
     pub digest: Option<Digest>,
@@ -1253,14 +1254,14 @@ pub struct CallExpression {
 
 impl_value_meta!(CallExpression);
 
-impl From<CallExpression> for Value {
+impl From<CallExpression> for Expr {
     fn from(call_expression: CallExpression) -> Self {
-        Value::CallExpression(Box::new(call_expression))
+        Expr::CallExpression(Box::new(call_expression))
     }
 }
 
 impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Value>) -> Result<Self, KclError> {
+    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Self, KclError> {
         Ok(Self {
             start: 0,
             end: 0,
@@ -1284,14 +1285,14 @@ impl CallExpression {
     pub fn has_substitution_arg(&self) -> bool {
         self.arguments
             .iter()
-            .any(|arg| matches!(arg, Value::PipeSubstitution(_)))
+            .any(|arg| matches!(arg, Expr::PipeSubstitution(_)))
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange([self.start, self.end])]
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for arg in &mut self.arguments {
             arg.replace_value(source_range, new_value.clone());
         }
@@ -1694,14 +1695,14 @@ impl VariableDeclaration {
         })
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for declaration in &mut self.declarations {
             declaration.init.replace_value(source_range, new_value.clone());
         }
     }
 
     /// Returns a value that includes the given character position.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
+    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
         for declaration in &self.declarations {
             let source_range: SourceRange = declaration.into();
             if source_range.contains(pos) {
@@ -1713,7 +1714,7 @@ impl VariableDeclaration {
     }
 
     /// Returns a value that includes the given character position.
-    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Value> {
+    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
         for declaration in &mut self.declarations {
             let source_range: SourceRange = declaration.clone().into();
             if source_range.contains(pos) {
@@ -1771,7 +1772,7 @@ impl VariableDeclaration {
             };
 
             let children = match &declaration.init {
-                Value::FunctionExpression(function_expression) => {
+                Expr::FunctionExpression(function_expression) => {
                     symbol_kind = SymbolKind::FUNCTION;
                     let mut children = vec![];
                     for param in &function_expression.params {
@@ -1790,7 +1791,7 @@ impl VariableDeclaration {
                     }
                     children
                 }
-                Value::ObjectExpression(object_expression) => {
+                Expr::ObjectExpression(object_expression) => {
                     symbol_kind = SymbolKind::OBJECT;
                     let mut children = vec![];
                     for property in &object_expression.properties {
@@ -1798,7 +1799,7 @@ impl VariableDeclaration {
                     }
                     children
                 }
-                Value::ArrayExpression(_) => {
+                Expr::ArrayExpression(_) => {
                     symbol_kind = SymbolKind::ARRAY;
                     vec![]
                 }
@@ -1886,7 +1887,7 @@ pub struct VariableDeclarator {
     /// The identifier of the variable.
     pub id: Identifier,
     /// The value of the variable.
-    pub init: Value,
+    pub init: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -1894,7 +1895,7 @@ pub struct VariableDeclarator {
 impl_value_meta!(VariableDeclarator);
 
 impl VariableDeclarator {
-    pub fn new(name: &str, init: Value) -> Self {
+    pub fn new(name: &str, init: Expr) -> Self {
         Self {
             start: 0,
             end: 0,
@@ -2217,9 +2218,9 @@ impl Default for PipeSubstitution {
     }
 }
 
-impl From<PipeSubstitution> for Value {
+impl From<PipeSubstitution> for Expr {
     fn from(pipe_substitution: PipeSubstitution) -> Self {
-        Value::PipeSubstitution(Box::new(pipe_substitution))
+        Expr::PipeSubstitution(Box::new(pipe_substitution))
     }
 }
 
@@ -2230,21 +2231,21 @@ impl From<PipeSubstitution> for Value {
 pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
-    pub elements: Vec<Value>,
+    pub elements: Vec<Expr>,
 
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ArrayExpression);
 
-impl From<ArrayExpression> for Value {
+impl From<ArrayExpression> for Expr {
     fn from(array_expression: ArrayExpression) -> Self {
-        Value::ArrayExpression(Box::new(array_expression))
+        Expr::ArrayExpression(Box::new(array_expression))
     }
 }
 
 impl ArrayExpression {
-    pub fn new(elements: Vec<Value>) -> Self {
+    pub fn new(elements: Vec<Expr>) -> Self {
         Self {
             start: 0,
             end: 0,
@@ -2260,7 +2261,7 @@ impl ArrayExpression {
         }
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for element in &mut self.elements {
             element.replace_value(source_range, new_value.clone());
         }
@@ -2340,45 +2341,45 @@ impl ArrayExpression {
 
         for element in &self.elements {
             let result = match element {
-                Value::Literal(literal) => literal.into(),
-                Value::TagDeclarator(tag) => tag.execute(memory).await?,
-                Value::None(none) => none.into(),
-                Value::Identifier(identifier) => {
+                Expr::Literal(literal) => literal.into(),
+                Expr::TagDeclarator(tag) => tag.execute(memory).await?,
+                Expr::None(none) => none.into(),
+                Expr::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
                 }
-                Value::BinaryExpression(binary_expression) => {
+                Expr::BinaryExpression(binary_expression) => {
                     binary_expression
                         .get_result(memory, dynamic_state, pipe_info, ctx)
                         .await?
                 }
-                Value::CallExpression(call_expression) => {
+                Expr::CallExpression(call_expression) => {
                     call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
                 }
-                Value::UnaryExpression(unary_expression) => {
+                Expr::UnaryExpression(unary_expression) => {
                     unary_expression
                         .get_result(memory, dynamic_state, pipe_info, ctx)
                         .await?
                 }
-                Value::ObjectExpression(object_expression) => {
+                Expr::ObjectExpression(object_expression) => {
                     object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
                 }
-                Value::ArrayExpression(array_expression) => {
+                Expr::ArrayExpression(array_expression) => {
                     array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
                 }
-                Value::PipeExpression(pipe_expression) => {
+                Expr::PipeExpression(pipe_expression) => {
                     pipe_expression
                         .get_result(memory, dynamic_state, pipe_info, ctx)
                         .await?
                 }
-                Value::PipeSubstitution(pipe_substitution) => {
+                Expr::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Value::FunctionExpression(function_expression) => {
+                Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+                Expr::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
@@ -2435,7 +2436,7 @@ impl ObjectExpression {
         }
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for property in &mut self.properties {
             property.value.replace_value(source_range, new_value.clone());
         }
@@ -2526,45 +2527,45 @@ impl ObjectExpression {
         let mut object = Map::new();
         for property in &self.properties {
             let result = match &property.value {
-                Value::Literal(literal) => literal.into(),
-                Value::TagDeclarator(tag) => tag.execute(memory).await?,
-                Value::None(none) => none.into(),
-                Value::Identifier(identifier) => {
+                Expr::Literal(literal) => literal.into(),
+                Expr::TagDeclarator(tag) => tag.execute(memory).await?,
+                Expr::None(none) => none.into(),
+                Expr::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
                 }
-                Value::BinaryExpression(binary_expression) => {
+                Expr::BinaryExpression(binary_expression) => {
                     binary_expression
                         .get_result(memory, dynamic_state, pipe_info, ctx)
                         .await?
                 }
-                Value::CallExpression(call_expression) => {
+                Expr::CallExpression(call_expression) => {
                     call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
                 }
-                Value::UnaryExpression(unary_expression) => {
+                Expr::UnaryExpression(unary_expression) => {
                     unary_expression
                         .get_result(memory, dynamic_state, pipe_info, ctx)
                         .await?
                 }
-                Value::ObjectExpression(object_expression) => {
+                Expr::ObjectExpression(object_expression) => {
                     object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
                 }
-                Value::ArrayExpression(array_expression) => {
+                Expr::ArrayExpression(array_expression) => {
                     array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
                 }
-                Value::PipeExpression(pipe_expression) => {
+                Expr::PipeExpression(pipe_expression) => {
                     pipe_expression
                         .get_result(memory, dynamic_state, pipe_info, ctx)
                         .await?
                 }
-                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Value::PipeSubstitution(pipe_substitution) => {
+                Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+                Expr::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                Value::FunctionExpression(function_expression) => {
+                Expr::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
@@ -2601,7 +2602,7 @@ pub struct ObjectProperty {
     pub start: usize,
     pub end: usize,
     pub key: Identifier,
-    pub value: Value,
+    pub value: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -3046,7 +3047,7 @@ impl BinaryExpression {
         hasher.update(slf.right.compute_digest());
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.left.replace_value(source_range, new_value.clone());
         self.right.replace_value(source_range, new_value);
     }
@@ -3309,7 +3310,7 @@ impl UnaryExpression {
         hasher.update(slf.argument.compute_digest());
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.argument.replace_value(source_range, new_value);
     }
 
@@ -3404,7 +3405,7 @@ pub struct PipeExpression {
     pub end: usize,
     // TODO: Only the first body expression can be any Value.
     // The rest will be CallExpression, and the AST type should reflect this.
-    pub body: Vec<Value>,
+    pub body: Vec<Expr>,
     pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
@@ -3412,14 +3413,14 @@ pub struct PipeExpression {
 
 impl_value_meta!(PipeExpression);
 
-impl From<PipeExpression> for Value {
+impl From<PipeExpression> for Expr {
     fn from(pipe_expression: PipeExpression) -> Self {
-        Value::PipeExpression(Box::new(pipe_expression))
+        Expr::PipeExpression(Box::new(pipe_expression))
     }
 }
 
 impl PipeExpression {
-    pub fn new(body: Vec<Value>) -> Self {
+    pub fn new(body: Vec<Expr>) -> Self {
         Self {
             start: 0,
             end: 0,
@@ -3437,7 +3438,7 @@ impl PipeExpression {
         hasher.update(slf.non_code_meta.compute_digest());
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for value in &mut self.body {
             value.replace_value(source_range, new_value.clone());
         }
@@ -3531,7 +3532,7 @@ impl PipeExpression {
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     dynamic_state: &DynamicState,
-    body: &[Value],
+    body: &[Expr],
     pipe_info: &PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
@@ -3568,17 +3569,17 @@ async fn execute_pipe_body(
     // Evaluate remaining elements.
     for expression in body {
         let output = match expression {
-            Value::BinaryExpression(binary_expression) => {
+            Expr::BinaryExpression(binary_expression) => {
                 binary_expression
                     .get_result(memory, dynamic_state, &new_pipe_info, ctx)
                     .await?
             }
-            Value::CallExpression(call_expression) => {
+            Expr::CallExpression(call_expression) => {
                 call_expression
                     .execute(memory, dynamic_state, &new_pipe_info, ctx)
                     .await?
             }
-            Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
+            Expr::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
             _ => {
                 // Return an error this should not happen.
                 return Err(KclError::Semantic(KclErrorDetails {
@@ -3813,7 +3814,7 @@ impl FunctionExpression {
         self.required_params().len()..=self.params.len()
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.body.replace_value(source_range, new_value);
     }
 
@@ -3850,7 +3851,7 @@ impl FunctionExpression {
 pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
-    pub argument: Value,
+    pub argument: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -5565,7 +5566,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5589,7 +5590,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5613,7 +5614,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5676,7 +5677,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5940,25 +5941,25 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             panic!("expected a function!");
         };
 
-        let Value::CallExpression(ce) = expression else {
+        let Expr::CallExpression(ce) = expression else {
             panic!("expected a function!");
         };
 
         assert!(!ce.arguments.is_empty());
 
-        let Value::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
+        let Expr::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
             panic!("expected a object!");
         };
 
         assert_eq!(oe.properties.len(), 2);
 
-        let Value::Literal(ref l) = oe.properties.first().unwrap().value else {
+        let Expr::Literal(ref l) = oe.properties.first().unwrap().value else {
             panic!("expected a literal!");
         };
 
         assert_eq!(l.raw, "true");
 
-        let Value::Literal(ref l) = oe.properties.get(1).unwrap().value else {
+        let Expr::Literal(ref l) = oe.properties.get(1).unwrap().value else {
             panic!("expected a literal!");
         };
 
