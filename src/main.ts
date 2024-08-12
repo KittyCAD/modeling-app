@@ -29,36 +29,19 @@ const createWindow = () => {
     },
   })
 
-  const splashWindow = new BrowserWindow({
-    width: 500,
-    height: 300,
-    transparent: false,
-    frame: false,
-    alwaysOnTop: true,
-  })
-
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    splashWindow.loadFile('public/splash.html')
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
-    splashWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/splash.html`)
-    )
     mainWindow.loadFile(
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     )
   }
 
-  splashWindow.center()
-
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  setTimeout(() => {
-    splashWindow.close()
     mainWindow.show()
-  }, 3000)
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
