@@ -70,10 +70,8 @@ const example = extrude(10, exampleSketch)
 {
 	// The extrude group the face is on.
 	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -101,6 +99,8 @@ const example = extrude(10, exampleSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -490,10 +490,8 @@ const example = extrude(10, exampleSketch)
 {
 	// The extrude group the face is on.
 	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -521,6 +519,8 @@ const example = extrude(10, exampleSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.

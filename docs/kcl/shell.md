@@ -132,10 +132,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```js
 {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -163,6 +161,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -206,10 +206,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 {
 	// The extrude group the face is on.
 	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -237,6 +235,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -527,10 +527,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```js
 {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -558,6 +556,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -601,10 +601,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 {
 	// The extrude group the face is on.
 	extrudeGroup: {
-	// The id of the extrusion end cap
-	endCapId: uuid,
 	// Chamfers or fillets on this extrude group.
-	filletOrChamfers: [{
+	edgeCuts: [{
 	// The engine id of the edge to fillet.
 	edgeId: uuid,
 	// The id of the engine command that called this fillet.
@@ -632,6 +630,8 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 },
 	type: "chamfer",
 }],
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
