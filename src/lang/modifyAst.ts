@@ -6,7 +6,7 @@ import {
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  Value,
+  Expr,
   Literal,
   PipeSubstitution,
   Identifier,
@@ -195,10 +195,7 @@ export function findUniqueName(
   return findUniqueName(searchStr, name, pad, index + 1)
 }
 
-export function mutateArrExp(
-  node: Value,
-  updateWith: ArrayExpression
-): boolean {
+export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
       if (isLiteralArrayOrStatic(element)) {
@@ -211,7 +208,7 @@ export function mutateArrExp(
 }
 
 export function mutateObjExpProp(
-  node: Value,
+  node: Expr,
   updateWith: Literal | ArrayExpression,
   key: string
 ): boolean {
@@ -254,7 +251,7 @@ export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = false,
-  distance = createLiteral(4) as Value
+  distance = createLiteral(4) as Expr
 ):
   | {
       modifiedAst: Program
@@ -608,7 +605,7 @@ export function createVariableDeclaration(
 }
 
 export function createObjectExpression(properties: {
-  [key: string]: Value
+  [key: string]: Expr
 }): ObjectExpression {
   return {
     type: 'ObjectExpression',

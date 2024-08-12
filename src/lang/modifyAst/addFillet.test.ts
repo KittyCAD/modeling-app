@@ -3,7 +3,7 @@ import {
   recast,
   initPromise,
   PathToNode,
-  Value,
+  Expr,
   Program,
   CallExpression,
 } from '../wasm'
@@ -25,7 +25,7 @@ const runFilletTest = async (
   code: string,
   segmentSnippet: string,
   extrudeSnippet: string,
-  radius = createLiteral(5) as Value,
+  radius = createLiteral(5) as Expr,
   expectedCode: string
 ) => {
   const astOrError = parse(code)
@@ -57,7 +57,7 @@ const runFilletTest = async (
     return new Error('Path to extrude node not found')
   }
 
-  // const radius = createLiteral(5) as Value
+  // const radius = createLiteral(5) as Expr
 
   const result = addFillet(ast, pathToSegmentNode, pathToExtrudeNode, radius)
   if (err(result)) {
@@ -90,7 +90,7 @@ describe('Testing addFillet', () => {
     `
     const segmentSnippet = `line([60.04, -55.72], %)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Value
+    const radius = createLiteral(5) as Expr
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -133,7 +133,7 @@ const extrude001 = extrude(50, sketch001)
       `
     const segmentSnippet = `line([60.04, -55.72], %)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Value
+    const radius = createLiteral(5) as Expr
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -176,7 +176,7 @@ const extrude001 = extrude(50, sketch001)
       `
     const segmentSnippet = `line([-87.24, -47.08], %, $seg03)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Value
+    const radius = createLiteral(5) as Expr
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -218,7 +218,7 @@ const extrude001 = extrude(50, sketch001)
             |> fillet({ radius: 10, tags: [seg03] }, %)`
     const segmentSnippet = `line([60.04, -55.72], %)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Value
+    const radius = createLiteral(5) as Expr
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
