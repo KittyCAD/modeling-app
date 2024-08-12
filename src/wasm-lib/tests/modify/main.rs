@@ -81,7 +81,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_modify_sketch_part001() {
+async fn kcl_test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
         r#"const {} = startSketchOn("XY")
@@ -106,7 +106,7 @@ async fn serial_test_modify_sketch_part001() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_modify_sketch_part002() {
+async fn kcl_test_modify_sketch_part002() {
     let name = "part002";
     let code = format!(
         r#"const {} = startSketchOn("XY")
@@ -132,7 +132,7 @@ async fn serial_test_modify_sketch_part002() {
 
 #[tokio::test(flavor = "multi_thread")]
 #[ignore] // until KittyCAD/engine#1434 is fixed.
-async fn serial_test_modify_close_sketch() {
+async fn kcl_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
         r#"const {} = startSketchOn("XY")
@@ -158,7 +158,7 @@ async fn serial_test_modify_close_sketch() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_modify_line_to_close_sketch() {
+async fn kcl_test_modify_line_to_close_sketch() {
     let name = "part002";
     let code = format!(
         r#"const {} = startSketchOn("XY")
@@ -194,7 +194,7 @@ async fn serial_test_modify_line_to_close_sketch() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_modify_with_constraint() {
+async fn kcl_test_modify_with_constraint() {
     let name = "part002";
     let code = format!(
         r#"const thing = 12
@@ -220,7 +220,7 @@ const {} = startSketchOn("XY")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_modify_line_should_close_sketch() {
+async fn kcl_test_modify_line_should_close_sketch() {
     let name = "part003";
     let code = format!(
         r#"const {} = startSketchOn("XY")

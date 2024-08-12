@@ -743,9 +743,9 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 // For each kcl code block, we want to generate a test that checks that the
 // code block is valid kcl code and compiles and executes.
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
-    let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
+    let test_name = format_ident!("kcl_test_example_{}{}", fn_name, index);
     let test_name_mock = format_ident!("test_mock_example_{}{}", fn_name, index);
-    let test_name_str = format!("serial_test_example_{}{}", fn_name, index);
+    let output_test_name_str = format!("serial_test_example_{}{}", fn_name, index);
 
     quote! {
         #[tokio::test(flavor = "multi_thread")]
@@ -769,7 +769,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let code = #code_block;
             // Note, `crate` must be kcl_lib
             let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm).await.unwrap();
-            twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #test_name_str), &result, 0.99);
+            twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #output_test_name_str), &result, 0.99);
         }
     }
 }

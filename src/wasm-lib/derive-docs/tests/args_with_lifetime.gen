@@ -20,7 +20,7 @@ mod test_examples_someFn {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_someFn0() {
+    async fn kcl_test_example_someFn0() {
         let code = "someFn()";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
