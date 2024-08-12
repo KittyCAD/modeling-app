@@ -79,7 +79,8 @@
                     "$ref": "#/components/schemas/Result"
                   }
                 ],
-                "description": "The result of the info command."
+                "description": "The result of the info command.",
+                "nullable": true
               },
               "sequence_id": {
                 "allOf": [
@@ -93,7 +94,6 @@
             "required": [
               "command",
               "module",
-              "result",
               "sequence_id"
             ],
             "type": "object"
