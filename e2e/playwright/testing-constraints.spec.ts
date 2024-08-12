@@ -80,11 +80,11 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
   |> angledLine([segAng(seg01), yo], %)
-  |> line([41.19, 28.97 + 5], %)
+  |> line([41.19, 58.97 + 5], %)
 const part002 = startSketchOn('XZ')
-  |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, $seg_what)
-  |> yLine(-264.06, %)
+  |> startProfileAt([299.05, 120], %)
+  |> xLine(-385.34, %, $seg_what)
+  |> yLine(-170.06, %)
   |> xLine(segLen(seg_what), %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)`
       )
@@ -138,7 +138,7 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
   |> angledLine([segAng(seg01), 78.33], %)
-  |> line([41.19, 28.97], %)
+  |> line([51.19, 48.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
@@ -237,7 +237,7 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-  |> line([41.19, 28.97], %)
+  |> line([51.19, 48.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
@@ -343,7 +343,7 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-  |> line([41.19, 28.97], %)
+  |> line([51.19, 48.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
@@ -450,7 +450,7 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-  |> line([41.19, 28.97], %)
+  |> line([51.19, 48.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
@@ -560,7 +560,7 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-  |> line([41.19, 28.97], %)
+  |> line([51.19, 48.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
@@ -613,14 +613,14 @@ const part002 = startSketchOn('XZ')
         codeAfter: [
           `|> yLine(130.4, %)`,
           `|> yLine(77.79, %)`,
-          `|> yLine(28.97, %)`,
+          `|> yLine(48.97, %)`,
         ],
       },
       {
         codeAfter: [
           `|> xLine(74.36, %)`,
           `|> xLine(9.16, %)`,
-          `|> xLine(41.19, %)`,
+          `|> xLine(51.19, %)`,
         ],
         constraintName: 'Horizontal',
       },
@@ -636,7 +636,7 @@ const part001 = startSketchOn('XZ')
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-  |> line([41.19, 28.97], %)
+  |> line([51.19, 48.97], %)
 const part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
