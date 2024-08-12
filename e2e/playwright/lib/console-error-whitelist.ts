@@ -9,14 +9,11 @@ export const isErrorWhitelisted = (exception: Error) => {
     project: 'webkit' | 'Google Chrome'
   }[] = [
     {
-      name: 'Unhandled Promise Rejection',
-      message:
-        '{"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}',
-      stack: `Unhandled Promise Rejection: {"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: \`JsValue(undefined)\`"}
-    at unknown (http://localhost:3000/src/lang/std/engineConnection.ts:1245:26)`,
-      foundInSpec:
-        'e2e/playwright/onboarding-tests.spec.ts Click through each onboarding step',
-      project: 'webkit',
+      name: '',
+      message: 'undefined',
+      stack: '',
+      foundInSpec: `e2e/playwright/sketch-tests.spec.ts Existing sketch with bad code delete user's code`,
+      project: 'Google Chrome',
     },
     {
       name: '"{"kind"',
@@ -39,6 +36,61 @@ export const isErrorWhitelisted = (exception: Error) => {
       message: 'no connection to send on',
       stack: '',
       foundInSpec: 'e2e/playwright/various.spec.ts',
+      project: 'Google Chrome',
+    },
+    {
+      name: '',
+      message: 'sketchGroup not found',
+      stack: '',
+      foundInSpec:
+        'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',
+      project: 'Google Chrome',
+    },
+    {
+      name: 'engine error',
+      message:
+        '[{"error_code":"bad_request","message":"Cannot set the camera position with these values"}]',
+      stack: '',
+      foundInSpec:
+        'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
+      project: 'Google Chrome',
+    },
+    {
+      name: '',
+      message: 'no connection to send on',
+      stack: '',
+      foundInSpec:
+        'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
+      project: 'Google Chrome',
+    },
+    {
+      name: 'RangeError',
+      message: 'Position 160 is out of range for changeset of length 0',
+      stack: `RangeError: Position 160 is out of range for changeset of length 0
+    at _ChangeSet.mapPos (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:756:13)
+    at findSharedChunks (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:3045:49)
+    at _RangeSet.compare (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2840:24)
+    at findChangedDeco (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:3320:12)
+    at DocView.update (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:2774:20)
+    at _EditorView.update (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:7056:30)
+    at DOMObserver.flush (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6621:17)
+    at MutationObserver.<anonymous> (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6322:14)`,
+      foundInSpec: 'e2e/playwright/editor-tests.spec.ts fold gutters work',
+      project: 'Google Chrome',
+    },
+    {
+      name: 'RangeError',
+      message: 'Selection points outside of document',
+      stack: `RangeError: Selection points outside of document
+    +     at checkSelection (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:1453:13)
+    +     at new _Transaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2014:7)
+    +     at _Transaction.create (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2022:12)
+    +     at resolveTransaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2155:24)
+    +     at _EditorState.update (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2281:12)
+    +     at _EditorView.dispatch (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6988:148)
+    +     at EditorManager.selectRange (http://localhost:3000/src/editor/manager.ts:182:22)
+    +     at AST extrude (http://localhost:3000/src/machines/modelingMachine.ts:828:25)`,
+      foundInSpec: 'e2e/playwright/editor-tests.spec.ts',
       project: 'Google Chrome',
     },
     {
@@ -102,11 +154,14 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'webkit',
     },
     {
-      name: '',
-      message: 'undefined',
-      stack: '',
-      foundInSpec: `e2e/playwright/sketch-tests.spec.ts Existing sketch with bad code delete user's code`,
-      project: 'Google Chrome',
+      name: 'Unhandled Promise Rejection',
+      message:
+        '{"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}',
+      stack: `Unhandled Promise Rejection: {"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: \`JsValue(undefined)\`"}
+    at unknown (http://localhost:3000/src/lang/std/engineConnection.ts:1245:26)`,
+      foundInSpec:
+        'e2e/playwright/onboarding-tests.spec.ts Click through each onboarding step',
+      project: 'webkit',
     },
     {
       name: 'Unhandled Promise Rejection',
@@ -150,14 +205,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'webkit',
     },
     {
-      name: '',
-      message: 'sketchGroup not found',
-      stack: '',
-      foundInSpec:
-        'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',
-      project: 'Google Chrome',
-    },
-    {
       name: 'Unhandled Promise Rejection',
       message: 'sketchGroup not found',
       stack: `Unhandled Promise Rejection: sketchGroup not found
@@ -175,53 +222,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       foundInSpec:
         'e2e/playwright/testing-camera-movement.spec.ts Zoom should be consistent when exiting or entering sketches',
       project: 'webkit',
-    },
-    {
-      name: 'engine error',
-      message:
-        '[{"error_code":"bad_request","message":"Cannot set the camera position with these values"}]',
-      stack: '',
-      foundInSpec:
-        'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
-      project: 'Google Chrome',
-    },
-    {
-      name: '',
-      message: 'no connection to send on',
-      stack: '',
-      foundInSpec:
-        'e2e/playwright/can-create-sketches-on-all-planes-and-their-back-sides.spec.ts XY',
-      project: 'Google Chrome',
-    },
-    {
-      name: 'RangeError',
-      message: 'Position 160 is out of range for changeset of length 0',
-      stack: `RangeError: Position 160 is out of range for changeset of length 0
-    at _ChangeSet.mapPos (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:756:13)
-    at findSharedChunks (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:3045:49)
-    at _RangeSet.compare (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2840:24)
-    at findChangedDeco (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:3320:12)
-    at DocView.update (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:2774:20)
-    at _EditorView.update (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:7056:30)
-    at DOMObserver.flush (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6621:17)
-    at MutationObserver.<anonymous> (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6322:14)`,
-      foundInSpec: 'e2e/playwright/editor-tests.spec.ts fold gutters work',
-      project: 'Google Chrome',
-    },
-    {
-      name: 'RangeError',
-      message: 'Selection points outside of document',
-      stack: `RangeError: Selection points outside of document
-    +     at checkSelection (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:1453:13)
-    +     at new _Transaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2014:7)
-    +     at _Transaction.create (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2022:12)
-    +     at resolveTransaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2155:24)
-    +     at _EditorState.update (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2281:12)
-    +     at _EditorView.dispatch (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6988:148)
-    +     at EditorManager.selectRange (http://localhost:3000/src/editor/manager.ts:182:22)
-    +     at AST extrude (http://localhost:3000/src/machines/modelingMachine.ts:828:25)`,
-      foundInSpec: 'e2e/playwright/editor-tests.spec.ts',
-      project: 'Google Chrome',
     },
   ]
 
