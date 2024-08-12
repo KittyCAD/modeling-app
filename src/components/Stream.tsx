@@ -16,7 +16,7 @@ import {
   DisconnectingType,
 } from 'lang/std/engineConnection'
 import { useRouteLoaderData } from 'react-router-dom'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
 
 enum StreamState {
@@ -35,7 +35,7 @@ export const Stream = () => {
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
-  const { file } = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   const IDLE = settings.context.app.streamIdleMode.current
 
