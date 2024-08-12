@@ -38,7 +38,7 @@ export function ToastTextToCad({
       ) : (
         <button
           onClick={() => {
-            navigator.clipboard.writeText(data.outputs.kcl)
+            navigator.clipboard.writeText(data.code || '// no code found')
             setHasCopied(true)
           }}
           className="flex-none p-2 flex items-center gap-2"

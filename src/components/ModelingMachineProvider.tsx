@@ -84,7 +84,11 @@ import {
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
-import { submitTextToCadPrompt } from 'lib/textToCad'
+import {
+  getTextToCadResult,
+  submitAndAwaitTextToKcl,
+  submitTextToCadPrompt,
+} from 'lib/textToCad'
 import { isTauri } from 'lib/isTauri'
 import { useFileContext } from 'hooks/useFileContext'
 import { FILE_EXT } from 'lib/constants'
@@ -479,61 +483,12 @@ export const ModelingMachineProvider = ({
           const trimmedPrompt = data.prompt.trim()
           if (!trimmedPrompt) return
 
-          const textToCadPromise = submitTextToCadPrompt(trimmedPrompt).then(
-            (value) => {
-              if (value instanceof Error) {
-                return Promise.reject(value)
-              }
-
-              const now = new Date().getTime()
-              const newFileName = `text-to-cad-${now}`
-
-              if (
-                value.code === undefined ||
-                !value.code ||
-                value.code.length === 0
-              ) {
-                return Promise.reject(new Error('No KCL code returned'))
-              }
-
-              if (isTauri()) {
-                fileMachineSend({
-                  type: 'Create file',
-                  data: {
-                    name: newFileName,
-                    makeDir: false,
-                    content: value.code,
-                    silent: true,
-                  },
-                })
-              }
-
-              return {
-                ...value,
-                fileName: newFileName + FILE_EXT,
-              }
-            }
-          )
-
-          toast.promise(
-            textToCadPromise,
-            {
-              loading: 'Submitting to Text-to-CAD API...',
-              success: (value) => (
-                <ToastTextToCad
-                  data={value}
-                  navigate={navigate}
-                  context={context}
-                />
-              ),
-              error: 'Failed to submit to Text-to-CAD API',
-            },
-            {
-              success: {
-                duration: Infinity,
-              },
-            }
-          )
+          void submitAndAwaitTextToKcl({
+            trimmedPrompt,
+            fileMachineSend,
+            navigate,
+            context,
+          })
         },
       },
       guards: {
