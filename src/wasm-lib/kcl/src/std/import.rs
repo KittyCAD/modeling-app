@@ -9,7 +9,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ImportedGeometry, MemoryItem},
+    executor::{ImportedGeometry, KclValue},
     fs::FileSystem,
     std::Args,
 };
@@ -117,11 +117,11 @@ impl From<ImportFormat> for kittycad::types::InputFormat {
 ///
 /// Import paths are relative to the current project directory. This only works in the desktop app
 /// not in browser.
-pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn import(args: Args) -> Result<KclValue, KclError> {
     let (file_path, options): (String, Option<ImportFormat>) = args.get_import_data()?;
 
     let imported_geometry = inner_import(file_path, options, args).await?;
-    Ok(MemoryItem::ImportedGeometry(imported_geometry))
+    Ok(KclValue::ImportedGeometry(imported_geometry))
 }
 
 /// Import a CAD file.

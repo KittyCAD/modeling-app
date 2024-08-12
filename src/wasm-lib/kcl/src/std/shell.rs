@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem},
+    executor::{ExtrudeGroup, KclValue},
     std::{sketch::FaceTag, Args},
 };
 
@@ -24,11 +24,11 @@ pub struct ShellData {
 }
 
 /// Create a shell.
-pub async fn shell(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn shell(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group): (ShellData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let extrude_group = inner_shell(data, extrude_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
 /// Remove volume from a 3-dimensional shape such that a wall of the

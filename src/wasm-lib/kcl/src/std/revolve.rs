@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, KclValue, SketchGroup},
     std::{
         extrude::do_post_extrude,
         fillet::{EdgeReference, DEFAULT_TOLERANCE},
@@ -98,11 +98,11 @@ impl RevolveAxisAndOrigin {
 }
 
 /// Revolve a sketch around an axis.
-pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group): (RevolveData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let extrude_group = inner_revolve(data, sketch_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
