@@ -9,7 +9,6 @@ import { useAppState, useAppStream } from 'AppState'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 import {
   EngineConnectionStateType,
-  EngineConnectionEvents,
   DisconnectingType,
 } from 'lang/std/engineConnection'
 

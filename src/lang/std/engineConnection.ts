@@ -1315,7 +1315,7 @@ export class EngineCommandManager extends EventTarget {
   commandLogs: CommandLog[] = []
   pendingExport?: {
     resolve: (a: null) => void
-    reject: (reason: any) => void
+    reject: (reason: string) => void
     commandId: string
   }
   settings: SettingsViaQueryString
@@ -1911,8 +1911,9 @@ export class EngineCommandManager extends EventTarget {
       const promise = new Promise<null>((resolve, reject) => {
         this.pendingExport = {
           resolve,
-          reject: () => {
+          reject: (reason: string) => {
             this.exportIntent = null
+            reject(reason)
           },
           commandId: command.cmd_id,
         }
