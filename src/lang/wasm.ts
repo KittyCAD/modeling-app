@@ -17,7 +17,6 @@ import init, {
   parse_project_settings,
   default_project_settings,
   parse_project_route,
-  serialize_project_settings,
 } from '../wasm-lib/pkg/wasm_lib'
 import {
   configurationToSettingsPayload,
@@ -38,8 +37,6 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
 
