@@ -317,6 +317,8 @@ jobs:
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
+    - name: run electron
+      run: yarn electron:start &
     - name: Run ubuntu/chrome flow (with retries)
       id: retry
       if: always()
