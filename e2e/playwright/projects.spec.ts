@@ -10,7 +10,7 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
-test('When the project folder is empty, user can create new project and open it.', async () => {
+test('When the project folder is empty, user can create new project and open it.', { tag: '@electron' }, async () => {
   // create or otherwise clear the folder ./electron-test-projects-dir
   const fileName = './electron-test-projects-dir'
   try {
