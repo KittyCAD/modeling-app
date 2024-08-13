@@ -27,7 +27,7 @@ export class MachineManager {
     // Start a background job to update the machines every ten seconds.
     // If MDNS is already watching, this timeout will wait until it's done to trigger the
     // finding again.
-    let timeoutId = undefined
+    let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
     const timeoutLoop = () => {
       clearTimeout(timeoutId)
       timeoutId = setTimeout(async () => {
