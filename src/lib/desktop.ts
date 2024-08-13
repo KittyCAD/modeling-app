@@ -8,6 +8,7 @@ import { components } from './machine-api'
 import { isDesktop } from './isDesktop'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import * as TOML from '@iarna/toml'
 
 import {
   defaultAppSettings,
@@ -15,6 +16,8 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
+import { TEST_SETTINGS_KEY } from '../../e2e/playwright/storageStates'
+import { TEST_SETTINGS_FILE_KEY } from './constants'
 export { parseProjectRoute } from 'lang/wasm'
 
 const DEFAULT_HOST = 'https://api.zoo.dev'
@@ -373,9 +376,14 @@ export async function writeProjectSettingsFile(
 }
 
 const getAppSettingsFilePath = async () => {
-  const appConfig = await window.electron.getPath('appData')
+  const isPlaywright = window.localStorage.getItem('playwright') === 'true'
+  const testDirectoryName = window.localStorage.getItem(TEST_SETTINGS_FILE_KEY) ?? ''
+  const appConfig = await window.electron.getPath(
+    isPlaywright ? 'temp' : 'appData'
+  )
   const fullPath = window.electron.path.join(
     appConfig,
+    isPlaywright ? testDirectoryName : '',
     window.electron.packageJson.name
   )
   try {
