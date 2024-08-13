@@ -57,3 +57,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 export const KCL_DEFAULT_LENGTH = `5`
 /** localStorage key for the playwright test-specific app settings file */
 export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
+
+export const DEFAULT_HOST = 'https://api.zoo.dev'
+export const SETTINGS_FILE_NAME = 'settings.toml'
+export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'

@@ -1,7 +1,5 @@
-import { _electron as electron, test, expect } from '@playwright/test'
-import { getUtils, setup, tearDown } from './test-utils'
-import fs from 'fs/promises'
-import { join } from 'path'
+import { test, expect } from '@playwright/test'
+import { getUtils, setupElectron, tearDown } from './test-utils'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
@@ -10,53 +8,10 @@ test.afterEach(async ({ page }, testInfo) => {
 test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
-  async ({ page: browserPage, context: browserContext }, testInfo) => {
-    // create or otherwise clear the folder ./electron-test-projects-dir
-    const settingsFileName = `./${testInfo.title
-      .replace(/\s/gi, '-')
-      .replace(/![\w-]/gi, '')}`
-    const projectDirName = settingsFileName + '-dir'
-    try {
-      await fs.rm(projectDirName, { recursive: true })
-    } catch (e) {
-      console.error(e)
-    }
-
-    await fs.mkdir(projectDirName)
-
-    // get full path for ./electron-test-projects-dir
-    const fullProjectPath = await fs.realpath(projectDirName)
-
-    const electronApp = await electron.launch({
-      args: ['.'],
-    })
-    const context = electronApp.context()
-    const page = await electronApp.firstWindow()
-
-    await page.goto('http://localhost:3000/')
-    const electronTempDirectory = await page.evaluate(async () => {
-      return await window.electron.getPath('temp')
-    })
-    const tempSettingsFilePath = join(electronTempDirectory, settingsFileName)
-    const settingsOverrides = `[settings.project]
-directory = "/Users/frankjohnson/Documents/zoo-modeling-app-projects-2"
-`
-
-    await fs.writeFile(tempSettingsFilePath + '.toml', settingsOverrides)
-
-    console.log('from within test setup', {
-      settingsFileName,
-      fullPath: fullProjectPath,
-      electronApp,
-      page,
-      settingsFilePath: tempSettingsFilePath + '.toml',
-    })
-
-    await setup(context, page, fullProjectPath)
-    // Set local storage directly using evaluate
-
+  async ({ page: _ }, testInfo) => {
+    const { electronApp, page } = await setupElectron({ testInfo })
+    
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('http://localhost:3000/')
 
     page.on('console', console.log)

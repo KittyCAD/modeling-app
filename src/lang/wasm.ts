@@ -569,7 +569,9 @@ export function defaultAppSettings(): Partial<SaveSettingsPayload> {
 }
 
 export function parseAppSettings(toml: string): Partial<SaveSettingsPayload> {
-  return configurationToSettingsPayload(parse_app_settings(toml))
+  const parsed = parse_app_settings(toml)
+  console.log('within wasm.ts, parsed app settings', parsed)
+  return configurationToSettingsPayload(parsed)
 }
 
 export function defaultProjectSettings(): Partial<SaveSettingsPayload> {

@@ -4,20 +4,24 @@ import {
   Download,
   TestInfo,
   BrowserContext,
+  _electron as electron,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
 import fsp from 'fs/promises'
+import fsSync from 'fs'
+import { join } from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
-import { APP_NAME } from 'lib/constants'
+import { APP_NAME, TEST_SETTINGS_FILE_KEY } from 'lib/constants'
 import waitOn from 'wait-on'
 import { secrets } from './secrets'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -638,25 +642,70 @@ export async function setup(
   })
 
   await context.addInitScript(
-    async ({ token, settingsKey, settings }) => {
+    async ({ token, settingsKey, settings, appSettingsFileKey, appSettingsFileContent }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
+      localStorage.setItem(appSettingsFileKey, appSettingsFileContent)
       localStorage.setItem('playwright', 'true')
     },
     {
       token: secrets.token,
+      appSettingsFileKey: TEST_SETTINGS_FILE_KEY,
+      appSettingsFileContent: overrideDirectory || TEST_SETTINGS.app.projectDirectory,
       settingsKey: TEST_SETTINGS_KEY,
       settings: TOML.stringify({
         ...TEST_SETTINGS,
         app: {
-          ...TEST_SETTINGS.app,
+          ...TEST_SETTINGS.projects,
           projectDirectory:
             overrideDirectory || TEST_SETTINGS.app.projectDirectory,
         },
-      }),
+      } as Partial<SaveSettingsPayload>),
     }
   )
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+}
+
+export async function setupElectron({
+  testInfo,
+}: {
+  testInfo: TestInfo
+}) {
+  // create or otherwise clear the folder
+  const projectDirName = testInfo.outputPath('electron-test-projects-dir')
+  try {
+    if (fsSync.existsSync(projectDirName)) {
+      await fsp.rm(projectDirName, { recursive: true })
+    }
+  } catch (e) {
+    console.error(e)
+  }
+
+  await fsp.mkdir(projectDirName)
+
+  const electronApp = await electron.launch({
+    args: ['.'],
+  })
+  const context = electronApp.context()
+  const page = await electronApp.firstWindow()
+  context.on('console', console.log)
+  page.on('console', console.log)
+
+  const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+  const settingsOverrides = TOML.stringify({
+    ...TEST_SETTINGS,
+    settings: {
+      app: {
+        ...TEST_SETTINGS.app,
+        projectDirectory: projectDirName,
+      },
+    },
+  })
+  await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
+
+  await setup(context, page, projectDirName)
+
+  return { electronApp, page }
 }
