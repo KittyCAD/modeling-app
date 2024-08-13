@@ -1,6 +1,6 @@
 import { _electron as electron, test, expect } from '@playwright/test'
-import { getUtils, tearDown } from './test-utils'
-import fs from 'node:fs'
+import { getUtils, setup, tearDown } from './test-utils'
+import fs from 'fs/promises'
 import { secrets } from './secrets'
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -10,45 +10,28 @@ test.afterEach(async ({ page }, testInfo) => {
 test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
-  async () => {
+  async ({ context }, testInfo) => {
     // create or otherwise clear the folder ./electron-test-projects-dir
-    const fileName = './electron-test-projects-dir'
+    const fileName = `./${testInfo.titlePath.join('-').replace(/\s/gi, '-')}-dir`
     try {
-      fs.rmdirSync(fileName, { recursive: true })
+      await fs.rm(fileName, { recursive: true })
     } catch (e) {
       console.error(e)
     }
 
-    fs.mkdirSync(fileName)
+    const projectDirectory = await fs.mkdir(fileName)
 
     // get full path for ./electron-test-projects-dir
-    const fullPath = fs.realpathSync(fileName)
+    const fullPath = await fs.realpath(fileName)
 
     const electronApp = await electron.launch({
       args: ['.'],
     })
 
-    await electronApp.evaluate(async ({ app }) => {
-      return app.getAppPath()
-    })
-
     const page = await electronApp.firstWindow()
 
     // Set local storage directly using evaluate
-    await page.evaluate(
-      (token) => localStorage.setItem('TOKEN_PERSIST_KEY', token),
-      secrets.token
-    )
-    await page.evaluate(
-      (fullPath) =>
-        localStorage.setItem(
-          'APP_SETTINGS_OVERRIDE',
-          JSON.stringify({
-            projectDirectory: fullPath,
-          })
-        ),
-      fullPath
-    )
+    await setup(context, page, fullPath)
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
