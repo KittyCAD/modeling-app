@@ -32,7 +32,7 @@ export async function getTextToCadResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/' + id
+  const url = VITE_KC_API_BASE_URL + '/user/text-to-cad/' + id
   const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
     url,
     {

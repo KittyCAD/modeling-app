@@ -37,8 +37,14 @@ export default async function crossPlatformFetch<T>(
   }
 
   if (!response.ok) {
+    console.error('Failed to request endpoint: ' + url, response)
     return new Error(
-      'Failed to request endpoint: ' + url + ' with status: ' + response.status
+      'Failed to request endpoint: ' +
+        url +
+        ' with status: ' +
+        response.status +
+        ' ' +
+        response.statusText
     )
   }
 
