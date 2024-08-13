@@ -2,7 +2,15 @@
 // template that ElectronJS provides.
 
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { app, BrowserWindow, ipcMain, dialog, shell, protocol, net } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  protocol,
+  net,
+} from 'electron'
 import path from 'path'
 import url from 'url'
 import fs from 'node:fs/promises'
@@ -41,7 +49,7 @@ const createWindow = () => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-    mainWindow.show()
+  mainWindow.show()
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -153,8 +161,12 @@ app.whenReady().then(() => {
     const maybeAbsolutePath = path.join(__dirname, filePath)
     const bypassCustomProtocolHandlers = true
     if (fss.existsSync(maybeAbsolutePath)) {
-      console.log(`Intercepted local-asbolute path ${filePath}, rebuilt it as ${maybeAbsolutePath}`)
-      return net.fetch(url.pathToFileURL(maybeAbsolutePath).toString(), { bypassCustomProtocolHandlers })
+      console.log(
+        `Intercepted local-asbolute path ${filePath}, rebuilt it as ${maybeAbsolutePath}`
+      )
+      return net.fetch(url.pathToFileURL(maybeAbsolutePath).toString(), {
+        bypassCustomProtocolHandlers,
+      })
     }
     console.log(`Default fetch to ${filePath}`)
     return net.fetch(request.url, { bypassCustomProtocolHandlers })
