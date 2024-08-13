@@ -210,6 +210,24 @@ pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
 /// ```
 ///
 /// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 20], %)
+///     |> line([20, 0], %)
+///     |> line([0, -20], %, $revolveAxis)
+///     |> close(%)
+///     |> extrude(20, %)
+///
+/// const sketch001 = startSketchOn(box, "END")
+///     |> circle([10,10], 4, %)
+///     |> revolve({
+///         angle: 90,
+///         axis: getOppositeEdge(revolveAxis),
+///         tolerance: 0.0001
+///     }, %)
+/// ```
+///
+/// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///   |> startProfileAt([10, 0], %)
 ///   |> line([5, -5], %)

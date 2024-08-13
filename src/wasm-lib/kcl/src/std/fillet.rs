@@ -79,6 +79,32 @@ pub async fn fillet(args: Args) -> Result<KclValue, KclError> {
 ///     ],
 ///   }, %)
 /// ```
+///
+/// ```no_run
+/// const width = 20
+/// const length = 10
+/// const thickness = 1
+/// const filletRadius = 1
+///
+/// const mountingPlateSketch = startSketchOn("XY")
+///   |> startProfileAt([-width/2, -length/2], %)
+///   |> lineTo([width/2, -length/2], %, $edge1)
+///   |> lineTo([width/2, length/2], %, $edge2)
+///   |> lineTo([-width/2, length/2], %, $edge3)
+///   |> close(%, $edge4)
+///
+/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+///   |> fillet({
+///     radius: filletRadius,
+///     tolerance: 0.000001,
+///     tags: [
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
+///     ],
+///   }, %)
+/// ```
 #[stdlib {
     name = "fillet",
 }]
@@ -387,7 +413,7 @@ async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Res
 
 pub(crate) fn default_tolerance(units: &UnitLength) -> f64 {
     match units {
-        UnitLength::Mm => 0.00001,
+        UnitLength::Mm => 0.0000001,
         UnitLength::Cm => 0.0001,
         UnitLength::In => 0.0001,
         UnitLength::Ft => 0.0001,
