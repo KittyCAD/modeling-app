@@ -414,8 +414,8 @@ async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Res
 pub(crate) fn default_tolerance(units: &UnitLength) -> f64 {
     match units {
         UnitLength::Mm => 0.0000001,
-        UnitLength::Cm => 0.0001,
-        UnitLength::In => 0.0001,
+        UnitLength::Cm => 0.0000001,
+        UnitLength::In => 0.0000001,
         UnitLength::Ft => 0.0001,
         UnitLength::Yd => 0.001,
         UnitLength::M => 0.001,
