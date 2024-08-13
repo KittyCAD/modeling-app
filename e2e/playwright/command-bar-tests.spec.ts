@@ -98,14 +98,16 @@ const extrude001 = extrude(-10, sketch001)`
 
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const cmdSearchBar = page.getByPlaceholder('Search commands')
-    const themeOption = page.getByRole('option', {
-      name: 'theme',
+    const commandName = 'debug panel'
+    const commandOption = page.getByRole('option', {
+      name: commandName,
       exact: false,
     })
     const commandLevelArgButton = page.getByRole('button', { name: 'level' })
     const commandThemeArgButton = page.getByRole('button', { name: 'value' })
+    const paneSelector = page.getByRole('button', { name: 'debug panel' })
     // This selector changes after we set the setting
-    let commandOptionInput = page.getByPlaceholder('Select an option')
+    let commandOptionInput = page.getByPlaceholder('On')
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -127,17 +129,16 @@ const extrude001 = extrude(-10, sketch001)`
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
-    await cmdSearchBar.fill('theme')
-    await expect(themeOption).toBeVisible()
-    await themeOption.click()
-    const themeInput = page.getByPlaceholder('Select an option')
-    await expect(themeInput).toBeVisible()
-    await expect(themeInput).toBeFocused()
-    // Select dark theme
+    await cmdSearchBar.fill(commandName)
+    await expect(commandOption).toBeVisible()
+    await commandOption.click()
+    const toggleInput = page.getByPlaceholder('On')
+    await expect(toggleInput).toBeVisible()
+    await expect(toggleInput).toBeFocused()
+    // Select On
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await expect(page.getByRole('option', { name: 'system' })).toHaveAttribute(
+    await expect(page.getByRole('option', { name: 'Off' })).toHaveAttribute(
       'data-headlessui-state',
       'active'
     )
@@ -145,21 +146,21 @@ const extrude001 = extrude(-10, sketch001)`
 
     // Check the toast appeared
     await expect(
-      page.getByText(`Set theme to "system" for this project`)
+      page.getByText(`Set show debug panel to "false" for this project`)
     ).toBeVisible()
-    // Check that the theme changed
-    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    // Check that the visibility changed
+    await expect(paneSelector).not.toBeVisible()
 
-    commandOptionInput = page.getByPlaceholder('system')
+    commandOptionInput = page.getByPlaceholder('off')
 
     // Test case for https://github.com/KittyCAD/modeling-app/issues/2882
     await commandBarButton.click()
     await cmdSearchBar.focus()
-    await cmdSearchBar.fill('theme')
-    await themeOption.click()
+    await cmdSearchBar.fill(commandName)
+    await commandOption.click()
     await expect(commandThemeArgButton).toBeDisabled()
     await commandOptionInput.focus()
-    await commandOptionInput.fill('lig')
+    await commandOptionInput.fill('on')
     await commandLevelArgButton.click()
     await expect(commandLevelArgButton).toBeDisabled()
 
@@ -197,7 +198,7 @@ const extrude001 = extrude(-10, sketch001)`
     })
     await expect(themeOption).toBeVisible()
     await themeOption.click()
-    const themeInput = page.getByPlaceholder('Select an option')
+    const themeInput = page.getByPlaceholder('dark')
     await expect(themeInput).toBeVisible()
     await expect(themeInput).toBeFocused()
     // Select dark theme
@@ -212,7 +213,7 @@ const extrude001 = extrude(-10, sketch001)`
 
     // Check the toast appeared
     await expect(
-      page.getByText(`Set theme to "system" for this project`)
+      page.getByText(`Set theme to "system" as a user default`)
     ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)

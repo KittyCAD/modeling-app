@@ -2064,7 +2064,7 @@ async fn test_kcl_lsp_on_change_update_ast() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_on_change_update_memory() {
+async fn kcl_test_kcl_lsp_on_change_update_memory() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let same_text = r#"const thing = 1"#.to_string();
@@ -2123,7 +2123,7 @@ async fn serial_test_kcl_lsp_on_change_update_memory() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 10)]
-async fn serial_test_kcl_lsp_update_units() {
+async fn kcl_test_kcl_lsp_update_units() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let same_text = r#"fn cube = (pos, scale) => {
@@ -2204,7 +2204,7 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_empty_file_execute_ok() {
+async fn kcl_test_kcl_lsp_empty_file_execute_ok() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
@@ -2267,7 +2267,7 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_diagnostics_on_execution_error() {
+async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
@@ -2327,7 +2327,7 @@ async fn serial_test_kcl_lsp_diagnostics_on_execution_error() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
+async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
@@ -2383,7 +2383,7 @@ async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
+async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2479,7 +2479,7 @@ async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute() {
+async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2570,7 +2570,7 @@ async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecut
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
+async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2664,7 +2664,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
+async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2736,7 +2736,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_cant_execute_set() {
+async fn kcl_test_kcl_lsp_cant_execute_set() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2937,7 +2937,7 @@ async fn test_kcl_lsp_folding() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
+async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2993,7 +2993,7 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_reparse() {
+async fn kcl_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3050,7 +3050,7 @@ const part001 = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
+async fn kcl_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3107,7 +3107,7 @@ const part001 = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexecute() {
+async fn kcl_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3172,7 +3172,7 @@ const part001 = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_new_lint() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_new_lint() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3245,7 +3245,7 @@ const NEW_LINT = 1"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3318,7 +3318,7 @@ const NEW_LINT = 1"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3409,7 +3409,7 @@ const NEW_LINT = 1"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1

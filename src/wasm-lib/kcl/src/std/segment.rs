@@ -6,12 +6,12 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SketchGroup, TagIdentifier},
+    executor::{KclValue, SketchGroup, TagIdentifier},
     std::{utils::between, Args},
 };
 
 /// Returns the segment end of x.
-pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_end_x(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_end_x(&tag, args.clone())?;
 
@@ -47,7 +47,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, args: Args) -> Result<f64, KclError>
 }
 
 /// Returns the segment end of y.
-pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_end_y(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_end_y(&tag, args.clone())?;
 
@@ -84,7 +84,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, args: Args) -> Result<f64, KclError>
 }
 
 /// Returns the last segment of x.
-pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn last_segment_x(args: Args) -> Result<KclValue, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_x(sketch_group, args.clone())?;
 
@@ -127,7 +127,7 @@ fn inner_last_segment_x(sketch_group: Box<SketchGroup>, args: Args) -> Result<f6
 }
 
 /// Returns the last segment of y.
-pub async fn last_segment_y(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn last_segment_y(args: Args) -> Result<KclValue, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_y(sketch_group, args.clone())?;
 
@@ -170,7 +170,7 @@ fn inner_last_segment_y(sketch_group: Box<SketchGroup>, args: Args) -> Result<f6
 }
 
 /// Returns the length of the segment.
-pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_length(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_length(&tag, args.clone())?;
     args.make_user_val_from_f64(result)
@@ -215,7 +215,7 @@ fn inner_segment_length(tag: &TagIdentifier, args: Args) -> Result<f64, KclError
 }
 
 /// Returns the angle of the segment.
-pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_angle(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
     let result = inner_segment_angle(&tag, args.clone())?;
@@ -255,7 +255,7 @@ fn inner_segment_angle(tag: &TagIdentifier, args: Args) -> Result<f64, KclError>
 }
 
 /// Returns the angle to match the given length for x.
-pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn angle_to_match_length_x(args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch_group) = args.get_tag_to_number_sketch_group()?;
     let result = inner_angle_to_match_length_x(&tag, to, sketch_group, args.clone())?;
     args.make_user_val_from_f64(result)
@@ -320,7 +320,7 @@ fn inner_angle_to_match_length_x(
 }
 
 /// Returns the angle to match the given length for y.
-pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn angle_to_match_length_y(args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch_group) = args.get_tag_to_number_sketch_group()?;
     let result = inner_angle_to_match_length_y(&tag, to, sketch_group, args.clone())?;
     args.make_user_val_from_f64(result)
