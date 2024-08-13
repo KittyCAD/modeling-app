@@ -11,10 +11,9 @@ use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{EdgeCut, ExtrudeGroup, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal},
+    settings::types::UnitLength,
     std::Args,
 };
-
-pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Data for fillets.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -25,6 +24,9 @@ pub struct FilletData {
     pub radius: f64,
     /// The tags of the paths you want to fillet.
     pub tags: Vec<EdgeReference>,
+    /// The tolerance for the fillet.
+    #[serde(default)]
+    pub tolerance: Option<f64>,
 }
 
 /// A tag or a uuid of an edge.
@@ -112,7 +114,7 @@ async fn inner_fillet(
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
-                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
+                tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 cut_type: Some(kittycad::types::CutType::Fillet),
             },
         )
@@ -381,4 +383,15 @@ async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Res
             source_ranges: vec![args.source_range],
         })
     })
+}
+
+pub(crate) fn default_tolerance(units: &UnitLength) -> f64 {
+    match units {
+        UnitLength::Mm => 0.00001,
+        UnitLength::Cm => 0.0001,
+        UnitLength::In => 0.0001,
+        UnitLength::Ft => 0.0001,
+        UnitLength::Yd => 0.001,
+        UnitLength::M => 0.001,
+    }
 }

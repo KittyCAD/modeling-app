@@ -11,7 +11,7 @@ use crate::{
     executor::{ExtrudeGroup, KclValue, SketchGroup},
     std::{
         extrude::do_post_extrude,
-        fillet::{EdgeReference, DEFAULT_TOLERANCE},
+        fillet::{default_tolerance, EdgeReference},
         Args,
     },
 };
@@ -25,6 +25,9 @@ pub struct RevolveData {
     pub angle: Option<f64>,
     /// Axis of revolution.
     pub axis: RevolveAxis,
+    /// Tolerance for the revolve operation.
+    #[serde(default)]
+    pub tolerance: Option<f64>,
 }
 
 /// Axis of revolution or tagged edge.
@@ -254,7 +257,7 @@ async fn inner_revolve(
                     target: sketch_group.id,
                     axis,
                     origin,
-                    tolerance: DEFAULT_TOLERANCE,
+                    tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                     axis_is_2d: true,
                 },
             )
@@ -271,7 +274,7 @@ async fn inner_revolve(
                     angle,
                     target: sketch_group.id,
                     edge_id,
-                    tolerance: DEFAULT_TOLERANCE,
+                    tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 },
             )
             .await?;
