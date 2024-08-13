@@ -462,7 +462,7 @@ where
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     type_name::<T>(),
-                    arg.display_type_name()
+                    arg.human_friendly_type()
                 ),
                 source_ranges: vec![args.source_range],
             }));
@@ -482,7 +482,7 @@ where
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     type_name::<T>(),
-                    arg.display_type_name()
+                    arg.human_friendly_type()
                 ),
                 source_ranges: vec![args.source_range],
             }));

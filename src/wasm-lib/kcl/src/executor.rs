@@ -11,7 +11,7 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, Expr, FunctionExpression, KclNone, Program, TagDeclarator},
+    ast::types::{human_friendly_type, BodyItem, Expr, FunctionExpression, KclNone, Program, TagDeclarator},
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -314,16 +314,9 @@ impl KclValue {
 
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
-    pub(crate) fn display_type_name(&self) -> &'static str {
+    pub(crate) fn human_friendly_type(&self) -> &'static str {
         match self {
-            KclValue::UserVal(u) => match u.value {
-                JValue::Null => "Null",
-                JValue::Bool(_) => "Bool",
-                JValue::Number(_) => "Number",
-                JValue::String(_) => "String",
-                JValue::Array(_) => "Array",
-                JValue::Object(_) => "Object",
-            },
+            KclValue::UserVal(u) => human_friendly_type(&u.value),
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
             KclValue::SketchGroup(_) => "SketchGroup",
