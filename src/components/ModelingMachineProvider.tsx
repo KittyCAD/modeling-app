@@ -80,7 +80,6 @@ import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
 import {
   ExportIntent,
-  EngineConnectionState,
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
@@ -371,7 +370,6 @@ export const ModelingMachineProvider = ({
           // Set the export intent.
           engineCommandManager.exportIntent = ExportIntent.Make
 
-          console.log('making', event.data)
           // Set the current machine.
           machineManager.currentMachine = event.data.machine
 
@@ -413,7 +411,6 @@ export const ModelingMachineProvider = ({
           // Set the export intent.
           engineCommandManager.exportIntent = ExportIntent.Save
 
-          console.log('exporting', event.data)
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>

@@ -10,13 +10,10 @@ use uuid::Uuid;
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{
-        ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, FilletSurface, GeoMeta, MemoryItem, TagIdentifier, UserVal,
-    },
+    executor::{EdgeCut, ExtrudeGroup, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal},
+    settings::types::UnitLength,
     std::Args,
 };
-
-pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Data for fillets.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -27,6 +24,9 @@ pub struct FilletData {
     pub radius: f64,
     /// The tags of the paths you want to fillet.
     pub tags: Vec<EdgeReference>,
+    /// The tolerance for the fillet.
+    #[serde(default)]
+    pub tolerance: Option<f64>,
 }
 
 /// A tag or a uuid of an edge.
@@ -41,12 +41,12 @@ pub enum EdgeReference {
 }
 
 /// Create fillets on tagged paths.
-pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn fillet(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
     let extrude_group = inner_fillet(data, extrude_group, tag, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
 /// Blend a transitional edge along a tagged path, smoothing the sharp edge.
@@ -79,6 +79,32 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 ///     ],
 ///   }, %)
 /// ```
+///
+/// ```no_run
+/// const width = 20
+/// const length = 10
+/// const thickness = 1
+/// const filletRadius = 1
+///
+/// const mountingPlateSketch = startSketchOn("XY")
+///   |> startProfileAt([-width/2, -length/2], %)
+///   |> lineTo([width/2, -length/2], %, $edge1)
+///   |> lineTo([width/2, length/2], %, $edge2)
+///   |> lineTo([-width/2, length/2], %, $edge3)
+///   |> close(%, $edge4)
+///
+/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+///   |> fillet({
+///     radius: filletRadius,
+///     tolerance: 0.000001,
+///     tags: [
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
+///     ],
+///   }, %)
+/// ```
 #[stdlib {
     name = "fillet",
 }]
@@ -100,7 +126,7 @@ async fn inner_fillet(
     }
 
     let mut extrude_group = extrude_group.clone();
-    let mut fillet_or_chamfers = Vec::new();
+    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -114,13 +140,13 @@ async fn inner_fillet(
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
-                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
+                tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 cut_type: Some(kittycad::types::CutType::Fillet),
             },
         )
         .await?;
 
-        fillet_or_chamfers.push(FilletOrChamfer::Fillet {
+        edge_cuts.push(EdgeCut::Fillet {
             id,
             edge_id,
             radius: data.radius,
@@ -139,17 +165,17 @@ async fn inner_fillet(
         }
     }
 
-    extrude_group.fillet_or_chamfers = fillet_or_chamfers;
+    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }
 
 /// Get the opposite edge to the edge given.
-pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn get_opposite_edge(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_opposite_edge(tag, args.clone()).await?;
-    Ok(MemoryItem::UserVal(UserVal {
+    Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
                 message: format!("Failed to convert Uuid to json: {}", e),
@@ -222,11 +248,11 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, args: Args) -> Result<Uuid,
 }
 
 /// Get the next adjacent edge to the edge given.
-pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn get_next_adjacent_edge(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_next_adjacent_edge(tag, args.clone()).await?;
-    Ok(MemoryItem::UserVal(UserVal {
+    Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
                 message: format!("Failed to convert Uuid to json: {}", e),
@@ -304,11 +330,11 @@ async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<
 }
 
 /// Get the previous adjacent edge to the edge given.
-pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn get_previous_adjacent_edge(args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, args.clone()).await?;
-    Ok(MemoryItem::UserVal(UserVal {
+    Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
                 message: format!("Failed to convert Uuid to json: {}", e),
@@ -383,4 +409,15 @@ async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Res
             source_ranges: vec![args.source_range],
         })
     })
+}
+
+pub(crate) fn default_tolerance(units: &UnitLength) -> f64 {
+    match units {
+        UnitLength::Mm => 0.0000001,
+        UnitLength::Cm => 0.0000001,
+        UnitLength::In => 0.0000001,
+        UnitLength::Ft => 0.0001,
+        UnitLength::Yd => 0.001,
+        UnitLength::M => 0.001,
+    }
 }

@@ -4,7 +4,7 @@ import {
   Path,
   SourceRange,
   Program,
-  Value,
+  Expr,
   PathToNode,
   CallExpression,
   Literal,
@@ -85,7 +85,7 @@ export type _VarValue<T> =
   | ObjectPropertyInput<T>
   | ArrayOrObjItemInput<T>
 
-export type VarValue = _VarValue<Value>
+export type VarValue = _VarValue<Expr>
 export type RawValue = _VarValue<Literal>
 
 export type VarValues = Array<VarValue>
@@ -99,11 +99,11 @@ type SimplifiedVarValue =
   | { type: 'objectProperty'; key: VarValueKeys }
 
 export type TransformCallback = (
-  args: [Value, Value],
+  args: [Expr, Expr],
   literalValues: RawValues,
   referencedSegment?: Path
 ) => {
-  callExp: Value
+  callExp: Expr
   valueUsedInTransform?: number
 }
 

@@ -368,3 +368,5 @@ startSketchOn(keychain, 'end')
        height - (keychainHoleSize + 1.5)
      ], keychainHoleSize, %)
   |> extrude(-thickness, %)`
+
+export const TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR = `const thing = 1`

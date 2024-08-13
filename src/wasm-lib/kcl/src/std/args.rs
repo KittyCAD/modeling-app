@@ -8,14 +8,14 @@ use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
-        DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, MemoryItem, Metadata,
+        DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata,
         ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
 };
 
 #[derive(Debug, Clone)]
 pub struct Args {
-    pub args: Vec<MemoryItem>,
+    pub args: Vec<KclValue>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
     pub current_program_memory: ProgramMemory,
@@ -24,7 +24,7 @@ pub struct Args {
 
 impl Args {
     pub fn new(
-        args: Vec<MemoryItem>,
+        args: Vec<KclValue>,
         source_range: SourceRange,
         ctx: ExecutorContext,
         current_program_memory: ProgramMemory,
@@ -72,7 +72,7 @@ impl Args {
         &'a self,
         tag: &'a TagIdentifier,
     ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
-        if let MemoryItem::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+        if let KclValue::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -131,16 +131,13 @@ impl Args {
                     self.current_program_memory
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
-                        .flat_map(|eg| eg.get_all_fillet_or_chamfer_ids()),
+                        .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(
-                    self.dynamic_state
-                        .fillet_or_chamfer_ids_on_sketch_group(sketch_group_id),
-                );
+                ids.extend(self.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
                 traversed_sketch_groups.push(sketch_group_id);
             }
 
-            ids.extend(extrude_group.get_all_fillet_or_chamfer_ids());
+            ids.extend(extrude_group.get_all_edge_cut_ids());
         }
 
         // We can return early if there are no fillets or chamfers.
@@ -167,8 +164,8 @@ impl Args {
         Ok(())
     }
 
-    fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
-        Ok(MemoryItem::UserVal(crate::executor::UserVal {
+    fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<KclValue, KclError> {
+        Ok(KclValue::UserVal(crate::executor::UserVal {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
@@ -176,15 +173,15 @@ impl Args {
         }))
     }
 
-    pub(crate) fn make_null_user_val(&self) -> Result<MemoryItem, KclError> {
+    pub(crate) fn make_null_user_val(&self) -> Result<KclValue, KclError> {
         self.make_user_val_from_json(serde_json::Value::Null)
     }
 
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> Result<MemoryItem, KclError> {
+    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> Result<KclValue, KclError> {
         self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from(n)))
     }
 
-    pub(crate) fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {
+    pub(crate) fn make_user_val_from_f64(&self, f: f64) -> Result<KclValue, KclError> {
         self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from_f64(f).ok_or_else(
             || {
                 KclError::Type(KclErrorDetails {
@@ -195,7 +192,7 @@ impl Args {
         )?))
     }
 
-    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<MemoryItem, KclError> {
+    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
         let mut arr = Vec::new();
         for n in f {
             arr.push(serde_json::Value::Number(serde_json::Number::from_f64(n).ok_or_else(
@@ -281,7 +278,7 @@ impl Args {
 
     pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
-        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
@@ -304,7 +301,7 @@ impl Args {
         &'a self,
     ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError>
     where
-        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
@@ -313,21 +310,21 @@ impl Args {
         &'a self,
     ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
     where
-        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
     pub(crate) fn get_data_and_extrude_group_set<'a, T>(&'a self) -> Result<(T, ExtrudeGroupSet), KclError>
     where
-        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
     pub(crate) fn get_data_and_extrude_group<'a, T>(&'a self) -> Result<(T, Box<ExtrudeGroup>), KclError>
     where
-        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
@@ -336,7 +333,7 @@ impl Args {
         &'a self,
     ) -> Result<(T, Box<ExtrudeGroup>, Option<TagDeclarator>), KclError>
     where
-        T: serde::de::DeserializeOwned + FromMemoryItem<'a> + Sized,
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
@@ -443,15 +440,15 @@ pub trait FromArgs<'a>: Sized {
     fn from_args(args: &'a Args, index: usize) -> Result<Self, KclError>;
 }
 
-/// Types which impl this trait can be extracted from a `MemoryItem`.
-pub trait FromMemoryItem<'a>: Sized {
-    /// Try to convert a MemoryItem into this type.
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self>;
+/// Types which impl this trait can be extracted from a `KclValue`.
+pub trait FromKclValue<'a>: Sized {
+    /// Try to convert a KclValue into this type.
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self>;
 }
 
 impl<'a, T> FromArgs<'a> for T
 where
-    T: FromMemoryItem<'a> + Sized,
+    T: FromKclValue<'a> + Sized,
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else {
@@ -475,7 +472,7 @@ where
 
 impl<'a, T> FromArgs<'a> for Option<T>
 where
-    T: FromMemoryItem<'a> + Sized,
+    T: FromKclValue<'a> + Sized,
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
@@ -533,27 +530,27 @@ where
     }
 }
 
-impl<'a> FromMemoryItem<'a> for &'a str {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for &'a str {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.as_user_val().and_then(|uv| uv.value.as_str())
     }
 }
 
-impl<'a> FromMemoryItem<'a> for TagDeclarator {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for TagDeclarator {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }
 }
 
-impl<'a> FromMemoryItem<'a> for TagIdentifier {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for TagIdentifier {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_identifier().ok()
     }
 }
 
-impl<'a> FromMemoryItem<'a> for &'a SketchGroup {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
-        let MemoryItem::SketchGroup(s) = arg else {
+impl<'a> FromKclValue<'a> for &'a SketchGroup {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::SketchGroup(s) = arg else {
             return None;
         };
         Some(s.as_ref())
@@ -562,8 +559,8 @@ impl<'a> FromMemoryItem<'a> for &'a SketchGroup {
 
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
-        impl<'a> FromMemoryItem<'a> for $typ {
-            fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+        impl<'a> FromKclValue<'a> for $typ {
+            fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
                 from_user_val(arg)
             }
         }
@@ -572,20 +569,20 @@ macro_rules! impl_from_arg_via_json {
 
 macro_rules! impl_from_arg_for_array {
     ($n:literal) => {
-        impl<'a, T> FromMemoryItem<'a> for [T; $n]
+        impl<'a, T> FromKclValue<'a> for [T; $n]
         where
-            T: serde::de::DeserializeOwned + FromMemoryItem<'a>,
+            T: serde::de::DeserializeOwned + FromKclValue<'a>,
         {
-            fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+            fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
                 from_user_val(arg)
             }
         }
     };
 }
 
-fn from_user_val<T: DeserializeOwned>(arg: &MemoryItem) -> Option<T> {
+fn from_user_val<T: DeserializeOwned>(arg: &KclValue) -> Option<T> {
     let v = match arg {
-        MemoryItem::UserVal(v) => v.value.clone(),
+        KclValue::UserVal(v) => v.value.clone(),
         other => serde_json::to_value(other).ok()?,
     };
     serde_json::from_value(v).ok()
@@ -619,64 +616,64 @@ impl_from_arg_via_json!(bool);
 impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
 
-impl<'a> FromMemoryItem<'a> for &'a Box<SketchGroup> {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
-        let MemoryItem::SketchGroup(s) = arg else {
+impl<'a> FromKclValue<'a> for &'a Box<SketchGroup> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::SketchGroup(s) = arg else {
             return None;
         };
         Some(s)
     }
 }
 
-impl<'a> FromMemoryItem<'a> for Box<SketchGroup> {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
-        let MemoryItem::SketchGroup(s) = arg else {
+impl<'a> FromKclValue<'a> for Box<SketchGroup> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::SketchGroup(s) = arg else {
             return None;
         };
         Some(s.to_owned())
     }
 }
 
-impl<'a> FromMemoryItem<'a> for Box<ExtrudeGroup> {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
-        let MemoryItem::ExtrudeGroup(s) = arg else {
+impl<'a> FromKclValue<'a> for Box<ExtrudeGroup> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::ExtrudeGroup(s) = arg else {
             return None;
         };
         Some(s.to_owned())
     }
 }
 
-impl<'a> FromMemoryItem<'a> for FnAsArg<'a> {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for FnAsArg<'a> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_function()
     }
 }
 
-impl<'a> FromMemoryItem<'a> for ExtrudeGroupSet {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for ExtrudeGroupSet {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_extrude_group_set().ok()
     }
 }
-impl<'a> FromMemoryItem<'a> for SketchGroupSet {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for SketchGroupSet {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_sketch_group_set().ok()
     }
 }
-impl<'a> FromMemoryItem<'a> for SketchSurfaceOrGroup {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for SketchSurfaceOrGroup {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            MemoryItem::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
-            MemoryItem::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
-            MemoryItem::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
+            KclValue::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
+            KclValue::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
+            KclValue::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
             _ => None,
         }
     }
 }
-impl<'a> FromMemoryItem<'a> for SketchSurface {
-    fn from_mem_item(arg: &'a MemoryItem) -> Option<Self> {
+impl<'a> FromKclValue<'a> for SketchSurface {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            MemoryItem::Plane(sg) => Some(Self::Plane(sg.clone())),
-            MemoryItem::Face(sg) => Some(Self::Face(sg.clone())),
+            KclValue::Plane(sg) => Some(Self::Plane(sg.clone())),
+            KclValue::Face(sg) => Some(Self::Face(sg.clone())),
             _ => None,
         }
     }

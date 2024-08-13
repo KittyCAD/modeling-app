@@ -4,7 +4,7 @@ import {
   ObjectExpression,
   PathToNode,
   Program,
-  Value,
+  Expr,
   VariableDeclaration,
   VariableDeclarator,
 } from '../wasm'
@@ -35,7 +35,7 @@ export function addFillet(
   node: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
-  radius = createLiteral(5) as Value
+  radius = createLiteral(5) as Expr
   // shouldPipe = false, // TODO: Implement this feature
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // clone ast to make mutations safe
