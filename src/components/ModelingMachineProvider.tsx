@@ -471,6 +471,12 @@ export const ModelingMachineProvider = ({
             }
           )
         },
+        'Add pending text-to-cad prompt': assign({
+          pendingTextToCad: (_, event) => event.data.prompt.trim(),
+        }),
+        'Remove pending text-to-cad prompt': assign({
+          pendingTextToCad: undefined,
+        }),
         'Submit to Text-to-CAD API': async (_, { data }) => {
           const trimmedPrompt = data.prompt.trim()
           if (!trimmedPrompt) return
@@ -542,6 +548,8 @@ export const ModelingMachineProvider = ({
             return false
           }
         },
+        'Has no pending text-to-cad submissions': ({ pendingTextToCad }) =>
+          !pendingTextToCad,
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {

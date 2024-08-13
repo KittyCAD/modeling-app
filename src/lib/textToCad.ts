@@ -126,39 +126,46 @@ export async function submitAndAwaitTextToKcl({
     }
   )
 
-  const textToCadOutputCreated = await textToCadComplete.then((value) => {
-    if (value.code === undefined || !value.code || value.code.length === 0) {
-      toast.error('No KCL code returned', {
+  const textToCadOutputCreated = await textToCadComplete
+    .catch((e) => {
+      toast.error('Failed to generate parametric model', {
         id: toastId,
       })
-      return Promise.reject(new Error('No KCL code returned'))
-    }
+      return e
+    })
+    .then((value) => {
+      if (value.code === undefined || !value.code || value.code.length === 0) {
+        toast.error('No KCL code returned', {
+          id: toastId,
+        })
+        return Promise.reject(new Error('No KCL code returned'))
+      }
 
-    const TRUNCATED_PROMPT_LENGTH = 24
-    const newFileName = `${value.prompt
-      .slice(0, TRUNCATED_PROMPT_LENGTH)
-      .replace(/\s/gi, '-')
-      .replace(/\W/gi, '-')
-      .toLowerCase()}`
+      const TRUNCATED_PROMPT_LENGTH = 24
+      const newFileName = `${value.prompt
+        .slice(0, TRUNCATED_PROMPT_LENGTH)
+        .replace(/\s/gi, '-')
+        .replace(/\W/gi, '-')
+        .toLowerCase()}`
 
-    if (isTauri()) {
-      fileMachineSend({
-        type: 'Create file',
-        data: {
-          name: newFileName,
-          makeDir: false,
-          content: value.code,
-          silent: true,
-          makeUnique: true,
-        },
-      })
-    }
+      if (isTauri()) {
+        fileMachineSend({
+          type: 'Create file',
+          data: {
+            name: newFileName,
+            makeDir: false,
+            content: value.code,
+            silent: true,
+            makeUnique: true,
+          },
+        })
+      }
 
-    return {
-      ...value,
-      fileName: newFileName + FILE_EXT,
-    }
-  })
+      return {
+        ...value,
+        fileName: newFileName + FILE_EXT,
+      }
+    })
 
   if (textToCadOutputCreated instanceof Error) {
     toast.error('Failed to generate parametric model', {
@@ -179,4 +186,5 @@ export async function submitAndAwaitTextToKcl({
       duration: Infinity,
     }
   )
+  return textToCadOutputCreated
 }
