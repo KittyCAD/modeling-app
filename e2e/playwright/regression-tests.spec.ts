@@ -326,7 +326,7 @@ const sketch001 = startSketchAt([-0, -0])
     const successToastMessage = page.getByText(`Exported successfully`)
     await expect(successToastMessage).toBeVisible()
   })
-  test('ensure you cant export while an export is already going', async ({
+  test('ensure you can not export while an export is already going', async ({
     page,
   }) => {
     const u = await getUtils(page)
