@@ -7,6 +7,7 @@ import { ContextFrom, EventData, EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { NavigateFunction } from 'react-router-dom'
 import { isTauri } from './isTauri'
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
 
 const headers = (token?: string): HeadersInit => ({
   'Content-Type': 'application/json',
@@ -18,21 +19,34 @@ export async function submitTextToCadPrompt(
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
   const body: Models['TextToCadCreateBody_type'] = { prompt }
-  const response = await fetch(
-    VITE_KC_API_BASE_URL + '/ai/text-to-cad/gltf?kcl=true',
-    {
+  // Glb has a smaller footprint than gltf, should we want to render it.
+  const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/glb?kcl=true'
+  let response = null
+  if (isTauri()) {
+    response = await tauriFetch(url, {
       method: 'POST',
-      headers: headers(isTauri() ? token : undefined),
+      headers: headers(token),
       body: JSON.stringify(body),
-      ...(isTauri() ? {} : { credentials: 'include' }),
-    }
-  )
+    })
+  } else {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify(body),
+      credentials: 'include',
+    })
+  }
+
+  if (!response) {
+    return new Error('Failed to request text-to-cad endpoint')
+  }
 
   if (!response.ok) {
     return new Error('Failed to request text-to-cad endpoint')
   }
 
   const data = (await response.json()) as Models['TextToCad_type'] | Error
+
   return data
 }
 
@@ -40,21 +54,31 @@ export async function getTextToCadResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
-  const response = await fetch(
-    VITE_KC_API_BASE_URL + '/user/text-to-cad/' + id,
-    {
+  const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/' + id
+  let response = null
+  if (isTauri()) {
+    response = await tauriFetch(url, {
       method: 'GET',
-      headers: headers(isTauri() ? token : undefined),
+      headers: headers(token),
+    })
+  } else {
+    response = await fetch(url, {
+      method: 'GET',
+      headers: headers(),
       credentials: 'include',
-      headers,
-    }
-  )
+    })
+  }
+
+  if (!response) {
+    return new Error('Failed to request text-to-cad endpoint')
+  }
 
   if (!response.ok) {
     return new Error('Failed to request text-to-cad endpoint')
   }
 
   const data = (await response.json()) as Models['TextToCad_type'] | Error
+
   return data
 }
 
