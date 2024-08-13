@@ -12,7 +12,8 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{
-        BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program, ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
+        ReturnStatement, TagDeclarator,
     },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -311,6 +312,24 @@ impl KclValue {
                 Ok(eg.into())
             }
             _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+
+    /// Human readable type name used in error messages.  Should not be relied
+    /// on for program logic.
+    pub(crate) fn human_friendly_type(&self) -> &'static str {
+        match self {
+            KclValue::UserVal(u) => human_friendly_type(&u.value),
+            KclValue::TagDeclarator(_) => "TagDeclarator",
+            KclValue::TagIdentifier(_) => "TagIdentifier",
+            KclValue::SketchGroup(_) => "SketchGroup",
+            KclValue::SketchGroups { .. } => "SketchGroups",
+            KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
+            KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
+            KclValue::ImportedGeometry(_) => "ImportedGeometry",
+            KclValue::Function { .. } => "Function",
+            KclValue::Plane(_) => "Plane",
+            KclValue::Face(_) => "Face",
         }
     }
 }
@@ -2344,6 +2363,29 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // https://github.com/KittyCAD/modeling-app/issues/3338
+    async fn test_object_member_starting_pipeline() {
+        let ast = r#"
+fn test2 = () => {
+  return {
+    thing: startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, 1], %)
+      |> line([1, 0], %)
+      |> line([0, -1], %)
+      |> close(%)
+  }
+}
+
+const x2 = test2()
+
+x2.thing
+  |> extrude(10, %)
 "#;
         parse_execute(ast).await.unwrap();
     }

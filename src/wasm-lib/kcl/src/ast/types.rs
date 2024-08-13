@@ -2977,7 +2977,7 @@ impl MemberExpression {
                 source_ranges: vec![self.clone().into()],
             })),
             (being_indexed, _) => {
-                let t = human_friendly_type(being_indexed);
+                let t = human_friendly_type(&being_indexed);
                 Err(KclError::Semantic(KclErrorDetails {
                     message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
                     source_ranges: vec![self.clone().into()],
@@ -4084,7 +4084,7 @@ impl ConstraintLevels {
     }
 }
 
-fn human_friendly_type(j: JValue) -> &'static str {
+pub(crate) fn human_friendly_type(j: &JValue) -> &'static str {
     match j {
         JValue::Null => "null",
         JValue::Bool(_) => "boolean (true/false value)",
