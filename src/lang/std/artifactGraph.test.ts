@@ -14,10 +14,6 @@ import {
 } from './artifactGraph'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
-import {
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
-} from 'lang/std/engineConnection'
 import { CI, VITE_KC_DEV_TOKEN } from 'env'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -140,7 +136,7 @@ beforeAll(async () => {
             console.error(ast)
             return Promise.reject(ast)
           }
-          const result = await kclManager.executeAst(ast)
+          await kclManager.executeAst(ast)
 
           cacheToWriteToFileTemp[codeKey] = {
             orderedCommands: engineCommandManager.orderedCommands,
