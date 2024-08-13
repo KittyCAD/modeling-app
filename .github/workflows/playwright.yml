@@ -462,7 +462,11 @@ jobs:
         name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
     - name: run electron
-      run: yarn electron:start &
+      run: |
+        yarn electron:start > electron.log 2>&1 &
+        while ! grep -q "built in" electron.log; do
+          sleep 1
+        done
     - name: Run ubuntu/chrome flow (with retries)
       id: retry
       if: always()
