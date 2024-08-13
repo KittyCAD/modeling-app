@@ -626,7 +626,11 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
-export async function setup(context: BrowserContext, page: Page, overrideDirectory?: string) {
+export async function setup(
+  context: BrowserContext,
+  page: Page,
+  overrideDirectory?: string
+) {
   // wait for Vite preview server to be up
   await waitOn({
     resources: ['tcp:3000'],
@@ -647,7 +651,8 @@ export async function setup(context: BrowserContext, page: Page, overrideDirecto
         ...TEST_SETTINGS,
         app: {
           ...TEST_SETTINGS.app,
-          projectDirectory: overrideDirectory || TEST_SETTINGS.app.projectDirectory,
+          projectDirectory:
+            overrideDirectory || TEST_SETTINGS.app.projectDirectory,
         },
       }),
     }

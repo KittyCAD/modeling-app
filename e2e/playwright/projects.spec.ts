@@ -1,9 +1,7 @@
 import { _electron as electron, test, expect } from '@playwright/test'
 import { getUtils, setup, tearDown } from './test-utils'
 import fs from 'fs/promises'
-import { secrets } from './secrets'
 import { join } from 'path'
-import { tomlStringify } from 'lang/wasm'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
@@ -16,7 +14,7 @@ test(
     // create or otherwise clear the folder ./electron-test-projects-dir
     const settingsFileName = `./${testInfo.title
       .replace(/\s/gi, '-')
-      .replace(/\W/gi, '')}`
+      .replace(/![\w-]/gi, '')}`
     const projectDirName = settingsFileName + '-dir'
     try {
       await fs.rm(projectDirName, { recursive: true })
@@ -35,21 +33,15 @@ test(
     const context = electronApp.context()
     const page = await electronApp.firstWindow()
 
+    await page.goto('http://localhost:3000/')
     const electronTempDirectory = await page.evaluate(async () => {
-      return await window.electron.getPath(
-        'temp'
-      )
+      return await window.electron.getPath('temp')
     })
     const tempSettingsFilePath = join(electronTempDirectory, settingsFileName)
-    const settingsOverrides = tomlStringify({
-      app: {
-        projectDirectory: fullProjectPath,
-      },
-    })
+    const settingsOverrides = `[settings.project]
+directory = "/Users/frankjohnson/Documents/zoo-modeling-app-projects-2"
+`
 
-    if (settingsOverrides instanceof Error) {
-      throw settingsOverrides
-    }
     await fs.writeFile(tempSettingsFilePath + '.toml', settingsOverrides)
 
     console.log('from within test setup', {
