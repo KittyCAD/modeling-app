@@ -32,7 +32,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "./*.ts"],
+  "include": ["src", "e2e", "packages", "./*.ts", "vite.config.mts"],
   "exclude": ["node_modules", "./*.grammar"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
