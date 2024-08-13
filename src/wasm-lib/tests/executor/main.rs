@@ -1763,7 +1763,7 @@ const baseExtrusion = extrude(width, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_engine_error_source_range_on_last_command() {
+async fn kcl_test_shell_with_tag() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
@@ -1778,12 +1778,8 @@ async fn kcl_test_engine_error_source_range_on_last_command() {
   }, %)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([256, 312])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
-    );
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("shell_with_tag", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2269,6 +2265,6 @@ async fn kcl_test_fillet_and_shell() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([2004, 2065])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Shell of non-planar solid3d not available yet\" }]" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([2004, 2065])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
     );
 }
