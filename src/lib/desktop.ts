@@ -441,6 +441,15 @@ export const readAppSettingsFile = async () => {
   }
   const configToml = await window.electron.readFile(settingsPath)
   const configObj = parseAppSettings(configToml)
+  const overrideJSON = localStorage.getItem('APP_SETTINGS_OVERRIDE')
+  if (overrideJSON) {
+    try {
+      const override = JSON.parse(overrideJSON)
+      configObj.app = { ...configObj.app, ...override }
+    } catch (e) {
+      console.error('Error parsing APP_SETTINGS_OVERRIDE:', e)
+    }
+  }
   return configObj
 }
 
