@@ -176,6 +176,7 @@ export const fileMachine = createMachine(
               makeDir: boolean
               content?: string
               silent?: boolean
+              makeUnique?: boolean
             }
           }
         | { type: 'Delete file'; data: FileEntry }

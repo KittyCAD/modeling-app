@@ -135,11 +135,11 @@ export async function submitAndAwaitTextToKcl({
     }
 
     const TRUNCATED_PROMPT_LENGTH = 24
-    const now = new Date().getTime()
     const newFileName = `${value.prompt
       .slice(0, TRUNCATED_PROMPT_LENGTH)
       .replace(/\s/gi, '-')
-      .replace(/\W/gi, '')}-${now.toString().slice(-8)}`
+      .replace(/\W/gi, '-')
+      .toLowerCase()}`
 
     if (isTauri()) {
       fileMachineSend({
@@ -149,6 +149,7 @@ export async function submitAndAwaitTextToKcl({
           makeDir: false,
           content: value.code,
           silent: true,
+          makeUnique: true,
         },
       })
     }
