@@ -261,7 +261,6 @@ jobs:
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       run: yarn playwright install chromium --with-deps
-      # run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
@@ -326,7 +325,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-                        yarn playwright test --project="Google Chrome" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep=@electron || true
+            yarn playwright test --project="Google Chrome" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep=@electron || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
