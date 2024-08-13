@@ -1755,7 +1755,7 @@ impl ExecutorContext {
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
                     // Discard return value.
-                    self.eval_expression(
+                    self.execute_expr(
                         &expression_statement.expression,
                         memory,
                         dynamic_state,
@@ -1772,7 +1772,7 @@ impl ExecutorContext {
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
-                            .eval_expression(
+                            .execute_expr(
                                 &declaration.init,
                                 memory,
                                 dynamic_state,
@@ -1787,7 +1787,7 @@ impl ExecutorContext {
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
                     let value = self
-                        .eval_expression(
+                        .execute_expr(
                             &return_statement.argument,
                             memory,
                             dynamic_state,
@@ -1816,7 +1816,7 @@ impl ExecutorContext {
         Ok(memory.clone())
     }
 
-    pub async fn eval_expression<'a>(
+    pub async fn execute_expr<'a>(
         &self,
         init: &Expr,
         memory: &mut ProgramMemory,
