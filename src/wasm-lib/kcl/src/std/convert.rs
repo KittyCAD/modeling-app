@@ -5,7 +5,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SourceRange},
+    executor::{KclValue, SourceRange},
     std::Args,
 };
 
@@ -31,7 +31,7 @@ impl ConversionError {
 }
 
 /// Converts a number to integer.
-pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn int(args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let converted = inner_int(num).map_err(|err| err.into_kcl_error(args.source_range))?;
 

@@ -20,7 +20,7 @@ mod test_examples_min {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_min0() {
+    async fn kcl_test_example_min0() {
         let code = "This is another code block.\nyes sirrr.\nmin";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
@@ -53,7 +53,7 @@ mod test_examples_min {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_min1() {
+    async fn kcl_test_example_min1() {
         let code = "This is code.\nIt does other shit.\nmin";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
@@ -81,7 +81,7 @@ fn boxed_min(
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
             > + Send,
     >,
 > {

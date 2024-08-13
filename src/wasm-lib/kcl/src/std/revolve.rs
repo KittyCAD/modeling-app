@@ -8,10 +8,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, KclValue, SketchGroup},
     std::{
         extrude::do_post_extrude,
-        fillet::{EdgeReference, DEFAULT_TOLERANCE},
+        fillet::{default_tolerance, EdgeReference},
         Args,
     },
 };
@@ -25,6 +25,9 @@ pub struct RevolveData {
     pub angle: Option<f64>,
     /// Axis of revolution.
     pub axis: RevolveAxis,
+    /// Tolerance for the revolve operation.
+    #[serde(default)]
+    pub tolerance: Option<f64>,
 }
 
 /// Axis of revolution or tagged edge.
@@ -98,11 +101,11 @@ impl RevolveAxisAndOrigin {
 }
 
 /// Revolve a sketch around an axis.
-pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group): (RevolveData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let extrude_group = inner_revolve(data, sketch_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -207,6 +210,24 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 ///
 /// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 20], %)
+///     |> line([20, 0], %)
+///     |> line([0, -20], %, $revolveAxis)
+///     |> close(%)
+///     |> extrude(20, %)
+///
+/// const sketch001 = startSketchOn(box, "END")
+///     |> circle([10,10], 4, %)
+///     |> revolve({
+///         angle: 90,
+///         axis: getOppositeEdge(revolveAxis),
+///         tolerance: 0.0001
+///     }, %)
+/// ```
+///
+/// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///   |> startProfileAt([10, 0], %)
 ///   |> line([5, -5], %)
@@ -254,7 +275,7 @@ async fn inner_revolve(
                     target: sketch_group.id,
                     axis,
                     origin,
-                    tolerance: DEFAULT_TOLERANCE,
+                    tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                     axis_is_2d: true,
                 },
             )
@@ -271,7 +292,7 @@ async fn inner_revolve(
                     angle,
                     target: sketch_group.id,
                     edge_id,
-                    tolerance: DEFAULT_TOLERANCE,
+                    tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 },
             )
             .await?;

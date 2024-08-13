@@ -1,7 +1,7 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
-import { getProjectMetaByRouteId, paths } from './paths'
+import { getProjectMetaByRouteId, PATHS } from './paths'
 import { BROWSER_PATH } from 'lib/paths'
 import {
   BROWSER_FILE_NAME,
@@ -12,7 +12,7 @@ import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { sep } from '@tauri-apps/api/path'
 import { readTextFile } from '@tauri-apps/plugin-fs'
-import { codeManager, kclManager } from 'lib/singletons'
+import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
   getProjectInfo,
@@ -54,7 +54,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
-    paths.ONBOARDING.INDEX
+    PATHS.ONBOARDING.INDEX
   )
   // '' is the initial state, 'done' and 'dismissed' are the final states
   const hasValidOnboardingStatus =
@@ -65,7 +65,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 
   if (shouldRedirectToOnboarding) {
     return redirect(
-      makeUrlPathRelative(paths.ONBOARDING.INDEX) + onboardingStatus.slice(1)
+      makeUrlPathRelative(PATHS.ONBOARDING.INDEX) + onboardingStatus.slice(1)
     )
   }
 
@@ -89,7 +89,7 @@ export const fileLoader: LoaderFunction = async ({
 
     if (!current_file_name || !current_file_path || !project_name) {
       return redirect(
-        `${paths.FILE}/${encodeURIComponent(
+        `${PATHS.FILE}/${encodeURIComponent(
           `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
         )}`
       )
@@ -104,9 +104,6 @@ export const fileLoader: LoaderFunction = async ({
     // the file system and not the editor.
     codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
-
-    // We don't want to call await on execute code since we don't want to block the UI
-    kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
@@ -158,7 +155,7 @@ export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
   if (!isTauri()) {
-    return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+    return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   const { configuration } = await loadAndValidateSettings()
 

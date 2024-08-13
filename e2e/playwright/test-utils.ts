@@ -246,14 +246,17 @@ export const getMovementUtils = (opts: any) => {
 }
 
 async function waitForAuthAndLsp(page: Page) {
-  const waitForLspPromise = page.waitForEvent('console', async (message) => {
-    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-    // but that doesn't seem to make it to the console for macos/safari :(
-    if (message.text().includes('start kcl lsp')) {
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      return true
-    }
-    return false
+  const waitForLspPromise = page.waitForEvent('console', {
+    predicate: async (message) => {
+      // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+      // but that doesn't seem to make it to the console for macos/safari :(
+      if (message.text().includes('start kcl lsp')) {
+        await new Promise((resolve) => setTimeout(resolve, 200))
+        return true
+      }
+      return false
+    },
+    timeout: 45_000,
   })
   if (process.env.CI) {
     await waitForPageLoadWithRetry(page)
@@ -263,6 +266,18 @@ async function waitForAuthAndLsp(page: Page) {
   }
 
   return waitForLspPromise
+}
+
+export function normaliseKclNumbers(code: string, ignoreZero = true): string {
+  const numberRegexp = /(?<!\w)-?\b\d+(\.\d+)?\b(?!\w)/g
+  const replaceNumber = (number: string) => {
+    if (ignoreZero && (number === '0' || number === '-0')) return number
+    const sign = number.startsWith('-') ? '-' : ''
+    return `${sign}12.34`
+  }
+  const replaceNumbers = (text: string) =>
+    text.replace(numberRegexp, replaceNumber)
+  return replaceNumbers(code)
 }
 
 export async function getUtils(page: Page) {
@@ -327,6 +342,11 @@ export async function getUtils(page: Page) {
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    normalisedEditorCode: async () => {
+      const code = await page.locator('.cm-content').innerText()
+      return normaliseKclNumbers(code)
+    },
+    normalisedCode: (code: string) => normaliseKclNumbers(code),
     canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,

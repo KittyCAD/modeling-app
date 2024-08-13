@@ -114,6 +114,7 @@ export function createSettings() {
        * The overall appearance of the app: light, dark, or system
        */
       theme: new Setting<Themes>({
+        hideOnLevel: 'project',
         defaultValue: Themes.System,
         description: 'The overall appearance of the app',
         validate: (v) => isEnumMember(v, Themes),

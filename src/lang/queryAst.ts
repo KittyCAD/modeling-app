@@ -13,7 +13,7 @@ import {
   SketchGroup,
   SourceRange,
   SyntaxType,
-  Value,
+  Expr,
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
@@ -118,7 +118,7 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Value | ExpressionStatement | VariableDeclaration | ReturnStatement,
+  node: Expr | ExpressionStatement | VariableDeclaration | ReturnStatement,
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -337,7 +337,7 @@ export function getNodePathFromSourceRange(
 }
 
 type KCLNode =
-  | Value
+  | Expr
   | ExpressionStatement
   | VariableDeclaration
   | VariableDeclarator
@@ -514,7 +514,7 @@ export function isNodeSafeToReplacePath(
 ):
   | {
       isSafe: boolean
-      value: Value
+      value: Expr
       replacer: ReplacerFn
     }
   | Error {
@@ -538,7 +538,7 @@ export function isNodeSafeToReplacePath(
 
   // binaryExpression should take precedence
   const [finVal, finPath] =
-    (binValue as Value)?.type === 'BinaryExpression'
+    (binValue as Expr)?.type === 'BinaryExpression'
       ? [binValue, outBinPath]
       : [value, outPath]
 
@@ -561,7 +561,7 @@ export function isNodeSafeToReplacePath(
     return { modifiedAst: _ast, pathToReplaced }
   }
 
-  const hasPipeSub = isTypeInValue(finVal as Value, 'PipeSubstitution')
+  const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
   const isIdentifierCallee = path[path.length - 1][0] !== 'callee'
   return {
     isSafe:
@@ -569,7 +569,7 @@ export function isNodeSafeToReplacePath(
       isIdentifierCallee &&
       acceptedNodeTypes.includes((finVal as any)?.type) &&
       finPath.map(([_, type]) => type).includes('VariableDeclaration'),
-    value: finVal as Value,
+    value: finVal as Expr,
     replacer: replaceNodeWithIdentifier,
   }
 }
@@ -580,7 +580,7 @@ export function isNodeSafeToReplace(
 ):
   | {
       isSafe: boolean
-      value: Value
+      value: Expr
       replacer: ReplacerFn
     }
   | Error {
@@ -588,7 +588,7 @@ export function isNodeSafeToReplace(
   return isNodeSafeToReplacePath(ast, path)
 }
 
-export function isTypeInValue(node: Value, syntaxType: SyntaxType): boolean {
+export function isTypeInValue(node: Expr, syntaxType: SyntaxType): boolean {
   if (node.type === syntaxType) return true
   if (node.type === 'BinaryExpression') return isTypeInBinExp(node, syntaxType)
   if (node.type === 'CallExpression') return isTypeInCallExp(node, syntaxType)
@@ -625,7 +625,7 @@ function isTypeInArrayExp(
   return node.elements.some((el) => isTypeInValue(el, syntaxType))
 }
 
-export function isValueZero(val?: Value): boolean {
+export function isValueZero(val?: Expr): boolean {
   return (
     (val?.type === 'Literal' && Number(val.value) === 0) ||
     (val?.type === 'UnaryExpression' &&

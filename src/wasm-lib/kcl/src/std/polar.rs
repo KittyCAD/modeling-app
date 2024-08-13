@@ -5,7 +5,7 @@ use derive_docs::stdlib;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{errors::KclError, executor::MemoryItem, std::Args};
+use crate::{errors::KclError, executor::KclValue, std::Args};
 
 /// Data for polar coordinates.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -19,7 +19,7 @@ pub struct PolarCoordsData {
 }
 
 /// Convert from polar/sphere coordinates to cartesian coordinates.
-pub async fn polar(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn polar(args: Args) -> Result<KclValue, KclError> {
     let data: PolarCoordsData = args.get_data()?;
     let result = inner_polar(&data)?;
 

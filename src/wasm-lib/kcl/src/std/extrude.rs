@@ -8,14 +8,14 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, MemoryItem, Path, SketchGroup, SketchGroupSet,
+        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, KclValue, Path, SketchGroup, SketchGroupSet,
         SketchSurface,
     },
     std::Args,
 };
 
 /// Extrudes by a given amount.
-pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn extrude(args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
 
     let result = inner_extrude(length, sketch_group_set, args).await?;
@@ -251,7 +251,7 @@ pub(crate) async fn do_post_extrude(
         height: length,
         start_cap_id,
         end_cap_id,
-        fillet_or_chamfers: vec![],
+        edge_cuts: vec![],
         meta: sketch_group.meta,
     }))
 }
