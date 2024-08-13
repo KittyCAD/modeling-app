@@ -272,6 +272,9 @@ const sketch001 = startSketchAt([-0, -0])
     const errorToastMessage = page.getByText(`Error while exporting`)
     await expect(errorToastMessage).toBeVisible()
 
+    const engineErrorToastMessage = page.getByText(`Nothing to export`)
+    await expect(engineErrorToastMessage).toBeVisible()
+
     // Make sure the exporting toast is gone
     await expect(exportingToastMessage).not.toBeVisible()
 
@@ -282,6 +285,7 @@ const sketch001 = startSketchAt([-0, -0])
 
     // Expect the toast to be gone
     await expect(errorToastMessage).not.toBeVisible()
+    await expect(engineErrorToastMessage).not.toBeVisible()
 
     // Now add in code that works.
     page.locator('.cm-content').fill(bracket)
@@ -317,6 +321,7 @@ const sketch001 = startSketchAt([-0, -0])
     // Expect it to succeed.
     await expect(exportingToastMessage).not.toBeVisible()
     await expect(errorToastMessage).not.toBeVisible()
+    await expect(engineErrorToastMessage).not.toBeVisible()
 
     const successToastMessage = page.getByText(`Exported successfully`)
     await expect(successToastMessage).toBeVisible()
