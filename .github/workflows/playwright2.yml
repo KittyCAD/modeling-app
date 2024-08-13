@@ -36,7 +36,7 @@ jobs:
   playwright-electron:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: check-rust-changes
+    needs: check-rust-changes2
     steps:
     - name: Tune GitHub-hosted runner network
       uses: smorimoto/tune-github-hosted-runner-network@v1
