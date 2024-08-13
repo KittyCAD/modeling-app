@@ -80,19 +80,11 @@ import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
 import {
   ExportIntent,
-  EngineConnectionState,
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
-import {
-  getTextToCadResult,
-  submitAndAwaitTextToKcl,
-  submitTextToCadPrompt,
-} from 'lib/textToCad'
-import { isTauri } from 'lib/isTauri'
+import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import { FILE_EXT } from 'lib/constants'
-import { ToastTextToCad } from './ToastTextToCad'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -488,6 +480,7 @@ export const ModelingMachineProvider = ({
             fileMachineSend,
             navigate,
             context,
+            token,
           })
         },
       },
