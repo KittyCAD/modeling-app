@@ -1,5 +1,6 @@
 use crate::Object;
 
+pub(crate) mod de;
 pub(crate) mod ser;
 
 #[derive(Debug, PartialEq)]

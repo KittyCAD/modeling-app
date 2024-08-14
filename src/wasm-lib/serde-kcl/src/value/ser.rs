@@ -1,8 +1,7 @@
 use serde::ser::Impossible;
 use serde::Serialize;
 
-use crate::value::Value;
-use crate::{to_value, Error, Object};
+use crate::{to_value, value::Value, Error, Object};
 
 // We only use our own error type; no need for From conversions provided by the
 // standard library's try! macro. This reduces lines of LLVM IR by 4%.
