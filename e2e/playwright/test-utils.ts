@@ -714,7 +714,7 @@ export async function setupElectron({
   })
   await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
 
-  await folderSetupFn?.(tempSettingsFilePath)
+  await folderSetupFn?.(projectDirName)
 
   await setup(context, page, projectDirName)
 

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { getUtils, setupElectron, tearDown } from './test-utils'
+import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
@@ -55,7 +56,8 @@ const extrude001 = extrude(200, sketch001)`)
 
     const pointOnModel = { x: 660, y: 250 }
 
-    // check the model loaded by checking it's grey
+    // gray at this pixel means the stream has loaded in the most
+    // user way we can verify it (pixel color)
     await expect
       .poll(() => u.getGreatestPixDiff(pointOnModel, [132, 132, 132]), {
         timeout: 10_000,
@@ -89,6 +91,117 @@ const extrude001 = extrude(200, sketch001)`)
     for (let i = 1; i <= 10; i++) {
       await createProject(i)
     }
+    await electronApp.close()
+  }
+)
+
+test(
+  'Check you can go home with two different methods, and that switching between projects does not harm the stream',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari because `window.tearDown` does not work'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await Promise.all([
+          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
+          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+        ])
+        await Promise.all([
+          fsp.copyFile(
+            'e2e/playwright/kcl-samples/router-template-slate.kcl',
+            `${dir}/router-template-slate/main.kcl`
+          ),
+          fsp.copyFile(
+            'e2e/playwright/kcl-samples/bracket.kcl',
+            `${dir}/bracket/main.kcl`
+          ),
+        ])
+      },
+    })
+    const u = await getUtils(page)
+    await page.goto('http://localhost:3000/')
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [75, 75, 75]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(10)
+    })
+
+    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+      await page.getByTestId('app-logo').click()
+
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
+    })
+
+    await test.step('Opening the router-template project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+
+      await page.getByText('router-template-slate').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [132, 132, 132]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(10)
+    })
+
+    await test.step('Opening the router-template project should load the stream', async () => {
+      await page.getByTestId('project-sidebar-toggle').click()
+      await expect(
+        page.getByRole('button', { name: 'Go to Home' })
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Go to Home' }).click()
+
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
+    })
+
     await electronApp.close()
   }
 )
