@@ -392,8 +392,8 @@ const sketch001 = startSketchAt([-0, -0])
 
     // Find the toast.
     // Look out for the toast message
-    await expect(exportingToastMessage).toBeVisible()
     await expect(alreadyExportingToastMessage).toBeVisible()
+    await expect(exportingToastMessage).toBeVisible()
 
     // Expect it to succeed.
     await expect(exportingToastMessage).not.toBeVisible()
