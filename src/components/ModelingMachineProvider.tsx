@@ -153,8 +153,6 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
-            // blocks entering a sketch until after exit sketch code has run
-            kclManager.isExecuting = true
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()

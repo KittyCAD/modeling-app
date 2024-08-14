@@ -19,6 +19,16 @@ import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 
+interface ExecuteArgs {
+  ast?: Program
+  zoomToFit?: boolean
+  executionId?: number
+  zoomOnRangeAndType?: {
+    range: SourceRange
+    type: string
+  }
+}
+
 export class KclManager {
   private _ast: Program = {
     body: [],
@@ -36,6 +46,7 @@ export class KclManager {
   private _lints: Diagnostic[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
+  private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
 
   engineCommandManager: EngineCommandManager
@@ -113,7 +124,23 @@ export class KclManager {
   }
   set isExecuting(isExecuting) {
     this._isExecuting = isExecuting
+    // If we have finished executing, but the execute is stale, we should
+    // execute again.
+    if (!isExecuting && this.executeIsStale) {
+      const args = this.executeIsStale
+      this.executeIsStale = null
+      this.executeAst(args)
+    } else {
+    }
     this._isExecutingCallback(isExecuting)
+  }
+
+  get executeIsStale() {
+    return this._executeIsStale
+  }
+
+  set executeIsStale(executeIsStale) {
+    this._executeIsStale = executeIsStale
   }
 
   get wasmInitFailed() {
@@ -202,16 +229,16 @@ export class KclManager {
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist.
   // just call to codeManager from wherever you want in other files.
-  async executeAst(
-    ast: Program = this._ast,
-    zoomToFit?: boolean,
-    executionId?: number,
-    zoomOnRangeAndType?: {
-      range: SourceRange
-      type: string
+  async executeAst(args: ExecuteArgs = {}): Promise<void> {
+    if (this.isExecuting) {
+      this.executeIsStale = args
+      // Exit early if we are already executing.
+      return
     }
-  ): Promise<void> {
-    const currentExecutionId = executionId || Date.now()
+
+    const ast = args.ast || this.ast
+
+    const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
@@ -229,12 +256,12 @@ export class KclManager {
     defaultSelectionFilter(programMemory, this.engineCommandManager)
     await this.engineCommandManager.waitForAllCommands()
 
-    if (zoomToFit) {
+    if (args.zoomToFit) {
       let zoomObjectId: string | undefined = ''
-      if (zoomOnRangeAndType) {
+      if (args.zoomOnRangeAndType) {
         zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
-          zoomOnRangeAndType.range,
-          zoomOnRangeAndType.type
+          args.zoomOnRangeAndType.range,
+          args.zoomOnRangeAndType.type
         )
       }
 
@@ -259,6 +286,7 @@ export class KclManager {
     }
 
     this.isExecuting = false
+
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
@@ -351,8 +379,7 @@ export class KclManager {
       return
     }
     this.ast = { ...ast }
-    this.isExecuting = true // executeAst sets this to false again
-    return this.executeAst(ast, zoomToFit)
+    return this.executeAst({ zoomToFit })
   }
   format() {
     const originalCode = codeManager.code
@@ -430,12 +457,11 @@ export class KclManager {
       codeManager.updateCodeEditor(newCode)
       // Write the file to disk.
       await codeManager.writeToFile()
-      await this.executeAst(
-        astWithUpdatedSource,
-        optionalParams?.zoomToFit,
-        undefined,
-        optionalParams?.zoomOnRangeAndType
-      )
+      await this.executeAst({
+        ast: astWithUpdatedSource,
+        zoomToFit: optionalParams?.zoomToFit,
+        zoomOnRangeAndType: optionalParams?.zoomOnRangeAndType,
+      })
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
