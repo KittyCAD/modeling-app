@@ -201,6 +201,7 @@ export async function submitAndAwaitTextToKcl({
         token,
         navigate,
         context,
+        fileMachineSend,
         settings,
       }),
     {

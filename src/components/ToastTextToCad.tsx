@@ -26,9 +26,9 @@ import { base64Decode } from 'lang/wasm'
 import { sendTelemetry } from 'lib/textToCad'
 import { Themes } from 'lib/theme'
 import { ActionButton } from './ActionButton'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { EventData, EventFrom } from 'xstate'
+import { fileMachine } from 'machines/fileMachine'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -95,6 +95,7 @@ export function ToastTextToCadSuccess({
   navigate,
   context,
   token,
+  fileMachineSend,
   settings,
 }: {
   // TODO: update this type to match the actual data when API is done
@@ -102,6 +103,10 @@ export function ToastTextToCadSuccess({
   navigate: (to: string) => void
   context: ReturnType<typeof useFileContext>['context']
   token?: string
+  fileMachineSend: (
+    event: EventFrom<typeof fileMachine>,
+    data?: EventData
+  ) => void
   settings: {
     theme: Themes
     highlightEdges: boolean
@@ -243,6 +248,17 @@ export function ToastTextToCadSuccess({
             onClick={() => {
               if (!hasCopied) {
                 sendTelemetry(modelId, 'rejected', token)
+              }
+              if (isTauri()) {
+                // Delete the file from the project
+                fileMachineSend({
+                  type: 'Delete file',
+                  data: {
+                    name: data.fileName,
+                    path: `${context.project.path}${sep()}${data.fileName}`,
+                    children: null,
+                  },
+                })
               }
               toast.dismiss()
             }}
