@@ -116,3 +116,11 @@ required-features = ["lsp-test-util"]
 name = "lsp_semantic_tokens_benchmark_iai"
 harness = false
 required-features = ["lsp-test-util"]
+
+[[bench]]
+name = "executor_benchmark_criterion"
+harness = false
+
+[[bench]]
+name = "executor_benchmark_iai"
+harness = false

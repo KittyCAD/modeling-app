@@ -972,11 +972,21 @@ async fn test_kcl_lsp_semantic_tokens() {
         assert_eq!(semantic_tokens.data[0].length, 13);
         assert_eq!(semantic_tokens.data[0].delta_start, 0);
         assert_eq!(semantic_tokens.data[0].delta_line, 0);
-        assert_eq!(semantic_tokens.data[0].token_type, 8);
+        assert_eq!(
+            semantic_tokens.data[0].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::FUNCTION)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[1].length, 4);
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
         assert_eq!(semantic_tokens.data[1].delta_line, 0);
-        assert_eq!(semantic_tokens.data[1].token_type, 3);
+        assert_eq!(
+            semantic_tokens.data[1].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::STRING)
+                .unwrap()
+        );
     } else {
         panic!("Expected semantic tokens");
     }
@@ -1229,29 +1239,64 @@ const sphereDia = 0.5"#
         assert_eq!(semantic_tokens.data[0].length, 15);
         assert_eq!(semantic_tokens.data[0].delta_start, 0);
         assert_eq!(semantic_tokens.data[0].delta_line, 0);
-        assert_eq!(semantic_tokens.data[0].token_type, 6);
+        assert_eq!(
+            semantic_tokens.data[0].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[1].length, 232);
         assert_eq!(semantic_tokens.data[1].delta_start, 0);
         assert_eq!(semantic_tokens.data[1].delta_line, 1);
-        assert_eq!(semantic_tokens.data[1].token_type, 6);
+        assert_eq!(
+            semantic_tokens.data[1].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[2].length, 88);
         assert_eq!(semantic_tokens.data[2].delta_start, 0);
         assert_eq!(semantic_tokens.data[2].delta_line, 2);
-        assert_eq!(semantic_tokens.data[2].token_type, 6);
+        assert_eq!(
+            semantic_tokens.data[2].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[3].length, 5);
         assert_eq!(semantic_tokens.data[3].delta_start, 0);
         assert_eq!(semantic_tokens.data[3].delta_line, 1);
-        assert_eq!(semantic_tokens.data[3].token_type, 4);
+        assert_eq!(
+            semantic_tokens.data[3].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::KEYWORD)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[4].length, 9);
         assert_eq!(semantic_tokens.data[4].delta_start, 6);
         assert_eq!(semantic_tokens.data[4].delta_line, 0);
-        assert_eq!(semantic_tokens.data[4].token_type, 1);
+        assert_eq!(
+            semantic_tokens.data[4].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::VARIABLE)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[5].length, 1);
         assert_eq!(semantic_tokens.data[5].delta_start, 10);
-        assert_eq!(semantic_tokens.data[5].token_type, 2);
+        assert_eq!(
+            semantic_tokens.data[5].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::OPERATOR)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[6].length, 3);
         assert_eq!(semantic_tokens.data[6].delta_start, 2);
-        assert_eq!(semantic_tokens.data[6].token_type, 0);
+        assert_eq!(
+            semantic_tokens.data[6].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::NUMBER)
+                .unwrap()
+        );
     } else {
         panic!("Expected semantic tokens");
     }
