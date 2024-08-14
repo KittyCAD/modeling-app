@@ -1,3 +1,4 @@
+import { DEV } from 'env'
 import { isTauri } from './isTauri'
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
 
@@ -12,24 +13,22 @@ export default async function crossPlatformFetch<T>(
   token?: string
 ): Promise<T | Error> {
   let response = null
+  let opts = options || {}
   if (isTauri()) {
     if (!token) {
       return new Error('No token provided')
     }
 
-    options = {
-      headers: headers(token),
-      ...options,
-    }
-    response = await tauriFetch(url, options)
+    opts.headers = headers(token)
+
+    response = await tauriFetch(url, opts)
   } else {
     // Add credentials: 'include' to options
-    options = {
-      credentials: 'include',
-      headers: headers(),
-      ...options,
-    }
-    response = await fetch(url, options)
+    // We send the token with the headers only in development mode, DO NOT
+    // DO THIS IN PRODUCTION, as it is a security risk.
+    opts.headers = headers(DEV ? token : undefined)
+    opts.credentials = 'include'
+    response = await fetch(url, opts)
   }
 
   if (!response) {
@@ -37,7 +36,10 @@ export default async function crossPlatformFetch<T>(
   }
 
   if (!response.ok) {
-    console.error('Failed to request endpoint: ' + url, response)
+    console.error(
+      'Failed to request endpoint: ' + url,
+      JSON.stringify(response)
+    )
     return new Error(
       'Failed to request endpoint: ' +
         url +
