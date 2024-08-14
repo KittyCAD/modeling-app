@@ -4,6 +4,7 @@ import {
   ObjectExpression,
   PathToNode,
   Program,
+  ProgramMemory,
   Value,
   VariableDeclaration,
   VariableDeclarator,
@@ -31,7 +32,6 @@ import {
 import { err, trap } from 'lib/trap'
 import { Selections, canFilletSelection } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
-import { KclManager } from 'lang/KclSingleton'
 import { getExtrusionFromSuspectedPath } from 'lang/std/artifactGraph'
 import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
 
@@ -44,15 +44,16 @@ export function applyFilletToSelection(
   radius: KclCommandValue
 ): void | Error {
   // 1. get AST
-  const astResult = getAst(kclManager, radius)
+  let ast = kclManager.ast
+  const astResult = getAst(ast, radius)
   if (err(astResult)) return astResult
-  const { ast } = astResult
 
   // 2. get path
+  const programMemory = kclManager.programMemory
   const getPathToExtrudeForSegmentSelectionResult = getPathToExtrudeForSegmentSelection(
     ast,
     selection,
-    kclManager
+    programMemory
   )
   if (err(getPathToExtrudeForSegmentSelectionResult)) return getPathToExtrudeForSegmentSelectionResult
   const { pathToSegmentNode, pathToExtrudeNode } = getPathToExtrudeForSegmentSelectionResult
@@ -72,11 +73,9 @@ export function applyFilletToSelection(
 }
 
 function getAst(
-  kclManager: KclManager,
+  ast: Program,
   radius: KclCommandValue
 ): { ast: Program } | Error {
-  let ast = kclManager.ast
-
   try {
     // Validate and update AST
     if (
@@ -88,7 +87,6 @@ function getAst(
       newBody.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
       ast.body = newBody
     }
-
     return { ast }
   } catch (error) {
     return new Error(`Failed to handle AST: ${(error as Error).message}`)
@@ -98,12 +96,14 @@ function getAst(
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selections,
-  kclManager: KclManager
+  programMemory: ProgramMemory,
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
+
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
     selection.codeBasedSelections[0].range
   )
+  console.log(' /// pathToSegmentNode', pathToSegmentNode)
 
   const varDecNode = getNodeFromPath<VariableDeclaration>(
     ast,
@@ -111,18 +111,27 @@ export function getPathToExtrudeForSegmentSelection(
     'VariableDeclaration'
   )
   if (err(varDecNode)) return varDecNode
+  console.log(' /// varDecNode', varDecNode)
+
   const sketchVar = varDecNode.node.declarations[0].id.name
-  const sketchGroup = kclManager.programMemory.get(sketchVar)
+  console.log(' /// sketchVar', sketchVar)
+
+  const sketchGroup = programMemory.get(sketchVar)
+  console.log(' /// sketchGroup', sketchGroup)
+
   if (sketchGroup?.type !== 'SketchGroup')
     return new Error('Invalid sketch group type')
   const extrusion = getExtrusionFromSuspectedPath(
     sketchGroup.id,
     engineCommandManager.artifactGraph
   )
+  console.log(' /// extrusion', extrusion)
+
   const pathToExtrudeNode = err(extrusion)
     ? []
     : getNodePathFromSourceRange(ast, extrusion.codeRef.range)
-
+  console.log(' /// pathToExtrudeNode', pathToExtrudeNode)
+  console.log(' /// add Fillet end /// ')
   return { pathToSegmentNode, pathToExtrudeNode }
 }
 
