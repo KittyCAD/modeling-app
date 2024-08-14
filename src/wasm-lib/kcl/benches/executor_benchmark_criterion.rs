@@ -6,7 +6,6 @@ pub fn bench_execute(c: &mut Criterion) {
     for (name, code) in [
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
-        ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
     ] {
         c.bench_with_input(BenchmarkId::new("execute_", name), &code, |b, &s| {
@@ -29,5 +28,4 @@ criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_svg.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
-const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../tests/executor/inputs/mike_stress_test.kcl");
 const SERVER_RACK_HEAVY_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-heavy.kcl");
