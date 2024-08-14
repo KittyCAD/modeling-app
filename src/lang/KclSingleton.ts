@@ -356,11 +356,6 @@ export class KclManager {
       return
     }
     this.ast = { ...ast }
-    if (this.isExecuting) {
-      // Exit early if we are already executing.
-      return
-    }
-    this.isExecuting = true // executeAst sets this to false again
     return this.executeAst(ast, zoomToFit)
   }
   format() {
