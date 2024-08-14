@@ -2672,9 +2672,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.12"
+version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7bc87dcc307aa8c8dd56a6f022da1cbdf13a0a1e2abacb9ca9f897118a75596d"
+checksum = "cda4573582df5e220e6c3104dba6dc01acff529b36e289f41ca9cb5f91c117ae"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2704,6 +2704,7 @@ dependencies = [
  "serde_json",
  "serde_urlencoded",
  "thiserror",
+ "tokio",
  "tracing",
  "url",
  "uuid",
@@ -4587,9 +4588,9 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.206"
+version = "1.0.207"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b3e4cd94123dd520a128bcd11e34d9e9e423e7e3e50425cb1b4b1e3549d0284"
+checksum = "5665e14a49a4ea1b91029ba7d3bca9f299e1f7cfa194388ccc20f14743e784f2"
 dependencies = [
  "serde_derive",
 ]
@@ -4616,9 +4617,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.206"
+version = "1.0.207"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fabfb6138d2383ea8208cf98ccf69cdfb1aff4088460681d84189aa259762f97"
+checksum = "6aea2634c86b0e8ef2cfdc0c340baede54ec27b1e46febd7f80dffb2aa44a00e"
 dependencies = [
  "proc-macro2",
  "quote",
