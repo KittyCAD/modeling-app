@@ -58,18 +58,22 @@ export const authMachine = createMachine<UserContext, Events>(
           onDone: [
             {
               target: 'loggedIn',
-              actions: assign((context, event) => ({
-                user: event.data.user,
-                token: event.data.token || context.token,
-              })),
+              actions: () => {
+                return assign((context, event) => ({
+                  user: event.data.user,
+                  token: event.data.token || context.token,
+                }))
+              },
             },
           ],
           onError: [
             {
               target: 'loggedOut',
-              actions: assign({
-                user: () => undefined,
-              }),
+              actions: (args) => {
+                return assign({
+                  user: () => undefined,
+                })
+              },
             },
           ],
         },

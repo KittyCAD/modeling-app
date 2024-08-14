@@ -500,8 +500,14 @@ export const getUser = async (
     window.electron.process.env.BASE_URL(baseurl)
   }
 
-  const user = await window.electron.kittycad.users.get_user_self({
-    client: { token },
-  })
-  return user
+  try {
+    const user = await window.electron.kittycad('users.get_user_self', {
+      client: { token },
+    })
+    return user
+  } catch (e) {
+    console.log('ERROR BRO')
+    console.log(e)
+  }
+  return Promise.reject(new Error('bad thing'))
 }

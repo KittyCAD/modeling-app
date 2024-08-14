@@ -4,7 +4,6 @@ import fs from 'node:fs/promises'
 import packageJson from '../../package.json'
 import { components } from 'lib/machine-api'
 import { MachinesListing } from 'lib/machineManager'
-import kittycad from '@kittycad/lib/require'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -38,6 +37,9 @@ const exposeProcessEnv = (varName: string) => {
     },
   }
 }
+
+const kittycad = (access: string, args: any) =>
+  ipcRenderer.invoke('kittycad', { access, args })
 
 // We could probably do this from the renderer side, but I fear CORS will
 // bite our butts.
@@ -81,9 +83,7 @@ contextBridge.exposeInMainWorld('electron', {
     // these are read-only over the boundary.
     env: Object.assign({}, exposeProcessEnv('BASE_URL')),
   },
-  kittycad: {
-    users: kittycad.users,
-  },
+  kittycad,
   listMachines,
   getMachineApiIp,
 })

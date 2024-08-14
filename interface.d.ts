@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'path'
 import { dialog, shell } from 'electron'
-import kittycad from '@kittycad/lib'
 import { MachinesListing } from 'lib/machineManager'
 
 export interface IElectronAPI {
@@ -34,7 +33,7 @@ export interface IElectronAPI {
       BASE_URL: (value?: string) => string
     }
   }
-  kittycad
+  kittycad: (access: string, args: any) => any
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
 }

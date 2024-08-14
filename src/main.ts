@@ -17,6 +17,9 @@ import fs from 'node:fs/promises'
 import fss from 'node:fs'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
+import * as kittycad from '@kittycad/lib/import'
+
+console.log(kittycad)
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -131,9 +134,23 @@ ipcMain.handle('login', async (event, host) => {
   }
 
   // Wait for the user to login.
-  const tokenSet = await handle.poll()
+  try {
+    console.log('Polling for token')
+    const tokenSet = await handle.poll()
+    console.log('Received token set')
+    console.log(tokenSet)
+    return tokenSet.access_token
+  } catch (e) {
+    console.log(e)
+  }
 
-  return tokenSet.access_token
+  return Promise.reject(new Error('No access token received'))
+})
+
+ipcMain.handle('kittycad', (event, data) => {
+  return data.access.split('.').reduce((obj, prop) => obj[prop], kittycad)(
+    data.args
+  )
 })
 
 const SERVICE_NAME = '_machine-api._tcp.local.'
