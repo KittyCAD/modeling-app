@@ -658,7 +658,13 @@ export async function setup(
   await page.emulateMedia({ reducedMotion: 'reduce' })
 }
 
-export async function setupElectron({ testInfo }: { testInfo: TestInfo }) {
+export async function setupElectron({
+  testInfo,
+  folderSetupFn,
+}: {
+  testInfo: TestInfo
+  folderSetupFn?: (projectDirName: string) => Promise<void>
+}) {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
   try {
@@ -690,6 +696,8 @@ export async function setupElectron({ testInfo }: { testInfo: TestInfo }) {
     },
   })
   await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
+
+  await folderSetupFn?.(tempSettingsFilePath)
 
   await setup(context, page, projectDirName)
 
