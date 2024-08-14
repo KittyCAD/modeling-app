@@ -509,7 +509,6 @@ test('Sketch on face', async ({ page }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  console.log('exit sketch here')
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
   await u.updateCamPosition([1049, 239, 686])
@@ -549,7 +548,6 @@ test('Sketch on face', async ({ page }) => {
   // exit sketch
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  console.log('exit sketch')
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
   await page.getByText('startProfileAt([-12').click()
