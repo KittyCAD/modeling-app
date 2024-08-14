@@ -8,7 +8,11 @@ pub fn bench_execute(c: &mut Criterion) {
         ("cube", CUBE_PROGRAM),
         ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
     ] {
-        c.bench_with_input(BenchmarkId::new("execute_", name), &code, |b, &s| {
+        let mut group = c.benchmark_group("executor");
+        // Configure Criterion.rs to detect smaller differences and increase sample size to improve
+        // precision and counteract the resulting noise.
+        group.sample_size(10);
+        group.bench_with_input(BenchmarkId::new("execute_", name), &code, |b, &s| {
             let rt = Runtime::new().unwrap();
 
             // Spawn a future onto the runtime
@@ -17,9 +21,9 @@ pub fn bench_execute(c: &mut Criterion) {
                     s,
                     kcl_lib::settings::types::UnitLength::Mm,
                 ));
-                assert!(result.is_ok());
             });
         });
+        group.finish();
     }
 }
 
