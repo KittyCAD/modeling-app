@@ -18,6 +18,8 @@ use crate::{
 pub async fn extrude(args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
 
+    println!("extrude");
+
     let result = inner_extrude(length, sketch_group_set, args).await?;
 
     Ok(result.into())
