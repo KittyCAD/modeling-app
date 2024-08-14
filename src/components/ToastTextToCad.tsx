@@ -127,6 +127,7 @@ export function ToastTextToCad({
         </p>
         <div className="flex justify-between items-center">
           <button
+            name="Reject"
             onClick={() => {
               sendTelemetry(modelId, 'rejected', token)
               toast.dismiss()
@@ -137,6 +138,7 @@ export function ToastTextToCad({
           {isTauri() ? (
             <button
               className="flex-none p-2"
+              name="Accept"
               onClick={() => {
                 sendTelemetry(modelId, 'accepted', token)
                 navigate(
@@ -151,6 +153,7 @@ export function ToastTextToCad({
             </button>
           ) : (
             <button
+              name="Accept"
               onClick={() => {
                 sendTelemetry(modelId, 'accepted', token)
                 navigator.clipboard.writeText(data.code || '// no code found')
