@@ -166,6 +166,8 @@ test.describe('Text-to-CAD tests', () => {
     const failureToastMessage = page.getByText(`No KCL code returned`)
     await expect(failureToastMessage).toBeVisible()
 
+    await page.waitForTimeout(1000)
+
     // The toast should disappear.
     await expect(failureToastMessage).not.toBeVisible()
   })
