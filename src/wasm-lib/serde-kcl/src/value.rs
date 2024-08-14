@@ -3,6 +3,7 @@ use crate::Object;
 pub(crate) mod de;
 pub(crate) mod ser;
 
+/// Values that can be represented in KCL.
 #[derive(Debug, PartialEq)]
 pub enum Value {
     /// A value to use when the specific value isn't really important.
@@ -33,6 +34,7 @@ pub enum Value {
 
 macro_rules! impl_as {
     ($name:ident, $variant:ident, $return_type:ty) => {
+        /// If the KCL value matches this type, return it.
         pub fn $name(&self) -> Option<&$return_type> {
             match self {
                 Self::$variant(x) => Some(x),
@@ -60,6 +62,7 @@ impl Value {
     impl_as!(as_array, Array, Vec<Value>);
     impl_as!(as_object, Object, Object);
     impl_as!(as_binary, Bytes, Vec<u8>);
+    /// If the KCL value matches this type, return it.
     pub fn as_unit(&self) -> Option<()> {
         match self {
             Self::Unit => Some(()),

@@ -4,14 +4,15 @@ use std::{fmt::Display, num::TryFromIntError};
 /// Rust types and KCL types.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    /// Some error not covered by other cases.
     #[error("{0}")]
     Message(String),
+    /// Number is too big.
     #[error("Number is too big")]
     NumberTooBig,
+    /// Invalid key for a KCL object.
     #[error("You cannot use this as a key of a KCL object")]
     InvalidKey,
-    #[error("Invalid syntax")]
-    Syntax,
 }
 
 impl From<TryFromIntError> for Error {

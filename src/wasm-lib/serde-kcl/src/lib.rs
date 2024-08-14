@@ -1,3 +1,9 @@
+//! # Serde KCL
+//!
+//! KCL (KittyCAD Language) has an object model similar to JSON.
+//! This crate works similarly to serde_json.
+#![deny(missing_docs)]
+
 use serde::Serialize;
 
 pub use crate::{error::Error, object::Object, value::Value};
