@@ -58,6 +58,7 @@
 
             nodejs_22
             yarn
+            electron
           ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
             libiconv 
             darwin.apple_sdk.frameworks.Security
@@ -65,6 +66,7 @@
 
           TARGET_CC = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}cc";
           LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
+          ELECTRON_OVERRIDE_DIST_PATH = "${pkgs.electron}/bin/";
         };
       });
     };
