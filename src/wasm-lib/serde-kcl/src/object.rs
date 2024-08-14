@@ -14,10 +14,17 @@ impl Object {
     pub fn new() -> Self {
         Self::default()
     }
+
+    /// Does the object have any properties?
+    pub fn is_empty(&self) -> bool {
+        self.properties.is_empty()
+    }
+
     /// How many properties does this object have?
     pub fn len(&self) -> usize {
         self.properties.len()
     }
+
     /// Add a new property to the object.
     /// If the object already has a property with this name, overwrites it.
     pub fn insert(&mut self, property: String, value: Value) {

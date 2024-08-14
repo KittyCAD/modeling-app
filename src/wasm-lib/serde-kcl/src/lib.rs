@@ -1,8 +1,6 @@
 use serde::Serialize;
 
-pub use crate::error::Error;
-pub use crate::object::Object;
-pub use crate::value::Value;
+pub use crate::{error::Error, object::Object, value::Value};
 
 mod error;
 mod object;
@@ -65,7 +63,7 @@ mod tests {
 
     #[test]
     fn ser_struct_into_kcl_object() {
-        let val = to_value(&Person::adam()).expect("Serializing to KCL object should pass");
+        let val = to_value(Person::adam()).expect("Serializing to KCL object should pass");
         let obj = val.as_object().unwrap();
         let expected = Object {
             properties: std::collections::HashMap::from([

@@ -1,11 +1,9 @@
+use std::{borrow::Cow, collections::HashMap, fmt, vec};
+
 use serde::de::{
     self, Deserialize, DeserializeSeed, EnumAccess, Expected, IntoDeserializer, MapAccess, SeqAccess, Unexpected,
     VariantAccess, Visitor,
 };
-use std::borrow::Cow;
-use std::collections::HashMap;
-use std::fmt;
-use std::vec;
 
 use crate::{value::Value, Error, Object};
 
@@ -56,7 +54,7 @@ impl<'de> Deserialize<'de> for Value {
 
             #[inline]
             fn visit_i64<E>(self, value: i64) -> Result<Value, E> {
-                Ok(Value::Integer(value.into()))
+                Ok(Value::Integer(value))
             }
 
             #[inline]
@@ -185,18 +183,14 @@ impl<'de> Visitor<'de> for KeyClassifier {
     where
         E: de::Error,
     {
-        match s {
-            _ => Ok(KeyClass::Map(s.to_owned())),
-        }
+        Ok(KeyClass::Map(s.to_owned()))
     }
 
     fn visit_string<E>(self, s: String) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        match s.as_str() {
-            _ => Ok(KeyClass::Map(s)),
-        }
+        Ok(KeyClass::Map(s))
     }
 }
 

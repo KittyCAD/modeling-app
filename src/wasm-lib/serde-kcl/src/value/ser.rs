@@ -1,5 +1,4 @@
-use serde::ser::Impossible;
-use serde::Serialize;
+use serde::{ser::Impossible, Serialize};
 
 use crate::{to_value, value::Value, Error, Object};
 
@@ -429,7 +428,7 @@ impl serde::Serializer for Serializer {
     }
 
     fn serialize_i64(self, value: i64) -> Result<Value> {
-        Ok(Value::Integer(value.into()))
+        Ok(Value::Integer(value))
     }
 
     #[inline]
@@ -562,10 +561,8 @@ impl serde::Serializer for Serializer {
             next_key: None,
         })
     }
-    fn serialize_struct(self, name: &'static str, len: usize) -> Result<Self::SerializeStruct> {
-        match name {
-            _ => self.serialize_map(Some(len)),
-        }
+    fn serialize_struct(self, _name: &'static str, len: usize) -> Result<Self::SerializeStruct> {
+        self.serialize_map(Some(len))
     }
 
     fn serialize_struct_variant(
