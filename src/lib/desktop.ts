@@ -374,12 +374,12 @@ export async function writeProjectSettingsFile(
 
 const getAppSettingsFilePath = async () => {
   const isPlaywright = window.localStorage.getItem('playwright') === 'true'
-  const testSettingsPath = window.localStorage.getItem(TEST_SETTINGS_FILE_KEY) ?? ''
+  const testSettingsPath =
+    window.localStorage.getItem(TEST_SETTINGS_FILE_KEY) ?? ''
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = isPlaywright ? testSettingsPath : window.electron.path.join(
-    appConfig,
-    window.electron.packageJson.name
-  )
+  const fullPath = isPlaywright
+    ? testSettingsPath
+    : window.electron.path.join(appConfig, window.electron.packageJson.name)
   try {
     await window.electron.stat(fullPath)
   } catch (e) {

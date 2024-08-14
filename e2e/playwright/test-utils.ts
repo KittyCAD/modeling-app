@@ -642,7 +642,13 @@ export async function setup(
   })
 
   await context.addInitScript(
-    async ({ token, settingsKey, settings, appSettingsFileKey, appSettingsFileContent }) => {
+    async ({
+      token,
+      settingsKey,
+      settings,
+      appSettingsFileKey,
+      appSettingsFileContent,
+    }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
@@ -652,7 +658,8 @@ export async function setup(
     {
       token: secrets.token,
       appSettingsFileKey: TEST_SETTINGS_FILE_KEY,
-      appSettingsFileContent: overrideDirectory || TEST_SETTINGS.app.projectDirectory,
+      appSettingsFileContent:
+        overrideDirectory || TEST_SETTINGS.app.projectDirectory,
       settingsKey: TEST_SETTINGS_KEY,
       settings: TOML.stringify({
         ...TEST_SETTINGS,
@@ -668,11 +675,7 @@ export async function setup(
   await page.emulateMedia({ reducedMotion: 'reduce' })
 }
 
-export async function setupElectron({
-  testInfo,
-}: {
-  testInfo: TestInfo
-}) {
+export async function setupElectron({ testInfo }: { testInfo: TestInfo }) {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
   try {
