@@ -7,6 +7,205 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
+  'CRUD projects',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari because `window.tearDown` does not work'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          `${dir}/router-template-slate/main.kcl`
+        )
+
+        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          `${dir}/bracket/main.kcl`
+        )
+
+        await fsp.mkdir(`${dir}/lego`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/lego.kcl',
+          `${dir}/lego/main.kcl`
+        )
+      },
+    })
+    await page.goto('http://localhost:3000/')
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.waitForTimeout(1_000)
+
+    await test.step('rename a project clicking buttons checking left and right arrow does not impact the text', async () => {
+      const routerTemplate = page.getByText('router-template-slate')
+
+      await routerTemplate.hover()
+      await routerTemplate.focus()
+
+      await expect(page.getByLabel('sketch').last()).toBeVisible()
+      await page.getByLabel('sketch').last().click()
+
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+
+      expect(selectedText).toBe('router-template-slate')
+
+      // type "updated project name"
+      await page.keyboard.press('Backspace')
+      await page.keyboard.type('updated project name')
+
+      for (let i = 0; i < 10; i++) {
+        await page.keyboard.press('ArrowRight')
+      }
+      for (let i = 0; i < 30; i++) {
+        await page.keyboard.press('ArrowLeft')
+      }
+
+      await page.getByLabel('checkmark').last().click()
+
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
+      await expect(page.getByText('Successfully renamed')).not.toBeVisible()
+      await expect(page.getByText('updated project name')).toBeVisible()
+    })
+
+    await test.step('update a project by hitting enter', async () => {
+      const project = page.getByText('updated project name')
+
+      await project.hover()
+      await project.focus()
+
+      await expect(page.getByLabel('sketch').last()).toBeVisible()
+      await page.getByLabel('sketch').last().click()
+
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+
+      expect(selectedText).toBe('updated project name')
+
+      // type "updated project name"
+      await page.keyboard.press('Backspace')
+      await page.keyboard.type('updated name again')
+
+      await page.keyboard.press('Enter')
+
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
+      await expect(page.getByText('Successfully renamed')).not.toBeVisible()
+
+      await expect(page.getByText('updated name again')).toBeVisible()
+    })
+
+    await test.step('Cancel and edit by clicking the x button', async () => {
+      const project = page.getByText('updated name again')
+
+      await project.hover()
+      await project.focus()
+
+      await expect(page.getByLabel('sketch').last()).toBeVisible()
+      await page.getByLabel('sketch').last().click()
+
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+
+      expect(selectedText).toBe('updated name again')
+
+      await page.keyboard.press('Backspace')
+      await page.keyboard.type('dismiss this text')
+
+      await page.getByLabel('close').last().click()
+
+      await expect(page.getByText('updated name again')).toBeVisible()
+    })
+
+    await test.step('Cancel and edit by pressing esc', async () => {
+      const project = page.getByText('updated name again')
+
+      await project.hover()
+      await project.focus()
+
+      await expect(page.getByLabel('sketch').last()).toBeVisible()
+      await page.getByLabel('sketch').last().click()
+
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+
+      expect(selectedText).toBe('updated name again')
+
+      await page.keyboard.press('Backspace')
+      await page.keyboard.type('dismiss this text')
+
+      await page.keyboard.press('Escape')
+
+      await expect(page.getByText('updated name again')).toBeVisible()
+    })
+
+    await test.step('delete a project by clicking the trash button', async () => {
+      const project = page.getByText('updated name again')
+
+      await project.hover()
+      await project.focus()
+
+      await expect(page.getByLabel('trash').last()).toBeVisible()
+      await page.getByLabel('trash').last().click()
+
+      await expect(page.getByText('This will permanently delete')).toBeVisible()
+
+      await page.getByTestId('delete-confirmation').click()
+
+      await expect(page.getByText('Successfully deleted')).toBeVisible()
+      await expect(page.getByText('Successfully deleted')).not.toBeVisible()
+
+      await expect(page.getByText('updated name again')).not.toBeVisible()
+    })
+
+    await test.step('rename a project to an empty string should make the field complain', async () => {
+      const routerTemplate = page.getByText('bracket')
+
+      await routerTemplate.hover()
+      await routerTemplate.focus()
+
+      await expect(page.getByLabel('sketch').last()).toBeVisible()
+      await page.getByLabel('sketch').last().click()
+
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+
+      expect(selectedText).toBe('bracket')
+
+      // type "updated project name"
+      await page.keyboard.press('Backspace')
+
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Escape')
+
+      // expect the name not to have changed
+      await expect(page.getByText('bracket')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
   'pressing "delete" on home screen should do nothing',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
