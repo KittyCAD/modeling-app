@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CustomIcon } from './CustomIcon'
 import { Box3, OrthographicCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { base64ToArrayBuffer } from 'lib/base64ToArrayBuffer'
+import { base64Decode } from 'lang/wasm'
 
 const CANVAS_SIZE = 96
 const FRUSTUM_SIZE = 0.5
@@ -25,7 +25,6 @@ export function ToastTextToCad({
   navigate: (to: string) => void
   context: ReturnType<typeof useFileContext>['context']
 }) {
-  console.log('data', data)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [hasCopied, setHasCopied] = useState(false)
@@ -46,8 +45,17 @@ export function ToastTextToCad({
     loader.setDRACOLoader(dracoLoader)
     scene.add(camera)
 
+    // Get the base64 encoded GLB file
+    const buffer = base64Decode(data.outputs[OUTPUT_KEY])
+
+    if (buffer instanceof Error) {
+      toast.error('Error loading GLB file: ' + buffer.message)
+      console.error('decoding buffer from base64 failed', buffer)
+      return
+    }
+
     loader.parse(
-      data.outputs[OUTPUT_KEY],
+      buffer,
       '',
       // called when the resource is loaded
       function (gltf) {
@@ -74,7 +82,9 @@ export function ToastTextToCad({
       },
       // called when loading has errors
       function (error) {
-        console.log('An error happened')
+        toast.error('Error loading GLB file: ' + error.message)
+        console.error('Error loading GLB file', error)
+        return
       }
     )
 
