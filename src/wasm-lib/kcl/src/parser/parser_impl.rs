@@ -1594,7 +1594,7 @@ mod tests {
         let tokens = crate::token::lexer("|").unwrap();
         let err: KclError = program.parse(&tokens).unwrap_err().into();
         assert_eq!(err.source_ranges(), vec![SourceRange([0, 1])]);
-        assert_eq!(err.message(), "Unexpected token");
+        assert_eq!(err.message(), "Unexpected token: |");
     }
 
     #[test]
@@ -2426,7 +2426,8 @@ const mySk1 = startSketchAt([0, 0])"#;
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        let actual = result.err().unwrap().to_string();
+        assert!(actual.contains("Unexpected token: |"), "actual={actual:?}");
     }
 
     #[test]
@@ -2523,7 +2524,7 @@ const secondExtrude = startSketchOn('XY')
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        assert!(result.err().unwrap().to_string().contains("Unexpected token: |"));
     }
 
     #[test]
@@ -2533,7 +2534,7 @@ const secondExtrude = startSketchOn('XY')
         let err = parser.ast().unwrap_err();
         assert_eq!(
             err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "Unexpected token: >" }"#
         );
     }
 
@@ -2545,7 +2546,7 @@ const secondExtrude = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "Unexpected token: %" }"#
         );
     }
 
@@ -2600,7 +2601,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4])], message: "Unexpected token: (" }"#
         );
     }
 
@@ -2612,7 +2613,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3])], message: "Unexpected token: (" }"#
         );
     }
 
@@ -2657,7 +2658,8 @@ e
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        let actual = result.err().unwrap().to_string();
+        assert!(actual.contains("Unexpected token: +"), "actual={actual:?}");
     }
 
     #[test]
@@ -3006,7 +3008,7 @@ thing(false)
         // It should say that the compiler is expecting a function expression on the RHS.
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18])], message: "Unexpected token: \"thing\"" }"#
         );
     }
 
