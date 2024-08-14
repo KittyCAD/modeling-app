@@ -17,10 +17,11 @@ pub fn bench_execute(c: &mut Criterion) {
 
             // Spawn a future onto the runtime
             b.iter(|| {
-                let result = rt.block_on(test_server::execute_and_snapshot(
+                rt.block_on(test_server::execute_and_snapshot(
                     s,
                     kcl_lib::settings::types::UnitLength::Mm,
-                ));
+                ))
+                .unwrap();
             });
         });
         group.finish();
