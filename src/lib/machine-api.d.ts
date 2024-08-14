@@ -266,6 +266,33 @@ export interface components {
         })
       | ({
           /** @enum {string} */
+          command: 'ams_change_filament'
+          /**
+           * Format: int64
+           * @description The error number.
+           */
+          errorno: number
+          /** @description The reason for the message. */
+          reason?: components['schemas']['Reason'] | null
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+          /**
+           * Format: int64
+           * @description The target temperature.
+           */
+          tar_temp: number
+          /**
+           * Format: int64
+           * @description The target.
+           */
+          target: number
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
           command: 'calibration'
           /**
            * Format: int64

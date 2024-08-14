@@ -620,6 +620,67 @@
           },
           {
             "additionalProperties": true,
+            "description": "Ams change filament.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "ams_change_filament"
+                ],
+                "type": "string"
+              },
+              "errorno": {
+                "description": "The error number.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "reason": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Reason"
+                  }
+                ],
+                "description": "The reason for the message.",
+                "nullable": true
+              },
+              "result": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                ],
+                "description": "The result of the command."
+              },
+              "sequence_id": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SequenceId"
+                  }
+                ],
+                "description": "The sequence id."
+              },
+              "tar_temp": {
+                "description": "The target temperature.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "target": {
+                "description": "The target.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "command",
+              "errorno",
+              "result",
+              "sequence_id",
+              "tar_temp",
+              "target"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": true,
             "description": "Calibration.",
             "properties": {
               "command": {
