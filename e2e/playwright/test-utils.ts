@@ -645,7 +645,13 @@ export async function setup(context: BrowserContext, page: Page) {
   )
 
   await context.addCookies([
-    { name: COOKIE_NAME, value: secrets.token, path: '/', domain: 'localhost', secure: true },
+    {
+      name: COOKIE_NAME,
+      value: secrets.token,
+      path: '/',
+      domain: 'localhost',
+      secure: true,
+    },
   ])
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
