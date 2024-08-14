@@ -6,6 +6,43 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
+test(
+  'pressing "delete" on home screen should do nothing',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari because `window.tearDown` does not work'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          `${dir}/router-template-slate/main.kcl`
+        )
+      },
+    })
+    await page.goto('http://localhost:3000/')
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await expect(page.getByText('router-template-slate')).toBeVisible()
+    await expect(page.getByText('Your Projects')).toBeVisible()
+
+    await page.keyboard.press('Delete')
+    await page.waitForTimeout(200)
+    await page.keyboard.press('Delete')
+
+    // expect to still be on the home page
+    await expect(page.getByText('router-template-slate')).toBeVisible()
+    await expect(page.getByText('Your Projects')).toBeVisible()
+
+    await electronApp.close()
+  }
+)
 test.fixme(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
