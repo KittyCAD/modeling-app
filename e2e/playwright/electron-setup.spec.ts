@@ -38,9 +38,11 @@ test('Electron setup', { tag: '@electron' }, async () => {
     },
     {
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: {
-        app: { projectDirectory: fullPath },
-      } }),
+      settings: TOML.stringify({
+        settings: {
+          app: { projectDirectory: fullPath },
+        },
+      }),
     }
   )
 })

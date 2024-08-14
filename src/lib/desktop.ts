@@ -8,7 +8,6 @@ import { components } from './machine-api'
 import { isDesktop } from './isDesktop'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import * as TOML from '@iarna/toml'
 
 import {
   defaultAppSettings,
@@ -17,14 +16,15 @@ import {
   parseProjectSettings,
 } from 'lang/wasm'
 import { TEST_SETTINGS_KEY } from '../../e2e/playwright/storageStates'
-import { TEST_SETTINGS_FILE_KEY } from './constants'
+import {
+  DEFAULT_HOST,
+  PROJECT_ENTRYPOINT,
+  PROJECT_FOLDER,
+  PROJECT_SETTINGS_FILE_NAME,
+  SETTINGS_FILE_NAME,
+  TEST_SETTINGS_FILE_KEY,
+} from './constants'
 export { parseProjectRoute } from 'lang/wasm'
-
-const DEFAULT_HOST = 'https://api.zoo.dev'
-const SETTINGS_FILE_NAME = 'settings.toml'
-const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
-const PROJECT_FOLDER = 'zoo-modeling-app-projects'
-const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -112,10 +112,7 @@ export async function createNewProjectDirectory(
     }
   }
 
-  const projectFile = window.electron.path.join(
-    projectDir,
-    DEFAULT_PROJECT_KCL_FILE
-  )
+  const projectFile = window.electron.path.join(projectDir, PROJECT_ENTRYPOINT)
   await window.electron.writeFile(projectFile, initialCode ?? '')
   const metadata = await window.electron.stat(projectFile)
 
@@ -255,7 +252,7 @@ export async function getDefaultKclFileForDir(
 
   let defaultFilePath = window.electron.path.join(
     projectDir,
-    DEFAULT_PROJECT_KCL_FILE
+    PROJECT_ENTRYPOINT
   )
   try {
     await window.electron.stat(defaultFilePath)
@@ -377,15 +374,12 @@ export async function writeProjectSettingsFile(
 
 const getAppSettingsFilePath = async () => {
   const isPlaywright = window.localStorage.getItem('playwright') === 'true'
-  const testDirectoryName = window.localStorage.getItem(TEST_SETTINGS_FILE_KEY) ?? ''
-  const appConfig = await window.electron.getPath(
-    isPlaywright ? 'temp' : 'appData'
-  )
-  const fullPath = window.electron.path.join(
-    appConfig,
-    isPlaywright ? testDirectoryName : '',
-    window.electron.packageJson.name
-  )
+  const testSettingsPath =
+    window.localStorage.getItem(TEST_SETTINGS_FILE_KEY) ?? ''
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isPlaywright
+    ? testSettingsPath
+    : window.electron.path.join(appConfig, window.electron.packageJson.name)
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
