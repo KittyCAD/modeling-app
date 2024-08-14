@@ -294,9 +294,13 @@ impl KclValue {
             KclValue::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
             KclValue::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
             KclValue::UserVal(value) => {
-                let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
-                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
-                Ok(sg.into())
+                if let Ok(sg) = serde_json::from_value::<Vec<Box<SketchGroup>>>(value.value.clone()) {
+                    return Ok(sg.into());
+                }
+                if let Ok(sg) = serde_json::from_value::<Box<SketchGroup>>(value.value.clone()) {
+                    return Ok(sg.into());
+                }
+                Err(anyhow::anyhow!("Failed to deserialize sketch group set from JSON"))
             }
             _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
         }
@@ -307,9 +311,13 @@ impl KclValue {
             KclValue::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
             KclValue::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
             KclValue::UserVal(value) => {
-                let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
-                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
-                Ok(eg.into())
+                if let Ok(eg) = serde_json::from_value::<Vec<Box<ExtrudeGroup>>>(value.value.clone()) {
+                    return Ok(eg.into());
+                }
+                if let Ok(eg) = serde_json::from_value::<Box<ExtrudeGroup>>(value.value.clone()) {
+                    return Ok(eg.into());
+                }
+                Err(anyhow::anyhow!("Failed to deserialize extrude group set from JSON"))
             }
             _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
         }
