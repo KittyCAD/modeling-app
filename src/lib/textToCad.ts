@@ -84,6 +84,7 @@ export async function submitAndAwaitTextToKcl({
         ToastTextToCadError({
           message,
           commandBarSend,
+          prompt: trimmedPrompt,
         }),
       {
         id: toastId,

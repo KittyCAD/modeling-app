@@ -37,9 +37,11 @@ const OUTPUT_KEY = 'source.glb'
 
 export function ToastTextToCadError({
   message,
+  prompt,
   commandBarSend,
 }: {
   message: string
+  prompt: string
   commandBarSend: (
     event: EventFrom<typeof commandBarMachine>,
     data?: EventData
@@ -78,6 +80,9 @@ export function ToastTextToCadError({
               data: {
                 groupId: 'modeling',
                 name: 'Text-to-CAD',
+                argDefaultValues: {
+                  prompt,
+                },
               },
             })
             toast.dismiss()
