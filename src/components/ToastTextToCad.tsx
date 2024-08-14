@@ -7,13 +7,30 @@ import { sep } from '@tauri-apps/api/path'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
 import { useEffect, useRef, useState } from 'react'
 import { CustomIcon } from './CustomIcon'
-import { Box3, OrthographicCamera, Scene, Vector3, WebGLRenderer } from 'three'
+import {
+  Box3,
+  Clock,
+  Color,
+  DirectionalLight,
+  EdgesGeometry,
+  LineBasicMaterial,
+  LineSegments,
+  Mesh,
+  MeshBasicMaterial,
+  OrthographicCamera,
+  Scene,
+  Vector3,
+  WebGLRenderer,
+} from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { base64Decode } from 'lang/wasm'
 import { sendTelemetry } from 'lib/textToCad'
+import { Themes } from 'lib/theme'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 const CANVAS_SIZE = 96
 const FRUSTUM_SIZE = 0.5
+const ROTATION_SPEED = 0.01
 const OUTPUT_KEY = 'source.glb'
 
 export function ToastTextToCad({
@@ -21,12 +38,17 @@ export function ToastTextToCad({
   navigate,
   context,
   token,
+  settings,
 }: {
   // TODO: update this type to match the actual data when API is done
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
   context: ReturnType<typeof useFileContext>['context']
   token?: string
+  settings: {
+    theme: Themes
+    highlightEdges: boolean
+  }
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -41,7 +63,10 @@ export function ToastTextToCad({
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+    const clock = new Clock()
     const scene = new Scene()
+    const ambientLight = new DirectionalLight(new Color('white'), 8.0)
+    scene.add(ambientLight)
     const camera = createCamera()
     const loader = new GLTFLoader()
     const dracoLoader = new DRACOLoader()
@@ -65,6 +90,12 @@ export function ToastTextToCad({
       function (gltf) {
         scene.add(gltf.scene)
 
+        // Style the objects in the scene
+        traverseSceneToStyleObjects({
+          scene,
+          ...settings,
+        })
+
         // Then we'll calculate the max distance of the bounding box
         // and set that as the camera's position
         const size = new Vector3()
@@ -82,6 +113,24 @@ export function ToastTextToCad({
         camera.near = 0
         camera.far = maxDistance * 10
         camera.updateProjectionMatrix()
+
+        // Create and attach the lights,
+        // since their position depends on the bounding box
+        const cameraLight1 = new DirectionalLight(new Color('white'), 1)
+        cameraLight1.position.set(maxDistance * -5, -maxDistance, maxDistance)
+        camera.add(cameraLight1)
+
+        const cameraLight2 = new DirectionalLight(new Color('white'), 1.4)
+        cameraLight2.position.set(0, 0, 2 * maxDistance)
+        camera.add(cameraLight2)
+
+        const sceneLight = new DirectionalLight(new Color('white'), 1)
+        sceneLight.position.set(
+          -2 * maxDistance,
+          -2 * maxDistance,
+          2 * maxDistance
+        )
+
         renderer.render(scene, camera)
       },
       // called when loading has errors
@@ -91,20 +140,6 @@ export function ToastTextToCad({
         return
       }
     )
-
-    // const animate = () => {
-    //   const delta = clock.getDelta()
-    //   updateCameraOrientation(
-    //     camera,
-    //     currentQuaternion,
-    //     sceneInfra.camControls.camera.quaternion,
-    //     delta,
-    //     cameraPassiveUpdateTimer
-    //   )
-    //   renderer.render(scene, camera)
-    //   requestAnimationFrame(animate)
-    // }
-    // animate()
 
     return () => {
       renderer.dispose()
@@ -116,7 +151,7 @@ export function ToastTextToCad({
       <div className="flex-none w-24 h-24">
         <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
       </div>
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col justify-between gap-4">
         <h2>Text-to-CAD successful</h2>
         <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
           Prompt: "
@@ -183,4 +218,36 @@ const createCamera = (): OrthographicCamera => {
     0.5,
     3
   )
+}
+
+function traverseSceneToStyleObjects({
+  scene,
+  color = 0x29ffa4,
+  theme,
+  highlightEdges = false,
+}: {
+  scene: Scene
+  color?: number
+  theme: Themes
+  highlightEdges?: boolean
+}) {
+  scene.traverse((child) => {
+    if ('isMesh' in child && child.isMesh) {
+      // Replace the material with our flat color one
+      ;(child as Mesh).material = new MeshBasicMaterial({
+        color,
+      })
+
+      // Add edges to the mesh if the option is enabled
+      if (!highlightEdges) return
+      const edges = new EdgesGeometry((child as Mesh).geometry, 30)
+      const lines = new LineSegments(
+        edges,
+        new LineBasicMaterial({
+          color: theme === 'light' ? 0xffffff : 0x1f2020,
+        })
+      )
+      scene.add(lines)
+    }
+  })
 }

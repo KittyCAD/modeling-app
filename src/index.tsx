@@ -57,16 +57,18 @@ root.render(
               <>
                 {icon}
                 {resolveValue(message, t)}
-                {t.duration === Infinity && t.type !== 'loading' && (
-                  <button className="border-none p-0 m-0">
-                    <CustomIcon
-                      name="close"
-                      className="w-5 h-5"
-                      onClick={() => toast.dismiss(t.id)}
-                    />
-                    <span className="sr-only">Close</span>
-                  </button>
-                )}
+                {t.duration === Infinity &&
+                  t.type !== 'loading' &&
+                  !t.className?.includes('no-close') && (
+                    <button className="border-none p-0 m-0">
+                      <CustomIcon
+                        name="close"
+                        className="w-5 h-5"
+                        onClick={() => toast.dismiss(t.id)}
+                      />
+                      <span className="sr-only">Close</span>
+                    </button>
+                  )}
               </>
             )}
           </ToastBar>

@@ -485,6 +485,10 @@ export const ModelingMachineProvider = ({
             navigate,
             context,
             token,
+            settings: {
+              theme: theme.current,
+              highlightEdges: highlightEdges.current,
+            },
           })
         },
       },

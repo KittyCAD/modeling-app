@@ -8,6 +8,7 @@ import { fileMachine } from 'machines/fileMachine'
 import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
 import { isTauri } from './isTauri'
+import { Themes } from './theme'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -53,6 +54,10 @@ interface TextToKclProps {
   navigate: NavigateFunction
   context: ContextFrom<typeof fileMachine>
   token?: string
+  settings: {
+    theme: Themes
+    highlightEdges: boolean
+  }
 }
 
 export async function submitAndAwaitTextToKcl({
@@ -61,6 +66,7 @@ export async function submitAndAwaitTextToKcl({
   navigate,
   context,
   token,
+  settings,
 }: TextToKclProps) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
 
@@ -174,17 +180,22 @@ export async function submitAndAwaitTextToKcl({
     return
   }
 
+  // Show a custom toast with the .glb model preview
+  // and options to reject or accept the model
   toast.success(
     () =>
       ToastTextToCad({
         data: textToCadOutputCreated,
+        token,
         navigate,
         context,
-        token,
+        settings,
       }),
     {
       id: toastId,
       duration: Infinity,
+      className: 'no-close',
+      icon: null,
     }
   )
   return textToCadOutputCreated
