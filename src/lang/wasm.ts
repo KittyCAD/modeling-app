@@ -17,6 +17,7 @@ import init, {
   parse_project_settings,
   default_project_settings,
   parse_project_route,
+  base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -592,4 +593,14 @@ export function parseProjectRoute(
   route_str: string
 ): ProjectRoute | Error {
   return parse_project_route(JSON.stringify(configuration), route_str)
+}
+
+export function base64Decode(base64: string): ArrayBuffer | Error {
+  try {
+    const decoded = base64_decode(base64)
+    return new Uint8Array(decoded).buffer
+  } catch (e) {
+    console.error('Caught error decoding base64 string: ' + e)
+    return new Error('Caught error decoding base64 string: ' + e)
+  }
 }

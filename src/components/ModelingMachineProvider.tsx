@@ -71,7 +71,7 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, trap } from 'lib/trap'
@@ -83,6 +83,8 @@ import {
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
+import { submitAndAwaitTextToKcl } from 'lib/textToCad'
+import { useFileContext } from 'hooks/useFileContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -108,6 +110,8 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const navigate = useNavigate()
+  const { context, send: fileMachineSend } = useFileContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -115,7 +119,7 @@ export const ModelingMachineProvider = ({
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -463,6 +467,29 @@ export const ModelingMachineProvider = ({
             }
           )
         },
+        'Add pending text-to-cad prompt': assign({
+          pendingTextToCad: (_, event) => event.data.prompt.trim(),
+        }),
+        'Remove pending text-to-cad prompt': assign({
+          pendingTextToCad: undefined,
+        }),
+        'Submit to Text-to-CAD API': async (_, { data }) => {
+          const trimmedPrompt = data.prompt.trim()
+          if (!trimmedPrompt) return
+
+          void submitAndAwaitTextToKcl({
+            trimmedPrompt,
+            fileMachineSend,
+            navigate,
+            commandBarSend,
+            context,
+            token,
+            settings: {
+              theme: theme.current,
+              highlightEdges: highlightEdges.current,
+            },
+          })
+        },
       },
       guards: {
         'has valid extrude selection': ({ selectionRanges }) => {
@@ -522,6 +549,8 @@ export const ModelingMachineProvider = ({
             return false
           }
         },
+        'Has no pending text-to-cad submissions': ({ pendingTextToCad }) =>
+          !pendingTextToCad,
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {
