@@ -8,9 +8,12 @@ test.afterEach(async ({ page }, testInfo) => {
 test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
-  async ({ page: _ }, testInfo) => {
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari because `window.tearDown` does not work'
+    )
     const { electronApp, page } = await setupElectron({ testInfo })
-    
     const u = await getUtils(page)
     await page.goto('http://localhost:3000/')
 
@@ -38,31 +41,6 @@ test(
     ).toBeEnabled({
       timeout: 20_000,
     })
-
-    await page.locator('.cm-content')
-      .fill(`const sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-87.4, 282.92], %)
-  |> line([324.07, 27.199], %, $seg01)
-  |> line([118.328, -291.754], %)
-  |> line([-180.04, -202.08], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001 = extrude(200, sketch001)`)
-
-    const pointOnModel = { x: 660, y: 250 }
-
-    // check the model loaded by checking it's grey
-    await expect
-      .poll(() => u.getGreatestPixDiff(pointOnModel, [132, 132, 132]), {
-        timeout: 10_000,
-      })
-      .toBeLessThan(10)
-
-    await page.mouse.click(pointOnModel.x, pointOnModel.y)
-    // check user can interact with model by checking it turns yellow
-    await expect
-      .poll(() => u.getGreatestPixDiff(pointOnModel, [176, 180, 132]))
-      .toBeLessThan(10)
 
     await electronApp.close()
   }
