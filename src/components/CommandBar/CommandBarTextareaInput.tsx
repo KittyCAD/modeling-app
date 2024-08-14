@@ -54,7 +54,23 @@ function CommandBarTextareaInput({
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && !event.currentTarget.value) {
               stepBack()
-            } else if (event.key === 'Enter' && event.metaKey) {
+            } else if (
+              event.key === 'Enter' &&
+              (event.metaKey || event.shiftKey)
+            ) {
+              // Insert a newline
+              event.preventDefault()
+              const target = event.currentTarget
+              const value = target.value
+              const selectionStart = target.selectionStart
+              const selectionEnd = target.selectionEnd
+              target.value =
+                value.substring(0, selectionStart) +
+                '\n' +
+                value.substring(selectionEnd)
+              target.selectionStart = selectionStart + 1
+              target.selectionEnd = selectionStart + 1
+            } else if (event.key === 'Enter') {
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )

@@ -157,8 +157,15 @@ export async function submitAndAwaitTextToKcl({
     })
     .then((value) => {
       if (value.code === undefined || !value.code || value.code.length === 0) {
-        showFailureToast('No KCL code returned')
-        return Promise.reject(new Error('No KCL code returned'))
+        // We want to show the real error message to the user.
+        if (value.error && value.error.length > 0) {
+          const error = value.error.replace('Text-to-CAD server:', '').trim()
+          showFailureToast(error)
+          return Promise.reject(new Error(error))
+        } else {
+          showFailureToast('No KCL code returned')
+          return Promise.reject(new Error('No KCL code returned'))
+        }
       }
 
       const TRUNCATED_PROMPT_LENGTH = 24

@@ -48,7 +48,7 @@ export function ToastTextToCadError({
   return (
     <div className="flex flex-col justify-between gap-6">
       <section>
-        <h2>Text-to-CAD successful</h2>
+        <h2>Text-to-CAD failed</h2>
         <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
           {message}
         </p>
@@ -71,7 +71,7 @@ export function ToastTextToCadError({
           iconStart={{
             icon: 'refresh',
           }}
-          name="Try again"
+          name="Edit prompt"
           onClick={() => {
             commandBarSend({
               type: 'Find and select command',
@@ -83,7 +83,7 @@ export function ToastTextToCadError({
             toast.dismiss()
           }}
         >
-          Try another prompt
+          Edit prompt
         </ActionButton>
       </div>
     </div>

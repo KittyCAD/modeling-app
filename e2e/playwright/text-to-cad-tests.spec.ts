@@ -119,7 +119,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(``)
   })
 
-  test('sending an bad prompt fails', async ({ page }) => {
+  test('sending a bad prompt fails, can dismiss', async ({ page }) => {
     const u = await getUtils(page)
 
     await page.setViewportSize({ width: 1000, height: 500 })
@@ -163,13 +163,172 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(generatingToastMessage).toBeVisible()
 
-    const failureToastMessage = page.getByText(`No KCL code returned`)
+    const failureToastMessage = page.getByText(
+      `The prompt must clearly describe a CAD model`
+    )
     await expect(failureToastMessage).toBeVisible()
 
     await page.waitForTimeout(1000)
 
+    // Make sure the toast did not say it was successful.
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    await expect(successToastMessage).not.toBeVisible()
+    await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
+
+    // Find the toast dismiss button.
+    const dismissButton = page.getByRole('button', { name: 'Dismiss' })
+    await expect(dismissButton).toBeVisible()
+    dismissButton.click()
+
     // The toast should disappear.
     await expect(failureToastMessage).not.toBeVisible()
+  })
+
+  test('sending a bad prompt fails, can start over', async ({ page }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByText('Text-to-CAD')
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    textToCadCommand.first().click()
+
+    // Enter the prompt.
+    const prompt = page.getByText('Prompt')
+    await expect(prompt.first()).toBeVisible()
+
+    const badPrompt =
+      'akjsndladf lajbhflauweyfa;wieufjn;wieJNUF;.wjdfn weh Fwhefb'
+
+    // Type the prompt.
+    page.keyboard.type(badPrompt)
+    await page.waitForTimeout(1000)
+    await page.keyboard.press('Enter')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage).toBeVisible()
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage).toBeVisible()
+
+    const failureToastMessage = page.getByText(
+      `The prompt must clearly describe a CAD model`
+    )
+    await expect(failureToastMessage).toBeVisible()
+
+    await page.waitForTimeout(1000)
+
+    // Make sure the toast did not say it was successful.
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    await expect(successToastMessage).not.toBeVisible()
+    await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
+
+    // Click the edit prompt button to try again.
+    const editPromptButton = page.getByRole('button', { name: 'Edit prompt' })
+    await expect(editPromptButton).toBeVisible()
+    editPromptButton.click()
+
+    // The toast should disappear.
+    await expect(failureToastMessage).not.toBeVisible()
+
+    // Make sure the old prompt is still there and can be edited.
+    await expect(page.locator('textarea')).toContainText(badPrompt)
+
+    // Select all and start a new prompt.
+    page.keyboard.down(CtrlKey)
+    page.keyboard.press('KeyA')
+    page.keyboard.up(CtrlKey)
+    page.keyboard.type('a 2x4 lego')
+
+    // Submit the new prompt.
+    await page.keyboard.press('Enter')
+
+    // Make sure the new prompt works.
+    // Find the toast.
+    // Look out for the toast message
+    await expect(submittingToastMessage).toBeVisible()
+
+    await page.waitForTimeout(5000)
+
+    await expect(generatingToastMessage).toBeVisible()
+
+    await expect(successToastMessage).toBeVisible()
+  })
+
+  test('ensure you can shift+enter in the prompt box', async ({ page }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const promptWithNewline = `a 2x4\nlego`
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByText('Text-to-CAD')
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    textToCadCommand.first().click()
+
+    // Enter the prompt.
+    const prompt = page.getByText('Prompt')
+    await expect(prompt.first()).toBeVisible()
+
+    // Type the prompt.
+    page.keyboard.type('a 2x4')
+    await page.waitForTimeout(1000)
+    await page.keyboard.down('Shift')
+    await page.keyboard.press('Enter')
+    await page.keyboard.up('Shift')
+    await page.keyboard.type('lego')
+    await page.waitForTimeout(1000)
+    await page.keyboard.press('Enter')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage).toBeVisible()
+
+    await page.waitForTimeout(1000)
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage).toBeVisible()
+    await page.waitForTimeout(5000)
+
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    await expect(successToastMessage).toBeVisible()
+
+    await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 })
 
