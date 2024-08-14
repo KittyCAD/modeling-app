@@ -173,7 +173,7 @@ Reference ID: {coredump_id}
         );
 
         // Add the kcl code if it exists.
-        if let Some(kcl_code) = &self.kcl_code {
+        if !self.kcl_code.trim().is_empty() {
             body.push_str(&format!(
                 r#"
 <details>
@@ -184,7 +184,7 @@ Reference ID: {coredump_id}
 ```
 </details>
 "#,
-                kcl_code
+                self.kcl_code
             ));
         }
 
