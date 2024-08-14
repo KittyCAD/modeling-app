@@ -1971,12 +1971,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@kittycad/lib@^0.0.76":
-  version "0.0.76"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.76.tgz#d544a50c54547139d6dfa15730354313a51d0e49"
-  integrity sha512-14zzP7JS7J8xiwKltJqiszOCF9LdQeJK2nN58Xjiep+LOEVWtiLSGuILTameU2ryjA3aeQzPtNc1WJZ2JYRg2A==
+"@kittycad/lib@2":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-2.0.0.tgz#c7808f47546f5b85371899b0b82989a4049d258d"
+  integrity sha512-iJCifdt7C+gHCH7xomNhynUmhy4rvM+J3Skxm3vxJR+zMWludm1bSCd+LgUpgk6kZOvkHJ755Y0gfMDYz1IVxw==
   dependencies:
-    node-fetch "3.3.2"
     openapi-types "^12.0.0"
     ts-node "^10.9.1"
     tslib "~2.4"
@@ -6677,7 +6676,14 @@ node-domexception@^1.0.0:
   resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
   integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
 
-node-fetch@3.3.2, node-fetch@^3.3.2:
+node-fetch@^2.6.1, node-fetch@^2.6.12, node-fetch@^2.6.7:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"
+  integrity sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==
+  dependencies:
+    whatwg-url "^5.0.0"
+
+node-fetch@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.3.2.tgz#d1e889bacdf733b4ff3b2b243eb7a12866a0b78b"
   integrity sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==
@@ -6685,13 +6691,6 @@ node-fetch@3.3.2, node-fetch@^3.3.2:
     data-uri-to-buffer "^4.0.0"
     fetch-blob "^3.1.4"
     formdata-polyfill "^4.0.10"
-
-node-fetch@^2.6.1, node-fetch@^2.6.12, node-fetch@^2.6.7:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"
-  integrity sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==
-  dependencies:
-    whatwg-url "^5.0.0"
 
 node-gyp@^9.0.0:
   version "9.4.1"

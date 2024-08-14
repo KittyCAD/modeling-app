@@ -635,12 +635,6 @@ export async function setup(
   page: Page,
   overrideDirectory?: string
 ) {
-  // wait for Vite preview server to be up
-  await waitOn({
-    resources: ['tcp:3000'],
-    timeout: 5000,
-  })
-
   await context.addInitScript(
     async ({
       token,
@@ -694,9 +688,7 @@ export async function setupElectron({
 
   await fsp.mkdir(projectDirName)
 
-  const electronApp = await electron.launch({
-    args: ['.'],
-  })
+  const electronApp = await electron.launch({ args: ['.', '--no-sandbox'] })
   const context = electronApp.context()
   const page = await electronApp.firstWindow()
   context.on('console', console.log)

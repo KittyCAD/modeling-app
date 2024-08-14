@@ -10,10 +10,6 @@ test(
   'CRUD projects',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari because `window.tearDown` does not work'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -36,7 +32,6 @@ test(
         )
       },
     })
-    await page.goto('http://localhost:3000/')
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
@@ -209,10 +204,6 @@ test(
   'pressing "delete" on home screen should do nothing',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari because `window.tearDown` does not work'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -223,7 +214,6 @@ test(
         )
       },
     })
-    await page.goto('http://localhost:3000/')
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
@@ -246,10 +236,6 @@ test.fixme(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari because `window.tearDown` does not work'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -265,7 +251,6 @@ test.fixme(
       },
     })
     const u = await getUtils(page)
-    await page.goto('http://localhost:3000/')
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
@@ -302,10 +287,6 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari because `window.tearDown` does not work'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -332,7 +313,6 @@ test(
         )
       },
     })
-    await page.goto('http://localhost:3000/')
     await page.setViewportSize({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
@@ -424,13 +404,8 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari because `window.tearDown` does not work'
-    )
     const { electronApp, page } = await setupElectron({ testInfo })
     const u = await getUtils(page)
-    await page.goto('http://localhost:3000/')
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
@@ -513,10 +488,6 @@ test(
   'Check you can go home with two different methods, and that switching between projects does not harm the stream',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari because `window.tearDown` does not work'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -537,7 +508,6 @@ test(
       },
     })
     const u = await getUtils(page)
-    await page.goto('http://localhost:3000/')
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
