@@ -266,7 +266,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'chat',
     args: {
       prompt: {
-        inputType: 'string',
+        inputType: 'text',
         required: true,
       },
     },
