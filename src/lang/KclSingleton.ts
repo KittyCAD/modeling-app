@@ -123,17 +123,14 @@ export class KclManager {
     return this._isExecuting
   }
   set isExecuting(isExecuting) {
-    console.log('isExecuting', isExecuting)
     this._isExecuting = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
     if (!isExecuting && this.executeIsStale) {
-      console.log('executeIsStale', this.executeIsStale)
       const args = this.executeIsStale
       this.executeIsStale = null
       this.executeAst(args)
     } else {
-      console.log('executeIsStale', this.executeIsStale)
     }
     this._isExecutingCallback(isExecuting)
   }
@@ -233,7 +230,6 @@ export class KclManager {
   // this function, too many other things that don't want it exist.
   // just call to codeManager from wherever you want in other files.
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
-    console.log('executeAst', args, this.isExecuting)
     if (this.isExecuting) {
       this.executeIsStale = args
       // Exit early if we are already executing.
@@ -377,7 +373,6 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    console.log('executeCode', zoomToFit, this.isExecuting)
     const ast = this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
