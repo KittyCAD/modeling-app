@@ -55,3 +55,4 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+export const COOKIE_NAME = '__Secure-next-auth.session-token'

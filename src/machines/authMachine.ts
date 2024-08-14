@@ -4,6 +4,7 @@ import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
 import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { getUser as getUserTauri } from 'lib/tauri'
+import { COOKIE_NAME } from 'lib/constants'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -38,7 +39,6 @@ export type Events =
       token?: string
     }
 
-const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken =
   getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''

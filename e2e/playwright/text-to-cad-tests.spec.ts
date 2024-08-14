@@ -65,8 +65,11 @@ test.describe('Text-to-CAD tests', () => {
 
     copyToClipboardButton.click()
 
+    // The toast should disappear.
+    await expect(successToastMessage).not.toBeVisible()
+
     // Click in the code editor.
-    await page.locator('textarea').click()
+    await page.locator('.cm-content').click()
 
     // Paste the code.
     page.keyboard.down(CtrlKey)
@@ -81,5 +84,66 @@ test.describe('Text-to-CAD tests', () => {
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
+  })
+
+  test('you can reject text-to-cad output and it does nothing', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByText('Text-to-CAD')
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    textToCadCommand.first().click()
+
+    // Enter the prompt.
+    const prompt = page.getByText('Prompt')
+    await expect(prompt.first()).toBeVisible()
+
+    // Type the prompt.
+    page.keyboard.type('a 2x4 lego')
+    await page.keyboard.press('Enter')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage).toBeVisible()
+
+    await page.waitForTimeout(5000)
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage).toBeVisible()
+
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    await expect(successToastMessage).toBeVisible()
+
+    // Hit copy to clipboard.
+    const rejectButton = page.getByRole('button', { name: 'Reject' })
+    await expect(rejectButton).toBeVisible()
+
+    rejectButton.click()
+
+    // The toast should disappear.
+    await expect(successToastMessage).not.toBeVisible()
+
+    // Expect no code.
+    await expect(page.locator('.cm-content')).toContainText(``)
   })
 })
