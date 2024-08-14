@@ -326,7 +326,6 @@ const createCamera = (): OrthographicCamera => {
 function traverseSceneToStyleObjects({
   scene,
   color = 0x29ffa4,
-  theme,
   highlightEdges = false,
 }: {
   scene: Scene
@@ -347,7 +346,11 @@ function traverseSceneToStyleObjects({
       const lines = new LineSegments(
         edges,
         new LineBasicMaterial({
-          color: theme === 'light' ? 0x1f2020 : 0xffffff,
+          // We don't respect the theme here on purpose,
+          // because I found the dark edges to work better
+          // in light and dark themes,
+          // but we can change that if needed, it is wired up
+          color: 0x1f2020,
         })
       )
       scene.add(lines)

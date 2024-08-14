@@ -17,6 +17,7 @@ function CommandBarTextareaInput({
 }) {
   const { commandBarSend, commandBarState } = useCommandsContext()
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   useTextareaAutoGrow(inputRef)
 
@@ -33,7 +34,7 @@ function CommandBarTextareaInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form id="arg-form" onSubmit={handleSubmit} ref={formRef}>
       <label className="flex items-start rounded mx-4 my-4 border border-chalkboard-100 dark:border-chalkboard-80">
         <span className="capitalize px-2 py-1 rounded-br bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
           {arg.name}
@@ -53,6 +54,8 @@ function CommandBarTextareaInput({
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && !event.currentTarget.value) {
               stepBack()
+            } else if (event.key === 'Enter' && event.metaKey) {
+              formRef.current?.dispatchEvent(new Event('submit', { bubbles: true }))
             }
           }}
           autoFocus
