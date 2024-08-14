@@ -85,3 +85,4 @@ gen_test_fail!(
     object_prop_not_found,
     "undefined value: Property 'age' not found in object"
 );
+gen_test!(sketch_group_in_object);
