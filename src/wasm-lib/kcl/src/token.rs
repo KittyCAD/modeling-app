@@ -72,6 +72,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             TokenType::Operator => Self::OPERATOR,
             TokenType::QuestionMark => Self::OPERATOR,
             TokenType::String => Self::STRING,
+            TokenType::Bang => Self::OPERATOR,
             TokenType::LineComment => Self::COMMENT,
             TokenType::BlockComment => Self::COMMENT,
             TokenType::Function => Self::FUNCTION,
@@ -83,7 +84,6 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::DoublePeriod
             | TokenType::Hash
             | TokenType::Dollar
-            | TokenType::Bang
             | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
