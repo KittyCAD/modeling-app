@@ -32,7 +32,10 @@ import {
 import { err, trap } from 'lib/trap'
 import { Selections, canFilletSelection } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
-import { getExtrusionFromSuspectedPath } from 'lang/std/artifactGraph'
+import {
+  ArtifactGraph,
+  getExtrusionFromSuspectedPath,
+} from 'lang/std/artifactGraph'
 import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
 
 /**
@@ -50,13 +53,12 @@ export function applyFilletToSelection(
 
   // 2. get path
   const programMemory = kclManager.programMemory
-  const getPathToExtrudeForSegmentSelectionResult = getPathToExtrudeForSegmentSelection(
-    ast,
-    selection,
-    programMemory
-  )
-  if (err(getPathToExtrudeForSegmentSelectionResult)) return getPathToExtrudeForSegmentSelectionResult
-  const { pathToSegmentNode, pathToExtrudeNode } = getPathToExtrudeForSegmentSelectionResult
+  const getPathToExtrudeForSegmentSelectionResult =
+    getPathToExtrudeForSegmentSelection(ast, selection, programMemory)
+  if (err(getPathToExtrudeForSegmentSelectionResult))
+    return getPathToExtrudeForSegmentSelectionResult
+  const { pathToSegmentNode, pathToExtrudeNode } =
+    getPathToExtrudeForSegmentSelectionResult
 
   // 3. add fillet
   const addFilletResult = addFillet(
@@ -97,8 +99,8 @@ export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selections,
   programMemory: ProgramMemory,
+  artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
-
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
     selection.codeBasedSelections[0].range
@@ -121,10 +123,11 @@ export function getPathToExtrudeForSegmentSelection(
 
   if (sketchGroup?.type !== 'SketchGroup')
     return new Error('Invalid sketch group type')
-  const extrusion = getExtrusionFromSuspectedPath(
-    sketchGroup.id,
-    engineCommandManager.artifactGraph
-  )
+
+  // const extrusion2 = engineCommandManager
+  // console.log('yo', engineCommandManager.artifactGraph)
+
+  const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
   console.log(' /// extrusion', extrusion)
 
   const pathToExtrudeNode = err(extrusion)

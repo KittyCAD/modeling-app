@@ -6,6 +6,7 @@ import {
   Value,
   Program,
   CallExpression,
+  makeDefaultPlanes,
 } from '../wasm'
 import {
   addFillet,
@@ -19,18 +20,31 @@ import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
 import { KclManager } from 'lang/KclSingleton'
 import { engineCommandManager, kclManager } from 'lib/singletons'
-import { enginelessExecutor } from 'lib/testHelpers'
-import { a } from 'vitest/dist/suite-IbNSsUWN'
+import { VITE_KC_DEV_TOKEN } from 'env'
 
 beforeAll(async () => {
-  await initPromise // Initialize the WASM environment before running tests
-}, 2000)
+  await initPromise
+
+  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
+  engineCommandManager.start({
+    disableWebRTC: true,
+    token: VITE_KC_DEV_TOKEN,
+    // there does seem to be a minimum resolution, not sure what it is but 256 works ok.
+    width: 256,
+    height: 256,
+    executeCode: () => {},
+    makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
+    setMediaStream: () => {},
+    setIsStreamReady: () => {},
+    modifyGrid: async () => {},
+  })
+  await engineCommandManager.waitForReady
+}, 20_000)
 
 const runGetPathToExtrudeForSegmentSelectionTest = async (
   code: string,
   segmentSnippet: string
 ) => {
-
   // ast
   const astOrError = parse(code)
   if (err(astOrError)) {
@@ -54,22 +68,26 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   }
 
   // programMemory
-  const programMemory = await enginelessExecutor(ast)
-  console.log( ' /// programMemory ', programMemory)
+  // const programMemory = await enginelessExecutor(ast)
+  await kclManager.executeAst(ast)
+  // console.log(' /// programMemory ', programMemory)
 
   // getPathForSelection
   const pathResult = getPathToExtrudeForSegmentSelection(
     ast,
     selection,
-    programMemory
+    kclManager.programMemory,
+    engineCommandManager.artifactGraph
   )
-  if (err(pathResult)) { return pathResult}
-  console.log( ' /// pathResult ', pathResult)
+  if (err(pathResult)) {
+    return pathResult
+  }
+  // console.log(' /// pathResult ', pathResult)
 
   const { pathToSegmentNode, pathToExtrudeNode } = pathResult
-  console.log( ' /// pathResult ', pathResult)
-  console.log( ' /// pathToSegmentNode ', pathToSegmentNode)
-  console.log( ' /// pathToExtrudeNode ', pathToExtrudeNode)
+  // console.log(' /// pathResult ', pathResult)
+  console.log(' /// pathToSegmentNode ', pathToSegmentNode)
+  console.log(' /// pathToExtrudeNode ', pathToExtrudeNode)
 }
 
 describe('Testing getPathForSelection', () => {
@@ -83,10 +101,7 @@ describe('Testing getPathForSelection', () => {
   |> close(%)
 const extrude001 = extrude(-15, sketch001)`
     const segmentSnippet = `line([20, 0], %)`
-    await runGetPathToExtrudeForSegmentSelectionTest(
-      code, 
-      segmentSnippet
-    )
+    await runGetPathToExtrudeForSegmentSelectionTest(code, segmentSnippet)
   })
 })
 
