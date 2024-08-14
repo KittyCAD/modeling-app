@@ -1,0 +1,18 @@
+[package]
+name = "serde-kcl"
+description = "KittyCAD Language object model"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/KittyCAD/modeling-app"
+rust-version = "1.80"
+license = "MIT"
+authors = ["Jess Frazelle", "Adam Chalmers", "Jon Tran", "KittyCAD, Inc"]
+keywords = ["kcl", "KittyCAD", "CAD"]
+
+[dependencies]
+ryu = "1.0"
+serde = "1.0.207"
+thiserror = "1.0.63"
+
+[dev-dependencies]
+serde = { version = "1.0.207", features = ["derive"]}
