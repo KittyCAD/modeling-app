@@ -105,7 +105,9 @@
         "https://kittycad.io/*",
         "https://zoo.dev/*",
         "https://api.dev.kittycad.io/*",
-        "https://api.dev.zoo.dev/*"
+        "https://api.dev.zoo.dev/*",
+        "https://api.kittycad.io",
+        "https://api.zoo.dev/*"
       ]
     },
     "os:allow-platform",
