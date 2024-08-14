@@ -50,6 +50,7 @@ pub async fn circle(args: Args) -> Result<KclValue, KclError> {
 ///   |> hole(circle([0, 15], 5, %), %)
 ///
 /// const example = extrude(5, exampleSketch)
+/// ```
 #[stdlib {
     name = "circle",
 }]

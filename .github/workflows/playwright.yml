@@ -112,7 +112,7 @@ jobs:
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
       run: |
-        yarn playwright test --project="Google Chrome" --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -171,7 +171,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
+            yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -186,7 +186,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --last-failed --grep-invert=@snapshot || true
+                    yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --last-failed --grep-invert=@snapshot || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
@@ -325,7 +325,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="webkit" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
+            yarn playwright test --project="webkit" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=@snapshot || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -340,7 +340,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="webkit" --last-failed --grep-invert=@snapshot || true
+                    yarn playwright test --project="webkit" --config=playwright.ci.config.ts --last-failed --grep-invert=@snapshot || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))

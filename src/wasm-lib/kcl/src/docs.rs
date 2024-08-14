@@ -513,19 +513,27 @@ pub fn get_autocomplete_snippet_from_schema(
                 let mut fn_docs = String::new();
                 fn_docs.push_str("{\n");
                 // Let's print out the object's properties.
-                for (i, (prop_name, prop)) in obj_val.properties.iter().enumerate() {
+                let mut i = 0;
+                for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
+                        continue;
+                    }
+
+                    // Tolerance is a an optional property that we don't want to show in the
+                    // autocomplete, since it is mostly for advanced users.
+                    if prop_name == "tolerance" {
                         continue;
                     }
 
                     if let Some((_, snippet)) = get_autocomplete_snippet_from_schema(prop, index + i)? {
                         fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
+                        i += 1;
                     }
                 }
 
                 fn_docs.push('}');
 
-                return Ok(Some((index + obj_val.properties.len() - 1, fn_docs)));
+                return Ok(Some((index + i - 1, fn_docs)));
             }
 
             if let Some(array_val) = &o.array {
@@ -902,8 +910,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"revolve({
-	axis: ${1:"X"},
-}, ${2:%})${}"#
+	axis: ${0:"X"},
+}, ${1:%})${}"#
         );
     }
 
