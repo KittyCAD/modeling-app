@@ -112,11 +112,11 @@ test(
         ])
         await Promise.all([
           fsp.copyFile(
-            'e2e/playwright/kcl-samples/router-template-slate.kcl',
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
             `${dir}/router-template-slate/main.kcl`
           ),
           fsp.copyFile(
-            'e2e/playwright/kcl-samples/bracket.kcl',
+            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
             `${dir}/bracket/main.kcl`
           ),
         ])
