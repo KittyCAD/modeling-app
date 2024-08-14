@@ -294,11 +294,19 @@ impl KclValue {
             KclValue::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
             KclValue::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
             KclValue::UserVal(value) => {
-                if let Ok(sg) = serde_json::from_value::<Vec<Box<SketchGroup>>>(value.value.clone()) {
-                    return Ok(sg.into());
-                }
-                if let Ok(sg) = serde_json::from_value::<Box<SketchGroup>>(value.value.clone()) {
-                    return Ok(sg.into());
+                let value = value.value.clone();
+                match value {
+                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => {}
+                    JValue::Array(_) => {
+                        if let Ok(sg) = serde_json::from_value::<Vec<Box<SketchGroup>>>(value) {
+                            return Ok(sg.into());
+                        }
+                    }
+                    JValue::Object(_) => {
+                        if let Ok(sg) = serde_json::from_value::<Box<SketchGroup>>(value) {
+                            return Ok(sg.into());
+                        }
+                    }
                 }
                 Err(anyhow::anyhow!("Failed to deserialize sketch group set from JSON"))
             }
@@ -311,11 +319,19 @@ impl KclValue {
             KclValue::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
             KclValue::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
             KclValue::UserVal(value) => {
-                if let Ok(eg) = serde_json::from_value::<Vec<Box<ExtrudeGroup>>>(value.value.clone()) {
-                    return Ok(eg.into());
-                }
-                if let Ok(eg) = serde_json::from_value::<Box<ExtrudeGroup>>(value.value.clone()) {
-                    return Ok(eg.into());
+                let value = value.value.clone();
+                match value {
+                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => {}
+                    JValue::Array(_) => {
+                        if let Ok(eg) = serde_json::from_value::<Vec<Box<ExtrudeGroup>>>(value) {
+                            return Ok(eg.into());
+                        }
+                    }
+                    JValue::Object(_) => {
+                        if let Ok(eg) = serde_json::from_value::<Box<ExtrudeGroup>>(value) {
+                            return Ok(eg.into());
+                        }
+                    }
                 }
                 Err(anyhow::anyhow!("Failed to deserialize extrude group set from JSON"))
             }
