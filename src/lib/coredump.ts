@@ -11,6 +11,7 @@ import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import { VITE_KC_API_BASE_URL } from 'env'
+import { codeManager } from './singletons'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -59,6 +60,10 @@ export class CoreDumpManager {
   // Get the version of the app from the package.json.
   version(): string {
     return APP_VERSION
+  }
+
+  kclCode(): string {
+    return codeManager.code
   }
 
   // Get the backend pool we've requested.
