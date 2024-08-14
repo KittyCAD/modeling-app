@@ -2056,6 +2056,15 @@ mod tests {
         Ok(memory)
     }
 
+    /// Convenience function to get a JSON value from memory and unwrap.
+    fn mem_get_json(memory: &ProgramMemory, name: &str) -> serde_json::Value {
+        memory
+            .get(name, SourceRange::default())
+            .unwrap()
+            .get_json_value()
+            .unwrap()
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_assign_two_variables() {
         let ast = r#"const myVar = 5
@@ -2724,6 +2733,172 @@ const bracket = startSketchOn('XY')
   |> line([-leg2 + thickness(), 0], %)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_succeeds() {
+        let ast = r#"
+fn returnTrue = () => { return !false }
+const t = true
+const f = false
+let notTrue = !t
+let notFalse = !f
+let c = !!true
+let d = !returnTrue()
+
+assert(!false, "expected to pass")
+
+fn check = (x) => {
+  assert(!x, "expected argument to be false")
+  return true
+}
+check(false)
+"#;
+        let mem = parse_execute(ast).await.unwrap();
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_on_non_bool_fails() {
+        let code1 = r#"
+// Yup, this is null.
+let myNull = 0 / 0
+let notNull = !myNull
+"#;
+        assert_eq!(
+            parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: null".to_owned(),
+                source_ranges: vec![SourceRange([56, 63])],
+            })
+        );
+
+        let code2 = "let notZero = !0";
+        assert_eq!(
+            parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 0".to_owned(),
+                source_ranges: vec![SourceRange([14, 16])],
+            })
+        );
+
+        let code3 = r#"
+let notEmptyString = !""
+"#;
+        assert_eq!(
+            parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: \"\"".to_owned(),
+                source_ranges: vec![SourceRange([22, 25])],
+            })
+        );
+
+        let code4 = r#"
+let obj = { a: 1 }
+let notMember = !obj.a
+"#;
+        assert_eq!(
+            parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 1".to_owned(),
+                source_ranges: vec![SourceRange([36, 42])],
+            })
+        );
+
+        let code5 = "
+let a = []
+let notArray = !a";
+        assert_eq!(
+            parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: []".to_owned(),
+                source_ranges: vec![SourceRange([27, 29])],
+            })
+        );
+
+        let code6 = "
+let x = {}
+let notObject = !x";
+        assert_eq!(
+            parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: {}".to_owned(),
+                source_ranges: vec![SourceRange([28, 30])],
+            })
+        );
+
+        let code7 = "
+fn x = () => { return 1 }
+let notFunction = !x";
+        let fn_err = parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            fn_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: "),
+            "Actual error: {:?}",
+            fn_err
+        );
+
+        let code8 = "
+let myTagDeclarator = $myTag
+let notTagDeclarator = !myTagDeclarator";
+        let tag_declarator_err = parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            tag_declarator_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","),
+            "Actual error: {:?}",
+            tag_declarator_err
+        );
+
+        let code9 = "
+let myTagDeclarator = $myTag
+let notTagIdentifier = !myTag";
+        let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            tag_identifier_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","),
+            "Actual error: {:?}",
+            tag_identifier_err
+        );
+
+        let code10 = "let notPipe = !(1 |> 2)";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([14, 15])],
+            })
+        );
+
+        let code11 = "
+fn identity = (x) => { return x }
+let notPipeSub = 1 |> identity(!%))";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token".to_owned(),
+                source_ranges: vec![SourceRange([54, 56])],
+            })
+        );
+
+        // TODO: Add these tests when we support these types.
+        // let notNan = !NaN
+        // let notInfinity = !Infinity
     }
 
     #[tokio::test(flavor = "multi_thread")]
