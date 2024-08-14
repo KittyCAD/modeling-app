@@ -6,6 +6,62 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
+test.fixme(
+  'File in the file pane should open with a single click',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari because `window.tearDown` does not work'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          `${dir}/router-template-slate/main.kcl`
+        )
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          `${dir}/router-template-slate/otherThingToClickOn.kcl`
+        )
+      },
+    })
+    const u = await getUtils(page)
+    await page.goto('http://localhost:3000/')
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.getByText('router-template-slate').click()
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    await expect(u.codeLocator).toContainText('routerDiameter')
+    await expect(u.codeLocator).toContainText('templateGap')
+    await expect(u.codeLocator).toContainText('minClampingDistance')
+
+    await page.getByRole('button', { name: 'Project Files' }).click()
+
+    const file = page.getByRole('button', { name: 'otherThingToClickOn.kcl' })
+    await expect(file).toBeVisible()
+
+    await file.click()
+
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+    await expect(u.codeLocator).toContainText(
+      'A mounting bracket for the Focusrite Scarlett Solo audio interface'
+    )
+
+    await electronApp.close()
+  }
+)
 test(
   'Can sort projects on home page',
   { tag: '@electron' },
