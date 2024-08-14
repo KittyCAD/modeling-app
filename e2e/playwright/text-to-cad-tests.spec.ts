@@ -39,7 +39,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
-    page.keyboard.type('a 2x10 lego')
+    page.keyboard.type('a 2x4 lego')
     await page.keyboard.press('Enter')
 
     // Find the toast.
@@ -114,7 +114,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
-    page.keyboard.type('a 2x10 lego')
+    page.keyboard.type('a 2x4 lego')
     await page.keyboard.press('Enter')
 
     // Find the toast.
