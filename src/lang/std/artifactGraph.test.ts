@@ -136,7 +136,7 @@ beforeAll(async () => {
             console.error(ast)
             return Promise.reject(ast)
           }
-          await kclManager.executeAst(ast)
+          await kclManager.executeAst({ ast })
 
           cacheToWriteToFileTemp[codeKey] = {
             orderedCommands: engineCommandManager.orderedCommands,
