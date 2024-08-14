@@ -1,5 +1,8 @@
 import { Models } from '@kittycad/lib'
-import { ToastTextToCad } from 'components/ToastTextToCad'
+import {
+  ToastTextToCadError,
+  ToastTextToCadSuccess,
+} from 'components/ToastTextToCad'
 import { VITE_KC_API_BASE_URL } from 'env'
 import toast from 'react-hot-toast'
 import { FILE_EXT } from './constants'
@@ -9,6 +12,7 @@ import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
 import { isTauri } from './isTauri'
 import { Themes } from './theme'
+import { commandBarMachine } from 'machines/commandBarMachine'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -52,6 +56,10 @@ interface TextToKclProps {
     data?: EventData
   ) => unknown
   navigate: NavigateFunction
+  commandBarSend: (
+    type: EventFrom<typeof commandBarMachine>,
+    data?: EventData
+  ) => unknown
   context: ContextFrom<typeof fileMachine>
   token?: string
   settings: {
@@ -64,11 +72,25 @@ export async function submitAndAwaitTextToKcl({
   trimmedPrompt,
   fileMachineSend,
   navigate,
+  commandBarSend,
   context,
   token,
   settings,
 }: TextToKclProps) {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
+  const showFailureToast = (message: string) => {
+    toast.error(
+      () =>
+        ToastTextToCadError({
+          message,
+          commandBarSend,
+        }),
+      {
+        id: toastId,
+        duration: Infinity,
+      }
+    )
+  }
 
   const textToCadQueued = await submitTextToCadPrompt(trimmedPrompt, token)
     .then((value) => {
@@ -78,16 +100,12 @@ export async function submitAndAwaitTextToKcl({
       return value
     })
     .catch((error) => {
-      toast.error('Failed to submit to Text-to-CAD API', {
-        id: toastId,
-      })
+      showFailureToast('Failed to submit to Text-to-CAD API')
       return error
     })
 
   if (textToCadQueued instanceof Error) {
-    toast.error('Failed to submit to Text-to-CAD API', {
-      id: toastId,
-    })
+    showFailureToast('Failed to submit to Text-to-CAD API')
     return
   }
 
@@ -134,16 +152,12 @@ export async function submitAndAwaitTextToKcl({
 
   const textToCadOutputCreated = await textToCadComplete
     .catch((e) => {
-      toast.error('Failed to generate parametric model', {
-        id: toastId,
-      })
+      showFailureToast('Failed to generate parametric model')
       return e
     })
     .then((value) => {
       if (value.code === undefined || !value.code || value.code.length === 0) {
-        toast.error('No KCL code returned', {
-          id: toastId,
-        })
+        showFailureToast('No KCL code returned')
         return Promise.reject(new Error('No KCL code returned'))
       }
 
@@ -174,9 +188,7 @@ export async function submitAndAwaitTextToKcl({
     })
 
   if (textToCadOutputCreated instanceof Error) {
-    toast.error('Failed to generate parametric model', {
-      id: toastId,
-    })
+    showFailureToast('Failed to generate parametric model')
     return
   }
 
@@ -184,7 +196,7 @@ export async function submitAndAwaitTextToKcl({
   // and options to reject or accept the model
   toast.success(
     () =>
-      ToastTextToCad({
+      ToastTextToCadSuccess({
         data: textToCadOutputCreated,
         token,
         navigate,

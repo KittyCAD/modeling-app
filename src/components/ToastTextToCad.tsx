@@ -26,13 +26,71 @@ import { base64Decode } from 'lang/wasm'
 import { sendTelemetry } from 'lib/textToCad'
 import { Themes } from 'lib/theme'
 import { ActionButton } from './ActionButton'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { commandBarMachine } from 'machines/commandBarMachine'
+import { EventData, EventFrom } from 'xstate'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
 const FRUSTUM_SIZE = 0.5
 const OUTPUT_KEY = 'source.glb'
 
-export function ToastTextToCad({
+export function ToastTextToCadError({
+  message,
+  commandBarSend,
+}: {
+  message: string
+  commandBarSend: (
+    event: EventFrom<typeof commandBarMachine>,
+    data?: EventData
+  ) => void
+}) {
+  return (
+    <div className="flex flex-col justify-between gap-6">
+      <section>
+        <h2>Text-to-CAD successful</h2>
+        <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+          {message}
+        </p>
+      </section>
+      <div className="flex justify-between gap-8">
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'close',
+          }}
+          name="Dismiss"
+          onClick={() => {
+            toast.dismiss()
+          }}
+        >
+          Dismiss
+        </ActionButton>
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'refresh',
+          }}
+          name="Try again"
+          onClick={() => {
+            commandBarSend({
+              type: 'Find and select command',
+              data: {
+                groupId: 'modeling',
+                name: 'Text-to-CAD',
+              },
+            })
+            toast.dismiss()
+          }}
+        >
+          Try another prompt
+        </ActionButton>
+      </div>
+    </div>
+  )
+}
+
+export function ToastTextToCadSuccess({
   data,
   navigate,
   context,
