@@ -10,6 +10,7 @@ import { CustomIcon } from './CustomIcon'
 import { Box3, OrthographicCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { base64Decode } from 'lang/wasm'
+import { sendTelemetry } from 'lib/textToCad'
 
 const CANVAS_SIZE = 96
 const FRUSTUM_SIZE = 0.5
@@ -19,15 +20,18 @@ export function ToastTextToCad({
   data,
   navigate,
   context,
+  token,
 }: {
   // TODO: update this type to match the actual data when API is done
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
   context: ReturnType<typeof useFileContext>['context']
+  token?: string
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [hasCopied, setHasCopied] = useState(false)
+  const modelId = data.id
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -122,11 +126,19 @@ export function ToastTextToCad({
           "
         </p>
         <div className="flex justify-between items-center">
-          <button onClick={() => toast.dismiss()}>Reject</button>
+          <button
+            onClick={() => {
+              sendTelemetry(modelId, 'rejected', token)
+              toast.dismiss()
+            }}
+          >
+            Reject
+          </button>
           {isTauri() ? (
             <button
               className="flex-none p-2"
               onClick={() => {
+                sendTelemetry(modelId, 'accepted', token)
                 navigate(
                   `${PATHS.FILE}/${encodeURIComponent(
                     `${context.project.path}${sep()}${data.fileName}`
@@ -140,6 +152,7 @@ export function ToastTextToCad({
           ) : (
             <button
               onClick={() => {
+                sendTelemetry(modelId, 'accepted', token)
                 navigator.clipboard.writeText(data.code || '// no code found')
                 setHasCopied(true)
               }}

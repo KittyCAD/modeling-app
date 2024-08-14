@@ -180,6 +180,7 @@ export async function submitAndAwaitTextToKcl({
         data: textToCadOutputCreated,
         navigate,
         context,
+        token,
       }),
     {
       id: toastId,
@@ -187,4 +188,20 @@ export async function submitAndAwaitTextToKcl({
     }
   )
   return textToCadOutputCreated
+}
+
+export async function sendTelemetry(
+  id: string,
+  feedback: Models['AiFeedback_type'],
+  token?: string
+): Promise<void> {
+  const url =
+    VITE_KC_API_BASE_URL + '/user/text-to-cad/' + id + '?feedback=' + feedback
+  await crossPlatformFetch(
+    url,
+    {
+      method: 'POST',
+    },
+    token
+  )
 }
