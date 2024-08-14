@@ -11,7 +11,10 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{human_friendly_type, BodyItem, Expr, FunctionExpression, KclNone, Program, TagDeclarator},
+    ast::types::{
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
+        ReturnStatement, TagDeclarator,
+    },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -1286,6 +1289,22 @@ impl From<SourceRange> for Metadata {
     }
 }
 
+impl From<&ExpressionStatement> for Metadata {
+    fn from(exp_statement: &ExpressionStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(exp_statement.start, exp_statement.end),
+        }
+    }
+}
+
+impl From<&ReturnStatement> for Metadata {
+    fn from(return_statement: &ReturnStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(return_statement.start, return_statement.end),
+        }
+    }
+}
+
 /// A base path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1734,20 +1753,26 @@ impl ExecutorContext {
         for statement in &program.body {
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
-                    if let Expr::PipeExpression(pipe_expr) = &expression_statement.expression {
-                        pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                    } else if let Expr::CallExpression(call_expr) = &expression_statement.expression {
-                        call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                    }
+                    let metadata = Metadata::from(expression_statement);
+                    // Discard return value.
+                    self.execute_expr(
+                        &expression_statement.expression,
+                        memory,
+                        dynamic_state,
+                        &pipe_info,
+                        &metadata,
+                        StatementKind::Expression,
+                    )
+                    .await?;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         let var_name = declaration.id.name.to_string();
-                        let source_range: SourceRange = declaration.init.clone().into();
+                        let source_range = SourceRange::from(&declaration.init);
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
-                            .arg_into_mem_item(
+                            .execute_expr(
                                 &declaration.init,
                                 memory,
                                 dynamic_state,
@@ -1759,51 +1784,20 @@ impl ExecutorContext {
                         memory.add(&var_name, memory_item, source_range)?;
                     }
                 }
-                BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
-                    Expr::BinaryExpression(bin_expr) => {
-                        let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::UnaryExpression(unary_expr) => {
-                        let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::Identifier(identifier) => {
-                        let value = memory.get(&identifier.name, identifier.into())?.clone();
-                        memory.return_ = Some(value);
-                    }
-                    Expr::Literal(literal) => {
-                        memory.return_ = Some(literal.into());
-                    }
-                    Expr::TagDeclarator(tag) => {
-                        memory.return_ = Some(tag.into());
-                    }
-                    Expr::ArrayExpression(array_expr) => {
-                        let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::ObjectExpression(obj_expr) => {
-                        let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::CallExpression(call_expr) => {
-                        let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::MemberExpression(member_expr) => {
-                        let result = member_expr.get_result(memory)?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::PipeExpression(pipe_expr) => {
-                        let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::PipeSubstitution(_) => {}
-                    Expr::FunctionExpression(_) => {}
-                    Expr::None(none) => {
-                        memory.return_ = Some(KclValue::from(none));
-                    }
-                },
+                BodyItem::ReturnStatement(return_statement) => {
+                    let metadata = Metadata::from(return_statement);
+                    let value = self
+                        .execute_expr(
+                            &return_statement.argument,
+                            memory,
+                            dynamic_state,
+                            &pipe_info,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?;
+                    memory.return_ = Some(value);
+                }
             }
         }
 
@@ -1822,7 +1816,7 @@ impl ExecutorContext {
         Ok(memory.clone())
     }
 
-    pub async fn arg_into_mem_item<'a>(
+    pub async fn execute_expr<'a>(
         &self,
         init: &Expr,
         memory: &mut ProgramMemory,
@@ -1832,8 +1826,8 @@ impl ExecutorContext {
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
         let item = match init {
-            Expr::None(none) => none.into(),
-            Expr::Literal(literal) => literal.into(),
+            Expr::None(none) => KclValue::from(none),
+            Expr::Literal(literal) => KclValue::from(literal),
             Expr::TagDeclarator(tag) => tag.execute(memory).await?,
             Expr::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
