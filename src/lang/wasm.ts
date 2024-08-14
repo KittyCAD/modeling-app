@@ -87,7 +87,7 @@ export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const fullUrl = '/wasm_lib_bg.wasm'
+  const fullUrl = './wasm_lib_bg.wasm'
   console.log(`Full URL for WASM: ${fullUrl}`)
 
   return fullUrl
