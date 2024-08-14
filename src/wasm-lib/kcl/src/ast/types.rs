@@ -1332,7 +1332,7 @@ impl CallExpression {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
             let result = ctx
-                .arg_into_mem_item(
+                .execute_expr(
                     arg,
                     memory,
                     dynamic_state,
@@ -3582,7 +3582,7 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .arg_into_mem_item(
+        .execute_expr(
             first,
             memory,
             dynamic_state,
@@ -3598,26 +3598,39 @@ async fn execute_pipe_body(
     new_pipe_info.previous_results = Some(output);
     // Evaluate remaining elements.
     for expression in body {
-        let output = match expression {
-            Expr::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .get_result(memory, dynamic_state, &new_pipe_info, ctx)
-                    .await?
-            }
-            Expr::CallExpression(call_expression) => {
-                call_expression
-                    .execute(memory, dynamic_state, &new_pipe_info, ctx)
-                    .await?
-            }
-            Expr::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
-            _ => {
-                // Return an error this should not happen.
+        match expression {
+            Expr::TagDeclarator(_) => {
                 return Err(KclError::Semantic(KclErrorDetails {
                     message: format!("This cannot be in a PipeExpression: {:?}", expression),
                     source_ranges: vec![expression.into()],
                 }));
             }
+            Expr::Literal(_)
+            | Expr::Identifier(_)
+            | Expr::BinaryExpression(_)
+            | Expr::FunctionExpression(_)
+            | Expr::CallExpression(_)
+            | Expr::PipeExpression(_)
+            | Expr::PipeSubstitution(_)
+            | Expr::ArrayExpression(_)
+            | Expr::ObjectExpression(_)
+            | Expr::MemberExpression(_)
+            | Expr::UnaryExpression(_)
+            | Expr::None(_) => {}
         };
+        let metadata = Metadata {
+            source_range: SourceRange([expression.start(), expression.end()]),
+        };
+        let output = ctx
+            .execute_expr(
+                expression,
+                memory,
+                dynamic_state,
+                &new_pipe_info,
+                &metadata,
+                StatementKind::Expression,
+            )
+            .await?;
         new_pipe_info.previous_results = Some(output);
     }
     // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
