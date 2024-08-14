@@ -30,6 +30,15 @@ export async function submitTextToCadPrompt(
     token
   )
 
+  // Make sure we have an id.
+  if (data instanceof Error) {
+    return data
+  }
+
+  if (!data.id) {
+    return new Error('No id returned from Text-to-CAD API')
+  }
+
   return data
 }
 
