@@ -194,7 +194,6 @@ export async function submitAndAwaitTextToKcl({
     {
       id: toastId,
       duration: Infinity,
-      className: 'no-close',
       icon: null,
     }
   )

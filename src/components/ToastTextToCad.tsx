@@ -1,4 +1,5 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useFileContext } from 'hooks/useFileContext'
 import { isTauri } from 'lib/isTauri'
 import { PATHS } from 'lib/paths'
@@ -6,10 +7,8 @@ import toast from 'react-hot-toast'
 import { sep } from '@tauri-apps/api/path'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
 import { useEffect, useRef, useState } from 'react'
-import { CustomIcon } from './CustomIcon'
 import {
   Box3,
-  Clock,
   Color,
   DirectionalLight,
   EdgesGeometry,
@@ -26,11 +25,11 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { base64Decode } from 'lang/wasm'
 import { sendTelemetry } from 'lib/textToCad'
 import { Themes } from 'lib/theme'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { ActionButton } from './ActionButton'
 
-const CANVAS_SIZE = 96
+const CANVAS_SIZE = 128
+const PROMPT_TRUNCATE_LENGTH = 128
 const FRUSTUM_SIZE = 0.5
-const ROTATION_SPEED = 0.01
 const OUTPUT_KEY = 'source.glb'
 
 export function ToastTextToCad({
@@ -53,6 +52,7 @@ export function ToastTextToCad({
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [hasCopied, setHasCopied] = useState(false)
+  const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
 
   useEffect(() => {
@@ -62,12 +62,14 @@ export function ToastTextToCad({
     const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setAnimationLoop(animate)
 
-    const clock = new Clock()
     const scene = new Scene()
     const ambientLight = new DirectionalLight(new Color('white'), 8.0)
     scene.add(ambientLight)
     const camera = createCamera()
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
     const loader = new GLTFLoader()
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderPath('/examples/jsm/libs/draco/')
@@ -81,6 +83,13 @@ export function ToastTextToCad({
       toast.error('Error loading GLB file: ' + buffer.message)
       console.error('decoding buffer from base64 failed', buffer)
       return
+    }
+
+    function animate() {
+      requestAnimationFrame(animate)
+      // required if controls.enableDamping or controls.autoRotate are set to true
+      controls.update()
+      renderer.render(scene, camera)
     }
 
     loader.parse(
@@ -112,7 +121,6 @@ export function ToastTextToCad({
         camera.bottom = -maxDistance
         camera.near = 0
         camera.far = maxDistance * 10
-        camera.updateProjectionMatrix()
 
         // Create and attach the lights,
         // since their position depends on the bounding box
@@ -130,8 +138,10 @@ export function ToastTextToCad({
           -2 * maxDistance,
           2 * maxDistance
         )
+        scene.add(sceneLight)
 
-        renderer.render(scene, camera)
+        camera.updateProjectionMatrix()
+        controls.update()
       },
       // called when loading has errors
       function (error) {
@@ -147,32 +157,46 @@ export function ToastTextToCad({
   }, [])
 
   return (
-    <div className="flex px-4 py-2 gap-4" ref={wrapperRef}>
-      <div className="flex-none w-24 h-24">
+    <div className="flex gap-4 min-w-80" ref={wrapperRef}>
+      <div
+        className="flex-none overflow-hidden"
+        style={{ width: CANVAS_SIZE + 'px', height: CANVAS_SIZE + 'px' }}
+      >
         <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
       </div>
-      <div className="flex flex-col justify-between gap-4">
-        <h2>Text-to-CAD successful</h2>
-        <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-          Prompt: "
-          {data.prompt.length > 24
-            ? data.prompt.slice(0, 24) + '...'
-            : data.prompt}
-          "
-        </p>
-        <div className="flex justify-between items-center">
-          <button
-            name="Reject"
+      <div className="flex flex-col justify-between gap-6">
+        <section>
+          <h2>Text-to-CAD successful</h2>
+          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+            Prompt: "
+            {data.prompt.length > PROMPT_TRUNCATE_LENGTH
+              ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + '...'
+              : data.prompt}
+            "
+          </p>
+        </section>
+        <div className="flex justify-between gap-8">
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'close',
+            }}
+            name={hasCopied ? 'Close' : 'Reject'}
             onClick={() => {
-              sendTelemetry(modelId, 'rejected', token)
+              if (!hasCopied) {
+                sendTelemetry(modelId, 'rejected', token)
+              }
               toast.dismiss()
             }}
           >
-            Reject
-          </button>
+            {hasCopied ? 'Close' : 'Reject'}
+          </ActionButton>
           {isTauri() ? (
-            <button
-              className="flex-none p-2"
+            <ActionButton
+              Element="button"
+              iconStart={{
+                icon: 'checkmark',
+              }}
               name="Accept"
               onClick={() => {
                 sendTelemetry(modelId, 'accepted', token)
@@ -185,23 +209,28 @@ export function ToastTextToCad({
               }}
             >
               Accept
-            </button>
+            </ActionButton>
           ) : (
-            <button
+            <ActionButton
+              Element="button"
+              iconStart={{
+                icon: showCopiedUi ? 'clipboardCheckmark' : 'clipboardPlus',
+              }}
               name="Copy to clipboard"
               onClick={() => {
                 sendTelemetry(modelId, 'accepted', token)
                 navigator.clipboard.writeText(data.code || '// no code found')
+                setShowCopiedUi(true)
                 setHasCopied(true)
+
+                // Reset the button text after 5 seconds
+                setTimeout(() => {
+                  setShowCopiedUi(false)
+                }, 5000)
               }}
-              className="flex-none p-2 flex items-center gap-2"
             >
-              <CustomIcon
-                name={hasCopied ? 'clipboardCheckmark' : 'clipboardPlus'}
-                className="w-5 h-5"
-              />
-              {hasCopied ? 'Copied' : 'Copy to clipboard'}
-            </button>
+              {showCopiedUi ? 'Copied' : 'Copy to clipboard'}
+            </ActionButton>
           )}
         </div>
       </div>
@@ -244,7 +273,7 @@ function traverseSceneToStyleObjects({
       const lines = new LineSegments(
         edges,
         new LineBasicMaterial({
-          color: theme === 'light' ? 0xffffff : 0x1f2020,
+          color: theme === 'light' ? 0x1f2020 : 0xffffff,
         })
       )
       scene.add(lines)
