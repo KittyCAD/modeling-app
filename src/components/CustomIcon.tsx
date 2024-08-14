@@ -2,7 +2,12 @@ import { cloneElement } from 'react'
 
 const CustomIconMap = {
   arc: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arc"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -12,7 +17,12 @@ const CustomIconMap = {
     </svg>
   ),
   angle: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="angle"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -22,7 +32,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowDown: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow down"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -32,7 +47,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowLeft: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow left"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -42,7 +62,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowRight: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow right"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -52,7 +77,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowRotateRight: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow rotate right"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -62,7 +92,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowUp: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow up"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -72,7 +107,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanExclude: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean exclude"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -82,7 +122,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanIntersect: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean intersect"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -92,7 +137,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanSubtract: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean subtract"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -102,7 +152,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanUnion: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean union"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -112,7 +167,12 @@ const CustomIconMap = {
     </svg>
   ),
   bug: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="bug"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -122,7 +182,12 @@ const CustomIconMap = {
     </svg>
   ),
   checkmark: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="checkmark"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -132,7 +197,12 @@ const CustomIconMap = {
     </svg>
   ),
   caretDown: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="caret down"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -142,7 +212,12 @@ const CustomIconMap = {
     </svg>
   ),
   chamfer3d: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="chamfer 3d"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -152,7 +227,12 @@ const CustomIconMap = {
     </svg>
   ),
   circle: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="circle"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -162,7 +242,12 @@ const CustomIconMap = {
     </svg>
   ),
   clipboardCheckmark: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="clipboard checkmark"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -172,7 +257,12 @@ const CustomIconMap = {
     </svg>
   ),
   clipboardPlus: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="clipboard plus"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -182,7 +272,12 @@ const CustomIconMap = {
     </svg>
   ),
   close: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="close"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -192,7 +287,12 @@ const CustomIconMap = {
     </svg>
   ),
   code: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="code"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -202,7 +302,12 @@ const CustomIconMap = {
     </svg>
   ),
   dimension: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="dimension"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -354,7 +459,12 @@ const CustomIconMap = {
     </svg>
   ),
   horizontalDash: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="horizontal Dash"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"

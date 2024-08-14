@@ -7,6 +7,128 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
+  'Can sort projects on home page',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari because `window.tearDown` does not work'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          `${dir}/router-template-slate/main.kcl`
+        )
+
+        // wait more than a second so the timestamp is different
+        await new Promise((r) => setTimeout(r, 1_200))
+        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          `${dir}/bracket/main.kcl`
+        )
+
+        // wait more than a second so the timestamp is different
+        await new Promise((r) => setTimeout(r, 1_200))
+        await fsp.mkdir(`${dir}/lego`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/lego.kcl',
+          `${dir}/lego/main.kcl`
+        )
+      },
+    })
+    await page.goto('http://localhost:3000/')
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const getAllProjects = () => page.getByTestId('project-link').all()
+
+    page.on('console', console.log)
+
+    await test.step('should be shorted by modified initially', async () => {
+      const lastModifiedButton = page.getByRole('button', {
+        name: 'Last Modified',
+      })
+      await expect(lastModifiedButton).toBeVisible()
+      await expect(lastModifiedButton.getByLabel('arrow down')).toBeVisible()
+    })
+
+    const projectNamesOrderedByModified = [
+      'lego',
+      'bracket',
+      'router-template-slate',
+    ]
+    await test.step('Check the order of the projects is correct', async () => {
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(
+          projectNamesOrderedByModified[index]
+        )
+      }
+    })
+
+    await test.step('Reverse modified order', async () => {
+      const lastModifiedButton = page.getByRole('button', {
+        name: 'Last Modified',
+      })
+      await lastModifiedButton.click()
+      await expect(lastModifiedButton).toBeVisible()
+      await expect(lastModifiedButton.getByLabel('arrow up')).toBeVisible()
+    })
+
+    await test.step('Check the order of the projects is has reversed', async () => {
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(
+          [...projectNamesOrderedByModified].reverse()[index]
+        )
+      }
+    })
+
+    await test.step('Change order to by name', async () => {
+      const nameButton = page.getByRole('button', {
+        name: 'Name',
+      })
+      await nameButton.click()
+      await expect(nameButton).toBeVisible()
+      await expect(nameButton.getByLabel('arrow down')).toBeVisible()
+    })
+
+    const projectNamesOrderedByName = [
+      'bracket',
+      'lego',
+      'router-template-slate',
+    ]
+    await test.step('Check the order of the projects is by name', async () => {
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(
+          projectNamesOrderedByName[index]
+        )
+      }
+    })
+
+    await test.step('Reverse name order', async () => {
+      const nameButton = page.getByRole('button', {
+        name: 'Name',
+      })
+      await nameButton.click()
+      await expect(nameButton).toBeVisible()
+      await expect(nameButton.getByLabel('arrow up')).toBeVisible()
+    })
+
+    await test.step('Check the order of the projects is by name reversed', async () => {
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(
+          [...projectNamesOrderedByName].reverse()[index]
+        )
+      }
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
