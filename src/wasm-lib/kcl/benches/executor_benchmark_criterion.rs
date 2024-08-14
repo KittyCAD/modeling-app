@@ -4,14 +4,13 @@ use tokio::runtime::Runtime;
 
 pub fn bench_execute(c: &mut Criterion) {
     for (name, code) in [
-        ("pipes_on_pipes", PIPES_PROGRAM),
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
     ] {
-        c.bench_with_input(BenchmarkId::new("semantic_tokens_", name), &code, |b, &s| {
+        c.bench_with_input(BenchmarkId::new("execute_", name), &code, |b, &s| {
             let rt = Runtime::new().unwrap();
 
             // Spawn a future onto the runtime
@@ -30,7 +29,6 @@ criterion_group!(benches, bench_execute);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../tests/executor/inputs/math.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../tests/executor/inputs/mike_stress_test.kcl");
