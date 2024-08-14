@@ -87,7 +87,16 @@ export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const fullUrl = './wasm_lib_bg.wasm'
+  // For when we're in electron (file based) or web server (network based)
+  // For some reason relative paths don't work as expected. Otherwise we would
+  // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
+  // is used from within worker.ts.
+  const fullUrl = document.location.protocol.includes('http')
+    ? document.location.origin + '/wasm_lib_bg.wasm'
+    : document.location.protocol +
+      document.location.pathname.split('/').slice(0, -1).join('/') +
+      '/wasm_lib_bg.wasm'
+
   console.log(`Full URL for WASM: ${fullUrl}`)
 
   return fullUrl

@@ -1,6 +1,7 @@
 import { App } from './App'
 import {
   createBrowserRouter,
+  createHashRouter,
   Outlet,
   redirect,
   RouterProvider,
@@ -42,7 +43,9 @@ import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 
-const router = createBrowserRouter([
+const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
+
+const router = createRouter([
   {
     loader: settingsLoader,
     id: PATHS.INDEX,

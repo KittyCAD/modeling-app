@@ -154,21 +154,3 @@ ipcMain.handle('find_machine_api', () => {
     })
   })
 })
-
-app.whenReady().then(() => {
-  protocol.handle('file', (request) => {
-    const filePath = request.url.slice('file://'.length)
-    const maybeAbsolutePath = path.join(__dirname, filePath)
-    const bypassCustomProtocolHandlers = true
-    if (fss.existsSync(maybeAbsolutePath)) {
-      console.log(
-        `Intercepted local-asbolute path ${filePath}, rebuilt it as ${maybeAbsolutePath}`
-      )
-      return net.fetch(url.pathToFileURL(maybeAbsolutePath).toString(), {
-        bypassCustomProtocolHandlers,
-      })
-    }
-    console.log(`Default fetch to ${filePath}`)
-    return net.fetch(request.url, { bypassCustomProtocolHandlers })
-  })
-})

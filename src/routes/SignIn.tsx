@@ -39,7 +39,7 @@ const SignIn = () => {
       <div className="max-w-2xl mx-auto">
         <div>
           <img
-            src={`/zma-logomark${getLogoTheme()}.svg`}
+            src={`./zma-logomark${getLogoTheme()}.svg`}
             alt="Zoo Modeling App"
             className="w-48 inline-block"
           />

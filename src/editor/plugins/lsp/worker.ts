@@ -27,6 +27,8 @@ const fromServer: FromServer | Error = FromServer.create()
 const initialise = async (wasmUrl: string) => {
   const input = await fetch(wasmUrl)
   const buffer = await input.arrayBuffer()
+  const td = new TextDecoder()
+  const text = td.decode(buffer)
   return init(buffer)
 }
 
