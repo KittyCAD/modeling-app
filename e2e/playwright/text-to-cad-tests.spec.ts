@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 
 import { getUtils, setup, tearDown } from './test-utils'
 
@@ -20,27 +20,7 @@ test.describe('Text-to-CAD tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByText('Text-to-CAD')
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByText('Prompt')
-    await expect(prompt.first()).toBeVisible()
-
-    // Type the prompt.
-    page.keyboard.type('a 2x4 lego')
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -59,14 +39,18 @@ test.describe('Text-to-CAD tests', () => {
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
     await expect(successToastMessage).toBeVisible()
 
+    await expect(page.getByText('Copied')).not.toBeVisible()
+
     // Hit copy to clipboard.
-    const copyToClipboardButton = page.getByRole('button', { name: 'Accept' })
+    const copyToClipboardButton = page.getByRole('button', {
+      name: 'Copy to clipboard',
+    })
     await expect(copyToClipboardButton).toBeVisible()
 
     copyToClipboardButton.click()
 
-    // The toast should disappear.
-    await expect(successToastMessage).not.toBeVisible()
+    // Expect the code to be copied.
+    await expect(page.getByText('Copied')).toBeVisible()
 
     // Click in the code editor.
     await page.locator('.cm-content').click()
@@ -84,6 +68,14 @@ test.describe('Text-to-CAD tests', () => {
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
+
+    // Find the toast close button.
+    const closeButton = page.getByRole('button', { name: 'Close' })
+    await expect(closeButton).toBeVisible()
+    closeButton.click()
+
+    // The toast should disappear.
+    await expect(successToastMessage).not.toBeVisible()
   })
 
   test('you can reject text-to-cad output and it does nothing', async ({
@@ -95,27 +87,7 @@ test.describe('Text-to-CAD tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByText('Text-to-CAD')
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByText('Prompt')
-    await expect(prompt.first()).toBeVisible()
-
-    // Type the prompt.
-    page.keyboard.type('a 2x4 lego')
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -146,4 +118,80 @@ test.describe('Text-to-CAD tests', () => {
     // Expect no code.
     await expect(page.locator('.cm-content')).toContainText(``)
   })
+
+  test('sending an bad prompt fails', async ({ page }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByText('Text-to-CAD')
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    textToCadCommand.first().click()
+
+    // Enter the prompt.
+    const prompt = page.getByText('Prompt')
+    await expect(prompt.first()).toBeVisible()
+
+    // Type the prompt.
+    page.keyboard.type(
+      'akjsndladf lajbhflauweyfa;wieufjn;wieJNUF;.wjdfn weh Fwhefb'
+    )
+    await page.waitForTimeout(1000)
+    await page.keyboard.press('Enter')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage).toBeVisible()
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage).toBeVisible()
+
+    const failureToastMessage = page.getByText(`No KCL code returned`)
+    await expect(failureToastMessage).toBeVisible()
+
+    // The toast should disappear.
+    await expect(failureToastMessage).not.toBeVisible()
+  })
 })
+
+async function sendPromptFromCommandBar(page: Page, promptStr: string) {
+  const commandBarButton = page.getByRole('button', { name: 'Commands' })
+  await expect(commandBarButton).toBeVisible()
+  // Click the command bar button
+  commandBarButton.click()
+
+  // Wait for the command bar to appear
+  const cmdSearchBar = page.getByPlaceholder('Search commands')
+  await expect(cmdSearchBar).toBeVisible()
+
+  const textToCadCommand = page.getByText('Text-to-CAD')
+  await expect(textToCadCommand.first()).toBeVisible()
+  // Click the Text-to-CAD command
+  textToCadCommand.first().click()
+
+  // Enter the prompt.
+  const prompt = page.getByText('Prompt')
+  await expect(prompt.first()).toBeVisible()
+
+  // Type the prompt.
+  page.keyboard.type(promptStr)
+  await page.waitForTimeout(1000)
+  await page.keyboard.press('Enter')
+}

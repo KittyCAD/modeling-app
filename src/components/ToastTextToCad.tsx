@@ -153,7 +153,7 @@ export function ToastTextToCad({
             </button>
           ) : (
             <button
-              name="Accept"
+              name="Copy to clipboard"
               onClick={() => {
                 sendTelemetry(modelId, 'accepted', token)
                 navigator.clipboard.writeText(data.code || '// no code found')
