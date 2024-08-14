@@ -55,7 +55,9 @@ function CommandBarTextareaInput({
             if (event.key === 'Backspace' && !event.currentTarget.value) {
               stepBack()
             } else if (event.key === 'Enter' && event.metaKey) {
-              formRef.current?.dispatchEvent(new Event('submit', { bubbles: true }))
+              formRef.current?.dispatchEvent(
+                new Event('submit', { bubbles: true })
+              )
             }
           }}
           autoFocus
