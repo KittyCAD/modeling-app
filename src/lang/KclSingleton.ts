@@ -211,6 +211,11 @@ export class KclManager {
       type: string
     }
   ): Promise<void> {
+    if (this.isExecuting) {
+      // Exit early if we are already executing.
+      return
+    }
+
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
