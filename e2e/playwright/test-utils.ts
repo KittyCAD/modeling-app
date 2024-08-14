@@ -12,7 +12,7 @@ import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
-import { APP_NAME } from 'lib/constants'
+import { APP_NAME, COOKIE_NAME } from 'lib/constants'
 import waitOn from 'wait-on'
 import { secrets } from './secrets'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
@@ -643,6 +643,16 @@ export async function setup(context: BrowserContext, page: Page) {
       settings: TOML.stringify({ settings: TEST_SETTINGS }),
     }
   )
+
+  await context.addCookies([
+    {
+      name: COOKIE_NAME,
+      value: secrets.token,
+      path: '/',
+      domain: 'localhost',
+      secure: true,
+    },
+  ])
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 }
