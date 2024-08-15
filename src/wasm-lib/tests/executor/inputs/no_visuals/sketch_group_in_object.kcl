@@ -1,0 +1,27 @@
+fn test = () => {
+  return startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+}
+
+fn test2 = () => {
+  return {
+    thing: startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, 1], %)
+      |> line([1, 0], %)
+      |> line([0, -1], %)
+      |> close(%)
+  }
+}
+
+const x = test()
+x
+  |> extrude(-10, %)
+
+const x2 = test2()
+x2.thing
+  |> extrude(10, %)
