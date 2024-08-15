@@ -905,7 +905,12 @@ const CustomIconMap = {
     </svg>
   ),
   revolve: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="revolve">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="revolve"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -1000,7 +1005,12 @@ const CustomIconMap = {
     </svg>
   ),
   sweep: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="sweep">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="sweep"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"

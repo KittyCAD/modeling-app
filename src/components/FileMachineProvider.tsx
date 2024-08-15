@@ -142,8 +142,8 @@ export const FileMachineProvider = ({
             window.electron.path.sep +
             createdName +
             (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
-        await create(createdPath)
-        if (event.data.content) {
+          await create(createdPath)
+          if (event.data.content) {
             await window.electron.writeFile(createdPath, '')
           }
         }
