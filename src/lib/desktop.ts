@@ -490,7 +490,7 @@ export const getUser = async (
     // because it was intended for NodeJS.
     // Needs to stay like this because window.electron.kittycad needs it
     // internally.
-    window.electron.process.env.BASE_URL = baseurl
+    window.electron.process.env.BASE_URL(baseurl)
   }
 
   try {
