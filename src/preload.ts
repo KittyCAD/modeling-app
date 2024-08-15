@@ -1,6 +1,7 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import path from 'path'
 import fs from 'node:fs/promises'
+import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
 
@@ -13,7 +14,9 @@ const login = (host: string): Promise<string> =>
   ipcRenderer.invoke('login', host)
 
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
-const exists = (path: string) => fs.existsSync(path)
+// It seems like from the node source code this does not actually block but also
+// don't trust me on that (jess).
+const exists = (path: string) => fsSync.existsSync(path)
 const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
