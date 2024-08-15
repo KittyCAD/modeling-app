@@ -1,6 +1,12 @@
 import fs from 'node:fs'
 
-import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
+import {
+  parse,
+  ProgramMemory,
+  SketchGroup,
+  initPromise,
+  sketchGroupFromKclValue,
+} from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
 
@@ -358,7 +364,7 @@ describe('testing math operators', () => {
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const mem = await exe(code)
-    const sketch = mem.get('part001')
+    const sketch = sketchGroupFromKclValue(mem.get('part001'))
     // result of `-legLen(5, min(3, 999))` should be -4
     const yVal = (sketch as SketchGroup).value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
@@ -376,7 +382,7 @@ describe('testing math operators', () => {
       ``,
     ].join('\n')
     const mem = await exe(code)
-    const sketch = mem.get('part001')
+    const sketch = sketchGroupFromKclValue(mem.get('part001'))
     // expect -legLen(segLen('seg01'), myVar) to equal -4 setting the y value back to 0
     expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
     expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
@@ -385,7 +391,9 @@ describe('testing math operators', () => {
       `legLen(segLen(seg01), myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
-    const removedUnaryExpMemSketch = removedUnaryExpMem.get('part001')
+    const removedUnaryExpMemSketch = sketchGroupFromKclValue(
+      removedUnaryExpMem.get('part001')
+    )
 
     // without the minus sign, the y value should be 8
     expect((removedUnaryExpMemSketch as SketchGroup).value?.[1]?.to).toEqual([
