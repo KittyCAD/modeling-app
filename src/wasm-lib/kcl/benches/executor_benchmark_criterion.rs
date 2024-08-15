@@ -6,6 +6,7 @@ pub fn bench_execute(c: &mut Criterion) {
     for (name, code) in [
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
+        ("server_rack_lite", SERVER_RACK_LITE_PROGRAM),
         ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
     ] {
         let mut group = c.benchmark_group("executor");
@@ -34,3 +35,4 @@ criterion_main!(benches);
 const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_svg.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const SERVER_RACK_HEAVY_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-heavy.kcl");
+const SERVER_RACK_LITE_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-lite.kcl");
