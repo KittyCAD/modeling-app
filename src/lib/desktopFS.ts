@@ -168,7 +168,6 @@ export async function createAndOpenNewProject({
 
 /**
  * Get the next available file name by appending a hyphen and number to the end of the name
- * @todo move this to the equivalent of tauriFS.ts for Electron migration
  */
 export function getNextFileName({
   entryName,
@@ -196,7 +195,6 @@ export function getNextFileName({
 
 /**
  * Get the next available directory name by appending a hyphen and number to the end of the name
- * @todo move this to the equivalent of tauriFS.ts for Electron migration
  */
 export function getNextDirName({
   entryName,

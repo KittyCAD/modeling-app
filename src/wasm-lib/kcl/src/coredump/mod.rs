@@ -29,7 +29,7 @@ pub trait CoreDump: Clone {
 
     fn pool(&self) -> Result<String>;
 
-    async fn os(&self) -> Result<OsInfo>;
+    fn os(&self) -> Result<OsInfo>;
 
     fn is_desktop(&self) -> Result<bool>;
 
@@ -75,7 +75,7 @@ pub trait CoreDump: Clone {
         let coredump_id = uuid::Uuid::new_v4();
         let client_state = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
-        let os = self.os().await?;
+        let os = self.os()?;
         let screenshot_url = self.upload_screenshot(&coredump_id, &zoo_client).await?;
 
         let mut core_dump_info = CoreDumpInfo {

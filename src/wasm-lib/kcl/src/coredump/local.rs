@@ -42,7 +42,7 @@ impl CoreDump for CoreDumper {
         Ok("".to_owned())
     }
 
-    async fn os(&self) -> Result<crate::coredump::OsInfo> {
+    fn os(&self) -> Result<crate::coredump::OsInfo> {
         Ok(crate::coredump::OsInfo {
             platform: Some(std::env::consts::OS.to_string()),
             arch: Some(std::env::consts::ARCH.to_string()),

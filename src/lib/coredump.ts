@@ -70,7 +70,7 @@ export class CoreDumpManager {
   }
 
   // Get the os information.
-  getOsInfo(): Promise<string> {
+  getOsInfo(): string {
     if (this.isDesktop()) {
       const osinfo: OsInfo = {
         platform: window.electron.platform ?? null,
@@ -78,9 +78,7 @@ export class CoreDumpManager {
         browser: 'desktop',
         version: window.electron.version ?? null,
       }
-      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
-      // (lf94) I'm not sure if this comment is specific to tauri or just desktop...
-      // TODO: get rid of promises now that the tauri api doesn't require them anymore
+      return JSON.stringify(osinfo)
     }
 
     const userAgent = window.navigator.userAgent || 'unknown browser'
@@ -91,7 +89,7 @@ export class CoreDumpManager {
         version: userAgent,
         browser: userAgent,
       }
-      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+      return JSON.stringify(osinfo)
     }
 
     const parser = new UAParser(userAgent)
@@ -102,7 +100,7 @@ export class CoreDumpManager {
       version: parserResults.os.version || userAgent,
       browser: userAgent,
     }
-    return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+    return JSON.stringify(osinfo)
   }
 
   isDesktop(): boolean {
