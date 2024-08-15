@@ -6,7 +6,8 @@ import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
-import * as kittycad from '@kittycad/lib'
+// @ts-ignore: TS1343
+import * as kittycad from '@kittycad/lib/import'
 
 // If it's not set, scream.
 const NODE_ENV = process.env.NODE_ENV
