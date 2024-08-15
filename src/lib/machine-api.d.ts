@@ -557,6 +557,20 @@ export interface components {
         })
       | ({
           /** @enum {string} */
+          command: 'print_speed'
+          /** @description The param. */
+          param: string
+          /** @description The reason for the message. */
+          reason?: components['schemas']['Reason'] | null
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
           command: 'resume'
           /** @description The reason for the message. */
           reason: components['schemas']['Reason']
