@@ -37,6 +37,7 @@ export interface IElectronAPI {
       BASE_URL: EnvFn
       TEST_SETTINGS_FILE_KEY: EnvFn
       IS_PLAYWRIGHT: EnvFn
+      DEV_TOKEN: EnvFn
     }
   }
   kittycad: (access: string, args: any) => any
