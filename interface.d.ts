@@ -40,16 +40,16 @@ export interface IElectronAPI {
   }
   process: {
     env: {
-      BASE_URL: EnvFn
-      TEST_SETTINGS_FILE_KEY: EnvFn
-      IS_PLAYWRIGHT: EnvFn
-      VITE_KC_DEV_TOKEN: EnvFn
-      VITE_KC_API_WS_MODELING_URL: EnvFn
-      VITE_KC_API_BASE_URL: EnvFn
-      VITE_KC_SITE_BASE_URL: EnvFn
-      VITE_KC_SKIP_AUTH: EnvFn
-      VITE_KC_CONNECTION_TIMEOUT_MS: EnvFn
-      VITE_KC_DEV_TOKEN: EnvFn
+      BASE_URL: string
+      TEST_SETTINGS_FILE_KEY: string
+      IS_PLAYWRIGHT: string
+      VITE_KC_DEV_TOKEN: string
+      VITE_KC_API_WS_MODELING_URL: string
+      VITE_KC_API_BASE_URL: string
+      VITE_KC_SITE_BASE_URL: string
+      VITE_KC_SKIP_AUTH: string
+      VITE_KC_CONNECTION_TIMEOUT_MS: string
+      VITE_KC_DEV_TOKEN: string
     }
   }
   kittycad: (access: string, args: any) => any
