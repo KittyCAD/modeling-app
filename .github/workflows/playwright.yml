@@ -474,7 +474,7 @@ jobs:
         fi
 
         retry=1
-        max_retrys=4
+        max_retrys=1
 
         # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
         while [[ $retry -le $max_retrys ]]; do
@@ -512,7 +512,7 @@ jobs:
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
-        DEBUG: 'pw:browser*'
+        #DEBUG: 'pw:browser*'
     - name: send to axiom
       if: always()
       shell: bash
