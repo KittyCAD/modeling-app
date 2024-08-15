@@ -296,7 +296,6 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   })
 
   const codePane = page.locator('.cm-content')
-  const codePaneButton = page.getByTestId('code-pane-button')
   const lineButton = page.getByRole('button', { name: 'Line', exact: true })
   const arcButton = page.getByRole('button', {
     name: 'Tangential Arc',
@@ -304,6 +303,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
   const commandBarComboBox = page.getByPlaceholder('Search commands')
+  const exitSketchButton = page.getByRole('button', { name: 'Exit Sketch' })
 
   await test.step(`Type code with modeling hotkeys, shouldn't fire`, async () => {
     await codePane.click()
@@ -326,7 +326,6 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
      * has pinpointed this to the unusual browser behavior:
      * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
      */
-    await codePaneButton.click()
     await blurCodeEditor()
     await page.waitForTimeout(1000)
     await page.keyboard.press('s')
@@ -337,7 +336,6 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
     await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
       timeout: 15_000,
     })
-    await codePaneButton.click()
   })
 
   // Use some sketch hotkeys to create a sketch (l and a for now)
@@ -383,13 +381,19 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
     await page.keyboard.press('a')
     await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
     await expect(codePane).toContainText('//la')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Backspace')
   })
 
   await test.step(`Close profile and exit sketch`, async () => {
+    await blurCodeEditor()
     await page.mouse.move(700, 200, { steps: 5 })
     await page.mouse.click(700, 200)
     // On  close it will unequip the line tool.
     await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
+    await expect(exitSketchButton).toBeEnabled()
     await page.keyboard.press('Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
@@ -399,8 +403,8 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // Extrude with e
   await test.step(`Extrude the sketch`, async () => {
     await page.mouse.click(750, 150)
-    await expect(extrudeButton).not.toBeDisabled()
     await blurCodeEditor()
+    await expect(extrudeButton).toBeEnabled()
     await page.keyboard.press('e')
     await page.waitForTimeout(500)
     await page.mouse.move(800, 200, { steps: 5 })
