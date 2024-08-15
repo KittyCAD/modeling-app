@@ -5292,10 +5292,10 @@ html-encoding-sniffer@^3.0.0:
   dependencies:
     whatwg-encoding "^2.0.0"
 
-html2canvas-pro@^1.5.5:
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/html2canvas-pro/-/html2canvas-pro-1.5.5.tgz#8486a62b8ce0ff2d9062c34a85cbe5e74a096278"
-  integrity sha512-Vk0Yiy9dCTxDxZfDRG3adwMV8gYVuuIFc+mbuAzZ9mCSInjYIiO6AxPL7OaNZUK/fI/FHDechxKj9QjPCVFRQw==
+html2canvas-pro@^1.5.8:
+  version "1.5.8"
+  resolved "https://registry.yarnpkg.com/html2canvas-pro/-/html2canvas-pro-1.5.8.tgz#d40ba9732c455943fc269f0606895ac00bb0c864"
+  integrity sha512-bVGAU7IvhBwBlRAmX6QhekX8lsaxmYoF6zIwf/HNlHscjx+KN8jw/U4PQRYqeEVm9+m13hcS1l5ChJB9/e29Lw==
   dependencies:
     css-line-break "^2.1.0"
     text-segmentation "^1.0.3"
