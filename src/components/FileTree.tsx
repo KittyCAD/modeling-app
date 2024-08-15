@@ -382,11 +382,17 @@ export const FileTreeMenu = () => {
   const { send } = useFileContext()
 
   async function createFile() {
-    send({ type: 'Create file', data: { name: '', makeDir: false } })
+    send({
+      type: 'Create file',
+      data: { name: '', makeDir: false, makeUnique: true },
+    })
   }
 
   async function createFolder() {
-    send({ type: 'Create file', data: { name: '', makeDir: true } })
+    send({
+      type: 'Create file',
+      data: { name: '', makeDir: true, makeUnique: true },
+    })
   }
 
   useHotkeyWrapper(['meta + n'], createFile)

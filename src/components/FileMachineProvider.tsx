@@ -21,6 +21,7 @@ import {
   rename,
   create,
   writeTextFile,
+  exists,
 } from '@tauri-apps/plugin-fs'
 import { isTauri } from 'lib/isTauri'
 import { join, sep } from '@tauri-apps/api/path'
@@ -111,8 +112,18 @@ export const FileMachineProvider = ({
           createdPath =
             context.selectedDirectory.path +
             sep() +
-            createdName +
-            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+            createdName.replace(FILE_EXT, '') +
+            FILE_EXT
+
+          // If a file with this name already exists, we need to make it unique
+          if (event.data.makeUnique) {
+            let i = 1
+            while (await exists(createdPath)) {
+              createdName = getNextFileEntryName(createdName, i)
+              createdPath = context.selectedDirectory.path + sep() + createdName
+              i++
+            }
+          }
           await create(createdPath)
           if (event.data.content) {
             await writeTextFile(createdPath, event.data.content)
@@ -135,8 +146,18 @@ export const FileMachineProvider = ({
           createdPath =
             context.selectedDirectory.path +
             sep() +
-            createdName +
-            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+            createdName.replace(FILE_EXT, '') +
+            FILE_EXT
+
+          // If a file with this name already exists, we need to make it unique
+          if (event.data.makeUnique) {
+            let i = 1
+            while (await exists(createdPath)) {
+              createdName = getNextFileEntryName(createdName, i)
+              createdPath = context.selectedDirectory.path + sep() + createdName
+              i++
+            }
+          }
           await create(createdPath)
           if (event.data.content) {
             await writeTextFile(createdPath, event.data.content)
@@ -232,3 +253,13 @@ export const FileMachineProvider = ({
 }
 
 export default FileMachineProvider
+
+/**
+ * TODO: move this to the equivalent of tauriFS.ts after Electron migration
+ */
+function getNextFileEntryName(name: string, i: number) {
+  // Remove any existing index from the name before adding a new one
+  return (
+    name.replace(new RegExp(`(-\\d+)?(${FILE_EXT})?$`), '') + `-${i}` + FILE_EXT
+  )
+}
