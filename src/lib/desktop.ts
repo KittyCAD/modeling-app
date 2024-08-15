@@ -380,7 +380,7 @@ const getAppFolderName = () => {
 }
 
 const getAppSettingsFilePath = async () => {
-  const isTestEnv = NODE_ENV === 'test'
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT() === 'true'
   const testSettingsPath = TEST_SETTINGS_FILE_KEY
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv

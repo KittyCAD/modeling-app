@@ -687,6 +687,7 @@ export async function setupElectron({
     env: {
       ...process.env,
       TEST_SETTINGS_FILE_KEY: projectDirName,
+      IS_PLAYWRIGHT: 'true',
     },
   })
   const context = electronApp.context()
