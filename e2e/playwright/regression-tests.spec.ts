@@ -329,92 +329,91 @@ const sketch001 = startSketchAt([-0, -0])
     const successToastMessage = page.getByText(`Exported successfully`)
     await expect(successToastMessage).toBeVisible()
   })
-  test.fixme(
-    'ensure you can not export while an export is already going',
-    async ({ page }) => {
-      const u = await getUtils(page)
-      await test.step('Set up the code and durations', async () => {
-        await page.addInitScript(
-          async ({ code, toastDurationKey, exportDurationKey }) => {
-            localStorage.setItem('persistCode', code)
-            // Normally we make these durations short to speed up PW tests
-            // to superhuman speeds. But in this case we want to make sure
-            // the export toast is visible for a while, and the export
-            // duration is long enough to make sure the export toast is visible
-            localStorage.setItem(toastDurationKey, '1500')
-            localStorage.setItem(exportDurationKey, '750')
-          },
-          {
-            code: bracket,
-            toastDurationKey: PLAYWRIGHT_TOAST_DURATION,
-            exportDurationKey: PLAYWRIGHT_MOCK_EXPORT_DURATION,
-          }
-        )
+  test('ensure you can not export while an export is already going', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await test.step('Set up the code and durations', async () => {
+      await page.addInitScript(
+        async ({ code, toastDurationKey, exportDurationKey }) => {
+          localStorage.setItem('persistCode', code)
+          // Normally we make these durations short to speed up PW tests
+          // to superhuman speeds. But in this case we want to make sure
+          // the export toast is visible for a while, and the export
+          // duration is long enough to make sure the export toast is visible
+          localStorage.setItem(toastDurationKey, '1500')
+          localStorage.setItem(exportDurationKey, '750')
+        },
+        {
+          code: bracket,
+          toastDurationKey: PLAYWRIGHT_TOAST_DURATION,
+          exportDurationKey: PLAYWRIGHT_MOCK_EXPORT_DURATION,
+        }
+      )
 
-        await page.setViewportSize({ width: 1000, height: 500 })
+      await page.setViewportSize({ width: 1000, height: 500 })
 
-        await u.waitForAuthSkipAppStart()
+      await u.waitForAuthSkipAppStart()
 
-        // wait for execution done
-        await u.openDebugPanel()
-        await u.expectCmdLog('[data-message-type="execution-done"]')
-        await u.closeDebugPanel()
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-        // expect zero errors in guter
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-      })
+      // expect zero errors in guter
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    })
 
-      const errorToastMessage = page.getByText(`Error while exporting`)
-      const exportingToastMessage = page.getByText(`Exporting...`)
-      const engineErrorToastMessage = page.getByText(`Nothing to export`)
-      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-      const successToastMessage = page.getByText(`Exported successfully`)
+    const errorToastMessage = page.getByText(`Error while exporting`)
+    const exportingToastMessage = page.getByText(`Exporting...`)
+    const engineErrorToastMessage = page.getByText(`Nothing to export`)
+    const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+    const successToastMessage = page.getByText(`Exported successfully`)
 
-      await test.step('Blocked second export', async () => {
-        await clickExportButton(page)
+    await test.step('Blocked second export', async () => {
+      await clickExportButton(page)
 
-        await expect(exportingToastMessage).toBeVisible()
+      await expect(exportingToastMessage).toBeVisible()
 
-        await clickExportButton(page)
+      await clickExportButton(page)
 
-        await test.step('The second export is blocked', async () => {
-          // Find the toast.
-          // Look out for the toast message
-          await expect(exportingToastMessage).toBeVisible()
-          await expect(alreadyExportingToastMessage).toBeVisible()
-
-          await page.waitForTimeout(1000)
-        })
-
-        await test.step('The first export still succeeds', async () => {
-          await expect(exportingToastMessage).not.toBeVisible()
-          await expect(errorToastMessage).not.toBeVisible()
-          await expect(engineErrorToastMessage).not.toBeVisible()
-
-          await expect(successToastMessage).toBeVisible()
-
-          await expect(alreadyExportingToastMessage).not.toBeVisible()
-        })
-      })
-
-      await test.step('Successful, unblocked export', async () => {
-        // Try exporting again.
-        await clickExportButton(page)
-
+      await test.step('The second export is blocked', async () => {
         // Find the toast.
         // Look out for the toast message
         await expect(exportingToastMessage).toBeVisible()
+        await expect(alreadyExportingToastMessage).toBeVisible()
 
-        // Expect it to succeed.
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('The first export still succeeds', async () => {
         await expect(exportingToastMessage).not.toBeVisible()
         await expect(errorToastMessage).not.toBeVisible()
         await expect(engineErrorToastMessage).not.toBeVisible()
-        await expect(alreadyExportingToastMessage).not.toBeVisible()
 
         await expect(successToastMessage).toBeVisible()
+
+        await expect(alreadyExportingToastMessage).not.toBeVisible()
       })
-    }
-  )
+    })
+
+    await test.step('Successful, unblocked export', async () => {
+      // Try exporting again.
+      await clickExportButton(page)
+
+      // Find the toast.
+      // Look out for the toast message
+      await expect(exportingToastMessage).toBeVisible()
+
+      // Expect it to succeed.
+      await expect(exportingToastMessage).not.toBeVisible()
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
+
+      await expect(successToastMessage).toBeVisible()
+    })
+  })
 })
 
 async function clickExportButton(page: Page) {
