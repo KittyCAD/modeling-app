@@ -78,6 +78,54 @@ test.describe('Text-to-CAD tests', () => {
     await expect(successToastMessage).not.toBeVisible()
   })
 
+  test('success model, then ignore success toast, user can create new prompt from command bar', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await sendPromptFromCommandBar(page, 'a 2x6 lego')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage).toBeVisible()
+
+    await page.waitForTimeout(5000)
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage).toBeVisible()
+
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    await expect(successToastMessage).toBeVisible()
+
+    await expect(page.getByText('Copied')).not.toBeVisible()
+
+    // Hit nothing, wait for toast to disappear.
+    await page.waitForTimeout(5000)
+    await expect(successToastMessage).not.toBeVisible()
+
+    // Can send a new prompt from the command bar.
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+
+    // Find the toast.
+    // Look out for the toast message
+    await expect(submittingToastMessage).toBeVisible()
+
+    await page.waitForTimeout(5000)
+
+    await expect(generatingToastMessage).toBeVisible()
+
+    await expect(successToastMessage).toBeVisible()
+  })
+
   test('you can reject text-to-cad output and it does nothing', async ({
     page,
   }) => {
@@ -184,7 +232,9 @@ test.describe('Text-to-CAD tests', () => {
     await expect(failureToastMessage).not.toBeVisible()
   })
 
-  test('sending a bad prompt fails, can start over', async ({ page }) => {
+  test('sending a bad prompt fails, can start over from toast', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
 
     await page.setViewportSize({ width: 1000, height: 500 })
@@ -271,6 +321,89 @@ test.describe('Text-to-CAD tests', () => {
     await expect(generatingToastMessage).toBeVisible()
 
     await expect(successToastMessage).toBeVisible()
+  })
+
+  test('sending a bad prompt fails, can ignore toast, can start over from command bar', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    await commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByText('Text-to-CAD')
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    await textToCadCommand.first().click()
+
+    // Enter the prompt.
+    const prompt = page.getByText('Prompt')
+    await expect(prompt.first()).toBeVisible()
+
+    const badPrompt =
+      'akjsndladf lajbhflauweyfa;wieufjn;wieJNUF;.wjdfn weh Fwhefb'
+
+    // Type the prompt.
+    await page.keyboard.type(badPrompt)
+    await page.waitForTimeout(1000)
+    await page.keyboard.press('Enter')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage).toBeVisible()
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage).toBeVisible()
+
+    const failureToastMessage = page.getByText(
+      `The prompt must clearly describe a CAD model`
+    )
+    await expect(failureToastMessage).toBeVisible()
+
+    await page.waitForTimeout(1000)
+
+    // Make sure the toast did not say it was successful.
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    await expect(successToastMessage).not.toBeVisible()
+    await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
+
+    // Wait for the error toast to disappear.
+    // DO NOT HIT DISMISS or anything else.
+    await page.waitForTimeout(3000)
+
+    // Toast should be gone.
+    await expect(failureToastMessage).not.toBeVisible()
+    await expect(page.getByText(`Text-to-CAD failed`)).not.toBeVisible()
+
+    // They should be able to try again from the command bar.
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+
+    // Find the toast.
+    // Look out for the toast message
+    await expect(submittingToastMessage).toBeVisible()
+
+    await page.waitForTimeout(5000)
+
+    await expect(generatingToastMessage).toBeVisible()
+
+    await expect(successToastMessage).toBeVisible()
+
+    await expect(page.getByText('Copied')).not.toBeVisible()
   })
 
   test('ensure you can shift+enter in the prompt box', async ({ page }) => {
