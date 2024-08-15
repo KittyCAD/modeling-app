@@ -86,13 +86,7 @@ contextBridge.exposeInMainWorld('electron', {
     // these are read-only over the boundary.
     env: Object.assign(
       {},
-      exposeProcessEnvs([
-        'BASE_URL',
-        'TEST_SETTINGS_FILE_KEY',
-        'IS_PLAYWRIGHT',
-        'SKIP_AUTH',
-        'DEV_TOKEN',
-      ])
+      exposeProcessEnvs(['BASE_URL', 'TEST_SETTINGS_FILE_KEY', 'IS_PLAYWRIGHT'])
     ),
   },
   kittycad,

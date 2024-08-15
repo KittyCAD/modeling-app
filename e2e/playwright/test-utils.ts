@@ -688,8 +688,6 @@ export async function setupElectron({
       ...process.env,
       TEST_SETTINGS_FILE_KEY: projectDirName,
       IS_PLAYWRIGHT: 'true',
-      SKIP_AUTH: 'true',
-      DEV_TOKEN: secrets.token,
     },
   })
   const context = electronApp.context()

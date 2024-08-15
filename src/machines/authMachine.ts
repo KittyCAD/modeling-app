@@ -8,8 +8,7 @@ import { COOKIE_NAME } from 'lib/constants'
 
 const SKIP_AUTH =
   // @ts-ignore
-  (import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV) ||
-  window.electron.process.env.SKIP_AUTH()
+  import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
 
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
@@ -122,8 +121,8 @@ export const authMachine = createMachine<UserContext, Events>(
 )
 
 async function getUser(context: UserContext) {
-  const token = VITE_KC_DEV_TOKEN || window.electron.process.env.DEV_TOKEN()
-    ? VITE_KC_DEV_TOKEN || window.electron.process.env.DEV_TOKEN()
+  const token = VITE_KC_DEV_TOKEN
+    ? VITE_KC_DEV_TOKEN
     : context.token && context.token !== ''
     ? context.token
     : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY)
