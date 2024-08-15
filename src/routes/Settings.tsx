@@ -16,7 +16,7 @@ import { isDesktop } from 'lib/isDesktop'
 
 export const APP_VERSION = isDesktop()
   ? // @ts-ignore
-    import.meta.env.PACKAGE_VERSION || 'unknown'
+    window.electron.packageJson.version
   : 'main'
 
 export const Settings = () => {
