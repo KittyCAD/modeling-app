@@ -73,11 +73,9 @@ export const authMachine = createMachine<UserContext, Events>(
           onError: [
             {
               target: 'loggedOut',
-              actions: (args) => {
-                return assign({
-                  user: () => undefined,
-                })
-              },
+              actions: assign({
+                user: () => undefined,
+              }),
             },
           ],
         },
