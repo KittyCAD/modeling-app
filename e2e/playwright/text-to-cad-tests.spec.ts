@@ -521,7 +521,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText('Copied')).toBeVisible()
 
     // Click in the code editor.
-    await page.locator('.cm-content').click()
+    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
     await page.keyboard.down(CtrlKey)
@@ -550,7 +550,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText('Copied')).toBeVisible()
 
     // Click in the code editor.
-    await page.locator('.cm-content').click()
+    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
     await page.keyboard.press('ControlOrMeta+a')
