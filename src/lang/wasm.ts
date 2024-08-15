@@ -38,6 +38,7 @@ import { err } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -312,7 +313,7 @@ export class ProgramMemory {
    */
   hasSketchOrExtrudeGroup(): boolean {
     for (const node of this.visibleEntries().values()) {
-      if (node.type === 'ExtrudeGroup' || node.type === 'SketchGroup') {
+      if (node.type === 'ExtrudeGroup' || node.value?.type === 'SketchGroup') {
         return true
       }
     }
@@ -330,6 +331,12 @@ export class ProgramMemory {
       return: this.return,
     }
   }
+}
+
+// TODO: In the future, make the parameter be a KclValue.
+export function sketchGroupFromKclValue(obj: any): SketchGroup | null {
+  if (obj?.value?.type === 'SketchGroup') return obj.value
+  return null
 }
 
 export const executor = async (

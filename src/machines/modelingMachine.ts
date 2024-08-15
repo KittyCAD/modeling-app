@@ -4,6 +4,7 @@ import {
   VariableDeclarator,
   parse,
   recast,
+  sketchGroupFromKclValue,
 } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
@@ -1187,8 +1188,10 @@ export const modelingMachine = createMachine(
         )
         if (err(varDecNode)) return
         const sketchVar = varDecNode.node.declarations[0].id.name
-        const sketchGroup = kclManager.programMemory.get(sketchVar)
-        if (sketchGroup?.type !== 'SketchGroup') return
+        const sketchGroup = sketchGroupFromKclValue(
+          kclManager.programMemory.get(sketchVar)
+        )
+        if (!sketchGroup) return
         const extrusion = getExtrusionFromSuspectedPath(
           sketchGroup.id,
           engineCommandManager.artifactGraph
