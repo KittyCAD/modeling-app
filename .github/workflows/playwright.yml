@@ -461,7 +461,7 @@ jobs:
       with:
         name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
-    - name: Run ubuntu/chrome flow (with retries)
+    - name: Run electron tests (with retries)
       id: retry
       if: always()
       run: |
