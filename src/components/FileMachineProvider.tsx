@@ -16,6 +16,14 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
+import {
+  mkdir,
+  remove,
+  rename,
+  create,
+  writeTextFile,
+} from '@tauri-apps/plugin-fs'
+import { join, sep } from '@tauri-apps/api/path'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 
@@ -94,6 +102,30 @@ export const FileMachineProvider = ({
           children: newFiles,
         }
       },
+      createAndOpenFile: async (context, event) => {
+        let createdName = event.data.name.trim() || DEFAULT_FILE_NAME
+        let createdPath: string
+
+        if (event.data.makeDir) {
+          createdPath = await join(context.selectedDirectory.path, createdName)
+          await mkdir(createdPath)
+        } else {
+          createdPath =
+            context.selectedDirectory.path +
+            sep() +
+            createdName +
+            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          await create(createdPath)
+          if (event.data.content) {
+            await writeTextFile(createdPath, event.data.content)
+          }
+        }
+
+        return {
+          message: `Successfully created "${createdName}"`,
+          path: createdPath,
+        }
+      },
       createFile: async (context, event) => {
         let createdName = event.data.name.trim() || DEFAULT_FILE_NAME
         let createdPath: string
@@ -110,11 +142,13 @@ export const FileMachineProvider = ({
             window.electron.path.sep +
             createdName +
             (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
-          await window.electron.writeFile(createdPath, '')
+        await create(createdPath)
+        if (event.data.content) {
+            await window.electron.writeFile(createdPath, '')
+          }
         }
 
         return {
-          message: `Successfully created "${createdName}"`,
           path: createdPath,
         }
       },
@@ -198,6 +232,7 @@ export const FileMachineProvider = ({
         if (event.type !== 'done.invoke.read-files') return false
         return !!event?.data?.children && event.data.children.length > 0
       },
+      'Is not silent': (_, event) => !event.data?.silent,
     },
   })
 

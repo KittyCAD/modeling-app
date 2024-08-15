@@ -15,6 +15,7 @@ const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
   'options',
   'string',
+  'text',
   'kcl',
   'selection',
   'boolean',
@@ -152,6 +153,16 @@ export type CommandArgumentConfig<
       defaultValueFromContext?: (context: C) => OutputType
     }
   | {
+      inputType: 'text'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+    }
+  | {
       inputType: 'boolean'
       defaultValue?:
         | OutputType
@@ -206,6 +217,15 @@ export type CommandArgument<
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
   | {
       inputType: 'string'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+  | {
+      inputType: 'text'
       defaultValue?:
         | OutputType
         | ((

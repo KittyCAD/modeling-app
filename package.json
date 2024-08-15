@@ -1,8 +1,8 @@
 {
+  "version": "0.24.11",
   "private": true,
   "name": "zoo-modeling-app",
   "productName": "Zoo Modeling App",
-  "version": "0.24.10",
   "author": {
     "name": "Zoo Corporation",
     "email": "info@zoo.dev",
@@ -26,7 +26,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "2",
+    "@kittycad/lib": "^0.0.76",
     "@lezer/highlight": "^1.2.0",
     "@lezer/lr": "^1.4.1",
     "@react-hook/resize-observer": "^2.0.1",
@@ -40,7 +40,7 @@
     "decamelize": "^6.0.0",
     "electron-squirrel-startup": "^1.0.1",
     "fuse.js": "^7.0.0",
-    "html2canvas-pro": "^1.5.5",
+    "html2canvas-pro": "^1.5.8",
     "json-rpc-2.0": "^1.6.0",
     "jszip": "^3.10.1",
     "openid-client": "^5.6.5",

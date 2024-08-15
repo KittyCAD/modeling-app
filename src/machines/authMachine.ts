@@ -4,6 +4,7 @@ import withBaseURL from '../lib/withBaseURL'
 import { isDesktop } from 'lib/isDesktop'
 import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { getUser as getUserDesktop } from 'lib/desktop'
+import { COOKIE_NAME } from 'lib/constants'
 
 const SKIP_AUTH =
   // @ts-ignore
@@ -40,7 +41,6 @@ export type Events =
       token?: string
     }
 
-const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken =
   VITE_KC_DEV_TOKEN ||

@@ -13,7 +13,7 @@ import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isDesktop } from 'lib/isDesktop'
@@ -50,7 +50,7 @@ export function App() {
   const token = auth?.context?.token
 
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, token),
+    () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
 

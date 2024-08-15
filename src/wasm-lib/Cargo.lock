@@ -686,9 +686,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.5.0"
+version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e962a19be5cfc3f3bf6dd8f61eb50107f356ad6270fbb3ed41476571db78be5"
+checksum = "e8566979429cf69b49a5c740c60791108e86440e8be149bbea4fe54d2c32d6e2"
 
 [[package]]
 name = "databake"
@@ -724,7 +724,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.22"
+version = "0.1.23"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1397,7 +1397,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "anyhow",
  "approx",
@@ -1467,7 +1467,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "anyhow",
  "hyper",
@@ -2667,9 +2667,9 @@ dependencies = [
 
 [[package]]
 name = "serde_tokenstream"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8790a7c3fe883e443eaa2af6f705952bc5d6e8671a220b9335c8cae92c037e74"
+checksum = "64060d864397305347a78851c51588fd283767e7e7589829e8121d65512340f1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3628,6 +3628,7 @@ dependencies = [
  "bson",
  "clap",
  "console_error_panic_hook",
+ "data-encoding",
  "futures",
  "gloo-utils",
  "hyper",

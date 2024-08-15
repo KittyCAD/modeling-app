@@ -1,7 +1,7 @@
 import { coreDump } from 'lang/wasm'
 import { CoreDumpManager } from 'lib/coredump'
 import { CustomIcon } from './CustomIcon'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import React, { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
@@ -11,7 +11,7 @@ export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, token),
+    () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
 

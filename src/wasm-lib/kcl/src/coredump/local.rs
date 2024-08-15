@@ -34,6 +34,10 @@ impl CoreDump for CoreDumper {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
 
+    fn kcl_code(&self) -> Result<String> {
+        Ok("".to_owned())
+    }
+
     fn pool(&self) -> Result<String> {
         Ok("".to_owned())
     }

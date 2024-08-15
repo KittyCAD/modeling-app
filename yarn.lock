@@ -1971,11 +1971,12 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@kittycad/lib@2":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-2.0.0.tgz#c7808f47546f5b85371899b0b82989a4049d258d"
-  integrity sha512-iJCifdt7C+gHCH7xomNhynUmhy4rvM+J3Skxm3vxJR+zMWludm1bSCd+LgUpgk6kZOvkHJ755Y0gfMDYz1IVxw==
+"@kittycad/lib@^0.0.76":
+  version "0.0.76"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.76.tgz#d544a50c54547139d6dfa15730354313a51d0e49"
+  integrity sha512-14zzP7JS7J8xiwKltJqiszOCF9LdQeJK2nN58Xjiep+LOEVWtiLSGuILTameU2ryjA3aeQzPtNc1WJZ2JYRg2A==
   dependencies:
+    node-fetch "3.3.2"
     openapi-types "^12.0.0"
     ts-node "^10.9.1"
     tslib "~2.4"
@@ -5496,7 +5497,7 @@ html-encoding-sniffer@^3.0.0:
   dependencies:
     whatwg-encoding "^2.0.0"
 
-html2canvas-pro@^1.5.5:
+html2canvas-pro@^1.5.8:
   version "1.5.8"
   resolved "https://registry.yarnpkg.com/html2canvas-pro/-/html2canvas-pro-1.5.8.tgz#d40ba9732c455943fc269f0606895ac00bb0c864"
   integrity sha512-bVGAU7IvhBwBlRAmX6QhekX8lsaxmYoF6zIwf/HNlHscjx+KN8jw/U4PQRYqeEVm9+m13hcS1l5ChJB9/e29Lw==
