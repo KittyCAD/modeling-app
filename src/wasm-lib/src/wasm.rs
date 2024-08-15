@@ -535,7 +535,8 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
 pub fn serialize_project_settings(val: JsValue) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let config: kcl_lib::settings::types::Configuration = serde_wasm_bindgen::from_value(val).map_err(|e| e.to_string())?;
+    let config: kcl_lib::settings::types::Configuration =
+        serde_wasm_bindgen::from_value(val).map_err(|e| e.to_string())?;
     let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
     serde_wasm_bindgen::to_value(&toml_str).map_err(|e| e.to_string())
 }
