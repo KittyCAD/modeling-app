@@ -34,7 +34,7 @@ import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import { getState, setState } from 'lib/tauri'
 import { CoreDumpManager } from 'lib/coredump'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
@@ -181,7 +181,7 @@ function CoreDump() {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, token),
+    () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
   useHotkeyWrapper(['meta + shift + .'], () => {
