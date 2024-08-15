@@ -511,8 +511,10 @@ jobs:
         exit 0
       env:
         CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        DEBUG: 'pw:browser*'
     - name: send to axiom
       if: always()
       shell: bash
