@@ -10,7 +10,7 @@ import { ContextFrom, EventData, EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
-import { isTauri } from './isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { Themes } from './theme'
 import { commandBarMachine } from 'machines/commandBarMachine'
 
@@ -186,7 +186,7 @@ export async function submitAndAwaitTextToKcl({
         .replace(/\W/gi, '-')
         .toLowerCase()}`
 
-      if (isTauri()) {
+      if (isDesktop()) {
         fileMachineSend({
           type: 'Create file',
           data: {

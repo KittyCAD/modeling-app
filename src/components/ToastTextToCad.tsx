@@ -1,10 +1,9 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useFileContext } from 'hooks/useFileContext'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
-import { sep } from '@tauri-apps/api/path'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -257,13 +256,13 @@ export function ToastTextToCadSuccess({
               if (!hasCopied) {
                 sendTelemetry(modelId, 'rejected', token)
               }
-              if (isTauri()) {
+              if (isDesktop()) {
                 // Delete the file from the project
                 fileMachineSend({
                   type: 'Delete file',
                   data: {
                     name: data.fileName,
-                    path: `${context.project.path}${sep()}${data.fileName}`,
+                    path: `${context.project.path}${window.electron.sep}${data.fileName}`,
                     children: null,
                   },
                 })
@@ -273,7 +272,7 @@ export function ToastTextToCadSuccess({
           >
             {hasCopied ? 'Close' : 'Reject'}
           </ActionButton>
-          {isTauri() ? (
+          {isDesktop() ? (
             <ActionButton
               Element="button"
               iconStart={{
@@ -284,7 +283,7 @@ export function ToastTextToCadSuccess({
                 sendTelemetry(modelId, 'accepted', token)
                 navigate(
                   `${PATHS.FILE}/${encodeURIComponent(
-                    `${context.project.path}${sep()}${data.fileName}`
+                    `${context.project.path}${window.electron.sep}${data.fileName}`
                   )}`
                 )
                 toast.dismiss(toastId)

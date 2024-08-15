@@ -453,8 +453,8 @@ jobs:
     - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       run: yarn build:wasm
-    - name: build web
-      run: yarn build:local
+    - name: build electron
+      run: yarn electron:package
     - uses: actions/download-artifact@v4
       if: always()
       continue-on-error: true

@@ -16,14 +16,6 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
-import {
-  mkdir,
-  remove,
-  rename,
-  create,
-  writeTextFile,
-} from '@tauri-apps/plugin-fs'
-import { join, sep } from '@tauri-apps/api/path'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 
@@ -107,17 +99,20 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = await join(context.selectedDirectory.path, createdName)
-          await mkdir(createdPath)
+          createdPath = await window.electron.join(
+            context.selectedDirectory.path,
+            createdName
+          )
+          await window.electron.mkdir(createdPath)
         } else {
           createdPath =
             context.selectedDirectory.path +
-            sep() +
+            window.electron.sep +
             createdName +
             (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
-          await create(createdPath)
+          await window.electron.mkdir(createdPath)
           if (event.data.content) {
-            await writeTextFile(createdPath, event.data.content)
+            await window.electron.writeFile(createdPath, event.data.content)
           }
         }
 
@@ -142,7 +137,7 @@ export const FileMachineProvider = ({
             window.electron.path.sep +
             createdName +
             (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
-          await create(createdPath)
+          await window.electron.mkdir(createdPath)
           if (event.data.content) {
             await window.electron.writeFile(createdPath, '')
           }

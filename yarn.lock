@@ -1971,12 +1971,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@kittycad/lib@^0.0.76":
-  version "0.0.76"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.76.tgz#d544a50c54547139d6dfa15730354313a51d0e49"
-  integrity sha512-14zzP7JS7J8xiwKltJqiszOCF9LdQeJK2nN58Xjiep+LOEVWtiLSGuILTameU2ryjA3aeQzPtNc1WJZ2JYRg2A==
+"@kittycad/lib@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-2.0.0.tgz#c7808f47546f5b85371899b0b82989a4049d258d"
+  integrity sha512-iJCifdt7C+gHCH7xomNhynUmhy4rvM+J3Skxm3vxJR+zMWludm1bSCd+LgUpgk6kZOvkHJ755Y0gfMDYz1IVxw==
   dependencies:
-    node-fetch "3.3.2"
     openapi-types "^12.0.0"
     ts-node "^10.9.1"
     tslib "~2.4"
@@ -2419,6 +2418,11 @@
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@types/http-cache-semantics/-/http-cache-semantics-4.0.4.tgz#b979ebad3919799c979b17c72621c0bc0a31c6c4"
   integrity sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==
+
+"@types/isomorphic-fetch@^0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/isomorphic-fetch/-/isomorphic-fetch-0.0.39.tgz#889573a72ca637bc1a665910a41ff1cb3b52011f"
+  integrity sha512-I0gou/ZdA1vMG7t7gMzL7VYu2xAKU78rW9U1l10MI0nn77pEHq3tQqHQ8hMmXdMpBlkxZOorjI4sO594Z3kKJw==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.6"

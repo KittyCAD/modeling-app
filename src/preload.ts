@@ -79,6 +79,8 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
+  join: path.join,
+  sep: path.sep,
   process: {
     // Setter/getter has to be created because
     // these are read-only over the boundary.

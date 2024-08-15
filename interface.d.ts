@@ -26,6 +26,8 @@ export interface IElectronAPI {
   statIsDirectory: (path: string) => Promise<boolean>
   path: typeof path
   mkdir: typeof fs.mkdir
+  join: typeof path.join
+  sep: typeof path.sep
   rename: (prev: string, next: string) => typeof fs.rename
   packageJson: {
     name: string

@@ -1,6 +1,8 @@
 import { DEV } from 'env'
-import { isTauri } from './isTauri'
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
+import { isDesktop } from 'lib/isDesktop'
+import isomorphicFetch from 'isomorphic-fetch'
+
+// TODO I not sure this file should exist
 
 const headers = (token?: string): HeadersInit => ({
   'Content-Type': 'application/json',
@@ -14,14 +16,14 @@ export default async function crossPlatformFetch<T>(
 ): Promise<T | Error> {
   let response = null
   let opts = options || {}
-  if (isTauri()) {
+  if (isDesktop()) {
     if (!token) {
       return new Error('No token provided')
     }
 
     opts.headers = headers(token)
 
-    response = await tauriFetch(url, opts)
+    response = await isomorphicFetch(url, opts)
   } else {
     // Add credentials: 'include' to options
     // We send the token with the headers only in development mode, DO NOT
