@@ -30,7 +30,7 @@ export interface IElectronAPI {
   join: typeof path.join
   sep: typeof path.sep
   rename: (prev: string, next: string) => typeof fs.rename
-  setBaseUrl: (value: string) => void,
+  setBaseUrl: (value: string) => void
   packageJson: {
     name: string
   }
@@ -51,6 +51,11 @@ export interface IElectronAPI {
       VITE_KC_SKIP_AUTH: string
       VITE_KC_CONNECTION_TIMEOUT_MS: string
       VITE_KC_DEV_TOKEN: string
+      NODE_ENV: string
+      PROD: string
+      DEV: string
+      TEST: string
+      CI: string
     }
   }
   kittycad: (access: string, args: any) => any
