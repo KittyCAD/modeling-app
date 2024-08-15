@@ -16,13 +16,10 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(args: Args) -> Result<KclValue, KclError> {
-    dbg!();
     let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
 
-    dbg!();
     let result = inner_extrude(length, sketch_group_set, args).await?;
 
-    dbg!();
     Ok(result.into())
 }
 
