@@ -512,6 +512,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        NODE_ENV: development
     - name: send to axiom
       if: always()
       shell: bash
