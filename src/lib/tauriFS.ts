@@ -169,14 +169,21 @@ export async function createAndOpenNewProject({
  * Get the next available file name by appending a hyphen and number to the end of the name
  * @todo move this to the equivalent of tauriFS.ts for Electron migration
  */
-export async function getNextFileName({ entryName, baseDir }: {entryName: string, baseDir: string}) {
+export async function getNextFileName({
+  entryName,
+  baseDir,
+}: {
+  entryName: string
+  baseDir: string
+}) {
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(FILE_EXT, '') + FILE_EXT
   let createdPath = await join(baseDir, createdName)
   let i = 1
   while (await exists(createdPath)) {
     const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${FILE_EXT})?$`)
-    createdName = entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
+    createdName =
+      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
     createdPath = await join(baseDir, createdName)
     i++
   }
@@ -190,7 +197,13 @@ export async function getNextFileName({ entryName, baseDir }: {entryName: string
  * Get the next available directory name by appending a hyphen and number to the end of the name
  * @todo move this to the equivalent of tauriFS.ts for Electron migration
  */
-export async function getNextDirName({ entryName, baseDir }: {entryName: string, baseDir: string}) {
+export async function getNextDirName({
+  entryName,
+  baseDir,
+}: {
+  entryName: string
+  baseDir: string
+}) {
   let createdName = entryName
   let createdPath = await join(baseDir, createdName)
   let i = 1

@@ -191,10 +191,12 @@ export async function submitAndAwaitTextToKcl({
         // We have to pre-emptively run our unique file name logic,
         // so that we can pass the unique file name to the toast,
         // and by extension the file-deletion-on-reject logic.
-        newFileName = (await getNextFileName({
-          entryName: newFileName,
-          baseDir: context.selectedDirectory.path,
-        })).name
+        newFileName = (
+          await getNextFileName({
+            entryName: newFileName,
+            baseDir: context.selectedDirectory.path,
+          })
+        ).name
 
         fileMachineSend({
           type: 'Create file',
