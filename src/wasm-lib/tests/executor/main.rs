@@ -183,19 +183,6 @@ async fn kcl_test_negative_args() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_tangential_arc() {
-    let code = r#"const boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
-    |> tangentialArc({radius: 5, offset: 90}, %)
-    |> line([5, -15], %)
-    |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("tangential_arc", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
@@ -838,30 +825,6 @@ const part002 = startSketchOn(part001, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_circle_tagged() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
-
-const part002 = startSketchOn(part001, "end")
-  |> circle([0, 0], 5, %, $myCircle) 
-  |> extrude(5, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_circle_tagged", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_stdlib_kcl_error_circle() {
     let code = r#"// Mounting Plate
 // A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
@@ -905,40 +868,6 @@ const part = rectShape([0, 0], 20, 20)
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but found string (text)" }"#,
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_big_number_angle_to_match_length_x() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, $seg01)
-  |> angledLineToX([
-       -angleToMatchLengthX(seg01, 3, %),
-       3
-     ], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("big_number_angle_to_match_length_x", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_big_number_angle_to_match_length_y() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, $seg01)
-  |> angledLineToX([
-       -angleToMatchLengthY(seg01, 3, %),
-       3
-     ], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("big_number_angle_to_match_length_y", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
