@@ -287,7 +287,6 @@ export const modelingMachineDefaultContext = {
     streamDimensions: { streamWidth: 1280, streamHeight: 720 },
     openPanes: getPersistedContext().openPanes || ['code'],
   } as Store,
-  pendingTextToCad: undefined as string | undefined,
 }
 
 export const modelingMachine = createMachine(
@@ -354,12 +353,7 @@ export const modelingMachine = createMachine(
           'Text-to-CAD': {
             target: 'idle',
             internal: true,
-            actions: [
-              'Add pending text-to-cad prompt',
-              'Submit to Text-to-CAD API',
-              'Remove pending text-to-cad prompt',
-            ],
-            cond: 'Has no pending text-to-cad submissions',
+            actions: ['Submit to Text-to-CAD API'],
           },
         },
 

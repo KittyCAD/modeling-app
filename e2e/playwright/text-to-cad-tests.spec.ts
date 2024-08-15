@@ -460,6 +460,206 @@ test.describe('Text-to-CAD tests', () => {
 
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
+
+  test('can do many at once and get many prompts back, and interact with many', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+
+    await sendPromptFromCommandBar(page, 'a 2x8 lego')
+
+    await sendPromptFromCommandBar(page, 'a 2x10 lego')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage.first()).toBeVisible()
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
+
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    // We should have three success toasts.
+    await expect(successToastMessage).toHaveCount(3, { timeout: 15000 })
+
+    await expect(page.getByText('Copied')).not.toBeVisible()
+
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+
+    // Ensure if you reject one, the others stay.
+    const rejectButton = page.getByRole('button', { name: 'Reject' })
+    await expect(rejectButton.first()).toBeVisible()
+    // Click the reject button on the first toast.
+    rejectButton.first().click()
+
+    // The first toast should disappear, but not the others.
+    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+
+    // Ensure you can copy the code for one of the models remaining.
+    const copyToClipboardButton = page.getByRole('button', {
+      name: 'Copy to clipboard',
+    })
+    await expect(copyToClipboardButton.first()).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.first().click()
+
+    // Expect the code to be copied.
+    await expect(page.getByText('Copied')).toBeVisible()
+
+    // Click in the code editor.
+    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+
+    // Paste the code.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
+
+    // Expect the code to be pasted.
+    await expect(page.locator('.cm-content')).toContainText(`2x8`)
+
+    // Find the toast close button.
+    const closeButton = page.getByRole('button', { name: 'Close' })
+    await expect(closeButton).toBeVisible()
+    await closeButton.click()
+
+    // Ensure the final toast remains.
+    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).not.toBeVisible()
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+
+    // Ensure you can copy the code for the final model.
+    await expect(copyToClipboardButton).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.click()
+
+    // Expect the code to be copied.
+    await expect(page.getByText('Copied')).toBeVisible()
+
+    // Click in the code editor.
+    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+
+    // Paste the code.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyA')
+    await page.keyboard.up(CtrlKey)
+    await page.keyboard.press('Backspace')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
+
+    // Expect the code to be pasted.
+    await expect(page.locator('.cm-content')).toContainText(`2x4`)
+
+    // Expect the toast to disappear.
+    // Find the toast close button.
+    await expect(closeButton).toBeVisible()
+    await closeButton.click()
+    await expect(page.getByText('Copied')).not.toBeVisible()
+    await expect(successToastMessage).not.toBeVisible()
+  })
+
+  test('can do many at once with errors, clicking dismiss error does not dismiss all', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+
+    await sendPromptFromCommandBar(
+      page,
+      'alkjsdnlajshdbfjlhsbdf a;skjdnf;askjdnf'
+    )
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage.first()).toBeVisible()
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
+
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    // We should have three success toasts.
+    await expect(successToastMessage).toHaveCount(1, { timeout: 15000 })
+
+    await expect(page.getByText('Copied')).not.toBeVisible()
+
+    const failureToastMessage = page.getByText(
+      `The prompt must clearly describe a CAD model`
+    )
+    await expect(failureToastMessage).toBeVisible()
+
+    // Make sure the toast did not say it was successful.
+    await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
+
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+
+    // Ensure if you dismiss the error the others stay.
+    const dismissButton = page.getByRole('button', { name: 'Dismiss' })
+    await expect(dismissButton).toBeVisible()
+    // Click the dismiss button on the first toast.
+    dismissButton.first().click()
+
+    // Make sure the failure toast disappears.
+    await expect(failureToastMessage).not.toBeVisible()
+    await expect(page.getByText(`Text-to-CAD failed`)).not.toBeVisible()
+
+    // The first toast should disappear, but not the others.
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+
+    // Ensure you can copy the code for one of the models remaining.
+    const copyToClipboardButton = page.getByRole('button', {
+      name: 'Copy to clipboard',
+    })
+    await expect(copyToClipboardButton.first()).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.first().click()
+
+    // Expect the code to be copied.
+    await expect(page.getByText('Copied')).toBeVisible()
+
+    // Click in the code editor.
+    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+
+    // Paste the code.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
+
+    // Expect the code to be pasted.
+    await expect(page.locator('.cm-content')).toContainText(`2x4`)
+
+    // Find the toast close button.
+    const closeButton = page.getByRole('button', { name: 'Close' })
+    await expect(closeButton).toBeVisible()
+    await closeButton.click()
+
+    // Expect the toast to disappear.
+    await expect(page.getByText('Copied')).not.toBeVisible()
+    await expect(successToastMessage).not.toBeVisible()
+  })
 })
 
 async function sendPromptFromCommandBar(page: Page, promptStr: string) {
