@@ -95,8 +95,8 @@ export const fileLoader: LoaderFunction = async (
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop()
-            ? project.default_file
-            : (params.id + '/' + PROJECT_ENTRYPOINT)
+              ? project.default_file
+              : params.id + '/' + PROJECT_ENTRYPOINT
           )}`
         )
       }
@@ -157,7 +157,6 @@ export const fileLoader: LoaderFunction = async (
     },
   }
 }
-
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred

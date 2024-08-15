@@ -90,9 +90,9 @@ contextBridge.exposeInMainWorld('electron', {
     isWindows,
     isLinux,
   },
-  // IMPORTANT NOTE: kittycad.ts reads process.env.BASE_URL. But there is 
+  // IMPORTANT NOTE: kittycad.ts reads process.env.BASE_URL. But there is
   // no way to set it across the bridge boundary. We need to make it a command.
-  setBaseUrl: (value: string) => process.env.BASE_URL = value,
+  setBaseUrl: (value: string) => (process.env.BASE_URL = value),
   process: {
     // Setter/getter has to be created because
     // these are read-only over the boundary.
