@@ -203,7 +203,6 @@ export async function submitAndAwaitTextToKcl({
             makeDir: false,
             content: value.code,
             silent: true,
-            makeUnique: true,
           },
         })
       }

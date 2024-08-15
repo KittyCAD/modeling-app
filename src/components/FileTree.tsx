@@ -384,14 +384,14 @@ export const FileTreeMenu = () => {
   async function createFile() {
     send({
       type: 'Create file',
-      data: { name: '', makeDir: false, makeUnique: true },
+      data: { name: '', makeDir: false },
     })
   }
 
   async function createFolder() {
     send({
       type: 'Create file',
-      data: { name: '', makeDir: true, makeUnique: true },
+      data: { name: '', makeDir: true },
     })
   }
 
