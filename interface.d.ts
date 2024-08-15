@@ -33,6 +33,11 @@ export interface IElectronAPI {
   packageJson: {
     name: string
   }
+  os: {
+    isMac: boolean
+    isWindows: boolean
+    isLinux: boolean
+  }
   process: {
     env: {
       BASE_URL: EnvFn

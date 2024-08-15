@@ -1,6 +1,7 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import path from 'path'
 import fs from 'node:fs/promises'
+import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
@@ -12,6 +13,10 @@ const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
 const login = (host: string): Promise<string> =>
   ipcRenderer.invoke('login', host)
+
+const isMac = os.platform() === 'darwin'
+const isWindows = os.platform() === 'win32'
+const isLinux = os.platform() === 'linux'
 
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also
@@ -85,6 +90,11 @@ contextBridge.exposeInMainWorld('electron', {
   version: process.version,
   join: path.join,
   sep: path.sep,
+  os: {
+    isMac,
+    isWindows,
+    isLinux,
+  },
   process: {
     // Setter/getter has to be created because
     // these are read-only over the boundary.

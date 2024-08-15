@@ -373,13 +373,24 @@ export async function writeProjectSettingsFile(
   return window.electron.writeFile(projectSettingsFilePath, tomlStr)
 }
 
+// Since we want backwards compatibility with the old settings file, we need to
+// rename the folder for macos.
+const MACOS_APP_NAME = 'dev.zoo.modeling-app'
+
+const getAppFolderName = () => {
+  if (window.electron.os.isMac) {
+    return MACOS_APP_NAME
+  }
+  return window.electron.packageJson.name
+}
+
 const getAppSettingsFilePath = async () => {
   const isTestEnv = NODE_ENV === 'test'
   const testSettingsPath = TEST_SETTINGS_FILE_KEY
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
     ? testSettingsPath
-    : window.electron.path.join(appConfig, window.electron.packageJson.name)
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
