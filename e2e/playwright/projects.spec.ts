@@ -19,12 +19,14 @@ test(
           `${dir}/router-template-slate/main.kcl`
         )
 
+        await new Promise((r) => setTimeout(r, 1_000))
         await fsp.mkdir(`${dir}/bracket`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
           `${dir}/bracket/main.kcl`
         )
 
+        await new Promise((r) => setTimeout(r, 1_000))
         await fsp.mkdir(`${dir}/lego`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/lego.kcl',
