@@ -1,4 +1,4 @@
-import { appConfigDir, join, sep } from '@tauri-apps/api/path'
+import { appConfigDir, join } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import type { FileEntry } from 'lib/types'
 import {
