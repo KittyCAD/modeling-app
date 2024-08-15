@@ -86,25 +86,31 @@ export const fileLoader: LoaderFunction = async (
     const { project_name, project_path, current_file_name, current_file_path } =
       projectPathData
 
-    if (!current_file_name || !current_file_path || !project_name) {
-      return redirect(
-        `${PATHS.FILE}/${encodeURIComponent(
-          `${params.id}${
-            isDesktop() ? window.electron.path.sep : '/'
-          }${PROJECT_ENTRYPOINT}`
-        )}`
-      )
+    const urlObj = new URL(routerData.request.url)
+    let code = ''
+
+    if (!urlObj.pathname.endsWith('/settings')) {
+      if (!current_file_name || !current_file_path || !project_name) {
+        const project = await getProjectInfo(project_path)
+        return redirect(
+          `${PATHS.FILE}/${encodeURIComponent(
+            isDesktop()
+            ? project.default_file
+            : (params.id + '/' + PROJECT_ENTRYPOINT)
+          )}`
+        )
+      }
+
+      code = await window.electron.readFile(current_file_path)
+
+      // Update both the state and the editor's code.
+      // We explicitly do not write to the file here since we are loading from
+      // the file system and not the editor.
+      codeManager.updateCurrentFilePath(current_file_path)
+      codeManager.updateCodeStateEditor(code)
+      // We don't want to call await on execute code since we don't want to block the UI
+      kclManager.executeCode(true)
     }
-
-    // TODO: PROJECT_ENTRYPOINT is hardcoded
-    // until we support setting a project's entrypoint file
-    const code = await window.electron.readFile(current_file_path)
-
-    // Update both the state and the editor's code.
-    // We explicitly do not write to the file here since we are loading from
-    // the file system and not the editor.
-    codeManager.updateCurrentFilePath(current_file_path)
-    codeManager.updateCodeStateEditor(code)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
@@ -151,6 +157,7 @@ export const fileLoader: LoaderFunction = async (
     },
   }
 }
+
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred

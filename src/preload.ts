@@ -37,12 +37,7 @@ const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: { [key: string]: (val?: string) => string } = {}
   varNames.forEach((varName) => {
-    envs[varName] = (value?: string) => {
-      if (value !== undefined) {
-        process.env[varName] = value
-      }
-      return process.env[varName] || ''
-    }
+    envs[varName] = process.env[varName]
   })
   return envs
 }
@@ -95,13 +90,15 @@ contextBridge.exposeInMainWorld('electron', {
     isWindows,
     isLinux,
   },
+  // IMPORTANT NOTE: kittycad.ts reads process.env.BASE_URL. But there is 
+  // no way to set it across the bridge boundary. We need to make it a command.
+  setBaseUrl: (value: string) => process.env.BASE_URL = value,
   process: {
     // Setter/getter has to be created because
     // these are read-only over the boundary.
     env: Object.assign(
       {},
       exposeProcessEnvs([
-        'BASE_URL',
         'NODE_ENV',
         'TEST_SETTINGS_FILE_KEY',
         'VITE_KC_API_WS_MODELING_URL',

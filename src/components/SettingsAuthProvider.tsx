@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
@@ -96,6 +96,7 @@ export const SettingsAuthProviderBase = ({
   loadedSettings: typeof settings
   loadedProject?: IndexLoaderData
 }) => {
+  const location = useLocation()
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
 
@@ -301,7 +302,7 @@ export const SettingsAuthProviderBase = ({
         logout()
       },
       goToIndexPage: () => {
-        if (window.location.pathname.includes(PATHS.SIGN_IN)) {
+        if (location.pathname.includes(PATHS.SIGN_IN)) {
           navigate(PATHS.INDEX)
         }
       },
