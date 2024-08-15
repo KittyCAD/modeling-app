@@ -84,23 +84,26 @@ contextBridge.exposeInMainWorld('electron', {
   process: {
     // Setter/getter has to be created because
     // these are read-only over the boundary.
-    env: Object.assign({}, exposeProcessEnvs([
-      'BASE_URL',
-      'NODE_ENV',
-      'TEST_SETTINGS_FILE_KEY',
-      'VITE_KC_API_WS_MODELING_URL',
-      'VITE_KC_API_BASE_URL',
-      'VITE_KC_SITE_BASE_URL',
-      'VITE_KC_SKIP_AUTH',
-      'VITE_KC_CONNECTION_TIMEOUT_MS',
-      'VITE_KC_DEV_TOKEN',
+    env: Object.assign(
+      {},
+      exposeProcessEnvs([
+        'BASE_URL',
+        'NODE_ENV',
+        'TEST_SETTINGS_FILE_KEY',
+        'VITE_KC_API_WS_MODELING_URL',
+        'VITE_KC_API_BASE_URL',
+        'VITE_KC_SITE_BASE_URL',
+        'VITE_KC_SKIP_AUTH',
+        'VITE_KC_CONNECTION_TIMEOUT_MS',
+        'VITE_KC_DEV_TOKEN',
 
-      // Really we shouldn't use these and our code should use NODE_ENV
-      'DEV',
-      'PROD',
-      'TEST',
-      'CI',
-    ])),
+        // Really we shouldn't use these and our code should use NODE_ENV
+        'DEV',
+        'PROD',
+        'TEST',
+        'CI',
+      ])
+    ),
   },
   kittycad,
   listMachines,

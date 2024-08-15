@@ -2,7 +2,12 @@ import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isDesktop } from 'lib/isDesktop'
-import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN, VITE_KC_SKIP_AUTH, DEV } from 'env'
+import {
+  VITE_KC_API_BASE_URL,
+  VITE_KC_DEV_TOKEN,
+  VITE_KC_SKIP_AUTH,
+  DEV,
+} from 'env'
 import { getUser as getUserDesktop } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
 

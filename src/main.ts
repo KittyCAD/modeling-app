@@ -20,11 +20,10 @@ import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 import * as kittycad from '@kittycad/lib/import'
 
-
 // If it's not set, scream.
 const NODE_ENV = process.env.NODE_ENV
 if (!NODE_ENV) {
-  console.error("*FOX SCREAM* process.env.NODE_ENV is not explicitly set!")
+  console.error('*FOX SCREAM* process.env.NODE_ENV is not explicitly set!')
   process.exit(1)
 }
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
