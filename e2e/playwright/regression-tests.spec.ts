@@ -250,7 +250,7 @@ const sketch001 = startSketchAt([-0, -0])
     await expect(exportButton).toBeVisible()
 
     // Click the export button
-    exportButton.click()
+    await exportButton.click()
 
     // Click the stl.
     const stlOption = page.getByText('glTF')
@@ -279,7 +279,7 @@ const sketch001 = startSketchAt([-0, -0])
     await expect(exportingToastMessage).not.toBeVisible()
 
     // Click the code editor
-    page.locator('.cm-content').click()
+    await page.locator('.cm-content').click()
 
     await page.waitForTimeout(2000)
 
@@ -288,8 +288,7 @@ const sketch001 = startSketchAt([-0, -0])
     await expect(engineErrorToastMessage).not.toBeVisible()
 
     // Now add in code that works.
-    page.locator('.cm-content').fill(bracket)
-    page.locator('.cm-content').click()
+    await page.locator('.cm-content').fill(bracket)
     await page.keyboard.press('End')
     await page.keyboard.press('Enter')
 
@@ -302,7 +301,7 @@ const sketch001 = startSketchAt([-0, -0])
     // Now try exporting
 
     // Click the export button
-    exportButton.click()
+    await exportButton.click()
 
     // Click the stl.
     await expect(stlOption).toBeVisible()
@@ -397,7 +396,7 @@ async function clickExportButton(page: Page) {
   await expect(exportButton).toBeVisible()
 
   // Click the export button
-  exportButton.click()
+  await exportButton.click()
 
   // Click the stl.
   const gltfOption = page.getByText('glTF')
