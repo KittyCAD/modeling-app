@@ -2,20 +2,8 @@
 // template that ElectronJS provides.
 
 import dotenv from 'dotenv'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import {
-  app,
-  BrowserWindow,
-  ipcMain,
-  dialog,
-  shell,
-  protocol,
-  net,
-} from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
-import url from 'url'
-import fs from 'node:fs/promises'
-import fss from 'node:fs'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 import * as kittycad from '@kittycad/lib/import'

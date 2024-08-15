@@ -4,7 +4,6 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { NODE_ENV } from 'env'
 
 import {
   defaultAppSettings,
@@ -18,7 +17,6 @@ import {
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
-  TEST_SETTINGS_FILE_KEY,
 } from './constants'
 export { parseProjectRoute } from 'lang/wasm'
 

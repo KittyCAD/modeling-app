@@ -1,7 +1,6 @@
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
 import { isDesktop } from './isDesktop'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { parseProjectRoute, readAppSettingsFile } from './desktop'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'

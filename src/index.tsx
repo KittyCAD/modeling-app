@@ -5,12 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
 import { isDesktop } from 'lib/isDesktop'
-import {
-  UpdaterRestartModal,
-  createUpdaterRestartModal,
-} from 'components/UpdaterRestartModal'
 import { AppStreamProvider } from 'AppState'
 import { PLAYWRIGHT_KEY, PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
 
