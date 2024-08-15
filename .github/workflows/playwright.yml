@@ -461,12 +461,6 @@ jobs:
       with:
         name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
-    - name: run electron
-      run: |
-        yarn electron:start > electron.log 2>&1 &
-        while ! grep -q "built in" electron.log; do
-          sleep 1
-        done
     - name: Run ubuntu/chrome flow (with retries)
       id: retry
       if: always()
@@ -474,7 +468,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" --grep=@electron || true
+            yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -489,7 +483,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --last-failed --grep=@electron || true
+                    yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
