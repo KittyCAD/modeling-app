@@ -1,6 +1,7 @@
 // env vars were centralised so they could be mocked in jest
 // but isn't needed anymore with vite, so is now just a convention
 
+// @ts-ignore: TS1343
 const env = window.electron?.process.env ?? import.meta.env
 
 export const NODE_ENV = env.NODE_ENV as string | undefined
