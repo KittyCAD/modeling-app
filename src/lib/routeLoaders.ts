@@ -91,11 +91,10 @@ export const fileLoader: LoaderFunction = async (
 
     if (!urlObj.pathname.endsWith('/settings')) {
       if (!current_file_name || !current_file_path || !project_name) {
-        const project = await getProjectInfo(project_path)
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop()
-              ? project.default_file
+              ? (await getProjectInfo(project_path)).default_file
               : params.id + '/' + PROJECT_ENTRYPOINT
           )}`
         )
