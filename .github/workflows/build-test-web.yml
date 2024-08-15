@@ -3,6 +3,7 @@ name: build-test-web
 on:
   pull_request:
   push:
+    - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

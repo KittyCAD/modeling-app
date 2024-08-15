@@ -3,6 +3,7 @@ name: build-test-publish-apps
 on:
   pull_request:
   push:
+    - main
   release:
     types: [published]
   schedule:
