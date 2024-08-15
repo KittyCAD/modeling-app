@@ -23,7 +23,7 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SourceRange,
+        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SketchGroup, SourceRange,
         StatementKind, TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
@@ -1356,10 +1356,13 @@ impl CallExpression {
                 // TODO: This could probably be done in a better way, but as of now this was my only idea
                 // and it works.
                 match result {
-                    KclValue::SketchGroup(ref sketch_group) => {
-                        for (_, tag) in sketch_group.tags.iter() {
-                            memory.update_tag(&tag.value, tag.clone())?;
-                        }
+                    KclValue::UserVal(ref mut uval) => {
+                        uval.mutate(|sketch_group: &mut SketchGroup| {
+                            for (_, tag) in sketch_group.tags.iter() {
+                                memory.update_tag(&tag.value, tag.clone())?;
+                            }
+                            Ok::<_, KclError>(())
+                        })?;
                     }
                     KclValue::ExtrudeGroup(ref mut extrude_group) => {
                         for value in &extrude_group.value {
