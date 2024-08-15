@@ -21,11 +21,13 @@ import {
   rename,
   create,
   writeTextFile,
+  exists,
 } from '@tauri-apps/plugin-fs'
 import { isTauri } from 'lib/isTauri'
 import { join, sep } from '@tauri-apps/api/path'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
 import { getProjectInfo } from 'lib/tauri'
+import { getNextDirName, getNextFileName } from 'lib/tauriFS'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -105,14 +107,20 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = await join(context.selectedDirectory.path, createdName)
+          let { name, path } = await getNextDirName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await mkdir(createdPath)
         } else {
-          createdPath =
-            context.selectedDirectory.path +
-            sep() +
-            createdName +
-            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          const { name, path } = await getNextFileName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await create(createdPath)
           if (event.data.content) {
             await writeTextFile(createdPath, event.data.content)
@@ -129,14 +137,20 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = await join(context.selectedDirectory.path, createdName)
+          let { name, path } = await getNextDirName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await mkdir(createdPath)
         } else {
-          createdPath =
-            context.selectedDirectory.path +
-            sep() +
-            createdName +
-            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          const { name, path } = await getNextFileName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await create(createdPath)
           if (event.data.content) {
             await writeTextFile(createdPath, event.data.content)

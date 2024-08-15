@@ -14,6 +14,7 @@ import {
   createUpdaterRestartModal,
 } from 'components/UpdaterRestartModal'
 import { AppStreamProvider } from 'AppState'
+import { PLAYWRIGHT_KEY, PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -24,6 +25,9 @@ import { AppStreamProvider } from 'AppState'
 //   })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+const maybePlaywrightToastDuration = Number(
+  window?.localStorage.getItem(PLAYWRIGHT_TOAST_DURATION)
+)
 
 root.render(
   <HotkeysProvider>
@@ -44,8 +48,10 @@ root.render(
               secondary: 'oklch(48.62% 0.1654 142.5deg)',
             },
             duration:
-              window?.localStorage.getItem('playwright') === 'true'
-                ? 10 // speed up e2e tests
+              window?.localStorage.getItem(PLAYWRIGHT_KEY) === 'true'
+                ? maybePlaywrightToastDuration > 0
+                  ? maybePlaywrightToastDuration
+                  : 10 // optionally speed up e2e tests
                 : 1500,
           },
         }}
