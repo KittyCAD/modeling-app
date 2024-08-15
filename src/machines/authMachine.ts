@@ -64,12 +64,10 @@ export const authMachine = createMachine<UserContext, Events>(
           onDone: [
             {
               target: 'loggedIn',
-              actions: () => {
-                return assign((context, event) => ({
-                  user: event.data.user,
-                  token: event.data.token || context.token,
-                }))
-              },
+              actions: assign((context, event) => ({
+                user: event.data.user,
+                token: event.data.token || context.token,
+              })),
             },
           ],
           onError: [
