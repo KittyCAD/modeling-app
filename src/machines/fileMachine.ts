@@ -90,11 +90,14 @@ export const fileMachine = createMachine(
         invoke: {
           id: 'rename-file',
           src: 'renameFile',
-          onDone: [{
-            target: '#File machine.Reading files',
-            actions: ['renameToastSuccess'],
-            cond: "Name has been changed"
-          }, "Reading files"],
+          onDone: [
+            {
+              target: '#File machine.Reading files',
+              actions: ['renameToastSuccess'],
+              cond: 'Name has been changed',
+            },
+            'Reading files',
+          ],
           onError: [
             {
               target: '#File machine.Reading files',
@@ -225,7 +228,7 @@ export const fileMachine = createMachine(
     guards: {
       'Name has been changed': (_, event) => {
         return event.data.newPath !== event.data.oldPath
-      }
-    }
+      },
+    },
   }
 )
