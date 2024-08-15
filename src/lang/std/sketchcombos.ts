@@ -1642,9 +1642,9 @@ export function transformAstSketchLines({
     if (kclVal?.type === 'ExtrudeGroup') {
       sketchGroup = kclVal.sketchGroup
     } else {
-      sketchGroup = sketchGroupFromKclValue(kclVal)
-      if (!sketchGroup) {
-        return new Error('not a sketch group')
+      sketchGroup = sketchGroupFromKclValue(kclVal, varName)
+      if (err(sketchGroup)) {
+        return
       }
     }
     const segMeta = getSketchSegmentFromPathToNode(

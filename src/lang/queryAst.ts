@@ -662,10 +662,8 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const sg = sketchGroupFromKclValue(programMemory?.get(varName))
-    if (!sg) {
-      return new Error(`${varName} is not a sketchgroup`)
-    }
+    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
       primaryLine.range
@@ -783,7 +781,7 @@ export function hasExtrudeSketchGroup({
   const varValue = programMemory?.get(varName)
   return (
     varValue?.type === 'ExtrudeGroup' ||
-    sketchGroupFromKclValue(varValue) !== null
+    !err(sketchGroupFromKclValue(varValue, varName))
   )
 }
 

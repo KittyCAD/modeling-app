@@ -590,11 +590,10 @@ export class SceneEntities {
       _node1.node?.declarations?.[0]?.id?.name || ''
 
     const sg = sketchGroupFromKclValue(
-      kclManager.programMemory.get(variableDeclarationName)
+      kclManager.programMemory.get(variableDeclarationName),
+      variableDeclarationName
     )
-    if (!sg) {
-      return new Error('was not sketch group')
-    }
+    if (err(sg)) return sg
     const lastSeg = sg.value.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
@@ -791,11 +790,10 @@ export class SceneEntities {
         })
         this.sceneProgramMemory = programMemory
         const sketchGroup = sketchGroupFromKclValue(
-          programMemory.get(variableDeclarationName)
+          programMemory.get(variableDeclarationName),
+          variableDeclarationName
         )
-        if (!sketchGroup) {
-          return new Error(`${variableDeclarationName} was not a sketch group`)
-        }
+        if (err(sketchGroup)) return sketchGroup
         const sgPaths = sketchGroup.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -848,11 +846,10 @@ export class SceneEntities {
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
           const sketchGroup = sketchGroupFromKclValue(
-            programMemory.get(variableDeclarationName)
+            programMemory.get(variableDeclarationName),
+            variableDeclarationName
           )
-          if (!sketchGroup) {
-            return new Error(`${variableDeclarationName} wasn't a sketch group`)
-          }
+          if (err(sketchGroup)) return sketchGroup
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -1121,8 +1118,11 @@ export class SceneEntities {
 
       const maybeSketchGroup = programMemory.get(variableDeclarationName)
       let sketchGroup = undefined
-      const sg = sketchGroupFromKclValue(maybeSketchGroup)
-      if (sg) {
+      const sg = sketchGroupFromKclValue(
+        maybeSketchGroup,
+        variableDeclarationName
+      )
+      if (!err(sg)) {
         sketchGroup = sg
       } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
         sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
@@ -1667,12 +1667,11 @@ function prepareTruncatedMemoryAndAst(
   )
   if (err(_node)) return _node
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
-  const sg = sketchGroupFromKclValue(programMemory.get(variableDeclarationName))
-  if (!sg) {
-    return new Error(
-      `The KCL variable ${variableDeclarationName} was not a sketch group`
-    )
-  }
+  const sg = sketchGroupFromKclValue(
+    programMemory.get(variableDeclarationName),
+    variableDeclarationName
+  )
+  if (err(sg)) return sg
   const lastSeg = sg?.value.slice(-1)[0]
   if (draftSegment) {
     // truncatedAst needs to setup with another segment at the end
@@ -1797,11 +1796,11 @@ export function sketchGroupFromPathToNode({
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }
-  const sg = sketchGroupFromKclValue(result)
-  if (sg) {
-    return sg
+  const sg = sketchGroupFromKclValue(result, varDec?.id?.name)
+  if (err(sg)) {
+    return null
   }
-  return null
+  return sg
 }
 
 function colorSegment(object: any, color: number) {

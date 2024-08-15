@@ -982,11 +982,10 @@ export async function deleteFromSelection(
             return
           }
           const sketchToPreserve = sketchGroupFromKclValue(
-            programMemory.get(sketchName)
+            programMemory.get(sketchName),
+            sketchName
           )
-          if (!sketchToPreserve) {
-            return new Error(`${sketchName} is not a sketchgroup`)
-          }
+          if (err(sketchToPreserve)) return sketchToPreserve
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict
