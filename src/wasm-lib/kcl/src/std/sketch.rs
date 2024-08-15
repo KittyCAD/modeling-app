@@ -1410,10 +1410,13 @@ pub(crate) fn inner_profile_start(sketch_group: SketchGroup) -> Result<[f64; 2],
 
 /// Close the current sketch.
 pub async fn close(args: Args) -> Result<KclValue, KclError> {
+    dbg!();
     let (sketch_group, tag): (SketchGroup, Option<TagDeclarator>) = args.get_sketch_group_and_optional_tag()?;
 
+    dbg!();
     let new_sketch_group = inner_close(sketch_group, tag, args).await?;
 
+    dbg!();
     Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
