@@ -122,9 +122,12 @@ ipcMain.handle('login', async (event, host) => {
 })
 
 ipcMain.handle('kittycad', (event, data) => {
-  return data.access.split('.').reduce((obj, prop) => obj[prop], kittycad)(
-    data.args
-  )
+  return data.access
+    .split('.')
+    .reduce(
+      (obj: any, prop: any) => obj[prop],
+      kittycad
+    )(data.args)
 })
 
 const SERVICE_NAME = '_machine-api._tcp.local.'
