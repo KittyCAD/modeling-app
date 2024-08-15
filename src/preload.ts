@@ -35,9 +35,12 @@ const statIsDirectory = (path: string) =>
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
-  const envs: { [key: string]: (val?: string) => string } = {}
+  const envs: Record<string, string> = {}
   varNames.forEach((varName) => {
-    envs[varName] = process.env[varName]
+    const envVar = process.env[varName]
+    if (envVar) {
+      envs[varName] = envVar
+    }
   })
   return envs
 }
