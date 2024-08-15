@@ -481,22 +481,85 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage.first()).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage.first()).toBeVisible()
+    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
     // We should have three success toasts.
-    await expect(successToastMessage).toHaveCount(3)
+    await expect(successToastMessage).toHaveCount(3, { timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
     await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
     await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
     await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+
+    // Ensure if you reject one, the others stay.
+    const rejectButton = page.getByRole('button', { name: 'Reject' })
+    await expect(rejectButton.first()).toBeVisible()
+    // Click the reject button on the first toast.
+    rejectButton.first().click()
+
+    // The first toast should disappear, but not the others.
+    await expect(page.getByText(`a 2x4 lego`)).not.toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+
+    // Ensure you can copy the code for one of the models remaining.
+    const copyToClipboardButton = page.getByRole('button', {
+      name: 'Copy to clipboard',
+    })
+    await expect(copyToClipboardButton.first()).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.first().click()
+
+    // Expect the code to be copied.
+    await expect(page.getByText('Copied')).toBeVisible()
+
+    // Click in the code editor.
+    await page.locator('.cm-content').click()
+
+    // Paste the code.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
+
+    // Expect the code to be pasted.
+    await expect(page.locator('.cm-content')).toContainText(`2x8`)
+
+    // Expect the toast to disappear.
+    await expect(page.getByText('Copied')).not.toBeVisible()
+
+    // Ensure the final toast remains.
+    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+
+    // Ensure you can copy the code for the final model.
+    await expect(copyToClipboardButton).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.click()
+
+    // Expect the code to be copied.
+    await expect(page.getByText('Copied')).toBeVisible()
+
+    // Click in the code editor.
+    await page.locator('.cm-content').click()
+
+    // Paste the code.
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyA')
+    await page.keyboard.up(CtrlKey)
+    await page.keyboard.press('Backspace')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
+
+    // Expect the code to be pasted.
+    await expect(page.locator('.cm-content')).toContainText(`2x10`)
+
+    // Expect the toast to disappear.
+    await expect(page.getByText('Copied')).not.toBeVisible()
   })
 })
 
