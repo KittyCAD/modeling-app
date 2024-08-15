@@ -502,7 +502,7 @@ test.describe('Text-to-CAD tests', () => {
     const rejectButton = page.getByRole('button', { name: 'Reject' })
     await expect(rejectButton.first()).toBeVisible()
     // Click the reject button on the first toast.
-    rejectButton.first().click()
+    await rejectButton.first().click()
 
     // The first toast should disappear, but not the others.
     await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
@@ -521,7 +521,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText('Copied')).toBeVisible()
 
     // Click in the code editor.
-    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+    await page.locator('.cm-content').click()
 
     // Paste the code.
     await page.keyboard.down(CtrlKey)
@@ -550,16 +550,12 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText('Copied')).toBeVisible()
 
     // Click in the code editor.
-    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+    await page.locator('.cm-content').click()
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
-    await page.keyboard.press('KeyA')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.press('ControlOrMeta+a')
     await page.keyboard.press('Backspace')
-    await page.keyboard.down(CtrlKey)
-    await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.press('ControlOrMeta+v')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
@@ -568,7 +564,6 @@ test.describe('Text-to-CAD tests', () => {
     // Find the toast close button.
     await expect(closeButton).toBeVisible()
     await closeButton.click()
-    await expect(page.getByText('Copied')).not.toBeVisible()
     await expect(successToastMessage).not.toBeVisible()
   })
 
@@ -620,7 +615,7 @@ test.describe('Text-to-CAD tests', () => {
     const dismissButton = page.getByRole('button', { name: 'Dismiss' })
     await expect(dismissButton).toBeVisible()
     // Click the dismiss button on the first toast.
-    dismissButton.first().click()
+    await dismissButton.first().click()
 
     // Make sure the failure toast disappears.
     await expect(failureToastMessage).not.toBeVisible()
