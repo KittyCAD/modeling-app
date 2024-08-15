@@ -31,7 +31,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "*.d.ts"],
-  "exclude": ["node_modules", "./*.grammar"],
+  "include": ["src", "e2e", "packages", "*.ts"],
+  "exclude": ["node_modules", "./*.grammar", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
