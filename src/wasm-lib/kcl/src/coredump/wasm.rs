@@ -104,7 +104,7 @@ impl CoreDump for CoreDumper {
     fn is_desktop(&self) -> Result<bool> {
         self.manager
             .is_desktop()
-            .map_err(|e| anyhow::anyhow!("Failed to get response from is tauri: {:?}", e))
+            .map_err(|e| anyhow::anyhow!("Failed to get response from is desktop: {:?}", e))
     }
 
     async fn get_webrtc_stats(&self) -> Result<crate::coredump::WebrtcStats> {

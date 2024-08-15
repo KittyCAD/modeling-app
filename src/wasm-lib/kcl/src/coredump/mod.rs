@@ -83,7 +83,7 @@ pub trait CoreDump: Clone {
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
-            tauri: self.is_desktop()?,
+            desktop: self.is_desktop()?,
             kcl_code: self.kcl_code()?,
             os,
             webrtc_stats,
@@ -134,8 +134,8 @@ pub struct CoreDumpInfo {
     /// A timestamp of the core dump.
     #[ts(type = "string")]
     pub timestamp: chrono::DateTime<chrono::Utc>,
-    /// If the app is running in tauri or the browser.
-    pub tauri: bool,
+    /// If the app is running in desktop or the browser.
+    pub desktop: bool,
     /// The os info.
     pub os: OsInfo,
     /// The webrtc stats.
@@ -155,8 +155,8 @@ impl CoreDumpInfo {
     /// Set the github issue url.
     pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_url: &str, coredump_id: &Uuid) -> Result<()> {
         let coredump_filename = Path::new(coredump_url).file_name().unwrap().to_str().unwrap();
-        let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
-        let labels = ["coredump", "bug", tauri_or_browser_label];
+        let desktop_or_browser_label = if self.desktop { "desktop-app" } else { "browser" };
+        let labels = ["coredump", "bug", desktop_or_browser_label];
         let mut body = format!(
             r#"[Add a title above and insert a description of the issue here]
 
