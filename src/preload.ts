@@ -2,7 +2,6 @@ import { ipcRenderer, contextBridge } from 'electron'
 import path from 'path'
 import fs from 'node:fs/promises'
 import packageJson from '../package.json'
-import { components } from 'lib/machine-api'
 import { MachinesListing } from 'lib/machineManager'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
@@ -14,6 +13,7 @@ const login = (host: string): Promise<string> =>
   ipcRenderer.invoke('login', host)
 
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
+const exists = (path: string) => fs.existsSync(path)
 const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
@@ -61,6 +61,7 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   readFile,
   writeFile,
+  exists,
   readdir,
   rename,
   rm: fs.rm,

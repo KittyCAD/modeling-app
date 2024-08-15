@@ -18,6 +18,7 @@ import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
+import { getNextDirName, getNextFileName } from 'lib/desktopFS'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -99,17 +100,20 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = await window.electron.join(
-            context.selectedDirectory.path,
-            createdName
-          )
+          let { name, path } = await getNextDirName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await window.electron.mkdir(createdPath)
         } else {
-          createdPath =
-            context.selectedDirectory.path +
-            window.electron.sep +
-            createdName +
-            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          const { name, path } = await getNextFileName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await window.electron.mkdir(createdPath)
           if (event.data.content) {
             await window.electron.writeFile(createdPath, event.data.content)
@@ -126,17 +130,20 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          createdPath = window.electron.path.join(
-            context.selectedDirectory.path,
-            createdName
-          )
+          let { name, path } = await getNextDirName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await window.electron.mkdir(createdPath)
         } else {
-          createdPath =
-            context.selectedDirectory.path +
-            window.electron.path.sep +
-            createdName +
-            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          const { name, path } = await getNextFileName({
+            entryName: createdName,
+            baseDir: context.selectedDirectory.path,
+          })
+          createdName = name
+          createdPath = path
           await window.electron.mkdir(createdPath)
           if (event.data.content) {
             await window.electron.writeFile(createdPath, '')

@@ -13,6 +13,7 @@ import crossPlatformFetch from './crossPlatformFetch'
 import { isDesktop } from 'lib/isDesktop'
 import { Themes } from './theme'
 import { commandBarMachine } from 'machines/commandBarMachine'
+import { getNextFileName } from './desktopFS'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -166,7 +167,7 @@ export async function submitAndAwaitTextToKcl({
       showFailureToast('Failed to generate parametric model')
       return e
     })
-    .then((value) => {
+    .then(async (value) => {
       if (value.code === undefined || !value.code || value.code.length === 0) {
         // We want to show the real error message to the user.
         if (value.error && value.error.length > 0) {
@@ -180,13 +181,21 @@ export async function submitAndAwaitTextToKcl({
       }
 
       const TRUNCATED_PROMPT_LENGTH = 24
-      const newFileName = `${value.prompt
+      let newFileName = `${value.prompt
         .slice(0, TRUNCATED_PROMPT_LENGTH)
         .replace(/\s/gi, '-')
         .replace(/\W/gi, '-')
-        .toLowerCase()}`
+        .toLowerCase()}${FILE_EXT}`
 
       if (isDesktop()) {
+        // We have to pre-emptively run our unique file name logic,
+        // so that we can pass the unique file name to the toast,
+        // and by extension the file-deletion-on-reject logic.
+        newFileName = getNextFileName({
+          entryName: newFileName,
+          baseDir: context.selectedDirectory.path,
+        }).name
+
         fileMachineSend({
           type: 'Create file',
           data: {
@@ -194,14 +203,13 @@ export async function submitAndAwaitTextToKcl({
             makeDir: false,
             content: value.code,
             silent: true,
-            makeUnique: true,
           },
         })
       }
 
       return {
         ...value,
-        fileName: newFileName + FILE_EXT,
+        fileName: newFileName,
       }
     })
 

@@ -20,6 +20,7 @@ export interface IElectronAPI {
     data: string | Uint8Array
   ) => ReturnType<fs.writeFile>
   readdir: (path: string) => ReturnType<fs.readdir>
+  exists: (path: string) => ReturnType<fs.exists>
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
   stat: (path: string) => ReturnType<fs.stat>

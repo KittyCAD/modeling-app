@@ -1,6 +1,7 @@
 import { isDesktop } from './isDesktop'
 import type { FileEntry } from 'lib/types'
 import {
+  FILE_EXT,
   INDEX_IDENTIFIER,
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
@@ -163,4 +164,57 @@ export async function createAndOpenNewProject({
     }`
   )
   return newProject
+}
+
+/**
+ * Get the next available file name by appending a hyphen and number to the end of the name
+ * @todo move this to the equivalent of tauriFS.ts for Electron migration
+ */
+export function getNextFileName({
+  entryName,
+  baseDir,
+}: {
+  entryName: string
+  baseDir: string
+}) {
+  // Remove any existing index from the name before adding a new one
+  let createdName = entryName.replace(FILE_EXT, '') + FILE_EXT
+  let createdPath = window.electron.path.join(baseDir, createdName)
+  let i = 1
+  while (window.electron.exists(createdPath)) {
+    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${FILE_EXT})?$`)
+    createdName =
+      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
+    createdPath = window.electron.path.join(baseDir, createdName)
+    i++
+  }
+  return {
+    name: createdName,
+    path: createdPath,
+  }
+}
+
+/**
+ * Get the next available directory name by appending a hyphen and number to the end of the name
+ * @todo move this to the equivalent of tauriFS.ts for Electron migration
+ */
+export function getNextDirName({
+  entryName,
+  baseDir,
+}: {
+  entryName: string
+  baseDir: string
+}) {
+  let createdName = entryName
+  let createdPath = window.electron.path.join(baseDir, createdName)
+  let i = 1
+  while (window.electron.exists(createdPath)) {
+    createdName = entryName.replace(/-\d+$/, '') + `-${i}`
+    createdPath = window.electron.path.join(baseDir, createdName)
+    i++
+  }
+  return {
+    name: createdName,
+    path: createdPath,
+  }
 }
