@@ -32,6 +32,7 @@ test(
         )
       },
     })
+
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
