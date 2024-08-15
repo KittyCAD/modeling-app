@@ -137,6 +137,23 @@ export interface components {
     LedMode: 'on' | 'off' | 'flashing'
     /** @description The node for the led. */
     LedNode: 'chamber_light' | 'work_light'
+    /** @description A liveview message. */
+    LiveView: {
+      /** @enum {string} */
+      command: 'init'
+      /** @description The op protocols. */
+      op_protocols: components['schemas']['OperationProtocol'][]
+      /** @description The peer host. */
+      peer_host: string
+      /** @description The reason for the message. */
+      reason?: components['schemas']['Reason'] | null
+      /** @description The result of the command. */
+      result: components['schemas']['Result']
+      /** @description The sequence id. */
+      sequence_id: components['schemas']['SequenceId']
+    } & {
+      [key: string]: unknown
+    }
     /** @description Details for a 3d printer connected over USB. */
     Machine:
       | {
@@ -202,6 +219,12 @@ export interface components {
           system: components['schemas']['System']
         }
       | {
+          security: components['schemas']['Security']
+        }
+      | {
+          live_view: components['schemas']['LiveView']
+        }
+      | {
           json: unknown
         }
       | {
@@ -211,6 +234,15 @@ export interface components {
     NetworkPrinterManufacturer: 'Bambu' | 'Formlabs'
     /** @description A nozzle type. */
     NozzleType: 'hardened_steel' | 'stainless_steel'
+    /** @description An operation protocol. */
+    OperationProtocol: {
+      /** @description The protocol. */
+      protocol: string
+      /** @description The version. */
+      version: string
+    } & {
+      [key: string]: unknown
+    }
     /** @description The response from the `/ping` endpoint. */
     Pong: {
       /** @description The pong response. */
@@ -225,6 +257,50 @@ export interface components {
           param?: string | null
           /** @description The reason for the message. */
           reason: components['schemas']['Reason']
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'ams_change_filament'
+          /**
+           * Format: int64
+           * @description The error number.
+           */
+          errorno: number
+          /** @description The reason for the message. */
+          reason?: components['schemas']['Reason'] | null
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
+          /**
+           * Format: int64
+           * @description The target temperature.
+           */
+          tar_temp: number
+          /**
+           * Format: int64
+           * @description The target.
+           */
+          target: number
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'calibration'
+          /**
+           * Format: int64
+           * @description The option.
+           */
+          option: number
+          /** @description The reason for the message. */
+          reason?: components['schemas']['Reason'] | null
           /** @description The result of the command. */
           result: components['schemas']['Result']
           /** @description The sequence id. */
@@ -721,6 +797,40 @@ export interface components {
         }
     /** @description The result of a message. */
     Result: 'SUCCESS' | 'FAIL'
+    /** @description A security message. */
+    Security: {
+      /**
+       * Format: int64
+       * @description The address.
+       */
+      address: number
+      /** @description The chip sn. */
+      chip_sn: string
+      /**
+       * Format: int64
+       * @description The chip sn length.
+       */
+      chipsn_len: number
+      /** @enum {string} */
+      command: 'get_sn'
+      /**
+       * Format: int64
+       * @description The length.
+       */
+      length: number
+      /** @description The module. */
+      module: string
+      /** @description The reason for the message. */
+      reason?: components['schemas']['Reason'] | null
+      /** @description The sequence id. */
+      sequence_id: components['schemas']['SequenceId']
+      /** @description The serial number. */
+      sn: string
+      /** @description The status. */
+      status: string
+    } & {
+      [key: string]: unknown
+    }
     /** @description The sequence id type. */
     SequenceId: string | number
     /** @description A system command. */

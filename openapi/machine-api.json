@@ -188,6 +188,67 @@
           }
         ]
       },
+      "LiveView": {
+        "description": "A liveview message.",
+        "oneOf": [
+          {
+            "additionalProperties": true,
+            "description": "Initialize the live view.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "init"
+                ],
+                "type": "string"
+              },
+              "op_protocols": {
+                "description": "The op protocols.",
+                "items": {
+                  "$ref": "#/components/schemas/OperationProtocol"
+                },
+                "type": "array"
+              },
+              "peer_host": {
+                "description": "The peer host.",
+                "type": "string"
+              },
+              "reason": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Reason"
+                  }
+                ],
+                "description": "The reason for the message.",
+                "nullable": true
+              },
+              "result": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                ],
+                "description": "The result of the command."
+              },
+              "sequence_id": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SequenceId"
+                  }
+                ],
+                "description": "The sequence id."
+              }
+            },
+            "required": [
+              "command",
+              "op_protocols",
+              "peer_host",
+              "result",
+              "sequence_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
       "Machine": {
         "description": "Details for a 3d printer connected over USB.",
         "oneOf": [
@@ -385,6 +446,32 @@
           },
           {
             "additionalProperties": false,
+            "description": "A security message.",
+            "properties": {
+              "security": {
+                "$ref": "#/components/schemas/Security"
+              }
+            },
+            "required": [
+              "security"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "A liveview message.",
+            "properties": {
+              "live_view": {
+                "$ref": "#/components/schemas/LiveView"
+              }
+            },
+            "required": [
+              "live_view"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
             "description": "An unknown Json message.",
             "properties": {
               "json": {}
@@ -448,6 +535,25 @@
           }
         ]
       },
+      "OperationProtocol": {
+        "additionalProperties": true,
+        "description": "An operation protocol.",
+        "properties": {
+          "protocol": {
+            "description": "The protocol.",
+            "type": "string"
+          },
+          "version": {
+            "description": "The version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "protocol",
+          "version"
+        ],
+        "type": "object"
+      },
       "Pong": {
         "description": "The response from the `/ping` endpoint.",
         "properties": {
@@ -507,6 +613,116 @@
             "required": [
               "command",
               "reason",
+              "result",
+              "sequence_id"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": true,
+            "description": "Ams change filament.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "ams_change_filament"
+                ],
+                "type": "string"
+              },
+              "errorno": {
+                "description": "The error number.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "reason": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Reason"
+                  }
+                ],
+                "description": "The reason for the message.",
+                "nullable": true
+              },
+              "result": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                ],
+                "description": "The result of the command."
+              },
+              "sequence_id": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SequenceId"
+                  }
+                ],
+                "description": "The sequence id."
+              },
+              "tar_temp": {
+                "description": "The target temperature.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "target": {
+                "description": "The target.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "command",
+              "errorno",
+              "result",
+              "sequence_id",
+              "tar_temp",
+              "target"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": true,
+            "description": "Calibration.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "calibration"
+                ],
+                "type": "string"
+              },
+              "option": {
+                "description": "The option.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "reason": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Reason"
+                  }
+                ],
+                "description": "The reason for the message.",
+                "nullable": true
+              },
+              "result": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                ],
+                "description": "The result of the command."
+              },
+              "sequence_id": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SequenceId"
+                  }
+                ],
+                "description": "The sequence id."
+              }
+            },
+            "required": [
+              "command",
+              "option",
               "result",
               "sequence_id"
             ],
@@ -1607,6 +1823,83 @@
               "FAIL"
             ],
             "type": "string"
+          }
+        ]
+      },
+      "Security": {
+        "description": "A security message.",
+        "oneOf": [
+          {
+            "additionalProperties": true,
+            "description": "Get the serial number.",
+            "properties": {
+              "address": {
+                "description": "The address.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "chip_sn": {
+                "description": "The chip sn.",
+                "type": "string"
+              },
+              "chipsn_len": {
+                "description": "The chip sn length.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "command": {
+                "enum": [
+                  "get_sn"
+                ],
+                "type": "string"
+              },
+              "length": {
+                "description": "The length.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "module": {
+                "description": "The module.",
+                "type": "string"
+              },
+              "reason": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Reason"
+                  }
+                ],
+                "description": "The reason for the message.",
+                "nullable": true
+              },
+              "sequence_id": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SequenceId"
+                  }
+                ],
+                "description": "The sequence id."
+              },
+              "sn": {
+                "description": "The serial number.",
+                "type": "string"
+              },
+              "status": {
+                "description": "The status.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "address",
+              "chip_sn",
+              "chipsn_len",
+              "command",
+              "length",
+              "module",
+              "sequence_id",
+              "sn",
+              "status"
+            ],
+            "type": "object"
           }
         ]
       },
