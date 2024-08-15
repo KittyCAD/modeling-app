@@ -108,9 +108,7 @@ test.describe('Text-to-CAD tests', () => {
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
-    // Hit nothing, wait for toast to disappear.
-    await page.waitForTimeout(5000)
-    await expect(successToastMessage).not.toBeVisible()
+    await expect(successToastMessage).toBeVisible()
 
     // Can send a new prompt from the command bar.
     await sendPromptFromCommandBar(page, 'a 2x4 lego')
@@ -123,7 +121,10 @@ test.describe('Text-to-CAD tests', () => {
 
     await expect(generatingToastMessage).toBeVisible()
 
-    await expect(successToastMessage).toBeVisible()
+    // Expect 2 success toasts.
+    await expect(successToastMessage).toHaveCount(2)
+    await expect(page.getByText('a 2x4 lego')).toBeVisible()
+    await expect(page.getByText('a 2x6 lego')).toBeVisible()
   })
 
   test('you can reject text-to-cad output and it does nothing', async ({
@@ -382,14 +383,6 @@ test.describe('Text-to-CAD tests', () => {
     await expect(successToastMessage).not.toBeVisible()
     await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
 
-    // Wait for the error toast to disappear.
-    // DO NOT HIT DISMISS or anything else.
-    await page.waitForTimeout(3000)
-
-    // Toast should be gone.
-    await expect(failureToastMessage).not.toBeVisible()
-    await expect(page.getByText(`Text-to-CAD failed`)).not.toBeVisible()
-
     // They should be able to try again from the command bar.
     await sendPromptFromCommandBar(page, 'a 2x4 lego')
 
@@ -404,6 +397,10 @@ test.describe('Text-to-CAD tests', () => {
     await expect(successToastMessage).toBeVisible()
 
     await expect(page.getByText('Copied')).not.toBeVisible()
+
+    // old failure toast should stick around.
+    await expect(failureToastMessage).toBeVisible()
+    await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
   })
 
   test('ensure you can shift+enter in the prompt box', async ({ page }) => {
@@ -475,7 +472,7 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
   const cmdSearchBar = page.getByPlaceholder('Search commands')
   await expect(cmdSearchBar).toBeVisible()
 
-  const textToCadCommand = page.getByText('Text-to-CAD')
+  const textToCadCommand = page.getByText('Use the Zoo Text-to-CAD API ')
   await expect(textToCadCommand.first()).toBeVisible()
   // Click the Text-to-CAD command
   await textToCadCommand.first().click()
