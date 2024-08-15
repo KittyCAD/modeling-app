@@ -1,11 +1,7 @@
 import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
-import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
-import { components } from './machine-api'
-import { isDesktop } from './isDesktop'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { NODE_ENV } from 'env'
@@ -16,7 +12,6 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
-import { TEST_SETTINGS_KEY } from '../../e2e/playwright/storageStates'
 import {
   DEFAULT_HOST,
   PROJECT_ENTRYPOINT,
