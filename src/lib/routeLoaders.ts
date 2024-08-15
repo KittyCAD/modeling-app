@@ -10,7 +10,7 @@ import {
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { codeManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
   getProjectInfo,
