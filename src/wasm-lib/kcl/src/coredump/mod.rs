@@ -25,6 +25,8 @@ pub trait CoreDump: Clone {
 
     fn version(&self) -> Result<String>;
 
+    fn kcl_code(&self) -> Result<String>;
+
     fn pool(&self) -> Result<String>;
 
     async fn os(&self) -> Result<OsInfo>;
@@ -82,6 +84,7 @@ pub trait CoreDump: Clone {
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
             tauri: self.is_tauri()?,
+            kcl_code: self.kcl_code()?,
             os,
             webrtc_stats,
             github_issue_url: None,
@@ -140,6 +143,8 @@ pub struct CoreDumpInfo {
     /// A GitHub issue url to report the core dump.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub github_issue_url: Option<String>,
+    /// The kcl code the user is using.
+    pub kcl_code: String,
     /// Engine pool the client is connected to.
     pub pool: String,
     /// The client state (singletons and xstate).
@@ -152,7 +157,7 @@ impl CoreDumpInfo {
         let coredump_filename = Path::new(coredump_url).file_name().unwrap().to_str().unwrap();
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
-        let body = format!(
+        let mut body = format!(
             r#"[Add a title above and insert a description of the issue here]
 
 ![Screenshot]({screenshot_url})
@@ -166,6 +171,23 @@ Reference ID: {coredump_id}
 </details>
 "#
         );
+
+        // Add the kcl code if it exists.
+        if !self.kcl_code.trim().is_empty() {
+            body.push_str(&format!(
+                r#"
+<details>
+<summary><b>KCL Code</b></summary>
+
+```kcl
+{}
+```
+</details>
+"#,
+                self.kcl_code
+            ));
+        }
+
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
         // Note that `github_issue_url` is not included in the coredump file.

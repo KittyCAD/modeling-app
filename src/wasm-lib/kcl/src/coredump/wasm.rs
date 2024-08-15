@@ -23,6 +23,9 @@ extern "C" {
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
+    #[wasm_bindgen(method, js_name = kclCode, catch)]
+    fn kcl_code(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = getOsInfo, catch)]
     fn get_os_info(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
@@ -71,6 +74,12 @@ impl CoreDump for CoreDumper {
         self.manager
             .version()
             .map_err(|e| anyhow::anyhow!("Failed to get response from version: {:?}", e))
+    }
+
+    fn kcl_code(&self) -> Result<String> {
+        self.manager
+            .kcl_code()
+            .map_err(|e| anyhow::anyhow!("Failed to get response from kcl code: {:?}", e))
     }
 
     fn pool(&self) -> Result<String> {
