@@ -36,10 +36,12 @@ const FRUSTUM_SIZE = 0.5
 const OUTPUT_KEY = 'source.glb'
 
 export function ToastTextToCadError({
+  toastId,
   message,
   prompt,
   commandBarSend,
 }: {
+  toastId: string
   message: string
   prompt: string
   commandBarSend: (
@@ -63,7 +65,7 @@ export function ToastTextToCadError({
           }}
           name="Dismiss"
           onClick={() => {
-            toast.dismiss()
+            toast.dismiss(toastId)
           }}
         >
           Dismiss
@@ -85,7 +87,7 @@ export function ToastTextToCadError({
                 },
               },
             })
-            toast.dismiss()
+            toast.dismiss(toastId)
           }}
         >
           Edit prompt
@@ -96,6 +98,7 @@ export function ToastTextToCadError({
 }
 
 export function ToastTextToCadSuccess({
+  toastId,
   data,
   navigate,
   context,
@@ -103,7 +106,7 @@ export function ToastTextToCadSuccess({
   fileMachineSend,
   settings,
 }: {
-  // TODO: update this type to match the actual data when API is done
+  toastId: string
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
   context: ReturnType<typeof useFileContext>['context']
@@ -265,7 +268,7 @@ export function ToastTextToCadSuccess({
                   },
                 })
               }
-              toast.dismiss()
+              toast.dismiss(toastId)
             }}
           >
             {hasCopied ? 'Close' : 'Reject'}
@@ -284,7 +287,7 @@ export function ToastTextToCadSuccess({
                     `${context.project.path}${sep()}${data.fileName}`
                   )}`
                 )
-                toast.dismiss()
+                toast.dismiss(toastId)
               }}
             >
               Accept

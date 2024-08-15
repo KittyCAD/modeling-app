@@ -461,7 +461,9 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 
-  test('can do many at once and get many prompts back, and interact with many', async ({ page }) => {
+  test('can do many at once and get many prompts back, and interact with many', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
 
     await page.setViewportSize({ width: 1000, height: 500 })

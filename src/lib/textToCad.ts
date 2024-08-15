@@ -91,6 +91,7 @@ export async function submitAndAwaitTextToKcl({
     toast.error(
       () =>
         ToastTextToCadError({
+          toastId,
           message,
           commandBarSend,
           prompt: trimmedPrompt,
@@ -214,6 +215,7 @@ export async function submitAndAwaitTextToKcl({
   toast.success(
     () =>
       ToastTextToCadSuccess({
+        toastId,
         data: textToCadOutputCreated,
         token,
         navigate,
