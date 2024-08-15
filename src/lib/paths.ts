@@ -6,6 +6,7 @@ import { parseProjectRoute, readAppSettingsFile } from './desktop'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { SaveSettingsPayload } from './settings/settingsTypes'
 import { err } from 'lib/trap'
+import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -43,8 +44,9 @@ export async function getProjectMetaByRouteId(
   if (!id) return undefined
 
   const onDesktop = isDesktop()
+  const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
-  if (configuration === undefined) {
+  if (configuration === undefined || isPlaywright) {
     configuration = onDesktop
       ? await readAppSettingsFile()
       : readLocalStorageAppSettingsFile()

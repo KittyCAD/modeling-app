@@ -17,7 +17,11 @@ import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
 import { APP_NAME, COOKIE_NAME } from 'lib/constants'
 import { secrets } from './secrets'
-import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
+import {
+  TEST_SETTINGS_KEY,
+  TEST_SETTINGS,
+  IS_PLAYWRIGHT_KEY,
+} from './storageStates'
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
@@ -631,22 +635,26 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 // but we'll be strict for now
 export async function setup(context: BrowserContext, page: Page) {
   await context.addInitScript(
-    async ({ token, settingsKey, settings }) => {
+    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
-      localStorage.setItem('playwright', 'true')
+      localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
     },
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
       settings: TOML.stringify({
-        ...TEST_SETTINGS,
-        app: {
-          ...TEST_SETTINGS.projects,
-          projectDirectory: TEST_SETTINGS.app.projectDirectory,
-        },
-      } as Partial<SaveSettingsPayload>),
+        settings: {
+          ...TEST_SETTINGS,
+          app: {
+            ...TEST_SETTINGS.projects,
+            projectDirectory: TEST_SETTINGS.app.projectDirectory,
+            onboardingStatus: 'dismissed',
+          },
+        } as Partial<SaveSettingsPayload>,
+      }),
+      IS_PLAYWRIGHT_KEY,
     }
   )
 

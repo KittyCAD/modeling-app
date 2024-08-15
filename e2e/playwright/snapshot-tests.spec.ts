@@ -7,7 +7,11 @@ import { spawn } from 'child_process'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
+import {
+  IS_PLAYWRIGHT_KEY,
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+} from './storageStates'
 import * as TOML from '@iarna/toml'
 
 test.beforeEach(async ({ page }) => {
@@ -16,16 +20,17 @@ test.beforeEach(async ({ page }) => {
 
   // set the default settings
   await page.addInitScript(
-    async ({ token, settingsKey, settings }) => {
+    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
-      localStorage.setItem('playwright', 'true')
+      localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
     },
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
       settings: TOML.stringify({ settings: TEST_SETTINGS }),
+      IS_PLAYWRIGHT_KEY: IS_PLAYWRIGHT_KEY,
     }
   )
 
