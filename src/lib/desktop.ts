@@ -378,7 +378,7 @@ export async function writeProjectSettingsFile(
 const MACOS_APP_NAME = 'dev.zoo.modeling-app'
 
 const getAppFolderName = () => {
-  if (window.electron.os.isMac) {
+  if (window.electron.os.isMac || window.electron.os.isWindows) {
     return MACOS_APP_NAME
   }
   return window.electron.packageJson.name
