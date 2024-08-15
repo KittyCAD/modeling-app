@@ -630,37 +630,22 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
-export async function setup(
-  context: BrowserContext,
-  page: Page,
-  overrideDirectory?: string
-) {
+export async function setup(context: BrowserContext, page: Page) {
   await context.addInitScript(
-    async ({
-      token,
-      settingsKey,
-      settings,
-      appSettingsFileKey,
-      appSettingsFileContent,
-    }) => {
+    async ({ token, settingsKey, settings }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
-      localStorage.setItem(appSettingsFileKey, appSettingsFileContent)
       localStorage.setItem('playwright', 'true')
     },
     {
       token: secrets.token,
-      appSettingsFileKey: TEST_SETTINGS_FILE_KEY,
-      appSettingsFileContent:
-        overrideDirectory || TEST_SETTINGS.app.projectDirectory,
       settingsKey: TEST_SETTINGS_KEY,
       settings: TOML.stringify({
         ...TEST_SETTINGS,
         app: {
           ...TEST_SETTINGS.projects,
-          projectDirectory:
-            overrideDirectory || TEST_SETTINGS.app.projectDirectory,
+          projectDirectory: TEST_SETTINGS.app.projectDirectory,
         },
       } as Partial<SaveSettingsPayload>),
     }
@@ -688,7 +673,14 @@ export async function setupElectron({
 
   await fsp.mkdir(projectDirName)
 
-  const electronApp = await electron.launch({ args: ['.', '--no-sandbox'] })
+  const electronApp = await electron.launch({
+    args: ['.', '--no-sandbox'],
+    env: {
+      ...process.env,
+      TEST_SETTINGS_FILE_KEY: projectDirName,
+      IS_PLAYWRIGHT: 'true',
+    },
+  })
   const context = electronApp.context()
   const page = await electronApp.firstWindow()
   context.on('console', console.log)
@@ -708,7 +700,7 @@ export async function setupElectron({
 
   await folderSetupFn?.(projectDirName)
 
-  await setup(context, page, projectDirName)
+  await setup(context, page)
 
   return { electronApp, page }
 }

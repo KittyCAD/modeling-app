@@ -3,6 +3,8 @@ import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'lib/machineManager'
 
+type EnvFn = (value?: string) => string
+
 export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
@@ -30,7 +32,9 @@ export interface IElectronAPI {
   }
   process: {
     env: {
-      BASE_URL: (value?: string) => string
+      BASE_URL: EnvFn
+      TEST_SETTINGS_FILE_KEY: EnvFn
+      IS_PLAYWRIGHT: EnvFn
     }
   }
   kittycad: (access: string, args: any) => any

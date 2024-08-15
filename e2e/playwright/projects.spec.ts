@@ -7,7 +7,7 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
-  'CRUD projects',
+  'Rename and delete projects, also spam arrow keys when renaming',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
     const { electronApp, page } = await setupElectron({
@@ -53,6 +53,8 @@ test(
       })
 
       expect(selectedText).toBe('router-template-slate')
+
+      await page.waitForTimeout(100)
 
       // type "updated project name"
       await page.keyboard.press('Backspace')

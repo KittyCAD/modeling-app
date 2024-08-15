@@ -1,7 +1,7 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import path from 'path'
 import fs from 'node:fs/promises'
-import packageJson from '../../package.json'
+import packageJson from '../package.json'
 import { components } from 'lib/machine-api'
 import { MachinesListing } from 'lib/machineManager'
 
@@ -26,16 +26,17 @@ const statIsDirectory = (path: string) =>
   stat(path).then((res) => res.isDirectory())
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
-const exposeProcessEnv = (varName: string) => {
-  return {
-    [varName](value?: string) {
+const exposeProcessEnvs = (varNames: Array<string>) => {
+  const envs: { [key: string]: (val?: string) => string } = {}
+  varNames.forEach((varName) => {
+    envs[varName] = (value?: string) => {
       if (value !== undefined) {
         process.env[varName] = value
-      } else {
-        return process.env[varName]
       }
-    },
-  }
+      return process.env[varName] || ''
+    }
+  })
+  return envs
 }
 
 const kittycad = (access: string, args: any) =>
@@ -81,7 +82,10 @@ contextBridge.exposeInMainWorld('electron', {
   process: {
     // Setter/getter has to be created because
     // these are read-only over the boundary.
-    env: Object.assign({}, exposeProcessEnv('BASE_URL')),
+    env: Object.assign(
+      {},
+      exposeProcessEnvs(['BASE_URL', 'TEST_SETTINGS_FILE_KEY', 'IS_PLAYWRIGHT'])
+    ),
   },
   kittycad,
   listMachines,

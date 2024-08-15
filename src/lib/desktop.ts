@@ -373,9 +373,10 @@ export async function writeProjectSettingsFile(
 }
 
 const getAppSettingsFilePath = async () => {
-  const isPlaywright = window.localStorage.getItem('playwright') === 'true'
-  const testSettingsPath =
-    window.localStorage.getItem(TEST_SETTINGS_FILE_KEY) ?? ''
+  const isPlaywright =
+    window.localStorage.getItem('playwright') === 'true' ||
+    window.electron.process.env.IS_PLAYWRIGHT()
+  const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY()
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isPlaywright
     ? testSettingsPath
@@ -443,15 +444,6 @@ export const readAppSettingsFile = async () => {
   }
   const configToml = await window.electron.readFile(settingsPath)
   const configObj = parseAppSettings(configToml)
-  const overrideJSON = localStorage.getItem('APP_SETTINGS_OVERRIDE')
-  if (overrideJSON) {
-    try {
-      const override = JSON.parse(overrideJSON)
-      configObj.app = { ...configObj.app, ...override }
-    } catch (e) {
-      console.error('Error parsing APP_SETTINGS_OVERRIDE:', e)
-    }
-  }
   return configObj
 }
 
