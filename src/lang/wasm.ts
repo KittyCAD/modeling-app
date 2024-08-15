@@ -334,9 +334,22 @@ export class ProgramMemory {
 }
 
 // TODO: In the future, make the parameter be a KclValue.
-export function sketchGroupFromKclValue(obj: any): SketchGroup | null {
+export function sketchGroupFromKclValue(
+  obj: any,
+  varName: string | null
+): SketchGroup | Error {
   if (obj?.value?.type === 'SketchGroup') return obj.value
-  return null
+  if (!varName) {
+    varName = 'a KCL value'
+  }
+  const actualType = obj?.value?.type ?? obj?.type
+  if (actualType) {
+    return new Error(
+      `Expected ${varName} to be a sketchGroup, but it ${actualType} instead.`
+    )
+  } else {
+    return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)
+  }
 }
 
 export const executor = async (

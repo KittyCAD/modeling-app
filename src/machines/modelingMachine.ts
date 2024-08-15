@@ -1189,9 +1189,10 @@ export const modelingMachine = createMachine(
         if (err(varDecNode)) return
         const sketchVar = varDecNode.node.declarations[0].id.name
         const sketchGroup = sketchGroupFromKclValue(
-          kclManager.programMemory.get(sketchVar)
+          kclManager.programMemory.get(sketchVar),
+          sketchVar
         )
-        if (!sketchGroup) return
+        if (trap(sketchGroup)) return
         const extrusion = getExtrusionFromSuspectedPath(
           sketchGroup.id,
           engineCommandManager.artifactGraph
