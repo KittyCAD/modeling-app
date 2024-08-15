@@ -1,6 +1,7 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
 
+import dotenv from 'dotenv'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import {
   app,
@@ -18,6 +19,15 @@ import fss from 'node:fs'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 import * as kittycad from '@kittycad/lib/import'
+
+
+// If it's not set, scream.
+const NODE_ENV = process.env.NODE_ENV
+if (!NODE_ENV) {
+  console.error("*FOX SCREAM* process.env.NODE_ENV is not explicitly set!")
+  process.exit(1)
+}
+dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -108,28 +118,7 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
-  // Open the system browser with the auth_uri.
-  // We do this in the browser and not a separate window because we want 1password and
-  // other crap to work well.
-  // TODO: find a better way to share this value with tauri e2e tests
-  // Here we're using an env var to enable the /tmp file (windows not supported for now)
-  // and bypass the shell::open call as it fails on GitHub Actions.
-  const e2e_tauri_enabled = process.env.E2E_TAURI_ENABLED
-  if (e2e_tauri_enabled) {
-    console.warn(
-      `E2E_TAURI_ENABLED is set, won't open ${handle.verification_uri_complete} externally`
-    )
-    let temp = '/tmp'
-    // Overwrite with Windows variable
-    if (process.env.TEMP) {
-      temp = process.env.TEMP
-    }
-    let tmpkcuc = path.join(temp, 'kittycad_user_code')
-    console.log(`Writing to ${tmpkcuc}`)
-    await fs.writeFile(tmpkcuc, handle.user_code)
-  } else {
-    shell.openExternal(handle.verification_uri_complete)
-  }
+  shell.openExternal(handle.verification_uri_complete)
 
   // Wait for the user to login.
   try {

@@ -8,6 +8,7 @@ import { components } from './machine-api'
 import { isDesktop } from './isDesktop'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { NODE_ENV } from 'env'
 
 import {
   defaultAppSettings,
@@ -373,12 +374,10 @@ export async function writeProjectSettingsFile(
 }
 
 const getAppSettingsFilePath = async () => {
-  const isPlaywright =
-    window.localStorage.getItem('playwright') === 'true' ||
-    window.electron.process.env.IS_PLAYWRIGHT()
-  const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY()
+  const isTestEnv = NODE_ENV === 'test'
+  const testSettingsPath = TEST_SETTINGS_FILE_KEY
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = isPlaywright
+  const fullPath = isTestEnv
     ? testSettingsPath
     : window.electron.path.join(appConfig, window.electron.packageJson.name)
   try {
@@ -489,7 +488,9 @@ export const getUser = async (
   if (baseurl !== DEFAULT_HOST) {
     // The TypeScript generated library uses environment variables for this
     // because it was intended for NodeJS.
-    window.electron.process.env.BASE_URL(baseurl)
+    // Needs to stay like this because window.electron.kittycad needs it
+    // internally.
+    window.electron.process.env.BASE_URL = baseurl
   }
 
   try {
@@ -498,8 +499,7 @@ export const getUser = async (
     })
     return user
   } catch (e) {
-    console.log('ERROR BRO')
     console.log(e)
   }
-  return Promise.reject(new Error('bad thing'))
+  return Promise.reject(new Error('unreachable'))
 }
