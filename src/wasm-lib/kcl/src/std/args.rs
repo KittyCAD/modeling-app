@@ -598,7 +598,6 @@ impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(SketchGroup);
-impl_from_arg_via_json!(SketchGroupSet);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);
@@ -608,6 +607,19 @@ impl_from_arg_via_json!(bool);
 
 impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
+
+impl<'a> FromKclValue<'a> for SketchGroupSet {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::UserVal(uv) = arg else {
+            return None;
+        };
+        if let Some((x, _meta)) = uv.get::<SketchGroup>() {
+            Some(SketchGroupSet::from(x))
+        } else {
+            uv.get::<Vec<SketchGroup>>().map(|x| x.0).map(SketchGroupSet::from)
+        }
+    }
+}
 
 impl<'a> FromKclValue<'a> for Box<ExtrudeGroup> {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
