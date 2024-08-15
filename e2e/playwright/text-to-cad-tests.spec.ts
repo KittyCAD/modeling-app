@@ -460,6 +460,44 @@ test.describe('Text-to-CAD tests', () => {
 
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
+
+  test('can do many at once and get many prompts back', async ({ page }) => {
+    const u = await getUtils(page)
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+
+    await sendPromptFromCommandBar(page, 'a 2x8 lego')
+
+    await sendPromptFromCommandBar(page, 'a 2x10 lego')
+
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage.first()).toBeVisible()
+
+    await page.waitForTimeout(5000)
+
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage.first()).toBeVisible()
+
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    // We should have three success toasts.
+    await expect(successToastMessage).toHaveCount(3)
+
+    await expect(page.getByText('Copied')).not.toBeVisible()
+
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+  })
 })
 
 async function sendPromptFromCommandBar(page: Page, promptStr: string) {
