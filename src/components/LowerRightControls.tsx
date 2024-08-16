@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
+import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 
 export function LowerRightControls({
   children,
@@ -24,10 +25,14 @@ export function LowerRightControls({
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
-  const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
+  const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
-  async function reportbug(event: { preventDefault: () => void }) {
+  async function reportbug(event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) {
     event?.preventDefault()
+    event?.stopPropagation()
 
     if (!coreDumpManager) {
       // open default reporting option
@@ -69,7 +74,7 @@ export function LowerRightControls({
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
         >
-          v{isPlayWright ? '11.22.33' : APP_VERSION}
+          v{isTestEnv ? '11.22.33' : APP_VERSION}
         </a>
         <a
           onClick={reportbug}
@@ -88,7 +93,7 @@ export function LowerRightControls({
         <Link
           to={
             location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_PROJECT
+              ? filePath + PATHS.SETTINGS + '?tab=project'
               : PATHS.HOME + PATHS.SETTINGS
           }
         >

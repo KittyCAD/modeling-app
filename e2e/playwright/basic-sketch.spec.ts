@@ -84,6 +84,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   } else {
     await page.waitForTimeout(500)
   }
+  await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
@@ -95,15 +96,16 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await page.getByRole('button', { name: 'Line', exact: true }).click()
-  await page.waitForTimeout(500)
+  await page.getByTestId('line').click()
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
   if (openPanes.includes('code')) {
-    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.WHITE)).toBeLessThan(3)
-    await expect(
-      await u.getGreatestPixDiff(line1, [249, 249, 249])
-    ).toBeLessThan(3)
+    await expect
+      .poll(async () => u.getGreatestPixDiff(line1, TEST_COLORS.WHITE))
+      .toBeLessThan(3)
+    await expect
+      .poll(() => u.getGreatestPixDiff(line1, [249, 249, 249]))
+      .toBeLessThan(3)
   }
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)

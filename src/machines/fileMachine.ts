@@ -4,7 +4,7 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 export const fileMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiAKwBGcQDoALACYAHAE4AzGoUA2JXK1yANCACeiabOmSlGpkqsqAvg6NpMuQiXIUASmABmAE5wRMxsSCDcfAJC4WIIWgpMMtpqkgrKalJa0kamCJIA7AUySgX6mkwK4gXVckpOLhjY+MRkYDIAEtRYpFxYfk2wFADCQXi82AOYocKRqPyCwnGSmbJa4ulKquJqcnriuYiaKsm2BSpVTAVyTOJyDSCuzR5tnd1TcD5gpHg4k00zcJzBYxUBxFRKWRKLS3XRqFSSHTVQ4IXRJAppRJWSr6erOR5NdytchvWD9QYjMYTcnTVizHjzaJLMyrGTrTbbXb7FF3E6SOSaNRMJhaLQFeEKB5PImedpdMkfIYAETAmGpH0BnAZIOZ+VZ7OUnL26xRui0MnE2WkpQxq0l+OlLVlpJpnwA8hxvq7NRFtUzYizxGsNoaVDtjQcTIh1JISsLMiLUlIrlLCU7XvLXUMAMpgXhYWCqsAECYQLAQVBBEtcALGH3A-1gsxpYoIla6BQqcUqbIo65JGF3LRCjSSJj3B1pl4k0ZgcZkKCuigQQTtMgANy4AGt2gQqWAALQaulAv2LAP5ZQnaoQuR3K5KJg5KMIeFJJSJfQFeM7NSQ1NuOmM5UguS5gAEAQ1jIHDoOMfg1jgMh7nOExHgCJ5alE55NnqloyBCWjqIo0iVJGeR2DImidgociIukOiEQBzzEu0vg-DgoEfMuq4yBu27tEE7GHseYSYYy2GiEcTBqPIVQ1FcEL8toKIJOaaQXPY2TWOIeKNIB06sd8vycU0FDgZBATQbBvDwQEiGCb8wnoaJvpYaCkmvp28gqD5kJ-lc-LQiif7mqKFwXNk8aVExMqvCqaomZg3EknxO4yBARaoSJ9JubqKx4SsNyWmkGgfkoPIQvhOg1AoRQ+TpkgxUB7TxXmiWUOZUEwXBCHpZlTm0i5DYScsmTFHopRPn+cg9oifZ3MkNp-to4iJloTUGTIvh4BWpCLoqyVrqQm5pWMEBoZgsD1me7lxHYMljpUNGJOKahin2dTyH+BR2J2w6WmoG0sVtc67ftFIrilx38TIZ0XXADCSENN26vdMiPekihXBo70vkmyQ2D5Qrik+BRA8621g1mZkQV11m2fZoPw1dGGueJt2IGjGPPdjb0FCi6QKPh4g9gK1G-qKTj4r0GXwOEjoGTl7O6gomgWtcVR3kVH6GC+B5QuUlphtJKhaxOenMc6ma9FmSs6hekiFLGyjfnUdwzQokjBV5ahlGUqSVPCYbmwS+nA5mip242HmOz9bKFEU7t3rVaimjcJSPoU1jSAUnviOTryzvOe2ulHI1mHcraclsOyiyoPLCnGthpDcGLrGTk5hxTRkcSXHxlxzCDKEktSa-eOk0aajslLstyu9J1j2hbsUkq1-B900A95ZX+HV35demtJBMTRCwqdpoBckpT7Vy2J9s4RsSgzyLiQRqTKJ7CcOtYtcqSFetndLavA9N8dqW8HY7whGGP8+99D1xfCoWwFodiijGrcT2eInBAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiACwAmADQgAnogAcANgCsAOnHiAjOICcAZh3K9TRQHYAvpdlpMuQiXIUASmABmAJzhFmbJCDcfAJCAWIIUrIKCHpq6nraipJJKorahqrWthjY+MRkYOoAEtRYpFxY7jmwFADC3ni82FWYfsJBqPyCwuG6hurKTAYG5mlSyeJRiHqS2prKg6Mj2pKz4lkgdrmOBcWlLXCuYKR4OM05bQEdXaGgvdpD6qPiioqqieJM2gaqUxELT3MQz0eleBlMhmUGy2Dny5D2sEq1TqDSaSNarHaPE6IR6iD6BgGQxGY1Wikm8gkQM0n2UknERm0qmUw2hOVhTkKJURBxq9TAjXOrW0-k42JueIQBKJw1GujJFOiqkkTE0X3M5mUuiYgxmbPseU5CPRhwAImBMGiDpcxcFumF8dptMp1GZRlqNYYdXo-ml1IlzMkHuZVAZJAY1PrtnCuftkQB5DjHE02wLi3EOqX6QmDWWkiZ-HSKf3gph6ZWqcwJIZRjm7bkmmoAZTAvCwsAtYAITQgWAgqG83a4njkqeuGbu+MkLPU7x+iiGszJfwj4ldTvB6UURh0klrht2-MaZCgWDwpF7XCTpBPJooEEEhTIADcuABrQoEVFgAC054gP5XscP7WpiVzpvak5SnO6hJD8RYfJ8ir4kw06zqoTDiMyTA4WGPz7js8JHvwpCnv+WBATepF3mAnieMO6gcOgjTuMOODqF+ApNH+F6AdeIEXGBto4pBoj4u8GjOiMqjiKMqhJFhfyVqqEbJIoCTkmk3wETG6huCcOC3gc96PuoL7voU3gGb+oGimmdq3GJCARuY8RMroEk6MMihKeWrpYepEZMKMSw6Ua+mnEZOQULR9GeIxzG8KxnjsVZpw2YJdnjqJ4QjK59KaoGLKhh6fyBpIsFgtqKjKuCYW7OalpRZgJnwuZH7qBAnbcbZWIOZKeXqAVyhFT8EbaOYK44f6kjlhYG6FVYNibOyB7wo1rbNZQsUMUxLFsZ13UZRiWUQY5uUakNskjdOY2lZSCAqhV24LlhHpMl89Xwm4eD9tRvKtU+pCvh1DQAbyY5nZKMwqZWwxqMorzltoZUrK6YbOlJoazIoX2FD9f2ngDD5tcDFnqGDAmYLADAin1InndMKrqD85jw8ySPvH8pgulqoYWEjc16HjekCoTjYxXRu2JclqVi1TcCQ-1mYwyzcMRhz6lcw9C56Cz4Yatd05ISLxFbYDZlkx1nGCgrSsM5KTJVgMMmjKkEYmAYfwrOkQ30i8WFSF8mTLTCa2FGb-3RTt8V7UlB02z1mX0xKmZMgu8R6C8YahqYwUow9TqBkNxXiLmUgGEyIsRYZUctSTQMg5ZxzpXbdPgcrUEuW57xYUyXkGD5D2Bhog9aKsLyzQywsbOUXXwAEYeEWAKcTk5P7KH8G+ujhuHDDJTJZ0t2QGsvxrlI2q85fiBhlgMZcQq8+iqDJ3OzAML2qCCqxDEkIsNryK+jMpSV1clIck3xB6ViLIWEwmhXiJF0EYIqptUS3nIpRLaQDHajAqvKCwqxEZTxkIXVChJNTqUDCkB4L9q4t1rkTHI2DMyRAeosIawxFxDESMoLCIsNokUYZgZhUF1IDGdK7LyWgX6TULqCIagYcKSHMAya6VdQ6rTPgTLaC9hKpygnSOY8FA7kj0J6WR0QISzn0J8IYN0tIi0TMcLBHcHZp1wf6cB5UiFZxIdEcEhJKyvQ9BqGSqCuIuL0WvXoHj8HeKSL472E0KrBRfrVRGL9cbWEsEAA */
     id: 'File machine',
 
     initial: 'Reading files',
@@ -29,7 +29,7 @@ export const fileMachine = createMachine(
       'Has no files': {
         on: {
           'Create file': {
-            target: 'Creating file',
+            target: 'Creating and opening file',
           },
         },
       },
@@ -40,9 +40,13 @@ export const fileMachine = createMachine(
             target: 'Renaming file',
           },
 
-          'Create file': {
-            target: 'Creating file',
-          },
+          'Create file': [
+            {
+              target: 'Creating and opening file',
+              cond: 'Is not silent',
+            },
+            'Creating file',
+          ],
 
           'Delete file': {
             target: 'Deleting file',
@@ -59,10 +63,10 @@ export const fileMachine = createMachine(
         },
       },
 
-      'Creating file': {
+      'Creating and opening file': {
         invoke: {
-          id: 'create-file',
-          src: 'createFile',
+          id: 'create-and-open-file',
+          src: 'createAndOpenFile',
           onDone: [
             {
               target: 'Reading files',
@@ -90,7 +94,9 @@ export const fileMachine = createMachine(
             {
               target: '#File machine.Reading files',
               actions: ['renameToastSuccess'],
+              cond: 'Name has been changed',
             },
+            'Reading files',
           ],
           onError: [
             {
@@ -147,6 +153,15 @@ export const fileMachine = createMachine(
       'Opening file': {
         entry: ['navigateToFile'],
       },
+
+      'Creating file': {
+        invoke: {
+          src: 'createFile',
+          id: 'create-file',
+          onDone: 'Reading files',
+          onError: 'Reading files',
+        },
+      },
     },
 
     schema: {
@@ -156,7 +171,15 @@ export const fileMachine = createMachine(
             type: 'Rename file'
             data: { oldName: string; newName: string; isDir: boolean }
           }
-        | { type: 'Create file'; data: { name: string; makeDir: boolean } }
+        | {
+            type: 'Create file'
+            data: {
+              name: string
+              makeDir: boolean
+              content?: string
+              silent?: boolean
+            }
+          }
         | { type: 'Delete file'; data: FileEntry }
         | { type: 'Set selected directory'; data: FileEntry }
         | { type: 'navigate'; data: { name: string } }
@@ -173,9 +196,15 @@ export const fileMachine = createMachine(
             }
           }
         | {
-            type: 'done.invoke.create-file'
+            type: 'done.invoke.create-and-open-file'
             data: {
               message: string
+              path: string
+            }
+          }
+        | {
+            type: 'done.invoke.create-file'
+            data: {
               path: string
             }
           }
@@ -195,6 +224,11 @@ export const fileMachine = createMachine(
       setSelectedDirectory: assign((_, event) => {
         return { selectedDirectory: event.data }
       }),
+    },
+    guards: {
+      'Name has been changed': (_, event) => {
+        return event.data.newPath !== event.data.oldPath
+      },
     },
   }
 )

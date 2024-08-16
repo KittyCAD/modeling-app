@@ -71,7 +71,7 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, trap } from 'lib/trap'
@@ -83,6 +83,9 @@ import {
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
+import { submitAndAwaitTextToKcl } from 'lib/textToCad'
+import { useFileContext } from 'hooks/useFileContext'
+import { PLAYWRIGHT_MOCK_EXPORT_DURATION } from 'lib/constants'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -108,6 +111,8 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const navigate = useNavigate()
+  const { context, send: fileMachineSend } = useFileContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -115,7 +120,7 @@ export const ModelingMachineProvider = ({
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -149,8 +154,6 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
-            // blocks entering a sketch until after exit sketch code has run
-            kclManager.isExecuting = true
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
@@ -391,10 +394,24 @@ export const ModelingMachineProvider = ({
             selection: { type: 'default_scene' },
           }
 
+          const mockExportDuration = window.localStorage.getItem(
+            PLAYWRIGHT_MOCK_EXPORT_DURATION
+          )
+
+          console.log('mockExportDuration', mockExportDuration)
+
+          // Artificially delay the export in playwright tests
           toast.promise(
-            exportFromEngine({
-              format: format,
-            }),
+            Promise.all([
+              exportFromEngine({
+                format: format,
+              }),
+              mockExportDuration
+                ? new Promise((resolve) =>
+                    setTimeout(resolve, Number(mockExportDuration))
+                  )
+                : Promise.resolve(),
+            ]),
             {
               loading: 'Starting print...',
               success: 'Started print successfully',
@@ -464,6 +481,23 @@ export const ModelingMachineProvider = ({
               error: 'Error while exporting',
             }
           )
+        },
+        'Submit to Text-to-CAD API': async (_, { data }) => {
+          const trimmedPrompt = data.prompt.trim()
+          if (!trimmedPrompt) return
+
+          void submitAndAwaitTextToKcl({
+            trimmedPrompt,
+            fileMachineSend,
+            navigate,
+            commandBarSend,
+            context,
+            token,
+            settings: {
+              theme: theme.current,
+              highlightEdges: highlightEdges.current,
+            },
+          })
         },
       },
       guards: {

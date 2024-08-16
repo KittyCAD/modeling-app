@@ -54,14 +54,17 @@ pub async fn execute_wasm(
     };
 
     let memory = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
+
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
+    // DO NOT USE serde_wasm_bindgen::to_value(&memory).map_err(|e| e.to_string())
+    // it will break the frontend.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn kcl_lint(program_str: &str) -> Result<JsValue, String> {
+pub async fn kcl_lint(program_str: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
@@ -536,7 +539,7 @@ pub fn default_project_settings() -> Result<JsValue, String> {
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
 }
 
-/// Parse the project settings.
+/// Parse (deserialize) the project settings.
 #[wasm_bindgen]
 pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
@@ -547,6 +550,20 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}
+
+/// Serialize the project settings.
+#[wasm_bindgen]
+pub fn serialize_project_settings(val: JsValue) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let config: kcl_lib::settings::types::Configuration = val.into_serde().map_err(|e| e.to_string())?;
+
+    let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    Ok(JsValue::from_str(&toml_str))
 }
 
 /// Parse the project route.
@@ -563,4 +580,27 @@ pub fn parse_project_route(configuration: &str, route: &str) -> Result<JsValue, 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&route).map_err(|e| e.to_string())
+}
+
+static ALLOWED_DECODING_FORMATS: &[data_encoding::Encoding] = &[
+    data_encoding::BASE64,
+    data_encoding::BASE64URL,
+    data_encoding::BASE64URL_NOPAD,
+    data_encoding::BASE64_MIME,
+    data_encoding::BASE64_NOPAD,
+];
+
+/// Base64 decode a string.
+#[wasm_bindgen]
+pub fn base64_decode(input: &str) -> Result<Vec<u8>, JsValue> {
+    console_error_panic_hook::set_once();
+
+    // Forgive alt base64 decoding formats
+    for config in ALLOWED_DECODING_FORMATS {
+        if let Ok(data) = config.decode(input.as_bytes()) {
+            return Ok(data);
+        }
+    }
+
+    Err(JsValue::from_str("Invalid base64 encoding"))
 }

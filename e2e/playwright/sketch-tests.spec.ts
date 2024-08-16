@@ -146,7 +146,7 @@ test.describe('Sketch tests', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(100)
 
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page.waitForTimeout(100)
 
     await page.mouse.click(700, 200)
@@ -725,7 +725,7 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content')).toHaveText(code)
       // Assert the tool was unequipped
       await expect(
-        page.getByRole('button', { name: 'Line', exact: true })
+        page.getByRole('button', { name: 'line Line', exact: true })
       ).not.toHaveAttribute('aria-pressed', 'true')
 
       // exit sketch

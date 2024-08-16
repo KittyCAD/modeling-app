@@ -61,7 +61,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     await page.waitForTimeout(300) // wait for animation
 
     await expect(
-      page.getByRole('button', { name: 'Line', exact: true })
+      page.getByRole('button', { name: 'line Line', exact: true })
     ).toBeVisible()
 
     // draw a line
@@ -72,7 +72,10 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page
+      .getByRole('button', { name: 'line Line', exact: true })
+      .first()
+      .click()
     await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')

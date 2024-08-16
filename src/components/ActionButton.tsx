@@ -1,4 +1,5 @@
 import { ActionIcon, ActionIconProps } from './ActionIcon'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import React, { ForwardedRef, forwardRef } from 'react'
 import { PATHS } from 'lib/paths'
 import { Link } from 'react-router-dom'
@@ -107,6 +108,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
           ref={ref as ForwardedRef<HTMLAnchorElement>}
           to={to || PATHS.INDEX}
           className={classNames}
+          onClick={openExternalBrowserIfDesktop(to as string)}
           {...rest}
           target="_blank"
         >

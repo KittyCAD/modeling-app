@@ -1,4 +1,4 @@
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useRouteError, isRouteErrorResponse } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
 import {
@@ -25,7 +25,7 @@ export const ErrorPage = () => {
           </p>
         )}
         <div className="flex justify-between gap-2 mt-6">
-          {isTauri() && (
+          {isDesktop() && (
             <ActionButton
               Element="link"
               to={'/'}

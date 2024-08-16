@@ -89,8 +89,6 @@ export const settingsMachine = createMachine(
           },
 
           'Set all settings': {
-            target: 'persisting settings',
-
             actions: [
               'setAllSettings',
               'setThemeClass',
