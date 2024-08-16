@@ -559,7 +559,7 @@ test(
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
       await page.getByTestId('app-logo').click()
 
-      await expect(page.getByText('mounting_braket')).toBeVisible()
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
       await expect(page.getByText('New Project')).toBeVisible()
     })
@@ -597,7 +597,7 @@ test(
       ).toBeVisible()
       await page.getByRole('button', { name: 'Go to Home' }).click()
 
-      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
       await expect(page.getByText('New Project')).toBeVisible()
     })
