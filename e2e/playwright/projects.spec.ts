@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { getUtils, setupElectron, tearDown } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
+import { join } from 'path'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
@@ -600,6 +601,67 @@ test(
       await expect(page.getByText('bracket')).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
       await expect(page.getByText('New Project')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'Search projects on desktop home',
+  { tag: '@electron' },
+  async ({ browserName: _ }, testInfo) => {
+    const projectData = [
+      ['basic bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['basic-cube', 'basic_fillet_cube_end.kcl'],
+      ['basic-cylinder', 'cylinder.kcl'],
+      ['router-template-slate', 'router-template-slate.kcl'],
+      ['Ancient Temple Block', 'lego.kcl'],
+    ]
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            join('src', 'wasm-lib', 'tests', 'executor', 'inputs', file),
+            join(dir, name, `main.kcl`)
+          )
+        }
+      },
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    // Our locator constants
+    const searchInput = page.getByPlaceholder('Search projects')
+    const projectLinks = page.getByTestId('project-link')
+
+    await test.step('Search for "basi"', async () => {
+      await searchInput.fill('basi')
+      await expect(projectLinks).toHaveCount(3)
+
+      // Chech each of the "basi" projects are visible
+      for (const [name] of projectData.slice(0, 3)) {
+        await expect(page.getByText(name)).toBeVisible()
+      }
+    })
+
+    await test.step('Clear search to see all projects', async () => {
+      await searchInput.fill('')
+      await expect(projectLinks).toHaveCount(projectData.length)
+    })
+
+    await test.step('Search for "templ"', async () => {
+      await searchInput.fill('templ')
+      await expect(projectLinks).toHaveCount(2)
+
+      // Check the "*templ*" project is visible
+      for (const [name] of projectData.slice(-2)) {
+        await expect(page.getByText(name)).toBeVisible()
+      }
     })
 
     await electronApp.close()
