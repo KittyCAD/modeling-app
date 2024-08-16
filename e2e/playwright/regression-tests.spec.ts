@@ -376,7 +376,7 @@ const sketch001 = startSketchAt([-0, -0])
       await test.step('The second export is blocked', async () => {
         // Find the toast.
         // Look out for the toast message
-        await expect(exportingToastMessage).toBeVisible()
+        await expect(exportingToastMessage.first()).toBeVisible()
         await expect(alreadyExportingToastMessage).toBeVisible()
 
         await page.waitForTimeout(1000)

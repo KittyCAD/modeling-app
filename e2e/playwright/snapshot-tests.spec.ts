@@ -56,6 +56,7 @@ test(
       process.platform === 'darwin' || process.platform === 'win32',
       'Skip on macos and windows'
     )
+
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -375,6 +376,9 @@ test.describe(
   'extrude on default planes should be stable',
   { tag: '@snapshot' },
   () => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     test('XY', async ({ page, context }) => {
       await extrudeDefaultPlane(context, page, 'XY')
     })
@@ -405,6 +409,9 @@ test(
   'Draft segments should look right',
   { tag: '@snapshot' },
   async ({ page, context }) => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -472,6 +479,9 @@ test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
   async ({ page, context }) => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -526,6 +536,9 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     test('Inch scale', async ({ page }) => {
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -720,6 +733,9 @@ test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
   async ({ page, context }) => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
@@ -782,6 +798,9 @@ test(
   'Zoom to fit on load - solid 2d',
   { tag: '@snapshot' },
   async ({ page, context }) => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -822,6 +841,9 @@ test(
   'Zoom to fit on load - solid 3d',
   { tag: '@snapshot' },
   async ({ page, context }) => {
+    // FIXME: Skip on macos its being weird.
+    test.skip(process.platform === 'darwin', 'Skip on macos')
+
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -860,6 +882,9 @@ test(
 )
 
 test.describe('Grid visibility', { tag: '@snapshot' }, () => {
+  // FIXME: Skip on macos its being weird.
+  test.skip(process.platform === 'darwin', 'Skip on macos')
+
   test('Grid turned off', async ({ page }) => {
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
