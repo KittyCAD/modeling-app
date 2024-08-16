@@ -236,7 +236,7 @@ const extrusion = extrude(5, sketch001)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -254,7 +254,7 @@ const extrusion = extrude(5, sketch001)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -445,7 +445,7 @@ const extrusion = extrude(5, sketch001)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -463,7 +463,7 @@ const extrusion = extrude(5, sketch001)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.

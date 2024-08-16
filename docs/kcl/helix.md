@@ -35,7 +35,7 @@ const part001 = startSketchOn('XY')
 	// Start angle (in degrees).
 	angleStart: number,
 	// Is the helix rotation counter clockwise? The default is `false`.
-	ccw: string,
+	ccw: bool,
 	// Length of the helix. If this argument is not provided, the height of the extrude group is used.
 	length: number,
 	// Number of revolutions.
@@ -282,7 +282,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -300,7 +300,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -677,7 +677,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -695,7 +695,7 @@ const part001 = startSketchOn('XY')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
