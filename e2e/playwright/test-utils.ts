@@ -52,7 +52,7 @@ async function waitForPageLoadWithRetry(page: Page) {
     })
 
     await expect(
-      page.getByRole('button', { name: 'Start Sketch' }),
+      page.getByRole('button', { name: 'sketch Start Sketch' }),
       errorMessage
     ).toBeEnabled({
       timeout: 20_000,
