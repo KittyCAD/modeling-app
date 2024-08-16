@@ -372,6 +372,18 @@ test(
     })
     const tutorialProjectIndicator = page.getByText('Tutorial Project 00')
     const tutorialModalText = page.getByText('Welcome to Modeling App!')
+    const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
+    const userMenuButton = page.getByTestId('user-sidebar-toggle')
+    const userMenuSettingsButton = page.getByRole('button', {
+      name: 'User settings',
+    })
+    const settingsHeading = page.getByRole('heading', {
+      name: 'Settings',
+      exact: true,
+    })
+    const restartOnboardingSettingsButton = page.getByRole('button', {
+      name: 'Replay onboarding',
+    })
 
     await test.step('Navigate into project', async () => {
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -395,6 +407,27 @@ test(
     })
 
     await test.step('Confirm that the onboarding has restarted', async () => {
+      await expect(tutorialProjectIndicator).toBeVisible()
+      await expect(tutorialModalText).toBeVisible()
+      await tutorialDismissButton.click()
+    })
+
+    await test.step('Clear code and restart onboarding from settings', async () => {
+      await u.openKclCodePanel()
+      await expect(u.codeLocator).toContainText('// Shelf Bracket')
+      await u.codeLocator.selectText()
+      await u.codeLocator.fill('')
+
+      await test.step('Navigate to settings', async () => {
+        await userMenuButton.click()
+        await userMenuSettingsButton.click()
+        await expect(settingsHeading).toBeVisible()
+        await expect(restartOnboardingSettingsButton).toBeVisible()
+      })
+
+      await restartOnboardingSettingsButton.click()
+      // Since the code is empty, we should not see the confirmation dialog
+      await expect(restartConfirmationButton).not.toBeVisible()
       await expect(tutorialProjectIndicator).toBeVisible()
       await expect(tutorialModalText).toBeVisible()
     })
