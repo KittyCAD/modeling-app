@@ -77,6 +77,7 @@
     "test:nowatch": "vitest run --mode development",
     "test:rust": "(cd src/wasm-lib && cargo test --all && cargo clippy --all --tests --benches)",
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",
+    "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages",
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages",
     "fetch:wasm": "./get-latest-wasm-bundle.sh",
