@@ -676,21 +676,25 @@ export async function setup(context: BrowserContext, page: Page) {
 export async function setupElectron({
   testInfo,
   folderSetupFn,
+  cleanProjectDir = true,
 }: {
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
+  cleanProjectDir?: boolean
 }) {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
   try {
-    if (fsSync.existsSync(projectDirName)) {
+    if (fsSync.existsSync(projectDirName) && cleanProjectDir) {
       await fsp.rm(projectDirName, { recursive: true })
     }
   } catch (e) {
     console.error(e)
   }
 
-  await fsp.mkdir(projectDirName)
+  if (cleanProjectDir) {
+    await fsp.mkdir(projectDirName)
+  }
 
   const electronApp = await electron.launch({
     args: ['.', '--no-sandbox'],
@@ -708,17 +712,19 @@ export async function setupElectron({
   context.on('console', console.log)
   page.on('console', console.log)
 
-  const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
-  const settingsOverrides = TOML.stringify({
-    ...TEST_SETTINGS,
-    settings: {
-      app: {
-        ...TEST_SETTINGS.app,
-        projectDirectory: projectDirName,
+  if (cleanProjectDir) {
+    const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+    const settingsOverrides = TOML.stringify({
+      ...TEST_SETTINGS,
+      settings: {
+        app: {
+          ...TEST_SETTINGS.app,
+          projectDirectory: projectDirName,
+        },
       },
-    },
-  })
-  await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
+    })
+    await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
+  }
 
   await folderSetupFn?.(projectDirName)
 
