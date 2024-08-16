@@ -48,6 +48,13 @@ export default defineConfig({
           /* Chromium is the only one with these permission types */
           permissions: ['clipboard-write', 'clipboard-read'],
         },
+        launchOptions: {
+          ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+            ? {
+                executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+              }
+            : {}),
+        },
       }, // or 'chrome-beta'
     },
     {

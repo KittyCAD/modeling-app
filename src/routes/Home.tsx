@@ -280,6 +280,7 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <Link
+              data-testid="project-directory-settings-link"
               to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >

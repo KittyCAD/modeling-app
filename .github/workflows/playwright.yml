@@ -33,14 +33,15 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  playwright-ubuntu:
+  playwright-chrome:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        os: [ubuntu-latest, windows-latest, macos-14]
+    runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -52,6 +53,7 @@ jobs:
         cache: 'yarn'
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
+      shell: bash
       run: yarn
     - name: Cache Playwright Browsers
       uses: actions/cache@v4
@@ -60,6 +62,7 @@ jobs:
           ~/.cache/ms-playwright/
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
+      shell: bash
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
@@ -74,6 +77,7 @@ jobs:
         path: src/wasm-lib/pkg
     - name: copy wasm blob
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      shell: bash
       run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
       continue-on-error: true
     - name: Setup Rust
@@ -88,7 +92,15 @@ jobs:
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
+    - name: install good sed
+      if:  ${{ startsWith(matrix.os, 'macos') }}
+      shell: bash
+      run: |
+        brew install gnu-sed
+        echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
     - name: Install vector
+      shell: bash
+      if:  ${{ !startsWith(matrix.os, 'windows') }}
       run: |
         curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
         chmod +x /tmp/vector.sh
@@ -104,13 +116,17 @@ jobs:
         ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
     - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      shell: bash
       run: yarn build:wasm
     - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
+      shell: bash
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
+      shell: bash
     - name: Run ubuntu/chrome snapshots
+      shell: bash
       run: |
         yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
@@ -121,17 +137,18 @@ jobs:
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-report-ubuntu-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
     - name: Clean up test-results
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       run: rm -r test-results
     - name: check for changes
+      shell: bash
       id: git-check
       run: |
           git add .
@@ -141,6 +158,7 @@ jobs:
           fi
     - name: Commit changes, if any
       if: steps.git-check.outputs.modified == 'true'
+      shell: bash
       run: |
         git add .
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -149,8 +167,7 @@ jobs:
         git fetch origin
         echo ${{ github.head_ref }}
         git checkout ${{ github.head_ref }}
-        # TODO when webkit works on ubuntu remove the os part of the commit message
-        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
+        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
         git push
         git push origin ${{ github.head_ref }}
     # only upload artifacts if there's actually changes
@@ -160,16 +177,16 @@ jobs:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
-    # if have previous run results, use them
     - uses: actions/download-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
-    - name: Run ubuntu/chrome flow (with retries)
+    - name: Run playwright/chrome flow (with retries)
       id: retry
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
       run: |
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
@@ -220,19 +237,19 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: send to axiom
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
@@ -240,158 +257,13 @@ jobs:
         overwrite: true
 
 
-  # playwright-macos:
-  #   timeout-minutes: 120
-  #   runs-on: macos-14
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       shardIndex: [1, 2, 3, 4]
-  #       shardTotal: [4]
-  #   needs: check-rust-changes
-  #   steps:
-  #   - name: Tune GitHub-hosted runner network
-  #     uses: smorimoto/tune-github-hosted-runner-network@v1
-  #   - uses: actions/checkout@v4
-  #   - uses: actions/setup-node@v4
-  #     with:
-  #       node-version-file: '.nvmrc'
-  #       cache: 'yarn'
-  #   - name: Install dependencies
-  #     run: yarn
-  #   - name: Cache Playwright Browsers
-  #     uses: actions/cache@v4
-  #     with:
-  #       path: |
-  #         ~/.cache/ms-playwright
-  #       key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
-  #       restore-keys: |
-  #         ${{ runner.os }}-playwright-
-  #   - name: Install Playwright Browsers
-  #     run: yarn playwright install --with-deps
-  #   - name: Download Wasm Cache
-  #     id: download-wasm
-  #     if: needs.check-rust-changes.outputs.rust-changed == 'false'
-  #     uses: dawidd6/action-download-artifact@v6
-  #     continue-on-error: true
-  #     with:
-  #       github_token: ${{secrets.GITHUB_TOKEN}}
-  #       name: wasm-bundle
-  #       workflow: build-and-store-wasm.yml
-  #       branch: main
-  #       path: src/wasm-lib/pkg
-  #   - name: copy wasm blob
-  #     if: needs.check-rust-changes.outputs.rust-changed == 'false'
-  #     run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
-  #     continue-on-error: true
-  #   - name: Setup Rust
-  #     uses: dtolnay/rust-toolchain@stable
-  #   - name: Cache Wasm (because rust diff)
-  #     if: needs.check-rust-changes.outputs.rust-changed == 'true'
-  #     uses: Swatinem/rust-cache@v2
-  #     with:
-  #       workspaces: './src/wasm-lib'
-  #   - name: OR Cache Wasm (because wasm cache failed)
-  #     if: steps.download-wasm.outcome == 'failure'
-  #     uses: Swatinem/rust-cache@v2
-  #     with:
-  #       workspaces: './src/wasm-lib'
-  #   - name: Install vector
-  #     run: |
-  #       curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
-  #       chmod +x /tmp/vector.sh
-  #       /tmp/vector.sh -y -no-modify-path
-  #       mkdir -p /tmp/vector
-  #       cp .github/workflows/vector.toml /tmp/vector.toml
-  #       sed -i "" "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
-  #       sed -i "" "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
-  #       sed -i "" "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
-  #       sed -i "" "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
-  #       sed -i "" "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
-  #       cat /tmp/vector.toml
-  #       ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
-  #   - name: Build Wasm (because rust diff)
-  #     if: needs.check-rust-changes.outputs.rust-changed == 'true'
-  #     run: yarn build:wasm
-  #   - name: OR Build Wasm (because wasm cache failed)
-  #     if: steps.download-wasm.outcome == 'failure'
-  #     run: yarn build:wasm
-  #   - name: build web
-  #     run: yarn build:local
-  #   # if have previous run results, use them
-  #   - uses: actions/download-artifact@v4
-  #     if: ${{ always() }}
-  #     continue-on-error: true
-  #     with:
-  #       name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}
-  #       path: test-results/
-  #   - name: Run macos/safari flow (with retries)
-  #     id: retry
-  #     if: always()
-  #     run: |
-  #       if [[ ! -f "test-results/.last-run.json" ]]; then
-  #           # if no last run artifact, than run plawright normally
-  #           echo "run playwright normally"
-  #           yarn playwright test --project="webkit" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert="@snapshot|@electron" || true
-  #           # # send to axiom
-  #           node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-  #       fi
-
-  #       retry=1
-  #       max_retrys=4
-
-  #       # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-  #       while [[ $retry -le $max_retrys ]]; do
-  #           if [[ -f "test-results/.last-run.json" ]]; then
-  #               failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-  #               if [[ $failed_tests -gt 0 ]]; then
-  #                   echo "retried=true" >>$GITHUB_OUTPUT
-  #                   echo "run playwright with last failed tests and retry $retry"
-  #                   yarn playwright test --project="webkit" --config=playwright.ci.config.ts --last-failed --grep-invert="@snapshot|@electron" || true
-  #                   # send to axiom
-  #                   node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-  #                   retry=$((retry + 1))
-  #               else
-  #                   echo "retried=false" >>$GITHUB_OUTPUT
-  #                   exit 0
-  #               fi
-  #           else
-  #               echo "retried=false" >>$GITHUB_OUTPUT
-  #               exit 0
-  #           fi
-  #       done
-
-  #       echo "retried=false" >>$GITHUB_OUTPUT
-
-  #       if [[ -f "test-results/.last-run.json" ]]; then
-  #           failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-  #           if [[ $failed_tests -gt 0 ]]; then
-  #               # if it still fails after 3 retrys, then fail the job
-  #               exit 1
-  #           fi
-  #       fi
-  #       exit 0
-  #     env:
-  #       CI: true
-  #       token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-  #   - uses: actions/upload-artifact@v4
-  #     if: ${{ always() }}
-  #     with:
-  #       name: test-results-macos-${{ matrix.shardIndex }}-${{ github.sha }}
-  #       path: test-results/
-  #       retention-days: 30
-  #       overwrite: true
-  #   - uses: actions/upload-artifact@v4
-  #     if: ${{ always() }}
-  #     with:
-  #       name: playwright-report-macos-${{ matrix.shardIndex }}-${{ github.sha }}
-  #       path: playwright-report/
-  #       retention-days: 30
-  #       overwrite: true
-
   playwright-electron:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -403,6 +275,7 @@ jobs:
         cache: 'yarn'
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
+      shell: bash
       run: yarn
     - name: Cache Playwright Browsers
       uses: actions/cache@v4
@@ -411,6 +284,7 @@ jobs:
           ~/.cache/ms-playwright/
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
+      shell: bash
       run: yarn playwright install chromium --with-deps
     - name: Download Wasm Cache
       id: download-wasm
@@ -425,6 +299,7 @@ jobs:
         path: src/wasm-lib/pkg
     - name: copy wasm blob
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      shell: bash
       run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
       continue-on-error: true
     - name: Setup Rust
@@ -439,7 +314,15 @@ jobs:
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
+    - name: install good sed
+      if:  ${{ startsWith(matrix.os, 'macos') }}
+      shell: bash
+      run: |
+        brew install gnu-sed
+        echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
     - name: Install vector
+      if:  ${{ !startsWith(matrix.os, 'windows') }}
+      shell: bash
       run: |
         curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
         chmod +x /tmp/vector.sh
@@ -455,26 +338,34 @@ jobs:
         ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
     - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      shell: bash
       run: yarn build:wasm
     - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
+      shell: bash
       run: yarn build:wasm
     - name: build electron
+      shell: bash
       run: yarn electron:package
     - uses: actions/download-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
         name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
     - name: Run electron tests (with retries)
       id: retry
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
       run: |
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            if [[ "$IS_UBUNTU" == "true" ]]; then
+              xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            else
+              yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            fi
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -489,7 +380,11 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
+                    if [[ "$IS_UBUNTU" == "true" ]]; then
+                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+                    else
+                      yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+                    fi
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
@@ -518,21 +413,22 @@ jobs:
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
+        IS_UBUNTU: ${{ startsWith(matrix.os, 'ubuntu') && 'true' || 'false' }}
         #DEBUG: 'pw:browser*'
     - name: send to axiom
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: test-results-electron-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-report-electron-${{ github.sha }}
         path: playwright-report/
