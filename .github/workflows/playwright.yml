@@ -91,7 +91,9 @@ jobs:
         workspaces: './src/wasm-lib'
     - name: install good sed
       if:  ${{ startsWith(matrix.os, 'macos') }}
-      run: brew install gnu-sed
+      run: |
+        brew install gnu-sed
+        echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
     - name: Install vector
       shell: bash
       if:  ${{ !startsWith(matrix.os, 'windows') }}
@@ -302,7 +304,9 @@ jobs:
         workspaces: './src/wasm-lib'
     - name: install good sed
       if:  ${{ startsWith(matrix.os, 'macos') }}
-      run: brew install gnu-sed
+      run: |
+        brew install gnu-sed
+        echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
     - name: Install vector
       if:  ${{ !startsWith(matrix.os, 'windows') }}
       shell: bash
