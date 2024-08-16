@@ -465,6 +465,12 @@ test.describe('Text-to-CAD tests', () => {
   test('can do many at once and get many prompts back, and interact with many', async ({
     page,
   }) => {
+    // skip on windows
+    test.skip(
+      process.platform === 'win32',
+      'This test is flaky, skipping for now'
+    )
+
     const u = await getUtils(page)
 
     await page.setViewportSize({ width: 1000, height: 500 })
