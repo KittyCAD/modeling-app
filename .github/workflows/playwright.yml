@@ -362,7 +362,11 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            $OPTIONAL_PLAYWRIGHT_ARGS yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            if [[ "$IS_UBUNTU" == "true" ]]; then
+              xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            else
+              yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            fi
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -377,7 +381,11 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    $OPTIONAL_PLAYWRIGHT_ARGS yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
+                    if [[ "$IS_UBUNTU" == "true" ]]; then
+                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+                    else
+                      yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+                    fi
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
@@ -406,7 +414,7 @@ jobs:
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
-        OPTIONAL_PLAYWRIGHT_ARGS: ${{ startsWith(matrix.os, 'ubuntu') && 'xvfb-run --auto-servernum --server-args=\"-screen 0 1280x960x24\" -- ' || '' }}
+        IS_UBUNTU: ${{ startsWith(matrix.os, 'ubuntu') && 'true' || 'false' }}
         #DEBUG: 'pw:browser*'
     - name: send to axiom
       if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
