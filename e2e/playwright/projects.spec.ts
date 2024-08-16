@@ -656,7 +656,7 @@ test(
         .inputValue()
 
       // Can't use Playwright filechooser since this is happening in electron.
-      electronApp.evaluate(
+      const handleFile = electronApp.evaluate(
         async ({ dialog }, filePaths) => {
           dialog.showOpenDialog = () =>
             Promise.resolve({ canceled: false, filePaths })
@@ -664,6 +664,7 @@ test(
         [newProjectDirName]
       )
       await page.getByTestId('project-directory-button').click()
+      await handleFile
 
       await expect(page.locator('section#projectDirectory input')).toHaveValue(
         newProjectDirName
@@ -686,7 +687,7 @@ test(
 
       await page.getByTestId('project-directory-settings-link').click()
 
-      electronApp.evaluate(
+      const handleFile = electronApp.evaluate(
         async ({ dialog }, filePaths) => {
           dialog.showOpenDialog = () =>
             Promise.resolve({ canceled: false, filePaths })
@@ -696,6 +697,7 @@ test(
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
 
       await page.getByTestId('project-directory-button').click()
+      await handleFile
 
       await expect(page.locator('section#projectDirectory input')).toHaveValue(
         originalProjectDirName
