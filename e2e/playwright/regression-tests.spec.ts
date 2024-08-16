@@ -3,10 +3,7 @@ import { test, expect, Page } from '@playwright/test'
 import { getUtils, setup, tearDown } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
-import {
-  PLAYWRIGHT_MOCK_EXPORT_DURATION,
-  PLAYWRIGHT_TOAST_DURATION,
-} from 'lib/constants'
+import { PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -229,127 +226,124 @@ const sketch001 = startSketchAt([-0, -0])
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
   })
-  // TODO fixme test fails on chrome (but okay on webkit)
-  test.fixme(
-    'when engine fails export we handle the failure and alert the user',
-    async ({ page }) => {
-      const u = await getUtils(page)
-      await page.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR)
 
-      await page.setViewportSize({ width: 1000, height: 500 })
+  test('when engine fails export we handle the failure and alert the user', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async (code) => {
+      localStorage.setItem('persistCode', code)
+    }, TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR)
 
-      await u.waitForAuthSkipAppStart()
+    await page.setViewportSize({ width: 1000, height: 500 })
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+    await u.waitForAuthSkipAppStart()
 
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-      // export the model
-      const exportButton = page.getByTestId('export-pane-button')
-      await expect(exportButton).toBeVisible()
+    // expect zero errors in guter
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      // Click the export button
-      await exportButton.click()
+    // export the model
+    const exportButton = page.getByTestId('export-pane-button')
+    await expect(exportButton).toBeVisible()
 
-      // Click the stl.
-      const stlOption = page.getByText('glTF')
-      await expect(stlOption).toBeVisible()
+    // Click the export button
+    await exportButton.click()
 
-      await page.keyboard.press('Enter')
+    // Click the stl.
+    const stlOption = page.getByText('glTF')
+    await expect(stlOption).toBeVisible()
 
-      // Click the checkbox
-      const submitButton = page.getByText('Confirm Export')
-      await expect(submitButton).toBeVisible()
+    await page.keyboard.press('Enter')
 
-      await page.keyboard.press('Enter')
+    // Click the checkbox
+    const submitButton = page.getByText('Confirm Export')
+    await expect(submitButton).toBeVisible()
 
-      // Find the toast.
-      // Look out for the toast message
-      const exportingToastMessage = page.getByText(`Exporting...`)
-      await expect(exportingToastMessage).toBeVisible()
+    await page.keyboard.press('Enter')
 
-      const errorToastMessage = page.getByText(`Error while exporting`)
-      await expect(errorToastMessage).toBeVisible()
+    // Find the toast.
+    // Look out for the toast message
+    const exportingToastMessage = page.getByText(`Exporting...`)
+    await expect(exportingToastMessage).toBeVisible()
 
-      const engineErrorToastMessage = page.getByText(`Nothing to export`)
-      await expect(engineErrorToastMessage).toBeVisible()
+    const errorToastMessage = page.getByText(`Error while exporting`)
+    await expect(errorToastMessage).toBeVisible()
 
-      // Make sure the exporting toast is gone
-      await expect(exportingToastMessage).not.toBeVisible()
+    const engineErrorToastMessage = page.getByText(`Nothing to export`)
+    await expect(engineErrorToastMessage).toBeVisible()
 
-      // Click the code editor
-      await page.locator('.cm-content').click()
+    // Make sure the exporting toast is gone
+    await expect(exportingToastMessage).not.toBeVisible()
 
-      await page.waitForTimeout(2000)
+    // Click the code editor
+    await page.locator('.cm-content').click()
 
-      // Expect the toast to be gone
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
+    await page.waitForTimeout(2000)
 
-      // Now add in code that works.
-      await page.locator('.cm-content').fill(bracket)
-      await page.keyboard.press('End')
-      await page.keyboard.press('Enter')
+    // Expect the toast to be gone
+    await expect(errorToastMessage).not.toBeVisible()
+    await expect(engineErrorToastMessage).not.toBeVisible()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.clearCommandLogs()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+    // Now add in code that works.
+    await page.locator('.cm-content').fill(bracket)
+    await page.keyboard.press('End')
+    await page.keyboard.press('Enter')
 
-      // Now try exporting
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.clearCommandLogs()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-      // Click the export button
-      await exportButton.click()
+    // Now try exporting
 
-      // Click the stl.
-      await expect(stlOption).toBeVisible()
+    // Click the export button
+    await exportButton.click()
 
-      await page.keyboard.press('Enter')
+    // Click the stl.
+    await expect(stlOption).toBeVisible()
 
-      // Click the checkbox
-      await expect(submitButton).toBeVisible()
+    await page.keyboard.press('Enter')
 
-      await page.keyboard.press('Enter')
+    // Click the checkbox
+    await expect(submitButton).toBeVisible()
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
+    await page.keyboard.press('Enter')
 
-      // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible()
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
+    // Find the toast.
+    // Look out for the toast message
+    await expect(exportingToastMessage).toBeVisible()
 
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
-    }
-  )
+    // Expect it to succeed.
+    await expect(exportingToastMessage).not.toBeVisible()
+    await expect(errorToastMessage).not.toBeVisible()
+    await expect(engineErrorToastMessage).not.toBeVisible()
+
+    const successToastMessage = page.getByText(`Exported successfully`)
+    await expect(successToastMessage).toBeVisible()
+  })
   test('ensure you can not export while an export is already going', async ({
     page,
   }) => {
     const u = await getUtils(page)
     await test.step('Set up the code and durations', async () => {
       await page.addInitScript(
-        async ({ code, toastDurationKey, exportDurationKey }) => {
+        async ({ code, toastDurationKey }) => {
           localStorage.setItem('persistCode', code)
           // Normally we make these durations short to speed up PW tests
           // to superhuman speeds. But in this case we want to make sure
           // the export toast is visible for a while, and the export
           // duration is long enough to make sure the export toast is visible
           localStorage.setItem(toastDurationKey, '1500')
-          localStorage.setItem(exportDurationKey, '750')
         },
         {
           code: bracket,
           toastDurationKey: PLAYWRIGHT_TOAST_DURATION,
-          exportDurationKey: PLAYWRIGHT_MOCK_EXPORT_DURATION,
         }
       )
 
