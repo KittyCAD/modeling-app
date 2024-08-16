@@ -137,7 +137,7 @@
     "@wdio/globals": "^8.36.0",
     "@wdio/local-runner": "^8.36.0",
     "@wdio/mocha-framework": "^8.36.0",
-    "@wdio/spec-reporter": "^8.36.0",
+    "@wdio/spec-reporter": "^9.0.0",
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.19",
     "d3-force": "^3.0.0",

@@ -2724,6 +2724,16 @@
     loglevel-plugin-prefix "^0.8.4"
     strip-ansi "^7.1.0"
 
+"@wdio/logger@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-9.0.0.tgz#f13ebacfce2903f31b8c6894bb152407de3cba79"
+  integrity sha512-DmmkVjxcCFUCFJVymca4/gQF4uTtevG4AF+jCzPUA4NByTnyjVtg8x83K0sG3/YX5SOxgc+JUhSdH8g5wceWSA==
+  dependencies:
+    chalk "^5.1.2"
+    loglevel "^1.6.0"
+    loglevel-plugin-prefix "^0.8.4"
+    strip-ansi "^7.1.0"
+
 "@wdio/mocha-framework@^8.36.0":
   version "8.38.2"
   resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-8.38.2.tgz#5174546406f435a696b301a3efc1ac4704c6d036"
@@ -2748,14 +2758,14 @@
   dependencies:
     "@types/node" "^20.1.0"
 
-"@wdio/reporter@8.38.2":
-  version "8.38.2"
-  resolved "https://registry.yarnpkg.com/@wdio/reporter/-/reporter-8.38.2.tgz#9daf7c442d233f9f0e225732285c9593a6e45ca9"
-  integrity sha512-R78UdAtAnkaV22NYlCCcbPPhmYweiDURiw64LYhlVIQrKNuXUQcafR2kRlWKy31rZc9thSLs5LzrZDReENUlFQ==
+"@wdio/reporter@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@wdio/reporter/-/reporter-9.0.0.tgz#02541f6afed17b72f430d4f0414399655a1e9f26"
+  integrity sha512-OW6rUpW4W4L1IXQgOcbBCYI2keKDW7o2/C/PcWPmCvlWq1BwNFPS3sD2BBFZjkcUjjhFNZQjoXXxe1/7S1g2Fg==
   dependencies:
     "@types/node" "^20.1.0"
-    "@wdio/logger" "8.38.0"
-    "@wdio/types" "8.38.2"
+    "@wdio/logger" "9.0.0"
+    "@wdio/types" "9.0.0"
     diff "^5.0.0"
     object-inspect "^1.12.0"
 
@@ -2776,21 +2786,28 @@
     webdriver "8.38.2"
     webdriverio "8.38.2"
 
-"@wdio/spec-reporter@^8.36.0":
-  version "8.38.2"
-  resolved "https://registry.yarnpkg.com/@wdio/spec-reporter/-/spec-reporter-8.38.2.tgz#703983f9f9279e9dcef9f5e95610fa63ca0fabc1"
-  integrity sha512-Dntk+lmrp+0I3HRRWkkXED+smshvgsW5cdLKwJhEJ1liI48MdBpdNGf9IHTVckE6nfxcWDyFI4icD9qYv/5bFA==
+"@wdio/spec-reporter@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@wdio/spec-reporter/-/spec-reporter-9.0.0.tgz#c2e6e81bcbdceddcbfff1113c6fa46f7697cade9"
+  integrity sha512-+9UGQLVxu7fuT2l2n1lnzJcQBvJtF/9qqvpKXKbko0+fPdXWeMvDl7aeoBZfOMUF08zFkyl+WQ9Y5eqplJQ4YA==
   dependencies:
-    "@wdio/reporter" "8.38.2"
-    "@wdio/types" "8.38.2"
+    "@wdio/reporter" "9.0.0"
+    "@wdio/types" "9.0.0"
     chalk "^5.1.2"
     easy-table "^1.2.0"
-    pretty-ms "^7.0.0"
+    pretty-ms "^9.0.0"
 
 "@wdio/types@8.38.2":
   version "8.38.2"
   resolved "https://registry.yarnpkg.com/@wdio/types/-/types-8.38.2.tgz#00d6874ced6bc2b081d3d0d43808f95861bb0705"
   integrity sha512-+wj1c1OSLdnN4WO5b44Ih4263dTl/eSwMGSI4/pCgIyXIuYQH38JQ+6WRa+c8vJEskUzboq2cSgEQumVZ39ozQ==
+  dependencies:
+    "@types/node" "^20.1.0"
+
+"@wdio/types@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@wdio/types/-/types-9.0.0.tgz#0bc2e3dcc3a718a9042779ecbf953f30882a9bc8"
+  integrity sha512-XDqIjNCw2ftWKXWn8vTqqZAMtjSxwJwO8IAEQczgRB0fUCvvipkeT3ZobT5Z4Mo5uvLLTaOqJxb4nwPXOfVt/A==
   dependencies:
     "@types/node" "^20.1.0"
 
@@ -6680,10 +6697,10 @@ parse-json@^7.0.0:
     lines-and-columns "^2.0.3"
     type-fest "^3.8.0"
 
-parse-ms@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-2.1.0.tgz#348565a753d4391fa524029956b172cb7753097d"
-  integrity sha512-kHt7kzLoS9VBZfUsiKjv43mr91ea+U05EyKkEtqp7vNbHxmaVuEqN7XxeEVnGrMtYOAxGrDElSi96K7EgO1zCA==
+parse-ms@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-4.0.0.tgz#c0c058edd47c2a590151a718990533fd62803df4"
+  integrity sha512-TXfryirbmq34y8QBwgqCVLi+8oA3oWx2eAnSn62ITyEhEYaWRlVZ2DvMM9eZbMs/RfxPu/PK/aBLyGj4IrqMHw==
 
 path-exists@^4.0.0:
   version "4.0.0"
@@ -6908,12 +6925,12 @@ pretty-format@^29.0.0, pretty-format@^29.7.0:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
-pretty-ms@^7.0.0:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-7.0.1.tgz#7d903eaab281f7d8e03c66f867e239dc32fb73e8"
-  integrity sha512-973driJZvxiGOQ5ONsFhOF/DtzPMOMtgC11kCpUrPGMTgqp2q/1gwzCquocrN33is0VZ5GFHXZYMM9l6h67v2Q==
+pretty-ms@^9.0.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-9.1.0.tgz#0ad44de6086454f48a168e5abb3c26f8db1b3253"
+  integrity sha512-o1piW0n3tgKIKCwk2vpM/vOV13zjJzvP37Ioze54YlTHE06m4tjEbzg9WsKkvTuyYln2DHjo5pY4qrZGI0otpw==
   dependencies:
-    parse-ms "^2.1.0"
+    parse-ms "^4.0.0"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
