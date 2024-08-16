@@ -90,11 +90,11 @@ jobs:
       with:
         workspaces: './src/wasm-lib'
     - name: install good sed
-      if: startsWith(matrix.os, 'macos')
+      if:  ${{ startsWith(matrix.os, 'macos') }}
       run: brew install gnu-sed
     - name: Install vector
       shell: bash
-      if: !startsWith(matrix.os, 'windows')
+      if:  ${{ !startsWith(matrix.os, 'windows') }}
       run: |
         curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
         chmod +x /tmp/vector.sh
@@ -227,7 +227,7 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: send to axiom
-      if: always() && !startsWith(matrix.os, 'windows')
+      if:  ${{ always() && !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
@@ -301,10 +301,10 @@ jobs:
       with:
         workspaces: './src/wasm-lib'
     - name: install good sed
-      if: startsWith(matrix.os, 'macos')
+      if:  ${{ startsWith(matrix.os, 'macos') }}
       run: brew install gnu-sed
     - name: Install vector
-      if: !startsWith(matrix.os, 'windows')
+      if:  ${{ !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
@@ -387,7 +387,7 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         #DEBUG: 'pw:browser*'
     - name: send to axiom
-      if: always() && !startsWith(matrix.os, 'windows')
+      if:  ${{ always() && !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
