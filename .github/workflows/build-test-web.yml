@@ -40,7 +40,7 @@ jobs:
       - run: yarn xstate:typegen
       - run: yarn tsc
       - name: Lint
-        run: yarn eslint --max-warnings 0 src
+        run: yarn eslint --max-warnings 0 src e2e
 
 
   check-typos:

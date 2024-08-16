@@ -602,7 +602,7 @@ test.describe('Sketch tests', () => {
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
-    click00r(undefined, undefined)
+    await click00r(undefined, undefined)
     await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')

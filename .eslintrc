@@ -25,6 +25,7 @@
         "files": ["e2e/**/*.ts"], // Update the pattern based on your file structure
         "rules": {
           "@typescript-eslint/no-floating-promises": "warn",
+          "suggest-no-throw/suggest-no-throw": "off",
           "testing-library/prefer-screen-queries": "off"
         }
       },
