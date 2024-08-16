@@ -406,7 +406,7 @@ jobs:
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
-        OPTIONAL_PLAYWRIGHT_ARGS: ${{ startsWith(matrix.os, 'ubuntu') && 'xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- ' || '' }}
+        OPTIONAL_PLAYWRIGHT_ARGS: ${{ startsWith(matrix.os, 'ubuntu') && 'xvfb-run --auto-servernum --server-args=\'-screen 0 1280x960x24\' -- ' || '' }}
         #DEBUG: 'pw:browser*'
     - name: send to axiom
       if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
