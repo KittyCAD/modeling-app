@@ -699,6 +699,9 @@ export async function setupElectron({
       TEST_SETTINGS_FILE_KEY: projectDirName,
       IS_PLAYWRIGHT: 'true',
     },
+    ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
+      ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
+      : {}),
   })
   const context = electronApp.context()
   const page = await electronApp.firstWindow()
