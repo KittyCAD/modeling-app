@@ -155,6 +155,7 @@
     "@vitest/web-worker": "^1.5.0",
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.19",
+    "d3-force": "^3.0.0",
     "electron": "^31.2.1",
     "eslint": "^8.0.1",
     "eslint-config-react-app": "^7.0.1",
