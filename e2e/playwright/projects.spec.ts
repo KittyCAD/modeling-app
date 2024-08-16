@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { getUtils, setupElectron, tearDown } from './test-utils'
 import fsp from 'fs/promises'
+import fs from 'fs'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
@@ -18,13 +19,16 @@ test(
           'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
           `${dir}/router-template-slate/main.kcl`
         )
+        const _1975 = new Date('1975-01-01T00:01:11')
+        fs.utimesSync(`${dir}/router-template-slate/main.kcl`, _1975, _1975)
 
-        await new Promise((r) => setTimeout(r, 1_000))
         await fsp.mkdir(`${dir}/bracket`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
           `${dir}/bracket/main.kcl`
         )
+        const _1985 = new Date('1985-01-01T00:02:22')
+        fs.utimesSync(`${dir}/bracket/main.kcl`, _1985, _1985)
 
         await new Promise((r) => setTimeout(r, 1_000))
         await fsp.mkdir(`${dir}/lego`, { recursive: true })
@@ -32,6 +36,8 @@ test(
           'src/wasm-lib/tests/executor/inputs/lego.kcl',
           `${dir}/lego/main.kcl`
         )
+        const _1995 = new Date('1995-01-01T00:03:33')
+        fs.utimesSync(`${dir}/lego/main.kcl`, _1995, _1995)
       },
     })
 
@@ -300,22 +306,24 @@ test(
           'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
           `${dir}/router-template-slate/main.kcl`
         )
+        const _1975 = new Date('1975-01-01T00:01:11')
+        fs.utimesSync(`${dir}/router-template-slate/main.kcl`, _1975, _1975)
 
-        // wait more than a second so the timestamp is different
-        await new Promise((r) => setTimeout(r, 1_200))
         await fsp.mkdir(`${dir}/bracket`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
           `${dir}/bracket/main.kcl`
         )
+        const _1985 = new Date('1985-01-01T00:02:22')
+        fs.utimesSync(`${dir}/bracket/main.kcl`, _1985, _1985)
 
-        // wait more than a second so the timestamp is different
-        await new Promise((r) => setTimeout(r, 1_200))
         await fsp.mkdir(`${dir}/lego`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/lego.kcl',
           `${dir}/lego/main.kcl`
         )
+        const _1995 = new Date('1995-01-01T00:03:33')
+        fs.utimesSync(`${dir}/lego/main.kcl`, _1995, _1995)
       },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
