@@ -559,9 +559,13 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.press('ControlOrMeta+a')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyA')
+    await page.keyboard.up(CtrlKey)
     await page.keyboard.press('Backspace')
-    await page.keyboard.press('ControlOrMeta+v')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
