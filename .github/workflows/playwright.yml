@@ -260,6 +260,7 @@ jobs:
 
   playwright-electron:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
     timeout-minutes: 30
