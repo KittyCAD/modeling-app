@@ -455,7 +455,10 @@ export async function getUtils(page: Page) {
         return page.evaluate('window.tearDown()')
       }
 
-      return cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+      return cdpSession?.send(
+        'Network.emulateNetworkConditions',
+        networkOptions
+      )
     },
   }
 }
