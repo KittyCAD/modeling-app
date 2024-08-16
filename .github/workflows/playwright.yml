@@ -140,6 +140,7 @@ jobs:
       continue-on-error: true
       run: rm -r test-results
     - name: check for changes
+      shell: bash
       id: git-check
       run: |
           git add .
@@ -149,6 +150,7 @@ jobs:
           fi
     - name: Commit changes, if any
       if: steps.git-check.outputs.modified == 'true'
+      shell: bash
       run: |
         git add .
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
