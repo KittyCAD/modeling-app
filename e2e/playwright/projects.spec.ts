@@ -633,8 +633,6 @@ test(
 
     page.on('console', console.log)
 
-    await page.waitForTimeout(1_000)
-
     // we'll grab this from the settings on screen before we switch
     let originalProjectDirName: string
     const newProjectDirName = testInfo.outputPath(
@@ -650,9 +648,7 @@ test(
         page.getByTestId('project-directory-settings-link')
       ).toBeVisible()
 
-      await page.waitForTimeout(100)
-
-      page.getByTestId('project-directory-settings-link').click()
+      await page.getByTestId('project-directory-settings-link').click()
 
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
       originalProjectDirName = await page
@@ -667,14 +663,13 @@ test(
         },
         [newProjectDirName]
       )
-      page.getByTestId('project-directory-button').click()
+      await page.getByTestId('project-directory-button').click()
 
       await expect(page.locator('section#projectDirectory input')).toHaveValue(
         newProjectDirName
       )
 
-      page.getByTestId('settings-close-button').click()
-      await page.waitForTimeout(100)
+      await page.getByTestId('settings-close-button').click()
 
       await expect(page.getByText('No Projects found')).toBeVisible()
       await page.getByRole('button', { name: 'New project' }).click()
@@ -689,7 +684,7 @@ test(
         page.getByTestId('project-directory-settings-link')
       ).toBeVisible()
 
-      page.getByTestId('project-directory-settings-link').click()
+      await page.getByTestId('project-directory-settings-link').click()
 
       electronApp.evaluate(
         async ({ dialog }, filePaths) => {
@@ -700,14 +695,13 @@ test(
       )
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
 
-      page.getByTestId('project-directory-button').click()
+      await page.getByTestId('project-directory-button').click()
 
       await expect(page.locator('section#projectDirectory input')).toHaveValue(
         originalProjectDirName
       )
 
-      page.getByTestId('settings-close-button').click()
-      await page.waitForTimeout(100)
+      await page.getByTestId('settings-close-button').click()
 
       await expect(page.getByText('bracket')).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
