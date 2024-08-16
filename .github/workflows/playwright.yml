@@ -33,14 +33,15 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  playwright-ubuntu:
+  playwright-chrome:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        os: [ubuntu-latest, windows-latest, macos-14]
+    runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
@@ -395,7 +396,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-14]
     timeout-minutes: 30
     runs-on: ${{ matrix.os }}
-    runs-on: ubuntu-latest
     needs: check-rust-changes
     steps:
     - name: Tune GitHub-hosted runner network
