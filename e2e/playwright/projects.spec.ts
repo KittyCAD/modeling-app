@@ -774,3 +774,46 @@ test(
     await electronApp.close()
   }
 )
+
+test(
+  'Settings persist across restarts',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    await test.step('We can change a user setting like theme', async () => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+      })
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      page.on('console', console.log)
+
+      await page.getByTestId('user-sidebar-toggle').click()
+
+      await page.getByTestId('user-settings').click()
+
+      await expect(page.getByTestId('app-theme')).toHaveValue('dark')
+
+      await page.getByTestId('app-theme').selectOption('light')
+
+      await electronApp.close()
+    })
+
+    await test.step('Starting the app again and we can see the same theme', async () => {
+      let { electronApp, page } = await setupElectron({
+        testInfo,
+        cleanProjectDir: false,
+      })
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      page.on('console', console.log)
+
+      await page.getByTestId('user-sidebar-toggle').click()
+
+      await page.getByTestId('user-settings').click()
+
+      await expect(page.getByTestId('app-theme')).toHaveValue('light')
+
+      await electronApp.close()
+    })
+  }
+)
