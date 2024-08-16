@@ -300,37 +300,40 @@ test(
   async ({ browserName }, testInfo) => {
     const { electronApp, page } = await setupElectron({
       testInfo,
-      folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
-        await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-          `${dir}/router-template-slate/main.kcl`
-        )
-        const _1975 = new Date('1975-01-01T00:01:11')
-        fs.utimesSync(`${dir}/router-template-slate/main.kcl`, _1975, _1975)
-
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
-        await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
-        )
-        const _1985 = new Date('1985-01-01T00:02:22')
-        fs.utimesSync(`${dir}/bracket/main.kcl`, _1985, _1985)
-
-        await fsp.mkdir(`${dir}/lego`, { recursive: true })
-        await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/lego.kcl',
-          `${dir}/lego/main.kcl`
-        )
-        const _1995 = new Date('1995-01-01T00:03:33')
-        fs.utimesSync(`${dir}/lego/main.kcl`, _1995, _1995)
-      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
 
     page.on('console', console.log)
+
+    const createProjectAndRenameIt = async (name: string) =>
+      test.step(`Create and rename project ${name}`, async () => {
+        await page.getByRole('button', { name: 'New project' }).click()
+        await expect(page.getByText('Successfully created')).toBeVisible()
+        await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+        await expect(page.getByText(`project-000`)).toBeVisible()
+        await page.getByText(`project-000`).hover()
+        await page.getByText(`project-000`).focus()
+
+        await page.getByLabel('sketch').first().click()
+
+        await page.waitForTimeout(100)
+
+        // type "updated project name"
+        await page.keyboard.press('Backspace')
+        await page.keyboard.type(name)
+
+        await page.getByLabel('checkmark').last().click()
+      })
+
+    // we need to create the folders so that the order is correct
+    // creating them ahead of time with fs tools means they all have the same timestamp
+    await createProjectAndRenameIt('router-template-slate')
+    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
+    await createProjectAndRenameIt('bracket')
+    await createProjectAndRenameIt('lego')
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
