@@ -166,7 +166,7 @@ interface RawProgramMemory {
  * in the future.
  */
 export class ProgramMemory {
-  private environments: Environment[]
+  environments: Environment[]
   private currentEnv: EnvironmentRef
   private return: KclValue | null
 
