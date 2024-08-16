@@ -450,7 +450,7 @@ test(
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
-      .getByRole('button', { name: 'Tangential Arc', exact: true })
+      .getByRole('button', { name: 'arc Tangential Arc', exact: true })
       .click()
 
     await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
@@ -501,7 +501,7 @@ test(
     const startXPx = 600
 
     // Equip the rectangle tool
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page
       .getByRole('button', { name: 'Corner rectangle', exact: true })
       .click()
@@ -568,7 +568,7 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await page
-        .getByRole('button', { name: 'Tangential Arc', exact: true })
+        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
       await page.waitForTimeout(100)
 
@@ -580,7 +580,7 @@ test.describe(
 
       // click tangential arc tool again to unequip it
       await page
-        .getByRole('button', { name: 'Tangential Arc', exact: true })
+        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
       await page.waitForTimeout(100)
 
@@ -671,7 +671,7 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await page
-        .getByRole('button', { name: 'Tangential Arc', exact: true })
+        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
       await page.waitForTimeout(100)
 
@@ -682,7 +682,7 @@ test.describe(
       await expect(u.codeLocator).toHaveText(code)
 
       await page
-        .getByRole('button', { name: 'Tangential Arc', exact: true })
+        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
       await page.waitForTimeout(100)
 

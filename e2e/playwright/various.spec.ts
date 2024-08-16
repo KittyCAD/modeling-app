@@ -598,10 +598,10 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
-  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'arrow right Continue' }).click()
   await page.waitForTimeout(100)
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
 const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
