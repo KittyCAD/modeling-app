@@ -31,6 +31,7 @@ test(
     page.on('console', console.log)
 
     await test.step('on open of project', async () => {
+      const fileChooserPromise = page.waitForEvent('filechooser')
       await expect(page.getByText(`bracket`)).toBeVisible()
 
       // open the project
@@ -59,7 +60,8 @@ test(
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
 
       // Click the export button
-      await exportButton.click()
+      await exportButton.click({ force: true })
+      await page.keyboard.press('Enter')
 
       await expect(gltfOption).toBeVisible()
       await expect(page.getByText('STL')).toBeVisible()
@@ -77,19 +79,20 @@ test(
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
 
+      const fileChooser = await fileChooserPromise
+      await fileChooser.setFiles('output.gltf')
+
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible()
       await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
       await expect(successToastMessage).toBeVisible()
+      await expect(exportingToastMessage).not.toBeVisible()
     })
 
     await test.step('on open of file in file pane', async () => {
-      await expect(
-        page.getByTestId('project-directory-settings-link')
-      ).toBeVisible()
+      const fileChooserPromise = page.waitForEvent('filechooser')
       // OPen the file pane
       await page.getByRole('button', { name: 'Project Files' }).click()
 
@@ -135,13 +138,16 @@ test(
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
 
+      const fileChooser = await fileChooserPromise
+      await fileChooser.setFiles('output.gltf')
+
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible()
       await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
       await expect(successToastMessage).toBeVisible()
+      await expect(exportingToastMessage).not.toBeVisible()
     })
 
     await electronApp.close()
