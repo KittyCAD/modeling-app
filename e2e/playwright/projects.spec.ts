@@ -608,6 +608,113 @@ test(
 )
 
 test(
+  'You can change the root projects directory and nothing is lost',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await Promise.all([
+          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
+          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+        ])
+        await Promise.all([
+          fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/router-template-slate/main.kcl`
+          ),
+          fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+            `${dir}/bracket/main.kcl`
+          ),
+        ])
+      },
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    // we'll grab this from the settings on screen before we switch
+    let originalProjectDirName: string
+    const newProjectDirName = testInfo.outputPath(
+      'electron-test-projects-dir-2'
+    )
+    if (fs.existsSync(newProjectDirName)) {
+      await fsp.rm(newProjectDirName, { recursive: true })
+    }
+
+    await test.step('We can change the root project directory', async () => {
+      // expect to see the project directory settings link
+      await expect(
+        page.getByTestId('project-directory-settings-link')
+      ).toBeVisible()
+
+      await page.getByTestId('project-directory-settings-link').click()
+
+      await expect(page.getByTestId('project-directory-button')).toBeVisible()
+      originalProjectDirName = await page
+        .locator('section#projectDirectory input')
+        .inputValue()
+
+      // Can't use Playwright filechooser since this is happening in electron.
+      const handleFile = electronApp.evaluate(
+        async ({ dialog }, filePaths) => {
+          dialog.showOpenDialog = () =>
+            Promise.resolve({ canceled: false, filePaths })
+        },
+        [newProjectDirName]
+      )
+      await page.getByTestId('project-directory-button').click()
+      await handleFile
+
+      await expect(page.locator('section#projectDirectory input')).toHaveValue(
+        newProjectDirName
+      )
+
+      await page.getByTestId('settings-close-button').click()
+
+      await expect(page.getByText('No Projects found')).toBeVisible()
+      await page.getByRole('button', { name: 'New project' }).click()
+      await expect(page.getByText('Successfully created')).toBeVisible()
+      await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+      await expect(page.getByText(`project-000`)).toBeVisible()
+    })
+
+    await test.step('We can change back to the original root project directory', async () => {
+      await expect(
+        page.getByTestId('project-directory-settings-link')
+      ).toBeVisible()
+
+      await page.getByTestId('project-directory-settings-link').click()
+
+      const handleFile = electronApp.evaluate(
+        async ({ dialog }, filePaths) => {
+          dialog.showOpenDialog = () =>
+            Promise.resolve({ canceled: false, filePaths })
+        },
+        [originalProjectDirName]
+      )
+      await expect(page.getByTestId('project-directory-button')).toBeVisible()
+
+      await page.getByTestId('project-directory-button').click()
+      await handleFile
+
+      await expect(page.locator('section#projectDirectory input')).toHaveValue(
+        originalProjectDirName
+      )
+
+      await page.getByTestId('settings-close-button').click()
+
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
   'Search projects on desktop home',
   { tag: '@electron' },
   async ({ browserName: _ }, testInfo) => {
