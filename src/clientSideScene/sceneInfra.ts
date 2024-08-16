@@ -309,7 +309,7 @@ export class SceneInfra {
 
     const textureLoader = new TextureLoader()
     this.extraSegmentTexture = textureLoader.load(
-      '/clientSideSceneAssets/extra-segment-texture.png'
+      './clientSideSceneAssets/extra-segment-texture.png'
     )
     this.extraSegmentTexture.anisotropy =
       this.renderer?.capabilities?.getMaxAnisotropy?.()

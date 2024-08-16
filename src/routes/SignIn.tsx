@@ -1,11 +1,10 @@
 import { ActionButton } from '../components/ActionButton'
-import { isTauri } from '../lib/isTauri'
+import { isDesktop } from '../lib/isDesktop'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
-import { login } from 'lib/tauri'
 
 const SignIn = () => {
   const {
@@ -25,10 +24,10 @@ const SignIn = () => {
       ? '-dark'
       : ''
 
-  const signInTauri = async () => {
+  const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
     try {
-      const token: string = await login(VITE_KC_API_BASE_URL)
+      const token: string = await window.electron.login(VITE_KC_API_BASE_URL)
       send({ type: 'Log in', token })
     } catch (error) {
       console.error('Error with login button', error)
@@ -40,7 +39,7 @@ const SignIn = () => {
       <div className="max-w-2xl mx-auto">
         <div>
           <img
-            src={`/zma-logomark${getLogoTheme()}.svg`}
+            src={`./zma-logomark${getLogoTheme()}.svg`}
             alt="Zoo Modeling App"
             className="w-48 inline-block"
           />
@@ -61,10 +60,10 @@ const SignIn = () => {
           ZMA is ready for production, please sign up for our mailing list at{' '}
           <a href="https://zoo.dev">zoo.dev</a>.
         </p>
-        {isTauri() ? (
+        {isDesktop() ? (
           <ActionButton
             Element="button"
-            onClick={signInTauri}
+            onClick={signInDesktop}
             iconStart={{ icon: 'arrowRight' }}
             className="w-fit mt-4"
             data-testid="sign-in-button"

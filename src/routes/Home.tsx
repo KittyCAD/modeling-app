@@ -1,10 +1,9 @@
 import { FormEvent, useEffect, useRef } from 'react'
-import { remove } from '@tauri-apps/plugin-fs'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-} from 'lib/tauriFS'
+} from 'lib/desktopFS'
 import { ActionButton } from 'components/ActionButton'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from 'components/AppHeader'
@@ -25,10 +24,9 @@ import {
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { join, sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
@@ -38,16 +36,16 @@ import {
   createNewProjectDirectory,
   listProjects,
   renameProjectDirectory,
-} from 'lib/tauri'
+} from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 
-// This route only opens in the Tauri desktop context for now,
-// as defined in Router.tsx, so we can use the Tauri APIs and types.
+// This route only opens in the desktop context for now,
+// as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
     settings: { context: settings },
   } = useSettingsAuthContext()
@@ -62,7 +60,7 @@ const Home = () => {
     e.preventDefault()
   })
   useHotkeys(
-    isTauri() ? 'mod+,' : 'shift+mod+,',
+    isDesktop() ? 'mod+,' : 'shift+mod+,',
     () => navigate(PATHS.HOME + PATHS.SETTINGS),
     {
       splitKey: '|',
@@ -82,7 +80,10 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          let projectPath = context.defaultDirectory + sep() + event.data.name
+          let projectPath =
+            context.defaultDirectory +
+            window.electron.path.sep +
+            event.data.name
           onProjectOpen(
             {
               name: event.data.name,
@@ -131,7 +132,7 @@ const Home = () => {
         }
 
         await renameProjectDirectory(
-          await join(context.defaultDirectory, oldName),
+          window.electron.path.join(context.defaultDirectory, oldName),
           name
         )
         return `Successfully renamed "${oldName}" to "${name}"`
@@ -140,9 +141,12 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await remove(await join(context.defaultDirectory, event.data.name), {
-          recursive: true,
-        })
+        await window.electron.rm(
+          window.electron.path.join(context.defaultDirectory, event.data.name),
+          {
+            recursive: true,
+          }
+        )
         return `Successfully deleted "${event.data.name}"`
       },
     },
@@ -276,7 +280,7 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <Link
-              to={`${PATHS.SETTINGS_USER}#projectDirectory`}
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >
               {settings.app.projectDirectory.current}

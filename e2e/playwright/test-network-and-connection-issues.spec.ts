@@ -198,7 +198,7 @@ test.describe('Test network and connection issues', () => {
     await page.waitForTimeout(150)
 
     // Click the line tool
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await page.waitForTimeout(150)
 
@@ -230,7 +230,7 @@ test.describe('Test network and connection issues', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     await expect(
-      page.getByRole('button', { name: 'Line', exact: true })
+      page.getByRole('button', { name: 'line Line', exact: true })
     ).not.toHaveAttribute('aria-pressed', 'true')
 
     // Exit sketch

@@ -2,7 +2,12 @@ import { cloneElement } from 'react'
 
 const CustomIconMap = {
   arc: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arc"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -12,7 +17,12 @@ const CustomIconMap = {
     </svg>
   ),
   angle: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="angle"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -22,7 +32,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowDown: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow down"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -32,7 +47,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowLeft: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow left"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -42,7 +62,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowRight: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow right"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -52,7 +77,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowRotateRight: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow rotate right"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -62,7 +92,12 @@ const CustomIconMap = {
     </svg>
   ),
   arrowUp: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow up"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -72,7 +107,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanExclude: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean exclude"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -82,7 +122,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanIntersect: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean intersect"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -92,7 +137,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanSubtract: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean subtract"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -102,7 +152,12 @@ const CustomIconMap = {
     </svg>
   ),
   booleanUnion: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="boolean union"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -112,7 +167,12 @@ const CustomIconMap = {
     </svg>
   ),
   bug: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="bug"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -132,7 +192,12 @@ const CustomIconMap = {
     </svg>
   ),
   checkmark: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="checkmark"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -142,7 +207,12 @@ const CustomIconMap = {
     </svg>
   ),
   caretDown: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="caret down"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -152,7 +222,12 @@ const CustomIconMap = {
     </svg>
   ),
   chamfer3d: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="chamfer 3d"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -162,7 +237,12 @@ const CustomIconMap = {
     </svg>
   ),
   circle: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="circle"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -172,7 +252,12 @@ const CustomIconMap = {
     </svg>
   ),
   clipboardCheckmark: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="clipboard checkmark"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -182,7 +267,12 @@ const CustomIconMap = {
     </svg>
   ),
   clipboardPlus: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="clipboard plus"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -192,7 +282,12 @@ const CustomIconMap = {
     </svg>
   ),
   close: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="close"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -202,7 +297,12 @@ const CustomIconMap = {
     </svg>
   ),
   code: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="code"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -212,7 +312,12 @@ const CustomIconMap = {
     </svg>
   ),
   dimension: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="dimension"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -232,7 +337,12 @@ const CustomIconMap = {
     </svg>
   ),
   equal: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="equal"
+    >
       <path
         d="M5 8.78V7H14.52V8.78H5ZM5 13.02V11.24H14.52V13.02H5Z"
         fill="currentColor"
@@ -240,7 +350,12 @@ const CustomIconMap = {
     </svg>
   ),
   exclamationMark: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="exclamation mark"
+    >
       <path
         d="M9.76391 11.6597L9.3633 7.91112V5.00671H10.6224V7.91112L10.2217 11.6597H9.76391ZM9.99283 15.1221C9.60176 15.1221 9.32515 15.041 9.163 14.8788C9.01039 14.7167 8.93408 14.5116 8.93408 14.2636V14.0061C8.93408 13.7581 9.01039 13.553 9.163 13.3909C9.32515 13.2287 9.60176 13.1476 9.99283 13.1476C10.3839 13.1476 10.6557 13.2287 10.8084 13.3909C10.9705 13.553 11.0516 13.7581 11.0516 14.0061V14.2636C11.0516 14.5116 10.9705 14.7167 10.8084 14.8788C10.6557 15.041 10.3839 15.1221 9.99283 15.1221Z"
         fill="currentColor"
@@ -248,7 +363,12 @@ const CustomIconMap = {
     </svg>
   ),
   exportFile: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="export file"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -258,7 +378,12 @@ const CustomIconMap = {
     </svg>
   ),
   extrude: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="extrude"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -268,7 +393,12 @@ const CustomIconMap = {
     </svg>
   ),
   fillet: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="fillet"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -284,7 +414,12 @@ const CustomIconMap = {
     </svg>
   ),
   fillet3d: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="fillet 3d"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -294,7 +429,12 @@ const CustomIconMap = {
     </svg>
   ),
   file: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="file"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -304,7 +444,12 @@ const CustomIconMap = {
     </svg>
   ),
   filePlus: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="file plus"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -314,7 +459,12 @@ const CustomIconMap = {
     </svg>
   ),
   floppyDiskArrow: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="floppy disk arrow"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -324,7 +474,12 @@ const CustomIconMap = {
     </svg>
   ),
   folder: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="folder"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -334,7 +489,12 @@ const CustomIconMap = {
     </svg>
   ),
   folderPlus: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="folder plus"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -344,7 +504,12 @@ const CustomIconMap = {
     </svg>
   ),
   gear: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gear"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -354,7 +519,12 @@ const CustomIconMap = {
     </svg>
   ),
   hole: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="hole"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -364,7 +534,12 @@ const CustomIconMap = {
     </svg>
   ),
   horizontal: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="horizontal"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -374,7 +549,12 @@ const CustomIconMap = {
     </svg>
   ),
   horizontalDash: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="horizontal Dash"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -384,7 +564,12 @@ const CustomIconMap = {
     </svg>
   ),
   'intersection-offset': (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="intersection offset"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -394,7 +579,12 @@ const CustomIconMap = {
     </svg>
   ),
   kcl: (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="kcl"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -404,7 +594,12 @@ const CustomIconMap = {
     </svg>
   ),
   keyboard: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="keyboard"
+    >
       <path
         d="M16 12V15H13.5M16 12V9M16 12H13.5M4 12V15H6.5M4 12V9M4 12H6.5M4 9V6H6.5M4 9H6.5M16 9V6H13.5M16 9H13.5M6.5 12V15M6.5 12H7.5M6.5 15H13.5M13.5 15V12M13.5 12H12.5M7.5 12V9M7.5 12H10M7.5 9H8.75M7.5 9H6.5M10 12V9M10 12H12.5M10 9H11.25M10 9H8.75M12.5 12V9M12.5 9H13.5M12.5 9H11.25M13.5 9V6M13.5 6H11.25M11.25 9V6M11.25 6H8.75M8.75 9V6M8.75 6H6.5M6.5 9V6"
         stroke="currentColor"
@@ -412,7 +607,12 @@ const CustomIconMap = {
     </svg>
   ),
   line: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="line"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -422,7 +622,12 @@ const CustomIconMap = {
     </svg>
   ),
   link: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="link"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -432,7 +637,12 @@ const CustomIconMap = {
     </svg>
   ),
   lockClosed: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="lock closed"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -442,7 +652,12 @@ const CustomIconMap = {
     </svg>
   ),
   lockOpen: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="lock open"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -452,7 +667,12 @@ const CustomIconMap = {
     </svg>
   ),
   loft: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="loft"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -462,7 +682,12 @@ const CustomIconMap = {
     </svg>
   ),
   'make-variable': (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="make variable"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -472,7 +697,12 @@ const CustomIconMap = {
     </svg>
   ),
   menu: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="menu"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -482,7 +712,12 @@ const CustomIconMap = {
     </svg>
   ),
   mirror: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="mirror"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -492,7 +727,12 @@ const CustomIconMap = {
     </svg>
   ),
   move: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="move"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -502,7 +742,12 @@ const CustomIconMap = {
     </svg>
   ),
   network: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="network"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -512,7 +757,12 @@ const CustomIconMap = {
     </svg>
   ),
   networkCrossedOut: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="network crossed out"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -522,7 +772,12 @@ const CustomIconMap = {
     </svg>
   ),
   parallel: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="parallel"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -532,7 +787,12 @@ const CustomIconMap = {
     </svg>
   ),
   person: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="person"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -542,7 +802,12 @@ const CustomIconMap = {
     </svg>
   ),
   plane: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="plane"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -552,7 +817,12 @@ const CustomIconMap = {
     </svg>
   ),
   plus: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="plus"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -562,7 +832,12 @@ const CustomIconMap = {
     </svg>
   ),
   printer3d: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="3D printer"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -572,7 +847,12 @@ const CustomIconMap = {
     </svg>
   ),
   polygon: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="polygon"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -582,7 +862,12 @@ const CustomIconMap = {
     </svg>
   ),
   questionMark: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="question mark"
+    >
       <path
         d="M9.12005 11.9172V9.67093C9.94034 9.63278 10.5842 9.45632 11.0515 9.14156C11.5189 8.81725 11.7526 8.3308 11.7526 7.6822V7.48189C11.7526 6.94775 11.5905 6.54714 11.2662 6.28007C10.9514 6.013 10.5174 5.87946 9.96419 5.87946C9.39189 5.87946 8.93405 6.03685 8.59067 6.35161C8.2473 6.66637 8.00884 7.06698 7.8753 7.55343L6.80225 7.15282C6.89763 6.83806 7.03116 6.54237 7.20285 6.26576C7.37454 5.97962 7.58915 5.73162 7.84669 5.52178C8.11376 5.31194 8.42375 5.14502 8.77667 5.02102C9.13912 4.89702 9.54927 4.83502 10.0071 4.83502C10.4649 4.83502 10.8751 4.90179 11.2375 5.03533C11.6095 5.15932 11.9243 5.34055 12.1818 5.57901C12.4394 5.80793 12.6397 6.08931 12.7827 6.42315C12.9258 6.75699 12.9974 7.12898 12.9974 7.53912C12.9974 7.98742 12.9163 8.38326 12.7541 8.72664C12.592 9.06048 12.3821 9.34663 12.1246 9.58508C11.8671 9.82354 11.5714 10.0191 11.2375 10.1717C10.9132 10.3148 10.5842 10.4149 10.2503 10.4721V11.9172H9.12005ZM9.73527 15.1221C9.3442 15.1221 9.06759 15.041 8.90544 14.8788C8.75282 14.7167 8.67652 14.5116 8.67652 14.2636V14.0061C8.67652 13.7581 8.75282 13.553 8.90544 13.3909C9.06759 13.2287 9.3442 13.1476 9.73527 13.1476C10.1263 13.1476 10.3982 13.2287 10.5508 13.3909C10.7129 13.553 10.794 13.7581 10.794 14.0061V14.2636C10.794 14.5116 10.7129 14.7167 10.5508 14.8788C10.3982 15.041 10.1263 15.1221 9.73527 15.1221Z"
         fill="currentColor"
@@ -590,7 +875,12 @@ const CustomIconMap = {
     </svg>
   ),
   rectangle: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="rectangle"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -600,7 +890,12 @@ const CustomIconMap = {
     </svg>
   ),
   refresh: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="refresh"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -610,7 +905,12 @@ const CustomIconMap = {
     </svg>
   ),
   revolve: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="revolve"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -620,7 +920,12 @@ const CustomIconMap = {
     </svg>
   ),
   search: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="search"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -630,7 +935,12 @@ const CustomIconMap = {
     </svg>
   ),
   settings: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="settings"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -640,7 +950,12 @@ const CustomIconMap = {
     </svg>
   ),
   shell: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="shell"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -650,7 +965,12 @@ const CustomIconMap = {
     </svg>
   ),
   sketch: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="sketch"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -670,7 +990,12 @@ const CustomIconMap = {
     </svg>
   ),
   spline: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="spline"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -680,7 +1005,12 @@ const CustomIconMap = {
     </svg>
   ),
   sweep: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="sweep"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -690,7 +1020,12 @@ const CustomIconMap = {
     </svg>
   ),
   tangent: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="tangent"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -700,7 +1035,12 @@ const CustomIconMap = {
     </svg>
   ),
   text: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="text"
+    >
       <path
         d="M12.3107 14.9933L11.5524 12.3321H8.37616L7.61786 14.9933H5.98682L8.90553 5.00671H11.0946L14.0133 14.9933H12.3107ZM10.0215 6.62345H9.90705L8.67661 11.0015H11.2519L10.0215 6.62345Z"
         fill="currentColor"
@@ -708,7 +1048,12 @@ const CustomIconMap = {
     </svg>
   ),
   'three-dots': (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="three-dots"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -718,7 +1063,12 @@ const CustomIconMap = {
     </svg>
   ),
   trash: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="trash"
+    >
       <path
         d="M8.5 6H5V8H6M8.5 6V4H11.5V6M8.5 6H11.5M11.5 6H15V8H14M6 8V15.5H8M6 8H14M14 8V15.5H12M8 15.5V10M8 15.5H10M12 15.5V10M12 15.5H10M10 15.5V12"
         stroke="currentColor"
@@ -726,7 +1076,12 @@ const CustomIconMap = {
     </svg>
   ),
   vertical: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="vertical"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -736,7 +1091,12 @@ const CustomIconMap = {
     </svg>
   ),
   xAbsolute: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="x-absolute"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -746,7 +1106,12 @@ const CustomIconMap = {
     </svg>
   ),
   xRelative: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="x-relative"
+    >
       <path
         d="M8.75069 6.82599C8.97469 6.78866 9.20803 6.79799 9.45069 6.85399C9.91736 6.95666 10.2627 7.17132 10.4867 7.49799C10.524 7.55399 10.552 7.58199 10.5707 7.58199L10.6547 7.46999C10.8787 7.20866 11.1447 7.01732 11.4527 6.89599C11.8074 6.76532 12.162 6.77932 12.5167 6.93799C12.7874 7.07799 12.9787 7.26466 13.0907 7.49799C13.2774 7.87132 13.282 8.26332 13.1047 8.67399C13.03 8.83266 12.9367 8.95399 12.8247 9.03799C12.4887 9.28066 12.1714 9.32732 11.8727 9.17799C11.8167 9.14999 11.77 9.11732 11.7327 9.07999C11.5927 8.93999 11.5367 8.76266 11.5647 8.54799C11.6207 8.12799 11.8354 7.85266 12.2087 7.72199L12.3207 7.67999L12.2647 7.62399C12.0967 7.47466 11.8914 7.43266 11.6487 7.49799C11.63 7.49799 11.6114 7.50266 11.5927 7.51199C11.3127 7.61466 11.0887 7.88532 10.9207 8.32399C10.8274 8.55732 10.58 9.54199 10.1787 11.278C10.132 11.4367 10.1087 11.5347 10.1087 11.572C10.062 11.8613 10.0667 12.0573 10.1227 12.16C10.1974 12.3 10.314 12.398 10.4727 12.454C10.5194 12.4727 10.6174 12.482 10.7667 12.482C10.9067 12.482 11.0094 12.4727 11.0747 12.454C11.3174 12.3793 11.56 12.23 11.8027 12.006C12.092 11.7073 12.2834 11.3807 12.3767 11.026C12.4047 10.9327 12.442 10.8813 12.4887 10.872C12.526 10.8627 12.61 10.858 12.7407 10.858C12.918 10.858 13.0207 10.8673 13.0487 10.886C13.0674 10.9047 13.0767 10.9373 13.0767 10.984C13.0767 11.18 12.9554 11.474 12.7127 11.866C12.7034 11.894 12.6894 11.9173 12.6707 11.936C12.2507 12.58 11.6954 12.9767 11.0047 13.126C10.79 13.1633 10.5474 13.1633 10.2767 13.126C9.80069 13.0233 9.44603 12.8133 9.21269 12.496L9.12869 12.37L9.08669 12.412C8.72269 12.8787 8.31203 13.126 7.85469 13.154C7.32269 13.182 6.92603 12.986 6.66469 12.566C6.60869 12.4913 6.56669 12.4073 6.53869 12.314C6.47336 12.1087 6.45469 11.8893 6.48269 11.656C6.54803 11.2547 6.73469 10.9793 7.04269 10.83C7.34136 10.69 7.60736 10.6853 7.84069 10.816C8.05536 10.9187 8.15336 11.1053 8.13469 11.376C8.10669 11.7493 7.93403 12.02 7.61669 12.188C7.57003 12.216 7.50469 12.244 7.42069 12.272L7.36469 12.286L7.40669 12.328C7.53736 12.4307 7.68669 12.482 7.85469 12.482C7.97603 12.4913 8.10203 12.4587 8.23269 12.384C8.47536 12.216 8.65736 11.9593 8.77869 11.614L9.54869 8.53399C9.61403 8.19799 9.62336 7.96466 9.57669 7.83399C9.53003 7.68466 9.40869 7.57732 9.21269 7.51199C9.02603 7.45599 8.83469 7.45599 8.63869 7.51199C8.36803 7.58666 8.13003 7.72666 7.92469 7.93199C7.65403 8.21199 7.45803 8.52466 7.33669 8.86999C7.30869 8.98199 7.28069 9.05199 7.25269 9.07999C7.23403 9.09866 7.13603 9.10799 6.95869 9.10799H6.69269L6.65069 9.06599C6.62269 9.03799 6.60869 9.00066 6.60869 8.95399C6.63669 8.81399 6.69269 8.65532 6.77669 8.47799C6.86069 8.28199 6.96803 8.09532 7.09869 7.91799C7.24803 7.69399 7.45336 7.48399 7.71469 7.28799C7.72403 7.27866 7.73803 7.26932 7.75669 7.25999C8.06469 7.04532 8.39603 6.90066 8.75069 6.82599Z"
         fill="currentColor"
@@ -754,7 +1119,12 @@ const CustomIconMap = {
     </svg>
   ),
   yAbsolute: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="y-absolute"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -764,7 +1134,12 @@ const CustomIconMap = {
     </svg>
   ),
   yRelative: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="y-relative"
+    >
       <path
         d="M7.92463 6.83998C8.1113 6.79332 8.33063 6.79798 8.58263 6.85398C9.05863 6.98465 9.36197 7.26932 9.49263 7.70798C9.52997 7.86665 9.52997 8.06732 9.49263 8.30998C9.47397 8.37532 9.40397 8.56665 9.28263 8.88399C8.94663 9.78932 8.7273 10.4847 8.62463 10.97C8.52197 11.5953 8.57797 12.0293 8.79263 12.272C8.9513 12.4587 9.1753 12.5287 9.46463 12.482C9.88463 12.426 10.2533 12.174 10.5706 11.726L10.6546 11.6L11.1586 9.54198C11.5133 8.15132 11.7046 7.43265 11.7326 7.38598C11.882 7.11532 12.106 6.97532 12.4046 6.96598C12.554 6.96598 12.68 7.00798 12.7826 7.09198C12.8293 7.11065 12.8713 7.16198 12.9086 7.24598C12.9553 7.33932 12.9646 7.45598 12.9366 7.59598C12.9086 7.73598 12.6846 8.65532 12.2646 10.354C11.742 12.3887 11.49 13.3733 11.5086 13.308C11.4153 13.6067 11.2753 13.882 11.0886 14.134C10.566 14.9273 9.8753 15.4593 9.01663 15.73C8.60597 15.87 8.20463 15.912 7.81263 15.856C7.11263 15.7533 6.67397 15.436 6.49663 14.904C6.4593 14.6987 6.46397 14.5073 6.51063 14.33C6.56663 14.0967 6.6833 13.91 6.86063 13.77C7.19663 13.5273 7.51397 13.4807 7.81263 13.63C7.92463 13.6953 8.00863 13.784 8.06463 13.896C8.1673 14.12 8.14863 14.3627 8.00863 14.624C7.9153 14.8013 7.7893 14.932 7.63063 15.016L7.54663 15.072L7.61663 15.1C7.98063 15.2587 8.3633 15.2587 8.76463 15.1C9.26863 14.8947 9.68863 14.442 10.0246 13.742C10.09 13.5927 10.1506 13.4433 10.2066 13.294C10.3186 12.9673 10.3653 12.7993 10.3466 12.79C10.3373 12.79 10.3046 12.8087 10.2486 12.846C10.1086 12.93 9.9593 13 9.80063 13.056C9.2873 13.2333 8.75997 13.2007 8.21863 12.958C8.08797 12.902 7.9713 12.832 7.86863 12.748C7.44863 12.412 7.26663 11.8987 7.32263 11.208C7.35997 10.7507 7.5793 9.98065 7.98063 8.89798C7.98997 8.86065 7.9993 8.82798 8.00863 8.79998C8.1393 8.47332 8.2093 8.27732 8.21863 8.21198C8.33063 7.89465 8.34463 7.67532 8.26063 7.55398C8.2233 7.49798 8.14863 7.46998 8.03663 7.46998C7.6353 7.50732 7.30397 7.84798 7.04263 8.49198C6.99597 8.60398 6.95397 8.72532 6.91663 8.85598C6.86997 9.00532 6.83263 9.08465 6.80463 9.09398C6.7953 9.10332 6.6973 9.10798 6.51063 9.10798H6.25863L6.21663 9.06598C6.16997 9.02865 6.17463 8.93065 6.23063 8.77198C6.40797 8.17465 6.67863 7.70332 7.04263 7.35798C7.30397 7.08732 7.59797 6.91465 7.92463 6.83998Z"
         fill="currentColor"

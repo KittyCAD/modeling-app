@@ -1,12 +1,7 @@
 import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
-import { isTauri } from 'lib/isTauri'
-import {
-  platform as tauriPlatform,
-  arch as tauriArch,
-  version as tauriKernelVersion,
-} from '@tauri-apps/plugin-os'
+import { isDesktop } from 'lib/isDesktop'
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
@@ -75,16 +70,15 @@ export class CoreDumpManager {
   }
 
   // Get the os information.
-  getOsInfo(): Promise<string> {
-    if (this.isTauri()) {
+  getOsInfo(): string {
+    if (this.isDesktop()) {
       const osinfo: OsInfo = {
-        platform: tauriPlatform(),
-        arch: tauriArch(),
-        browser: 'tauri',
-        version: tauriKernelVersion(),
+        platform: window.electron.platform ?? null,
+        arch: window.electron.arch ?? null,
+        browser: 'desktop',
+        version: window.electron.version ?? null,
       }
-      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
-      // TODO: get rid of promises now that the tauri api doesn't require them anymore
+      return JSON.stringify(osinfo)
     }
 
     const userAgent = window.navigator.userAgent || 'unknown browser'
@@ -95,7 +89,7 @@ export class CoreDumpManager {
         version: userAgent,
         browser: userAgent,
       }
-      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+      return JSON.stringify(osinfo)
     }
 
     const parser = new UAParser(userAgent)
@@ -106,11 +100,11 @@ export class CoreDumpManager {
       version: parserResults.os.version || userAgent,
       browser: userAgent,
     }
-    return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+    return JSON.stringify(osinfo)
   }
 
-  isTauri(): boolean {
-    return isTauri()
+  isDesktop(): boolean {
+    return isDesktop()
   }
 
   getWebrtcStats(): Promise<string> {
