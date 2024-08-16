@@ -139,7 +139,9 @@ export const parse = (code: string | Error): Program | Error => {
 
 export type PathToNode = [string | number, string][]
 
-type Memory = Map<string, KclValue>
+interface Memory {
+  [key: string]: KclValue
+}
 
 type EnvironmentRef = number
 
@@ -151,7 +153,7 @@ interface Environment {
 }
 
 function emptyEnvironment(): Environment {
-  return { bindings: new Map(), parent: null }
+  return { bindings: {}, parent: null }
 }
 
 interface RawProgramMemory {
@@ -166,7 +168,7 @@ interface RawProgramMemory {
  * in the future.
  */
 export class ProgramMemory {
-  environments: Environment[]
+  private environments: Environment[]
   private currentEnv: EnvironmentRef
   private return: KclValue | null
 
@@ -217,9 +219,9 @@ export class ProgramMemory {
     let envRef = this.currentEnv
     while (true) {
       const env = this.environments[envRef]
-      const val = env.bindings.get(name)
-      if (val) return val
-
+      if (env.bindings.hasOwnProperty(name)) {
+        return env.bindings[name]
+      }
       if (!env.parent) {
         break
       }
@@ -233,7 +235,7 @@ export class ProgramMemory {
       return new Error('No environment to set memory in')
     }
     const env = this.environments[this.currentEnv]
-    env.bindings.set(name, value)
+    env.bindings[name] = value
     return null
   }
 
@@ -266,7 +268,7 @@ export class ProgramMemory {
           continue
         }
         // Deep copy.
-        bindings.set(name, structuredClone(value))
+        bindings[name] = structuredClone(value)
       }
       environments.push({ bindings, parent: env.parent })
     }
