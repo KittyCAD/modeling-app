@@ -104,7 +104,7 @@ export function useSetupEngineManager(
   }, [immediateState])
 
   useEffect(() => {
-    engineCommandManager.settings.theme = settings.theme
+    engineCommandManager.settings = settings
 
     const handleResize = deferExecution(() => {
       const { width, height } = getDimensions(
@@ -194,13 +194,7 @@ export function useSetupEngineManager(
     // Engine relies on many settings so we should rebind events when it changes
     // We have to list out the ones we care about because the settings object holds
     // non-settings too...
-  }, [
-    settings.enableSSAO,
-    settings.highlightEdges,
-    settings.showScaleGrid,
-    settings.theme,
-    settings.pool,
-  ])
+  }, [...Object.values(settings)])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {

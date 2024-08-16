@@ -3,10 +3,11 @@ import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { createAndOpenNewProject } from 'lib/tauriFS'
 import { PATHS } from 'lib/paths'
+import { createAndOpenNewProject } from 'lib/desktopFS'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -141,6 +142,9 @@ function HelpMenuItem({
       {as === 'a' ? (
         <a
           {...(props as React.ComponentProps<'a'>)}
+          onClick={openExternalBrowserIfDesktop(
+            (props as React.ComponentProps<'a'>).href
+          )}
           className={`no-underline text-inherit ${baseClassName} ${className}`}
         >
           {children}

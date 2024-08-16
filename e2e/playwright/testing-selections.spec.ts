@@ -77,7 +77,7 @@ test.describe('Testing selections', () => {
     |> line([-${commonPoints.num2}, 0], %)`)
 
     // deselect line tool
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await u.closeDebugPanel()
     const selectionSequence = async () => {
@@ -782,9 +782,9 @@ const extrude001 = extrude(50, sketch001)
 
     const nothing = { x: 946, y: 229 }
 
-    expect(await u.getGreatestPixDiff(extrudeWall, noHoverColor)).toBeLessThan(
-      5
-    )
+    await expect
+      .poll(() => u.getGreatestPixDiff(extrudeWall, noHoverColor))
+      .toBeLessThan(5)
     await page.mouse.move(nothing.x, nothing.y)
     await page.waitForTimeout(100)
     await page.mouse.move(extrudeWall.x, extrudeWall.y)
@@ -964,7 +964,7 @@ const extrude001 = extrude(50, sketch001)
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
     // deselect the line tool by clicking it
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await page.mouse.click(700, 200)
     await page.waitForTimeout(100)
@@ -977,7 +977,7 @@ const extrude001 = extrude(50, sketch001)
     await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
 
     // select line tool again
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await u.closeDebugPanel()
 

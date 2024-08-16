@@ -10,10 +10,10 @@ import { ContextFrom, EventData, EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
-import { isTauri } from './isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { Themes } from './theme'
 import { commandBarMachine } from 'machines/commandBarMachine'
-import { getNextFileName } from './tauriFS'
+import { getNextFileName } from './desktopFS'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -187,16 +187,14 @@ export async function submitAndAwaitTextToKcl({
         .replace(/\W/gi, '-')
         .toLowerCase()}${FILE_EXT}`
 
-      if (isTauri()) {
+      if (isDesktop()) {
         // We have to pre-emptively run our unique file name logic,
         // so that we can pass the unique file name to the toast,
         // and by extension the file-deletion-on-reject logic.
-        newFileName = (
-          await getNextFileName({
-            entryName: newFileName,
-            baseDir: context.selectedDirectory.path,
-          })
-        ).name
+        newFileName = getNextFileName({
+          entryName: newFileName,
+          baseDir: context.selectedDirectory.path,
+        }).name
 
         fileMachineSend({
           type: 'Create file',
