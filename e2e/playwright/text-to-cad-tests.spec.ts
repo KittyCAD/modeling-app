@@ -70,7 +70,8 @@ test.describe('Text-to-CAD tests', () => {
     await u.closeDebugPanel()
 
     // Find the toast close button.
-    const closeButton = page.getByRole('status')
+    const closeButton = page
+      .getByRole('status')
       .locator('div')
       .filter({ hasText: 'Text-to-CAD successfulPrompt' })
       .first()
@@ -532,7 +533,8 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(`2x8`)
 
     // Find the toast close button.
-    const closeButton = page.getByRole('status')
+    const closeButton = page
+      .getByRole('status')
       .locator('div')
       .filter({ hasText: 'Text-to-CAD successfulPrompt' })
       .first()
@@ -648,7 +650,8 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
 
     // Find the toast close button.
-    const closeButton = page.getByRole('status')
+    const closeButton = page
+      .getByRole('status')
       .locator('div')
       .filter({ hasText: 'Text-to-CAD successfulPrompt' })
       .first()
