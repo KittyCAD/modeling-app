@@ -503,7 +503,7 @@ test(
     // Equip the rectangle tool
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page
-      .getByRole('button', { name: 'Corner rectangle', exact: true })
+      .getByRole('button', { name: 'rectangle Corner rectangle', exact: true })
       .click()
 
     // Draw the rectangle
