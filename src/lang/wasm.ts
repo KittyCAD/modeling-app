@@ -127,6 +127,7 @@ export const parse = (code: string | Error): Program | Error => {
     const program: Program = parse_wasm(code)
     return program
   } catch (e: any) {
+    // throw e
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,

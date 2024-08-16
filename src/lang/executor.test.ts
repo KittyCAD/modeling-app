@@ -58,7 +58,7 @@ const newVar = myVar + 1`
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const minusGeo = mem.get('mySketch')?.value
+    const minusGeo = mem.get('mySketch')?.value?.value
     expect(minusGeo).toEqual([
       {
         type: 'ToPoint',
@@ -152,6 +152,8 @@ const newVar = myVar + 1`
     ].join('\n')
     const mem = await exe(code)
     expect(mem.get('mySk1')).toEqual({
+      type: 'UserVal',
+      value: {
       type: 'SketchGroup',
       on: expect.any(Object),
       start: {
@@ -215,7 +217,9 @@ const newVar = myVar + 1`
       ],
       id: expect.any(String),
       __meta: [{ sourceRange: [39, 63] }],
-    })
+    },
+        __meta: [{ sourceRange: [39, 63] }],
+  })
   })
   it('execute array expression', async () => {
     const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(

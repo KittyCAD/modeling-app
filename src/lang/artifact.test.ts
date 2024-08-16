@@ -18,6 +18,10 @@ const mySketch001 = startSketchOn('XY')
     // @ts-ignore
     const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
+      
+      type: 'UserVal',
+      __meta: [{ sourceRange: [46, 71] }],
+      value: {
       type: 'SketchGroup',
       on: expect.any(Object),
       start: {
@@ -53,7 +57,7 @@ const mySketch001 = startSketchOn('XY')
       ],
       id: expect.any(String),
       __meta: [{ sourceRange: [46, 71] }],
-    })
+    }})
   })
   test('extrude artifacts', async () => {
     // Enable rotations #152
