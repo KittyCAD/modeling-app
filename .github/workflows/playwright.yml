@@ -137,14 +137,14 @@ jobs:
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-report-ubuntu-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
     - name: Clean up test-results
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       run: rm -r test-results
     - name: check for changes
@@ -177,16 +177,15 @@ jobs:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
-    # if have previous run results, use them
     - uses: actions/download-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
     - name: Run playwright/chrome flow (with retries)
       id: retry
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
         if [[ ! -f "test-results/.last-run.json" ]]; then
@@ -238,19 +237,19 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: send to axiom
-      if:  ${{ always() && !startsWith(matrix.os, 'windows') }}
+      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
@@ -349,14 +348,14 @@ jobs:
       shell: bash
       run: yarn electron:package
     - uses: actions/download-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
         name: test-results-ubuntu-${{ github.sha }}
         path: test-results/
     - name: Run electron tests (with retries)
       id: retry
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
         if [[ ! -f "test-results/.last-run.json" ]]; then
@@ -409,19 +408,19 @@ jobs:
         OPTIONAL_PLAYWRIGHT_ARGS: ${{ startsWith(matrix.os, 'ubuntu') && 'xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- ' || '' }}
         #DEBUG: 'pw:browser*'
     - name: send to axiom
-      if:  ${{ always() && !startsWith(matrix.os, 'windows') }}
+      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: test-results-electron-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
-      if: always()
+      if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-report-electron-${{ github.sha }}
         path: playwright-report/
