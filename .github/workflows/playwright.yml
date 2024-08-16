@@ -358,7 +358,6 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        set -x
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
