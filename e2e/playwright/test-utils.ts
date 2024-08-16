@@ -675,46 +675,7 @@ export async function setup(
     },
   ])
 
-  // enabled for chrome for now
-  if (page.context().browser()?.browserType().name() === 'chromium') {
-    page.on('pageerror', (exception) => {
-      if (isErrorWhitelisted(exception)) {
-        return
-      }
-
-      // only set this env var to false if you want to collect console errors
-      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
-      // unwhitelisted console errors are detected).
-      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
-        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
-        // use expect to prevent page from closing and not cleaning up
-        expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-          
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
-          `).toEqual('Console error detected')
-      } else {
-        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
-        fsp
-          .appendFile(
-            './test-results/exceptions.txt',
-            [
-              '~~~',
-              `triggered_by_test:${
-                testInfo?.file + ' ' + (testInfo?.title || ' ')
-              }`,
-              `name:${exception.name}`,
-              `message:${exception.message}`,
-              `stack:${exception.stack}`,
-              `project:${testInfo?.project.name}`,
-              '~~~',
-            ].join('\n')
-          )
-          .catch((err) => {
-            console.error(err)
-          })
-      }
-    })
-  }
+  failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 }
@@ -777,4 +738,47 @@ export async function setupElectron({
   await setup(context, page)
 
   return { electronApp, page }
+}
+
+function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
+  // enabled for chrome for now
+  if (page.context().browser()?.browserType().name() === 'chromium') {
+    page.on('pageerror', (exception) => {
+      if (isErrorWhitelisted(exception)) {
+        return
+      }
+
+      // only set this env var to false if you want to collect console errors
+      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
+      // unwhitelisted console errors are detected).
+      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
+        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
+        // use expect to prevent page from closing and not cleaning up
+        expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
+          
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+          `).toEqual('Console error detected')
+      } else {
+        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
+        fsp
+          .appendFile(
+            './test-results/exceptions.txt',
+            [
+              '~~~',
+              `triggered_by_test:${
+                testInfo?.file + ' ' + (testInfo?.title || ' ')
+              }`,
+              `name:${exception.name}`,
+              `message:${exception.message}`,
+              `stack:${exception.stack}`,
+              `project:${testInfo?.project.name}`,
+              '~~~',
+            ].join('\n')
+          )
+          .catch((err) => {
+            console.error(err)
+          })
+      }
+    })
+  }
 }
