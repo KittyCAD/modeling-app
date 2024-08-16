@@ -330,7 +330,7 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox({ timeout: 5000 })
+        .boundingBox({ timeout: 5_000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
@@ -347,7 +347,7 @@ export async function getUtils(page: Page) {
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
-        .boundingBox()
+        .boundingBox({ timeout: 5_000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     normalisedEditorCode: async () => {
@@ -640,6 +640,7 @@ export async function setup(context: BrowserContext, page: Page) {
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
+      console.log('TEST_SETTINGS.projects', settings)
     },
     {
       token: secrets.token,
@@ -651,6 +652,7 @@ export async function setup(context: BrowserContext, page: Page) {
             ...TEST_SETTINGS.projects,
             projectDirectory: TEST_SETTINGS.app.projectDirectory,
             onboardingStatus: 'dismissed',
+            theme: 'dark',
           },
         } as Partial<SaveSettingsPayload>,
       }),

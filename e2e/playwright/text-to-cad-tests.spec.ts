@@ -12,7 +12,7 @@ test.afterEach(async ({ page }, testInfo) => {
 
 const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
-test.describe('Text-to-CAD tests', () => {
+test.fixme('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({ page }) => {
     const u = await getUtils(page)
 

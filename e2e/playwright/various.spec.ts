@@ -209,9 +209,12 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
   const arcButton = page.getByRole('button', {
-    name: 'Tangential Arc',
+    name: 'arc Tangential Arc',
     exact: true,
   })
 
@@ -296,9 +299,12 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   })
 
   const codePane = page.locator('.cm-content')
-  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
   const arcButton = page.getByRole('button', {
-    name: 'Tangential Arc',
+    name: 'arc Tangential Arc',
     exact: true,
   })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
