@@ -241,7 +241,7 @@ jobs:
 
 
   playwright-macos:
-    timeout-minutes: 30
+    timeout-minutes: 120
     runs-on: macos-14
     strategy:
       fail-fast: false
