@@ -27,7 +27,7 @@
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
     "@kittycad/lib": "^2.0.0",
-    "@lezer/highlight": "^1.2.0",
+    "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
     "@react-hook/resize-observer": "^2.0.1",
     "@replit/codemirror-interact": "^6.3.1",
