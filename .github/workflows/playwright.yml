@@ -347,7 +347,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+            $OPTIONAL_PLAYWRIGHT_ARGS yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -362,7 +362,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
+                    $OPTIONAL_PLAYWRIGHT_ARGS yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
@@ -391,6 +391,7 @@ jobs:
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
+        OPTIONAL_PLAYWRIGHT_ARGS: ${{ startsWith(matrix.os, "ubuntu") && 'xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- ' || '' }}
         #DEBUG: 'pw:browser*'
     - name: send to axiom
       if:  ${{ always() && !startsWith(matrix.os, 'windows') }}
