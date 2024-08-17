@@ -467,8 +467,16 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 return Ok((fn_docs, true));
             }
 
-            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                return Ok((Primitive::String.to_string(), false));
+            if let Some(instance_type) = &o.instance_type {
+                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
+                    if schemars::schema::InstanceType::Boolean == **single {
+                        return Ok((Primitive::Bool.to_string(), false));
+                    } else if schemars::schema::InstanceType::String == **single {
+                        return Ok((Primitive::String.to_string(), false));
+                    } else if schemars::schema::InstanceType::Null == **single {
+                        return Ok((Primitive::String.to_string(), false));
+                    }
+                }
             }
 
             if let Some(reference) = &o.reference {
@@ -506,14 +514,6 @@ pub fn get_autocomplete_snippet_from_schema(
                     return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
-                }
-            }
-
-            if let Some(instance_type) = &o.instance_type {
-                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
-                    if schemars::schema::InstanceType::Boolean == **single {
-                        return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
-                    }
                 }
             }
 
@@ -638,8 +638,16 @@ pub fn get_autocomplete_snippet_from_schema(
                 return Ok(Some((index, fn_docs)));
             }
 
-            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
+            if let Some(instance_type) = &o.instance_type {
+                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
+                    if schemars::schema::InstanceType::Boolean == **single {
+                        return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
+                    } else if schemars::schema::InstanceType::String == **single {
+                        return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
+                    } else if schemars::schema::InstanceType::Null == **single {
+                        return Ok(None);
+                    }
+                }
             }
 
             anyhow::bail!("unknown type: {:#?}", o)
@@ -681,14 +689,6 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                     return Ok(Primitive::Number.to_string());
                 } else {
                     anyhow::bail!("unknown format: {}", format);
-                }
-            }
-
-            if let Some(instance_type) = &o.instance_type {
-                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
-                    if schemars::schema::InstanceType::Boolean == **single {
-                        return Ok(Primitive::Bool.to_string());
-                    }
                 }
             }
 
@@ -780,8 +780,16 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                 return Ok(fn_docs);
             }
 
-            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                return Ok(Primitive::String.to_string());
+            if let Some(instance_type) = &o.instance_type {
+                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
+                    if schemars::schema::InstanceType::Boolean == **single {
+                        return Ok(Primitive::Bool.to_string());
+                    } else if schemars::schema::InstanceType::String == **single {
+                        return Ok(Primitive::String.to_string());
+                    } else if schemars::schema::InstanceType::Null == **single {
+                        return Ok(Primitive::String.to_string());
+                    }
+                }
             }
 
             anyhow::bail!("unknown type: {:#?}", o)
