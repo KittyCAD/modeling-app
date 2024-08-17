@@ -750,7 +750,7 @@ test(
       await searchInput.fill('basi')
       await expect(projectLinks).toHaveCount(3)
 
-      // Chech each of the "basi" projects are visible
+      // Check each of the "basi" projects are visible
       for (const [name] of projectData.slice(0, 3)) {
         await expect(page.getByText(name)).toBeVisible()
       }
