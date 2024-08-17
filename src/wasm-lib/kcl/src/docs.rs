@@ -509,6 +509,14 @@ pub fn get_autocomplete_snippet_from_schema(
                 }
             }
 
+            if let Some(instance_type) = &o.instance_type {
+                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
+                    if schemars::schema::InstanceType::Boolean == **single {
+                        return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
+                    }
+                }
+            }
+
             if let Some(obj_val) = &o.object {
                 let mut fn_docs = String::new();
                 fn_docs.push_str("{\n");
@@ -673,6 +681,14 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                     return Ok(Primitive::Number.to_string());
                 } else {
                     anyhow::bail!("unknown format: {}", format);
+                }
+            }
+
+            if let Some(instance_type) = &o.instance_type {
+                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
+                    if schemars::schema::InstanceType::Boolean == **single {
+                        return Ok(Primitive::Bool.to_string());
+                    }
                 }
             }
 
@@ -898,7 +914,7 @@ mod tests {
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
 	repetitions: ${3:10},
-	rotateDuplicates: ${4:"string"},
+	rotateDuplicates: ${4:false},
 }, ${5:%})${}"#
         );
     }
