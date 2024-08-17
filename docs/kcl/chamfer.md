@@ -381,7 +381,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -399,7 +399,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -785,7 +785,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -803,7 +803,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
