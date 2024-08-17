@@ -467,15 +467,13 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 return Ok((fn_docs, true));
             }
 
-            if let Some(instance_type) = &o.instance_type {
-                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
-                    if schemars::schema::InstanceType::Boolean == **single {
-                        return Ok((Primitive::Bool.to_string(), false));
-                    } else if schemars::schema::InstanceType::String == **single {
-                        return Ok((Primitive::String.to_string(), false));
-                    } else if schemars::schema::InstanceType::Null == **single {
-                        return Ok((Primitive::String.to_string(), false));
-                    }
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok((Primitive::Bool.to_string(), false));
+                } else if schemars::schema::InstanceType::String == **single
+                    || schemars::schema::InstanceType::Null == **single
+                {
+                    return Ok((Primitive::String.to_string(), false));
                 }
             }
 
@@ -638,15 +636,13 @@ pub fn get_autocomplete_snippet_from_schema(
                 return Ok(Some((index, fn_docs)));
             }
 
-            if let Some(instance_type) = &o.instance_type {
-                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
-                    if schemars::schema::InstanceType::Boolean == **single {
-                        return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
-                    } else if schemars::schema::InstanceType::String == **single {
-                        return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
-                    } else if schemars::schema::InstanceType::Null == **single {
-                        return Ok(None);
-                    }
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
+                } else if schemars::schema::InstanceType::String == **single {
+                    return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
+                } else if schemars::schema::InstanceType::Null == **single {
+                    return Ok(None);
                 }
             }
 
@@ -780,15 +776,13 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                 return Ok(fn_docs);
             }
 
-            if let Some(instance_type) = &o.instance_type {
-                if let schemars::schema::SingleOrVec::Single(single) = instance_type {
-                    if schemars::schema::InstanceType::Boolean == **single {
-                        return Ok(Primitive::Bool.to_string());
-                    } else if schemars::schema::InstanceType::String == **single {
-                        return Ok(Primitive::String.to_string());
-                    } else if schemars::schema::InstanceType::Null == **single {
-                        return Ok(Primitive::String.to_string());
-                    }
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok(Primitive::Bool.to_string());
+                } else if schemars::schema::InstanceType::String == **single
+                    || schemars::schema::InstanceType::Null == **single
+                {
+                    return Ok(Primitive::String.to_string());
                 }
             }
 
