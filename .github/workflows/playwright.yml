@@ -237,19 +237,19 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: send to axiom
-      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
+      if: always()
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() && (success() || failure()) }}
+      if: always()
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() && (success() || failure()) }}
+      if: always()
       with:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
