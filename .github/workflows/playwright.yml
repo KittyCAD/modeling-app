@@ -458,7 +458,7 @@ jobs:
   merge-coverage-reports:
     # Merge reports after playwright-tests, even if some shards have failed
     if: ${{ !cancelled() }}
-    needs: [playwright-ubuntu]
+    needs: [playwright-chrome]
     # only report on ubuntu (Google chrome) for now
     # needs: [playwright-ubuntu, playwright-macos]
 
