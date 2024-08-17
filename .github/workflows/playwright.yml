@@ -63,6 +63,7 @@ jobs:
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       shell: bash
+      if:  ${{ !startsWith(matrix.os, 'macos') }}
       run: yarn playwright install --with-deps
     - name: install chrome from the cask macos
       if:  ${{ startsWith(matrix.os, 'macos') }}
