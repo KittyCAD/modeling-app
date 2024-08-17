@@ -62,4 +62,11 @@ Mac_App_Distribution.provisionprofile
 *.tsbuildinfo
 
 venv
-.nyc_output/*
+.nyc_output/*.vite/
+
+# electron
+out/
+
+src-tauri/target
+electron-test-projects-dir
+electron-test-projects-dir-2

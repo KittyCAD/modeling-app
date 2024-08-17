@@ -412,9 +412,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.15"
+version = "4.5.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11d8838454fda655dafd3accb2b6e2bea645b9e4078abe84a22ceb947235c5cc"
+checksum = "ed6719fffa43d0d87e5fd8caeab59be1554fb028cd30edc88fc4369b17971019"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -686,9 +686,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.5.0"
+version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e962a19be5cfc3f3bf6dd8f61eb50107f356ad6270fbb3ed41476571db78be5"
+checksum = "e8566979429cf69b49a5c740c60791108e86440e8be149bbea4fe54d2c32d6e2"
 
 [[package]]
 name = "databake"
@@ -724,7 +724,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.22"
+version = "0.1.23"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1397,7 +1397,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "anyhow",
  "approx",
@@ -1467,7 +1467,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "anyhow",
  "hyper",
@@ -1480,9 +1480,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.13"
+version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cda4573582df5e220e6c3104dba6dc01acff529b36e289f41ca9cb5f91c117ae"
+checksum = "ce5e9c51976882cdf6777557fd8c3ee68b00bb53e9307fc1721acb397f2ece9a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2583,9 +2583,9 @@ checksum = "92d43fe69e652f3df9bdc2b85b2854a0825b86e4fb76bc44d945137d053639ca"
 
 [[package]]
 name = "serde"
-version = "1.0.207"
+version = "1.0.208"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5665e14a49a4ea1b91029ba7d3bca9f299e1f7cfa194388ccc20f14743e784f2"
+checksum = "cff085d2cb684faa248efb494c39b68e522822ac0de72ccf08109abde717cfb2"
 dependencies = [
  "serde_derive",
 ]
@@ -2601,9 +2601,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.207"
+version = "1.0.208"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aea2634c86b0e8ef2cfdc0c340baede54ec27b1e46febd7f80dffb2aa44a00e"
+checksum = "24008e81ff7613ed8e5ba0cfaf24e2c2f1e5b8a0495711e44fcd4882fca62bcf"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2623,9 +2623,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.124"
+version = "1.0.125"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "66ad62847a56b3dba58cc891acd13884b9c61138d330c0d7b6181713d4fce38d"
+checksum = "83c8e735a073ccf5be70aa8066aa984eaf2fa000db6c8d0100ae605b366d31ed"
 dependencies = [
  "indexmap 2.2.5",
  "itoa",
@@ -2656,9 +2656,9 @@ dependencies = [
 
 [[package]]
 name = "serde_tokenstream"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8790a7c3fe883e443eaa2af6f705952bc5d6e8671a220b9335c8cae92c037e74"
+checksum = "64060d864397305347a78851c51588fd283767e7e7589829e8121d65512340f1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3617,6 +3617,7 @@ dependencies = [
  "bson",
  "clap",
  "console_error_panic_hook",
+ "data-encoding",
  "futures",
  "gloo-utils",
  "hyper",

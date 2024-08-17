@@ -682,10 +682,6 @@ test.describe('Editor tests', () => {
     })
     await page.waitForTimeout(100)
 
-    const startPX = [665, 458]
-
-    const dragPX = 40
-
     await page.getByText('startProfileAt([4.61, -14.01], %)').click()
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
     await page.getByRole('button', { name: 'Extrude' }).click()
@@ -693,10 +689,10 @@ test.describe('Editor tests', () => {
     await expect(page.getByTestId('command-bar')).toBeVisible()
     await page.waitForTimeout(100)
 
-    await page.keyboard.press('Enter')
+    await page.getByRole('button', { name: 'arrow right Continue' }).click()
     await page.waitForTimeout(100)
     await expect(page.getByText('Confirm Extrude')).toBeVisible()
-    await page.keyboard.press('Enter')
+    await page.getByRole('button', { name: 'checkmark Submit command' }).click()
     await page.waitForTimeout(100)
 
     // expect the code to have changed

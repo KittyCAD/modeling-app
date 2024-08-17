@@ -209,9 +209,12 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
   const arcButton = page.getByRole('button', {
-    name: 'Tangential Arc',
+    name: 'arc Tangential Arc',
     exact: true,
   })
 
@@ -264,6 +267,8 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 })
 
 test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
+  const u = await getUtils(page)
+
   // This test can run long if it takes a little too long to load
   // the engine.
   test.setTimeout(90000)
@@ -273,131 +278,165 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
     'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
   )
   // Load the app with the code pane open
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'store',
-      JSON.stringify({
-        state: {
-          openPanes: ['code'],
-        },
-        version: 0,
-      })
-    )
+
+  await test.step(`Set up test`, async () => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'store',
+        JSON.stringify({
+          state: {
+            openPanes: ['code'],
+          },
+          version: 0,
+        })
+      )
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
   })
 
-  // Wait for the app to be ready for use
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  const codePane = page.getByRole('textbox').locator('div')
-  const codePaneButton = page.getByTestId('code-pane-button')
-  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const codePane = page.locator('.cm-content')
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
   const arcButton = page.getByRole('button', {
-    name: 'Tangential Arc',
+    name: 'arc Tangential Arc',
     exact: true,
   })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
+  const commandBarComboBox = page.getByPlaceholder('Search commands')
+  const exitSketchButton = page.getByRole('button', { name: 'Exit Sketch' })
 
-  // Test that the hotkeys do nothing when
-  // focus is on the code pane
-  await codePane.click()
-  await page.keyboard.press('/')
-  await page.keyboard.press('/')
-  await page.keyboard.press('s')
-  await page.keyboard.press('l')
-  await page.keyboard.press('a')
-  await page.keyboard.press('e')
-  await expect(page.locator('.cm-content')).toHaveText('//slae')
-  await page.keyboard.press('Meta+/')
-  await page.waitForTimeout(1000)
-  // Test these hotkeys perform actions when
-  // focus is on the canvas
-  await page.mouse.move(600, 250)
-  await page.mouse.click(600, 250)
-
-  // work-around: to stop "keyboard.press('s')" from typing in the editor even when it should be blurred
-  await page.getByRole('button', { name: 'Commands' }).click()
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Escape')
-  await page.waitForTimeout(100)
-  // end work-around
-
-  // Start a sketch
-  await page.keyboard.press('s')
-  await page.waitForTimeout(1000)
-  await page.mouse.move(800, 300, { steps: 5 })
-  await page.mouse.click(800, 300)
-  await page.waitForTimeout(1000)
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
-    timeout: 15_000,
+  await test.step(`Type code with modeling hotkeys, shouldn't fire`, async () => {
+    await codePane.click()
+    await page.keyboard.type('//')
+    await page.keyboard.press('s')
+    await expect(commandBarComboBox).not.toBeVisible()
+    await page.keyboard.press('e')
+    await expect(commandBarComboBox).not.toBeVisible()
+    await expect(codePane).toHaveText('//se')
   })
+
+  // Blur focus from the code editor, use the s command to sketch
+  await test.step(`Blur editor focus, enter sketch`, async () => {
+    /**
+     * TODO: There is a bug somewhere that causes this test to fail
+     * if you toggle the codePane closed before your trigger the
+     * start of the sketch.
+     * and a separate Safari-only bug that causes the test to fail
+     * if the pane is open the entire test. The maintainer of CodeMirror
+     * has pinpointed this to the unusual browser behavior:
+     * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
+     */
+    await blurCodeEditor()
+    await page.waitForTimeout(1000)
+    await page.keyboard.press('s')
+    await page.waitForTimeout(1000)
+    await page.mouse.move(800, 300, { steps: 5 })
+    await page.mouse.click(800, 300)
+    await page.waitForTimeout(1000)
+    await expect(lineButton).toHaveAttribute('aria-pressed', 'true', {
+      timeout: 15_000,
+    })
+  })
+
+  // Use some sketch hotkeys to create a sketch (l and a for now)
+  await test.step(`Incomplete sketch with hotkeys`, async () => {
+    await test.step(`Draw a line`, async () => {
+      await page.mouse.move(700, 200, { steps: 5 })
+      await page.mouse.click(700, 200)
+      await page.mouse.move(800, 250, { steps: 5 })
+      await page.mouse.click(800, 250)
+    })
+
+    await test.step(`Unequip line tool`, async () => {
+      await page.keyboard.press('l')
+      await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+    })
+
+    await test.step(`Draw a tangential arc`, async () => {
+      await page.keyboard.press('a')
+      await expect(arcButton).toHaveAttribute('aria-pressed', 'true', {
+        timeout: 10_000,
+      })
+      await page.mouse.move(1000, 100, { steps: 5 })
+      await page.mouse.click(1000, 100)
+    })
+
+    await test.step(`Unequip with escape, equip line tool`, async () => {
+      await page.keyboard.press('Escape')
+      await page.keyboard.press('l')
+      await page.waitForTimeout(50)
+      await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+    })
+  })
+
+  await test.step(`Type code with sketch hotkeys, shouldn't fire`, async () => {
+    // Since there's code now, we have to get to the end of the line
+    await page.locator('.cm-line').last().click()
+    await page.keyboard.press('ControlOrMeta+ArrowRight')
+
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('//')
+    await page.keyboard.press('l')
+    await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+    await page.keyboard.press('a')
+    await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(codePane).toContainText('//la')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Backspace')
+  })
+
+  await test.step(`Close profile and exit sketch`, async () => {
+    await blurCodeEditor()
+    await page.mouse.move(700, 200, { steps: 5 })
+    await page.mouse.click(700, 200)
+    // On  close it will unequip the line tool.
+    await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
+    await expect(exitSketchButton).toBeEnabled()
+    await page.keyboard.press('Escape')
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).not.toBeVisible()
+  })
+
+  // Extrude with e
+  await test.step(`Extrude the sketch`, async () => {
+    await page.mouse.click(750, 150)
+    await blurCodeEditor()
+    await expect(extrudeButton).toBeEnabled()
+    await page.keyboard.press('e')
+    await page.waitForTimeout(500)
+    await page.mouse.move(800, 200, { steps: 5 })
+    await page.mouse.click(800, 200)
+    await page.waitForTimeout(500)
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
+    await page.getByRole('button', { name: 'Continue' }).click()
+    await expect(
+      page.getByRole('button', { name: 'Submit command' })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Submit command' }).click()
+    await expect(page.locator('.cm-content')).toContainText('extrude(')
+  })
+
+  // await codePaneButton.click()
+  // await expect(u.codeLocator).not.toBeVisible()
+
   /**
-   * TODO: There is a bug somewhere that causes this test to fail
-   * if you toggle the codePane closed before your trigger the
-   * start of the sketch.
-   * and a separate Safari-only bug that causes the test to fail
-   * if the pane is open the entire test. The maintainer of CodeMirror
-   * has pinpointed this to the unusual browser behavior:
-   * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
+   * work-around: to stop `keyboard.press()` from typing in the editor even when it should be blurred
    */
-  await codePaneButton.click()
-  await expect(u.codeLocator).not.toBeVisible()
-  await page.waitForTimeout(300)
-
-  // Draw a line
-  await page.mouse.move(700, 200, { steps: 5 })
-  await page.mouse.click(700, 200)
-  await page.waitForTimeout(300)
-  await page.mouse.move(800, 250, { steps: 5 })
-  await page.mouse.click(800, 250)
-  // Unequip line tool
-  await page.keyboard.press('l')
-  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
-  // Equip arc tool
-  await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true', {
-    timeout: 10_000,
-  })
-  await page.mouse.move(1000, 100, { steps: 5 })
-  await page.mouse.click(1000, 100)
-  await page.keyboard.press('Escape')
-  await page.keyboard.press('l')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
-  // Close profile
-  await page.mouse.move(700, 200, { steps: 5 })
-  await page.mouse.click(700, 200)
-  // On  close it will unequip the line tool.
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
-  // Exit sketch
-  await page.keyboard.press('Escape')
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
-  await page.waitForTimeout(400)
-
-  // Extrude
-  await page.mouse.click(750, 150)
-  await expect(extrudeButton).not.toBeDisabled()
-  await page.keyboard.press('e')
-  await page.waitForTimeout(100)
-  await page.mouse.move(800, 200, { steps: 5 })
-  await page.mouse.click(800, 200)
-  await page.waitForTimeout(300)
-  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
-  await page.getByRole('button', { name: 'Continue' }).click()
-  await page.waitForTimeout(300)
-  await expect(
-    page.getByRole('button', { name: 'Submit command' })
-  ).toBeVisible()
-  await page.getByRole('button', { name: 'Submit command' }).click()
-
-  await codePaneButton.click()
-  await expect(page.locator('.cm-content')).toContainText('extrude(')
+  async function blurCodeEditor() {
+    await page.getByRole('button', { name: 'Commands' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(100)
+  }
 })
 
 test('Delete key does not navigate back', async ({ page }) => {
@@ -559,10 +598,10 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
-  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'arrow right Continue' }).click()
   await page.waitForTimeout(100)
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
 const sketch002 = extrude(${[5, 5]} + 7, sketch002)`

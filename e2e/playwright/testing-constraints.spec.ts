@@ -49,7 +49,9 @@ test.describe('Testing constraints', () => {
     await page.mouse.click(834, 244)
     await page.keyboard.up('Shift')
 
-    await page.getByRole('button', { name: 'Length', exact: true }).click()
+    await page
+      .getByRole('button', { name: 'dimension Length', exact: true })
+      .click()
     await page.getByText('Add constraining value').click()
 
     await expect(page.locator('.cm-content')).toHaveText(

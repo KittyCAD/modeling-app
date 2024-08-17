@@ -5,15 +5,9 @@ import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
-import { isTauri } from 'lib/isTauri'
-import { relaunch } from '@tauri-apps/plugin-process'
-import { check } from '@tauri-apps/plugin-updater'
-import {
-  UpdaterRestartModal,
-  createUpdaterRestartModal,
-} from 'components/UpdaterRestartModal'
+import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
+import { PLAYWRIGHT_KEY, PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -24,6 +18,9 @@ import { AppStreamProvider } from 'AppState'
 //   })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+const maybePlaywrightToastDuration = Number(
+  window?.localStorage.getItem(PLAYWRIGHT_TOAST_DURATION)
+)
 
 root.render(
   <HotkeysProvider>
@@ -34,6 +31,7 @@ root.render(
         toastOptions={{
           style: {
             borderRadius: '3px',
+            maxInlineSize: 'min(480px, 100%)',
           },
           className:
             'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
@@ -43,8 +41,10 @@ root.render(
               secondary: 'oklch(48.62% 0.1654 142.5deg)',
             },
             duration:
-              window?.localStorage.getItem('playwright') === 'true'
-                ? 10 // speed up e2e tests
+              window?.localStorage.getItem(PLAYWRIGHT_KEY) === 'true'
+                ? maybePlaywrightToastDuration > 0
+                  ? maybePlaywrightToastDuration
+                  : 10 // optionally speed up e2e tests
                 : 1500,
           },
         }}
@@ -59,29 +59,4 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-const runTauriUpdater = async () => {
-  try {
-    const update = await check()
-    if (update && update.available) {
-      const { date, version, body } = update
-      const modal = createUpdaterModal(UpdaterModal)
-      const { wantUpdate } = await modal({ date, version, body })
-      if (wantUpdate) {
-        await update.downloadAndInstall()
-        // On macOS and Linux, the restart needs to be manually triggered
-        const isNotWindows = navigator.userAgent.indexOf('Win') === -1
-        if (isNotWindows) {
-          const relaunchModal = createUpdaterRestartModal(UpdaterRestartModal)
-          const { wantRestart } = await relaunchModal({ version })
-          if (wantRestart) {
-            await relaunch()
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-isTauri() && runTauriUpdater()
+isDesktop()
