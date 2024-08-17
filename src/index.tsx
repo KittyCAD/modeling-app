@@ -36,7 +36,7 @@ root.render(
               primary: 'oklch(89% 0.16 143.4deg)',
               secondary: 'oklch(48.62% 0.1654 142.5deg)',
             },
-            // We shouldnt have a different duration in tests than prod, it might
+            // We shouldn't have a different duration in tests than prod, it might
             // lead to issues.
             duration: 1500,
           },
