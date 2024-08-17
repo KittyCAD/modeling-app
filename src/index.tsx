@@ -7,7 +7,6 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
-import { PLAYWRIGHT_KEY } from 'lib/constants'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
