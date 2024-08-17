@@ -7,7 +7,7 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
-import { PLAYWRIGHT_KEY, PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
+import { PLAYWRIGHT_KEY } from 'lib/constants'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -18,9 +18,6 @@ import { PLAYWRIGHT_KEY, PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
 //   })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-const maybePlaywrightToastDuration = Number(
-  window?.localStorage.getItem(PLAYWRIGHT_TOAST_DURATION)
-)
 
 root.render(
   <HotkeysProvider>
@@ -40,12 +37,9 @@ root.render(
               primary: 'oklch(89% 0.16 143.4deg)',
               secondary: 'oklch(48.62% 0.1654 142.5deg)',
             },
-            duration:
-              window?.localStorage.getItem(PLAYWRIGHT_KEY) === 'true'
-                ? maybePlaywrightToastDuration > 0
-                  ? maybePlaywrightToastDuration
-                  : 10 // optionally speed up e2e tests
-                : 1500,
+            // We shouldnt have a different duration in tests than prod, it might
+            // lead to issues.
+            duration: 1500,
           },
         }}
       />

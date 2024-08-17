@@ -3,7 +3,6 @@ import { test, expect, Page } from '@playwright/test'
 import { getUtils, setup, tearDown } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
-import { PLAYWRIGHT_TOAST_DURATION } from 'lib/constants'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -345,17 +344,11 @@ const sketch001 = startSketchAt([-0, -0])
     const u = await getUtils(page)
     await test.step('Set up the code and durations', async () => {
       await page.addInitScript(
-        async ({ code, toastDurationKey }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          // Normally we make these durations short to speed up PW tests
-          // to superhuman speeds. But in this case we want to make sure
-          // the export toast is visible for a while, and the export
-          // duration is long enough to make sure the export toast is visible
-          localStorage.setItem(toastDurationKey, '1500')
         },
         {
           code: bracket,
-          toastDurationKey: PLAYWRIGHT_TOAST_DURATION,
         }
       )
 
