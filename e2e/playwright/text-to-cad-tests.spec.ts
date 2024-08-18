@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test'
-
-import { getUtils, setup, tearDown } from './test-utils'
+import * as fsp from 'fs/promises'
+import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import { join } from 'path'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -12,13 +13,14 @@ test.afterEach(async ({ page }, testInfo) => {
 
 const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
-test.fixme('Text-to-CAD tests', () => {
+test.describe('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({ page }) => {
     const u = await getUtils(page)
 
-    await page.setViewportSize({ width: 1000, height: 500 })
-
-    await u.waitForAuthSkipAppStart()
+    await test.step('Set up', async () => {
+      await page.setViewportSize({ width: 1000, height: 500 })
+      await u.waitForAuthSkipAppStart()
+    })
 
     await sendPromptFromCommandBar(page, 'a 2x4 lego')
 
@@ -56,9 +58,7 @@ test.fixme('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click()
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
-    await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.press('ControlOrMeta+KeyV')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`const`)
@@ -70,7 +70,12 @@ test.fixme('Text-to-CAD tests', () => {
     await u.closeDebugPanel()
 
     // Find the toast close button.
-    const closeButton = page.getByRole('button', { name: 'Close' })
+    const closeButton = page
+      .getByRole('status')
+      .locator('div')
+      .filter({ hasText: 'Text-to-CAD successfulPrompt' })
+      .first()
+      .getByRole('button', { name: 'Close' })
     await expect(closeButton).toBeVisible()
     await closeButton.click()
 
@@ -194,9 +199,7 @@ test.fixme('Text-to-CAD tests', () => {
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
-    await page.keyboard.type(
-      'akjsndladf lajbhflauweyfa;wieufjn;wieJNUF;.wjdfn weh Fwhefb'
-    )
+    await page.keyboard.type('akjsndladf ghgsssswefiuwq22262664')
     await page.waitForTimeout(1000)
     await page.keyboard.press('Enter')
 
@@ -260,8 +263,7 @@ test.fixme('Text-to-CAD tests', () => {
     const prompt = page.getByText('Prompt')
     await expect(prompt.first()).toBeVisible()
 
-    const badPrompt =
-      'akjsndladf lajbhflauweyfa;wieufjn;wieJNUF;.wjdfn weh Fwhefb'
+    const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
 
     // Type the prompt.
     await page.keyboard.type(badPrompt)
@@ -351,8 +353,7 @@ test.fixme('Text-to-CAD tests', () => {
     const prompt = page.getByText('Prompt')
     await expect(prompt.first()).toBeVisible()
 
-    const badPrompt =
-      'akjsndladf lajbhflauweyfa;wieufjn;wieJNUF;.wjdfn weh Fwhefb'
+    const badPrompt = 'akjsndladf lajbhflauweyfa;wieufjn---4;'
 
     // Type the prompt.
     await page.keyboard.type(badPrompt)
@@ -464,6 +465,12 @@ test.fixme('Text-to-CAD tests', () => {
   test('can do many at once and get many prompts back, and interact with many', async ({
     page,
   }) => {
+    // skip on windows
+    test.skip(
+      process.platform === 'win32',
+      'This test is flaky, skipping for now'
+    )
+
     const u = await getUtils(page)
 
     await page.setViewportSize({ width: 1000, height: 500 })
@@ -532,7 +539,12 @@ test.fixme('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(`2x8`)
 
     // Find the toast close button.
-    const closeButton = page.getByRole('button', { name: 'Close' })
+    const closeButton = page
+      .getByRole('status')
+      .locator('div')
+      .filter({ hasText: 'Text-to-CAD successfulPrompt' })
+      .first()
+      .getByRole('button', { name: 'Close' })
     await expect(closeButton).toBeVisible()
     await closeButton.click()
 
@@ -553,9 +565,13 @@ test.fixme('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.press('ControlOrMeta+a')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyA')
+    await page.keyboard.up(CtrlKey)
     await page.keyboard.press('Backspace')
-    await page.keyboard.press('ControlOrMeta+v')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
@@ -578,10 +594,7 @@ test.fixme('Text-to-CAD tests', () => {
 
     await sendPromptFromCommandBar(page, 'a 2x4 lego')
 
-    await sendPromptFromCommandBar(
-      page,
-      'alkjsdnlajshdbfjlhsbdf a;skjdnf;askjdnf'
-    )
+    await sendPromptFromCommandBar(page, 'alkjsdnlajshdbfjlhsbdf a;askjdnf')
 
     // Find the toast.
     // Look out for the toast message
@@ -647,7 +660,12 @@ test.fixme('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
 
     // Find the toast close button.
-    const closeButton = page.getByRole('button', { name: 'Close' })
+    const closeButton = page
+      .getByRole('status')
+      .locator('div')
+      .filter({ hasText: 'Text-to-CAD successfulPrompt' })
+      .first()
+      .getByRole('button', { name: 'Close' })
     await expect(closeButton).toBeVisible()
     await closeButton.click()
 
@@ -658,26 +676,28 @@ test.fixme('Text-to-CAD tests', () => {
 })
 
 async function sendPromptFromCommandBar(page: Page, promptStr: string) {
-  const commandBarButton = page.getByRole('button', { name: 'Commands' })
-  await expect(commandBarButton).toBeVisible()
-  // Click the command bar button
-  await commandBarButton.click()
+  await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    await commandBarButton.click()
 
-  // Wait for the command bar to appear
-  const cmdSearchBar = page.getByPlaceholder('Search commands')
-  await expect(cmdSearchBar).toBeVisible()
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
 
-  const textToCadCommand = page.getByText('Use the Zoo Text-to-CAD API ')
-  await expect(textToCadCommand.first()).toBeVisible()
-  // Click the Text-to-CAD command
-  await textToCadCommand.first().click()
+    const textToCadCommand = page.getByText('Use the Zoo Text-to-CAD API ')
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    await textToCadCommand.first().click()
 
-  // Enter the prompt.
-  const prompt = page.getByText('Prompt')
-  await expect(prompt.first()).toBeVisible()
+    // Enter the prompt.
+    const prompt = page.getByText('Prompt')
+    await expect(prompt.first()).toBeVisible()
 
-  // Type the prompt.
-  await page.keyboard.type(promptStr)
-  await page.waitForTimeout(1000)
-  await page.keyboard.press('Enter')
+    // Type the prompt.
+    await page.keyboard.type(promptStr)
+    await page.waitForTimeout(1000)
+    await page.keyboard.press('Enter')
+  })
 }
