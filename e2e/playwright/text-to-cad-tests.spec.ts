@@ -1,7 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
-import { join } from 'path'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)

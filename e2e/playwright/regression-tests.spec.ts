@@ -337,6 +337,7 @@ const sketch001 = startSketchAt([-0, -0])
   }) => {
     // This is being weird on ubuntu and windows.
     test.skip(
+      // eslint-disable-next-line jest/valid-title
       process.platform === 'linux' || process.platform === 'win32',
       'This test is being weird on ubuntu'
     )
