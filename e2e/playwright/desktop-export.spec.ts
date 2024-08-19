@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { setupElectron, tearDown } from './test-utils'
+import { doExport, setupElectron, tearDown, Paths } from './test-utils'
 import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -31,7 +31,6 @@ test(
     page.on('console', console.log)
 
     await test.step('on open of project', async () => {
-      const fileChooserPromise = page.waitForEvent('filechooser')
       await expect(page.getByText(`bracket`)).toBeVisible()
 
       // open the project
@@ -42,9 +41,6 @@ test(
       await expect(page.getByTestId('loading')).not.toBeAttached({
         timeout: 20_000,
       })
-
-      // click the export button
-      await page.getByRole('button', { name: 'Export' }).click()
 
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -58,10 +54,10 @@ test(
       const exportingToastMessage = page.getByText(`Exporting...`)
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
 
       // Click the export button
-      await exportButton.click({ force: true })
-      await page.keyboard.press('Enter')
+      await exportButton.click()
 
       await expect(gltfOption).toBeVisible()
       await expect(page.getByText('STL')).toBeVisible()
@@ -75,12 +71,29 @@ test(
 
       await page.keyboard.press('Enter')
 
+      await test.step('Check the export size', async () => {
+        await expect
+          .poll(
+            async () => {
+              try {
+                const outputGltf = await fsp.readFile('output.gltf')
+                return outputGltf.byteLength
+              } catch (e) {
+                return 0
+              }
+            },
+            { timeout: 15_000 }
+          )
+          .toBe(477327)
+
+        // clean up output.gltf
+        await fsp.rm('output.gltf')
+      })
+
       // Find the toast.
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
-
-      const fileChooser = await fileChooserPromise
-      await fileChooser.setFiles('output.gltf')
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
 
       // Expect it to succeed.
       await expect(errorToastMessage).not.toBeVisible()
@@ -92,22 +105,17 @@ test(
     })
 
     await test.step('on open of file in file pane', async () => {
-      const fileChooserPromise = page.waitForEvent('filechooser')
       // OPen the file pane
       await page.getByRole('button', { name: 'Project Files' }).click()
 
       // Click the file
       await page.getByRole('button', { name: 'other.kcl' }).click()
 
-      // wait for the file to load
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+      // Close the file pane
+      await page.getByRole('button', { name: 'Project Files' }).click()
 
-      // click the export button
-      await page.getByRole('button', { name: 'Export' }).click()
-
+      // wait for it to finish executing (todo: make this more robust)
+      await page.waitForTimeout(1000)
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
@@ -120,6 +128,7 @@ test(
       const exportingToastMessage = page.getByText(`Exporting...`)
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
 
       // Click the export button
       await exportButton.click()
@@ -134,12 +143,29 @@ test(
 
       await page.keyboard.press('Enter')
 
+      await test.step('Check the export size', async () => {
+        await expect
+          .poll(
+            async () => {
+              try {
+                const outputGltf = await fsp.readFile('output.gltf')
+                return outputGltf.byteLength
+              } catch (e) {
+                return 0
+              }
+            },
+            { timeout: 15_000 }
+          )
+          .toBe(477327)
+
+        // clean up output.gltf
+        await fsp.rm('output.gltf')
+      })
+
       // Find the toast.
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
-
-      const fileChooser = await fileChooserPromise
-      await fileChooser.setFiles('output.gltf')
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
 
       // Expect it to succeed.
       await expect(errorToastMessage).not.toBeVisible()
@@ -148,6 +174,7 @@ test(
       const successToastMessage = page.getByText(`Exported successfully`)
       await expect(successToastMessage).toBeVisible()
       await expect(exportingToastMessage).not.toBeVisible()
+      await electronApp.close()
     })
 
     await electronApp.close()
