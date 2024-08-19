@@ -539,14 +539,19 @@ export interface Paths {
 
 export const doExport = async (
   output: Models['OutputFormat_type'],
-  page: Page
+  page: Page,
+  isElectron = false
 ): Promise<Paths> => {
-  await page.getByRole('button', { name: APP_NAME }).click()
-  const exportMenuButton = page.getByRole('button', {
-    name: 'Export current part',
-  })
-  await expect(exportMenuButton).toBeVisible()
-  await exportMenuButton.click()
+  if (!isElectron) {
+    await page.getByRole('button', { name: APP_NAME }).click()
+    const exportMenuButton = page.getByRole('button', {
+      name: 'Export current part',
+    })
+    await expect(exportMenuButton).toBeVisible()
+    await exportMenuButton.click()
+  } else {
+    await page.getByTestId('export-pane-button').click()
+  }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar
@@ -573,13 +578,21 @@ export const doExport = async (
   const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
   let downloadCnt = 0
 
-  page.on('download', async (download) => {
-    if (downloadCnt === 0) {
-      downloadResolve1(download)
-    }
-    downloadCnt++
-  })
+  if (!isElectron)
+    page.on('download', async (download) => {
+      if (downloadCnt === 0) {
+        downloadResolve1(download)
+      }
+      downloadCnt++
+    })
   await page.getByRole('button', { name: 'Submit command' }).click()
+  if (isElectron) {
+    return {
+      modelPath: '',
+      imagePath: '',
+      outputType: output.type,
+    }
+  }
 
   // Handle download
   const download = await downloadPromise1
