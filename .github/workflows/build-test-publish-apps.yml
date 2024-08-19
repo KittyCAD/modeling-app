@@ -64,7 +64,7 @@ jobs:
           name: prepared-files
           path: |
             package.json
-            public/wasm_lib*
+            src/wasm-lib/pkg/wasm_lib*
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
@@ -93,8 +93,8 @@ jobs:
         run: |
           ls -R prepared-files
           cp prepared-files/package.json package.json
-          cp prepared-files/public/wasm_lib* public
-          cp prepared-files/public/wasm_lib* src/wasm-lib/pkg
+          cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
+          cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
