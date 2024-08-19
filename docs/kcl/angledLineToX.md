@@ -153,7 +153,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -171,7 +171,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -362,7 +362,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -380,7 +380,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -573,7 +573,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -591,7 +591,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -782,7 +782,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -800,7 +800,7 @@ const example = extrude(10, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.

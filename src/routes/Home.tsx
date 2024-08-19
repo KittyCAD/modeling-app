@@ -112,7 +112,7 @@ const Home = () => {
         ).trim()
 
         if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = await getNextProjectIndex(name, projects)
+          const nextIndex = getNextProjectIndex(name, projects)
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
