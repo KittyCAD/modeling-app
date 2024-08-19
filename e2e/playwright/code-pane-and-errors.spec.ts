@@ -258,9 +258,15 @@ test(
       })
     })
 
+    await test.step('Pre-condition: panes are not already visible', async () => {
+      await expect(page.locator('#variables-pane')).not.toBeVisible()
+      await expect(page.locator('#logs-pane')).not.toBeVisible()
+    })
+
     await test.step('Open multiple panes', async () => {
       await u.openKclCodePanel()
       await u.openVariablesPane()
+      // await u.closeVariablesPane()
       await u.openLogsPane()
     })
 

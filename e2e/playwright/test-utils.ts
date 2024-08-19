@@ -163,6 +163,16 @@ async function openVariablesPane(page: Page) {
   await openPane(page, 'variables-pane-button')
 }
 
+async function closeVariablesPane(page: Page) {
+  const fileLocator = page.getByTestId('variables-pane-button')
+  await expect(fileLocator).toBeVisible()
+  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
+  if (isOpen) {
+    await fileLocator.click()
+    await expect(fileLocator).not.toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
 async function openLogsPane(page: Page) {
   await openPane(page, 'logs-pane-button')
 }
@@ -343,6 +353,7 @@ export async function getUtils(page: Page) {
     openFilePanel: () => openFilePanel(page),
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
+    closeVariablesPane: () => closeVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
     openAndClearDebugPanel: async () => {
       await openDebugPanel(page)
@@ -677,8 +688,16 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
 export async function setup(context: BrowserContext, page: Page) {
+  console.warn('************ Setting up test')
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+      // Load the app with the code panes
+      localStorage.setItem(
+        PERSIST_MODELING_CONTEXT,
+        JSON.stringify({ openPanes: [] })
+      )
+
+      // localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
