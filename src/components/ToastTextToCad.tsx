@@ -293,6 +293,7 @@ export function ToastTextToCadSuccess({
             iconStart={{
               icon: 'close',
             }}
+            data-negative-button={hasCopied ? 'close' : 'reject'}
             name={hasCopied ? 'Close' : 'Reject'}
             onClick={() => {
               if (!hasCopied) {
