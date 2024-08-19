@@ -106,7 +106,7 @@ test(
 
     await test.step('on open of file in file pane', async () => {
       const u = await getUtils(page)
-      u.openFilePanel()
+      await u.openFilePanel()
 
       const otherKclButton = page.getByRole('button', { name: 'other.kcl' })
 
@@ -114,7 +114,7 @@ test(
       await otherKclButton.click()
 
       // Close the file pane
-      u.closeFilePanel()
+      await u.closeFilePanel()
 
       // wait for it to finish executing (todo: make this more robust)
       await page.waitForTimeout(1000)
