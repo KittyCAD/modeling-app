@@ -473,7 +473,7 @@ async function clickExportButton(page: Page) {
     // Click the export button
     await exportButton.click()
 
-    // Click the stl.
+    // Click the gltf.
     const gltfOption = page.getByRole('option', { name: 'glTF' })
     await expect(gltfOption).toBeVisible()
 
