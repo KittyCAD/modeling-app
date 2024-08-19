@@ -15,7 +15,6 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
-
 test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },

@@ -39,7 +39,7 @@ test(
       timeout: 20_000,
     })
 
-    const notFoundText = 'Machine API server not found'
+    const notFoundText = 'Machine API server was not discovered'
     await expect(page.getByText(notFoundText)).not.toBeVisible()
 
     // Find the make button

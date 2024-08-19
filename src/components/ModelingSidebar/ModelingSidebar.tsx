@@ -63,10 +63,20 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           data: { name: 'Make', groupId: 'modeling' },
         })
       },
-      disable: () =>
-        machineManager.machineCount() === 0
-          ? 'Machine API server was not discovered'
-          : undefined,
+      disable: () => {
+        if (
+          machineManager.machineCount() === 0 &&
+          machineManager.machineApiIp === null
+        ) {
+          return 'Machine API server was not discovered'
+        }
+
+        if (machineManager.machineCount() === 0) {
+          return 'Machine API server was discovered, but no machines are available'
+        }
+
+        return undefined
+      },
     },
   ]
   const filteredActions: SidebarAction[] = sidebarActions.filter(
@@ -265,7 +275,6 @@ function ModelingPaneButton({
         data-testid={paneConfig.id + '-pane-button'}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
-        title={disabledText !== undefined ? disabledText : paneConfig.title}
         {...props}
       >
         <ActionIcon
@@ -292,6 +301,7 @@ function ModelingPaneButton({
         >
           <span className="flex-1">
             {paneConfig.title}
+            {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
