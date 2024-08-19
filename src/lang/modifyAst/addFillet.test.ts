@@ -20,7 +20,6 @@ import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
-import { KclManager } from 'lang/KclSingleton'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 

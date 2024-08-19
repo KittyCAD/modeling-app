@@ -5,7 +5,6 @@ import {
   PathToNode,
   Program,
   ProgramMemory,
-  Value,
   Expr,
   VariableDeclaration,
   VariableDeclarator,
@@ -153,7 +152,7 @@ export function addFillet(
   node: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
-  // radius = createLiteral(5) as Value // TODO what is EXP?
+  // radius = createLiteral(5) as Expr // TODO what is EXP?
   radius = createLiteral(5) as Expr
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // clone ast to make mutations safe
@@ -200,7 +199,7 @@ function tagSketchSegment(
   return taggedSegment
 }
 
-function createFilletCall(radius: Value, tag: string): CallExpression {
+function createFilletCall(radius: Expr, tag: string): CallExpression {
   return createCallExpressionStdLib('fillet', [
     createObjectExpression({
       radius: radius,
@@ -237,7 +236,7 @@ function insertFilletCall(
 function locateExtrudeCall(
   node: Program,
   pathToExtrudeNode: PathToNode
-): { extrudeDeclarator: VariableDeclarator; extrudeInit: Value } | Error {
+): { extrudeDeclarator: VariableDeclarator; extrudeInit: Expr } | Error {
   const extrudeChunk = getNodeFromPath(
     node,
     pathToExtrudeNode,
@@ -273,7 +272,7 @@ function locateExtrudeCall(
 function handleExtrudeType(
   node: Program,
   extrudeDeclarator: VariableDeclarator,
-  extrudeInit: Value,
+  extrudeInit: Expr,
   filletCall: CallExpression,
   pathToExtrudeNode: PathToNode,
   tag: string
