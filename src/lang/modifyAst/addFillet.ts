@@ -53,8 +53,14 @@ export function applyFilletToSelection(
 
   // 2. get path
   const programMemory = kclManager.programMemory
+  const artifactGraph = engineCommandManager.artifactGraph
   const getPathToExtrudeForSegmentSelectionResult =
-    getPathToExtrudeForSegmentSelection(ast, selection, programMemory)
+    getPathToExtrudeForSegmentSelection(
+      ast,
+      selection,
+      programMemory,
+      artifactGraph
+    )
   if (err(getPathToExtrudeForSegmentSelectionResult))
     return getPathToExtrudeForSegmentSelectionResult
   const { pathToSegmentNode, pathToExtrudeNode } =
@@ -105,7 +111,6 @@ export function getPathToExtrudeForSegmentSelection(
     ast,
     selection.codeBasedSelections[0].range
   )
-  console.log(' /// pathToSegmentNode', pathToSegmentNode)
 
   const varDecNode = getNodeFromPath<VariableDeclaration>(
     ast,
@@ -113,28 +118,17 @@ export function getPathToExtrudeForSegmentSelection(
     'VariableDeclaration'
   )
   if (err(varDecNode)) return varDecNode
-  console.log(' /// varDecNode', varDecNode)
-
   const sketchVar = varDecNode.node.declarations[0].id.name
-  console.log(' /// sketchVar', sketchVar)
 
   const sketchGroup = programMemory.get(sketchVar)
-  console.log(' /// sketchGroup', sketchGroup)
-
   if (sketchGroup?.type !== 'SketchGroup')
     return new Error('Invalid sketch group type')
 
-  // const extrusion2 = engineCommandManager
-  // console.log('yo', engineCommandManager.artifactGraph)
-
   const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
-  console.log(' /// extrusion', extrusion)
 
   const pathToExtrudeNode = err(extrusion)
     ? []
     : getNodePathFromSourceRange(ast, extrusion.codeRef.range)
-  console.log(' /// pathToExtrudeNode', pathToExtrudeNode)
-  console.log(' /// add Fillet end /// ')
   return { pathToSegmentNode, pathToExtrudeNode }
 }
 
