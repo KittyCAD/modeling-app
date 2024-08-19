@@ -563,6 +563,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
     elements,
   }
 }
