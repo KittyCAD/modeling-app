@@ -391,11 +391,10 @@ test.describe('Text-to-CAD tests', () => {
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
-    await expect(generatingToastMessage).toBeVisible()
-
-    await expect(successToastMessage).toBeVisible()
+    await Promise.all([
+      expect(generatingToastMessage).toBeVisible({ timeout: 20_000 }),
+      expect(successToastMessage).toBeVisible({ timeout: 30_000 }),
+    ])
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
