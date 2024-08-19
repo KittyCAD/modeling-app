@@ -64,18 +64,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         })
       },
       disable: () => {
-        if (
-          machineManager.machineCount() === 0 &&
-          machineManager.machineApiIp === null
-        ) {
-          return 'Machine API server was not discovered'
-        }
-
-        if (machineManager.machineCount() === 0) {
-          return 'Machine API server was discovered, but no machines are available'
-        }
-
-        return undefined
+        return machineManager.noMachinesReason()
       },
     },
   ]

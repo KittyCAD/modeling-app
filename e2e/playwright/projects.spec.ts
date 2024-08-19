@@ -31,7 +31,6 @@ test(
     })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    const u = await getUtils(page)
 
     await expect(page.getByText('broken-code')).toBeVisible()
 
