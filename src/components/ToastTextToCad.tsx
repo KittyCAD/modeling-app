@@ -132,13 +132,19 @@ export function ToastTextToCadSuccess({
       scene,
       camera,
       controls,
+      isFirstRender = false,
     }: {
       renderer: WebGLRenderer
       scene: Scene
       camera: OrthographicCamera
       controls: OrbitControls
+      isFirstRender?: boolean
     }) => {
-      if (!wrapperRef.current) return
+      if (
+        !wrapperRef.current ||
+        !(isFirstRender || animationRequestRef.current)
+      )
+        return
       animationRequestRef.current = requestAnimationFrame(() =>
         animate({ renderer, scene, camera, controls })
       )
@@ -242,11 +248,15 @@ export function ToastTextToCadSuccess({
     // ...and set a mouseover listener on the canvas to enable the orbit controls
     canvasRef.current.addEventListener('mouseover', () => {
       renderer.setAnimationLoop(() =>
-        animate({ renderer, scene, camera, controls })
+        animate({ renderer, scene, camera, controls, isFirstRender: true })
       )
     })
     canvasRef.current.addEventListener('mouseout', () => {
       renderer.setAnimationLoop(null)
+      if (animationRequestRef.current) {
+        cancelAnimationFrame(animationRequestRef.current)
+        animationRequestRef.current = undefined
+      }
     })
 
     return () => {
