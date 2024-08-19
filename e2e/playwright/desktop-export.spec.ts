@@ -108,8 +108,16 @@ test(
       // OPen the file pane
       await page.getByRole('button', { name: 'Project Files' }).click()
 
+      const otherKclButton = page.getByRole('button', { name: 'other.kcl' })
+
+      // Check if the file is visible
+      if (!otherKclButton.isVisible()) {
+        // Open the file pane
+        await page.getByRole('button', { name: 'Project Files' }).click()
+      }
+
       // Click the file
-      await page.getByRole('button', { name: 'other.kcl' }).click()
+      await otherKclButton.click()
 
       // Close the file pane
       await page.getByRole('button', { name: 'Project Files' }).click()
