@@ -1075,6 +1075,67 @@ test(
 )
 
 test(
+  'select all in code editor does not actually select all, just what is visible (regression)',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        // src/wasm-lib/tests/executor/inputs/mike_stress_test.kcl
+        const name = 'mike_stress_test'
+        await fsp.mkdir(`${dir}/${name}`, { recursive: true })
+        await fsp.copyFile(
+          `src/wasm-lib/tests/executor/inputs/${name}.kcl`,
+          `${dir}/${name}/main.kcl`
+        )
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.getByText('mike_stress_test').click()
+
+    const modifier = process.platform === 'win32' ? 'Control' : 'Meta'
+
+    await test.step('select all in code editor, check its length', async () => {
+      await u.codeLocator.click()
+      // select all (ctrl + a) or similar for each OS
+      await page.keyboard.down(modifier)
+      await page.keyboard.press('KeyA')
+      await page.keyboard.up(modifier)
+
+      // check the length of the selected text
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+      expect(selectedText.length).toBe(870)
+    })
+
+    await test.step('delete all the text, select again and verify there are no characters left', async () => {
+      // delete all
+      await page.keyboard.press('Backspace')
+
+      // select again
+      await page.keyboard.down(modifier)
+      await page.keyboard.press('KeyA')
+      await page.keyboard.up(modifier)
+
+      // check the length of the selected text
+      const selectedText2 = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+      expect(selectedText2.length).toBe(0)
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
   'Settings persist across restarts',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
