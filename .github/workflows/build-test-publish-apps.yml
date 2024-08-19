@@ -92,7 +92,7 @@ jobs:
         run: |
           ls -l prepared-files
           cp prepared-files/package.json package.json
-          cp prepared-files/wasm_lib_bg.wasm public/wasm_lib_bg.wasm
+          cp prepared-files/public/wasm_lib_bg.wasm public/wasm_lib_bg.wasm
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
