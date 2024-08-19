@@ -295,6 +295,101 @@ test.fixme(
     await electronApp.close()
   }
 )
+
+test(
+  'Deleting projects, can delete individual project, can still create projects after deleting all',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    const createProjectAndRenameIt = async (name: string) =>
+      test.step(`Create and rename project ${name}`, async () => {
+        await page.getByRole('button', { name: 'New project' }).click()
+        await expect(page.getByText('Successfully created')).toBeVisible()
+        await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+        await expect(page.getByText(`project-000`)).toBeVisible()
+        await page.getByText(`project-000`).hover()
+        await page.getByText(`project-000`).focus()
+
+        await page.getByLabel('sketch').first().click()
+
+        await page.waitForTimeout(100)
+
+        // type "updated project name"
+        await page.keyboard.press('Backspace')
+        await page.keyboard.type(name)
+
+        await page.getByLabel('checkmark').last().click()
+      })
+
+    // we need to create the folders so that the order is correct
+    // creating them ahead of time with fs tools means they all have the same timestamp
+    await createProjectAndRenameIt('router-template-slate')
+    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
+    await createProjectAndRenameIt('bracket')
+    await createProjectAndRenameIt('lego')
+
+    await test.step('delete the middle project, i.e. the bracket project', async () => {
+      const project = page.getByText('bracket')
+
+      await project.hover()
+      await project.focus()
+
+      await page
+        .locator('[data-edit-buttons-for="bracket"]')
+        .getByLabel('trash')
+        .click()
+
+      await expect(page.getByText('This will permanently delete')).toBeVisible()
+
+      await page.getByTestId('delete-confirmation').click()
+
+      await expect(page.getByText('Successfully deleted')).toBeVisible()
+      await expect(page.getByText('Successfully deleted')).not.toBeVisible()
+
+      await expect(page.getByText('bracket')).not.toBeVisible()
+    })
+
+    await test.step('Now that the middle project is deleted, check the other projects are still there', async () => {
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('lego')).toBeVisible()
+    })
+
+    await test.step('delete other two projects', async () => {
+      await page
+        .locator('[data-edit-buttons-for="router-template-slate"]')
+        .getByLabel('trash')
+        .click()
+      await page.getByTestId('delete-confirmation').click()
+
+      await page
+        .locator('[data-edit-buttons-for="lego"]')
+        .getByLabel('trash')
+        .click()
+      await page.getByTestId('delete-confirmation').click()
+    })
+
+    await test.step('Check that the home page is empty', async () => {
+      await expect(page.getByText('No Projects found')).toBeVisible()
+    })
+
+    await test.step('Check we can still create a project', async () => {
+      await page.getByRole('button', { name: 'New project' }).click()
+      await expect(page.getByText('Successfully created')).toBeVisible()
+      await expect(page.getByText('Successfully created')).not.toBeVisible()
+      await expect(page.getByText('project-000')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)
+
 test(
   'Can sort projects on home page',
   { tag: '@electron' },
