@@ -502,7 +502,7 @@ const extrude001 = extrude(200, sketch001)`)
 )
 
 test(
-  'Check you can go home with two different methods, and that switching between projects does not harm the stream',
+  'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
     const { electronApp, page } = await setupElectron({
