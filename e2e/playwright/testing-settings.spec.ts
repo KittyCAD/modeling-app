@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test'
-import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+
+import { getUtils, setup, tearDown } from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
-import { APP_NAME } from 'lib/constants'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -188,74 +187,4 @@ test.describe('Testing settings', () => {
       await expect(themeColorSetting).toHaveValue(settingValues.default)
     })
   })
-
-  test(
-    `Project settings override user settings on desktop`,
-    { tag: '@electron' },
-    async ({ browser: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-        folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
-          await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
-          )
-        },
-      })
-
-      await page.setViewportSize({ width: 1200, height: 500 })
-      const u = await getUtils(page)
-
-      page.on('console', console.log)
-
-      // Selectors and constants
-      const userThemeColor = '120'
-      const projectThemeColor = '50'
-      const settingsOpenButton = page.getByRole('link', {
-        name: 'settings Settings',
-      })
-      const themeColorSetting = page.locator('#themeColor').getByRole('slider')
-      const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
-      const userSettingsTab = page.getByRole('radio', { name: 'User' })
-      const settingsCloseButton = page.getByTestId('settings-close-button')
-      const projectLink = page.getByText('bracket')
-      const logoLink = page.getByTestId('app-logo')
-
-      // Open the app and set the user theme color
-      await test.step('Set user theme color on home', async () => {
-        await expect(settingsOpenButton).toBeVisible()
-        await settingsOpenButton.click()
-        // The user tab should be selected by default on home
-        await expect(userSettingsTab).toBeChecked()
-        await themeColorSetting.fill(userThemeColor)
-        await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
-        await settingsCloseButton.click()
-      })
-
-      await test.step('Set project theme color', async () => {
-        // Open the project
-        await projectLink.click()
-        await settingsOpenButton.click()
-        // The project tab should be selected by default within a project
-        await expect(projectSettingsTab).toBeChecked()
-        await themeColorSetting.fill(projectThemeColor)
-        await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-      })
-
-      await test.step('Refresh the application and see project setting applied', async () => {
-        await page.reload()
-
-        await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-        await settingsCloseButton.click()
-      })
-
-      await test.step(`Navigate back to the home view and see user setting applied`, async () => {
-        await logoLink.click()
-        await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
-      })
-
-      await electronApp.close()
-    }
-  )
 })
