@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test'
-
-import { getUtils, setup, tearDown } from './test-utils'
+import * as fsp from 'fs/promises'
+import { getUtils, setup, setupElectron, tearDown } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
@@ -416,6 +416,52 @@ const sketch001 = startSketchAt([-0, -0])
       await expect(successToastMessage).toBeVisible()
     })
   })
+
+  test(
+    `Network health indicator only appears in modeling view`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+            `${dir}/bracket/main.kcl`
+          )
+        },
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      const u = await getUtils(page)
+
+      // Locators
+      const projectsHeading = page.getByRole('heading', {
+        name: 'Your projects',
+      })
+      const projectLink = page.getByRole('link', { name: 'bracket' })
+      const networkHealthIndicator = page.getByTestId('network-toggle')
+
+      await test.step('Check the home page', async () => {
+        await expect(projectsHeading).toBeVisible()
+        await expect(projectLink).toBeVisible()
+        await expect(networkHealthIndicator).not.toBeVisible()
+      })
+
+      await test.step('Open the project', async () => {
+        await projectLink.click()
+      })
+
+      await test.step('Check the modeling view', async () => {
+        await expect(networkHealthIndicator).toBeVisible()
+        await expect(networkHealthIndicator).toContainText('Problem')
+        await u.waitForPageLoad()
+        await expect(networkHealthIndicator).toContainText('Connected')
+      })
+
+      await electronApp.close()
+    }
+  )
 })
 
 async function clickExportButton(page: Page) {
