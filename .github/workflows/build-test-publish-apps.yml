@@ -16,6 +16,10 @@ on:
 env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: true
+  BUCKET_NAME: 'dl.kittycad.io'
+  BUCKET_FOLDER: 'releases/modeling-app/test/electron'
+  WEBSITE_DIR: 'dl.zoo.dev/releases/modeling-app/test/electron' 
+  GOOGLE_CLOUD_PROJECT_ID: 'kittycadapi'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -260,17 +264,13 @@ jobs:
       contents: write
     # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-json-files, build-test-app-macos, build-test-app-windows, build-test-app-ubuntu]
-    env:
+    # env:
       # VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
       # PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       # NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       # BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
       # WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
-      BUCKET_NAME: 'dl.kittycad.io'
-      BUCKET_FOLDER: 'releases/modeling-app/test/electron'
-      WEBSITE_DIR: 'dl.zoo.dev/releases/modeling-app/test/electron' 
-      GOOGLE_CLOUD_PROJECT_ID: 'kittycadapi'
       # URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/download-artifact@v3
