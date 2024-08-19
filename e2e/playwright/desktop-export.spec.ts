@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { setupElectron, tearDown } from './test-utils'
+import { getUtils, setupElectron, tearDown } from './test-utils'
 import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -105,22 +105,16 @@ test(
     })
 
     await test.step('on open of file in file pane', async () => {
-      // OPen the file pane
-      await page.getByRole('button', { name: 'Project Files' }).click()
+      const u = await getUtils(page)
+      u.openFilePanel()
 
       const otherKclButton = page.getByRole('button', { name: 'other.kcl' })
-
-      // Check if the file is visible
-      if (!otherKclButton.isVisible()) {
-        // Open the file pane
-        await page.getByRole('button', { name: 'Project Files' }).click()
-      }
 
       // Click the file
       await otherKclButton.click()
 
       // Close the file pane
-      await page.getByRole('button', { name: 'Project Files' }).click()
+      u.closeFilePanel()
 
       // wait for it to finish executing (todo: make this more robust)
       await page.waitForTimeout(1000)
