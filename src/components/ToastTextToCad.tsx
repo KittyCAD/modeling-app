@@ -156,7 +156,6 @@ export function ToastTextToCadSuccess({
     const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setAnimationLoop(animate)
 
     const scene = new Scene()
     const ambientLight = new DirectionalLight(new Color('white'), 8.0)
@@ -229,6 +228,8 @@ export function ToastTextToCadSuccess({
 
         camera.updateProjectionMatrix()
         controls.update()
+        // render the scene once...
+        renderer.render(scene, camera)
       },
       // called when loading has errors
       function (error) {
@@ -238,9 +239,22 @@ export function ToastTextToCadSuccess({
       }
     )
 
+    // ...and set a mouseover listener on the canvas to enable the orbit controls
+    canvasRef.current.addEventListener('mouseover', () => {
+      renderer.setAnimationLoop(() =>
+        animate({ renderer, scene, camera, controls })
+      )
+    })
+    canvasRef.current.addEventListener('mouseout', () => {
+      renderer.setAnimationLoop(null)
+    })
+
     return () => {
       renderer.dispose()
+      if (animationRequestRef.current) {
         cancelAnimationFrame(animationRequestRef.current)
+        animationRequestRef.current = undefined
+      }
     }
   }, [])
 
