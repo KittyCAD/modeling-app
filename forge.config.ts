@@ -22,10 +22,30 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
-    new MakerZIP({}, ['darwin']),
+    new MakerSquirrel((arch) => ({
+      remoteReleases: `https://${process.env.WEBSITE_DIR}/win32/${arch}`,
+    })),
+    new MakerZIP(
+      (arch) => ({
+        macUpdateManifestBaseUrl: `https://${process.env.WEBSITE_DIR}/darwin/${arch}`,
+      }),
+      ['darwin']
+    ),
     new MakerRpm({}),
     new MakerDeb({}),
+  ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-gcs',
+      config: {
+        storageOptions: {
+          projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        },
+        bucket: process.env.BUCKET_NAME,
+        folder: process.env.BUCKET_FOLDER,
+        public: true,
+      },
+    },
   ],
   plugins: [
     new VitePlugin({
