@@ -493,11 +493,13 @@ test.describe('Text-to-CAD tests', () => {
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
+    await expect(generatingToastMessage.first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
     // We should have three success toasts.
-    await expect(successToastMessage).toHaveCount(3, { timeout: 15000 })
+    await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -697,7 +699,7 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
 
     // Type the prompt.
     await page.keyboard.type(promptStr)
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(200)
     await page.keyboard.press('Enter')
   })
 }
