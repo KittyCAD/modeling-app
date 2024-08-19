@@ -5,7 +5,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SourceRange},
+    executor::{KclValue, SourceRange},
     std::Args,
 };
 
@@ -31,14 +31,14 @@ impl ConversionError {
 }
 
 /// Converts a number to integer.
-pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn int(args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let converted = inner_int(num).map_err(|err| err.into_kcl_error(args.source_range))?;
 
     args.make_user_val_from_i64(converted)
 }
 
-/// Converts a number to an integer.
+/// Convert a number to an integer.
 ///
 /// Callers should use floor(), ceil(), or other rounding function first if they
 /// care about how numbers with fractional parts are converted.  If the number

@@ -6,6 +6,7 @@ import {
   Program,
   ProgramMemory,
   Value,
+  Expr,
   VariableDeclaration,
   VariableDeclarator,
 } from '../wasm'
@@ -152,7 +153,8 @@ export function addFillet(
   node: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
-  radius = createLiteral(5) as Value
+  // radius = createLiteral(5) as Value // TODO what is EXP?
+  radius = createLiteral(5) as Expr
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // clone ast to make mutations safe
   let _node = structuredClone(node)

@@ -9,16 +9,15 @@ import {
 import { Fragment } from 'react/jsx-runtime'
 import { SettingsSection } from './SettingsSection'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
-import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
+import { getInitialDefaultDir } from 'lib/desktop'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
-import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { sep } from '@tauri-apps/api/path'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
 
@@ -41,12 +40,17 @@ export const AllSettingsFields = forwardRef(
     } = useSettingsAuthContext()
 
     const projectPath =
-      isFileSettings && isTauri()
+      isFileSettings && isDesktop()
         ? decodeURI(
             location.pathname
-              .replace(paths.FILE + '/', '')
-              .replace(paths.SETTINGS, '')
-              .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
+              .replace(PATHS.FILE + '/', '')
+              .replace(PATHS.SETTINGS, '')
+              .slice(
+                0,
+                decodeURI(location.pathname).lastIndexOf(
+                  window.electron.path.sep
+                )
+              )
           )
         : undefined
 
@@ -70,7 +74,7 @@ export const AllSettingsFields = forwardRef(
           if (isFileSettings) {
             // If we're in a project, first navigate to the onboarding start here
             // so we can trigger the warning screen if necessary
-            navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
+            navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
           } else {
             // If we're in the global settings, create a new project and navigate
             // to the onboarding start in that project
@@ -176,21 +180,25 @@ export const AllSettingsFields = forwardRef(
             title="Reset settings"
             description={`Restore settings to their default values. Your settings are saved in
                     ${
-                      isTauri()
+                      isDesktop()
                         ? ' a file in the app data folder for your OS.'
                         : " your browser's local storage."
                     }
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {isTauri() && (
+              {isDesktop() && (
                 <ActionButton
                   Element="button"
                   onClick={async () => {
                     const paths = await getSettingsFolderPaths(
                       projectPath ? decodeURIComponent(projectPath) : undefined
                     )
-                    showInFolder(paths[searchParamTab])
+                    const finalPath = paths[searchParamTab]
+                    if (!finalPath) {
+                      return new Error('finalPath undefined')
+                    }
+                    window.electron.showInFolder(finalPath)
                   }}
                   iconStart={{
                     icon: 'folder',

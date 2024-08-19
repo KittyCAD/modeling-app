@@ -55,3 +55,13 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+/** localStorage key for the playwright test-specific app settings file */
+export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
+
+export const DEFAULT_HOST = 'https://api.zoo.dev'
+export const SETTINGS_FILE_NAME = 'settings.toml'
+export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
+export const COOKIE_NAME = '__Secure-next-auth.session-token'
+
+/** localStorage key to determine if we're in Playwright tests */
+export const PLAYWRIGHT_KEY = 'playwright'

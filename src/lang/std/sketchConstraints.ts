@@ -8,7 +8,7 @@ import {
   SourceRange,
   Path,
   PathToNode,
-  Value,
+  Expr,
 } from '../wasm'
 import { err } from 'lib/trap'
 
@@ -25,7 +25,7 @@ export function getSketchSegmentFromPathToNode(
   // TODO: once pathTodNode is stored on program memory as part of execution,
   // we can check if the pathToNode matches the pathToNode of the sketchGroup.
   // For now we fall back to the sourceRange
-  const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+  const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
   if (err(nodeMeta)) return nodeMeta
 
   const node = nodeMeta.node

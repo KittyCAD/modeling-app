@@ -8,14 +8,14 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, MemoryItem, Path, SketchGroup, SketchGroupSet,
+        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, KclValue, Path, SketchGroup, SketchGroupSet,
         SketchSurface,
     },
     std::Args,
 };
 
 /// Extrudes by a given amount.
-pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn extrude(args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
 
     let result = inner_extrude(length, sketch_group_set, args).await?;
@@ -23,7 +23,9 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
     Ok(result.into())
 }
 
-/// Extrudes by a given amount.
+/// Extend a 2-dimensional sketch through a third dimension in order to
+/// create new 3-dimensional volume, or if extruded into an existing volume,
+/// cut into an existing solid.
 ///
 /// ```no_run
 /// const example = startSketchOn('XZ')
@@ -249,7 +251,7 @@ pub(crate) async fn do_post_extrude(
         height: length,
         start_cap_id,
         end_cap_id,
-        fillet_or_chamfers: vec![],
+        edge_cuts: vec![],
         meta: sketch_group.meta,
     }))
 }

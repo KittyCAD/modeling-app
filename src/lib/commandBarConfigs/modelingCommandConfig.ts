@@ -40,6 +40,9 @@ export type ModelingCommandSchema = {
   'change tool': {
     tool: SketchTool
   }
+  'Text-to-CAD': {
+    prompt: string
+  }
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
@@ -254,6 +257,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  'Text-to-CAD': {
+    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
+    icon: 'chat',
+    args: {
+      prompt: {
+        inputType: 'text',
         required: true,
       },
     },

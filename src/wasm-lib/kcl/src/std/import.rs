@@ -9,7 +9,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ImportedGeometry, MemoryItem},
+    executor::{ImportedGeometry, KclValue},
     fs::FileSystem,
     std::Args,
 };
@@ -96,8 +96,12 @@ impl From<ImportFormat> for kittycad::types::InputFormat {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
             },
-            ImportFormat::Sldprt {} => kittycad::types::InputFormat::Sldprt {},
-            ImportFormat::Step {} => kittycad::types::InputFormat::Step {},
+            ImportFormat::Sldprt {} => kittycad::types::InputFormat::Sldprt {
+                split_closed_faces: false,
+            },
+            ImportFormat::Step {} => kittycad::types::InputFormat::Step {
+                split_closed_faces: false,
+            },
             ImportFormat::Stl { coords, units } => kittycad::types::InputFormat::Stl {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
@@ -113,20 +117,23 @@ impl From<ImportFormat> for kittycad::types::InputFormat {
 ///
 /// Import paths are relative to the current project directory. This only works in the desktop app
 /// not in browser.
-pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn import(args: Args) -> Result<KclValue, KclError> {
     let (file_path, options): (String, Option<ImportFormat>) = args.get_import_data()?;
 
     let imported_geometry = inner_import(file_path, options, args).await?;
-    Ok(MemoryItem::ImportedGeometry(imported_geometry))
+    Ok(KclValue::ImportedGeometry(imported_geometry))
 }
 
 /// Import a CAD file.
-/// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
-/// Otherwise you can specify the unit by passing in the options parameter.
-/// If you import a gltf file, we will try to find the bin file and import it as well.
 ///
-/// Import paths are relative to the current project directory. This only works in the desktop app
-/// not in browser.
+/// For formats lacking unit data (such as STL, OBJ, or PLY files), the default
+/// unit of measurement is millimeters. Alternatively you may specify the unit
+/// by passing your desired measurement unit in the options parameter. When
+/// importing a GLTF file, the bin file will be imported as well. Import paths
+/// are relative to the current project directory.
+///
+/// Note: The import command currently only works when using the native
+/// Modeling App.
 ///
 /// ```no_run
 /// const model = import("tests/inputs/cube.obj")
@@ -328,7 +335,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
     // * Up: +Z
     // * Handedness: Right
     match format {
-        kittycad::types::FileImportFormat::Step => Ok(kittycad::types::InputFormat::Step {}),
+        kittycad::types::FileImportFormat::Step => Ok(kittycad::types::InputFormat::Step {
+            split_closed_faces: false,
+        }),
         kittycad::types::FileImportFormat::Stl => Ok(kittycad::types::InputFormat::Stl {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
@@ -343,7 +352,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
             units: ul,
         }),
         kittycad::types::FileImportFormat::Fbx => Ok(kittycad::types::InputFormat::Fbx {}),
-        kittycad::types::FileImportFormat::Sldprt => Ok(kittycad::types::InputFormat::Sldprt {}),
+        kittycad::types::FileImportFormat::Sldprt => Ok(kittycad::types::InputFormat::Sldprt {
+            split_closed_faces: false,
+        }),
     }
 }
 
@@ -383,8 +394,8 @@ fn get_name_of_format(type_: kittycad::types::InputFormat) -> String {
         kittycad::types::InputFormat::Gltf {} => "gltf".to_string(),
         kittycad::types::InputFormat::Obj { coords: _, units: _ } => "obj".to_string(),
         kittycad::types::InputFormat::Ply { coords: _, units: _ } => "ply".to_string(),
-        kittycad::types::InputFormat::Sldprt {} => "sldprt".to_string(),
-        kittycad::types::InputFormat::Step {} => "step".to_string(),
+        kittycad::types::InputFormat::Sldprt { split_closed_faces: _ } => "sldprt".to_string(),
+        kittycad::types::InputFormat::Step { split_closed_faces: _ } => "step".to_string(),
         kittycad::types::InputFormat::Stl { coords: _, units: _ } => "stl".to_string(),
     }
 }

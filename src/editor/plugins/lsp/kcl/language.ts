@@ -29,7 +29,7 @@ export interface LanguageOptions {
 }
 
 export const KclLanguage = LRLanguage.define({
-  name: 'klc',
+  name: 'kcl',
   parser: parser.configure({
     props: [
       indentNodeProp.add({

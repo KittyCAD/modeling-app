@@ -6,7 +6,11 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
-import { Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import {
+  Diagnostic,
+  forEachDiagnostic,
+  setDiagnosticsEffect,
+} from '@codemirror/lint'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -131,6 +135,38 @@ export default class EditorManager {
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
         setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  scrollToFirstErrorDiagnosticIfExists() {
+    if (!this._editorView) return
+
+    let firstDiagnosticPos: [number, number] | null = null
+    forEachDiagnostic(
+      this._editorView.state,
+      (d: Diagnostic, from: number, to: number) => {
+        if (!firstDiagnosticPos && d.severity === 'error') {
+          firstDiagnosticPos = [from, to]
+        }
+      }
+    )
+
+    if (!firstDiagnosticPos) return
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.cursor(firstDiagnosticPos[0]),
+      ]),
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(firstDiagnosticPos[0], firstDiagnosticPos[1])
+        ),
+      ],
+      annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),
       ],

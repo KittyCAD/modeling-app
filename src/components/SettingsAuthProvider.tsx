@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { paths } from 'lib/paths'
+import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
+import { PATHS } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect } from 'react'
@@ -21,7 +21,7 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
@@ -60,8 +60,8 @@ export const SettingsAuthProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const loadedSettings = useRouteLoaderData(paths.INDEX) as typeof settings
-  const loadedProject = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loadedSettings = useRouteLoaderData(PATHS.INDEX) as typeof settings
+  const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   return (
     <SettingsAuthProviderBase
       loadedSettings={loadedSettings}
@@ -96,6 +96,7 @@ export const SettingsAuthProviderBase = ({
   loadedSettings: typeof settings
   loadedProject?: IndexLoaderData
 }) => {
+  const location = useLocation()
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
 
@@ -191,6 +192,7 @@ export const SettingsAuthProviderBase = ({
               allSettingsIncludesUnitChange ||
               resetSettingsIncludesUnitChange
             ) {
+              // Unit changes requires a re-exec of code
               kclManager.isFirstRender = true
               kclManager.executeCode(true).then(() => {
                 kclManager.isFirstRender = false
@@ -296,12 +298,12 @@ export const SettingsAuthProviderBase = ({
   const [authState, authSend, authActor] = useMachine(authMachine, {
     actions: {
       goToSignInPage: () => {
-        navigate(paths.SIGN_IN)
+        navigate(PATHS.SIGN_IN)
         logout()
       },
       goToIndexPage: () => {
-        if (window.location.pathname.includes(paths.SIGN_IN)) {
-          navigate(paths.INDEX)
+        if (location.pathname.includes(PATHS.SIGN_IN)) {
+          navigate(PATHS.INDEX)
         }
       },
     },
@@ -340,7 +342,7 @@ export default SettingsAuthProvider
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   return (
-    !isTauri() &&
+    !isDesktop() &&
     fetch(withBaseUrl('/logout'), {
       method: 'POST',
       credentials: 'include',

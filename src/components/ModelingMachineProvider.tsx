@@ -71,14 +71,20 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
-import { ExportIntent } from 'lang/std/engineConnection'
+import {
+  ExportIntent,
+  EngineConnectionStateType,
+  EngineConnectionEvents,
+} from 'lang/std/engineConnection'
+import { submitAndAwaitTextToKcl } from 'lib/textToCad'
+import { useFileContext } from 'hooks/useFileContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -104,6 +110,8 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const navigate = useNavigate()
+  const { context, send: fileMachineSend } = useFileContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -111,7 +119,7 @@ export const ModelingMachineProvider = ({
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -145,8 +153,6 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
-            // blocks entering a sketch until after exit sketch code has run
-            kclManager.isExecuting = true
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
@@ -154,7 +160,10 @@ export const ModelingMachineProvider = ({
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
             store.videoElement?.pause()
+
+            kclManager.isFirstRender = true
             kclManager.executeCode().then(() => {
+              kclManager.isFirstRender = false
               if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play().catch((e) => {
@@ -363,7 +372,6 @@ export const ModelingMachineProvider = ({
           // Set the export intent.
           engineCommandManager.exportIntent = ExportIntent.Make
 
-          console.log('making', event.data)
           // Set the current machine.
           machineManager.currentMachine = event.data.machine
 
@@ -380,14 +388,17 @@ export const ModelingMachineProvider = ({
               },
             },
             storage: 'ascii',
-            units: defaultUnit.current,
+            // Convert all units to mm since that is what the slicer expects.
+            units: 'mm',
             selection: { type: 'default_scene' },
           }
 
+          // Artificially delay the export in playwright tests
           toast.promise(
             exportFromEngine({
               format: format,
             }),
+
             {
               loading: 'Starting print...',
               success: 'Started print successfully',
@@ -404,7 +415,6 @@ export const ModelingMachineProvider = ({
           // Set the export intent.
           engineCommandManager.exportIntent = ExportIntent.Save
 
-          console.log('exporting', event.data)
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>
@@ -458,6 +468,23 @@ export const ModelingMachineProvider = ({
               error: 'Error while exporting',
             }
           )
+        },
+        'Submit to Text-to-CAD API': async (_, { data }) => {
+          const trimmedPrompt = data.prompt.trim()
+          if (!trimmedPrompt) return
+
+          void submitAndAwaitTextToKcl({
+            trimmedPrompt,
+            fileMachineSend,
+            navigate,
+            commandBarSend,
+            context,
+            token,
+            settings: {
+              theme: theme.current,
+              highlightEdges: highlightEdges.current,
+            },
+          })
         },
       },
       guards: {
@@ -909,15 +936,19 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  useSetupEngineManager(streamRef, token, {
-    pool: pool,
-    theme: theme.current,
-    highlightEdges: highlightEdges.current,
-    enableSSAO: enableSSAO.current,
+  useSetupEngineManager(
+    streamRef,
     modelingSend,
-    modelingContext: modelingState.context,
-    showScaleGrid: showScaleGrid.current,
-  })
+    modelingState.context,
+    {
+      pool: pool,
+      theme: theme.current,
+      highlightEdges: highlightEdges.current,
+      enableSSAO: enableSSAO.current,
+      showScaleGrid: showScaleGrid.current,
+    },
+    token
+  )
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {
@@ -945,17 +976,25 @@ export const ModelingMachineProvider = ({
   }, [modelingState.context.selectionRanges])
 
   useEffect(() => {
-    const offlineCallback = () => {
+    const onConnectionStateChanged = ({ detail }: CustomEvent) => {
       // If we are in sketch mode we need to exit it.
       // TODO: how do i check if we are in a sketch mode, I only want to call
       // this then.
-      modelingSend({ type: 'Cancel' })
+      if (detail.type === EngineConnectionStateType.Disconnecting) {
+        modelingSend({ type: 'Cancel' })
+      }
     }
-    window.addEventListener('offline', offlineCallback)
+    engineCommandManager.engineConnection?.addEventListener(
+      EngineConnectionEvents.ConnectionStateChanged,
+      onConnectionStateChanged as EventListener
+    )
     return () => {
-      window.removeEventListener('offline', offlineCallback)
+      engineCommandManager.engineConnection?.removeEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChanged as EventListener
+      )
     }
-  }, [modelingSend])
+  }, [engineCommandManager.engineConnection, modelingSend])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

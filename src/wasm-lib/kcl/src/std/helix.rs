@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExtrudeGroup, MemoryItem},
+    executor::{ExtrudeGroup, KclValue},
     std::Args,
 };
 
@@ -31,11 +31,11 @@ pub struct HelixData {
 }
 
 /// Create a helix on a cylinder.
-pub async fn helix(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn helix(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group): (HelixData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let extrude_group = inner_helix(data, extrude_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
 /// Create a helix on a cylinder.

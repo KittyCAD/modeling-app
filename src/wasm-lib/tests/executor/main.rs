@@ -4,7 +4,8 @@ use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
 /// i.e. how different the current model snapshot can be from the previous saved one.
 const MIN_DIFF: f64 = 0.99;
 
-// mod server;
+mod no_visuals;
+mod visuals;
 
 macro_rules! kcl_input {
     ($file:literal) => {
@@ -17,80 +18,6 @@ fn assert_out(test_name: &str, result: &image::DynamicImage) {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face() {
-    let code = kcl_input!("sketch_on_face");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_riddle_small() {
-    let code = kcl_input!("riddle_small");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("riddle_small", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_lego() {
-    let code = kcl_input!("lego");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("lego", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_computed_var() {
-    let code = kcl_input!("computed_var");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("computed_var", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_pipe_as_arg() {
-    let code = kcl_input!("pipe_as_arg");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("pipe_as_arg", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_pentagon_fillet_sugar() {
-    let code = kcl_input!("pentagon_fillet_sugar");
-    let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
-    assert_out("pentagon_fillet_sugar", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_start() {
-    let code = kcl_input!("sketch_on_face_start");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_start", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_mike_stress_lines() {
-    let code = kcl_input!("mike_stress_test");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("mike_stress_test", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_end() {
-    let code = kcl_input!("sketch_on_face_end");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_end", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_end_negative_extrude() {
-    let code = kcl_input!("sketch_on_face_end_negative_extrude");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_end_negative_extrude", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
@@ -100,44 +27,6 @@ async fn kcl_test_fillet_duplicate_tags() {
         result.err().unwrap().to_string(),
         r#"type: KclErrorDetails { source_ranges: [SourceRange([203, 249])], message: "Duplicate tags are not allowed." }"#,
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_start() {
-    let code = kcl_input!("basic_fillet_cube_start");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_start", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_end() {
-    let code = kcl_input!("basic_fillet_cube_end");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_end", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_close_opposite() {
-    let code = kcl_input!("basic_fillet_cube_close_opposite");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_close_opposite", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_next_adjacent() {
-    let code = kcl_input!("basic_fillet_cube_next_adjacent");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_next_adjacent", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_fillet_cube_previous_adjacent() {
-    let code = kcl_input!("basic_fillet_cube_previous_adjacent");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("basic_fillet_cube_previous_adjacent", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -291,19 +180,6 @@ async fn kcl_test_negative_args() {
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("negative_args", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_tangential_arc() {
-    let code = r#"const boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
-    |> tangentialArc({radius: 5, offset: 90}, %)
-    |> line([5, -15], %)
-    |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("tangential_arc", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -949,30 +825,6 @@ const part002 = startSketchOn(part001, "end")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_circle_tagged() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
-
-const part002 = startSketchOn(part001, "end")
-  |> circle([0, 0], 5, %, $myCircle) 
-  |> extrude(5, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_circle_tagged", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_stdlib_kcl_error_circle() {
     let code = r#"// Mounting Plate
 // A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
@@ -1014,42 +866,8 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but wasn't" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but found string (text)" }"#,
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_big_number_angle_to_match_length_x() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, $seg01)
-  |> angledLineToX([
-       -angleToMatchLengthX(seg01, 3, %),
-       3
-     ], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("big_number_angle_to_match_length_x", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_big_number_angle_to_match_length_y() {
-    let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, $seg01)
-  |> angledLineToX([
-       -angleToMatchLengthY(seg01, 3, %),
-       3
-     ], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("big_number_angle_to_match_length_y", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1536,7 +1354,7 @@ const secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but wasn't" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
     );
 }
 
@@ -1874,7 +1692,7 @@ const baseExtrusion = extrude(width, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_engine_error_source_range_on_last_command() {
+async fn kcl_test_shell_with_tag() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
@@ -1889,12 +1707,8 @@ async fn kcl_test_engine_error_source_range_on_last_command() {
   }, %)
 "#;
 
-    let result = execute_and_snapshot(code, UnitLength::Mm).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([256, 312])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
-    );
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("shell_with_tag", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2347,7 +2161,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
     );
 }
 
@@ -2368,6 +2182,18 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but wasn't" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_fillet_and_shell() {
+    let code = kcl_input!("fillet-and-shell");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([2004, 2065])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Invalid brep after shell operation\" }]" }"#
     );
 }

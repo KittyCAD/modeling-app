@@ -6,7 +6,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::MemoryItem,
+    executor::KclValue,
     std::Args,
 };
 
@@ -22,7 +22,7 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
 
 /// Check that the provided value is true, or raise a [KclError]
 /// with the provided description.
-pub async fn assert(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn assert(args: Args) -> Result<KclValue, KclError> {
     let (data, description): (bool, String) = args.get_data()?;
     inner_assert(data, &description, &args).await?;
     args.make_null_user_val()
@@ -42,7 +42,7 @@ async fn inner_assert(data: bool, message: &str, args: &Args) -> Result<(), KclE
     _assert(data, message, args).await
 }
 
-pub async fn assert_lt(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn assert_lt(args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_lt(left, right, &description, &args).await?;
     args.make_null_user_val()
@@ -61,9 +61,30 @@ async fn inner_assert_lt(left: f64, right: f64, message: &str, args: &Args) -> R
     _assert(left < right, message, args).await
 }
 
-pub async fn assert_gt(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn assert_gt(args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_gt(left, right, &description, &args).await?;
+    args.make_null_user_val()
+}
+
+/// Check that a numerical value equals another at runtime,
+/// otherwise raise an error.
+///
+/// ```no_run
+/// let n = 1.0285
+/// let m = 1.0286
+/// assertEqual(n, m, 0.01, "n is within the given tolerance for m")
+/// ```
+#[stdlib {
+    name = "assertEqual",
+}]
+async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
+    _assert((right - left).abs() < epsilon, message, args).await
+}
+
+pub async fn assert_equal(args: Args) -> Result<KclValue, KclError> {
+    let (left, right, epsilon, description): (f64, f64, f64, String) = args.get_data()?;
+    inner_assert_equal(left, right, epsilon, &description, &args).await?;
     args.make_null_user_val()
 }
 
@@ -80,7 +101,7 @@ async fn inner_assert_gt(left: f64, right: f64, message: &str, args: &Args) -> R
     _assert(left > right, message, args).await
 }
 
-pub async fn assert_lte(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn assert_lte(args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_lte(left, right, &description, &args).await?;
     args.make_null_user_val()
@@ -100,7 +121,7 @@ async fn inner_assert_lte(left: f64, right: f64, message: &str, args: &Args) -> 
     _assert(left <= right, message, args).await
 }
 
-pub async fn assert_gte(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn assert_gte(args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_gte(left, right, &description, &args).await?;
     args.make_null_user_val()

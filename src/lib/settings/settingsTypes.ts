@@ -2,6 +2,15 @@ import { type Models } from '@kittycad/lib'
 import { Setting, settings } from './initialSettings'
 import { AtLeast, PathValue, Paths } from 'lib/types'
 import { CommandArgumentConfig } from 'lib/commandTypes'
+import { Themes } from 'lib/theme'
+
+export interface SettingsViaQueryString {
+  pool: string | null
+  theme: Themes
+  highlightEdges: boolean
+  enableSSAO: boolean
+  showScaleGrid: boolean
+}
 
 export enum UnitSystem {
   Imperial = 'imperial',

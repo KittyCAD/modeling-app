@@ -381,6 +381,7 @@ export class SceneEntities {
       programMemory,
     })
     if (err(sketchGroup)) return Promise.reject(sketchGroup)
+    if (!sketchGroup) return Promise.reject('sketchGroup not found')
 
     if (!Array.isArray(sketchGroup?.value))
       return {
@@ -590,7 +591,7 @@ export class SceneEntities {
     const sg = kclManager.programMemory.get(
       variableDeclarationName
     ) as SketchGroup
-    const lastSeg = sg.value.slice(-1)[0] || sg.start
+    const lastSeg = sg?.value?.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
 
@@ -916,6 +917,10 @@ export class SceneEntities {
             programMemory: kclManager.programMemory,
           })
           if (trap(sketchGroup)) return
+          if (!sketchGroup) {
+            trap(new Error('sketchGroup not found'))
+            return
+          }
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
@@ -1765,7 +1770,7 @@ export function sketchGroupFromPathToNode({
   pathToNode: PathToNode
   ast: Program
   programMemory: ProgramMemory
-}): SketchGroup | Error {
+}): SketchGroup | null | Error {
   const _varDec = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     pathToNode,
@@ -1777,7 +1782,10 @@ export function sketchGroupFromPathToNode({
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }
-  return result as SketchGroup
+  if (result?.type === 'SketchGroup') {
+    return result
+  }
+  return null
 }
 
 function colorSegment(object: any, color: number) {
@@ -1830,6 +1838,7 @@ export async function getSketchOrientationDetails(
     programMemory: kclManager.programMemory,
   })
   if (err(sketchGroup)) return Promise.reject(sketchGroup)
+  if (!sketchGroup) return Promise.reject('sketchGroup not found')
 
   if (sketchGroup.on.type === 'plane') {
     const zAxis = sketchGroup?.on.zAxis

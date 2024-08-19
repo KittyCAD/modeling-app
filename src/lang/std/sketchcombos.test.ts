@@ -1,4 +1,4 @@
-import { parse, Value, recast, initPromise } from '../wasm'
+import { parse, Expr, recast, initPromise } from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -69,8 +69,8 @@ function getConstraintTypeFromSourceHelper(
   if (err(ast)) return ast
 
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
-    Value,
-    Value
+    Expr,
+    Expr
   ]
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(args, fnName)
@@ -81,7 +81,7 @@ function getConstraintTypeFromSourceHelper2(
   const ast = parse(code)
   if (err(ast)) return ast
 
-  const arg = (ast.body[0] as any).expression.arguments[0] as Value
+  const arg = (ast.body[0] as any).expression.arguments[0] as Expr
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(arg, fnName)
 }

@@ -240,6 +240,7 @@ export function getArtifactsToUpdate({
   const response = responseMap[id]
   const cmd = command.cmd
   const returnArr: ReturnType<typeof getArtifactsToUpdate> = []
+  if (!response) return returnArr
   if (cmd.type === 'enable_sketch_mode') {
     const plane = getArtifact(currentPlaneId)
     const pathIds = plane?.type === 'plane' ? plane?.pathIds : []
@@ -316,7 +317,7 @@ export function getArtifactsToUpdate({
         artifact: { ...path, segIds: [id] },
       })
     if (
-      response.type === 'modeling' &&
+      response?.type === 'modeling' &&
       response.data.modeling_response.type === 'close_path'
     ) {
       returnArr.push({

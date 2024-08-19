@@ -1,0 +1,2 @@
+let num = 999
+let x = num[3]

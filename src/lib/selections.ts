@@ -5,7 +5,7 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Value, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, Expr, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -639,7 +639,7 @@ export function updateSelections(
 
   const newSelections = Object.entries(pathToNodeMap)
     .map(([index, pathToNode]): Selection | undefined => {
-      const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
       return {

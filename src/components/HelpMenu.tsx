@@ -3,10 +3,11 @@ import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { createAndOpenNewProject } from 'lib/tauriFS'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
+import { createAndOpenNewProject } from 'lib/desktopFS'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -16,7 +17,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
   const location = useLocation()
   const { onProjectOpen } = useLspContext()
   const filePath = useAbsoluteFilePath()
-  const isInProject = location.pathname.includes(paths.FILE)
+  const isInProject = location.pathname.includes(PATHS.FILE)
   const navigate = useNavigate()
   const { settings } = useSettingsAuthContext()
 
@@ -89,10 +90,10 @@ export function HelpMenu(props: React.PropsWithChildren) {
         <HelpMenuItem
           as="button"
           onClick={() => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=keybindings')
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_KEYBINDINGS
+              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+            navigate(targetPath)
           }}
         >
           Keyboard shortcuts
@@ -108,7 +109,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
               },
             })
             if (isInProject) {
-              navigate(filePath + paths.ONBOARDING.INDEX)
+              navigate(filePath + PATHS.ONBOARDING.INDEX)
             } else {
               createAndOpenNewProject({ onProjectOpen, navigate })
             }
@@ -141,6 +142,9 @@ function HelpMenuItem({
       {as === 'a' ? (
         <a
           {...(props as React.ComponentProps<'a'>)}
+          onClick={openExternalBrowserIfDesktop(
+            (props as React.ComponentProps<'a'>).href
+          )}
           className={`no-underline text-inherit ${baseClassName} ${className}`}
         >
           {children}

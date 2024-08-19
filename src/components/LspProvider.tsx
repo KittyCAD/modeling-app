@@ -14,7 +14,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { FileEntry } from 'lib/types'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
@@ -25,7 +25,7 @@ import {
 import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { err } from 'lib/trap'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { codeManager } from 'lib/singletons'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
@@ -125,7 +125,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isTauri() && isKclLspReady && kclLspClient && codeManager.code) {
+    if (!isDesktop() && isKclLspReady && kclLspClient && codeManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -260,7 +260,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     if (redirect) {
-      navigate(paths.HOME)
+      navigate(PATHS.HOME)
     }
   }
 

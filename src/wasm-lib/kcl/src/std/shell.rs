@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem},
+    executor::{ExtrudeGroup, KclValue},
     std::{sketch::FaceTag, Args},
 };
 
@@ -24,14 +24,16 @@ pub struct ShellData {
 }
 
 /// Create a shell.
-pub async fn shell(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn shell(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group): (ShellData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let extrude_group = inner_shell(data, extrude_group, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
-/// Shell a solid.
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains, taking volume starting at the provided
+/// face, leaving it open in that direction.
 ///
 /// ```no_run
 /// const firstSketch = startSketchOn('XY')
@@ -45,6 +47,38 @@ pub async fn shell(args: Args) -> Result<MemoryItem, KclError> {
 /// // Remove the end face for the extrusion.
 /// shell({
 ///     faces: ['end'],
+///     thickness: 0.25,
+/// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('-XZ')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove the start face for the extrusion.
+/// shell({
+///     faces: ['start'],
+///     thickness: 0.25,
+/// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %, $myTag)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove a tagged face for the extrusion.
+/// shell({
+///     faces: [myTag],
 ///     thickness: 0.25,
 /// }, firstSketch)
 /// ```
@@ -76,6 +110,11 @@ async fn inner_shell(
             source_ranges: vec![args.source_range],
         }));
     }
+
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not do these for sketch on face, things will fail with face does not exist.
+    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+        .await?;
 
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),

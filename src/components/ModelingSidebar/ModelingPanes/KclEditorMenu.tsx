@@ -7,6 +7,7 @@ import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './KclEditorPane'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { kclManager } from 'lib/singletons'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
@@ -60,6 +61,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               href="https://zoo.dev/docs/kcl"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={openExternalBrowserIfDesktop()}
             >
               <span>Read the KCL docs</span>
               <small>
@@ -78,6 +80,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               href="https://zoo.dev/docs/kcl-samples"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={openExternalBrowserIfDesktop()}
             >
               <span>KCL samples</span>
               <small>

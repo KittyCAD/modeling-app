@@ -5,7 +5,7 @@ import {
   InterpreterFrom,
   StateFrom,
 } from 'xstate'
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import {
   Command,
   CommandArgument,
@@ -76,8 +76,8 @@ export function createMachineCommand<
   if ('hide' in commandConfig) {
     const { hide } = commandConfig
     if (hide === 'both') return null
-    else if (hide === 'desktop' && isTauri()) return null
-    else if (hide === 'web' && !isTauri()) return null
+    else if (hide === 'desktop' && isDesktop()) return null
+    else if (hide === 'web' && !isDesktop()) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -154,10 +154,6 @@ export function buildCommandArgument<
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
-    if (!(arg.options || arg.optionsFromContext)) {
-      throw new Error('Options must be provided for options input type')
-    }
-
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,
