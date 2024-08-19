@@ -53,6 +53,7 @@ test(
   async ({ page, context }) => {
     // skip on macos and windows.
     test.skip(
+      // eslint-disable-next-line jest/valid-title
       process.platform === 'darwin' || process.platform === 'win32',
       'Skip on macos and windows'
     )
