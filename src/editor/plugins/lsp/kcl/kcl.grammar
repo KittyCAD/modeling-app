@@ -111,6 +111,6 @@ commaSep<term> { (term ("," term)*)? ","? }
   "," "?" ":" "." ".."
 }
 
-@external propSource klcHighlight from "./highlight"
+@external propSource kclHighlight from "./highlight"
 
 @detectDelim

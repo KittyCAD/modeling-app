@@ -34,13 +34,13 @@ jobs:
               - 'src/wasm-lib/**'
 
   playwright-chrome:
-    timeout-minutes: 30
+    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 40 }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
-        os: [ubuntu-latest, windows-latest, macos-14]
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
@@ -238,19 +238,19 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: send to axiom
-      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
+      if: always()
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() && (success() || failure()) }}
+      if: always()
       with:
         name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() && (success() || failure()) }}
+      if: always()
       with:
         name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/

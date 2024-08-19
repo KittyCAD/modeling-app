@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { getUtils, setupElectron, tearDown } from './test-utils'
+import {
+  doExport,
+  getUtils,
+  Paths,
+  setupElectron,
+  tearDown,
+} from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
@@ -8,6 +14,94 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
+test(
+  'Can export from electron app',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          `${dir}/bracket/main.kcl`
+        )
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+    await electronApp.context().addInitScript(async () => {
+      ;(window as any).playwrightSkipFilePicker = true
+    })
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [75, 75, 75]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(10)
+    })
+
+    const exportLocations: Array<Paths> = []
+    await test.step('export the model as a glTF', async () => {
+      exportLocations.push(
+        await doExport(
+          {
+            type: 'gltf',
+            storage: 'embedded',
+            presentation: 'pretty',
+          },
+          page,
+          true
+        )
+      )
+    })
+
+    await test.step('Check the export size', async () => {
+      await expect
+        .poll(
+          async () => {
+            try {
+              const outputGltf = await fsp.readFile('output.gltf')
+              return outputGltf.byteLength
+            } catch (e) {
+              return 0
+            }
+          },
+          { timeout: 15_000 }
+        )
+        .toBe(477327)
+
+      // clean up output.gltf
+      await fsp.rm('output.gltf')
+    })
+
+    await electronApp.close()
+  }
+)
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
   { tag: '@electron' },
@@ -66,10 +160,10 @@ test(
 
       await page.waitForTimeout(100)
 
-      // type "updated project name"
       await page.keyboard.press('Backspace')
       await page.keyboard.type('updated project name')
 
+      // spam arrow keys to make sure it doesn't impact the text
       for (let i = 0; i < 10; i++) {
         await page.keyboard.press('ArrowRight')
       }
@@ -295,6 +389,101 @@ test.fixme(
     await electronApp.close()
   }
 )
+
+test(
+  'Deleting projects, can delete individual project, can still create projects after deleting all',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    const createProjectAndRenameIt = async (name: string) =>
+      test.step(`Create and rename project ${name}`, async () => {
+        await page.getByRole('button', { name: 'New project' }).click()
+        await expect(page.getByText('Successfully created')).toBeVisible()
+        await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+        await expect(page.getByText(`project-000`)).toBeVisible()
+        await page.getByText(`project-000`).hover()
+        await page.getByText(`project-000`).focus()
+
+        await page.getByLabel('sketch').first().click()
+
+        await page.waitForTimeout(100)
+
+        // type "updated project name"
+        await page.keyboard.press('Backspace')
+        await page.keyboard.type(name)
+
+        await page.getByLabel('checkmark').last().click()
+      })
+
+    // we need to create the folders so that the order is correct
+    // creating them ahead of time with fs tools means they all have the same timestamp
+    await createProjectAndRenameIt('router-template-slate')
+    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
+    await createProjectAndRenameIt('bracket')
+    await createProjectAndRenameIt('lego')
+
+    await test.step('delete the middle project, i.e. the bracket project', async () => {
+      const project = page.getByText('bracket')
+
+      await project.hover()
+      await project.focus()
+
+      await page
+        .locator('[data-edit-buttons-for="bracket"]')
+        .getByLabel('trash')
+        .click()
+
+      await expect(page.getByText('This will permanently delete')).toBeVisible()
+
+      await page.getByTestId('delete-confirmation').click()
+
+      await expect(page.getByText('Successfully deleted')).toBeVisible()
+      await expect(page.getByText('Successfully deleted')).not.toBeVisible()
+
+      await expect(page.getByText('bracket')).not.toBeVisible()
+    })
+
+    await test.step('Now that the middle project is deleted, check the other projects are still there', async () => {
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('lego')).toBeVisible()
+    })
+
+    await test.step('delete other two projects', async () => {
+      await page
+        .locator('[data-edit-buttons-for="router-template-slate"]')
+        .getByLabel('trash')
+        .click()
+      await page.getByTestId('delete-confirmation').click()
+
+      await page
+        .locator('[data-edit-buttons-for="lego"]')
+        .getByLabel('trash')
+        .click()
+      await page.getByTestId('delete-confirmation').click()
+    })
+
+    await test.step('Check that the home page is empty', async () => {
+      await expect(page.getByText('No Projects found')).toBeVisible()
+    })
+
+    await test.step('Check we can still create a project', async () => {
+      await page.getByRole('button', { name: 'New project' }).click()
+      await expect(page.getByText('Successfully created')).toBeVisible()
+      await expect(page.getByText('Successfully created')).not.toBeVisible()
+      await expect(page.getByText('project-000')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)
+
 test(
   'Can sort projects on home page',
   { tag: '@electron' },
@@ -502,7 +691,7 @@ const extrude001 = extrude(200, sketch001)`)
 )
 
 test(
-  'Check you can go home with two different methods, and that switching between projects does not harm the stream',
+  'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
     const { electronApp, page } = await setupElectron({
@@ -750,7 +939,7 @@ test(
       await searchInput.fill('basi')
       await expect(projectLinks).toHaveCount(3)
 
-      // Chech each of the "basi" projects are visible
+      // Check each of the "basi" projects are visible
       for (const [name] of projectData.slice(0, 3)) {
         await expect(page.getByText(name)).toBeVisible()
       }
