@@ -13,7 +13,7 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
-  'Can export from electron app',
+  'When machine-api server not found button is disabled',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
     const { electronApp, page } = await setupElectron({
@@ -30,72 +30,28 @@ test(
     await page.setViewportSize({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
-    await electronApp.context().addInitScript(async () => {
-      ;(window as any).playwrightSkipFilePicker = true
+    await expect(page.getByText('bracket')).toBeVisible()
+
+    await page.getByText('bracket').click()
+
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
     })
 
-    const pointOnModel = { x: 630, y: 280 }
+    const notFoundText = 'Machine API server not found'
+    await expect(page.getByText(notFoundText)).not.toBeVisible()
 
-    await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
+    // Find the make button
+    const makeButton = page.getByRole('button', { name: 'Make' })
+    // Make sure the button is visible but disabled
+    await expect(makeButton).toBeVisible()
+    await expect(makeButton).toBeDisabled()
 
-      await page.getByText('bracket').click()
-
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
-
-      // gray at this pixel means the stream has loaded in the most
-      // user way we can verify it (pixel color)
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [75, 75, 75]), {
-          timeout: 10_000,
-        })
-        .toBeLessThan(10)
-    })
-
-    const exportLocations: Array<Paths> = []
-    await test.step('export the model as a glTF', async () => {
-      exportLocations.push(
-        await doExport(
-          {
-            type: 'gltf',
-            storage: 'embedded',
-            presentation: 'pretty',
-          },
-          page,
-          true
-        )
-      )
-    })
-
-    await test.step('Check the export size', async () => {
-      await expect
-        .poll(
-          async () => {
-            try {
-              const outputGltf = await fsp.readFile('output.gltf')
-              return outputGltf.byteLength
-            } catch (e) {
-              return 0
-            }
-          },
-          { timeout: 15_000 }
-        )
-        .toBe(477327)
-
-      // clean up output.gltf
-      await fsp.rm('output.gltf')
-    })
+    // When you hover over the button, the tooltip should show
+    // that the machine-api server is not found
+    await makeButton.hover()
+    await expect(page.getByText(notFoundText)).toBeVisible()
 
     await electronApp.close()
   }
