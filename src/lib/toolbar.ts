@@ -2,7 +2,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import {
-  canRectangleTool,
+  canRectangleOrCircleTool,
   isEditingExistingSketch,
   modelingMachine,
 } from 'machines/modelingMachine'
@@ -355,9 +355,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'circle-center',
-          onClick: () => console.error('Center circle not yet implemented'),
+          onClick: ({ modelingStateMatches, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingStateMatches('Sketch.Rectangle tool')
+                  ? 'circle'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
           title: 'Center circle',
           showTitle: false,
           description: 'Start drawing a circle from its center',
@@ -374,7 +382,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             console.error('Three-point circle not yet implemented'),
           icon: 'circle',
           status: 'unavailable',
-          disabled: () => true,
           title: 'Three-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',
@@ -396,7 +403,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'rectangle',
           status: 'available',
           disabled: (state) =>
-            !canRectangleTool(state.context) &&
+            !canRectangleOrCircleTool(state.context) &&
             !state.matches('Sketch.Rectangle tool'),
           title: 'Corner rectangle',
           hotkey: (state) =>
