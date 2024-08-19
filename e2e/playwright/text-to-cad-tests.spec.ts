@@ -31,15 +31,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -149,15 +147,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Hit copy to clipboard.
     const rejectButton = page.getByRole('button', { name: 'Reject' })
