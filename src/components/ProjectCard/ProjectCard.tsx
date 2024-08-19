@@ -120,7 +120,10 @@ function ProjectCard({
         </div>
       </Link>
       {!isEditing && (
-        <div className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100">
+        <div
+          className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100"
+          data-edit-buttons-for={project.name?.replace(FILE_EXT, '')}
+        >
           <ActionButton
             Element="button"
             iconStart={{
