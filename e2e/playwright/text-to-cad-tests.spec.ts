@@ -541,12 +541,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(`2x8`)
 
     // Find the toast close button.
-    const closeButton = page
-      .getByRole('status')
-      .locator('div')
-      .filter({ hasText: 'Text-to-CAD successfulPrompt' })
-      .first()
-      .getByRole('button', { name: 'Close' })
+    const closeButton = page.locator('[data-negative-button="close"]').first()
     await expect(closeButton).toBeVisible()
     await closeButton.click()
 
