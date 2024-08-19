@@ -23,7 +23,8 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel((arch) => ({
-      remoteReleases: `https://${process.env.WEBSITE_DIR}/win32/${arch}`,
+      // TODO: reactive once we have releases live
+      // remoteReleases: `https://${process.env.WEBSITE_DIR}/win32/${arch}`,
     })),
     new MakerZIP(
       (arch) => ({
