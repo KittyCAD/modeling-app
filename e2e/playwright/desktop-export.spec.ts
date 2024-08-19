@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { doExport, setupElectron, tearDown, Paths } from './test-utils'
+import { setupElectron, tearDown } from './test-utils'
 import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
