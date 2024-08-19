@@ -5,6 +5,7 @@ import {
   TestInfo,
   BrowserContext,
   _electron as electron,
+  Locator,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
@@ -94,6 +95,8 @@ async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
   await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
+// Ignoring the lint since I assume someone will want to use this for a test.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function waitForDefaultPlanesToBeVisible(page: Page) {
   await page.waitForFunction(
     () =>
@@ -171,7 +174,8 @@ export const wiggleMove = async (
       const isElVis = await page.locator(locator).isVisible()
       if (isElVis) return
     }
-    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
+    // x1 is 0.
+    const y1 = Math.sin((tau / steps) * j * freq) * amplitude
     const [x2, y2] = [
       Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
       Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
@@ -452,7 +456,10 @@ export async function getUtils(page: Page) {
         return page.evaluate('window.tearDown()')
       }
 
-      cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+      return cdpSession?.send(
+        'Network.emulateNetworkConditions',
+        networkOptions
+      )
     },
   }
 }
@@ -744,4 +751,23 @@ export async function setupElectron({
   await setup(context, page)
 
   return { electronApp, page }
+}
+
+export async function isOutOfViewInScrollContainer(
+  element: Locator,
+  container: Locator
+): Promise<boolean> {
+  const elementBox = await element.boundingBox({ timeout: 5_000 })
+  const containerBox = await container.boundingBox({ timeout: 5_000 })
+
+  let isOutOfView = false
+  if (elementBox && containerBox)
+    return (
+      elementBox.y + elementBox.height > containerBox.y + containerBox.height ||
+      elementBox.y < containerBox.y ||
+      elementBox.x + elementBox.width > containerBox.x + containerBox.width ||
+      elementBox.x < containerBox.x
+    )
+
+  return isOutOfView
 }
