@@ -37,7 +37,6 @@ test(
       ;(window as any).playwrightSkipFilePicker = true
     })
 
-    // click on teh project
     const pointOnModel = { x: 630, y: 280 }
 
     await test.step('Opening the bracket project should load the stream', async () => {
