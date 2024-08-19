@@ -29,15 +29,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -96,15 +94,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -116,13 +112,12 @@ test.describe('Text-to-CAD tests', () => {
     // Find the toast.
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
-
-    await page.waitForTimeout(5000)
-
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     // Expect 2 success toasts.
-    await expect(successToastMessage).toHaveCount(2)
+    await expect(successToastMessage).toHaveCount(2, {
+      timeout: 15000,
+    })
     await expect(page.getByText('a 2x4 lego')).toBeVisible()
     await expect(page.getByText('a 2x6 lego')).toBeVisible()
   })
@@ -145,15 +140,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Hit copy to clipboard.
     const rejectButton = page.getByRole('button', { name: 'Reject' })
@@ -317,11 +310,9 @@ test.describe('Text-to-CAD tests', () => {
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
-    await expect(generatingToastMessage).toBeVisible()
-
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
   })
 
   test('sending a bad prompt fails, can ignore toast, can start over from command bar', async ({
@@ -390,11 +381,9 @@ test.describe('Text-to-CAD tests', () => {
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
-    await expect(generatingToastMessage).toBeVisible()
-
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -447,16 +436,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(1000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
-    await page.waitForTimeout(5000)
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
