@@ -1228,56 +1228,56 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@csstools/color-helpers@^4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@csstools/color-helpers/-/color-helpers-4.2.1.tgz#da573554220ccb59757f12de62bf70c6b15645d4"
-  integrity sha512-CEypeeykO9AN7JWkr1OEOQb0HRzZlPWGwV0Ya6DuVgFdDi6g3ma/cPZ5ZPZM4AWQikDpq/0llnGGlIL+j8afzw==
+"@csstools/color-helpers@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@csstools/color-helpers/-/color-helpers-5.0.1.tgz#829f1c76f5800b79c51c709e2f36821b728e0e10"
+  integrity sha512-MKtmkA0BX87PKaO1NFRTFH+UnkgnmySQOvNxJubsadusqPEC2aJ9MOQiMceZJJ6oitUl/i0L6u0M1IrmAOmgBA==
 
-"@csstools/css-calc@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@csstools/css-calc/-/css-calc-1.2.4.tgz#9d9fb0dca33666cf97659f8f2c343ed0210e0e73"
-  integrity sha512-tfOuvUQeo7Hz+FcuOd3LfXVp+342pnWUJ7D2y8NUpu1Ww6xnTbHLpz018/y6rtbHifJ3iIEf9ttxXd8KG7nL0Q==
+"@csstools/css-calc@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@csstools/css-calc/-/css-calc-2.0.1.tgz#1675297b19f0933c729fdd7f4f5279b855ae724f"
+  integrity sha512-e59V+sNp6e5m+9WnTUydA1DQO70WuKUdseflRpWmXxocF/h5wWGIxUjxfvLtajcmwstH0vm6l0reKMzcyI757Q==
 
-"@csstools/css-color-parser@^2.0.4":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@csstools/css-color-parser/-/css-color-parser-2.0.5.tgz#ce1fe52f23f35f37bea2cf61ac865115aa17880a"
-  integrity sha512-lRZSmtl+DSjok3u9hTWpmkxFZnz7stkbZxzKc08aDUsdrWwhSgWo8yq9rq9DaFUtbAyAq2xnH92fj01S+pwIww==
+"@csstools/css-color-parser@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@csstools/css-color-parser/-/css-color-parser-3.0.2.tgz#710abb97142d58bcefc3a5e032a55a246895351c"
+  integrity sha512-mNg7A6HnNjlm0we/pDS9dUafOuBxcanN0TBhEGeIk6zZincuk0+mAbnBqfVs29NlvWHZ8diwTG6g5FeU8246sA==
   dependencies:
-    "@csstools/color-helpers" "^4.2.1"
-    "@csstools/css-calc" "^1.2.4"
+    "@csstools/color-helpers" "^5.0.1"
+    "@csstools/css-calc" "^2.0.1"
 
-"@csstools/css-parser-algorithms@^2.7.1":
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/@csstools/css-parser-algorithms/-/css-parser-algorithms-2.7.1.tgz#6d93a8f7d8aeb7cd9ed0868f946e46f021b6aa70"
-  integrity sha512-2SJS42gxmACHgikc1WGesXLIT8d/q2l0UFM7TaEeIzdFCE/FPMtTiizcPGGJtlPo2xuQzY09OhrLTzRxqJqwGw==
+"@csstools/css-parser-algorithms@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@csstools/css-parser-algorithms/-/css-parser-algorithms-3.0.1.tgz#f14ade63bae5f6025ac85c7d03fe47a7ca0e58af"
+  integrity sha512-lSquqZCHxDfuTg/Sk2hiS0mcSFCEBuj49JfzPHJogDBT0mGCyY5A1AQzBWngitrp7i1/HAZpIgzF/VjhOEIJIg==
 
-"@csstools/css-tokenizer@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@csstools/css-tokenizer/-/css-tokenizer-2.4.1.tgz#1d8b2e200197cf5f35ceb07ca2dade31f3a00ae8"
-  integrity sha512-eQ9DIktFJBhGjioABJRtUucoWR2mwllurfnM8LuNGAqX3ViZXaUchqk+1s7jjtkFiT9ySdACsFEA3etErkALUg==
+"@csstools/css-tokenizer@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@csstools/css-tokenizer/-/css-tokenizer-3.0.1.tgz#9dd9b10084f3011290f96789598091e5bcb3c29a"
+  integrity sha512-UBqaiu7kU0lfvaP982/o3khfXccVlHPWp0/vwwiIgDF0GmqqqxoiXC/6FCjlS9u92f7CoEz6nXKQnrn1kIAkOw==
 
-"@csstools/postcss-oklab-function@^3.0.16":
-  version "3.0.19"
-  resolved "https://registry.yarnpkg.com/@csstools/postcss-oklab-function/-/postcss-oklab-function-3.0.19.tgz#3bd0719914780fb53558af11958d0f4e6d2f952e"
-  integrity sha512-e3JxXmxjU3jpU7TzZrsNqSX4OHByRC3XjItV3Ieo/JEQmLg5rdOL4lkv/1vp27gXemzfNt44F42k/pn0FpE21Q==
+"@csstools/postcss-oklab-function@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@csstools/postcss-oklab-function/-/postcss-oklab-function-4.0.2.tgz#3d36974fbb7c3a589d52756e4eb029eaa29e4735"
+  integrity sha512-2iSK/T77PHMeorakBAk/WLxSodfIJ/lmi6nxEkuruXfhGH7fByZim4Fw6ZJf4B73SVieRSH2ep8zvYkA2ZfRtA==
   dependencies:
-    "@csstools/css-color-parser" "^2.0.4"
-    "@csstools/css-parser-algorithms" "^2.7.1"
-    "@csstools/css-tokenizer" "^2.4.1"
-    "@csstools/postcss-progressive-custom-properties" "^3.3.0"
-    "@csstools/utilities" "^1.0.0"
+    "@csstools/css-color-parser" "^3.0.2"
+    "@csstools/css-parser-algorithms" "^3.0.1"
+    "@csstools/css-tokenizer" "^3.0.1"
+    "@csstools/postcss-progressive-custom-properties" "^4.0.0"
+    "@csstools/utilities" "^2.0.0"
 
-"@csstools/postcss-progressive-custom-properties@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@csstools/postcss-progressive-custom-properties/-/postcss-progressive-custom-properties-3.3.0.tgz#20177d3fc61d8f170c4ee1686f3d2ab6eec27bbb"
-  integrity sha512-W2oV01phnILaRGYPmGFlL2MT/OgYjQDrL9sFlbdikMFi6oQkFki9B86XqEWR7HCsTZFVq7dbzr/o71B75TKkGg==
+"@csstools/postcss-progressive-custom-properties@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@csstools/postcss-progressive-custom-properties/-/postcss-progressive-custom-properties-4.0.0.tgz#ecdb85bcdb1852d73970a214a376684a91f82bdc"
+  integrity sha512-XQPtROaQjomnvLUSy/bALTR5VCtTVUFwYs1SblvYgLSeTo2a/bMNwUwo2piXw5rTv/FEYiy5yPSXBqg9OKUx7Q==
   dependencies:
     postcss-value-parser "^4.2.0"
 
-"@csstools/utilities@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@csstools/utilities/-/utilities-1.0.0.tgz#42f3c213f2fb929324d465684ab9f46a0febd4bb"
-  integrity sha512-tAgvZQe/t2mlvpNosA4+CkMiZ2azISW5WPAcdSalZlEjQvUfghHxfQcrCiK/7/CrfAWVxyM88kGFYO82heIGDg==
+"@csstools/utilities@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@csstools/utilities/-/utilities-2.0.0.tgz#f7ff0fee38c9ffb5646d47b6906e0bc8868bde60"
+  integrity sha512-5VdOr0Z71u+Yp3ozOx8T11N703wIFGVRgOWbOZMKgglPJsWA54MRIoMNVMa7shUToIhx5J8vX4sOZgD2XiihiQ==
 
 "@electron-forge/cli@^7.4.0":
   version "7.4.0"
