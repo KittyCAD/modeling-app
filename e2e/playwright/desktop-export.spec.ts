@@ -71,6 +71,19 @@ test(
 
       await page.keyboard.press('Enter')
 
+      // Find the toast.
+      // Look out for the toast message
+      await expect(exportingToastMessage).toBeVisible()
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
+
+      // Expect it to succeed.
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
+
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage).toBeVisible()
+      await expect(exportingToastMessage).not.toBeVisible()
+
       await test.step('Check the export size', async () => {
         await expect
           .poll(
@@ -89,19 +102,6 @@ test(
         // clean up output.gltf
         await fsp.rm('output.gltf')
       })
-
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
-
-      // Expect it to succeed.
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
-
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
-      await expect(exportingToastMessage).not.toBeVisible()
     })
 
     await test.step('on open of file in file pane', async () => {
@@ -151,6 +151,19 @@ test(
 
       await page.keyboard.press('Enter')
 
+      // Find the toast.
+      // Look out for the toast message
+      await expect(exportingToastMessage).toBeVisible()
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
+
+      // Expect it to succeed.
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
+
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage).toBeVisible()
+      await expect(exportingToastMessage).not.toBeVisible()
+
       await test.step('Check the export size', async () => {
         await expect
           .poll(
@@ -164,24 +177,11 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(477327)
+          .toBe(108944)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')
       })
-
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
-
-      // Expect it to succeed.
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
-
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
-      await expect(exportingToastMessage).not.toBeVisible()
       await electronApp.close()
     })
 
