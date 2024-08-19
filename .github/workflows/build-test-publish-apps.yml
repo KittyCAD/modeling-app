@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  prepare-json-files:
+  prepare-files:
     runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
@@ -37,52 +37,6 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-
-      - name: Set nightly version
-        if: github.event_name == 'schedule'
-        run: |
-          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
-
-      # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
-      # TODO: see if we ned to add updater test URL here https://dl.zoo.dev/releases/modeling-app/updater-test/last_update.json
-
-      - uses: actions/upload-artifact@v3
-        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
-        with:
-          path: |
-            package.json
-
-      - id: export_version
-        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
-
-
-  build-test-app-macos:
-    needs: [prepare-json-files]
-    runs-on: macos-14
-    env:
-      APPLE_ID: ${{ secrets.APPLE_ID }}
-      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v3
-        if: github.event_name == 'schedule'
-
-      - name: Copy updated .json files
-        if: github.event_name == 'schedule'
-        run: |
-          ls -l artifact
-          cp artifact/package.json package.json
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - run: yarn install
 
@@ -96,40 +50,52 @@ jobs:
       - name: Run build:wasm
         run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
 
-      - name: Add signing certificate
-        if: ${{ env.BUILD_RELEASE == 'true' }}
-        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
+      - name: Set nightly version
+        if: github.event_name == 'schedule'
+        run: |
+          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
 
-      - name: Build the app for arm64
-        run: "yarn electron-forge publish --arch arm64 --dry-run"
-
-      - name: Build the app for x64
-        run: "yarn electron-forge publish --arch x64 --dry-run"
-
-      - name: List artifacts
-        run: "ls -R out/make"
-
-      # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
+      # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
+      # TODO: see if we ned to add updater test URL here https://dl.zoo.dev/releases/modeling-app/updater-test/last_update.json
 
       - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
         with:
-          path: out
-          name: out
+          name: prepared-files
+          path: |
+            package.json
+            public/wasm_lib_bg.wasm
+
+      - id: export_version
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
-  build-test-app-windows:
-    needs: [prepare-json-files]
-    runs-on: windows-2022
+  build-apps:
+    needs: [prepare-files]
+    strategy:
+      matrix:
+        os: [macos-14, windows-2022, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    env:
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
+        if: github.event_name == 'schedule'
+        name: prepared-files
 
       - name: Copy updated .json files
         if: github.event_name == 'schedule'
         run: |
-          ls -l artifact
-          cp artifact/package.json package.json
+          ls -l prepared-files
+          cp prepared-files/package.json package.json
+          cp prepared-files/wasm_lib_bg.wasm public/wasm_lib_bg.wasm
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
@@ -139,26 +105,12 @@ jobs:
 
       - run: yarn install
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: './src/wasm-lib'
-
-      - name: Run build:wasm manually
-        shell: bash
-        env:
-          MODE: ${{ env.BUILD_RELEASE == 'true' && '--release' || '--debug' }}
-        run: |
-          mkdir src/wasm-lib/pkg; cd src/wasm-lib
-          echo "building with ${{ env.MODE }}"
-          npx wasm-pack build --target web --out-dir pkg ${{ env.MODE }}
-          cd ../../
-          cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+      - name: Add macOS signing certificate
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
 
       - name: Prepare certificate and variables (Windows only)
-        if: ${{ env.BUILD_RELEASE == 'true' }}
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
           cat /d/Certificate_pkcs12.p12
@@ -173,7 +125,7 @@ jobs:
         shell: bash
 
       - name: Setup certicate with SSM KSP (Windows only)
-        if: ${{ env.BUILD_RELEASE == 'true' }}
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -183,17 +135,24 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
-      - name: Build the app for arm64
+      - name: Make the app for arm64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        run: "yarn electron-forge make --arch arm64"
+
+      - name: Make the app for x64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        run: "yarn electron-forge make --arch x64"
+
+      - name: Publish the app for arm64 (dry run)
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         run: "yarn electron-forge publish --arch arm64 --dry-run"
 
-      - name: Build the app for x64
+      - name: Publish the app for x64 (dry run)
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         run: "yarn electron-forge publish --arch x64 --dry-run"
 
-      - name: List artifacts
-        run: "ls -R out/make"
-
-      - name: Sign using Signtool
-        if: ${{ env.BUILD_RELEASE == 'true' }}
+      - name: Sign Windows builds using Signtool
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
         env:
           THUMBPRINT: "F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D"
           X64_FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\x64\\Zoo Modeling App-*Setup.exe"
@@ -204,50 +163,7 @@ jobs:
           signtool.exe sign /sha1 ${{ env.THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.ARM64_FILE }}"
           signtool.exe verify /v /pa "${{ env.ARM64_FILE }}"
 
-      - uses: actions/upload-artifact@v3
-        with:
-          path: out
-          name: out
-
-
-  build-test-app-ubuntu:
-    needs: [prepare-json-files]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v3
-        if: github.event_name == 'schedule'
-
-      - name: Copy updated .json files
-        if: github.event_name == 'schedule'
-        run: |
-          ls -l artifact
-          cp artifact/package.json package.json
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
-
-      - run: yarn install
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: './src/wasm-lib'
-
-      - name: Run build:wasm
-        run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
-
-      - name: Build the app for arm64
-        run: "yarn electron-forge publish --arch arm64 --dry-run"
-
-      - name: Build the app for x64
-        run: "yarn electron-forge publish --arch x64 --dry-run"
+      # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
       - name: List artifacts
         run: "ls -R out/make"
@@ -263,7 +179,7 @@ jobs:
     permissions:
       contents: write
     # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [prepare-json-files, build-test-app-macos, build-test-app-windows, build-test-app-ubuntu]
+    needs: [prepare-files, build-apps]
     # env:
       # VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
