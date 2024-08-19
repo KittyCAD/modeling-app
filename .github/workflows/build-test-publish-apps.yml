@@ -273,6 +273,8 @@ jobs:
       # WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
       # URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v3
         with:
           name: out
@@ -290,6 +292,14 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2.1.0
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
+
+      - run: yarn install
 
       - run: yarn electron-forge publish --from-dry-run
 
