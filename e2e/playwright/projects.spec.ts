@@ -945,7 +945,6 @@ test(
           'tangential_arc.kcl',
         ]
         for (const fileName of fileNames) {
-          // await fsp.mkdir(`${dir}/${fileName.slice(0,-4)}`, { recursive: true })
           await fsp.copyFile(
             `src/wasm-lib/tests/executor/inputs/${fileName}`,
             `${dir}/testProject/${fileName}`
