@@ -47,6 +47,7 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
+      # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
       - name: Run build:wasm
         run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
 
@@ -63,7 +64,7 @@ jobs:
           name: prepared-files
           path: |
             package.json
-            public/wasm_lib_bg.wasm
+            public/wasm_lib*
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
@@ -92,7 +93,7 @@ jobs:
         run: |
           ls -l prepared-files
           cp prepared-files/package.json package.json
-          cp prepared-files/public/wasm_lib_bg.wasm public/wasm_lib_bg.wasm
+          cp prepared-files/public/wasm_lib* public
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
