@@ -89,11 +89,12 @@ jobs:
       - uses: actions/download-artifact@v3
         name: prepared-files
 
-      - name: Copy updated .json files
+      - name: Copy prepared files
         run: |
-          ls -l prepared-files
+          ls -R prepared-files
           cp prepared-files/package.json package.json
           cp prepared-files/public/wasm_lib* public
+          cp prepared-files/public/wasm_lib* src/wasm-lib/pkg
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
