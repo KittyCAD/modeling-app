@@ -346,7 +346,7 @@ export function sketchGroupFromKclValue(
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
     return new Error(
-      `Expected ${varName} to be a sketchGroup, but it ${actualType} instead.`
+      `Expected ${varName} to be a sketchGroup, but it was ${actualType} instead.`
     )
   } else {
     return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)
