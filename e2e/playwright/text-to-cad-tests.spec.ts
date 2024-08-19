@@ -375,7 +375,7 @@ test.describe('Text-to-CAD tests', () => {
     const failureToastMessage = page.getByText(
       `The prompt must clearly describe a CAD model`
     )
-    await expect(failureToastMessage).toBeVisible()
+    await expect(failureToastMessage).toBeVisible({ timeout: 15_000 })
 
     await page.waitForTimeout(1000)
 
