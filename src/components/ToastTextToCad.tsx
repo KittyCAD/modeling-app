@@ -5,7 +5,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Box3,
   Color,
@@ -121,9 +121,33 @@ export function ToastTextToCadSuccess({
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const animationRequestRef = useRef<number>()
   const [hasCopied, setHasCopied] = useState(false)
   const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
+
+  const animate = useCallback(
+    ({
+      renderer,
+      scene,
+      camera,
+      controls,
+    }: {
+      renderer: WebGLRenderer
+      scene: Scene
+      camera: OrthographicCamera
+      controls: OrbitControls
+    }) => {
+      if (!wrapperRef.current) return
+      animationRequestRef.current = requestAnimationFrame(() =>
+        animate({ renderer, scene, camera, controls })
+      )
+      // required if controls.enableDamping or controls.autoRotate are set to true
+      controls.update()
+      renderer.render(scene, camera)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -153,13 +177,6 @@ export function ToastTextToCadSuccess({
       toast.error('Error loading GLB file: ' + buffer.message)
       console.error('decoding buffer from base64 failed', buffer)
       return
-    }
-
-    function animate() {
-      requestAnimationFrame(animate)
-      // required if controls.enableDamping or controls.autoRotate are set to true
-      controls.update()
-      renderer.render(scene, camera)
     }
 
     loader.parse(
@@ -223,6 +240,7 @@ export function ToastTextToCadSuccess({
 
     return () => {
       renderer.dispose()
+        cancelAnimationFrame(animationRequestRef.current)
     }
   }, [])
 
