@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { getUtils, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  isOutOfViewInScrollContainer,
+  setupElectron,
+  tearDown,
+} from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
@@ -864,6 +869,116 @@ test(
       for (const [name] of projectData.slice(-2)) {
         await expect(page.getByText(name)).toBeVisible()
       }
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'file plane is scrollable when there are many files',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/testProject`, { recursive: true })
+        const fileNames = [
+          'angled_line.kcl',
+          'basic_fillet_cube_close_opposite.kcl',
+          'basic_fillet_cube_end.kcl',
+          'basic_fillet_cube_next_adjacent.kcl',
+          'basic_fillet_cube_previous_adjacent.kcl',
+          'basic_fillet_cube_start.kcl',
+          'big_number_angle_to_match_length_x.kcl',
+          'big_number_angle_to_match_length_y.kcl',
+          'close_arc.kcl',
+          'computed_var.kcl',
+          'cube-embedded.gltf',
+          'cube.bin',
+          'cube.glb',
+          'cube.gltf',
+          'cube.kcl',
+          'cube.mtl',
+          'cube.obj',
+          'cylinder.kcl',
+          'dimensions_match.kcl',
+          'extrude-custom-plane.kcl',
+          'extrude-inside-fn-with-tags.kcl',
+          'fillet-and-shell.kcl',
+          'fillet_duplicate_tags.kcl',
+          'focusrite_scarlett_mounting_braket.kcl',
+          'function_sketch.kcl',
+          'function_sketch_with_position.kcl',
+          'global-tags.kcl',
+          'helix_ccw.kcl',
+          'helix_defaults.kcl',
+          'helix_defaults_negative_extrude.kcl',
+          'helix_with_length.kcl',
+          'i_shape.kcl',
+          'kittycad_svg.kcl',
+          'lego.kcl',
+          'math.kcl',
+          'member_expression_sketch_group.kcl',
+          'mike_stress_test.kcl',
+          'negative_args.kcl',
+          'order-sketch-extrude-in-order.kcl',
+          'order-sketch-extrude-out-of-order.kcl',
+          'parametric.kcl',
+          'parametric_with_tan_arc.kcl',
+          'pattern_vase.kcl',
+          'pentagon_fillet_sugar.kcl',
+          'pipe_as_arg.kcl',
+          'pipes_on_pipes.kcl',
+          'riddle.kcl',
+          'riddle_small.kcl',
+          'router-template-slate.kcl',
+          'scoped-tags.kcl',
+          'server-rack-heavy.kcl',
+          'server-rack-lite.kcl',
+          'sketch_on_face.kcl',
+          'sketch_on_face_circle_tagged.kcl',
+          'sketch_on_face_end.kcl',
+          'sketch_on_face_end_negative_extrude.kcl',
+          'sketch_on_face_start.kcl',
+          'tan_arc_x_line.kcl',
+          'tangential_arc.kcl',
+        ]
+        for (const fileName of fileNames) {
+          // await fsp.mkdir(`${dir}/${fileName.slice(0,-4)}`, { recursive: true })
+          await fsp.copyFile(
+            `src/wasm-lib/tests/executor/inputs/${fileName}`,
+            `${dir}/testProject/${fileName}`
+          )
+        }
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await test.step('setup, open file pane', async () => {
+      await page.getByText('testProject').click()
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await page.getByTestId('files-pane-button').click()
+    })
+
+    await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
+      const element = page.getByText('tangential_arc.kcl')
+      const container = page.getByTestId('file-pane-scroll-container')
+
+      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
+        true
+      )
+      await element.scrollIntoViewIfNeeded()
+      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
+        false
+      )
     })
 
     await electronApp.close()

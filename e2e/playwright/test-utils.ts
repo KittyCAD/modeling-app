@@ -5,6 +5,7 @@ import {
   TestInfo,
   BrowserContext,
   _electron as electron,
+  Locator,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
@@ -731,4 +732,23 @@ export async function setupElectron({
   await setup(context, page)
 
   return { electronApp, page }
+}
+
+export async function isOutOfViewInScrollContainer(
+  element: Locator,
+  container: Locator
+): Promise<boolean> {
+  const elementBox = await element.boundingBox({ timeout: 5_000 })
+  const containerBox = await container.boundingBox({ timeout: 5_000 })
+
+  let isOutOfView = false
+  if (elementBox && containerBox)
+    return (
+      elementBox.y + elementBox.height > containerBox.y + containerBox.height ||
+      elementBox.y < containerBox.y ||
+      elementBox.x + elementBox.width > containerBox.x + containerBox.width ||
+      elementBox.x < containerBox.x
+    )
+
+  return isOutOfView
 }
