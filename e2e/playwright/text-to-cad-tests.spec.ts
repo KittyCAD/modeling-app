@@ -353,7 +353,7 @@ test.describe('Text-to-CAD tests', () => {
     const prompt = page.getByText('Prompt')
     await expect(prompt.first()).toBeVisible()
 
-    const badPrompt = 'akjsndladf lajbhflauweyfa;wieufjn---4;'
+    const badPrompt = 'akjsndladflajbhflauweyf15;'
 
     // Type the prompt.
     await page.keyboard.type(badPrompt)
@@ -465,6 +465,8 @@ test.describe('Text-to-CAD tests', () => {
   test('can do many at once and get many prompts back, and interact with many', async ({
     page,
   }) => {
+    // Let this test run longer since we've seen it timeout.
+    test.setTimeout(180_000)
     // skip on windows
     test.skip(
       process.platform === 'win32',
