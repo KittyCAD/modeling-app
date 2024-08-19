@@ -5,7 +5,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Box3,
   Color,
@@ -121,9 +121,39 @@ export function ToastTextToCadSuccess({
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const animationRequestRef = useRef<number>()
   const [hasCopied, setHasCopied] = useState(false)
   const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
+
+  const animate = useCallback(
+    ({
+      renderer,
+      scene,
+      camera,
+      controls,
+      isFirstRender = false,
+    }: {
+      renderer: WebGLRenderer
+      scene: Scene
+      camera: OrthographicCamera
+      controls: OrbitControls
+      isFirstRender?: boolean
+    }) => {
+      if (
+        !wrapperRef.current ||
+        !(isFirstRender || animationRequestRef.current)
+      )
+        return
+      animationRequestRef.current = requestAnimationFrame(() =>
+        animate({ renderer, scene, camera, controls })
+      )
+      // required if controls.enableDamping or controls.autoRotate are set to true
+      controls.update()
+      renderer.render(scene, camera)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -132,7 +162,6 @@ export function ToastTextToCadSuccess({
     const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setAnimationLoop(animate)
 
     const scene = new Scene()
     const ambientLight = new DirectionalLight(new Color('white'), 8.0)
@@ -153,13 +182,6 @@ export function ToastTextToCadSuccess({
       toast.error('Error loading GLB file: ' + buffer.message)
       console.error('decoding buffer from base64 failed', buffer)
       return
-    }
-
-    function animate() {
-      requestAnimationFrame(animate)
-      // required if controls.enableDamping or controls.autoRotate are set to true
-      controls.update()
-      renderer.render(scene, camera)
     }
 
     loader.parse(
@@ -212,6 +234,8 @@ export function ToastTextToCadSuccess({
 
         camera.updateProjectionMatrix()
         controls.update()
+        // render the scene once...
+        renderer.render(scene, camera)
       },
       // called when loading has errors
       function (error) {
@@ -221,8 +245,26 @@ export function ToastTextToCadSuccess({
       }
     )
 
+    // ...and set a mouseover listener on the canvas to enable the orbit controls
+    canvasRef.current.addEventListener('mouseover', () => {
+      renderer.setAnimationLoop(() =>
+        animate({ renderer, scene, camera, controls, isFirstRender: true })
+      )
+    })
+    canvasRef.current.addEventListener('mouseout', () => {
+      renderer.setAnimationLoop(null)
+      if (animationRequestRef.current) {
+        cancelAnimationFrame(animationRequestRef.current)
+        animationRequestRef.current = undefined
+      }
+    })
+
     return () => {
       renderer.dispose()
+      if (animationRequestRef.current) {
+        cancelAnimationFrame(animationRequestRef.current)
+        animationRequestRef.current = undefined
+      }
     }
   }, [])
 
