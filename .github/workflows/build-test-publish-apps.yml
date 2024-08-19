@@ -94,6 +94,7 @@ jobs:
           ls -R prepared-files
           cp prepared-files/package.json package.json
           cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
+          mkdir src/wasm-lib/pkg
           cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
 
       - name: Sync node version and setup cache
