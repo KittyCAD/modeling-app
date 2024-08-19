@@ -44,7 +44,6 @@ const config: ForgeConfig = {
         },
         bucket: process.env.BUCKET_NAME,
         folder: process.env.BUCKET_FOLDER,
-        public: true,
       },
     },
   ],
