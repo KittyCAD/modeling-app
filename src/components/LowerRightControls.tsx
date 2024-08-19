@@ -107,7 +107,9 @@ export function LowerRightControls({
           </Tooltip>
         </Link>
         <NetworkMachineIndicator className={linkOverrideClassName} />
-        <NetworkHealthIndicator />
+        {!location.pathname.startsWith(PATHS.HOME) && (
+          <NetworkHealthIndicator />
+        )}
         <HelpMenu />
       </menu>
     </section>

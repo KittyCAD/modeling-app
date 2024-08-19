@@ -49,7 +49,7 @@ export const FileMachineProvider = ({
         if (event.data && 'name' in event.data) {
           commandBarSend({ type: 'Close' })
           navigate(
-            `${PATHS.FILE}/${encodeURIComponent(
+            `..${PATHS.FILE}/${encodeURIComponent(
               context.selectedDirectory +
                 window.electron.path.sep +
                 event.data.name
@@ -61,7 +61,7 @@ export const FileMachineProvider = ({
           event.data.path.endsWith(FILE_EXT)
         ) {
           // Don't navigate to newly created directories
-          navigate(`${PATHS.FILE}/${encodeURIComponent(event.data.path)}`)
+          navigate(`..${PATHS.FILE}/${encodeURIComponent(event.data.path)}`)
         }
       },
       addFileToRenamingQueue: assign({
@@ -100,7 +100,7 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          let { name, path } = await getNextDirName({
+          let { name, path } = getNextDirName({
             entryName: createdName,
             baseDir: context.selectedDirectory.path,
           })
@@ -108,16 +108,13 @@ export const FileMachineProvider = ({
           createdPath = path
           await window.electron.mkdir(createdPath)
         } else {
-          const { name, path } = await getNextFileName({
+          const { name, path } = getNextFileName({
             entryName: createdName,
             baseDir: context.selectedDirectory.path,
           })
           createdName = name
           createdPath = path
-          await window.electron.mkdir(createdPath)
-          if (event.data.content) {
-            await window.electron.writeFile(createdPath, event.data.content)
-          }
+          await window.electron.writeFile(createdPath, event.data.content ?? '')
         }
 
         return {
@@ -130,7 +127,7 @@ export const FileMachineProvider = ({
         let createdPath: string
 
         if (event.data.makeDir) {
-          let { name, path } = await getNextDirName({
+          let { name, path } = getNextDirName({
             entryName: createdName,
             baseDir: context.selectedDirectory.path,
           })
@@ -138,16 +135,13 @@ export const FileMachineProvider = ({
           createdPath = path
           await window.electron.mkdir(createdPath)
         } else {
-          const { name, path } = await getNextFileName({
+          const { name, path } = getNextFileName({
             entryName: createdName,
             baseDir: context.selectedDirectory.path,
           })
           createdName = name
           createdPath = path
-          await window.electron.mkdir(createdPath)
-          if (event.data.content) {
-            await window.electron.writeFile(createdPath, '')
-          }
+          await window.electron.writeFile(createdPath, event.data.content ?? '')
         }
 
         return {
@@ -180,13 +174,13 @@ export const FileMachineProvider = ({
         const currentFilePath = window.electron.path.join(file.path, file.name)
         if (oldPath === currentFilePath && project?.path) {
           // If we just renamed the current file, navigate to the new path
-          navigate(PATHS.FILE + '/' + encodeURIComponent(newPath))
+          navigate(`..${PATHS.FILE}/${encodeURIComponent(newPath)}`)
         } else if (file?.path.includes(oldPath)) {
           // If we just renamed a directory that the current file is in, navigate to the new path
           navigate(
-            PATHS.FILE +
-              '/' +
-              encodeURIComponent(file.path.replace(oldPath, newDirPath))
+            `..${PATHS.FILE}/${encodeURIComponent(
+              file.path.replace(oldPath, newDirPath)
+            )}`
           )
         }
 
@@ -221,7 +215,7 @@ export const FileMachineProvider = ({
             file?.path.includes(event.data.path)) &&
           project?.path
         ) {
-          navigate(PATHS.FILE + '/' + encodeURIComponent(project.path))
+          navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
         }
 
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
