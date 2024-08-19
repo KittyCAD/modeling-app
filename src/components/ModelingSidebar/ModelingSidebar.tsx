@@ -63,6 +63,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           data: { name: 'Make', groupId: 'modeling' },
         })
       },
+      hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
       },
