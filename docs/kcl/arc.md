@@ -166,7 +166,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -184,7 +184,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -375,7 +375,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -393,7 +393,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -586,7 +586,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -604,7 +604,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -795,7 +795,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -813,7 +813,7 @@ const exampleSketch = startSketchOn('XZ')
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
