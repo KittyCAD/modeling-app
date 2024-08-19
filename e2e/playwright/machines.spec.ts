@@ -33,7 +33,7 @@ test(
     })
 
     const notFoundText = 'Machine API server was not discovered'
-    await expect(page.getByText(notFoundText)).not.toBeVisible()
+    await expect(page.getByText(notFoundText).first()).not.toBeVisible()
 
     // Find the make button
     const makeButton = page.getByRole('button', { name: 'Make' })
@@ -44,7 +44,7 @@ test(
     // When you hover over the button, the tooltip should show
     // that the machine-api server is not found
     await makeButton.hover()
-    await expect(page.getByText(notFoundText)).toBeVisible()
+    await expect(page.getByText(notFoundText).first()).toBeVisible()
 
     await electronApp.close()
   }
@@ -84,10 +84,10 @@ test(
       timeout: 20_000,
     })
 
-    await expect(page.getByText(notFoundText)).not.toBeVisible()
+    await expect(page.getByText(notFoundText).nth(1)).not.toBeVisible()
 
     await networkMachineToggle.hover()
-    await expect(page.getByText(notFoundText)).toBeVisible()
+    await expect(page.getByText(notFoundText).nth(1)).toBeVisible()
 
     await electronApp.close()
   }
