@@ -77,8 +77,10 @@ const parseProjectRoute = (
   configuration: Partial<SaveSettingsPayload>,
   id: string
 ) => {
+  const onDesktop = isDesktop()
   let projectName = ''
   let projectPath = ''
+  let currentFileName = ''
   if (
     configuration.app?.projectDirectory &&
     id.startsWith(configuration.app.projectDirectory)
@@ -94,15 +96,27 @@ const parseProjectRoute = (
     )
   } else {
     projectPath = id
-    if (window.electron.path.extname(id) === '.kcl') {
-      projectPath = window.electron.path.dirname(id)
+    if (onDesktop) {
+      if (window.electron.path.extname(id) === '.kcl') {
+        projectPath = window.electron.path.dirname(id)
+      }
+      projectName = window.electron.path.basename(projectPath)
+    } else {
+      if (id.endsWith('.kcl')) {
+        projectPath = '/browser'
+        projectName = 'browser'
+      }
     }
-    projectName = window.electron.path.basename(projectPath)
+  }
+  if (onDesktop) {
+    currentFileName = window.electron.path.basename(id)
+  } else {
+    currentFileName = 'main.kcl'
   }
   return {
     projectName: projectName,
     projectPath: projectPath,
-    currentFileName: window.electron.path.basename(id),
+    currentFileName: currentFileName,
     currentFilePath: id,
   }
 }
