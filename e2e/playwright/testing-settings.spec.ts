@@ -264,4 +264,55 @@ test.describe('Testing settings', () => {
       await electronApp.close()
     }
   )
+
+  test(
+    `Closing settings modal should go back to the original file being viewed`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await test.step("Precondition: No projects exist", async () => {
+        await expect(page.getByTestId('home-section')).toBeVisible()
+        const projectLinksPre = await page.getByTestId('project-link')
+        expect(projectLinksPre.length).toBe(0)
+      })
+
+      await test.step('Create and select the project', async () => {
+        await page.getByTestId('home-new-file').click()
+        const projectLinksPost = await page.getByTestId('project-link')
+        expect(projectLinksPost.length).toBe(1)
+        await projectLinksPost[0].click()
+      })
+
+      await test.step('Paste in KCL code', async () => {
+      })
+
+      await test.step('Open file pane', async () => {
+      })
+
+      await test.step('Create a new file, select it', async () => {
+      })
+
+      await test.step('Paste in new KCL code', async () => {
+      })
+
+      const settingsOpenButton = await page.getByRole('link', {
+        name: 'settings Settings',
+      })
+      const settingsCloseButton = await page.getByTestId('settings-close-button')
+
+      await test.step('Open and close settings', async () => {
+      })
+
+      await test.step('Postcondition: Same file is selected as from before settings modal opening', async () => {
+      })
+
+      await electronApp.close()
+    }
+  )
 })
