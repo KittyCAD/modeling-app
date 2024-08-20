@@ -691,13 +691,6 @@ export async function setup(context: BrowserContext, page: Page) {
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
       localStorage.clear()
-
-      // Load the app with the code panes
-      localStorage.setItem(
-        PERSIST_MODELING_CONTEXT,
-        JSON.stringify({ openPanes: [] })
-      )
-
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
