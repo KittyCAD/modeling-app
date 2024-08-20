@@ -1,13 +1,11 @@
 import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
 
-export type MachinesListing = {
-  [key: string]: components['schemas']['MachineInfoResponse']
-}
+export type MachinesListing = Array<components['schemas']['MachineInfoResponse']>
 
 export class MachineManager {
   private _isDesktop: boolean = isDesktop()
-  private _machines: MachinesListing = {}
+  private _machines: MachinesListing = []
   private _machineApiIp: string | null = null
   private _currentMachine: components['schemas']['MachineInfoResponse'] | null =
     null
@@ -45,7 +43,7 @@ export class MachineManager {
   }
 
   machineCount(): number {
-    return Object.keys(this._machines).length
+    return this._machines.length
   }
 
   get machineApiIp(): string | null {

@@ -52,7 +52,7 @@ const kittycad = (access: string, args: any) =>
 // bite our butts.
 const listMachines = async (): Promise<MachinesListing> => {
   const machineApi = await ipcRenderer.invoke('find_machine_api')
-  if (!machineApi) return {}
+  if (!machineApi) return []
 
   return fetch(`http://${machineApi}/machines`).then((resp) => resp.json())
 }
