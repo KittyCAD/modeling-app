@@ -510,7 +510,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       )
     },
 
-    editorTextEqualTo: async (code: string) => {
+    editorTextMatches: async (code: string) => {
       const editor = page.locator(editorSelector)
       const editorText = await editor.textContent()
       return expect(util.toNormalizedCode(editorText || '')).toBe(
@@ -522,7 +522,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return test?.step('Paste in KCL code', async () => {
         const editor = page.locator(editorSelector)
         await editor.fill(code)
-        await util.editorTextEqualTo(code)
+        await util.editorTextMatches(code)
       })
     },
 

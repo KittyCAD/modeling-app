@@ -286,7 +286,7 @@ test.describe('Testing settings', () => {
         pasteCodeInEditor,
         clickPane,
         createNewFileAndSelect,
-        editorTextEqualTo,
+        editorTextMatches,
       } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -329,7 +329,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
-        await editorTextEqualTo(kclCylinder)
+        await editorTextMatches(kclCylinder)
       })
 
       await electronApp.close()
