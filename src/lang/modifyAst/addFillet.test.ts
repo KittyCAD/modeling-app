@@ -43,6 +43,10 @@ beforeAll(async () => {
   })
 }, 20_000)
 
+afterAll(() => {
+  engineCommandManager.tearDown()
+})
+
 const runGetPathToExtrudeForSegmentSelectionTest = async (
   code: string,
   selectedSegmentSnippet: string,
