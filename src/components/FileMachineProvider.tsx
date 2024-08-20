@@ -183,10 +183,6 @@ export const FileMachineProvider = ({
               file.path.replace(oldPath, newPath)
             )}`
           )
-        } else {
-          // This shouldn't be possible since you
-          // have to click on a file to rename it
-          console.warn('Renamed file not in current file path')
         }
 
         return {
