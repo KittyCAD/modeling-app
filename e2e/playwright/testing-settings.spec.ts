@@ -1,38 +1,15 @@
 import { test, expect, Page } from '@playwright/test'
 import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  PERSIST_MODELING_CONTEXT,
+} from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
-
-const toNormalizedCode = (text: string) => {
-  return text.replace(/\s+/g, '')
-}
-
-const createAndSelectProject = async (page: Page, hasText: string) => {
-  await test.step(`Create and select project with text "${hasText}"`, async () => {
-    page.getByTestId('home-new-file').click()
-    const projectLinksPost = page.getByTestId('project-link')
-    await projectLinksPost.filter({ hasText }).click()
-  })
-}
-
-const pasteCodeInEditor = async (page: Page, code: string) => {
-  await test.step('Paste in KCL code', async () => {
-    const editor = page.locator('[role="textbox"][data-language="kcl"]')
-    await editor.fill(code)
-    const editorText = await editor.textContent()
-    await expect(toNormalizedCode(editorText)).toBe(toNormalizedCode(code))
-  })
-}
-
-type PaneId = 'variables' | 'code' | 'files' | 'logs' 
-const clickPane = async (page: Page, paneId: PaneId) => {
-  await test.step('Open ${paneId} pane', async () => {
-    await page.getByTestId(paneId + '-pane-button').click()
-    await expect(page.locator('#' + paneId + '-pane')).toBeVisible()
-  })
-}
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -300,11 +277,22 @@ test.describe('Testing settings', () => {
     async ({ browser: _ }, testInfo) => {
       const { electronApp, page } = await setupElectron({
         testInfo,
-        folderSetupFn: async () => {}
+        folderSetupFn: async () => {},
       })
+
+      const {
+        panesOpen,
+        createAndSelectProject,
+        pasteCodeInEditor,
+        clickPane,
+        createNewFileAndSelect,
+        editorTextEqualTo,
+      } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
+
+      panesOpen([])
 
       await test.step('Precondition: No projects exist', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()
@@ -312,25 +300,37 @@ test.describe('Testing settings', () => {
         await expect(projectLinksPre).toHaveCount(0)
       })
 
-      createAndSelectProject(page, 'project-000')
+      await createAndSelectProject('project-000')
 
-      const kclCube = await fsp.readFile('src/wasm-lib/tests/executor/inputs/cube.kcl', 'utf-8')
-      await pasteCodeInEditor(page, kclCube)
+      await clickPane('code')
+      const kclCube = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclCube)
 
-      await clickPane(page, 'files')
+      await clickPane('files')
+      await createNewFileAndSelect('2.kcl')
 
-      await test.step('Create a new file, select it', async () => {})
-
-      await test.step('Paste in new KCL code', async () => {})
+      const kclCylinder = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclCylinder)
 
       const settingsOpenButton = page.getByRole('link', {
         name: 'settings Settings',
       })
       const settingsCloseButton = page.getByTestId('settings-close-button')
 
-      await test.step('Open and close settings', async () => {})
+      await test.step('Open and close settings', async () => {
+        await settingsOpenButton.click()
+        await settingsCloseButton.click()
+      })
 
-      await test.step('Postcondition: Same file is selected as from before settings modal opening', async () => {})
+      await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
+        await editorTextEqualTo(kclCylinder)
+      })
 
       await electronApp.close()
     }

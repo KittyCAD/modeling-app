@@ -44,6 +44,9 @@ export const commonPoints = {
   num2: 14.44,
 }
 
+export const editorSelector = '[role="textbox"][data-language="kcl"]'
+type PaneId = 'variables' | 'code' | 'files' | 'logs'
+
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
@@ -311,13 +314,19 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
-export async function getUtils(page: Page) {
+export async function getUtils(page: Page, test?: TestInfo) {
+  if (!test) {
+    console.warn(
+      'Some methods in getUtils requires test object as second argument'
+    )
+  }
+
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
   const cdpSession =
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
-  return {
+  const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
     waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
@@ -484,7 +493,74 @@ export async function getUtils(page: Page) {
         networkOptions
       )
     },
+
+    toNormalizedCode: (text: string) => {
+      return text.replace(/\s+/g, '')
+    },
+
+    createAndSelectProject: async (hasText: string) => {
+      return test?.step(
+        `Create and select project with text "${hasText}"`,
+        async () => {
+          await page.getByTestId('home-new-file').click()
+          const projectLinksPost = page.getByTestId('project-link')
+          await projectLinksPost.filter({ hasText }).click()
+        }
+      )
+    },
+
+    editorTextEqualTo: async (code: string) => {
+      const editor = page.locator(editorSelector)
+      const editorText = await editor.textContent()
+      return expect(util.toNormalizedCode(editorText)).toBe(
+        util.toNormalizedCode(code)
+      )
+    },
+
+    pasteCodeInEditor: async (code: string) => {
+      return test?.step('Paste in KCL code', async () => {
+        const editor = page.locator(editorSelector)
+        await editor.fill(code)
+        await util.editorTextEqualTo(code)
+      })
+    },
+
+    clickPane: async (paneId: PaneId) => {
+      return test?.step(`Open ${paneId} pane`, async () => {
+        await page.getByTestId(paneId + '-pane-button').click()
+        await expect(page.locator('#' + paneId + '-pane')).toBeVisible()
+      })
+    },
+
+    createNewFileAndSelect: async (name: string) => {
+      return test?.step(`Create a file named ${name}, select it`, async () => {
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+        await page
+          .getByTestId('file-pane-scroll-container')
+          .filter({ hasText: name })
+          .click()
+      })
+    },
+
+    panesOpen: async (paneIds: PaneId[]) => {
+      return test?.step(`Setting ${paneIds} panes to be open`, async () => {
+        await page.addInitScript(
+          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+            localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify({ openPanes: paneIds })
+            )
+          },
+          { PERSIST_MODELING_CONTEXT, paneIds }
+        )
+        await page.reload()
+      })
+    },
   }
+
+  return util
 }
 
 type TemplateOptions = Array<number | Array<number>>
@@ -733,6 +809,7 @@ export async function setup(context: BrowserContext, page: Page) {
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
+  // Trigger a navigation, since loading file:// doesn't.
   await page.reload()
 }
 
