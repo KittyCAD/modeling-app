@@ -1588,15 +1588,16 @@ test.describe('Renaming in the file tree', () => {
         await page.keyboard.press('Enter')
       })
 
-      await test.step('Verify the folder is renamed, and no navigation occurred', async () => {
-        const url = page.url()
-        expect(url).toContain('main.kcl')
-        expect(url).toContain(newFolderName)
-        expect(url).toContain('someFileWithin.kcl')
-
+      await test.step('Verify the folder is renamed, and navigated to new path', async () => {
         await expect(projectMenuButton).toContainText('someFileWithin.kcl')
         await expect(renamedFolder).toBeVisible()
         await expect(folderToRename).not.toBeAttached()
+
+        // URL is synchronous, so we check the other stuff first
+        const url = page.url()
+        expect(url).not.toContain('main.kcl')
+        expect(url).toContain(newFolderName)
+        expect(url).toContain('someFileWithin.kcl')
       })
 
       await electronApp.close()
