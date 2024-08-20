@@ -271,46 +271,53 @@ test.describe('Testing settings', () => {
     async ({ browser: _ }, testInfo) => {
       const { electronApp, page } = await setupElectron({
         testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+            `${dir}/bracket/main.kcl`
+          )
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/bracket/secondary.kcl`
+          )
+        },
       })
+      const u = await getUtils(page)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
-      await test.step("Precondition: No projects exist", async () => {
+      await test.step('Precondition: No projects exist', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()
-        const projectLinksPre = await page.getByTestId('project-link')
-        expect(projectLinksPre.length).toBe(0)
+        const projectLinksPre = page.getByTestId('project-link')
+        await expect(projectLinksPre).toHaveCount(0)
       })
 
       await test.step('Create and select the project', async () => {
         await page.getByTestId('home-new-file').click()
-        const projectLinksPost = await page.getByTestId('project-link')
-        expect(projectLinksPost.length).toBe(1)
-        await projectLinksPost[0].click()
+        const projectLinksPost = page.getByTestId('project-link')
+        await expect(projectLinksPost).toHaveCount(1)
+        await projectLinksPost.first().click()
+        await u.waitForPageLoad()
       })
 
-      await test.step('Paste in KCL code', async () => {
-      })
+      await test.step('Paste in KCL code', async () => {})
 
-      await test.step('Open file pane', async () => {
-      })
+      await test.step('Open file pane', async () => {})
 
-      await test.step('Create a new file, select it', async () => {
-      })
+      await test.step('Create a new file, select it', async () => {})
 
-      await test.step('Paste in new KCL code', async () => {
-      })
+      await test.step('Paste in new KCL code', async () => {})
 
-      const settingsOpenButton = await page.getByRole('link', {
+      const settingsOpenButton = page.getByRole('link', {
         name: 'settings Settings',
       })
-      const settingsCloseButton = await page.getByTestId('settings-close-button')
+      const settingsCloseButton = page.getByTestId('settings-close-button')
 
-      await test.step('Open and close settings', async () => {
-      })
+      await test.step('Open and close settings', async () => {})
 
-      await test.step('Postcondition: Same file is selected as from before settings modal opening', async () => {
-      })
+      await test.step('Postcondition: Same file is selected as from before settings modal opening', async () => {})
 
       await electronApp.close()
     }
