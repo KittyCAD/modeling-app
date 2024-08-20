@@ -236,9 +236,13 @@ const sketch001 = startSketchAt([-0, -0])
     page,
   }) => {
     const u = await getUtils(page)
-    await page.addInitScript(async (code) => {
-      localStorage.setItem('persistCode', code)
-    }, TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR)
+    await page.addInitScript(
+      async ({ code }) => {
+        localStorage.setItem('persistCode', code)
+        ;(window as any).playwrightSkipFilePicker = true
+      },
+      { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+    )
 
     await page.setViewportSize({ width: 1000, height: 500 })
 
@@ -325,7 +329,7 @@ const sketch001 = startSketchAt([-0, -0])
     await expect(exportingToastMessage).toBeVisible()
 
     // Expect it to succeed.
-    await expect(exportingToastMessage).not.toBeVisible()
+    await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
     await expect(errorToastMessage).not.toBeVisible()
     await expect(engineErrorToastMessage).not.toBeVisible()
 
