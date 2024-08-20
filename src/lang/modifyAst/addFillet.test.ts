@@ -103,7 +103,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   }
 
   // programMemory and artifactGraph
-  await kclManager.executeAst(ast)
+  await kclManager.executeAst({ ast })
   const programMemory = kclManager.programMemory
   const artifactGraph = engineCommandManager.artifactGraph
 
