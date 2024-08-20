@@ -156,7 +156,7 @@ jobs:
         with:
           name: out
           path: |
-            out/make/*/arm64/*
+            out/make/**/arm64/*
             out/publish-dry-run/*/*
 
       - name: Make the app for x64
@@ -179,7 +179,7 @@ jobs:
         with:
           name: out
           path: |
-            out/make/*/x64/*
+            out/make/**/x64/*
             out/publish-dry-run/*/*
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
