@@ -688,16 +688,16 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
 export async function setup(context: BrowserContext, page: Page) {
-  console.warn('************ Setting up test')
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+      localStorage.clear()
+
       // Load the app with the code panes
       localStorage.setItem(
         PERSIST_MODELING_CONTEXT,
         JSON.stringify({ openPanes: [] })
       )
 
-      // localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
@@ -733,6 +733,8 @@ export async function setup(context: BrowserContext, page: Page) {
   ])
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  await page.reload()
 }
 
 export async function setupElectron({
