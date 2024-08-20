@@ -20,10 +20,6 @@ test(
   'click help/keybindings from home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async () => {},
@@ -52,10 +48,17 @@ test(
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.mkdir(join(dir, 'bracket'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
+          join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs',
+            'focusrite_scarlett_mounting_braket.kcl'
+          ),
+          join(dir, 'bracket', 'main.kcl')
         )
       },
     })
@@ -92,17 +95,20 @@ test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/broken-code`, { recursive: true })
+        await fsp.mkdir(join(dir, 'broken-code'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/broken-code-test.kcl',
-          `${dir}/broken-code/main.kcl`
+          join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs',
+            'broken-code-test.kcl'
+          ),
+          join(dir, 'broken-code', 'main.kcl')
         )
       },
     })
@@ -824,17 +830,31 @@ test(
       testInfo,
       folderSetupFn: async (dir) => {
         await Promise.all([
-          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+          fsp.mkdir(join(dir, 'router-template-slate'), { recursive: true }),
+          fsp.mkdir(join(dir, 'bracket'), { recursive: true }),
         ])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/router-template-slate/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'router-template-slate.kcl'
+            ),
+            join(dir, 'router-template-slate', 'main.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'focusrite_scarlett_mounting_braket.kcl'
+            ),
+            join(dir, 'bracket', 'main.kcl')
           ),
         ])
       },
