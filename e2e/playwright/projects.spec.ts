@@ -1135,11 +1135,15 @@ test(
 
     await page.getByText('mike_stress_test').click()
 
-    const modifier = process.platform === 'win32' ? 'Control' : 'Meta'
+    const modifier =
+      process.platform === 'win32' || process.platform === 'linux'
+        ? 'Control'
+        : 'Meta'
 
     await test.step('select all in code editor, check its length', async () => {
       await u.codeLocator.click()
-      // select all (ctrl + a) or similar for each OS
+      // expect u.codeLocator to have some text
+      await expect(u.codeLocator).toContainText('line(')
       await page.keyboard.down(modifier)
       await page.keyboard.press('KeyA')
       await page.keyboard.up(modifier)
@@ -1149,24 +1153,26 @@ test(
         const selection = window.getSelection()
         return selection ? selection.toString() : ''
       })
-      expect(selectedText.length).toBe(870)
+      // even though if the user copied the text into their clipboard they would get the full text
+      // it seems that the selection is limited to what is visible
+      // we just want to check we did select something, and later we've verify it's empty
+      expect(selectedText.length).toBeGreaterThan(10)
     })
 
     await test.step('delete all the text, select again and verify there are no characters left', async () => {
-      // delete all
       await page.keyboard.press('Backspace')
 
-      // select again
       await page.keyboard.down(modifier)
       await page.keyboard.press('KeyA')
       await page.keyboard.up(modifier)
 
       // check the length of the selected text
-      const selectedText2 = await page.evaluate(() => {
+      const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
         return selection ? selection.toString() : ''
       })
-      expect(selectedText2.length).toBe(0)
+      expect(selectedText.length).toBe(0)
+      await expect(u.codeLocator).toHaveText('')
     })
 
     await electronApp.close()
