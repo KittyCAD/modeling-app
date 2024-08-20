@@ -148,6 +148,27 @@ async function closeDebugPanel(page: Page) {
   }
 }
 
+async function openFilePanel(page: Page) {
+  const fileLocator = page.getByTestId('files-pane-button')
+  await expect(fileLocator).toBeVisible()
+  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
+
+  if (!isOpen) {
+    await fileLocator.click()
+    await expect(fileLocator).toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
+async function closeFilePanel(page: Page) {
+  const fileLocator = page.getByTestId('files-pane-button')
+  await expect(fileLocator).toBeVisible()
+  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
+  if (isOpen) {
+    await fileLocator.click()
+    await expect(fileLocator).not.toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
 async function waitForCmdReceive(page: Page, commandType: string) {
   return page
     .locator(`[data-receive-command-type="${commandType}"]`)
@@ -321,6 +342,8 @@ export async function getUtils(page: Page) {
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
+    openFilePanel: () => openFilePanel(page),
+    closeFilePanel: () => closeFilePanel(page),
     openAndClearDebugPanel: async () => {
       await openDebugPanel(page)
       return clearCommandLogs(page)

@@ -86,17 +86,17 @@
     "build:wasm-clean": "yarn wasm-prep && yarn build:wasm",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",
-    "lint": "eslint --fix src",
+    "lint": "eslint --fix src e2e",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json",
     "postinstall": "yarn xstate:typegen",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
-    "electron:start": "electron-forge start",
-    "electron:package": "electron-forge package",
-    "electron:make": "electron-forge make",
-    "electron:publish": "electron-forge publish",
-    "electron:e2e:local": "NODE_ENV=development yarn playwright test --config=playwright.electron.config.ts --grep=@electron"
+    "tron:start": "electron-forge start",
+    "tron:package": "electron-forge package",
+    "tron:make": "electron-forge make",
+    "tron:publish": "electron-forge publish",
+    "tron:test": "NODE_ENV=development yarn playwright test --config=playwright.electron.config.ts --grep=@electron"
   },
   "prettier": {
     "trailingComma": "es5",

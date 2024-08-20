@@ -51,6 +51,19 @@ export class MachineManager {
     return this._machineApiIp
   }
 
+  // Get the reason message for why there are no machines.
+  noMachinesReason(): string | undefined {
+    if (this.machineCount() > 0) {
+      return undefined
+    }
+
+    if (this.machineApiIp === null) {
+      return 'Machine API server was not discovered'
+    }
+
+    return 'Machine API server was discovered, but no machines are available'
+  }
+
   get currentMachine(): components['schemas']['Machine'] | null {
     return this._currentMachine
   }
