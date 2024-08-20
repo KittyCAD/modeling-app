@@ -52,24 +52,17 @@ const DownloadAppBanner = () => {
             </a>{' '}
             to download the app for the best experience.
           </p>
-          <p className="mt-6">
-            If you're on Linux and the browser is your only way to use the app,
-            you can permanently dismiss this banner by{' '}
+          {!navigator?.userAgent.includes('Chrome') && <p className="mt-6">
+            If you want to stay here on the web-app, we currently only support Chrome. Please use{' '}
             <a
-              onClick={() => {
-                setIsBannerDismissed(true)
-                settings.send({
-                  type: 'set.app.dismissWebBanner',
-                  data: { level: 'user', value: true },
-                })
-              }}
-              href="/"
+              href="https://www.google.com/chrome/"
+              rel="noopener noreferrer"
+              target="_blank"
               className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
             >
-              toggling the App &gt; Dismiss Web Banner setting
-            </a>
-            .
-          </p>
+              this link
+            </a> to download it.
+          </p>}
         </div>
       </Dialog.Panel>
     </Dialog>

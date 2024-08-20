@@ -154,10 +154,6 @@ export function buildCommandArgument<
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
-    if (!(arg.options || arg.optionsFromContext)) {
-      throw new Error('Options must be provided for options input type')
-    }
-
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,

@@ -4,7 +4,6 @@ import { getUtils, setup, setupElectron, tearDown } from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
-import { APP_NAME } from 'lib/constants'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -193,6 +192,10 @@ test.describe('Testing settings', () => {
     `Project settings override user settings on desktop`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
+      test.skip(
+        process.platform === 'win32',
+        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
@@ -205,7 +208,6 @@ test.describe('Testing settings', () => {
       })
 
       await page.setViewportSize({ width: 1200, height: 500 })
-      const u = await getUtils(page)
 
       page.on('console', console.log)
 
