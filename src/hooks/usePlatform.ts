@@ -8,7 +8,17 @@ export default function usePlatform() {
 
   useEffect(() => {
     async function getPlatform() {
-      setPlatformName((window.electron.platform ?? '') as Platform)
+      let rawPlatform = window.electron.platform ?? ''
+      let platform: Platform
+      if (rawPlatform === 'macos' || rawPlatform === 'windows' || rawPlatform === 'linux') {
+        platform = rawPlatform
+      } else if (rawPlatform === 'darwin') {
+        platform = 'macos'
+      } else {
+        console.error('Unknown platform:', rawPlatform)
+        platform = ''
+      }
+      setPlatformName(platform)
     }
 
     if (isDesktop()) {
