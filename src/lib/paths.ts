@@ -93,6 +93,11 @@ const parseProjectRoute = (
       projectName
     )
   } else {
+    projectPath = id
+    if (window.electron.path.extname(id) === '.kcl') {
+      projectPath = window.electron.path.dirname(id)
+    }
+    projectName = window.electron.path.basename(projectPath)
   }
   return {
     projectName: projectName,

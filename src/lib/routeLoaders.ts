@@ -122,9 +122,6 @@ export const fileLoader: LoaderFunction = async (
       metadata: null,
       default_file: projectPath,
     }
-    //const currentDirName = currentFilePath
-    //  ? window.electron.path.dirname(currentFilePath)
-    //  : ''
 
     const maybeProjectInfo = isDesktop()
       ? await getProjectInfo(projectPath)
