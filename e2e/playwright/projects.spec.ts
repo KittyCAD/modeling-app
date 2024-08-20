@@ -1504,7 +1504,7 @@ test.describe('Renaming in the file tree', () => {
       await electronApp.close()
     }
   )
-  
+
   test(
     `A folder you are inside`,
     { tag: '@electron' },
@@ -1549,8 +1549,9 @@ test.describe('Renaming in the file tree', () => {
         name: 'folderToRename',
       })
       const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
-      const fileWithinFolder = page
-        .getByRole('listitem').filter({ has: page.getByRole('button', { name: 'someFileWithin.kcl' }) })
+      const fileWithinFolder = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
+      })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('folderToRename')
       const newFolderName = 'newFolderName'

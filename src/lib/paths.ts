@@ -7,6 +7,8 @@ import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { SaveSettingsPayload } from './settings/settingsTypes'
 import { err } from 'lib/trap'
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
+import { DeepPartial } from './types'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -39,7 +41,7 @@ export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${
 
 export async function getProjectMetaByRouteId(
   id?: string,
-  configuration?: Partial<SaveSettingsPayload> | Error
+  configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 

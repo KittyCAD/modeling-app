@@ -21,6 +21,7 @@ import {
 } from 'lib/desktop'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { DeepPartial } from 'lib/types'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -28,8 +29,8 @@ import { BROWSER_PROJECT_NAME } from 'lib/constants'
  * for hiding and showing settings.
  **/
 export function configurationToSettingsPayload(
-  configuration: Configuration
-): Partial<SaveSettingsPayload> {
+  configuration: DeepPartial<Configuration>
+): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
       theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
@@ -66,8 +67,8 @@ export function configurationToSettingsPayload(
 }
 
 export function projectConfigurationToSettingsPayload(
-  configuration: ProjectConfiguration
-): Partial<SaveSettingsPayload> {
+  configuration: DeepPartial<ProjectConfiguration>
+): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
       theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
@@ -106,7 +107,7 @@ function localStorageProjectSettingsPath() {
 }
 
 export function readLocalStorageAppSettingsFile():
-  | Partial<SaveSettingsPayload>
+  | DeepPartial<Configuration>
   | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
@@ -132,7 +133,7 @@ export function readLocalStorageAppSettingsFile():
 }
 
 function readLocalStorageProjectSettingsFile():
-  | Partial<SaveSettingsPayload>
+  | DeepPartial<ProjectConfiguration>
   | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
@@ -156,7 +157,7 @@ function readLocalStorageProjectSettingsFile():
 
 export interface AppSettings {
   settings: ReturnType<typeof createSettings>
-  configuration: Partial<SaveSettingsPayload>
+  configuration: DeepPartial<Configuration>
 }
 
 export async function loadAndValidateSettings(
@@ -175,7 +176,11 @@ export async function loadAndValidateSettings(
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   const settings = createSettings()
-  setSettingsAtLevel(settings, 'user', appSettingsPayload)
+  setSettingsAtLevel(
+    settings,
+    'user',
+    configurationToSettingsPayload(appSettingsPayload)
+  )
 
   // Load the project settings if they exist
   if (projectPath) {
@@ -187,11 +192,18 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload = projectSettings
-    setSettingsAtLevel(settings, 'project', projectSettingsPayload)
+    setSettingsAtLevel(
+      settings,
+      'project',
+      projectConfigurationToSettingsPayload(projectSettingsPayload)
+    )
   }
 
   // Return the settings object
-  return { settings, configuration: appSettingsPayload }
+  return {
+    settings,
+    configuration: appSettingsPayload,
+  }
 }
 
 export async function saveSettings(
@@ -216,7 +228,7 @@ export async function saveSettings(
 
   // Write the app settings.
   if (onDesktop) {
-    await writeAppSettingsFile(appSettings)
+    await writeAppSettingsFile(tomlString2)
   } else {
     localStorage.setItem(localStorageAppSettingsPath(), tomlString2)
   }
@@ -241,7 +253,7 @@ export async function saveSettings(
 
   // Write the project settings.
   if (onDesktop) {
-    await writeProjectSettingsFile(projectPath, projectSettings)
+    await writeProjectSettingsFile(projectPath, tomlStr)
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
   }
