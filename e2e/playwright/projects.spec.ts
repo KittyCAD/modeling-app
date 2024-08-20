@@ -45,10 +45,6 @@ test(
   'click help/keybindings from project page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -736,6 +732,10 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({ testInfo })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -820,6 +820,10 @@ test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
