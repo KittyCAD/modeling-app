@@ -466,12 +466,7 @@ export const readAppSettingsFile = async () => {
   if (err(configObj)) {
     return Promise.reject(configObj)
   }
-  if (!configObj.settings?.app) {
-    return Promise.reject(new Error('config.app is falsey'))
-  }
-  if (!configObj.settings?.app?.project_directory) {
-    configObj.settings.app.project_directory = await getInitialDefaultDir()
-  }
+
   return configObj
 }
 
