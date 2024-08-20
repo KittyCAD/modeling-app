@@ -101,7 +101,7 @@ This will start the application and hot-reload on changed.
 
 Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
 
-To build, run `yarn electron:package`.
+To build, run `yarn tron:package`.
 
 ## Checking out commits / Bisecting
 
