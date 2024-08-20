@@ -29,12 +29,9 @@ beforeAll(async () => {
   // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      // disableWebRTC: true,
       token: VITE_KC_DEV_TOKEN,
-      // there does seem to be a minimum resolution, not sure what it is but 256 works ok.
       width: 256,
       height: 256,
-      // executeCode: () => {},
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
@@ -44,7 +41,6 @@ beforeAll(async () => {
       },
     })
   })
-  // await engineCommandManager.waitForReady
 }, 20_000)
 
 const runGetPathToExtrudeForSegmentSelectionTest = async (
