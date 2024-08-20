@@ -115,8 +115,7 @@ test.describe('Testing settings', () => {
     ).not.toBeChecked()
   })
 
-  // TODO fixme reset doesn't seem to work for color setting
-  test.fixme('Project and user settings can be reset', async ({ page }) => {
+  test('Project and user settings can be reset', async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -160,6 +159,11 @@ test.describe('Testing settings', () => {
     await test.step('Reset project settings', async () => {
       // Click the reset settings button.
       await resetButton.click()
+
+      await expect(page.getByText('Settings restored to default')).toBeVisible()
+      await expect(
+        page.getByText('Settings restored to default')
+      ).not.toBeVisible()
 
       // Verify it is now set to the inherited user value
       await expect(themeColorSetting).toHaveValue(settingValues.default)
