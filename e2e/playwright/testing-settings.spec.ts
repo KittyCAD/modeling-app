@@ -292,7 +292,7 @@ test.describe('Testing settings', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
-      panesOpen([])
+      await panesOpen([])
 
       await test.step('Precondition: No projects exist', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()
