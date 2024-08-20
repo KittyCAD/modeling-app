@@ -2,10 +2,11 @@ import {
   expect,
   Page,
   Download,
-  TestInfo,
   BrowserContext,
+  TestInfo,
   _electron as electron,
   Locator,
+  test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
@@ -314,7 +315,7 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
-export async function getUtils(page: Page, test?: TestInfo) {
+export async function getUtils(page: Page, test_?: typeof test) {
   if (!test) {
     console.warn(
       'Some methods in getUtils requires test object as second argument'
@@ -499,7 +500,7 @@ export async function getUtils(page: Page, test?: TestInfo) {
     },
 
     createAndSelectProject: async (hasText: string) => {
-      return test?.step(
+      return test_?.step(
         `Create and select project with text "${hasText}"`,
         async () => {
           await page.getByTestId('home-new-file').click()
@@ -512,7 +513,7 @@ export async function getUtils(page: Page, test?: TestInfo) {
     editorTextEqualTo: async (code: string) => {
       const editor = page.locator(editorSelector)
       const editorText = await editor.textContent()
-      return expect(util.toNormalizedCode(editorText)).toBe(
+      return expect(util.toNormalizedCode(editorText || '')).toBe(
         util.toNormalizedCode(code)
       )
     },
