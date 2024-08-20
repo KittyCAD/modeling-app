@@ -92,11 +92,11 @@
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
-    "electron:start": "electron-forge start",
-    "electron:package": "electron-forge package",
-    "electron:make": "electron-forge make",
-    "electron:publish": "electron-forge publish",
-    "electron:e2e:local": "NODE_ENV=development yarn playwright test --config=playwright.electron.config.ts --grep=@electron"
+    "tron:start": "electron-forge start",
+    "tron:package": "electron-forge package",
+    "tron:make": "electron-forge make",
+    "tron:publish": "electron-forge publish",
+    "tron:test": "NODE_ENV=development yarn playwright test --config=playwright.electron.config.ts --grep=@electron"
   },
   "prettier": {
     "trailingComma": "es5",
