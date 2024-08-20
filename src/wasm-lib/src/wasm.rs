@@ -566,9 +566,16 @@ pub fn serialize_project_settings(val: JsValue) -> Result<JsValue, String> {
     Ok(JsValue::from_str(&toml_str))
 }
 
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 /// Parse the project route.
 #[wasm_bindgen]
 pub fn parse_project_route(configuration: &str, route: &str) -> Result<JsValue, String> {
+    log!("WASM config was: {}", configuration);
     console_error_panic_hook::set_once();
 
     let configuration: kcl_lib::settings::types::Configuration =

@@ -16,10 +16,13 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
 } from './constants'
+<<<<<<< HEAD
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export { parseProjectRoute } from 'lang/wasm'
+=======
+>>>>>>> 841317ac (Working bare-min project parse)
 
 export async function renameProjectDirectory(
   projectPath: string,
