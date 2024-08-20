@@ -83,6 +83,7 @@ jobs:
       APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+      WINDOWS_CERTIFICATE_THUMBPRINT: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
     steps:
       - uses: actions/checkout@v4
 
@@ -139,39 +140,49 @@ jobs:
         if: ${{ env.BUILD_RELEASE == 'false' }}
         run: "yarn electron-forge make --arch arm64"
 
-      - name: Make the app for x64
-        if: ${{ env.BUILD_RELEASE == 'false' }}
-        run: "yarn electron-forge make --arch x64"
-
       - name: Publish the app for arm64 (dry run)
         if: ${{ env.BUILD_RELEASE == 'true' }}
         run: "yarn electron-forge publish --arch arm64 --dry-run"
+
+      - name: Sign Windows arm64 builds using Signtool
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
+        env:
+          FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\arm64\\Zoo Modeling App-*Setup.exe"
+        run: |
+          signtool.exe sign /sha1 ${{ env.WINDOWS_CERTIFICATE_THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.FILE }}"
+          signtool.exe verify /v /pa "${{ env.FILE }}"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: out
+          path: |
+            out/make/*/arm64/*
+            out/publish-dry-run/*/*
+
+      - name: Make the app for x64
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        run: "yarn electron-forge make --arch x64"
 
       - name: Publish the app for x64 (dry run)
         if: ${{ env.BUILD_RELEASE == 'true' }}
         run: "yarn electron-forge publish --arch x64 --dry-run"
 
-      - name: Sign Windows builds using Signtool
+      - name: Sign Windows x64 builds using Signtool
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
         env:
-          THUMBPRINT: "F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D"
-          X64_FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\x64\\Zoo Modeling App-*Setup.exe"
-          ARM64_FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\arm64\\Zoo Modeling App-*Setup.exe"
+          FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\x64\\Zoo Modeling App-*Setup.exe"
         run: |
-          signtool.exe sign /sha1 ${{ env.THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.X64_FILE }}"
-          signtool.exe verify /v /pa "${{ env.X64_FILE }}"
-          signtool.exe sign /sha1 ${{ env.THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.ARM64_FILE }}"
-          signtool.exe verify /v /pa "${{ env.ARM64_FILE }}"
-
-      # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
-
-      - name: List artifacts
-        run: "ls -R out/make"
+          signtool.exe sign /sha1 ${{ env.WINDOWS_CERTIFICATE_THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.FILE }}"
+          signtool.exe verify /v /pa "${{ env.FILE }}"
 
       - uses: actions/upload-artifact@v3
         with:
-          path: out
           name: out
+          path: |
+            out/make/*/x64/*
+            out/publish-dry-run/*/*
+
+      # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
 
   publish-apps-release:
