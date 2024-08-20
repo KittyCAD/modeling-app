@@ -10,6 +10,7 @@ import {
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
+import { FILE_EXT } from 'lib/constants'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
@@ -1335,5 +1336,82 @@ test(
 
       await electronApp.close()
     })
+  }
+)
+
+test(
+  'Renaming in the file tree',
+  { tag: '@electron' },
+  async ({ browser: _ }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/Test Project`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/basic_fillet_cube_end.kcl',
+          `${dir}/Test Project/main.kcl`
+        )
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
+          `${dir}/Test Project/fileToRename.kcl`
+        )
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    page.on('console', console.log)
+
+    // Constants and locators
+    const projectLink = page.getByText('Test Project')
+    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+    const fileToRename = page
+      .getByRole('listitem')
+      .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
+    const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+    const renameInput = page.getByPlaceholder('fileToRename.kcl')
+    const newFileName = 'newFileName'
+    const codeLocator = page.locator('.cm-content')
+
+    await test.step('Open project and file pane', async () => {
+      await expect(projectLink).toBeVisible()
+      await projectLink.click()
+      await expect(projectMenuButton).toBeVisible()
+      await expect(projectMenuButton).toContainText('main.kcl')
+
+      await u.openFilePanel()
+      await expect(fileToRename).toBeVisible()
+      await fileToRename.click()
+      await expect(projectMenuButton).toContainText('fileToRename.kcl')
+      await u.openKclCodePanel()
+      await expect(codeLocator).toContainText('circle(')
+      await u.closeKclCodePanel()
+    })
+
+    await test.step('Rename the project', async () => {
+      await fileToRename.click({ button: 'right' })
+      await renameMenuItem.click()
+      await expect(renameInput).toBeVisible()
+      await renameInput.fill(newFileName)
+      await page.keyboard.press('Enter')
+    })
+
+    await test.step('Verify the project is renamed', async () => {
+      await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
+      const url = page.url()
+      expect(url).toContain(newFileName)
+      await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
+      await expect(projectMenuButton).not.toContainText('main.kcl')
+      expect(url).not.toContain('fileToRename.kcl')
+      expect(url).not.toContain('main.kcl')
+
+      await u.openKclCodePanel()
+      await expect(codeLocator).toContainText('circle(')
+    })
+
+    await electronApp.close()
   }
 )
