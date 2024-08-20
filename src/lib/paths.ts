@@ -2,7 +2,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
 import { isDesktop } from './isDesktop'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
-import { parseProjectRoute, readAppSettingsFile } from './desktop'
+import { readAppSettingsFile } from './desktop'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
@@ -65,4 +65,27 @@ export async function getProjectMetaByRouteId(
   if (err(route)) return Promise.reject(route)
 
   return route
+}
+
+const parseProjectRoute = (configuration, id) => {
+  let projectName = ''
+  let projectPath = ''
+  if (id.startsWith(configuration.app.projectDirectory)) {
+    const relativeToRoot = window.electron.path.relative(
+      configuration.app.projectDirectory,
+      id
+    )
+    projectName = relativeToRoot.split(window.electron.path.sep)[0]
+    projectPath = window.electron.path.join(
+      configuration.app.projectDirectory,
+      projectName
+    )
+  } else {
+  }
+  return {
+    projectName: projectName,
+    projectPath: projectPath,
+    currentFileName: window.electron.path.basename(id),
+    currentFilePath: id,
+  }
 }
