@@ -347,6 +347,10 @@ test(
   'Restarting onboarding on desktop takes one attempt',
   { tag: '@electron' },
   async ({ browser: _ }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
