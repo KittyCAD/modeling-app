@@ -52,17 +52,21 @@ const DownloadAppBanner = () => {
             </a>{' '}
             to download the app for the best experience.
           </p>
-          {!navigator?.userAgent.includes('Chrome') && <p className="mt-6">
-            If you want to stay here on the web-app, we currently only support Chrome. Please use{' '}
-            <a
-              href="https://www.google.com/chrome/"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
-            >
-              this link
-            </a> to download it.
-          </p>}
+          {!navigator?.userAgent.includes('Chrome') && (
+            <p className="mt-6">
+              If you want to stay here on the web-app, we currently only support
+              Chrome. Please use{' '}
+              <a
+                href="https://www.google.com/chrome/"
+                rel="noopener noreferrer"
+                target="_blank"
+                className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
+              >
+                this link
+              </a>{' '}
+              to download it.
+            </p>
+          )}
         </div>
       </Dialog.Panel>
     </Dialog>
