@@ -1,6 +1,5 @@
 import { Completion } from '@codemirror/autocomplete'
 import { EditorView, ViewUpdate } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -84,17 +83,13 @@ function CommandBarKclInput({
           if (event.key === 'Backspace' && value === '') {
             event.preventDefault()
             stepBack()
+          } else if (event.key === 'Enter') {
+            event.preventDefault()
+            handleSubmit()
           }
         },
       }),
       varMentions(varMentionData),
-      EditorState.transactionFilter.of((tr) => {
-        if (tr.newDoc.lines > 1) {
-          handleSubmit()
-          return []
-        }
-        return tr
-      }),
       EditorView.updateListener.of((vu: ViewUpdate) => {
         if (vu.docChanged) {
           setValue(vu.state.doc.toString())
@@ -107,7 +102,7 @@ function CommandBarKclInput({
     if (editorRef.current) {
       setContainer(editorRef.current)
     }
-  }, [arg, editorRef])
+  }, [arg, editorRef as React.RefObject<HTMLDivElement>])
 
   useEffect(() => {
     setCanSubmit(
