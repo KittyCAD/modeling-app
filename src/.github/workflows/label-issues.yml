@@ -3,7 +3,8 @@ name: Label Issues
 on:
   issues:
     types: [opened]
-
+permissions:
+  issues: write
 jobs:
   label:
     runs-on: ubuntu-latest
