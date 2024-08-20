@@ -1406,4 +1406,6 @@ test.describe('Deleting files from the file pane', () => {
       await electronApp.close()
     }
   )
+
+  test.fixme('TODO - when main.kcl does not exist', async () => {})
 })
