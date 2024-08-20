@@ -7,22 +7,20 @@ export default function usePlatform() {
   const [platformName, setPlatformName] = useState<Platform>('')
 
   useEffect(() => {
-    async function getPlatform() {
-      let rawPlatform = window.electron.platform ?? ''
-      let platform: Platform
-      if (rawPlatform === 'macos' || rawPlatform === 'windows' || rawPlatform === 'linux') {
-        platform = rawPlatform
-      } else if (rawPlatform === 'darwin') {
-        platform = 'macos'
-      } else {
-        console.error('Unknown platform:', rawPlatform)
-        platform = ''
+    function getPlatform(): Platform {
+      const platform = window.electron.platform ?? ''
+      if (platform === 'macos' || platform === 'windows' || platform === 'linux') {
+        return platform
       }
-      setPlatformName(platform)
+      if (platform === 'darwin') {
+        return 'macos'
+      }
+      console.error('Unknown platform:', platform)
+      return ''
     }
 
     if (isDesktop()) {
-      void getPlatform()
+      setPlatformName(getPlatform())
     } else {
       if (navigator.userAgent.indexOf('Mac') !== -1) {
         setPlatformName('macos')
