@@ -39,7 +39,7 @@ export async function renameProjectDirectory(
 
   // Make sure the new name does not exist.
   const newPath = window.electron.path.join(
-    projectPath.split('/').slice(0, -1).join('/'),
+    window.electron.path.dirname(projectPath),
     newName
   )
   try {
@@ -186,9 +186,9 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
 
-  const pathParts = path.split(window.electron.path.sep)
+  const name = window.electron.path.basename(path)
   let entry: FileEntry = {
-    name: pathParts.slice(-1)[0],
+    name: name,
     path,
     children: [],
   }
