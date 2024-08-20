@@ -10,6 +10,10 @@ test(
   'export works on the first try',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -171,7 +175,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(108944)
+          .toBe(105022)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')

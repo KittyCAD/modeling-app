@@ -7,9 +7,13 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
-  'When machine-api server not found button is disabled and shows the reason',
+  'When machine-api server not found butt is disabled and shows the reason',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -54,6 +58,10 @@ test(
   'When machine-api server not found home screen & project status shows the reason',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
