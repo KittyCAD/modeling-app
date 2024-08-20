@@ -1,7 +1,6 @@
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
 import { isDesktop } from './isDesktop'
-import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { readAppSettingsFile } from './desktop'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
@@ -24,6 +23,13 @@ type OnboardingPaths = {
 }
 
 const SETTINGS = '/settings' as const
+
+export type ProjectRoute = {
+  projectName: string
+  projectPath: string
+  currentFileName: string
+  currentFilePath: string
+}
 
 export const PATHS = {
   INDEX: '/',
@@ -67,10 +73,16 @@ export async function getProjectMetaByRouteId(
   return route
 }
 
-const parseProjectRoute = (configuration, id) => {
+const parseProjectRoute = (
+  configuration: Partial<SaveSettingsPayload>,
+  id: string
+) => {
   let projectName = ''
   let projectPath = ''
-  if (id.startsWith(configuration.app.projectDirectory)) {
+  if (
+    configuration.app?.projectDirectory &&
+    id.startsWith(configuration.app.projectDirectory)
+  ) {
     const relativeToRoot = window.electron.path.relative(
       configuration.app.projectDirectory,
       id

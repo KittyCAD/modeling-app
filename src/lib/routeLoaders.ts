@@ -36,9 +36,9 @@ export const settingsLoader: LoaderFunction = async ({
       configuration
     )
     if (projectPathData) {
-      const { project_path } = projectPathData
+      const { projectPath } = projectPathData
       const { settings: s } = await loadAndValidateSettings(
-        project_path || undefined
+        projectPath || undefined
       )
       return s
     }
@@ -94,7 +94,7 @@ export const fileLoader: LoaderFunction = async (
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop()
-              ? (await getProjectInfo(project_path)).default_file
+              ? (await getProjectInfo(projectPath)).default_file
               : params.id + '/' + PROJECT_ENTRYPOINT
           )}`
         )
