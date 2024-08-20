@@ -16,6 +16,74 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
+  'click help/keybindings from home page',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async () => {},
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    // click ? button
+    await page.getByTestId('help-button').click()
+    await expect(page.getByTestId('keybindings-button')).toBeVisible()
+    // Click keyboard shortcuts button.
+    await page.getByTestId('keybindings-button').click()
+    // Make sure the keyboard shortcuts modal is visible.
+    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'click help/keybindings from project page',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          `${dir}/bracket/main.kcl`
+        )
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    page.on('console', console.log)
+
+    // expect to see the text bracket
+    await expect(page.getByText('bracket')).toBeVisible()
+
+    await page.getByText('bracket').click()
+
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    // click ? button
+    await page.getByTestId('help-button').click()
+    await expect(page.getByTestId('keybindings-button')).toBeVisible()
+    // Click keyboard shortcuts button.
+    await page.getByTestId('keybindings-button').click()
+    // Make sure the keyboard shortcuts modal is visible.
+    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+
+    await electronApp.close()
+  }
+)
+
+test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
