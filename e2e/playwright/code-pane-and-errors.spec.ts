@@ -258,6 +258,7 @@ test(
       })
     })
 
+    // If they're open by default, we're not actually testing anything.
     await test.step('Pre-condition: panes are not already visible', async () => {
       await expect(page.locator('#variables-pane')).not.toBeVisible()
       await expect(page.locator('#logs-pane')).not.toBeVisible()
@@ -266,7 +267,6 @@ test(
     await test.step('Open multiple panes', async () => {
       await u.openKclCodePanel()
       await u.openVariablesPane()
-      // await u.closeVariablesPane()
       await u.openLogsPane()
     })
 
