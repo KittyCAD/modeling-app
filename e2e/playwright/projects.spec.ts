@@ -67,8 +67,6 @@ test(
 
     page.on('console', console.log)
 
-    page.on('console', console.log)
-
     // expect to see the text bracket
     await expect(page.getByText('bracket')).toBeVisible()
 
