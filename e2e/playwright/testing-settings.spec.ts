@@ -1,9 +1,38 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import * as fsp from 'fs/promises'
 import { getUtils, setup, setupElectron, tearDown } from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
+
+const toNormalizedCode = (text: string) => {
+  return text.replace(/\s+/g, '')
+}
+
+const createAndSelectProject = async (page: Page, hasText: string) => {
+  await test.step(`Create and select project with text "${hasText}"`, async () => {
+    page.getByTestId('home-new-file').click()
+    const projectLinksPost = page.getByTestId('project-link')
+    await projectLinksPost.filter({ hasText }).click()
+  })
+}
+
+const pasteCodeInEditor = async (page: Page, code: string) => {
+  await test.step('Paste in KCL code', async () => {
+    const editor = page.locator('[role="textbox"][data-language="kcl"]')
+    await editor.fill(code)
+    const editorText = await editor.textContent()
+    await expect(toNormalizedCode(editorText)).toBe(toNormalizedCode(code))
+  })
+}
+
+type PaneId = 'variables' | 'code' | 'files' | 'logs' 
+const clickPane = async (page: Page, paneId: PaneId) => {
+  await test.step('Open ${paneId} pane', async () => {
+    await page.getByTestId(paneId + '-pane-button').click()
+    await expect(page.locator('#' + paneId + '-pane')).toBeVisible()
+  })
+}
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -271,19 +300,8 @@ test.describe('Testing settings', () => {
     async ({ browser: _ }, testInfo) => {
       const { electronApp, page } = await setupElectron({
         testInfo,
-        folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
-          await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
-          )
-          await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/bracket/secondary.kcl`
-          )
-        },
+        folderSetupFn: async () => {}
       })
-      const u = await getUtils(page)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
@@ -294,17 +312,12 @@ test.describe('Testing settings', () => {
         await expect(projectLinksPre).toHaveCount(0)
       })
 
-      await test.step('Create and select the project', async () => {
-        await page.getByTestId('home-new-file').click()
-        const projectLinksPost = page.getByTestId('project-link')
-        await expect(projectLinksPost).toHaveCount(1)
-        await projectLinksPost.first().click()
-        await u.waitForPageLoad()
-      })
+      createAndSelectProject(page, 'project-000')
 
-      await test.step('Paste in KCL code', async () => {})
+      const kclCube = await fsp.readFile('src/wasm-lib/tests/executor/inputs/cube.kcl', 'utf-8')
+      await pasteCodeInEditor(page, kclCube)
 
-      await test.step('Open file pane', async () => {})
+      await clickPane(page, 'files')
 
       await test.step('Create a new file, select it', async () => {})
 
