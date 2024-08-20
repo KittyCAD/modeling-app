@@ -57,6 +57,13 @@ export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
 
     console.log('response', response)
 
+    if (!response.ok) {
+      console.error('Error exporting', response)
+      const text = await response.text()
+      toast.error('Error exporting: ' + response.statusText + ' ' + text)
+      return null
+    }
+
     return response
   } catch (error) {
     console.error('Error exporting', error)
