@@ -85,6 +85,10 @@
             "description": "Additional, per-machine information which is specfic to the underlying machine type.",
             "nullable": true
           },
+          "id": {
+            "description": "Machine Identifier (ID) for the specific Machine.",
+            "type": "string"
+          },
           "machine_type": {
             "allOf": [
               {
@@ -112,6 +116,7 @@
           }
         },
         "required": [
+          "id",
           "machine_type",
           "make_model"
         ],
@@ -289,11 +294,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": {
+                  "items": {
                     "$ref": "#/components/schemas/MachineInfoResponse"
                   },
-                  "title": "Map_of_MachineInfoResponse",
-                  "type": "object"
+                  "title": "Array_of_MachineInfoResponse",
+                  "type": "array"
                 }
               }
             },

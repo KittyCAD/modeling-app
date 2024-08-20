@@ -111,6 +111,8 @@ export interface components {
         MachineInfoResponse: {
             /** @description Additional, per-machine information which is specfic to the underlying machine type. */
             extra?: components["schemas"]["ExtraMachineInfoResponse"] | null;
+            /** @description Machine Identifier (ID) for the specific Machine. */
+            id: string;
             /** @description Information regarding the method of manufacture. */
             machine_type: components["schemas"]["MachineType"];
             /** @description Information regarding the make and model of the attached Machine. */
@@ -228,9 +230,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: components["schemas"]["MachineInfoResponse"];
-                    };
+                    "application/json": components["schemas"]["MachineInfoResponse"][];
                 };
             };
             "4XX": components["responses"]["Error"];

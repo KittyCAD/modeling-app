@@ -25,7 +25,7 @@ export type ModelingCommandSchema = {
     storage?: StorageUnion
   }
   Make: {
-    machine: components['schemas']['Machine']
+    machine: components['schemas']['MachineInfoResponse']
   }
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
@@ -179,21 +179,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       machine: {
         inputType: 'options',
         required: true,
-        valueSummary: (machine: components['schemas']['Machine']) =>
-          machine.model || machine.manufacturer,
+        valueSummary: (machine: components['schemas']['MachineInfoResponse']) =>
+          machine.make_model.model ||
+          machine.make_model.manufacturer ||
+          'Unknown Machine',
         options: () => {
           return Object.entries(machineManager.machines).map(
             ([hostname, machine]) => ({
-              name: `${machine.model || machine.manufacturer}, ${hostname}`,
+              name: `${
+                machine.make_model.model || machine.make_model.manufacturer
+              }, ${hostname}`,
               isCurrent: false,
-              value: machine as components['schemas']['Machine'],
+              value: machine as components['schemas']['MachineInfoResponse'],
             })
           )
         },
         defaultValue: () => {
           return Object.values(
             machineManager.machines
-          )[0] as components['schemas']['Machine']
+          )[0] as components['schemas']['MachineInfoResponse']
         },
       },
     },

@@ -2,14 +2,15 @@ import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
 
 export type MachinesListing = {
-  [key: string]: components['schemas']['Machine']
+  [key: string]: components['schemas']['MachineInfoResponse']
 }
 
 export class MachineManager {
   private _isDesktop: boolean = isDesktop()
   private _machines: MachinesListing = {}
   private _machineApiIp: string | null = null
-  private _currentMachine: components['schemas']['Machine'] | null = null
+  private _currentMachine: components['schemas']['MachineInfoResponse'] | null =
+    null
 
   constructor() {
     if (!this._isDesktop) {
@@ -64,11 +65,13 @@ export class MachineManager {
     return 'Machine API server was discovered, but no machines are available'
   }
 
-  get currentMachine(): components['schemas']['Machine'] | null {
+  get currentMachine(): components['schemas']['MachineInfoResponse'] | null {
     return this._currentMachine
   }
 
-  set currentMachine(machine: components['schemas']['Machine'] | null) {
+  set currentMachine(
+    machine: components['schemas']['MachineInfoResponse'] | null
+  ) {
     this._currentMachine = machine
   }
 
