@@ -9,14 +9,23 @@ export default function usePlatform() {
   useEffect(() => {
     function getPlatform(): Platform {
       const platform = window.electron.platform ?? ''
-      if (platform === 'macos' || platform === 'windows' || platform === 'linux') {
-        return platform
+      // https://nodejs.org/api/process.html#processplatform
+      switch (platform) {
+        case 'darwin':
+          return 'macos'
+        case 'win32':
+          return 'windows'
+        // We don't currently care to distinguish between these.
+        case 'android':
+        case 'freebsd':
+        case 'linux':
+        case 'openbsd':
+        case 'sunos':
+          return 'linux'
+        default:
+          console.error('Unknown platform:', platform)
+          return ''
       }
-      if (platform === 'darwin') {
-        return 'macos'
-      }
-      console.error('Unknown platform:', platform)
-      return ''
     }
 
     if (isDesktop()) {
