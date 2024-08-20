@@ -13,11 +13,18 @@ import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
 import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
 import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
 import { isDesktop } from 'lib/isDesktop'
+import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
+import { NODE_ENV } from 'env'
 
-export const APP_VERSION = isDesktop()
-  ? // @ts-ignore
-    window.electron.packageJson.version
-  : 'main'
+const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
+
+export const APP_VERSION =
+  isTestEnv && NODE_ENV === 'development'
+    ? '11.22.33'
+    : isDesktop()
+    ? // @ts-ignore
+      window.electron.packageJson.version
+    : 'main'
 
 export const Settings = () => {
   const navigate = useNavigate()
