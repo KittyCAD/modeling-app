@@ -74,7 +74,7 @@ export async function getProjectMetaByRouteId(
 }
 
 const parseProjectRoute = (
-  configuration: Partial<SaveSettingsPayload>,
+  configuration: DeepPartial<Configuration>,
   id: string
 ) => {
   const onDesktop = isDesktop()
@@ -82,16 +82,16 @@ const parseProjectRoute = (
   let projectPath = ''
   let currentFileName = ''
   if (
-    configuration.app?.projectDirectory &&
-    id.startsWith(configuration.app.projectDirectory)
+    configuration.settings?.app?.project_directory &&
+    id.startsWith(configuration.settings.app.project_directory)
   ) {
     const relativeToRoot = window.electron.path.relative(
-      configuration.app.projectDirectory,
+      configuration.settings.app.project_directory,
       id
     )
     projectName = relativeToRoot.split(window.electron.path.sep)[0]
     projectPath = window.electron.path.join(
-      configuration.app.projectDirectory,
+      configuration.settings.app.project_directory,
       projectName
     )
   } else {
