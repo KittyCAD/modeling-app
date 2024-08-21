@@ -1,6 +1,12 @@
 import fs from 'node:fs'
 
-import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
+import {
+  parse,
+  ProgramMemory,
+  SketchGroup,
+  initPromise,
+  sketchGroupFromKclValue,
+} from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
 
@@ -52,7 +58,7 @@ const newVar = myVar + 1`
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const minusGeo = mem.get('mySketch')?.value
+    const minusGeo = mem.get('mySketch')?.value?.value
     expect(minusGeo).toEqual([
       {
         type: 'ToPoint',
@@ -146,68 +152,72 @@ const newVar = myVar + 1`
     ].join('\n')
     const mem = await exe(code)
     expect(mem.get('mySk1')).toEqual({
-      type: 'SketchGroup',
-      on: expect.any(Object),
-      start: {
-        to: [0, 0],
-        from: [0, 0],
-        tag: null,
-        __geoMeta: {
-          id: expect.any(String),
-          sourceRange: [39, 63],
-        },
-      },
-      tags: {
-        myPath: {
-          __meta: [
-            {
-              sourceRange: [109, 116],
-            },
-          ],
-          type: 'TagIdentifier',
-          value: 'myPath',
-          info: expect.any(Object),
-        },
-      },
-      value: [
-        {
-          type: 'ToPoint',
-          to: [1, 1],
+      type: 'UserVal',
+      value: {
+        type: 'SketchGroup',
+        on: expect.any(Object),
+        start: {
+          to: [0, 0],
           from: [0, 0],
           tag: null,
           __geoMeta: {
-            sourceRange: [69, 85],
             id: expect.any(String),
+            sourceRange: [39, 63],
           },
         },
-        {
-          type: 'ToPoint',
-          to: [0, 1],
-          from: [1, 1],
-          __geoMeta: {
-            sourceRange: [91, 117],
-            id: expect.any(String),
-          },
-          tag: {
-            end: 116,
-            start: 109,
-            type: 'TagDeclarator',
+        tags: {
+          myPath: {
+            __meta: [
+              {
+                sourceRange: [109, 116],
+              },
+            ],
+            type: 'TagIdentifier',
             value: 'myPath',
-            digest: null,
+            info: expect.any(Object),
           },
         },
-        {
-          type: 'ToPoint',
-          to: [1, 1],
-          from: [0, 1],
-          tag: null,
-          __geoMeta: {
-            sourceRange: [123, 139],
-            id: expect.any(String),
+        value: [
+          {
+            type: 'ToPoint',
+            to: [1, 1],
+            from: [0, 0],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [69, 85],
+              id: expect.any(String),
+            },
           },
-        },
-      ],
-      id: expect.any(String),
+          {
+            type: 'ToPoint',
+            to: [0, 1],
+            from: [1, 1],
+            __geoMeta: {
+              sourceRange: [91, 117],
+              id: expect.any(String),
+            },
+            tag: {
+              end: 116,
+              start: 109,
+              type: 'TagDeclarator',
+              value: 'myPath',
+              digest: null,
+            },
+          },
+          {
+            type: 'ToPoint',
+            to: [1, 1],
+            from: [0, 1],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [123, 139],
+              id: expect.any(String),
+            },
+          },
+        ],
+        id: expect.any(String),
+        __meta: [{ sourceRange: [39, 63] }],
+      },
       __meta: [{ sourceRange: [39, 63] }],
     })
   })
@@ -358,7 +368,7 @@ describe('testing math operators', () => {
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const mem = await exe(code)
-    const sketch = mem.get('part001')
+    const sketch = sketchGroupFromKclValue(mem.get('part001'), 'part001')
     // result of `-legLen(5, min(3, 999))` should be -4
     const yVal = (sketch as SketchGroup).value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
@@ -376,7 +386,7 @@ describe('testing math operators', () => {
       ``,
     ].join('\n')
     const mem = await exe(code)
-    const sketch = mem.get('part001')
+    const sketch = sketchGroupFromKclValue(mem.get('part001'), 'part001')
     // expect -legLen(segLen('seg01'), myVar) to equal -4 setting the y value back to 0
     expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
     expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
@@ -385,7 +395,10 @@ describe('testing math operators', () => {
       `legLen(segLen(seg01), myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
-    const removedUnaryExpMemSketch = removedUnaryExpMem.get('part001')
+    const removedUnaryExpMemSketch = sketchGroupFromKclValue(
+      removedUnaryExpMem.get('part001'),
+      'part001'
+    )
 
     // without the minus sign, the y value should be 8
     expect((removedUnaryExpMemSketch as SketchGroup).value?.[1]?.to).toEqual([

@@ -102,7 +102,7 @@ impl RevolveAxisAndOrigin {
 
 /// Revolve a sketch around an axis.
 pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_group): (RevolveData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (RevolveData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let extrude_group = inner_revolve(data, sketch_group, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
@@ -249,7 +249,7 @@ pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
 }]
 async fn inner_revolve(
     data: RevolveData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     if let Some(angle) = data.angle {

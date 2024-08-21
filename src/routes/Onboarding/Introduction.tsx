@@ -145,7 +145,7 @@ function OnboardingIntroductionInner() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
           <img
-            src={`./zma-logomark${getLogoTheme()}.svg`}
+            src={`${isDesktop() ? '.' : ''}/zma-logomark${getLogoTheme()}.svg`}
             alt={APP_NAME}
             className="h-20 max-w-full"
           />

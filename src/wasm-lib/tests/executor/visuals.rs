@@ -56,3 +56,4 @@ kcl_test!("computed_var", kcl_test_computed_var);
 kcl_test!("lego", kcl_test_lego);
 kcl_test!("riddle_small", kcl_test_riddle_small);
 kcl_test!("tan_arc_x_line", kcl_test_tan_arc_x_line);
+kcl_test!("fillet-and-shell", kcl_test_fillet_and_shell);
