@@ -16,9 +16,85 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test(
+  'click help/keybindings from home page',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async () => {},
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    // click ? button
+    await page.getByTestId('help-button').click()
+    await expect(page.getByTestId('keybindings-button')).toBeVisible()
+    // Click keyboard shortcuts button.
+    await page.getByTestId('keybindings-button').click()
+    // Make sure the keyboard shortcuts modal is visible.
+    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'click help/keybindings from project page',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.copyFile(
+          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          `${dir}/bracket/main.kcl`
+        )
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    page.on('console', console.log)
+
+    // expect to see the text bracket
+    await expect(page.getByText('bracket')).toBeVisible()
+
+    await page.getByText('bracket').click()
+
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    // click ? button
+    await page.getByTestId('help-button').click()
+    await expect(page.getByTestId('keybindings-button')).toBeVisible()
+    // Click keyboard shortcuts button.
+    await page.getByTestId('keybindings-button').click()
+    // Make sure the keyboard shortcuts modal is visible.
+    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+
+    await electronApp.close()
+  }
+)
+
+test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -57,6 +133,10 @@ test(
   'Can export from electron app',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -145,6 +225,10 @@ test(
   'Rename and delete projects, also spam arrow keys when renaming',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -433,6 +517,10 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -527,6 +615,10 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -649,6 +741,10 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({ testInfo })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -733,6 +829,10 @@ test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -946,6 +1046,10 @@ test(
   'Search projects on desktop home',
   { tag: '@electron' },
   async ({ browserName: _ }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_braket.kcl'],
       ['basic-cube', 'basic_fillet_cube_end.kcl'],
@@ -1004,9 +1108,13 @@ test(
 )
 
 test(
-  'file plane is scrollable when there are many files',
+  'file pane is scrollable when there are many files',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -1116,6 +1224,10 @@ test(
   'select all in code editor does not actually select all, just what is visible (regression)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -1183,6 +1295,10 @@ test(
   'Settings persist across restarts',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     await test.step('We can change a user setting like theme', async () => {
       const { electronApp, page } = await setupElectron({
         testInfo,

@@ -407,6 +407,9 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 }
 
 export const getInitialDefaultDir = async () => {
+  if (!window.electron) {
+    return ''
+  }
   const dir = await window.electron.getPath('documents')
   return window.electron.path.join(dir, PROJECT_FOLDER)
 }
@@ -447,6 +450,12 @@ export const readAppSettingsFile = async () => {
   }
   const configToml = await window.electron.readFile(settingsPath)
   const configObj = parseAppSettings(configToml)
+  if (!configObj.app) {
+    return Promise.reject(new Error('config.app is falsey'))
+  }
+  if (!configObj.app.projectDirectory) {
+    configObj.app.projectDirectory = await getInitialDefaultDir()
+  }
   return configObj
 }
 

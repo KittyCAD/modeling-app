@@ -105,15 +105,19 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('code-pane-button')
-  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
-  const isOpen = ariaSelected === 'true'
+async function openPane(page: Page, testId: string) {
+  const locator = page.getByTestId(testId)
+  await expect(locator).toBeVisible()
+  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
-    await paneLocator.click()
-    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
+    await locator.click()
+    await expect(locator).toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openKclCodePanel(page: Page) {
+  await openPane(page, 'code-pane-button')
 }
 
 async function closeKclCodePanel(page: Page) {
@@ -128,14 +132,7 @@ async function closeKclCodePanel(page: Page) {
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('debug-pane-button')
-  await expect(debugLocator).toBeVisible()
-  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
-
-  if (!isOpen) {
-    await debugLocator.click()
-    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
-  }
+  await openPane(page, 'debug-pane-button')
 }
 
 async function closeDebugPanel(page: Page) {
@@ -149,14 +146,7 @@ async function closeDebugPanel(page: Page) {
 }
 
 async function openFilePanel(page: Page) {
-  const fileLocator = page.getByTestId('files-pane-button')
-  await expect(fileLocator).toBeVisible()
-  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
-
-  if (!isOpen) {
-    await fileLocator.click()
-    await expect(fileLocator).toHaveAttribute('aria-pressed', 'true')
-  }
+  await openPane(page, 'files-pane-button')
 }
 
 async function closeFilePanel(page: Page) {
@@ -167,6 +157,14 @@ async function closeFilePanel(page: Page) {
     await fileLocator.click()
     await expect(fileLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openVariablesPane(page: Page) {
+  await openPane(page, 'variables-pane-button')
+}
+
+async function openLogsPane(page: Page) {
+  await openPane(page, 'logs-pane-button')
 }
 
 async function waitForCmdReceive(page: Page, commandType: string) {
@@ -344,6 +342,8 @@ export async function getUtils(page: Page) {
     closeDebugPanel: () => closeDebugPanel(page),
     openFilePanel: () => openFilePanel(page),
     closeFilePanel: () => closeFilePanel(page),
+    openVariablesPane: () => openVariablesPane(page),
+    openLogsPane: () => openLogsPane(page),
     openAndClearDebugPanel: async () => {
       await openDebugPanel(page)
       return clearCommandLogs(page)
@@ -679,6 +679,7 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(context: BrowserContext, page: Page) {
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+      localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
@@ -714,6 +715,8 @@ export async function setup(context: BrowserContext, page: Page) {
   ])
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  await page.reload()
 }
 
 export async function setupElectron({
