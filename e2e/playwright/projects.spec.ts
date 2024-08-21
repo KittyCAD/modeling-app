@@ -1513,6 +1513,7 @@ test.describe('Renaming in the file tree', () => {
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
+      const exampleDir = join('src', 'wasm-lib', 'tests', 'executor', 'inputs')
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
@@ -1520,13 +1521,6 @@ test.describe('Renaming in the file tree', () => {
           await fsp.mkdir(join(dir, 'Test Project', 'folderToRename'), {
             recursive: true,
           })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
             join(exampleDir, 'basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
@@ -1589,6 +1583,10 @@ test.describe('Renaming in the file tree', () => {
       })
 
       await test.step('Verify the folder is renamed, and navigated to new path', async () => {
+        const urlSnippet = encodeURIComponent(
+          join(newFolderName, 'someFileWithin.kcl')
+        )
+        await page.waitForURL(new RegExp(urlSnippet))
         await expect(projectMenuButton).toContainText('someFileWithin.kcl')
         await expect(renamedFolder).toBeVisible()
         await expect(folderToRename).not.toBeAttached()
