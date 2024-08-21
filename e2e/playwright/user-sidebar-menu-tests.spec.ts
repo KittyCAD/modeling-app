@@ -23,9 +23,7 @@ test.describe('Electron user sidebar menu tests', () => {
 
       // No space after "User settings" since it's textContent.
       const text =
-        process.platform === 'darwin'
-          ? 'User settings⌘,'
-          : 'User settingsCtrl,'
+        process.platform === 'darwin' ? 'User settings⌘,' : 'User settingsCtrl,'
       const userSettingsButton = page.getByTestId('user-settings')
       await expect(userSettingsButton).toBeVisible()
       await expect(userSettingsButton).toHaveText(text)
