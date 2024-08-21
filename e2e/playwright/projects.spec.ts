@@ -1676,6 +1676,7 @@ test.describe('Renaming in the file tree', () => {
       })
 
       await test.step('Rename the folder', async () => {
+        await page.waitForTimeout(60000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()

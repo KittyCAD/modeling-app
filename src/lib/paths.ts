@@ -25,10 +25,10 @@ type OnboardingPaths = {
 const SETTINGS = '/settings' as const
 
 export type ProjectRoute = {
-  projectName: string
+  projectName: string | null
   projectPath: string
-  currentFileName: string
-  currentFilePath: string
+  currentFileName: string | null
+  currentFilePath: string | null
 }
 
 export const PATHS = {
@@ -66,21 +66,22 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id)
+  const route = parseProjectRoute(configuration, id, onDesktop)
 
   if (err(route)) return Promise.reject(route)
 
   return route
 }
 
-const parseProjectRoute = (
+export async function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string
-) => {
-  const onDesktop = isDesktop()
-  let projectName = ''
+  id: string,
+  onDesktop: boolean
+): Promise<ProjectRoute> {
+  let projectName = null
   let projectPath = ''
-  let currentFileName = ''
+  let currentFileName = null
+  let currentFilePath = null
   if (
     configuration.settings?.app?.project_directory &&
     id.startsWith(configuration.settings.app.project_directory)
@@ -94,6 +95,7 @@ const parseProjectRoute = (
       configuration.settings.app.project_directory,
       projectName
     )
+    projectName = projectName === "" ? null : projectName
   } else {
     projectPath = id
     if (onDesktop) {
@@ -109,14 +111,18 @@ const parseProjectRoute = (
     }
   }
   if (onDesktop) {
-    currentFileName = window.electron.path.basename(id)
+    if (projectPath !== id) {
+        currentFileName = window.electron.path.basename(id)
+	currentFilePath = id
+    }
   } else {
     currentFileName = 'main.kcl'
+    currentFilePath = id
   }
   return {
     projectName: projectName,
     projectPath: projectPath,
     currentFileName: currentFileName,
-    currentFilePath: id,
+    currentFilePath: currentFilePath,
   }
 }
