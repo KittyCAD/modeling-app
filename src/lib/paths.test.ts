@@ -2,7 +2,7 @@ import { parseProjectRoute } from './paths'
 import * as path from 'path'
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {
-    global.window = {electron:  { path: path }}
+    global.window = { electron: { path: path } }
     let config = {
       settings: {
         app: {
@@ -19,7 +19,7 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project as the project dir', async () => {
-    global.window = {electron:  { path: path }}
+    global.window = { electron: { path: path } }
     let config = {
       settings: {
         app: {
@@ -36,7 +36,7 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project with file in the project dir', async () => {
-    global.window = {electron:  { path: path }}
+    global.window = { electron: { path: path } }
     let config = {
       settings: {
         app: {
@@ -44,11 +44,11 @@ describe('testing parseProjectRoute', () => {
         },
       },
     }
-    const route = "/home/somebody/projects/assembly/main.kcl"
+    const route = '/home/somebody/projects/assembly/main.kcl'
     expect(await parseProjectRoute(config, route, true)).toEqual({
-      projectName: "assembly",
-      projectPath: "/home/somebody/projects/assembly",
-      currentFileName: "main.kcl",
+      projectName: 'assembly',
+      projectPath: '/home/somebody/projects/assembly',
+      currentFileName: 'main.kcl',
       currentFilePath: route,
     })
   })
