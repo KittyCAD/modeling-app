@@ -38,6 +38,7 @@ import { err } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -126,6 +127,7 @@ export const parse = (code: string | Error): Program | Error => {
     const program: Program = parse_wasm(code)
     return program
   } catch (e: any) {
+    // throw e
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
@@ -312,7 +314,7 @@ export class ProgramMemory {
    */
   hasSketchOrExtrudeGroup(): boolean {
     for (const node of this.visibleEntries().values()) {
-      if (node.type === 'ExtrudeGroup' || node.type === 'SketchGroup') {
+      if (node.type === 'ExtrudeGroup' || node.value?.type === 'SketchGroup') {
         return true
       }
     }
@@ -329,6 +331,25 @@ export class ProgramMemory {
       currentEnv: this.currentEnv,
       return: this.return,
     }
+  }
+}
+
+// TODO: In the future, make the parameter be a KclValue.
+export function sketchGroupFromKclValue(
+  obj: any,
+  varName: string | null
+): SketchGroup | Error {
+  if (obj?.value?.type === 'SketchGroup') return obj.value
+  if (!varName) {
+    varName = 'a KCL value'
+  }
+  const actualType = obj?.value?.type ?? obj?.type
+  if (actualType) {
+    return new Error(
+      `Expected ${varName} to be a sketchGroup, but it was ${actualType} instead.`
+    )
+  } else {
+    return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)
   }
 }
 

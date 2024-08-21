@@ -9,12 +9,14 @@ fn test = () => {
 
 fn test2 = () => {
   return {
-    thing: startSketchOn('XY')
-      |> startProfileAt([0, 0], %)
-      |> line([0, 1], %)
-      |> line([1, 0], %)
-      |> line([0, -1], %)
-      |> close(%)
+    thing1: {
+      thing2: startSketchOn('XY')
+        |> startProfileAt([0, 0], %)
+        |> line([0, 1], %)
+        |> line([1, 0], %)
+        |> line([0, -1], %)
+        |> close(%)
+    }
   }
 }
 
@@ -23,5 +25,5 @@ x
   |> extrude(-10, %)
 
 const x2 = test2()
-x2.thing
+x2.thing1.thing2
   |> extrude(10, %)

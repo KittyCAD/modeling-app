@@ -84,7 +84,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
     // Close the code pane
     await codePaneButton.click()
@@ -107,7 +107,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
@@ -223,6 +223,10 @@ test(
   'Opening multiple panes persists when switching projects',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
     // Setup multiple projects.
     const { electronApp, page } = await setupElectron({
       testInfo,

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
-    executor::{ExecutorContext, KclValue, PlaneType, SourceRange},
+    executor::{ExecutorContext, KclValue, PlaneType, SketchGroup, SourceRange},
 };
 use kittycad::types::{ModelingCmd, Point3D};
 use pretty_assertions::assert_eq;
@@ -39,8 +39,11 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.
-    let KclValue::SketchGroup(sketch_group) = memory.get(name, SourceRange::default()).unwrap() else {
+    let KclValue::UserVal(user_val) = memory.get(name, SourceRange::default()).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", memory);
+    };
+    let Some((sketch_group, _meta)) = user_val.get::<SketchGroup>() else {
+        anyhow::bail!("part001 was not a SketchGroup");
     };
     let sketch_id = sketch_group.id;
 

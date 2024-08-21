@@ -251,11 +251,11 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_sketch_groups(&self) -> Result<(SketchGroupSet, SketchGroup), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
+    pub(crate) fn get_sketch_group(&self) -> Result<SketchGroup, KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -270,9 +270,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_group_and_optional_tag(
-        &self,
-    ) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_group_and_optional_tag(&self) -> Result<(SketchGroup, Option<TagDeclarator>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -283,7 +281,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, Box<SketchGroup>), KclError>
+    pub(crate) fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, SketchGroup), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
@@ -299,7 +297,7 @@ impl Args {
 
     pub(crate) fn get_data_and_sketch_group_and_tag<'a, T>(
         &'a self,
-    ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError>
+    ) -> Result<(T, SketchGroup, Option<TagDeclarator>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -338,7 +336,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, SketchGroup), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -550,15 +548,6 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a SketchGroup {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::SketchGroup(s) = arg else {
-            return None;
-        };
-        Some(s.as_ref())
-    }
-}
-
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for $typ {
@@ -608,6 +597,7 @@ impl_from_arg_via_json!(super::revolve::RevolveData);
 impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
+impl_from_arg_via_json!(SketchGroup);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);
@@ -618,21 +608,16 @@ impl_from_arg_via_json!(bool);
 impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
 
-impl<'a> FromKclValue<'a> for &'a Box<SketchGroup> {
+impl<'a> FromKclValue<'a> for SketchGroupSet {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::SketchGroup(s) = arg else {
+        let KclValue::UserVal(uv) = arg else {
             return None;
         };
-        Some(s)
-    }
-}
-
-impl<'a> FromKclValue<'a> for Box<SketchGroup> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::SketchGroup(s) = arg else {
-            return None;
-        };
-        Some(s.to_owned())
+        if let Some((x, _meta)) = uv.get::<SketchGroup>() {
+            Some(SketchGroupSet::from(x))
+        } else {
+            uv.get::<Vec<SketchGroup>>().map(|x| x.0).map(SketchGroupSet::from)
+        }
     }
 }
 
@@ -656,15 +641,16 @@ impl<'a> FromKclValue<'a> for ExtrudeGroupSet {
         arg.get_extrude_group_set().ok()
     }
 }
-impl<'a> FromKclValue<'a> for SketchGroupSet {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.get_sketch_group_set().ok()
-    }
-}
 impl<'a> FromKclValue<'a> for SketchSurfaceOrGroup {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
+            KclValue::UserVal(uv) => {
+                if let Some((sg, _meta)) = uv.get() {
+                    Some(Self::SketchGroup(sg))
+                } else {
+                    None
+                }
+            }
             KclValue::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
             KclValue::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
             _ => None,
