@@ -271,7 +271,7 @@ export interface components {
            * Format: int64
            * @description The error number.
            */
-          errorno: number
+          errorno?: number | null
           /** @description The reason for the message. */
           reason?: components['schemas']['Reason'] | null
           /** @description The result of the command. */
@@ -282,7 +282,7 @@ export interface components {
            * Format: int64
            * @description The target temperature.
            */
-          tar_temp: number
+          tar_temp?: number | null
           /**
            * Format: int64
            * @description The target.
@@ -520,6 +520,22 @@ export interface components {
            * @description The source.
            */
           source?: number | null
+        } & {
+          [key: string]: unknown
+        })
+      | ({
+          /** @enum {string} */
+          command: 'gcode_file'
+          /** @description The param. */
+          param?: string | null
+          /** @description The print type. */
+          print_type?: string | null
+          /** @description The reason for the message. */
+          reason: components['schemas']['Reason']
+          /** @description The result of the command. */
+          result: components['schemas']['Result']
+          /** @description The sequence id. */
+          sequence_id: components['schemas']['SequenceId']
         } & {
           [key: string]: unknown
         })
