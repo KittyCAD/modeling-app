@@ -19,11 +19,6 @@ import init, {
   parse_project_route,
   base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
-import {
-  configurationToSettingsPayload,
-  projectConfigurationToSettingsPayload,
-} from 'lib/settings/settingsUtils'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
@@ -40,6 +35,9 @@ import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { DeepPartial } from 'lib/types'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -570,31 +568,30 @@ export function tomlStringify(toml: any): string | Error {
   return toml_stringify(JSON.stringify(toml))
 }
 
-export function defaultAppSettings(): Partial<SaveSettingsPayload> {
-  // Immediately go from Configuration -> Partial<SaveSettingsPayload>
-  // The returned Rust type is Configuration but it's a lie. Every
-  // property in that returned object is optional. The Partial<T> essentially
-  // brings that type in-line with that definition.
-  return configurationToSettingsPayload(default_app_settings())
+export function defaultAppSettings(): DeepPartial<Configuration> | Error {
+  return default_app_settings()
 }
 
-export function parseAppSettings(toml: string): Partial<SaveSettingsPayload> {
-  const parsed = parse_app_settings(toml)
-  return configurationToSettingsPayload(parsed)
+export function parseAppSettings(
+  toml: string
+): DeepPartial<Configuration> | Error {
+  return parse_app_settings(toml)
 }
 
-export function defaultProjectSettings(): Partial<SaveSettingsPayload> {
-  return projectConfigurationToSettingsPayload(default_project_settings())
+export function defaultProjectSettings():
+  | DeepPartial<ProjectConfiguration>
+  | Error {
+  return default_project_settings()
 }
 
 export function parseProjectSettings(
   toml: string
-): Partial<SaveSettingsPayload> {
-  return projectConfigurationToSettingsPayload(parse_project_settings(toml))
+): DeepPartial<ProjectConfiguration> | Error {
+  return parse_project_settings(toml)
 }
 
 export function parseProjectRoute(
-  configuration: Partial<SaveSettingsPayload>,
+  configuration: DeepPartial<Configuration>,
   route_str: string
 ): ProjectRoute | Error {
   return parse_project_route(JSON.stringify(configuration), route_str)
