@@ -207,7 +207,7 @@ export const wiggleMove = async (
 }
 
 export const circleMove = async (
-  page: any,
+  page: Page,
   x: number,
   y: number,
   steps: number,
@@ -796,31 +796,29 @@ export async function isOutOfViewInScrollContainer(
 }
 
 export async function createProjectAndRenameIt (
-    {
-        name,
-        page,
-    } : {
-        name: string,
-        page: Page
-    }
+  {
+    name,
+    page,
+  } : {
+    name: string,
+    page: Page
+  }
 ) {
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
+  await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page.getByText('Successfully created')).toBeVisible()
+  await expect(page.getByText('Successfully created')).not.toBeVisible()
 
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
+  await expect(page.getByText(`project-000`)).toBeVisible()
+  await page.getByText(`project-000`).hover()
+  await page.getByText(`project-000`).focus()
 
-        await page.getByLabel('sketch').first().click()
+  await page.getByLabel('sketch').first().click()
 
-        await page.waitForTimeout(100)
+  await page.waitForTimeout(100)
 
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
+  // type the name passed in
+  await page.keyboard.press('Backspace')
+  await page.keyboard.type(name)
 
-        await page.getByLabel('checkmark').last().click()
-      })
+  await page.getByLabel('checkmark').last().click()
 }

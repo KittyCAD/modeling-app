@@ -403,12 +403,17 @@ test(
 
     page.on('console', console.log)
 
+    const createProjectAndRenameItTest = async ({name, page}:{name:string, page:Page}) => {
+      test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({name, page})
+      })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt({name:'router-template-slate', page})
-    await createProjectAndRenameIt({name:'bracket', page})
-    await createProjectAndRenameIt({name:'lego', page})
+    await createProjectAndRenameItTest({name:'router-template-slate', page})
+    await createProjectAndRenameItTest({name:'bracket', page})
+    await createProjectAndRenameItTest({name:'lego', page})
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -477,6 +482,12 @@ test(
     const getAllProjects = () => page.getByTestId('project-link').all()
 
     page.on('console', console.log)
+
+    const createProjectAndRenameItTest = async ({name, page}:{name:string, page:Page}) => {
+      test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({name, page})
+      })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
@@ -1072,5 +1083,51 @@ test(
 
       await electronApp.close()
     })
+  }
+)
+
+test(
+  'Original project name persist after onboarding',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const getAllProjects = () => page.getByTestId('project-link').all()
+    page.on('console', console.log)
+
+    await test.step('Should create and name a project called wrist brace', async () => {
+      await createProjectAndRenameIt({name:'wrist brace', page})
+    })
+
+    await test.step('Should go through onboarding', async () => {
+      await page.getByTestId('user-sidebar-toggle').click()
+      await page.getByTestId('user-settings').click()
+      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
+
+      const numberOfOnboardingSteps = 12
+      for (let clicks = 0; clicks < numberOfOnboardingSteps; clicks++) {
+        await page.getByTestId('onboarding-next').click()
+      }
+
+      await page.getByTestId('project-sidebar-toggle').click()
+    })
+
+    await test.step('Should go home after onboarding is completed', async () => {
+      await page.getByRole('button', { name: 'Go to Home' }).click()
+    })
+
+    await test.step('Should show the original project called wrist brace', async () => {
+      const projectNames = ['Tutorial Project 00', 'wrist brace']
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(
+          projectNames[index]
+        )
+      }
+    })
+
+    await electronApp.close()
   }
 )
