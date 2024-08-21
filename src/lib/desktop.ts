@@ -450,15 +450,13 @@ export const readAppSettingsFile = async () => {
   } catch (e) {
     if (e === 'ENOENT') {
       const config = defaultAppSettings()
-      if (err(config)) {
+      if (err(config)) 
         return Promise.reject(config)
-      }
-      if (!config.settings?.app) {
+      if (!config.settings?.app) 
         return Promise.reject(new Error('config.app is falsey'))
-      } else {
-        config.settings.app.project_directory = await getInitialDefaultDir()
-        return config
-      }
+
+      config.settings.app.project_directory = await getInitialDefaultDir()
+      return config
     }
   }
   const configToml = await window.electron.readFile(settingsPath)
