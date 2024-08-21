@@ -569,17 +569,34 @@ export interface Paths {
 export const doExport = async (
   output: Models['OutputFormat_type'],
   page: Page,
-  isElectron = false
+  exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
-  if (!isElectron) {
+  if (exportFrom === 'dropdown') {
     await page.getByRole('button', { name: APP_NAME }).click()
     const exportMenuButton = page.getByRole('button', {
       name: 'Export current part',
     })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
-  } else {
+  } else if (exportFrom === 'sidebarButton') {
+    await expect(page.getByTestId('export-pane-button')).toBeVisible()
     await page.getByTestId('export-pane-button').click()
+  } else if (exportFrom === 'commandBar') {
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    await commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByRole('option', {
+      name: 'floppy disk arrow Export',
+    })
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    await textToCadCommand.first().click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
@@ -607,7 +624,7 @@ export const doExport = async (
   const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
   let downloadCnt = 0
 
-  if (!isElectron)
+  if (exportFrom === 'dropdown')
     page.on('download', async (download) => {
       if (downloadCnt === 0) {
         downloadResolve1(download)
@@ -615,7 +632,7 @@ export const doExport = async (
       downloadCnt++
     })
   await page.getByRole('button', { name: 'Submit command' }).click()
-  if (isElectron) {
+  if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
     return {
       modelPath: '',
       imagePath: '',
