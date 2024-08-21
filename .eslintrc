@@ -26,7 +26,8 @@
         "rules": {
           "@typescript-eslint/no-floating-promises": "warn",
           "suggest-no-throw/suggest-no-throw": "off",
-          "testing-library/prefer-screen-queries": "off"
+          "testing-library/prefer-screen-queries": "off",
+          "jest/valid-expect": "off"
         }
       },
       {
