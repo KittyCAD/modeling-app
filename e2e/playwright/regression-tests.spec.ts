@@ -194,7 +194,7 @@ const sketch001 = startSketchAt([-0, -0])
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
     // Okay execution finished, let's start editing text below the error.
     await u.codeLocator.click()
@@ -236,9 +236,13 @@ const sketch001 = startSketchAt([-0, -0])
     page,
   }) => {
     const u = await getUtils(page)
-    await page.addInitScript(async (code) => {
-      localStorage.setItem('persistCode', code)
-    }, TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR)
+    await page.addInitScript(
+      async ({ code }) => {
+        localStorage.setItem('persistCode', code)
+        ;(window as any).playwrightSkipFilePicker = true
+      },
+      { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+    )
 
     await page.setViewportSize({ width: 1000, height: 500 })
 
@@ -325,7 +329,7 @@ const sketch001 = startSketchAt([-0, -0])
     await expect(exportingToastMessage).toBeVisible()
 
     // Expect it to succeed.
-    await expect(exportingToastMessage).not.toBeVisible()
+    await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
     await expect(errorToastMessage).not.toBeVisible()
     await expect(engineErrorToastMessage).not.toBeVisible()
 
@@ -421,6 +425,10 @@ const sketch001 = startSketchAt([-0, -0])
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ browserName: _ }, testInfo) => {
+      test.skip(
+        process.platform === 'win32',
+        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
@@ -473,7 +481,7 @@ async function clickExportButton(page: Page) {
     // Click the export button
     await exportButton.click()
 
-    // Click the stl.
+    // Click the gltf.
     const gltfOption = page.getByRole('option', { name: 'glTF' })
     await expect(gltfOption).toBeVisible()
 

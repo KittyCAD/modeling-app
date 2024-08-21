@@ -63,8 +63,10 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           data: { name: 'Make', groupId: 'modeling' },
         })
       },
-      hide: () => machineManager.machineCount() === 0,
-      hideOnPlatform: 'web',
+      hide: () => !isDesktop(),
+      disable: () => {
+        return machineManager.noMachinesReason()
+      },
     },
   ]
   const filteredActions: SidebarAction[] = sidebarActions.filter(
@@ -186,6 +188,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                       iconSize: 'md',
                     }}
                     onClick={action.action}
+                    disabledText={action.disable?.()}
                   />
                 ))}
               </ul>
@@ -238,6 +241,7 @@ interface ModelingPaneButtonProps
   onClick: () => void
   paneIsOpen?: boolean
   showBadge?: BadgeInfoComputed
+  disabledText?: string
 }
 
 function ModelingPaneButton({
@@ -245,6 +249,7 @@ function ModelingPaneButton({
   onClick,
   paneIsOpen,
   showBadge,
+  disabledText,
   ...props
 }: ModelingPaneButtonProps) {
   useHotkeys(paneConfig.keybinding, onClick, {
@@ -258,6 +263,8 @@ function ModelingPaneButton({
         onClick={onClick}
         name={paneConfig.title}
         data-testid={paneConfig.id + '-pane-button'}
+        disabled={disabledText !== undefined}
+        aria-disabled={disabledText !== undefined}
         {...props}
       >
         <ActionIcon
@@ -284,6 +291,7 @@ function ModelingPaneButton({
         >
           <span className="flex-1">
             {paneConfig.title}
+            {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
@@ -326,4 +334,5 @@ export type SidebarAction = {
   action: () => void
   hideOnPlatform?: 'desktop' | 'web'
   hide?: boolean | (() => boolean)
+  disable?: () => string | undefined
 }

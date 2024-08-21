@@ -105,15 +105,19 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('code-pane-button')
-  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
-  const isOpen = ariaSelected === 'true'
+async function openPane(page: Page, testId: string) {
+  const locator = page.getByTestId(testId)
+  await expect(locator).toBeVisible()
+  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
-    await paneLocator.click()
-    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
+    await locator.click()
+    await expect(locator).toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openKclCodePanel(page: Page) {
+  await openPane(page, 'code-pane-button')
 }
 
 async function closeKclCodePanel(page: Page) {
@@ -128,14 +132,7 @@ async function closeKclCodePanel(page: Page) {
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('debug-pane-button')
-  await expect(debugLocator).toBeVisible()
-  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
-
-  if (!isOpen) {
-    await debugLocator.click()
-    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
-  }
+  await openPane(page, 'debug-pane-button')
 }
 
 async function closeDebugPanel(page: Page) {
@@ -146,6 +143,28 @@ async function closeDebugPanel(page: Page) {
     await debugLocator.click()
     await expect(debugLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openFilePanel(page: Page) {
+  await openPane(page, 'files-pane-button')
+}
+
+async function closeFilePanel(page: Page) {
+  const fileLocator = page.getByTestId('files-pane-button')
+  await expect(fileLocator).toBeVisible()
+  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
+  if (isOpen) {
+    await fileLocator.click()
+    await expect(fileLocator).not.toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
+async function openVariablesPane(page: Page) {
+  await openPane(page, 'variables-pane-button')
+}
+
+async function openLogsPane(page: Page) {
+  await openPane(page, 'logs-pane-button')
 }
 
 async function waitForCmdReceive(page: Page, commandType: string) {
@@ -321,6 +340,10 @@ export async function getUtils(page: Page) {
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
+    openFilePanel: () => openFilePanel(page),
+    closeFilePanel: () => closeFilePanel(page),
+    openVariablesPane: () => openVariablesPane(page),
+    openLogsPane: () => openLogsPane(page),
     openAndClearDebugPanel: async () => {
       await openDebugPanel(page)
       return clearCommandLogs(page)
@@ -546,17 +569,34 @@ export interface Paths {
 export const doExport = async (
   output: Models['OutputFormat_type'],
   page: Page,
-  isElectron = false
+  exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
-  if (!isElectron) {
+  if (exportFrom === 'dropdown') {
     await page.getByRole('button', { name: APP_NAME }).click()
     const exportMenuButton = page.getByRole('button', {
       name: 'Export current part',
     })
     await expect(exportMenuButton).toBeVisible()
     await exportMenuButton.click()
-  } else {
+  } else if (exportFrom === 'sidebarButton') {
+    await expect(page.getByTestId('export-pane-button')).toBeVisible()
     await page.getByTestId('export-pane-button').click()
+  } else if (exportFrom === 'commandBar') {
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    await commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByRole('option', {
+      name: 'floppy disk arrow Export',
+    })
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    await textToCadCommand.first().click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
@@ -584,7 +624,7 @@ export const doExport = async (
   const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
   let downloadCnt = 0
 
-  if (!isElectron)
+  if (exportFrom === 'dropdown')
     page.on('download', async (download) => {
       if (downloadCnt === 0) {
         downloadResolve1(download)
@@ -592,7 +632,7 @@ export const doExport = async (
       downloadCnt++
     })
   await page.getByRole('button', { name: 'Submit command' }).click()
-  if (isElectron) {
+  if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
     return {
       modelPath: '',
       imagePath: '',
@@ -656,6 +696,7 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(context: BrowserContext, page: Page) {
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+      localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
@@ -691,6 +732,8 @@ export async function setup(context: BrowserContext, page: Page) {
   ])
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  await page.reload()
 }
 
 export async function setupElectron({

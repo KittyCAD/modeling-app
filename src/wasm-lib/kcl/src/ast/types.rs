@@ -6039,7 +6039,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token: |>" }"#
         );
     }
 
