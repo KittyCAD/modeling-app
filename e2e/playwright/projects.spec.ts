@@ -1340,85 +1340,189 @@ test(
 )
 
 test.describe('Renaming in the file tree', () => {
-  test('A file', { tag: '@electron' }, async ({ browser: _ }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async (dir) => {
-        await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
-        const exampleDir = join(
-          'src',
-          'wasm-lib',
-          'tests',
-          'executor',
-          'inputs'
+  test(
+    'A file you have open',
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      test.skip(
+        process.platform === 'win32',
+        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+      )
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
+          const exampleDir = join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs'
+          )
+          await fsp.copyFile(
+            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            join(dir, 'Test Project', 'main.kcl')
+          )
+          await fsp.copyFile(
+            join(exampleDir, 'cylinder.kcl'),
+            join(dir, 'Test Project', 'fileToRename.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      // Constants and locators
+      const projectLink = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const fileToRename = page
+        .getByRole('listitem')
+        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
+      const renamedFile = page
+        .getByRole('listitem')
+        .filter({ has: page.getByRole('button', { name: 'newFileName.kcl' }) })
+      const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+      const renameInput = page.getByPlaceholder('fileToRename.kcl')
+      const newFileName = 'newFileName'
+      const codeLocator = page.locator('.cm-content')
+
+      await test.step('Open project and file pane', async () => {
+        await expect(projectLink).toBeVisible()
+        await projectLink.click()
+        await expect(projectMenuButton).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
+
+        await u.openFilePanel()
+        await expect(fileToRename).toBeVisible()
+        await fileToRename.click()
+        await expect(projectMenuButton).toContainText('fileToRename.kcl')
+        await u.openKclCodePanel()
+        await expect(codeLocator).toContainText('circle(')
+        await u.closeKclCodePanel()
+      })
+
+      await test.step('Rename the file', async () => {
+        await fileToRename.click({ button: 'right' })
+        await renameMenuItem.click()
+        await expect(renameInput).toBeVisible()
+        await renameInput.fill(newFileName)
+        await page.keyboard.press('Enter')
+      })
+
+      await test.step('Verify the file is renamed', async () => {
+        await expect(fileToRename).not.toBeAttached()
+        await expect(renamedFile).toBeVisible()
+      })
+
+      await test.step('Verify we navigated', async () => {
+        await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
+        const url = page.url()
+        expect(url).toContain(newFileName)
+        await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
+        await expect(projectMenuButton).not.toContainText('main.kcl')
+        expect(url).not.toContain('fileToRename.kcl')
+        expect(url).not.toContain('main.kcl')
+
+        await u.openKclCodePanel()
+        await expect(codeLocator).toContainText('circle(')
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  test(
+    'A file you do not have open',
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      test.skip(
+        process.platform === 'win32',
+        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+      )
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
+          const exampleDir = join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs'
+          )
+          await fsp.copyFile(
+            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            join(dir, 'Test Project', 'main.kcl')
+          )
+          await fsp.copyFile(
+            join(exampleDir, 'cylinder.kcl'),
+            join(dir, 'Test Project', 'fileToRename.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      // Constants and locators
+      const newFileName = 'newFileName'
+      const projectLink = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const fileToRename = page
+        .getByRole('listitem')
+        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
+      const renamedFile = page
+        .getByRole('listitem')
+        .filter({
+          has: page.getByRole('button', { name: newFileName + FILE_EXT }),
+        })
+      const renameMenuItem = page.getByRole('button', { name: 'Rename' })
+      const renameInput = page.getByPlaceholder('fileToRename.kcl')
+      const codeLocator = page.locator('.cm-content')
+
+      await test.step('Open project and file pane', async () => {
+        await expect(projectLink).toBeVisible()
+        await projectLink.click()
+        await expect(projectMenuButton).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
+
+        await u.openFilePanel()
+        await expect(fileToRename).toBeVisible()
+      })
+
+      await test.step('Rename the file', async () => {
+        await fileToRename.click({ button: 'right' })
+        await renameMenuItem.click()
+        await expect(renameInput).toBeVisible()
+        await renameInput.fill(newFileName)
+        await page.keyboard.press('Enter')
+      })
+
+      await test.step('Verify the file is renamed', async () => {
+        await expect(fileToRename).not.toBeAttached()
+        await expect(renamedFile).toBeVisible()
+      })
+
+      await test.step('Verify we have not navigated', async () => {
+        await expect(projectMenuButton).toContainText('main.kcl')
+        await expect(projectMenuButton).not.toContainText(
+          newFileName + FILE_EXT
         )
-        await fsp.copyFile(
-          join(exampleDir, 'basic_fillet_cube_end.kcl'),
-          join(dir, 'Test Project', 'main.kcl')
-        )
-        await fsp.copyFile(
-          join(exampleDir, 'cylinder.kcl'),
-          join(dir, 'Test Project', 'fileToRename.kcl')
-        )
-      },
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+        await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
 
-    // Constants and locators
-    const projectLink = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const fileToRename = page
-      .getByRole('listitem')
-      .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-    const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-    const renameInput = page.getByPlaceholder('fileToRename.kcl')
-    const newFileName = 'newFileName'
-    const codeLocator = page.locator('.cm-content')
+        const url = page.url()
+        expect(url).toContain('main.kcl')
+        expect(url).not.toContain(newFileName)
+        expect(url).not.toContain('fileToRename.kcl')
 
-    await test.step('Open project and file pane', async () => {
-      await expect(projectLink).toBeVisible()
-      await projectLink.click()
-      await expect(projectMenuButton).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
+        await u.openKclCodePanel()
+        await expect(codeLocator).toContainText('fillet(')
+      })
 
-      await u.openFilePanel()
-      await expect(fileToRename).toBeVisible()
-      await fileToRename.click()
-      await expect(projectMenuButton).toContainText('fileToRename.kcl')
-      await u.openKclCodePanel()
-      await expect(codeLocator).toContainText('circle(')
-      await u.closeKclCodePanel()
-    })
-
-    await test.step('Rename the project', async () => {
-      await fileToRename.click({ button: 'right' })
-      await renameMenuItem.click()
-      await expect(renameInput).toBeVisible()
-      await renameInput.fill(newFileName)
-      await page.keyboard.press('Enter')
-    })
-
-    await test.step('Verify the project is renamed', async () => {
-      await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
-      const url = page.url()
-      expect(url).toContain(newFileName)
-      await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
-      await expect(projectMenuButton).not.toContainText('main.kcl')
-      expect(url).not.toContain('fileToRename.kcl')
-      expect(url).not.toContain('main.kcl')
-
-      await u.openKclCodePanel()
-      await expect(codeLocator).toContainText('circle(')
-    })
-
-    await electronApp.close()
-  })
+      await electronApp.close()
+    }
+  )
 
   test(
     `A folder you're not inside`,
