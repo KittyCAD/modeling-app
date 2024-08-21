@@ -75,7 +75,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
+import { isArray, isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
 import {
   addStartProfileAt,
   createArrayExpression,
@@ -99,6 +99,7 @@ import {
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -115,6 +116,8 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
+
+type Vec3Array = [number, number, number]
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -384,7 +387,7 @@ export class SceneEntities {
     if (err(sketchGroup)) return Promise.reject(sketchGroup)
     if (!sketchGroup) return Promise.reject('sketchGroup not found')
 
-    if (!Array.isArray(sketchGroup?.value))
+    if (!isArray(sketchGroup?.value))
       return {
         truncatedAst,
         programMemoryOverride,
@@ -1838,6 +1841,7 @@ export function getSketchQuaternion(
   })
   if (err(sketchGroup)) return sketchGroup
   const zAxis = sketchGroup?.on.zAxis || sketchNormalBackUp
+  if (!zAxis) return Error('SketchGroup zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
@@ -1962,8 +1966,8 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   return quaternion
 }
 
-function massageFormats(a: any): Vector3 {
-  return Array.isArray(a)
+function massageFormats(a: Vec3Array | Point3d): Vector3 {
+  return isArray(a)
     ? new Vector3(a[0], a[1], a[2])
     : new Vector3(a.x, a.y, a.z)
 }

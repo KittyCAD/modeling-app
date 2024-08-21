@@ -4,6 +4,13 @@ import { v4 } from 'uuid'
 
 export const uuidv4 = v4
 
+/**
+ * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
+ */
+export function isArray(val: any): val is unknown[] {
+  return Array.isArray(val)
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]
