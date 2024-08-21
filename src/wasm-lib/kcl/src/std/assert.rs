@@ -72,8 +72,8 @@ pub async fn assert_gt(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// let n = 1.0285
-/// let m = 1.0286
-/// assertEqual(n, m, 0.01, "n is within the given tolerance for m")
+/// let o = 1.0286
+/// assertEqual(n, o, 0.01, "n is within the given tolerance for o")
 /// ```
 #[stdlib {
     name = "assertEqual",
