@@ -1,7 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
-import { join } from 'path'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -192,7 +190,8 @@ test.describe('Text-to-CAD tests', () => {
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
-    await page.keyboard.type('akjsndladf ghgsssswefiuwq22262664')
+    const randomPrompt = `aslkdfja;` + Date.now() + `FFFFEIWJF`
+    await page.keyboard.type(randomPrompt)
     await page.waitForTimeout(1000)
     await page.keyboard.press('Enter')
 

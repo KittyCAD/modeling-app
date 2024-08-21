@@ -2898,7 +2898,7 @@ let notTagIdentifier = !myTag";
             // a runtime error instead.
             parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token".to_owned(),
+                message: "Unexpected token: !".to_owned(),
                 source_ranges: vec![SourceRange([14, 15])],
             })
         );
@@ -2911,7 +2911,7 @@ let notPipeSub = 1 |> identity(!%))";
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token".to_owned(),
+                message: "Unexpected token: |>".to_owned(),
                 source_ranges: vec![SourceRange([54, 56])],
             })
         );
