@@ -1,9 +1,9 @@
 use std::any::type_name;
 
+use anyhow::Result;
 use kittycad::types::OkWebSocketResponseData;
 use serde::de::DeserializeOwned;
 
-use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
 use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
@@ -11,6 +11,7 @@ use crate::{
         DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata,
         ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
+    std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
 };
 
 #[derive(Debug, Clone)]
@@ -37,6 +38,25 @@ impl Args {
             current_program_memory,
             dynamic_state,
         }
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn new_test_args() -> Result<Self> {
+        use std::sync::Arc;
+
+        Ok(Self {
+            args: Vec::new(),
+            source_range: SourceRange::default(),
+            ctx: ExecutorContext {
+                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
+                fs: Arc::new(crate::fs::FileManager::new()),
+                stdlib: Arc::new(crate::std::StdLib::new()),
+                settings: Default::default(),
+                is_mock: true,
+            },
+            current_program_memory: ProgramMemory::default(),
+            dynamic_state: DynamicState::default(),
+        })
     }
 
     // Add a modeling command to the batch but don't fire it right away.
