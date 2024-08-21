@@ -10,7 +10,6 @@ import {
   Program,
   ProgramMemory,
   ReturnStatement,
-  SketchGroup,
   SourceRange,
   SyntaxType,
   Expr,

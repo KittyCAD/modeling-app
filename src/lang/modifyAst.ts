@@ -17,7 +17,6 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  SketchGroup,
   sketchGroupFromKclValue,
 } from './wasm'
 import {
