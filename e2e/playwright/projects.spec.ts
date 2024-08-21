@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import {
   doExport,
   getUtils,
@@ -6,7 +6,7 @@ import {
   Paths,
   setupElectron,
   tearDown,
-  createProjectAndRenameIt
+  createProjectAndRenameIt,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -403,17 +403,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameItTest = async ({name, page}:{name:string, page:Page}) => {
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
       test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({name, page})
+        await createProjectAndRenameIt({ name, page })
       })
     }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({name:'router-template-slate', page})
-    await createProjectAndRenameItTest({name:'bracket', page})
-    await createProjectAndRenameItTest({name:'lego', page})
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -483,17 +489,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameItTest = async ({name, page}:{name:string, page:Page}) => {
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
       test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({name, page})
+        await createProjectAndRenameIt({ name, page })
       })
     }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt({name:'router-template-slate', page})
-    await createProjectAndRenameIt({name: 'bracket', page})
-    await createProjectAndRenameIt({name: 'lego', page})
+    await createProjectAndRenameIt({ name: 'router-template-slate', page })
+    await createProjectAndRenameIt({ name: 'bracket', page })
+    await createProjectAndRenameIt({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -1099,7 +1111,7 @@ test(
     page.on('console', console.log)
 
     await test.step('Should create and name a project called wrist brace', async () => {
-      await createProjectAndRenameIt({name:'wrist brace', page})
+      await createProjectAndRenameIt({ name: 'wrist brace', page })
     })
 
     await test.step('Should go through onboarding', async () => {
@@ -1122,9 +1134,7 @@ test(
     await test.step('Should show the original project called wrist brace', async () => {
       const projectNames = ['Tutorial Project 00', 'wrist brace']
       for (const [index, projectLink] of (await getAllProjects()).entries()) {
-        await expect(projectLink).toContainText(
-          projectNames[index]
-        )
+        await expect(projectLink).toContainText(projectNames[index])
       }
     })
 

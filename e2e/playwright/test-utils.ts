@@ -795,15 +795,13 @@ export async function isOutOfViewInScrollContainer(
   return isOutOfView
 }
 
-export async function createProjectAndRenameIt (
-  {
-    name,
-    page,
-  } : {
-    name: string,
-    page: Page
-  }
-) {
+export async function createProjectAndRenameIt({
+  name,
+  page,
+}: {
+  name: string
+  page: Page
+}) {
   await page.getByRole('button', { name: 'New project' }).click()
   await expect(page.getByText('Successfully created')).toBeVisible()
   await expect(page.getByText('Successfully created')).not.toBeVisible()
