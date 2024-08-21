@@ -154,72 +154,72 @@ const newVar = myVar + 1`
     expect(mem.get('mySk1')).toEqual({
       type: 'UserVal',
       value: {
-      type: 'SketchGroup',
-      on: expect.any(Object),
-      start: {
-        to: [0, 0],
-        from: [0, 0],
-        tag: null,
-        __geoMeta: {
-          id: expect.any(String),
-          sourceRange: [39, 63],
-        },
-      },
-      tags: {
-        myPath: {
-          __meta: [
-            {
-              sourceRange: [109, 116],
-            },
-          ],
-          type: 'TagIdentifier',
-          value: 'myPath',
-          info: expect.any(Object),
-        },
-      },
-      value: [
-        {
-          type: 'ToPoint',
-          to: [1, 1],
+        type: 'SketchGroup',
+        on: expect.any(Object),
+        start: {
+          to: [0, 0],
           from: [0, 0],
           tag: null,
           __geoMeta: {
-            sourceRange: [69, 85],
             id: expect.any(String),
+            sourceRange: [39, 63],
           },
         },
-        {
-          type: 'ToPoint',
-          to: [0, 1],
-          from: [1, 1],
-          __geoMeta: {
-            sourceRange: [91, 117],
-            id: expect.any(String),
-          },
-          tag: {
-            end: 116,
-            start: 109,
-            type: 'TagDeclarator',
+        tags: {
+          myPath: {
+            __meta: [
+              {
+                sourceRange: [109, 116],
+              },
+            ],
+            type: 'TagIdentifier',
             value: 'myPath',
-            digest: null,
+            info: expect.any(Object),
           },
         },
-        {
-          type: 'ToPoint',
-          to: [1, 1],
-          from: [0, 1],
-          tag: null,
-          __geoMeta: {
-            sourceRange: [123, 139],
-            id: expect.any(String),
+        value: [
+          {
+            type: 'ToPoint',
+            to: [1, 1],
+            from: [0, 0],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [69, 85],
+              id: expect.any(String),
+            },
           },
-        },
-      ],
-      id: expect.any(String),
-      __meta: [{ sourceRange: [39, 63] }],
-    },
+          {
+            type: 'ToPoint',
+            to: [0, 1],
+            from: [1, 1],
+            __geoMeta: {
+              sourceRange: [91, 117],
+              id: expect.any(String),
+            },
+            tag: {
+              end: 116,
+              start: 109,
+              type: 'TagDeclarator',
+              value: 'myPath',
+              digest: null,
+            },
+          },
+          {
+            type: 'ToPoint',
+            to: [1, 1],
+            from: [0, 1],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [123, 139],
+              id: expect.any(String),
+            },
+          },
+        ],
+        id: expect.any(String),
         __meta: [{ sourceRange: [39, 63] }],
-  })
+      },
+      __meta: [{ sourceRange: [39, 63] }],
+    })
   })
   it('execute array expression', async () => {
     const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(

@@ -18,46 +18,46 @@ const mySketch001 = startSketchOn('XY')
     // @ts-ignore
     const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
-      
       type: 'UserVal',
       __meta: [{ sourceRange: [46, 71] }],
       value: {
-      type: 'SketchGroup',
-      on: expect.any(Object),
-      start: {
-        to: [0, 0],
-        from: [0, 0],
-        tag: null,
-        __geoMeta: {
-          id: expect.any(String),
-          sourceRange: [46, 71],
-        },
-      },
-      value: [
-        {
-          type: 'ToPoint',
-          tag: null,
-          to: [-1.59, -1.54],
+        type: 'SketchGroup',
+        on: expect.any(Object),
+        start: {
+          to: [0, 0],
           from: [0, 0],
-          __geoMeta: {
-            sourceRange: [77, 102],
-            id: expect.any(String),
-          },
-        },
-        {
-          type: 'ToPoint',
-          to: [0.46, -5.82],
-          from: [-1.59, -1.54],
           tag: null,
           __geoMeta: {
-            sourceRange: [108, 132],
             id: expect.any(String),
+            sourceRange: [46, 71],
           },
         },
-      ],
-      id: expect.any(String),
-      __meta: [{ sourceRange: [46, 71] }],
-    }})
+        value: [
+          {
+            type: 'ToPoint',
+            tag: null,
+            to: [-1.59, -1.54],
+            from: [0, 0],
+            __geoMeta: {
+              sourceRange: [77, 102],
+              id: expect.any(String),
+            },
+          },
+          {
+            type: 'ToPoint',
+            to: [0.46, -5.82],
+            from: [-1.59, -1.54],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [108, 132],
+              id: expect.any(String),
+            },
+          },
+        ],
+        id: expect.any(String),
+        __meta: [{ sourceRange: [46, 71] }],
+      },
+    })
   })
   test('extrude artifacts', async () => {
     // Enable rotations #152
