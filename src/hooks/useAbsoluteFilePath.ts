@@ -6,10 +6,6 @@ export function useAbsoluteFilePath() {
   const routeData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   return (
-    PATHS.FILE +
-    '/' +
-    encodeURIComponent(
-      routeData?.file?.path || BROWSER_PATH
-    )
+    PATHS.FILE + '/' + encodeURIComponent(routeData?.file?.path || BROWSER_PATH)
   )
 }

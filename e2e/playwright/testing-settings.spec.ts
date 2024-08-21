@@ -1,11 +1,6 @@
 import { test, expect } from '@playwright/test'
 import * as fsp from 'fs/promises'
-import {
-  getUtils,
-  setup,
-  setupElectron,
-  tearDown,
-} from './test-utils'
+import { getUtils, setup, setupElectron, tearDown } from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
