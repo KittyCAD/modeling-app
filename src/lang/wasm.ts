@@ -33,10 +33,11 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { DeepPartial } from 'lib/types'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -85,19 +86,16 @@ export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? 'http://127.0.0.1:3000'
-      : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost' // custom protocol for macOS
-      : window.location.origin.includes('tauri.localhost')
-      ? 'http://tauri.localhost' // fallback for Windows
-      : window.location.origin.includes('localhost')
-      ? 'http://localhost:3000'
-      : window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : 'http://localhost:3000'
-  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  // For when we're in electron (file based) or web server (network based)
+  // For some reason relative paths don't work as expected. Otherwise we would
+  // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
+  // is used from within worker.ts.
+  const fullUrl = document.location.protocol.includes('http')
+    ? document.location.origin + '/wasm_lib_bg.wasm'
+    : document.location.protocol +
+      document.location.pathname.split('/').slice(0, -1).join('/') +
+      '/wasm_lib_bg.wasm'
+
   console.log(`Full URL for WASM: ${fullUrl}`)
 
   return fullUrl
@@ -570,26 +568,30 @@ export function tomlStringify(toml: any): string | Error {
   return toml_stringify(JSON.stringify(toml))
 }
 
-export function defaultAppSettings(): Configuration | Error {
+export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
 }
 
-export function parseAppSettings(toml: string): Configuration | Error {
+export function parseAppSettings(
+  toml: string
+): DeepPartial<Configuration> | Error {
   return parse_app_settings(toml)
 }
 
-export function defaultProjectSettings(): ProjectConfiguration | Error {
+export function defaultProjectSettings():
+  | DeepPartial<ProjectConfiguration>
+  | Error {
   return default_project_settings()
 }
 
 export function parseProjectSettings(
   toml: string
-): ProjectConfiguration | Error {
+): DeepPartial<ProjectConfiguration> | Error {
   return parse_project_settings(toml)
 }
 
 export function parseProjectRoute(
-  configuration: Configuration,
+  configuration: DeepPartial<Configuration>,
   route_str: string
 ): ProjectRoute | Error {
   return parse_project_route(JSON.stringify(configuration), route_str)

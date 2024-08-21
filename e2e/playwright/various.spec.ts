@@ -17,6 +17,8 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
+const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
+
 test('Units menu', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -209,9 +211,12 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
   const arcButton = page.getByRole('button', {
-    name: 'Tangential Arc',
+    name: 'arc Tangential Arc',
     exact: true,
   })
 
@@ -296,9 +301,12 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   })
 
   const codePane = page.locator('.cm-content')
-  const lineButton = page.getByRole('button', { name: 'Line', exact: true })
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
   const arcButton = page.getByRole('button', {
-    name: 'Tangential Arc',
+    name: 'arc Tangential Arc',
     exact: true,
   })
   const extrudeButton = page.getByRole('button', { name: 'Extrude' })
@@ -372,7 +380,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await test.step(`Type code with sketch hotkeys, shouldn't fire`, async () => {
     // Since there's code now, we have to get to the end of the line
     await page.locator('.cm-line').last().click()
-    await page.keyboard.press('ControlOrMeta+ArrowRight')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.up(CtrlKey)
 
     await page.keyboard.press('Enter')
     await page.keyboard.type('//')
@@ -592,10 +602,10 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
-  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'arrow right Continue' }).click()
   await page.waitForTimeout(100)
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
 const sketch002 = extrude(${[5, 5]} + 7, sketch002)`

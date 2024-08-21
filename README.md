@@ -89,26 +89,19 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
-## Tauri
+## Desktop
 
-To spin up up tauri dev, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
+To spin up the desktop app, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
 
 ```
-yarn tauri dev
+yarn electron:start
 ```
 
-Will spin up the web app before opening up the tauri dev desktop app. Note that it's probably a good idea to close the browser tab that gets opened since at the time of writing they can conflict.
+This will start the application and hot-reload on changed.
 
-The dev instance automatically opens up the browser devtools which can be disabled by [commenting it out](https://github.com/KittyCAD/modeling-app/blob/main/src-tauri/src/main.rs#L92.)
+Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
 
-To build, run `yarn tauri build`, or `yarn tauri build --debug` to keep access to the devtools.
-
-Note that these became separate apps on Macos, so make sure you open the right one after a build 😉
-![image](https://github.com/KittyCAD/modeling-app/assets/29681384/a08762c5-8d16-42d8-a02f-a5efc9ae5551)
-
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/29681384/211947063-46164bb4-7bdd-45cb-9a76-2f40c71a24aa.png">
-
-<img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
+To build, run `yarn tron:package`.
 
 ## Checking out commits / Bisecting
 

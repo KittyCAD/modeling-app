@@ -44,7 +44,7 @@ const example = extrude(-5, exampleSketch)
 	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
 	repetitions: number,
 	// Whether or not to rotate the duplicates as they are copied.
-	rotateDuplicates: string,
+	rotateDuplicates: bool,
 }
 ```
 * `extrude_group_set`: `ExtrudeGroupSet` - A extrude group or a group of extrude groups. (REQUIRED)
@@ -287,7 +287,7 @@ const example = extrude(-5, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -305,7 +305,7 @@ const example = extrude(-5, exampleSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.

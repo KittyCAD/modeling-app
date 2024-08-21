@@ -19,6 +19,16 @@ macro_rules! kcl_test {
 }
 
 kcl_test!("sketch_on_face", kcl_test_sketch_on_face);
+kcl_test!("tangential_arc", kcl_test_tangential_arc);
+kcl_test!(
+    "big_number_angle_to_match_length_x",
+    kcl_test_big_number_angle_to_match_length_x
+);
+kcl_test!(
+    "big_number_angle_to_match_length_y",
+    kcl_test_big_number_angle_to_match_length_y
+);
+kcl_test!("sketch_on_face_circle_tagged", kcl_test_sketch_on_face_circle_tagged);
 kcl_test!("basic_fillet_cube_start", kcl_test_basic_fillet_cube_start);
 kcl_test!(
     "basic_fillet_cube_next_adjacent",
@@ -46,3 +56,4 @@ kcl_test!("computed_var", kcl_test_computed_var);
 kcl_test!("lego", kcl_test_lego);
 kcl_test!("riddle_small", kcl_test_riddle_small);
 kcl_test!("tan_arc_x_line", kcl_test_tan_arc_x_line);
+kcl_test!("fillet-and-shell", kcl_test_fillet_and_shell);

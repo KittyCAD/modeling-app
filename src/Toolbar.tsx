@@ -185,6 +185,8 @@ export function Toolbar({
                     maybeIconConfig[0].disabled
                   }
                   name={maybeIconConfig[0].title}
+                  // aria-description is still in ARIA 1.3 draft.
+                  // eslint-disable-next-line jsx-a11y/aria-props
                   aria-description={maybeIconConfig[0].description}
                   onClick={() =>
                     maybeIconConfig[0].onClick(configCallbackProps)
@@ -225,6 +227,8 @@ export function Toolbar({
                   (!itemConfig.showTitle ? ' !px-0' : '')
                 }
                 name={itemConfig.title}
+                // aria-description is still in ARIA 1.3 draft.
+                // eslint-disable-next-line jsx-a11y/aria-props
                 aria-description={itemConfig.description}
                 aria-pressed={itemConfig.isActive}
                 disabled={

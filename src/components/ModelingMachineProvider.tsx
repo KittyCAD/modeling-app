@@ -393,10 +393,12 @@ export const ModelingMachineProvider = ({
             selection: { type: 'default_scene' },
           }
 
+          // Artificially delay the export in playwright tests
           toast.promise(
             exportFromEngine({
               format: format,
             }),
+
             {
               loading: 'Starting print...',
               success: 'Started print successfully',

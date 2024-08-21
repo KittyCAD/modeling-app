@@ -399,7 +399,7 @@ shell({ faces: [myTag], thickness: 0.25 }, firstSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -417,7 +417,7 @@ shell({ faces: [myTag], thickness: 0.25 }, firstSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -794,7 +794,7 @@ shell({ faces: [myTag], thickness: 0.25 }, firstSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
@@ -812,7 +812,7 @@ shell({ faces: [myTag], thickness: 0.25 }, firstSketch)
 } |
 {
 	// arc's direction
-	ccw: string,
+	ccw: bool,
 	// the arc's center
 	center: [number, number],
 	// The from point.
