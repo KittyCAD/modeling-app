@@ -1,11 +1,10 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import * as fsp from 'fs/promises'
 import {
   getUtils,
   setup,
   setupElectron,
   tearDown,
-  PERSIST_MODELING_CONTEXT,
 } from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
