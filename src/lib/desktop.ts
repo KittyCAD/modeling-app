@@ -329,7 +329,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
       new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
-
   let walked = await collectAllFilesRecursiveFrom(projectPath)
   let default_file = await getDefaultKclFileForDir(projectPath, walked)
   const metadata = await window.electron.stat(projectPath)

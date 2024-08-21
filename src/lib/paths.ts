@@ -83,16 +83,16 @@ export async function parseProjectRoute(
   let currentFileName = null
   let currentFilePath = null
   if (
-    configuration.settings?.app?.project_directory &&
-    id.startsWith(configuration.settings.app.project_directory)
+    configuration.settings?.project?.directory &&
+    id.startsWith(configuration.settings.project.directory)
   ) {
     const relativeToRoot = window.electron.path.relative(
-      configuration.settings.app.project_directory,
+      configuration.settings.project.directory,
       id
     )
     projectName = relativeToRoot.split(window.electron.path.sep)[0]
     projectPath = window.electron.path.join(
-      configuration.settings.app.project_directory,
+      configuration.settings.project.directory,
       projectName
     )
     projectName = projectName === '' ? null : projectName

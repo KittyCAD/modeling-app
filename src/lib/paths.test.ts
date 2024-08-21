@@ -5,8 +5,8 @@ describe('testing parseProjectRoute', () => {
     global.window = { electron: { path: path } }
     let config = {
       settings: {
-        app: {
-          project_directory: '/home/somebody/projects',
+        project: {
+          directory: '/home/somebody/projects',
         },
       },
     }
@@ -22,8 +22,8 @@ describe('testing parseProjectRoute', () => {
     global.window = { electron: { path: path } }
     let config = {
       settings: {
-        app: {
-          project_directory: '/home/somebody/projects',
+        project: {
+          directory: '/home/somebody/projects',
         },
       },
     }
@@ -39,12 +39,29 @@ describe('testing parseProjectRoute', () => {
     global.window = { electron: { path: path } }
     let config = {
       settings: {
-        app: {
-          project_directory: '/home/somebody/projects',
+        project: {
+          directory: '/home/somebody/projects',
         },
       },
     }
     const route = '/home/somebody/projects/assembly/main.kcl'
+    expect(await parseProjectRoute(config, route, true)).toEqual({
+      projectName: 'assembly',
+      projectPath: '/home/somebody/projects/assembly',
+      currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
+  it('should parse a project with file in a subdir in the project dir', async () => {
+    global.window = { electron: { path: path } }
+    let config = {
+      settings: {
+        project: {
+          directory: '/home/somebody/projects',
+        },
+      },
+    }
+    const route = '/home/somebody/projects/assembly/subdir/main.kcl'
     expect(await parseProjectRoute(config, route, true)).toEqual({
       projectName: 'assembly',
       projectPath: '/home/somebody/projects/assembly',
