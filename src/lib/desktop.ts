@@ -443,28 +443,34 @@ export const readProjectSettingsFile = async (
   return configObj
 }
 
+/**
+ * Read the app settings file, or creates an initial one if it doesn't exist.
+ */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
-  try {
-    await window.electron.stat(settingsPath)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      const config = defaultAppSettings()
-      if (err(config)) return Promise.reject(config)
-      if (!config.settings?.app)
-        return Promise.reject(new Error('config.app is falsey'))
 
-      config.settings.app.project_directory = await getInitialDefaultDir()
-      return config
+  // The file exists, read it and parse it.
+  if (window.electron.exists(settingsPath)) {
+    const configToml = await window.electron.readFile(settingsPath)
+    const configObj = parseAppSettings(configToml)
+    if (err(configObj)) {
+      return Promise.reject(configObj)
     }
-  }
-  const configToml = await window.electron.readFile(settingsPath)
-  const configObj = parseAppSettings(configToml)
-  if (err(configObj)) {
-    return Promise.reject(configObj)
+
+    return configObj
   }
 
-  return configObj
+  // The file doesn't exist, create a new one.
+  // This defaultAppConfig is truly an empty object every time.
+  const defaultAppConfig = defaultAppSettings()
+  if (err(defaultAppConfig)) {
+    return Promise.reject(defaultAppConfig)
+  }
+  const initialDirConfig: DeepPartial<Configuration> = {
+    settings: { project: { directory: await getInitialDefaultDir() } },
+  }
+  const config = Object.assign(defaultAppConfig, initialDirConfig)
+  return config
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
