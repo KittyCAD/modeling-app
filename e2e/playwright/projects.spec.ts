@@ -6,6 +6,7 @@ import {
   Paths,
   setupElectron,
   tearDown,
+  createProjectAndRenameIt
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -402,33 +403,12 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
-      })
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameIt({name:'router-template-slate', page})
+    await createProjectAndRenameIt({name:'bracket', page})
+    await createProjectAndRenameIt({name:'lego', page})
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -498,33 +478,11 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
-      })
-
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameIt({name:'router-template-slate', page})
+    await createProjectAndRenameIt({name: 'bracket', page})
+    await createProjectAndRenameIt({name: 'lego', page})
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
