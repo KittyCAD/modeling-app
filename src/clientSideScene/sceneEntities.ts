@@ -75,7 +75,13 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isArray, isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
+import {
+  isArray,
+  isOverlap,
+  normaliseAngle,
+  roundOff,
+  throttle,
+} from 'lib/utils'
 import {
   addStartProfileAt,
   createArrayExpression,
@@ -1967,7 +1973,5 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
 }
 
 function massageFormats(a: Vec3Array | Point3d): Vector3 {
-  return isArray(a)
-    ? new Vector3(a[0], a[1], a[2])
-    : new Vector3(a.x, a.y, a.z)
+  return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
 }
