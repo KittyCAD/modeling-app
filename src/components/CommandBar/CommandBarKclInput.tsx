@@ -102,7 +102,7 @@ function CommandBarKclInput({
     if (editorRef.current) {
       setContainer(editorRef.current)
     }
-  }, [arg, editorRef as React.RefObject<HTMLDivElement>])
+  }, [arg, editorRef])
 
   useEffect(() => {
     setCanSubmit(
