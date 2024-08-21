@@ -91,26 +91,31 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
-## Tauri
+## Desktop
 
-To spin up up tauri dev, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
+To spin up the desktop app, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
 
 ```
-yarn tauri dev
+yarn electron:start
 ```
 
-Will spin up the web app before opening up the tauri dev desktop app. Note that it's probably a good idea to close the browser tab that gets opened since at the time of writing they can conflict.
+This will start the application and hot-reload on changed.
 
-The dev instance automatically opens up the browser devtools which can be disabled by [commenting it out](https://github.com/KittyCAD/modeling-app/blob/main/src-tauri/src/main.rs#L92.)
+Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
 
-To build, run `yarn tauri build`, or `yarn tauri build --debug` to keep access to the devtools.
+To build, run `yarn tron:package`.
 
-Note that these became separate apps on Macos, so make sure you open the right one after a build 😉
-![image](https://github.com/KittyCAD/modeling-app/assets/29681384/a08762c5-8d16-42d8-a02f-a5efc9ae5551)
+## Checking out commits / Bisecting
 
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/29681384/211947063-46164bb4-7bdd-45cb-9a76-2f40c71a24aa.png">
+Which commands from setup are one off vs need to be run every time?
 
-<img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
+The following will need to be run when checking out a new commit and guarantees the build is not stale:
+```bash
+yarn install
+yarn wasm-prep
+yarn build:wasm-dev # or yarn build:wasm for slower but more production-like build
+yarn start # or yarn build:local && yarn serve for slower but more production-like build
+```
 
 ## Before submitting a PR
 
@@ -126,20 +131,40 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-1. Bump the versions by running `./make-realease.sh` while on a fresh pull of main
+#### 1. Bump the versions by running `./make-release.sh` and create a Cut Release PR
 
-That will create the branch with the updated json files for you.
-run `./make-release.sh` for a patch update
-run `./make-release.sh "minor"` for minor
-run `./make-release.sh "major"` for major
+That will create the branch with the updated json files for you:
+- run `./make-release.sh` or `./make-release.sh patch` for a patch update;
+- run `./make-release.sh minor` for minor; or
+- run `./make-release.sh major` for major.
 
-After it runs you should just need to push the push the branch and open a PR (it will suggest a changelog for you too, delete any that are not user facing)
+After it runs you should just need the push the branch and open a PR.
 
-The PR may serve as a place to discuss the human-readable changelog and extra QA. 
+**Important:** It needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
 
-2. Merge the PR
+The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
 
-3. Profit (A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions if the PR was correctly named)
+#### 2. Smoke test artifacts from the Cut Release PR
+
+The release builds can be find under the `artifact` zip, at the very bottom of the `ci` action page for each commit on this branch.
+
+We don't have a strict process, but click around and check for anything obvious, posting results as comments in the Cut Release PR.
+
+The other `ci` output in Cut Release PRs is `updater-test`, because we don't have a way to test this fully automated, we have a semi-automated process. Download updater-test zip file, install the app, run it, expect an updater prompt to a dummy v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
+
+#### 3. Merge the Cut Release PR
+
+This will kick the `create-release` action, that creates a _Draft_ release out of this Cut Release PR merge after less than a minute, with the new version as title and Cut Release PR as description.
+
+
+#### 4. Publish the release
+
+Head over to https://github.com/KittyCAD/modeling-app/releases, the draft release corresponding to the merged Cut Release PR should show up at the top as _Draft_. Click on it, verify the content, and hit _Publish_.
+
+#### 5. Profit
+
+A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter.
+
 
 ## Fuzzing the parser
 

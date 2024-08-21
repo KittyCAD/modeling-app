@@ -3,6 +3,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useKclContext } from 'lang/KclProvider'
 import { CommandArgument } from 'lib/commandTypes'
 import {
+  Selection,
   canSubmitSelectionArg,
   getSelectionType,
   getSelectionTypeDisplayText,
@@ -10,6 +11,25 @@ import {
 import { modelingMachine } from 'machines/modelingMachine'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
+
+const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
+  face: ['extrude-wall', 'start-cap', 'end-cap'],
+  edge: ['edge', 'line', 'arc'],
+  point: ['point', 'line-end', 'line-mid'],
+}
+
+function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
+  const semanticSelectionType = new Set()
+  selectionType.forEach((type) => {
+    Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
+      if (entityTypes.includes(type)) {
+        semanticSelectionType.add(entity)
+      }
+    })
+  })
+
+  return Array.from(semanticSelectionType)
+}
 
 const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
   snapshot.context.selectionRanges
@@ -85,7 +105,9 @@ function CommandBarSelectionInput({
       >
         {canSubmitSelection
           ? getSelectionTypeDisplayText(selection) + ' selected'
-          : `Please select ${arg.multiple ? 'one or more faces' : 'one face'}`}
+          : `Please select ${
+              arg.multiple ? 'one or more ' : 'one '
+            }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
         <input
           id="selection"
           name="selection"

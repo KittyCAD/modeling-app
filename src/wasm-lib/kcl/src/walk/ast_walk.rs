@@ -2,8 +2,8 @@ use anyhow::Result;
 
 use crate::{
     ast::types::{
-        BinaryPart, BodyItem, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
-        Parameter, Program, UnaryExpression, Value, VariableDeclarator,
+        BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression,
+        ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
     walk::Node,
 };
@@ -108,20 +108,20 @@ where
     }
 }
 
-fn walk_value<'a, WalkT>(node: &'a Value, f: &WalkT) -> Result<bool>
+fn walk_value<'a, WalkT>(node: &'a Expr, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
     match node {
-        Value::Literal(lit) => f.walk(lit.as_ref().into()),
-        Value::TagDeclarator(tag) => f.walk(tag.as_ref().into()),
+        Expr::Literal(lit) => f.walk(lit.as_ref().into()),
+        Expr::TagDeclarator(tag) => f.walk(tag.as_ref().into()),
 
-        Value::Identifier(id) => {
+        Expr::Identifier(id) => {
             // sometimes there's a bare Identifier without a Value::Identifier.
             f.walk(id.as_ref().into())
         }
 
-        Value::BinaryExpression(be) => {
+        Expr::BinaryExpression(be) => {
             if !f.walk(be.as_ref().into())? {
                 return Ok(false);
             }
@@ -130,7 +130,7 @@ where
             }
             walk_binary_part(&be.right, f)
         }
-        Value::FunctionExpression(fe) => {
+        Expr::FunctionExpression(fe) => {
             if !f.walk(fe.as_ref().into())? {
                 return Ok(false);
             }
@@ -142,7 +142,7 @@ where
             }
             walk(&fe.body, f)
         }
-        Value::CallExpression(ce) => {
+        Expr::CallExpression(ce) => {
             if !f.walk(ce.as_ref().into())? {
                 return Ok(false);
             }
@@ -157,7 +157,7 @@ where
             }
             Ok(true)
         }
-        Value::PipeExpression(pe) => {
+        Expr::PipeExpression(pe) => {
             if !f.walk(pe.as_ref().into())? {
                 return Ok(false);
             }
@@ -169,8 +169,8 @@ where
             }
             Ok(true)
         }
-        Value::PipeSubstitution(ps) => f.walk(ps.as_ref().into()),
-        Value::ArrayExpression(ae) => {
+        Expr::PipeSubstitution(ps) => f.walk(ps.as_ref().into()),
+        Expr::ArrayExpression(ae) => {
             if !f.walk(ae.as_ref().into())? {
                 return Ok(false);
             }
@@ -181,10 +181,10 @@ where
             }
             Ok(true)
         }
-        Value::ObjectExpression(oe) => walk_object_expression(oe, f),
-        Value::MemberExpression(me) => walk_member_expression(me, f),
-        Value::UnaryExpression(ue) => walk_unary_expression(ue, f),
-        Value::None(_) => Ok(true),
+        Expr::ObjectExpression(oe) => walk_object_expression(oe, f),
+        Expr::MemberExpression(me) => walk_member_expression(me, f),
+        Expr::UnaryExpression(ue) => walk_unary_expression(ue, f),
+        Expr::None(_) => Ok(true),
     }
 }
 

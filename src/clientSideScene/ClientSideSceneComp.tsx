@@ -26,7 +26,7 @@ import {
   PathToNode,
   Program,
   SourceRange,
-  Value,
+  Expr,
   parse,
   recast,
 } from 'lang/wasm'
@@ -102,6 +102,7 @@ export const ClientSideScene = ({
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
     canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
     sceneInfra.setSend(send)
+    engineCommandManager.modelingSend = send
     return () => {
       canvas?.removeEventListener('mousemove', sceneInfra.onMouseMove)
       canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
@@ -549,7 +550,7 @@ const ConstraintSymbol = ({
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Value>(kclManager.ast, pathToNode),
+    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
@@ -574,10 +575,10 @@ const ConstraintSymbol = ({
             : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
-          editorManager.setHighlightRange(range)
+          editorManager.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          editorManager.setHighlightRange([0, 0])
+          editorManager.setHighlightRange([[0, 0]])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?

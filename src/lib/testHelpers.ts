@@ -1,8 +1,9 @@
 import { Program, ProgramMemory, _executor, SourceRange } from '../lang/wasm'
 import {
   EngineCommandManager,
-  EngineCommand,
-} from '../lang/std/engineConnection'
+  EngineCommandManagerEvents,
+} from 'lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
@@ -75,7 +76,7 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Program | Error,
-  pm: ProgramMemory | Error = { root: {}, return: null }
+  pm: ProgramMemory | Error = ProgramMemory.empty()
 ): Promise<ProgramMemory> {
   if (err(ast)) return Promise.reject(ast)
   if (err(pm)) return Promise.reject(pm)
@@ -84,7 +85,6 @@ export async function enginelessExecutor(
     setIsStreamReady: () => {},
     setMediaStream: () => {},
   }) as any as EngineCommandManager
-  await mockEngineCommandManager.waitForReady
   mockEngineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, mockEngineCommandManager, true)
   await mockEngineCommandManager.waitForAllCommands()
@@ -93,7 +93,7 @@ export async function enginelessExecutor(
 
 export async function executor(
   ast: Program,
-  pm: ProgramMemory = { root: {}, return: null }
+  pm: ProgramMemory = ProgramMemory.empty()
 ): Promise<ProgramMemory> {
   const engineCommandManager = new EngineCommandManager()
   engineCommandManager.start({
@@ -101,7 +101,6 @@ export async function executor(
     setMediaStream: () => {},
     width: 0,
     height: 0,
-    executeCode: () => {},
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
     },
@@ -109,9 +108,21 @@ export async function executor(
       return new Promise((resolve) => resolve())
     },
   })
-  await engineCommandManager.waitForReady
-  engineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, engineCommandManager, false)
-  await engineCommandManager.waitForAllCommands()
-  return programMemory
+
+  return new Promise((resolve) => {
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.SceneReady,
+      async () => {
+        engineCommandManager.startNewSession()
+        const programMemory = await _executor(
+          ast,
+          pm,
+          engineCommandManager,
+          false
+        )
+        await engineCommandManager.waitForAllCommands()
+        Promise.resolve(programMemory)
+      }
+    )
+  })
 }

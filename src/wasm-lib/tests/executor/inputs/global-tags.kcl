@@ -56,10 +56,10 @@ const bracketBody = bs
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge(bs.tags.edge7, %),
-         getNextAdjacentEdge(bs.tags.edge2, %),
-         getNextAdjacentEdge(bs.tags.edge3, %),
-         getNextAdjacentEdge(bs.tags.edge6, %)
+         getNextAdjacentEdge(bs.tags.edge7),
+         getNextAdjacentEdge(bs.tags.edge2),
+         getNextAdjacentEdge(bs.tags.edge3),
+         getNextAdjacentEdge(bs.tags.edge6)
        ]
      }, %)
 
@@ -88,8 +88,8 @@ const tabsR = startSketchOn(tabPlane)
   |> fillet({
        radius: holeDiam / 2,
        tags: [
-         getNextAdjacentEdge(edge12, %),
-         getNextAdjacentEdge(edge13, %)
+         getNextAdjacentEdge(edge12),
+         getNextAdjacentEdge(edge13)
        ]
      }, %)
   |> patternLinear3d({
@@ -113,8 +113,8 @@ const tabsL = startSketchOn(tabPlane)
   |> fillet({
        radius: holeDiam / 2,
        tags: [
-         getNextAdjacentEdge(edge21, %),
-         getNextAdjacentEdge(edge22, %)
+         getNextAdjacentEdge(edge21),
+         getNextAdjacentEdge(edge22)
        ]
      }, %)
   |> patternLinear3d({

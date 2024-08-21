@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
+import { BinaryPart, Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -36,14 +36,14 @@ export function horzVertDistanceInfo({
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
   const [hasErr, , nodesWErrs] = cleanErrs(_nodes)
 
   if (hasErr) return nodesWErrs[0]
-  const nodes = _nodes as Value[]
+  const nodes = _nodes as Expr[]
 
   const _varDecs = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
@@ -108,7 +108,7 @@ export async function applyConstraintHorzVertDistance({
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
   const transformed = transformSecondarySketchLinesTagFirst({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,

@@ -3,95 +3,126 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
-} from 'lib/tauriFS'
-import { isTauri } from 'lib/isTauri'
-import { useNavigate } from 'react-router-dom'
-import { paths } from 'lib/paths'
+import { createAndOpenNewProject } from 'lib/desktopFS'
+import { isDesktop } from 'lib/isDesktop'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
-import { join } from '@tauri-apps/api/path'
-import {
-  APP_NAME,
-  ONBOARDING_PROJECT_NAME,
-  PROJECT_ENTRYPOINT,
-} from 'lib/constants'
-import { createNewProjectDirectory, listProjects } from 'lib/tauri'
+import { APP_NAME } from 'lib/constants'
+import { useState } from 'react'
+import { IndexLoaderData } from 'lib/types'
+import { PATHS } from 'lib/paths'
+import { useFileContext } from 'hooks/useFileContext'
+import { useLspContext } from 'components/LspProvider'
 
-function OnboardingWithNewFile() {
-  const navigate = useNavigate()
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.INDEX)
+/**
+ * Show either a welcome screen or a warning screen
+ * depending on if the user has code in the editor.
+ */
+export default function OnboardingIntroduction() {
+  const [shouldShowWarning, setShouldShowWarning] = useState(
+    codeManager.code !== '' && codeManager.code !== bracket
+  )
 
-  async function createAndOpenNewProject() {
-    const projects = await listProjects()
-    const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-    const name = interpolateProjectNameWithIndex(
-      ONBOARDING_PROJECT_NAME,
-      nextIndex
-    )
-    const newFile = await createNewProjectDirectory(name, bracket)
-    navigate(
-      `${paths.FILE}/${encodeURIComponent(
-        await join(newFile.path, PROJECT_ENTRYPOINT)
-      )}${paths.ONBOARDING.INDEX}`
-    )
-  }
+  return shouldShowWarning ? (
+    <OnboardingResetWarning setShouldShowWarning={setShouldShowWarning} />
+  ) : (
+    <OnboardingIntroductionInner />
+  )
+}
+
+interface OnboardingResetWarningProps {
+  setShouldShowWarning: (arg: boolean) => void
+}
+
+function OnboardingResetWarning(props: OnboardingResetWarningProps) {
   return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        {!isTauri() ? (
-          <>
-            <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
-              Replaying onboarding resets your code
-            </h1>
-            <p className="my-4">
-              We see you have some of your own code written in this project.
-              Please save it somewhere else before continuing the onboarding.
-            </p>
-            <OnboardingButtons
-              className="mt-6"
-              dismiss={dismiss}
-              next={() => {
-                // We do want to update both the state and editor here.
-                codeManager.updateCodeEditor(bracket)
-                kclManager.executeCode(true, true)
-                next()
-              }}
-              nextText="Overwrite code and continue"
-            />
-          </>
+        {!isDesktop() ? (
+          <OnboardingWarningWeb {...props} />
         ) : (
-          <>
-            <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
-              Would you like to create a new project?
-            </h1>
-            <section className="my-12">
-              <p className="my-4">
-                You have some content in this project that we don't want to
-                overwrite. If you would like to create a new project, please
-                click the button below.
-              </p>
-            </section>
-            <OnboardingButtons
-              className="mt-6"
-              dismiss={dismiss}
-              next={() => {
-                void createAndOpenNewProject()
-                codeManager.updateCodeEditor(bracket)
-                dismiss()
-              }}
-              nextText="Make a new project"
-            />
-          </>
+          <OnboardingWarningDesktop {...props} />
         )}
       </div>
     </div>
   )
 }
 
-export default function OnboardingIntroduction() {
+function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
+  const navigate = useNavigate()
+  const dismiss = useDismiss()
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { context: fileContext } = useFileContext()
+  const { onProjectClose, onProjectOpen } = useLspContext()
+
+  async function onAccept() {
+    onProjectClose(
+      loaderData.file || null,
+      fileContext.project.path || null,
+      false
+    )
+    await createAndOpenNewProject({ onProjectOpen, navigate })
+    props.setShouldShowWarning(false)
+  }
+
+  return (
+    <>
+      <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
+        Would you like to create a new project?
+      </h1>
+      <section className="my-12">
+        <p className="my-4">
+          You have some content in this project that we don't want to overwrite.
+          If you would like to create a new project, please click the button
+          below.
+        </p>
+      </section>
+      <OnboardingButtons
+        className="mt-6"
+        dismiss={dismiss}
+        next={onAccept}
+        nextText="Make a new project"
+      />
+    </>
+  )
+}
+
+function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
+  const dismiss = useDismiss()
+
+  return (
+    <>
+      <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
+        Replaying onboarding resets your code
+      </h1>
+      <p className="my-4">
+        We see you have some of your own code written in this project. Please
+        save it somewhere else before continuing the onboarding.
+      </p>
+      <OnboardingButtons
+        className="mt-6"
+        dismiss={dismiss}
+        next={async () => {
+          // We do want to update both the state and editor here.
+          codeManager.updateCodeStateEditor(bracket)
+          await codeManager.writeToFile()
+
+          kclManager.isFirstRender = true
+          await kclManager.executeCode(true).then(() => {
+            kclManager.isFirstRender = false
+          })
+          props.setShouldShowWarning(false)
+        }}
+        nextText="Overwrite code and continue"
+      />
+    </>
+  )
+}
+
+function OnboardingIntroductionInner() {
+  // Reset the code to the bracket code
+  useDemoCode()
+
   const {
     settings: {
       state: {
@@ -108,17 +139,13 @@ export default function OnboardingIntroduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const currentCode = codeManager.code
-  const isStarterCode = currentCode === '' || currentCode === bracket
 
-  useDemoCode()
-
-  return isStarterCode ? (
+  return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
           <img
-            src={`/zma-logomark${getLogoTheme()}.svg`}
+            src={`${isDesktop() ? '.' : ''}/zma-logomark${getLogoTheme()}.svg`}
             alt={APP_NAME}
             className="h-20 max-w-full"
           />
@@ -172,7 +199,5 @@ export default function OnboardingIntroduction() {
         />
       </div>
     </div>
-  ) : (
-    <OnboardingWithNewFile />
   )
 }

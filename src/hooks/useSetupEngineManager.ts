@@ -1,32 +1,32 @@
-import { useLayoutEffect, useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useEffect, useRef } from 'react'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
+import { useNetworkContext } from 'hooks/useNetworkContext'
 import { useAppState, useAppStream } from 'AppState'
+import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import {
+  EngineConnectionStateType,
+  DisconnectingType,
+} from 'lang/std/engineConnection'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
-  token?: string,
+  modelingSend: ReturnType<typeof useModelingContext>['send'],
+  modelingContext: ReturnType<typeof useModelingContext>['context'],
   settings = {
     pool: null,
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
-    modelingSend: (() => {}) as any,
-    modelingContext: {} as any,
     showScaleGrid: false,
-  } as {
-    pool: string | null
-    theme: Themes
-    highlightEdges: boolean
-    enableSSAO: boolean
-    modelingSend: ReturnType<typeof useModelingContext>['send']
-    modelingContext: ReturnType<typeof useModelingContext>['context']
-    showScaleGrid: boolean
-  }
+  } as SettingsViaQueryString,
+  token?: string
 ) {
+  const networkContext = useNetworkContext()
+  const { pingPongHealth, immediateState } = networkContext
   const { setAppState } = useAppState()
   const { setMediaStream } = useAppStream()
 
@@ -35,33 +35,21 @@ export function useSetupEngineManager(
   if (settings.pool) {
     // override the pool param (?pool=) to request a specific engine instance
     // from a particular pool.
-    engineCommandManager.pool = settings.pool
+    engineCommandManager.settings.pool = settings.pool
   }
 
-  const startEngineInstance = (restart: boolean = false) => {
+  const startEngineInstance = () => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
     const { width: quadWidth, height: quadHeight } = getDimensions(
       streamRef?.current?.offsetWidth ?? 0,
       streamRef?.current?.offsetHeight ?? 0
     )
-    if (restart) {
-      kclManager.isFirstRender = false
-    }
     engineCommandManager.start({
-      restart,
       setMediaStream: (mediaStream) => setMediaStream(mediaStream),
       setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
       width: quadWidth,
       height: quadHeight,
-      executeCode: () => {
-        // We only want to execute the code here that we already have set.
-        // Nothing else.
-        kclManager.isFirstRender = true
-        return kclManager.executeCode(true, true).then(() => {
-          kclManager.isFirstRender = false
-        })
-      },
       token,
       settings,
       makeDefaultPlanes: () => {
@@ -71,7 +59,7 @@ export function useSetupEngineManager(
         return modifyGrid(kclManager.engineCommandManager, hidden)
       },
     })
-    settings.modelingSend({
+    modelingSend({
       type: 'Set context',
       data: {
         streamDimensions: {
@@ -94,24 +82,44 @@ export function useSetupEngineManager(
   }, [
     streamRef?.current?.offsetWidth,
     streamRef?.current?.offsetHeight,
-    settings.modelingSend,
+    modelingSend,
   ])
 
   useEffect(() => {
+    if (pingPongHealth === 'TIMEOUT') {
+      engineCommandManager.tearDown()
+    }
+  }, [pingPongHealth])
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (immediateState.type === EngineConnectionStateType.Disconnected) {
+        engineCommandManager.engineConnection = undefined
+        startEngineInstance()
+      }
+    }, 3000)
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [immediateState])
+
+  useEffect(() => {
+    engineCommandManager.settings = settings
+
     const handleResize = deferExecution(() => {
       const { width, height } = getDimensions(
         streamRef?.current?.offsetWidth ?? 0,
         streamRef?.current?.offsetHeight ?? 0
       )
       if (
-        settings.modelingContext.store.streamDimensions.streamWidth !== width ||
-        settings.modelingContext.store.streamDimensions.streamHeight !== height
+        modelingContext.store.streamDimensions.streamWidth !== width ||
+        modelingContext.store.streamDimensions.streamHeight !== height
       ) {
         engineCommandManager.handleResize({
           streamWidth: width,
           streamHeight: height,
         })
-        settings.modelingSend({
+        modelingSend({
           type: 'Set context',
           data: {
             streamDimensions: {
@@ -124,7 +132,7 @@ export function useSetupEngineManager(
     }, 500)
 
     const onOnline = () => {
-      startEngineInstance(true)
+      startEngineInstance()
     }
 
     const onVisibilityChange = () => {
@@ -140,10 +148,18 @@ export function useSetupEngineManager(
     window.document.addEventListener('visibilitychange', onVisibilityChange)
 
     const onAnyInput = () => {
-      if (
+      const isEngineNotReadyOrConnecting =
         !engineCommandManager.engineConnection?.isReady() &&
         !engineCommandManager.engineConnection?.isConnecting()
-      ) {
+
+      const conn = engineCommandManager.engineConnection
+
+      const isStreamPaused =
+        conn?.state.type === EngineConnectionStateType.Disconnecting &&
+        conn?.state.value.type === DisconnectingType.Pause
+
+      if (isEngineNotReadyOrConnecting || isStreamPaused) {
+        engineCommandManager.engineConnection = undefined
         startEngineInstance()
       }
     }
@@ -154,7 +170,6 @@ export function useSetupEngineManager(
     window.document.addEventListener('touchstart', onAnyInput)
 
     const onOffline = () => {
-      kclManager.isFirstRender = true
       engineCommandManager.tearDown()
     }
 
@@ -179,16 +194,11 @@ export function useSetupEngineManager(
     // Engine relies on many settings so we should rebind events when it changes
     // We have to list out the ones we care about because the settings object holds
     // non-settings too...
-  }, [
-    settings.enableSSAO,
-    settings.highlightEdges,
-    settings.showScaleGrid,
-    settings.theme,
-    settings.pool,
-  ])
+  }, [...Object.values(settings)])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
+  const factorOf = 4
   const maxResolution = 2000
   const width = streamWidth ? streamWidth : 0
   const height = streamHeight ? streamHeight : 0
@@ -196,7 +206,7 @@ function getDimensions(streamWidth?: number, streamHeight?: number) {
     Math.min(maxResolution / width, maxResolution / height),
     1.0
   )
-  const quadWidth = Math.round((width * ratio) / 4) * 4
-  const quadHeight = Math.round((height * ratio) / 4) * 4
+  const quadWidth = Math.round((width * ratio) / factorOf) * factorOf
+  const quadHeight = Math.round((height * ratio) / factorOf) * factorOf
   return { width: quadWidth, height: quadHeight }
 }

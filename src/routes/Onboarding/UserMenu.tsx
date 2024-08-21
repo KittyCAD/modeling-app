@@ -43,19 +43,13 @@ export default function UserMenu() {
           <h2 className="text-2xl font-bold">User Menu</h2>
           <p className="my-4">
             Click {buttonDescription} in the upper right to open the user menu.
-            You can change your settings, sign out, or request a feature.
+            You can change your user-level settings, sign out, report a bug,
+            manage your account, request a feature, and more.
           </p>
           <p className="my-4">
-            We only support global settings at the moment, but we are working to
-            implement{' '}
-            <a
-              href="https://github.com/KittyCAD/modeling-app/issues/1503"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              per-project settings
-            </a>{' '}
-            now.
+            Many settings can be set either a user or per-project level. User
+            settings will apply to all projects, while project settings will
+            only apply to the current project.
           </p>
         </section>
         <OnboardingButtons

@@ -1,5 +1,10 @@
 import { Extension } from '@codemirror/state'
-import { hoverTooltip, tooltips, ViewPlugin } from '@codemirror/view'
+import {
+  hoverTooltip,
+  tooltips,
+  ViewPlugin,
+  EditorView,
+} from '@codemirror/view'
 
 import { LanguageServerPlugin } from './lsp'
 import { offsetToPos } from './util'
@@ -17,6 +22,13 @@ export default function lspHoverExt(
     }),
     tooltips({
       position: 'absolute',
+      parent: document.body,
+    }),
+    EditorView.baseTheme({
+      '.cm-tooltip': {
+        fontSize: '12px',
+        maxWidth: '400px',
+      },
     }),
   ]
 }

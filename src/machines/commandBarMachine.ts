@@ -22,7 +22,7 @@ export type CommandBarMachineEvent =
   | { type: 'Clear' }
   | {
       type: 'Select command'
-      data: { command: Command }
+      data: { command: Command; argDefaultValues?: { [x: string]: unknown } }
     }
   | { type: 'Deselect command' }
   | { type: 'Submit command'; data: { [x: string]: unknown } }
@@ -57,7 +57,11 @@ export type CommandBarMachineEvent =
     }
   | {
       type: 'Find and select command'
-      data: { name: string; groupId: string }
+      data: {
+        name: string
+        groupId: string
+        argDefaultValues?: { [x: string]: unknown }
+      }
     }
   | {
       type: 'Change current argument'
@@ -203,7 +207,7 @@ export const commandBarMachine = createMachine(
           'Change current argument': {
             target: 'Gathering arguments',
             internal: true,
-            actions: ['Remove current argument and set a new one'],
+            actions: ['Set current argument'],
           },
 
           'Deselect command': {
@@ -328,7 +332,12 @@ export const commandBarMachine = createMachine(
                 context.argumentsToSubmit[argName] === undefined ||
                 (rejectedArg && rejectedArg.name === argName))
 
-            if (mustNotSkipArg === true) {
+            if (
+              mustNotSkipArg === true ||
+              argIndex + 1 === Object.keys(selectedCommand.args).length
+            ) {
+              // If we have reached the end of the arguments and none are skippable,
+              // return the last argument.
               return {
                 ...selectedCommand.args[argName],
                 name: argName,
@@ -359,27 +368,11 @@ export const commandBarMachine = createMachine(
           switch (event.type) {
             case 'Edit argument':
               return event.data.arg
+            case 'Change current argument':
+              return Object.values(event.data)[0]
             default:
               return context.currentArgument
           }
-        },
-      }),
-      'Remove current argument and set a new one': assign({
-        argumentsToSubmit: (context, event) => {
-          if (
-            event.type !== 'Change current argument' ||
-            !context.currentArgument
-          )
-            return context.argumentsToSubmit
-          const { name } = context.currentArgument
-
-          const { [name]: _, ...rest } = context.argumentsToSubmit
-          return rest
-        },
-        currentArgument: (context, event) => {
-          if (event.type !== 'Change current argument')
-            return context.currentArgument
-          return Object.values(event.data)[0]
         },
       }),
       'Clear argument data': assign({
@@ -409,7 +402,11 @@ export const commandBarMachine = createMachine(
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
             args[argName] =
-              arg.skip && 'defaultValue' in arg ? arg.defaultValue : undefined
+              e.data.argDefaultValues && argName in e.data.argDefaultValues
+                ? e.data.argDefaultValues[argName]
+                : arg.skip && 'defaultValue' in arg
+                ? arg.defaultValue
+                : undefined
           }
           return args
         },

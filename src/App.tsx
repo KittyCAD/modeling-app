@@ -2,21 +2,21 @@ import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import { EngineCommand } from './lang/std/engineConnection'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
@@ -28,8 +28,8 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
-  useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
+  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
@@ -44,27 +44,26 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const { context } = useModelingContext()
+  const { context, state } = useModelingContext()
 
   const { auth, settings } = useSettingsAuthContext()
   const token = auth?.context?.token
 
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, token),
+    () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
 
   const {
     app: { onboardingStatus },
   } = settings.context
-  const { state } = useModelingContext()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
   useHotkeyWrapper(
-    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
-    () => navigate(filePath + paths.SETTINGS),
+    [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
+    () => navigate(filePath + PATHS.SETTINGS),
     {
       splitKey: '|',
     }
@@ -96,16 +95,16 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-    if (context.store?.buttonDownInStream === undefined) {
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'highlight_set_entity',
-          selected_at_window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    }
+    if (state.matches('idle.showPlanes')) return
+    if (context.store?.buttonDownInStream !== undefined) return
+    debounceSocketSend({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'highlight_set_entity',
+        selected_at_window: { x, y },
+      },
+      cmd_id: newCmdId,
+    })
   }
 
   return (

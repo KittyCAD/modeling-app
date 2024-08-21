@@ -1,13 +1,13 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function ProjectMenu() {
   const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EXPORT)
-  const tauri = isTauri()
+  const onDesktop = isDesktop()
 
   return (
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
@@ -20,13 +20,14 @@ export default function ProjectMenu() {
         <section className="flex-1">
           <h2 className="text-2xl font-bold">Project Menu</h2>
           <p className="my-4">
-            Click on your part's name in the upper left to open the project
-            menu.
-            {tauri && (
+            Click on {onDesktop ? `your part's name` : `the app name`} in the
+            upper left to open the project menu, where you can open the project
+            settings and export your current part.
+            {onDesktop && (
               <> You can click the Zoo logo to quickly navigate home.</>
             )}
           </p>
-          {tauri ? (
+          {onDesktop ? (
             <>
               <p className="my-4">
                 From here you can manage files in your project and export your
@@ -43,8 +44,8 @@ export default function ProjectMenu() {
           ) : (
             <>
               <p className="my-4">
-                From here you can export your part. You can't manage separate
-                files and separate projects from the browser; you have to{' '}
+                You can't manage separate files and separate projects from the
+                browser; you have to{' '}
                 <a
                   href="https://zoo.dev/modeling-app/download"
                   target="_blank"

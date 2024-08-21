@@ -837,7 +837,7 @@ async fn test_kcl_lsp_on_hover() {
 
     // Check the hover.
     if let Some(hover) = hover {
-        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string() }));
+        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a new 2-dimensional sketch on a specific plane or face.".to_string() }));
     } else {
         panic!("Expected hover");
     }
@@ -972,11 +972,21 @@ async fn test_kcl_lsp_semantic_tokens() {
         assert_eq!(semantic_tokens.data[0].length, 13);
         assert_eq!(semantic_tokens.data[0].delta_start, 0);
         assert_eq!(semantic_tokens.data[0].delta_line, 0);
-        assert_eq!(semantic_tokens.data[0].token_type, 8);
+        assert_eq!(
+            semantic_tokens.data[0].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::FUNCTION)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[1].length, 4);
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
         assert_eq!(semantic_tokens.data[1].delta_line, 0);
-        assert_eq!(semantic_tokens.data[1].token_type, 3);
+        assert_eq!(
+            semantic_tokens.data[1].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::STRING)
+                .unwrap()
+        );
     } else {
         panic!("Expected semantic tokens");
     }
@@ -1229,29 +1239,64 @@ const sphereDia = 0.5"#
         assert_eq!(semantic_tokens.data[0].length, 15);
         assert_eq!(semantic_tokens.data[0].delta_start, 0);
         assert_eq!(semantic_tokens.data[0].delta_line, 0);
-        assert_eq!(semantic_tokens.data[0].token_type, 6);
+        assert_eq!(
+            semantic_tokens.data[0].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[1].length, 232);
         assert_eq!(semantic_tokens.data[1].delta_start, 0);
         assert_eq!(semantic_tokens.data[1].delta_line, 1);
-        assert_eq!(semantic_tokens.data[1].token_type, 6);
+        assert_eq!(
+            semantic_tokens.data[1].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[2].length, 88);
         assert_eq!(semantic_tokens.data[2].delta_start, 0);
         assert_eq!(semantic_tokens.data[2].delta_line, 2);
-        assert_eq!(semantic_tokens.data[2].token_type, 6);
+        assert_eq!(
+            semantic_tokens.data[2].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[3].length, 5);
         assert_eq!(semantic_tokens.data[3].delta_start, 0);
         assert_eq!(semantic_tokens.data[3].delta_line, 1);
-        assert_eq!(semantic_tokens.data[3].token_type, 4);
+        assert_eq!(
+            semantic_tokens.data[3].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::KEYWORD)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[4].length, 9);
         assert_eq!(semantic_tokens.data[4].delta_start, 6);
         assert_eq!(semantic_tokens.data[4].delta_line, 0);
-        assert_eq!(semantic_tokens.data[4].token_type, 1);
+        assert_eq!(
+            semantic_tokens.data[4].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::VARIABLE)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[5].length, 1);
         assert_eq!(semantic_tokens.data[5].delta_start, 10);
-        assert_eq!(semantic_tokens.data[5].token_type, 2);
+        assert_eq!(
+            semantic_tokens.data[5].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::OPERATOR)
+                .unwrap()
+        );
         assert_eq!(semantic_tokens.data[6].length, 3);
         assert_eq!(semantic_tokens.data[6].delta_start, 2);
-        assert_eq!(semantic_tokens.data[6].token_type, 0);
+        assert_eq!(
+            semantic_tokens.data[6].token_type,
+            server
+                .get_semantic_token_type_index(&SemanticTokenType::NUMBER)
+                .unwrap()
+        );
     } else {
         panic!("Expected semantic tokens");
     }
@@ -2064,7 +2109,7 @@ async fn test_kcl_lsp_on_change_update_ast() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_on_change_update_memory() {
+async fn kcl_test_kcl_lsp_on_change_update_memory() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let same_text = r#"const thing = 1"#.to_string();
@@ -2123,7 +2168,7 @@ async fn serial_test_kcl_lsp_on_change_update_memory() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 10)]
-async fn serial_test_kcl_lsp_update_units() {
+async fn kcl_test_kcl_lsp_update_units() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let same_text = r#"fn cube = (pos, scale) => {
@@ -2204,7 +2249,7 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_empty_file_execute_ok() {
+async fn kcl_test_kcl_lsp_empty_file_execute_ok() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
@@ -2267,7 +2312,7 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_diagnostics_on_execution_error() {
+async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
@@ -2327,7 +2372,7 @@ async fn serial_test_kcl_lsp_diagnostics_on_execution_error() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
+async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
@@ -2371,16 +2416,19 @@ async fn serial_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
         })
         .await;
 
+    let mut default_hashed = crate::ast::types::Program::default();
+    default_hashed.compute_digest();
+
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast, crate::ast::types::Program::default());
+    assert_eq!(ast, default_hashed);
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
+async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2476,7 +2524,7 @@ async fn serial_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute() {
+async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2567,7 +2615,7 @@ async fn serial_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecut
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
+async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2661,7 +2709,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
+async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2733,7 +2781,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_cant_execute_set() {
+async fn kcl_test_kcl_lsp_cant_execute_set() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2835,9 +2883,12 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
+    let mut default_hashed = crate::ast::types::Program::default();
+    default_hashed.compute_digest();
+
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != crate::ast::types::Program::default());
+    assert!(ast != default_hashed);
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
     // Now it should be the default memory.
@@ -2931,7 +2982,7 @@ async fn test_kcl_lsp_folding() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
+async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"const part001 = startSketchOn('XY')
@@ -2987,7 +3038,7 @@ async fn serial_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_dia
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_reparse() {
+async fn kcl_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3044,7 +3095,7 @@ const part001 = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
+async fn kcl_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3101,7 +3152,7 @@ const part001 = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexecute() {
+async fn kcl_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3166,7 +3217,7 @@ const part001 = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_new_lint() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_new_lint() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3239,7 +3290,7 @@ const NEW_LINT = 1"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3312,7 +3363,7 @@ const NEW_LINT = 1"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1
@@ -3403,7 +3454,7 @@ const NEW_LINT = 1"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
+async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"const LINT = 1

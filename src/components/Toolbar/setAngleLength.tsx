@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value } from '../../lang/wasm'
+import { BinaryPart, Program, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -44,7 +44,7 @@ export function angleLengthInfo({
   )
 
   const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression')
+    getNodeFromPath<Expr>(kclManager.ast, pathToNode, 'CallExpression')
   )
   const _err1 = nodes.find(err)
   if (err(_err1)) return _err1
@@ -84,7 +84,7 @@ export async function applyConstraintAngleLength({
 
   const { transforms } = angleLength
   const sketched = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
@@ -139,7 +139,7 @@ export async function applyConstraintAngleLength({
   }
 
   const retval = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,

@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, MemoryItem, Point3d, ProgramReturn, SketchGroup,
-        SketchGroupSet, SourceRange, UserVal,
+        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
+        SourceRange, UserVal,
     },
     function_param::FunctionParam,
     std::{types::Uint, Args},
@@ -77,7 +77,7 @@ impl LinearPattern {
 /// A linear pattern
 /// Each element in the pattern repeats a particular piece of geometry.
 /// The repetitions can be transformed by the `transform` parameter.
-pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pattern_transform(args: Args) -> Result<KclValue, KclError> {
     let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
 
     let extrude_groups = inner_pattern_transform(
@@ -87,17 +87,18 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
             fn_expr: transform.expr,
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: args.current_program_memory.clone(),
+            memory: *transform.memory,
+            dynamic_state: args.dynamic_state.clone(),
         },
         extr,
         &args,
     )
     .await?;
-    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+    Ok(KclValue::ExtrudeGroups { value: extrude_groups })
 }
 
-/// A linear pattern on a 3D solid.
-/// Each repetition of the pattern can be transformed (e.g. scaled, translated, hidden, etc).
+/// Repeat a 3-dimensional solid by successively applying a transformation (such
+/// as rotation, scale, translation, visibility) on each repetition.
 ///
 /// ```no_run
 /// // Parameters
@@ -116,7 +117,7 @@ pub async fn pattern_transform(args: Args) -> Result<MemoryItem, KclError> {
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %, 'tag1')
+///     |> circle([0, 0], 1, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -202,7 +203,7 @@ async fn make_transform<'a>(
     source_range: SourceRange,
 ) -> Result<kittycad::types::LinearTransform, KclError> {
     // Call the transform fn for this repetition.
-    let repetition_num = MemoryItem::UserVal(UserVal {
+    let repetition_num = KclValue::UserVal(UserVal {
         value: serde_json::Value::Number(i.into()),
         meta: vec![source_range.into()],
     });
@@ -217,13 +218,7 @@ async fn make_transform<'a>(
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let ProgramReturn::Value(transform_fn_return) = transform_fn_return else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Transform function must return a value".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
-    };
-    let MemoryItem::UserVal(transform) = transform_fn_return else {
+    let KclValue::UserVal(transform) = transform_fn_return else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Transform function must return a transform object".to_string(),
             source_ranges: source_ranges.clone(),
@@ -302,7 +297,7 @@ mod tests {
 }
 
 /// A linear pattern on a 2D sketch.
-pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pattern_linear_2d(args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     if data.axis == [0.0, 0.0] {
@@ -318,7 +313,8 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(sketch_groups.into())
 }
 
-/// A linear pattern on a 2D sketch.
+/// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -368,7 +364,7 @@ async fn inner_pattern_linear_2d(
 }
 
 /// A linear pattern on a 3D model.
-pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group_set): (LinearPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
     if data.axis == [0.0, 0.0, 0.0] {
@@ -384,7 +380,8 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(extrude_groups.into())
 }
 
-/// A linear pattern on a 3D model.
+/// Repeat a 3-dimensional solid along a linear path, with a dynamic amount
+/// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -575,14 +572,17 @@ impl CircularPattern {
 }
 
 /// A circular pattern on a 2D sketch.
-pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pattern_circular_2d(args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (CircularPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     let sketch_groups = inner_pattern_circular_2d(data, sketch_group_set, args).await?;
     Ok(sketch_groups.into())
 }
 
-/// A circular pattern on a 2D sketch.
+/// Repeat a 2-dimensional sketch some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orentation of the
+/// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -637,14 +637,17 @@ async fn inner_pattern_circular_2d(
 }
 
 /// A circular pattern on a 3D model.
-pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group_set): (CircularPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
     let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, args).await?;
     Ok(extrude_groups.into())
 }
 
-/// A circular pattern on a 3D model.
+/// Repeat a 3-dimensional solid some number of times along a partial or
+/// complete circle some specified number of times. Each object may
+/// additionally be rotated along the circle, ensuring orentation of the
+/// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')

@@ -1,4 +1,4 @@
-import { parse, Value, recast, initPromise } from '../wasm'
+import { parse, Expr, recast, initPromise } from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -69,8 +69,8 @@ function getConstraintTypeFromSourceHelper(
   if (err(ast)) return ast
 
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
-    Value,
-    Value
+    Expr,
+    Expr
   ]
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(args, fnName)
@@ -81,7 +81,7 @@ function getConstraintTypeFromSourceHelper2(
   const ast = parse(code)
   if (err(ast)) return ast
 
-  const arg = (ast.body[0] as any).expression.arguments[0] as Value
+  const arg = (ast.body[0] as any).expression.arguments[0] as Expr
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(arg, fnName)
 }
@@ -148,61 +148,61 @@ const part001 = startSketchOn('XY')
        -angleToMatchLengthY(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
-  |> angledLine([45, segLen(seg01, %)], %) // ln-lineTo-free should become angledLine
-  |> angledLine([45, segLen(seg01, %)], %) // ln-angledLineToX-free should become angledLine
-  |> angledLine([myAng, segLen(seg01, %)], %) // ln-angledLineToX-angle should become angledLine
+  |> angledLine([45, segLen(seg01)], %) // ln-lineTo-free should become angledLine
+  |> angledLine([45, segLen(seg01)], %) // ln-angledLineToX-free should become angledLine
+  |> angledLine([myAng, segLen(seg01)], %) // ln-angledLineToX-angle should become angledLine
   |> angledLineToX([
        angleToMatchLengthX(seg01, myVar2, %),
        myVar2
      ], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
-  |> angledLine([-45, segLen(seg01, %)], %) // ln-angledLineToY-free should become angledLine
-  |> angledLine([myAng2, segLen(seg01, %)], %) // ln-angledLineToY-angle should become angledLine
+  |> angledLine([-45, segLen(seg01)], %) // ln-angledLineToY-free should become angledLine
+  |> angledLine([myAng2, segLen(seg01)], %) // ln-angledLineToY-angle should become angledLine
   |> angledLineToY([
        angleToMatchLengthY(seg01, myVar3, %),
        myVar3
      ], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line([
-       min(segLen(seg01, %), myVar),
-       legLen(segLen(seg01, %), myVar)
+       min(segLen(seg01), myVar),
+       legLen(segLen(seg01), myVar)
      ], %) // ln-should use legLen for y
   |> line([
-       min(segLen(seg01, %), myVar),
-       -legLen(segLen(seg01, %), myVar)
+       min(segLen(seg01), myVar),
+       -legLen(segLen(seg01), myVar)
      ], %) // ln-legLen but negative
-  |> angledLine([-112, segLen(seg01, %)], %) // ln-should become angledLine
-  |> angledLine([myVar, segLen(seg01, %)], %) // ln-use segLen for second arg
-  |> angledLine([45, segLen(seg01, %)], %) // ln-segLen again
-  |> angledLine([54, segLen(seg01, %)], %) // ln-should be transformed to angledLine
+  |> angledLine([-112, segLen(seg01)], %) // ln-should become angledLine
+  |> angledLine([myVar, segLen(seg01)], %) // ln-use segLen for second arg
+  |> angledLine([45, segLen(seg01)], %) // ln-segLen again
+  |> angledLine([54, segLen(seg01)], %) // ln-should be transformed to angledLine
   |> angledLineOfXLength([
-       legAngX(segLen(seg01, %), myVar),
-       min(segLen(seg01, %), myVar)
+       legAngX(segLen(seg01), myVar),
+       min(segLen(seg01), myVar)
      ], %) // ln-should use legAngX to calculate angle
   |> angledLineOfXLength([
-       180 + legAngX(segLen(seg01, %), myVar),
-       min(segLen(seg01, %), myVar)
+       180 + legAngX(segLen(seg01), myVar),
+       min(segLen(seg01), myVar)
      ], %) // ln-same as above but should have + 180 to match original quadrant
   |> line([
-       legLen(segLen(seg01, %), myVar),
-       min(segLen(seg01, %), myVar)
+       legLen(segLen(seg01), myVar),
+       min(segLen(seg01), myVar)
      ], %) // ln-legLen again but yRelative
   |> line([
-       -legLen(segLen(seg01, %), myVar),
-       min(segLen(seg01, %), myVar)
+       -legLen(segLen(seg01), myVar),
+       min(segLen(seg01), myVar)
      ], %) // ln-negative legLen yRelative
-  |> angledLine([58, segLen(seg01, %)], %) // ln-angledLineOfYLength-free should become angledLine
-  |> angledLine([myAng, segLen(seg01, %)], %) // ln-angledLineOfYLength-angle should become angledLine
+  |> angledLine([58, segLen(seg01)], %) // ln-angledLineOfYLength-free should become angledLine
+  |> angledLine([myAng, segLen(seg01)], %) // ln-angledLineOfYLength-angle should become angledLine
   |> angledLineOfXLength([
-       legAngY(segLen(seg01, %), myVar),
-       min(segLen(seg01, %), myVar)
+       legAngY(segLen(seg01), myVar),
+       min(segLen(seg01), myVar)
      ], %) // ln-angledLineOfYLength-yRelative use legAngY
   |> angledLineOfXLength([
-       270 + legAngY(segLen(seg01, %), myVar),
-       min(segLen(seg01, %), myVar)
+       270 + legAngY(segLen(seg01), myVar),
+       min(segLen(seg01), myVar)
      ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
-  |> xLine(segLen(seg01, %), %) // ln-xLine-free should sub in segLen
-  |> yLine(segLen(seg01, %), %) // ln-yLine-free should sub in segLen
-  |> xLine(segLen(seg01, %), %) // ln-xLineTo-free should convert to xLine
-  |> yLine(segLen(seg01, %), %) // ln-yLineTo-free should convert to yLine
+  |> xLine(segLen(seg01), %) // ln-xLine-free should sub in segLen
+  |> yLine(segLen(seg01), %) // ln-yLine-free should sub in segLen
+  |> xLine(segLen(seg01), %) // ln-xLineTo-free should convert to xLine
+  |> yLine(segLen(seg01), %) // ln-yLineTo-free should convert to yLine
 `
   it('should transform the ast', async () => {
     const ast = parse(inputScript)
@@ -417,10 +417,10 @@ const part001 = startSketchOn('XY')
         'setVertDistance'
       )
       expect(expectedHorizontalCode).toContain(
-        `lineTo([segEndX(seg01, %) + 0.9, 4.59], %) // free`
+        `lineTo([segEndX(seg01) + 0.9, 4.59], %) // free`
       )
       expect(expectedVerticalCode).toContain(
-        `lineTo([1.21, segEndY(seg01, %) + 2.92], %) // free`
+        `lineTo([1.21, segEndY(seg01) + 2.92], %) // free`
       )
     })
     it('testing for xRelative to vertical distance', async () => {
@@ -431,7 +431,7 @@ const part001 = startSketchOn('XY')
       )
       expect(expectedCode).toContain(`|> lineTo([
        lastSegX(%) + myVar,
-       segEndY(seg01, %) + 2.93
+       segEndY(seg01) + 2.93
      ], %) // xRelative`)
     })
     it('testing for yRelative to horizontal distance', async () => {
@@ -441,7 +441,7 @@ const part001 = startSketchOn('XY')
         'setHorzDistance'
       )
       expect(expectedCode).toContain(`|> lineTo([
-       segEndX(seg01, %) + 2.6,
+       segEndX(seg01) + 2.6,
        lastSegY(%) + myVar
      ], %) // yRelative`)
     })
@@ -512,11 +512,11 @@ const part001 = startSketchOn('XY')
   |> angledLine({
   angle: halfArmAngle,
   length: 2.45,
-}, %, 'seg01bing') // partial
+}, %, $seg01bing) // partial
   |> xLine(4.4, %) // partial
   |> yLine(-1, %) // partial
   |> xLine(-4.2 + 0, %) // full
-  |> angledLine([segAng('seg01bing', %) + 180, 1.79], %) // partial
+  |> angledLine([segAng(seg01bing) + 180, 1.79], %) // partial
   |> line([1.44, -0.74], %) // free
   |> xLine(3.36, %) // partial
   |> line([-1.49, 1.06], %) // free

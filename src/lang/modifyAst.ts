@@ -6,7 +6,7 @@ import {
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  Value,
+  Expr,
   Literal,
   PipeSubstitution,
   Identifier,
@@ -195,10 +195,7 @@ export function findUniqueName(
   return findUniqueName(searchStr, name, pad, index + 1)
 }
 
-export function mutateArrExp(
-  node: Value,
-  updateWith: ArrayExpression
-): boolean {
+export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
       if (isLiteralArrayOrStatic(element)) {
@@ -211,7 +208,7 @@ export function mutateArrExp(
 }
 
 export function mutateObjExpProp(
-  node: Value,
+  node: Expr,
   updateWith: Literal | ArrayExpression,
   key: string
 ): boolean {
@@ -254,7 +251,7 @@ export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = false,
-  distance = createLiteral(4) as Value
+  distance = createLiteral(4) as Expr
 ):
   | {
       modifiedAst: Program
@@ -349,7 +346,6 @@ export function sketchOnExtrudedFace(
   node: Program,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  programMemory: ProgramMemory,
   cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -388,7 +384,6 @@ export function sketchOnExtrudedFace(
   if (cap === 'none') {
     const __tag = addTagForSketchOnFace(
       {
-        previousProgramMemory: programMemory,
         pathToNode: sketchPathToNode,
         node: _node,
       },
@@ -610,7 +605,7 @@ export function createVariableDeclaration(
 }
 
 export function createObjectExpression(properties: {
-  [key: string]: Value
+  [key: string]: Expr
 }): ObjectExpression {
   return {
     type: 'ObjectExpression',
@@ -727,7 +722,7 @@ export function moveValueIntoNewVariablePath(
     programMemory,
     pathToNode
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = structuredClone(ast)
   const boop = replacer(_node, variableName)
   if (trap(boop)) return { modifiedAst: ast }
 
@@ -759,7 +754,7 @@ export function moveValueIntoNewVariable(
     programMemory,
     sourceRange
   )
-  let _node = JSON.parse(JSON.stringify(ast))
+  let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
 
@@ -784,7 +779,7 @@ export function deleteSegmentFromPipeExpression(
   code: string,
   pathToNode: PathToNode
 ): Program | Error {
-  let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
+  let _modifiedAst = structuredClone(modifiedAst)
 
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
@@ -901,7 +896,7 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Program | Error> {
-  const astClone = JSON.parse(JSON.stringify(ast))
+  const astClone = structuredClone(ast)
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
@@ -985,7 +980,7 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.root[sketchName] as SketchGroup
+          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict

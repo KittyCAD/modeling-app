@@ -16,7 +16,7 @@ const mySketch001 = startSketchOn('XY')
   // |> rx(45, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.root?.mySketch001
+    const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'SketchGroup',
       on: expect.any(Object),
@@ -66,7 +66,7 @@ const mySketch001 = startSketchOn('XY')
   |> extrude(2, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.root?.mySketch001
+    const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'ExtrudeGroup',
       id: expect.any(String),
@@ -146,7 +146,7 @@ const sk2 = startSketchOn('XY')
 `
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const geos = [programMemory?.root?.theExtrude, programMemory?.root?.sk2]
+    const geos = [programMemory?.get('theExtrude'), programMemory?.get('sk2')]
     expect(geos).toEqual([
       {
         type: 'ExtrudeGroup',
@@ -195,6 +195,7 @@ const sk2 = startSketchOn('XY')
               ],
               type: 'TagIdentifier',
               value: 'p',
+              info: expect.any(Object),
             },
           },
           value: [
@@ -288,6 +289,7 @@ const sk2 = startSketchOn('XY')
               ],
               type: 'TagIdentifier',
               value: 'o',
+              info: expect.any(Object),
             },
           },
           value: [

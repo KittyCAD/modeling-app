@@ -5,7 +5,7 @@ import {
   InterpreterFrom,
   StateFrom,
 } from 'xstate'
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import {
   Command,
   CommandArgument,
@@ -52,17 +52,22 @@ export function createMachineCommand<
     return null
   } else if (commandConfig instanceof Array) {
     return commandConfig
-      .map((config) =>
-        createMachineCommand({
+      .map((config) => {
+        const recursiveCommandBarConfig: Partial<
+          StateMachineCommandSetConfig<T, S>
+        > = {
+          [type]: config,
+        }
+        return createMachineCommand({
           groupId,
           type,
           state,
           send,
           actor,
-          commandBarConfig: { [type]: config },
+          commandBarConfig: recursiveCommandBarConfig,
           onCancel,
         })
-      )
+      })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
   }
 
@@ -71,8 +76,8 @@ export function createMachineCommand<
   if ('hide' in commandConfig) {
     const { hide } = commandConfig
     if (hide === 'both') return null
-    else if (hide === 'desktop' && isTauri()) return null
-    else if (hide === 'web' && !isTauri()) return null
+    else if (hide === 'desktop' && isDesktop()) return null
+    else if (hide === 'web' && !isDesktop()) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -145,13 +150,10 @@ export function buildCommandArgument<
     required: arg.required,
     skip: arg.skip,
     machineActor,
+    valueSummary: arg.valueSummary,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
-    if (!(arg.options || arg.optionsFromContext)) {
-      throw new Error('Options must be provided for options input type')
-    }
-
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,

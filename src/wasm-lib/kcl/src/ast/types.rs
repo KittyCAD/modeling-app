@@ -23,8 +23,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind,
-        TagIdentifier, UserVal,
+        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SourceRange,
+        StatementKind, TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -206,6 +206,20 @@ impl Program {
         Ok(x.clone())
     }
 
+    pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
+        let rules = vec![
+            crate::lint::checks::lint_variables,
+            crate::lint::checks::lint_object_properties,
+            crate::lint::checks::lint_call_expressions,
+        ];
+
+        let mut findings = vec![];
+        for rule in rules {
+            findings.append(&mut self.lint(rule)?);
+        }
+        Ok(findings)
+    }
+
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
@@ -252,7 +266,7 @@ impl Program {
 
     /// Returns a value that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
+    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
@@ -375,7 +389,7 @@ impl Program {
             };
 
             // Check if we have a function expression.
-            if let Some(Value::FunctionExpression(ref mut function_expression)) = &mut value {
+            if let Some(Expr::FunctionExpression(ref mut function_expression)) = &mut value {
                 // Check if the params to the function expression contain the position.
                 for param in &mut function_expression.params {
                     let param_source_range: SourceRange = (&param.identifier).into();
@@ -430,7 +444,7 @@ impl Program {
     }
 
     /// Replace a value with the new value, use the source range for matching the exact value.
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
             match item {
                 BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
@@ -556,11 +570,12 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
+/// An expression can be evaluated to yield a single KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum Value {
+pub enum Expr {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
     TagDeclarator(Box<TagDeclarator>),
@@ -576,22 +591,22 @@ pub enum Value {
     None(KclNone),
 }
 
-impl Value {
+impl Expr {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
-            Value::Literal(lit) => lit.compute_digest(),
-            Value::Identifier(id) => id.compute_digest(),
-            Value::TagDeclarator(tag) => tag.compute_digest(),
-            Value::BinaryExpression(be) => be.compute_digest(),
-            Value::FunctionExpression(fe) => fe.compute_digest(),
-            Value::CallExpression(ce) => ce.compute_digest(),
-            Value::PipeExpression(pe) => pe.compute_digest(),
-            Value::PipeSubstitution(ps) => ps.compute_digest(),
-            Value::ArrayExpression(ae) => ae.compute_digest(),
-            Value::ObjectExpression(oe) => oe.compute_digest(),
-            Value::MemberExpression(me) => me.compute_digest(),
-            Value::UnaryExpression(ue) => ue.compute_digest(),
-            Value::None(_) => {
+            Expr::Literal(lit) => lit.compute_digest(),
+            Expr::Identifier(id) => id.compute_digest(),
+            Expr::TagDeclarator(tag) => tag.compute_digest(),
+            Expr::BinaryExpression(be) => be.compute_digest(),
+            Expr::FunctionExpression(fe) => fe.compute_digest(),
+            Expr::CallExpression(ce) => ce.compute_digest(),
+            Expr::PipeExpression(pe) => pe.compute_digest(),
+            Expr::PipeSubstitution(ps) => ps.compute_digest(),
+            Expr::ArrayExpression(ae) => ae.compute_digest(),
+            Expr::ObjectExpression(oe) => oe.compute_digest(),
+            Expr::MemberExpression(me) => me.compute_digest(),
+            Expr::UnaryExpression(ue) => ue.compute_digest(),
+            Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
                 hasher.finalize().into()
@@ -601,19 +616,19 @@ impl Value {
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         match &self {
-            Value::BinaryExpression(bin_exp) => bin_exp.recast(options),
-            Value::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
-            Value::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
-            Value::MemberExpression(mem_exp) => mem_exp.recast(),
-            Value::Literal(literal) => literal.recast(),
-            Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
-            Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
-            Value::Identifier(ident) => ident.name.to_string(),
-            Value::TagDeclarator(tag) => tag.recast(),
-            Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
-            Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
-            Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
-            Value::None(_) => {
+            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
+            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::MemberExpression(mem_exp) => mem_exp.recast(),
+            Expr::Literal(literal) => literal.recast(),
+            Expr::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
+            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::Identifier(ident) => ident.name.to_string(),
+            Expr::TagDeclarator(tag) => tag.recast(),
+            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
+            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
         }
@@ -642,78 +657,78 @@ impl Value {
     // Get the non code meta for the value.
     pub fn get_non_code_meta(&self) -> Option<&NonCodeMeta> {
         match self {
-            Value::BinaryExpression(_bin_exp) => None,
-            Value::ArrayExpression(_array_exp) => None,
-            Value::ObjectExpression(_obj_exp) => None,
-            Value::MemberExpression(_mem_exp) => None,
-            Value::Literal(_literal) => None,
-            Value::FunctionExpression(_func_exp) => None,
-            Value::CallExpression(_call_exp) => None,
-            Value::Identifier(_ident) => None,
-            Value::TagDeclarator(_tag) => None,
-            Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
-            Value::UnaryExpression(_unary_exp) => None,
-            Value::PipeSubstitution(_pipe_substitution) => None,
-            Value::None(_none) => None,
+            Expr::BinaryExpression(_bin_exp) => None,
+            Expr::ArrayExpression(_array_exp) => None,
+            Expr::ObjectExpression(_obj_exp) => None,
+            Expr::MemberExpression(_mem_exp) => None,
+            Expr::Literal(_literal) => None,
+            Expr::FunctionExpression(_func_exp) => None,
+            Expr::CallExpression(_call_exp) => None,
+            Expr::Identifier(_ident) => None,
+            Expr::TagDeclarator(_tag) => None,
+            Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
+            Expr::UnaryExpression(_unary_exp) => None,
+            Expr::PipeSubstitution(_pipe_substitution) => None,
+            Expr::None(_none) => None,
         }
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         if source_range == self.clone().into() {
             *self = new_value;
             return;
         }
 
         match self {
-            Value::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
-            Value::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
-            Value::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
-            Value::MemberExpression(_) => {}
-            Value::Literal(_) => {}
-            Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
-            Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
-            Value::Identifier(_) => {}
-            Value::TagDeclarator(_) => {}
-            Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
-            Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
-            Value::PipeSubstitution(_) => {}
-            Value::None(_) => {}
+            Expr::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
+            Expr::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
+            Expr::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
+            Expr::MemberExpression(_) => {}
+            Expr::Literal(_) => {}
+            Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
+            Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
+            Expr::Identifier(_) => {}
+            Expr::TagDeclarator(_) => {}
+            Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
+            Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
+            Expr::PipeSubstitution(_) => {}
+            Expr::None(_) => {}
         }
     }
 
     pub fn start(&self) -> usize {
         match self {
-            Value::Literal(literal) => literal.start(),
-            Value::Identifier(identifier) => identifier.start(),
-            Value::TagDeclarator(tag) => tag.start(),
-            Value::BinaryExpression(binary_expression) => binary_expression.start(),
-            Value::FunctionExpression(function_expression) => function_expression.start(),
-            Value::CallExpression(call_expression) => call_expression.start(),
-            Value::PipeExpression(pipe_expression) => pipe_expression.start(),
-            Value::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
-            Value::ArrayExpression(array_expression) => array_expression.start(),
-            Value::ObjectExpression(object_expression) => object_expression.start(),
-            Value::MemberExpression(member_expression) => member_expression.start(),
-            Value::UnaryExpression(unary_expression) => unary_expression.start(),
-            Value::None(none) => none.start,
+            Expr::Literal(literal) => literal.start(),
+            Expr::Identifier(identifier) => identifier.start(),
+            Expr::TagDeclarator(tag) => tag.start(),
+            Expr::BinaryExpression(binary_expression) => binary_expression.start(),
+            Expr::FunctionExpression(function_expression) => function_expression.start(),
+            Expr::CallExpression(call_expression) => call_expression.start(),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.start(),
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
+            Expr::ArrayExpression(array_expression) => array_expression.start(),
+            Expr::ObjectExpression(object_expression) => object_expression.start(),
+            Expr::MemberExpression(member_expression) => member_expression.start(),
+            Expr::UnaryExpression(unary_expression) => unary_expression.start(),
+            Expr::None(none) => none.start,
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            Value::Literal(literal) => literal.end(),
-            Value::Identifier(identifier) => identifier.end(),
-            Value::TagDeclarator(tag) => tag.end(),
-            Value::BinaryExpression(binary_expression) => binary_expression.end(),
-            Value::FunctionExpression(function_expression) => function_expression.end(),
-            Value::CallExpression(call_expression) => call_expression.end(),
-            Value::PipeExpression(pipe_expression) => pipe_expression.end(),
-            Value::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
-            Value::ArrayExpression(array_expression) => array_expression.end(),
-            Value::ObjectExpression(object_expression) => object_expression.end(),
-            Value::MemberExpression(member_expression) => member_expression.end(),
-            Value::UnaryExpression(unary_expression) => unary_expression.end(),
-            Value::None(none) => none.end,
+            Expr::Literal(literal) => literal.end(),
+            Expr::Identifier(identifier) => identifier.end(),
+            Expr::TagDeclarator(tag) => tag.end(),
+            Expr::BinaryExpression(binary_expression) => binary_expression.end(),
+            Expr::FunctionExpression(function_expression) => function_expression.end(),
+            Expr::CallExpression(call_expression) => call_expression.end(),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.end(),
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
+            Expr::ArrayExpression(array_expression) => array_expression.end(),
+            Expr::ObjectExpression(object_expression) => object_expression.end(),
+            Expr::MemberExpression(member_expression) => member_expression.end(),
+            Expr::UnaryExpression(unary_expression) => unary_expression.end(),
+            Expr::None(none) => none.end,
         }
     }
 
@@ -721,82 +736,82 @@ impl Value {
     /// This is really recursive so keep that in mind.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
-            Value::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
-            Value::FunctionExpression(function_expression) => {
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
+            Expr::FunctionExpression(function_expression) => {
                 function_expression.get_hover_value_for_position(pos, code)
             }
-            Value::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
-            Value::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
-            Value::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
-            Value::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
-            Value::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
-            Value::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
+            Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
+            Expr::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
+            Expr::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
             // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
-            Value::None(_) => None,
-            Value::Literal(_) => None,
-            Value::Identifier(_) => None,
-            Value::TagDeclarator(_) => None,
+            Expr::None(_) => None,
+            Expr::Literal(_) => None,
+            Expr::Identifier(_) => None,
+            Expr::TagDeclarator(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
-            Value::PipeSubstitution(_) => None,
+            Expr::PipeSubstitution(_) => None,
         }
     }
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
-            Value::Literal(_literal) => {}
-            Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
-            Value::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
-            Value::BinaryExpression(ref mut binary_expression) => {
+            Expr::Literal(_literal) => {}
+            Expr::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Expr::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
+            Expr::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
-            Value::FunctionExpression(_function_identifier) => {}
-            Value::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
-            Value::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
-            Value::PipeSubstitution(_) => {}
-            Value::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
-            Value::ObjectExpression(ref mut object_expression) => {
+            Expr::FunctionExpression(_function_identifier) => {}
+            Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeSubstitution(_) => {}
+            Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Expr::ObjectExpression(ref mut object_expression) => {
                 object_expression.rename_identifiers(old_name, new_name)
             }
-            Value::MemberExpression(ref mut member_expression) => {
+            Expr::MemberExpression(ref mut member_expression) => {
                 member_expression.rename_identifiers(old_name, new_name)
             }
-            Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
-            Value::None(_) => {}
+            Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            Expr::None(_) => {}
         }
     }
 
     /// Get the constraint level for a value type.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
-            Value::Literal(literal) => literal.get_constraint_level(),
-            Value::Identifier(identifier) => identifier.get_constraint_level(),
-            Value::TagDeclarator(tag) => tag.get_constraint_level(),
-            Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
+            Expr::Literal(literal) => literal.get_constraint_level(),
+            Expr::Identifier(identifier) => identifier.get_constraint_level(),
+            Expr::TagDeclarator(tag) => tag.get_constraint_level(),
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
-            Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
-            Value::CallExpression(call_expression) => call_expression.get_constraint_level(),
-            Value::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
-            Value::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
+            Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
+            Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
+            Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
                 source_ranges: vec![pipe_substitution.into()],
             },
-            Value::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
-            Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
-            Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
-            Value::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
-            Value::None(none) => none.get_constraint_level(),
+            Expr::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
+            Expr::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
+            Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            Expr::None(none) => none.get_constraint_level(),
         }
     }
 }
 
-impl From<Value> for SourceRange {
-    fn from(value: Value) -> Self {
+impl From<Expr> for SourceRange {
+    fn from(value: Expr) -> Self {
         Self([value.start(), value.end()])
     }
 }
 
-impl From<&Value> for SourceRange {
-    fn from(value: &Value) -> Self {
+impl From<&Expr> for SourceRange {
+    fn from(value: &Expr) -> Self {
         Self([value.start(), value.end()])
     }
 }
@@ -850,7 +865,7 @@ impl BinaryPart {
         }
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         match self {
             BinaryPart::Literal(_) => {}
             BinaryPart::Identifier(_) => {}
@@ -904,9 +919,10 @@ impl BinaryPart {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
@@ -914,10 +930,16 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, pipe_info, ctx).await
+                binary_expression
+                    .get_result(memory, dynamic_state, pipe_info, ctx)
+                    .await
             }
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await,
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await,
+            BinaryPart::CallExpression(call_expression) => {
+                call_expression.execute(memory, dynamic_state, pipe_info, ctx).await
+            }
+            BinaryPart::UnaryExpression(unary_expression) => {
+                unary_expression.get_result(memory, dynamic_state, pipe_info, ctx).await
+            }
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
@@ -1203,7 +1225,7 @@ impl NonCodeMeta {
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
-    pub expression: Value,
+    pub expression: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -1224,7 +1246,7 @@ pub struct CallExpression {
     pub start: usize,
     pub end: usize,
     pub callee: Identifier,
-    pub arguments: Vec<Value>,
+    pub arguments: Vec<Expr>,
     pub optional: bool,
 
     pub digest: Option<Digest>,
@@ -1232,14 +1254,14 @@ pub struct CallExpression {
 
 impl_value_meta!(CallExpression);
 
-impl From<CallExpression> for Value {
+impl From<CallExpression> for Expr {
     fn from(call_expression: CallExpression) -> Self {
-        Value::CallExpression(Box::new(call_expression))
+        Expr::CallExpression(Box::new(call_expression))
     }
 }
 
 impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Value>) -> Result<Self, KclError> {
+    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Self, KclError> {
         Ok(Self {
             start: 0,
             end: 0,
@@ -1263,14 +1285,14 @@ impl CallExpression {
     pub fn has_substitution_arg(&self) -> bool {
         self.arguments
             .iter()
-            .any(|arg| matches!(arg, Value::PipeSubstitution(_)))
+            .any(|arg| matches!(arg, Expr::PipeSubstitution(_)))
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange([self.start, self.end])]
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for arg in &mut self.arguments {
             arg.replace_value(source_range, new_value.clone());
         }
@@ -1297,19 +1319,27 @@ impl CallExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let fn_name = self.callee.name.clone();
 
-        let mut fn_args: Vec<MemoryItem> = Vec::with_capacity(self.arguments.len());
+        let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
 
         for arg in &self.arguments {
             let metadata = Metadata {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
             let result = ctx
-                .arg_into_mem_item(arg, memory, pipe_info, &metadata, StatementKind::Expression)
+                .execute_expr(
+                    arg,
+                    memory,
+                    dynamic_state,
+                    pipe_info,
+                    &metadata,
+                    StatementKind::Expression,
+                )
                 .await?;
             fn_args.push(result);
         }
@@ -1317,8 +1347,70 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone());
-                let result = func.std_lib_fn()(args).await?;
+                let args =
+                    crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone(), dynamic_state.clone());
+                let mut result = func.std_lib_fn()(args).await?;
+
+                // If the return result is a sketch group or extrude group, we want to update the
+                // memory for the tags of the group.
+                // TODO: This could probably be done in a better way, but as of now this was my only idea
+                // and it works.
+                match result {
+                    KclValue::SketchGroup(ref sketch_group) => {
+                        for (_, tag) in sketch_group.tags.iter() {
+                            memory.update_tag(&tag.value, tag.clone())?;
+                        }
+                    }
+                    KclValue::ExtrudeGroup(ref mut extrude_group) => {
+                        for value in &extrude_group.value {
+                            if let Some(tag) = value.get_tag() {
+                                // Get the past tag and update it.
+                                let mut t = if let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) {
+                                    t.clone()
+                                } else {
+                                    // It's probably a fillet or a chamfer.
+                                    // Initialize it.
+                                    TagIdentifier {
+                                        value: tag.name.clone(),
+                                        info: Some(TagEngineInfo {
+                                            id: value.get_id(),
+                                            surface: Some(value.clone()),
+                                            path: None,
+                                            sketch_group: extrude_group.id,
+                                        }),
+                                        meta: vec![Metadata {
+                                            source_range: tag.clone().into(),
+                                        }],
+                                    }
+                                };
+
+                                let Some(ref info) = t.info else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("Tag {} does not have path info", tag.name),
+                                        source_ranges: vec![tag.into()],
+                                    }));
+                                };
+
+                                let mut info = info.clone();
+                                info.surface = Some(value.clone());
+                                info.sketch_group = extrude_group.id;
+                                t.info = Some(info);
+
+                                memory.update_tag(&tag.name, t.clone())?;
+
+                                // update the sketch group tags.
+                                extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
+                            }
+                        }
+
+                        // Find the stale sketch group in memory and update it.
+                        if let Some(current_env) = memory.environments.get_mut(memory.current_env.index()) {
+                            current_env.update_sketch_group_tags(&extrude_group.sketch_group);
+                        }
+                    }
+                    _ => {}
+                }
+
                 Ok(result)
             }
             FunctionKind::Std(func) => {
@@ -1356,7 +1448,7 @@ impl CallExpression {
                     } else {
                         fn_memory.add(
                             &param.identifier.name,
-                            MemoryItem::UserVal(UserVal {
+                            KclValue::UserVal(UserVal {
                                 value: serde_json::value::Value::Null,
                                 meta: Default::default(),
                             }),
@@ -1365,9 +1457,14 @@ impl CallExpression {
                     }
                 }
 
+                let mut fn_dynamic_state = dynamic_state.clone();
+
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match ctx.inner_execute(&p, &mut fn_memory, BodyType::Block).await {
+                let results = match ctx
+                    .inner_execute(&p, &mut fn_memory, &mut fn_dynamic_state, BodyType::Block)
+                    .await
+                {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
@@ -1382,24 +1479,30 @@ impl CallExpression {
                         source_ranges: vec![self.into()],
                     })
                 })?;
-
-                let result = result.get_value()?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
-                let result = func.call_fn(fn_args, memory.clone(), ctx.clone()).await.map_err(|e| {
-                    // Add the call expression to the source ranges.
-                    e.add_source_ranges(vec![self.into()])
-                })?;
+                let fn_dynamic_state = dynamic_state.merge(memory);
+                let result = func
+                    .call_fn(fn_args, &fn_dynamic_state, ctx.clone())
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        e.add_source_ranges(vec![self.into()])
+                    })?;
 
                 let result = result.ok_or_else(|| {
+                    let mut source_ranges: Vec<SourceRange> = vec![self.into()];
+                    // We want to send the source range of the original function.
+                    if let KclValue::Function { meta, .. } = func {
+                        source_ranges = meta.iter().map(|m| m.source_range).collect();
+                    };
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of user-defined function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
+                        source_ranges,
                     })
                 })?;
-                let result = result.get_value()?;
 
                 Ok(result)
             }
@@ -1589,14 +1692,14 @@ impl VariableDeclaration {
         })
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for declaration in &mut self.declarations {
             declaration.init.replace_value(source_range, new_value.clone());
         }
     }
 
     /// Returns a value that includes the given character position.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
+    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
         for declaration in &self.declarations {
             let source_range: SourceRange = declaration.into();
             if source_range.contains(pos) {
@@ -1608,7 +1711,7 @@ impl VariableDeclaration {
     }
 
     /// Returns a value that includes the given character position.
-    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Value> {
+    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
         for declaration in &mut self.declarations {
             let source_range: SourceRange = declaration.clone().into();
             if source_range.contains(pos) {
@@ -1666,7 +1769,7 @@ impl VariableDeclaration {
             };
 
             let children = match &declaration.init {
-                Value::FunctionExpression(function_expression) => {
+                Expr::FunctionExpression(function_expression) => {
                     symbol_kind = SymbolKind::FUNCTION;
                     let mut children = vec![];
                     for param in &function_expression.params {
@@ -1685,7 +1788,7 @@ impl VariableDeclaration {
                     }
                     children
                 }
-                Value::ObjectExpression(object_expression) => {
+                Expr::ObjectExpression(object_expression) => {
                     symbol_kind = SymbolKind::OBJECT;
                     let mut children = vec![];
                     for property in &object_expression.properties {
@@ -1693,7 +1796,7 @@ impl VariableDeclaration {
                     }
                     children
                 }
-                Value::ArrayExpression(_) => {
+                Expr::ArrayExpression(_) => {
                     symbol_kind = SymbolKind::ARRAY;
                     vec![]
                 }
@@ -1781,7 +1884,7 @@ pub struct VariableDeclarator {
     /// The identifier of the variable.
     pub id: Identifier,
     /// The value of the variable.
-    pub init: Value,
+    pub init: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -1789,7 +1892,7 @@ pub struct VariableDeclarator {
 impl_value_meta!(VariableDeclarator);
 
 impl VariableDeclarator {
-    pub fn new(name: &str, init: Value) -> Self {
+    pub fn new(name: &str, init: Expr) -> Self {
         Self {
             start: 0,
             end: 0,
@@ -1866,9 +1969,9 @@ impl Literal {
     }
 }
 
-impl From<Literal> for MemoryItem {
+impl From<Literal> for KclValue {
     fn from(literal: Literal) -> Self {
-        MemoryItem::UserVal(UserVal {
+        KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
@@ -1877,9 +1980,9 @@ impl From<Literal> for MemoryItem {
     }
 }
 
-impl From<&Box<Literal>> for MemoryItem {
+impl From<&Box<Literal>> for KclValue {
     fn from(literal: &Box<Literal>) -> Self {
-        MemoryItem::UserVal(UserVal {
+        KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
@@ -1961,15 +2064,15 @@ impl From<Box<TagDeclarator>> for Vec<SourceRange> {
     }
 }
 
-impl From<&Box<TagDeclarator>> for MemoryItem {
+impl From<&Box<TagDeclarator>> for KclValue {
     fn from(tag: &Box<TagDeclarator>) -> Self {
-        MemoryItem::TagDeclarator(tag.clone())
+        KclValue::TagDeclarator(tag.clone())
     }
 }
 
-impl From<&TagDeclarator> for MemoryItem {
+impl From<&TagDeclarator> for KclValue {
     fn from(tag: &TagDeclarator) -> Self {
-        MemoryItem::TagDeclarator(Box::new(tag.clone()))
+        KclValue::TagDeclarator(Box::new(tag.clone()))
     }
 }
 
@@ -1977,6 +2080,7 @@ impl From<&TagDeclarator> for TagIdentifier {
     fn from(tag: &TagDeclarator) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
+            info: None,
             meta: vec![Metadata {
                 source_range: tag.into(),
             }],
@@ -2045,9 +2149,10 @@ impl TagDeclarator {
         }
     }
 
-    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let memory_item = MemoryItem::TagIdentifier(Box::new(TagIdentifier {
+    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<KclValue, KclError> {
+        let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
+            info: None,
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
@@ -2110,9 +2215,9 @@ impl Default for PipeSubstitution {
     }
 }
 
-impl From<PipeSubstitution> for Value {
+impl From<PipeSubstitution> for Expr {
     fn from(pipe_substitution: PipeSubstitution) -> Self {
-        Value::PipeSubstitution(Box::new(pipe_substitution))
+        Expr::PipeSubstitution(Box::new(pipe_substitution))
     }
 }
 
@@ -2123,21 +2228,21 @@ impl From<PipeSubstitution> for Value {
 pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
-    pub elements: Vec<Value>,
+    pub elements: Vec<Expr>,
 
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ArrayExpression);
 
-impl From<ArrayExpression> for Value {
+impl From<ArrayExpression> for Expr {
     fn from(array_expression: ArrayExpression) -> Self {
-        Value::ArrayExpression(Box::new(array_expression))
+        Expr::ArrayExpression(Box::new(array_expression))
     }
 }
 
 impl ArrayExpression {
-    pub fn new(elements: Vec<Value>) -> Self {
+    pub fn new(elements: Vec<Expr>) -> Self {
         Self {
             start: 0,
             end: 0,
@@ -2153,7 +2258,7 @@ impl ArrayExpression {
         }
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for element in &mut self.elements {
             element.replace_value(source_range, new_value.clone());
         }
@@ -2225,36 +2330,53 @@ impl ArrayExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
             let result = match element {
-                Value::Literal(literal) => literal.into(),
-                Value::TagDeclarator(tag) => tag.execute(memory).await?,
-                Value::None(none) => none.into(),
-                Value::Identifier(identifier) => {
+                Expr::Literal(literal) => literal.into(),
+                Expr::TagDeclarator(tag) => tag.execute(memory).await?,
+                Expr::None(none) => none.into(),
+                Expr::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
                 }
-                Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
+                Expr::BinaryExpression(binary_expression) => {
+                    binary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
                 }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::PipeSubstitution(pipe_substitution) => {
+                Expr::CallExpression(call_expression) => {
+                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Expr::UnaryExpression(unary_expression) => {
+                    unary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Expr::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Expr::ArrayExpression(array_expression) => {
+                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Expr::PipeExpression(pipe_expression) => {
+                    pipe_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Expr::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Value::FunctionExpression(function_expression) => {
+                Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+                Expr::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
@@ -2266,7 +2388,7 @@ impl ArrayExpression {
             results.push(result);
         }
 
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value: results.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -2311,7 +2433,7 @@ impl ObjectExpression {
         }
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for property in &mut self.properties {
             property.value.replace_value(source_range, new_value.clone());
         }
@@ -2395,35 +2517,52 @@ impl ObjectExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
             let result = match &property.value {
-                Value::Literal(literal) => literal.into(),
-                Value::TagDeclarator(tag) => tag.execute(memory).await?,
-                Value::None(none) => none.into(),
-                Value::Identifier(identifier) => {
+                Expr::Literal(literal) => literal.into(),
+                Expr::TagDeclarator(tag) => tag.execute(memory).await?,
+                Expr::None(none) => none.into(),
+                Expr::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
                 }
-                Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
+                Expr::BinaryExpression(binary_expression) => {
+                    binary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
                 }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Value::PipeSubstitution(pipe_substitution) => {
+                Expr::CallExpression(call_expression) => {
+                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Expr::UnaryExpression(unary_expression) => {
+                    unary_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Expr::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Expr::ArrayExpression(array_expression) => {
+                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
+                }
+                Expr::PipeExpression(pipe_expression) => {
+                    pipe_expression
+                        .get_result(memory, dynamic_state, pipe_info, ctx)
+                        .await?
+                }
+                Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+                Expr::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                Value::FunctionExpression(function_expression) => {
+                Expr::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
@@ -2434,7 +2573,7 @@ impl ObjectExpression {
             object.insert(property.key.name.clone(), result.get_json_value()?);
         }
 
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -2460,7 +2599,7 @@ pub struct ObjectProperty {
     pub start: usize,
     pub end: usize,
     pub key: Identifier,
-    pub value: Value,
+    pub value: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -2659,7 +2798,7 @@ impl MemberExpression {
         None
     }
 
-    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<MemoryItem, KclError> {
+    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<KclValue, KclError> {
         let array = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
             MemberObject::Identifier(identifier) => {
@@ -2672,7 +2811,7 @@ impl MemberExpression {
 
         if let serde_json::Value::Array(array) = array_json {
             if let Some(value) = array.get(index) {
-                Ok(MemoryItem::UserVal(UserVal {
+                Ok(KclValue::UserVal(UserVal {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
@@ -2692,32 +2831,95 @@ impl MemberExpression {
         }
     }
 
-    pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
-        let property_name = match &self.property {
-            LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
+    pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<KclValue, KclError> {
+        #[derive(Debug)]
+        enum Property {
+            Number(usize),
+            String(String),
+        }
+
+        impl Property {
+            fn type_name(&self) -> &'static str {
+                match self {
+                    Property::Number(_) => "number",
+                    Property::String(_) => "string",
+                }
+            }
+        }
+
+        let property_src: SourceRange = self.property.clone().into();
+        let property_sr = vec![property_src];
+
+        let property: Property = match self.property.clone() {
+            LiteralIdentifier::Identifier(identifier) => {
+                let name = identifier.name;
+                if !self.computed {
+                    // Treat the property as a literal
+                    Property::String(name.to_string())
+                } else {
+                    // Actually evaluate memory to compute the property.
+                    let prop = memory.get(&name, property_src)?;
+                    let KclValue::UserVal(prop) = prop else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges: property_sr,
+                            message: format!(
+                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                            ),
+                        }));
+                    };
+                    match prop.value {
+                        JValue::Number(ref num) => {
+                            num
+                                .as_u64()
+                                .and_then(|x| usize::try_from(x).ok())
+                                .map(Property::Number)
+                                .ok_or_else(|| {
+                                    KclError::Semantic(KclErrorDetails {
+                                        source_ranges: property_sr,
+                                        message: format!(
+                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
+                                        ),
+                                    })
+                                })?
+                        }
+                        JValue::String(ref x) => Property::String(x.to_owned()),
+                        _ => {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!(
+                                    "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
+                                ),
+                            }));
+                        }
+                    }
+                }
+            }
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::IInteger(x) if x >= 0 => return self.get_result_array(memory, x as usize),
                     LiteralValue::IInteger(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
-                            source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                        if let Ok(x) = u64::try_from(x) {
+                            Property::Number(x.try_into().unwrap())
+                        } else {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                            }));
+                        }
                     }
-                    LiteralValue::Fractional(x) => {
-                        return Err(KclError::Syntax(KclErrorDetails {
+                    LiteralValue::String(s) => Property::String(s),
+                    _ => {
+                        return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: vec![self.into()],
-                            message: format!("invalid index: {x}"),
-                        }))
+                            message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                        }));
                     }
-                    LiteralValue::String(s) => s,
-                    LiteralValue::Bool(b) => b.to_string(),
                 }
             }
         };
 
         let object = match &self.object {
+            // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
             MemberObject::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
@@ -2727,25 +2929,60 @@ impl MemberExpression {
 
         let object_json = object.get_json_value()?;
 
-        if let serde_json::Value::Object(map) = object_json {
-            if let Some(value) = map.get(&property_name) {
-                Ok(MemoryItem::UserVal(UserVal {
-                    value: value.clone(),
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }))
-            } else {
-                Err(KclError::UndefinedValue(KclErrorDetails {
-                    message: format!("Property {} not found in object", property_name),
+        // Check the property and object match -- e.g. ints for arrays, strs for objects.
+        match (object_json, property) {
+            (JValue::Object(map), Property::String(property)) => {
+                if let Some(value) = map.get(&property) {
+                    Ok(KclValue::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Property '{property}' not found in object"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Object(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only strings can be used as the property of an object, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (JValue::Array(arr), Property::Number(index)) => {
+                let value_of_arr: Option<&JValue> = arr.get(index);
+                if let Some(value) = value_of_arr {
+                    Ok(KclValue::UserVal(UserVal {
+                        value: value.clone(),
+                        meta: vec![Metadata {
+                            source_range: self.into(),
+                        }],
+                    }))
+                } else {
+                    Err(KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("The array doesn't have any item at index {index}"),
+                        source_ranges: vec![self.clone().into()],
+                    }))
+                }
+            }
+            (JValue::Array(_), p) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "Only integers >= 0 can be used as the index of an array, but you're using a {}",
+                    p.type_name()
+                ),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (being_indexed, _) => {
+                let t = human_friendly_type(&being_indexed);
+                Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("MemberExpression object is not an object: {:?}", object),
-                source_ranges: vec![self.clone().into()],
-            }))
         }
     }
 
@@ -2807,7 +3044,7 @@ impl BinaryExpression {
         hasher.update(slf.right.compute_digest());
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.left.replace_value(source_range, new_value.clone());
         self.right.replace_value(source_range, new_value);
     }
@@ -2877,11 +3114,20 @@ impl BinaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
-        let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
-        let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+    ) -> Result<KclValue, KclError> {
+        let left_json_value = self
+            .left
+            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .await?
+            .get_json_value()?;
+        let right_json_value = self
+            .right
+            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .await?
+            .get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -2890,7 +3136,7 @@ impl BinaryExpression {
                 parse_json_value_as_string(&right_json_value),
             ) {
                 let value = serde_json::Value::String(format!("{}{}", left, right));
-                return Ok(MemoryItem::UserVal(UserVal {
+                return Ok(KclValue::UserVal(UserVal {
                     value,
                     meta: vec![Metadata {
                         source_range: self.into(),
@@ -2911,7 +3157,7 @@ impl BinaryExpression {
             BinaryOperator::Pow => (left.powf(right)).into(),
         };
 
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value,
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -2947,6 +3193,18 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
         Some(n.clone())
     } else {
         None
+    }
+}
+
+/// JSON value as bool.  If it isn't a bool, returns None.
+pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
+    match j {
+        JValue::Null => None,
+        JValue::Bool(b) => Some(*b),
+        JValue::Number(_) => None,
+        JValue::String(_) => None,
+        JValue::Array(_) => None,
+        JValue::Object(_) => None,
     }
 }
 
@@ -3061,7 +3319,7 @@ impl UnaryExpression {
         hasher.update(slf.argument.compute_digest());
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.argument.replace_value(source_range, new_value);
     }
 
@@ -3086,18 +3344,40 @@ impl UnaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
+        if self.operator == UnaryOperator::Not {
+            let value = self
+                .argument
+                .get_result(memory, dynamic_state, pipe_info, ctx)
+                .await?
+                .get_json_value()?;
+            let Some(bool_value) = json_as_bool(&value) else {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot apply unary operator ! to non-boolean value: {}", value),
+                    source_ranges: vec![self.into()],
+                }));
+            };
+            let negated = !bool_value;
+            return Ok(KclValue::UserVal(UserVal {
+                value: serde_json::Value::Bool(negated),
+                meta: vec![Metadata {
+                    source_range: self.into(),
+                }],
+            }));
+        }
+
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, pipe_info, ctx)
+                .get_result(memory, dynamic_state, pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
         )?;
-        Ok(MemoryItem::UserVal(UserVal {
+        Ok(KclValue::UserVal(UserVal {
             value: (-(num)).into(),
             meta: vec![Metadata {
                 source_range: self.into(),
@@ -3155,7 +3435,7 @@ pub struct PipeExpression {
     pub end: usize,
     // TODO: Only the first body expression can be any Value.
     // The rest will be CallExpression, and the AST type should reflect this.
-    pub body: Vec<Value>,
+    pub body: Vec<Expr>,
     pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
@@ -3163,14 +3443,14 @@ pub struct PipeExpression {
 
 impl_value_meta!(PipeExpression);
 
-impl From<PipeExpression> for Value {
+impl From<PipeExpression> for Expr {
     fn from(pipe_expression: PipeExpression) -> Self {
-        Value::PipeExpression(Box::new(pipe_expression))
+        Expr::PipeExpression(Box::new(pipe_expression))
     }
 }
 
 impl PipeExpression {
-    pub fn new(body: Vec<Value>) -> Self {
+    pub fn new(body: Vec<Expr>) -> Self {
         Self {
             start: 0,
             end: 0,
@@ -3188,7 +3468,7 @@ impl PipeExpression {
         hasher.update(slf.non_code_meta.compute_digest());
     });
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for value in &mut self.body {
             value.replace_value(source_range, new_value.clone());
         }
@@ -3263,10 +3543,11 @@ impl PipeExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
+        dynamic_state: &DynamicState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
-    ) -> Result<MemoryItem, KclError> {
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
+    ) -> Result<KclValue, KclError> {
+        execute_pipe_body(memory, dynamic_state, &self.body, pipe_info, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -3280,11 +3561,12 @@ impl PipeExpression {
 #[async_recursion::async_recursion]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
-    body: &[Value],
+    dynamic_state: &DynamicState,
+    body: &[Expr],
     pipe_info: &PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
-) -> Result<MemoryItem, KclError> {
+) -> Result<KclValue, KclError> {
     let mut body = body.iter();
     let first = body.next().ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -3300,7 +3582,14 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .arg_into_mem_item(first, memory, pipe_info, &meta, StatementKind::Expression)
+        .execute_expr(
+            first,
+            memory,
+            dynamic_state,
+            pipe_info,
+            &meta,
+            StatementKind::Expression,
+        )
         .await?;
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -3309,20 +3598,39 @@ async fn execute_pipe_body(
     new_pipe_info.previous_results = Some(output);
     // Evaluate remaining elements.
     for expression in body {
-        let output = match expression {
-            Value::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &new_pipe_info, ctx).await?
-            }
-            Value::CallExpression(call_expression) => call_expression.execute(memory, &new_pipe_info, ctx).await?,
-            Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
-            _ => {
-                // Return an error this should not happen.
+        match expression {
+            Expr::TagDeclarator(_) => {
                 return Err(KclError::Semantic(KclErrorDetails {
                     message: format!("This cannot be in a PipeExpression: {:?}", expression),
                     source_ranges: vec![expression.into()],
                 }));
             }
+            Expr::Literal(_)
+            | Expr::Identifier(_)
+            | Expr::BinaryExpression(_)
+            | Expr::FunctionExpression(_)
+            | Expr::CallExpression(_)
+            | Expr::PipeExpression(_)
+            | Expr::PipeSubstitution(_)
+            | Expr::ArrayExpression(_)
+            | Expr::ObjectExpression(_)
+            | Expr::MemberExpression(_)
+            | Expr::UnaryExpression(_)
+            | Expr::None(_) => {}
         };
+        let metadata = Metadata {
+            source_range: SourceRange([expression.start(), expression.end()]),
+        };
+        let output = ctx
+            .execute_expr(
+                expression,
+                memory,
+                dynamic_state,
+                &new_pipe_info,
+                &metadata,
+                StatementKind::Expression,
+            )
+            .await?;
         new_pipe_info.previous_results = Some(output);
     }
     // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
@@ -3549,7 +3857,7 @@ impl FunctionExpression {
         self.required_params().len()..=self.params.len()
     }
 
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.body.replace_value(source_range, new_value);
     }
 
@@ -3586,7 +3894,7 @@ impl FunctionExpression {
 pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
-    pub argument: Value,
+    pub argument: Expr,
 
     pub digest: Option<Digest>,
 }
@@ -3806,6 +4114,17 @@ impl ConstraintLevels {
         }
 
         source_ranges
+    }
+}
+
+pub(crate) fn human_friendly_type(j: &JValue) -> &'static str {
+    match j {
+        JValue::Null => "null",
+        JValue::Bool(_) => "boolean (true/false value)",
+        JValue::Number(_) => "number",
+        JValue::String(_) => "string (text)",
+        JValue::Array(_) => "array (list)",
+        JValue::Object(_) => "object",
     }
 }
 
@@ -4178,6 +4497,30 @@ const myNestedVar = [callExp(bing.yo)]
     }
 
     #[test]
+    fn test_recast_space_in_fn_call() {
+        let some_program_string = r#"fn thing = (x) => {
+    return x + 1
+}
+
+thing ( 1 )
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"fn thing = (x) => {
+  return x + 1
+}
+
+thing(1)
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_object_fn_in_array_weird_bracket() {
         let some_program_string = r#"const bing = { yo: 55 }
 const myNestedVar = [
@@ -4363,10 +4706,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-  getEdge(edge2, %),
-  getEdge(edge4, %),
-  getOppositeEdge(edge2, %),
-  getOppositeEdge(edge4, %)
+  edge2,
+  edge4,
+  getOppositeEdge(edge2),
+  getOppositeEdge(edge4)
 ]
      }, %)
   // build the bracket sketch around the body
@@ -4396,10 +4739,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-  getNextAdjacentEdge(edge7, %),
-  getNextAdjacentEdge(edge2, %),
-  getNextAdjacentEdge(edge3, %),
-  getNextAdjacentEdge(edge6, %)
+  getNextAdjacentEdge(edge7),
+  getNextAdjacentEdge(edge2),
+  getNextAdjacentEdge(edge3),
+  getNextAdjacentEdge(edge6)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
@@ -4483,10 +4826,10 @@ const scarlett_body = rectShape([0, 0], width, length)
   |> fillet({
        radius: radius,
        tags: [
-         getEdge(edge2, %),
-         getEdge(edge4, %),
-         getOppositeEdge(edge2, %),
-         getOppositeEdge(edge4, %)
+         edge2,
+         edge4,
+         getOppositeEdge(edge2),
+         getOppositeEdge(edge4)
        ]
      }, %)
 // build the bracket sketch around the body
@@ -4516,10 +4859,10 @@ const bracket_body = bracketSketch(width, depth, thk)
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge(edge7, %),
-         getNextAdjacentEdge(edge2, %),
-         getNextAdjacentEdge(edge3, %),
-         getNextAdjacentEdge(edge6, %)
+         getNextAdjacentEdge(edge7),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge6)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)
@@ -5266,7 +5609,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5290,7 +5633,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5314,7 +5657,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5377,7 +5720,7 @@ const firstExtrude = startSketchOn('XY')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -5641,25 +5984,25 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             panic!("expected a function!");
         };
 
-        let Value::CallExpression(ce) = expression else {
+        let Expr::CallExpression(ce) = expression else {
             panic!("expected a function!");
         };
 
         assert!(!ce.arguments.is_empty());
 
-        let Value::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
+        let Expr::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
             panic!("expected a object!");
         };
 
         assert_eq!(oe.properties.len(), 2);
 
-        let Value::Literal(ref l) = oe.properties.first().unwrap().value else {
+        let Expr::Literal(ref l) = oe.properties.first().unwrap().value else {
             panic!("expected a literal!");
         };
 
         assert_eq!(l.raw, "true");
 
-        let Value::Literal(ref l) = oe.properties.get(1).unwrap().value else {
+        let Expr::Literal(ref l) = oe.properties.get(1).unwrap().value else {
             panic!("expected a literal!");
         };
 
@@ -5696,7 +6039,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token: |>" }"#
         );
     }
 

@@ -5,7 +5,7 @@ import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
   Program,
-  Value,
+  Expr,
   BinaryPart,
   VariableDeclarator,
   PathToNode,
@@ -68,8 +68,8 @@ export type ConstraintType =
 
 function createCallWrapper(
   a: ToolTip,
-  val: [Value, Value] | Value,
-  tag?: Value,
+  val: [Expr, Expr] | Expr,
+  tag?: Expr,
   valueUsedInTransform?: number
 ): ReturnType<TransformCallback> {
   const args = [createFirstArg(a, val), createPipeSubstitution()]
@@ -103,8 +103,8 @@ function createCallWrapper(
  */
 function createStdlibCallExpression(
   tool: ToolTip,
-  val: Value,
-  tag?: Value,
+  val: Expr,
+  tag?: Expr,
   valueUsedInTransform?: number
 ): ReturnType<TransformCallback> {
   const args = [val, createPipeSubstitution()]
@@ -126,10 +126,10 @@ function intersectCallWrapper({
   valueUsedInTransform,
 }: {
   fnName: string
-  angleVal: Value
-  offsetVal: Value
-  intersectTag: Value
-  tag?: Value
+  angleVal: Expr
+  offsetVal: Expr
+  intersectTag: Expr
+  tag?: Expr
   valueUsedInTransform?: number
 }): ReturnType<TransformCallback> {
   const firstArg: any = {
@@ -137,7 +137,7 @@ function intersectCallWrapper({
     offset: offsetVal,
     intersectTag,
   }
-  const args: Value[] = [
+  const args: Expr[] = [
     createObjectExpression(firstArg),
     createPipeSubstitution(),
   ]
@@ -154,11 +154,11 @@ export type TransformInfo = {
   tooltip: ToolTip
   createNode: (a: {
     varValues: VarValues
-    varValA: Value // x / angle
-    varValB: Value // y / length or x y for angledLineOfXlength etc
+    varValA: Expr // x / angle
+    varValB: Expr // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
-    tag?: Value
-    forceValueUsedInTransform?: Value
+    tag?: Expr
+    forceValueUsedInTransform?: Expr
   }) => TransformCallback
 }
 
@@ -234,8 +234,8 @@ const angledLineAngleCreateNode: TransformInfo['createNode'] =
 
 const getMinAndSegLenVals = (
   referenceSegName: string,
-  varVal: Value
-): [Value, BinaryPart] => {
+  varVal: Expr
+): [Expr, BinaryPart] => {
   const segLenVal = createSegLen(referenceSegName)
   return [
     createCallExpression('min', [segLenVal, varVal]),
@@ -245,9 +245,9 @@ const getMinAndSegLenVals = (
 
 const getMinAndSegAngVals = (
   referenceSegName: string,
-  varVal: Value,
+  varVal: Expr,
   fnName: 'legAngX' | 'legAngY' = 'legAngX'
-): [Value, BinaryPart] => {
+): [Expr, BinaryPart] => {
   const minVal = createCallExpression('min', [
     createSegLen(referenceSegName),
     varVal,
@@ -259,12 +259,12 @@ const getMinAndSegAngVals = (
   return [minVal, legAngle]
 }
 
-const getSignedLeg = (arg: Value, legLenVal: BinaryPart) =>
+const getSignedLeg = (arg: Expr, legLenVal: BinaryPart) =>
   arg.type === 'Literal' && Number(arg.value) < 0
     ? createUnaryExpression(legLenVal)
     : legLenVal
 
-const getLegAng = (arg: Value, legAngleVal: BinaryPart) => {
+const getLegAng = (arg: Expr, legAngleVal: BinaryPart) => {
   const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
@@ -275,14 +275,14 @@ const getLegAng = (arg: Value, legAngleVal: BinaryPart) => {
   return truncatedTo90 === 0 ? legAngleVal : binExp
 }
 
-const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
+const getAngleLengthSign = (arg: Expr, legAngleVal: BinaryPart) => {
   const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
   const normalisedAngle = ((ang % 180) + 180) % 180 // between 0 and 180
   return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
 function getClosesAngleDirection(
-  arg: Value,
+  arg: Expr,
   refAngle: number,
   angleVal: BinaryPart
 ) {
@@ -305,7 +305,7 @@ const setHorzVertDistanceCreateNode =
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      let finalValue: Value = createBinaryExpressionWithUnary([
+      let finalValue: Expr = createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, !index),
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
@@ -1374,7 +1374,7 @@ export function getTransformInfo(
 }
 
 export function getConstraintType(
-  val: Value | [Value, Value] | [Value, Value, Value],
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr],
   fnName: ToolTip
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both
@@ -1416,7 +1416,7 @@ export function getTransformInfos(
     getNodePathFromSourceRange(ast, range)
   )
   const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(ast, pathToNode, 'CallExpression')
+    getNodeFromPath<Expr>(ast, pathToNode, 'CallExpression')
   )
 
   try {
@@ -1449,7 +1449,7 @@ export function getRemoveConstraintsTransforms(
     getNodePathFromSourceRange(ast, selectionRange.range)
   )
   const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(ast, pathToNode)
+    getNodeFromPath<Expr>(ast, pathToNode)
   )
 
   const theTransforms = nodes.map((nodeMeta) => {
@@ -1484,7 +1484,7 @@ export function transformSecondarySketchLinesTagFirst({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   forceSegName?: string
-  forceValueUsedInTransform?: Value
+  forceValueUsedInTransform?: Expr
 }):
   | {
       modifiedAst: Program
@@ -1496,7 +1496,7 @@ export function transformSecondarySketchLinesTagFirst({
       }
     }
   | Error {
-  // let node = JSON.parse(JSON.stringify(ast))
+  // let node = structuredClone(ast)
   const primarySelection = selectionRanges.codeBasedSelections[0].range
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
@@ -1555,7 +1555,7 @@ export function transformAstSketchLines({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
-  forceValueUsedInTransform?: Value
+  forceValueUsedInTransform?: Expr
   referencedSegmentRange?: Selection['range']
 }):
   | {
@@ -1565,7 +1565,7 @@ export function transformAstSketchLines({
     }
   | Error {
   // deep clone since we are mutating in a loop, of which any could fail
-  let node = JSON.parse(JSON.stringify(ast))
+  let node = structuredClone(ast)
   let _valueUsedInTransform // TODO should this be an array?
   const pathToNodeMap: PathToNodeMap = {}
 
@@ -1609,7 +1609,7 @@ export function transformAstSketchLines({
       )
         return
 
-      const nodeMeta = getNodeFromPath<Value>(ast, a.pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
       if (err(nodeMeta)) return
 
       if (a?.argPosition?.type === 'arrayItem') {
@@ -1636,8 +1636,8 @@ export function transformAstSketchLines({
     })
 
     const varName = varDec.node.id.name
-    let sketchGroup = programMemory.root?.[varName]
-    if (sketchGroup.type === 'ExtrudeGroup') {
+    let sketchGroup = programMemory.get(varName)
+    if (sketchGroup?.type === 'ExtrudeGroup') {
       sketchGroup = sketchGroup.sketchGroup
     }
     if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
@@ -1712,24 +1712,17 @@ export function transformAstSketchLines({
   }
 }
 
-function createSegLen(referenceSegName: string): Value {
-  return createCallExpression('segLen', [
-    createIdentifier(referenceSegName),
-    createPipeSubstitution(),
-  ])
+function createSegLen(referenceSegName: string): Expr {
+  return createCallExpression('segLen', [createIdentifier(referenceSegName)])
 }
 
-function createSegAngle(referenceSegName: string): Value {
-  return createCallExpression('segAng', [
-    createIdentifier(referenceSegName),
-    createPipeSubstitution(),
-  ])
+function createSegAngle(referenceSegName: string): Expr {
+  return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
 function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
-    createPipeSubstitution(),
   ])
 }
 
@@ -1739,7 +1732,7 @@ function createLastSeg(isX: boolean): CallExpression {
   ])
 }
 
-function getArgLiteralVal(arg: Value): number {
+function getArgLiteralVal(arg: Expr): number {
   return arg?.type === 'Literal' ? Number(arg.value) : 0
 }
 
@@ -1783,7 +1776,7 @@ export function getConstraintLevelFromSourceRange(
 }
 
 export function isLiteralArrayOrStatic(
-  val: Value | [Value, Value] | [Value, Value, Value] | undefined
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr] | undefined
 ): boolean {
   if (!val) return false
 
@@ -1799,7 +1792,7 @@ export function isLiteralArrayOrStatic(
 }
 
 export function isNotLiteralArrayOrStatic(
-  val: Value | [Value, Value] | [Value, Value, Value]
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
 ): boolean {
   if (Array.isArray(val)) {
     const a = val[0]

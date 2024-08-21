@@ -304,7 +304,6 @@ describe('testing sketchOnExtrudedFace', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([9.7, 9.19], %)`
     const segmentRange: [number, number] = [
       code.indexOf(segmentSnippet),
@@ -321,8 +320,7 @@ describe('testing sketchOnExtrudedFace', () => {
     const extruded = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode,
-      programMemory
+      extrudePathToNode
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -345,7 +343,6 @@ const sketch001 = startSketchOn(part001, seg01)`)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `close(%)`
     const segmentRange: [number, number] = [
       code.indexOf(segmentSnippet),
@@ -362,8 +359,7 @@ const sketch001 = startSketchOn(part001, seg01)`)
     const extruded = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode,
-      programMemory
+      extrudePathToNode
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -386,7 +382,6 @@ const sketch001 = startSketchOn(part001, seg01)`)
   |> extrude(5 + 7, %)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
     const sketchSnippet = `startProfileAt([3.58, 2.06], %)`
     const sketchRange: [number, number] = [
       code.indexOf(sketchSnippet),
@@ -404,7 +399,6 @@ const sketch001 = startSketchOn(part001, seg01)`)
       ast,
       sketchPathToNode,
       extrudePathToNode,
-      programMemory,
       'end'
     )
     if (err(extruded)) throw extruded
@@ -436,7 +430,6 @@ const sketch001 = startSketchOn(part001, 'END')`)
     const part001 = extrude(5 + 7, sketch001)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
     const segmentSnippet = `line([4.99, -0.46], %)`
     const segmentRange: [number, number] = [
       code.indexOf(segmentSnippet),
@@ -453,8 +446,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
     const updatedAst = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode,
-      programMemory
+      extrudePathToNode
     )
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)
@@ -468,12 +460,12 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const code = `const part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %)
-  |> line([306.21, 198.85], %, 'a')
+  |> line([306.21, 198.85], %, $a)
   |> line([306.21, 198.87], %)`
     const ast = parse(code)
     if (err(ast)) throw ast
     const programMemory = await enginelessExecutor(ast)
-    const lineOfInterest = "line([306.21, 198.85], %, 'a')"
+    const lineOfInterest = 'line([306.21, 198.85], %, $a)'
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
@@ -503,10 +495,10 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %, $b)
 ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
-      !replace1 ? 'segLen(a, %)' : replace1
+      !replace1 ? 'segLen(a)' : replace1
     }], %)
   |> line([306.21, 198.87], %)
-  |> angledLine([65, ${!replace2 ? 'segAng(a, %)' : replace2}], %)
+  |> angledLine([65, ${!replace2 ? 'segAng(a)' : replace2}], %)
   |> line([-963.39, -154.67], %)
 `
     test.each([
@@ -761,7 +753,7 @@ const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -788,7 +780,7 @@ const sketch002 = startSketchOn({
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -817,7 +809,7 @@ const sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -844,7 +836,7 @@ const sketch002 = startSketchOn({
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
-  |> angledLine([-86, segLen(seg02, %)], %)
+  |> angledLine([-86, segLen(seg02)], %)
   |> line([-3.97, -0.53], %)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)

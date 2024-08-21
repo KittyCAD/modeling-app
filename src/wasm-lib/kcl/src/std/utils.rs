@@ -833,6 +833,7 @@ pub fn get_tangent_point_from_previous_arc(
 ) -> Coords2d {
     let angle_from_old_center_to_arc_start = get_angle(last_arc_center, last_arc_end);
     let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { -90.0 } else { 90.0 };
+    // What is the 10.0 constant doing???
     [
         tangential_angle.to_radians().cos() * 10.0 + last_arc_end[0],
         tangential_angle.to_radians().sin() * 10.0 + last_arc_end[1],

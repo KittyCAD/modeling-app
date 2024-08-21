@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, FilletOrChamfer, MemoryItem},
+    executor::{ChamferSurface, EdgeCut, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -27,15 +27,19 @@ pub struct ChamferData {
 }
 
 /// Create chamfers on tagged paths.
-pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
     let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
-/// Create chamfers on tagged paths.
+/// Cut a straight transitional edge along a tagged path.
+///
+/// Chamfer is similar in function and use to a fillet, except
+/// a fillet will blend the transition along an edge, rather than cut
+/// a sharp, straight transitional edge.
 ///
 /// ```no_run
 /// const width = 20
@@ -45,19 +49,19 @@ pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
-///   |> lineTo([width/2, -length/2], %, 'edge1')
-///   |> lineTo([width/2, length/2], %, 'edge2')
-///   |> lineTo([-width/2, length/2], %, 'edge3')
-///   |> close(%, 'edge4')
+///   |> lineTo([width/2, -length/2], %, $edge1)
+///   |> lineTo([width/2, length/2], %, $edge2)
+///   |> lineTo([-width/2, length/2], %, $edge3)
+///   |> close(%, $edge4)
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> chamfer({
 ///     length: chamferLength,
 ///     tags: [
-///       getNextAdjacentEdge('edge1', %),
-///       getNextAdjacentEdge('edge2', %),
-///       getNextAdjacentEdge('edge3', %),
-///       getNextAdjacentEdge('edge4', %)
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
 ///     ],
 ///   }, %)
 /// ```
@@ -90,24 +94,12 @@ async fn inner_chamfer(
         }));
     }
 
-    let mut fillet_or_chamfers = Vec::new();
+    let mut extrude_group = extrude_group.clone();
+    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => {
-                extrude_group
-                    .sketch_group
-                    .get_path_by_tag(&edge_tag)
-                    .ok_or_else(|| {
-                        KclError::Type(KclErrorDetails {
-                            message: format!("No edge found with tag: `{}`", edge_tag.value),
-                            source_ranges: vec![args.source_range],
-                        })
-                    })?
-                    .get_base()
-                    .geo_meta
-                    .id
-            }
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
         };
 
         let id = uuid::Uuid::new_v4();
@@ -123,16 +115,26 @@ async fn inner_chamfer(
         )
         .await?;
 
-        fillet_or_chamfers.push(FilletOrChamfer::Chamfer {
+        edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
             length: data.length,
             tag: Box::new(tag.clone()),
         });
+
+        if let Some(ref tag) = tag {
+            extrude_group.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                face_id: edge_id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    let mut extrude_group = extrude_group.clone();
-    extrude_group.fillet_or_chamfers = fillet_or_chamfers;
+    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }

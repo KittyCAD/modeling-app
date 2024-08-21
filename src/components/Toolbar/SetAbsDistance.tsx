@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value } from '../../lang/wasm'
+import { BinaryPart, Program, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -49,7 +49,7 @@ export function absDistanceInfo({
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(
+    const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
       pathToNode,
       'CallExpression'
@@ -59,7 +59,7 @@ export function absDistanceInfo({
   })
   const _err1 = _nodes.find(err)
   if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes = _nodes as Expr[]
 
   const isAllTooltips = nodes.every(
     (node) =>
@@ -106,7 +106,7 @@ export async function applyConstraintAbsDistance({
   const transformInfos = info.transforms
 
   const transform1 = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: structuredClone(kclManager.ast),
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
@@ -128,7 +128,7 @@ export async function applyConstraintAbsDistance({
   )
 
   const transform2 = transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: structuredClone(kclManager.ast),
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
@@ -176,7 +176,7 @@ export function applyConstraintAxisAlign({
   let finalValue = createIdentifier('ZERO')
 
   return transformAstSketchLines({
-    ast: JSON.parse(JSON.stringify(kclManager.ast)),
+    ast: structuredClone(kclManager.ast),
     selectionRanges: selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,

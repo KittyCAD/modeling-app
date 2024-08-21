@@ -79,7 +79,7 @@ impl From<ParseError<&[Token], ContextError>> for KclError {
         // See https://github.com/KittyCAD/modeling-app/issues/784
         KclError::Syntax(KclErrorDetails {
             source_ranges: bad_token.as_source_ranges(),
-            message: "Unexpected token".to_string(),
+            message: format!("Unexpected token: {}", bad_token.value),
         })
     }
 }

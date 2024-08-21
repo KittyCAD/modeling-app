@@ -1,17 +1,35 @@
-import { Platform, platform } from '@tauri-apps/plugin-os'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useEffect, useState } from 'react'
 
+export type Platform = 'macos' | 'windows' | 'linux' | ''
+
 export default function usePlatform() {
-  const [platformName, setPlatformName] = useState<Platform | ''>('')
+  const [platformName, setPlatformName] = useState<Platform>('')
 
   useEffect(() => {
-    async function getPlatform() {
-      setPlatformName(await platform())
+    function getPlatform(): Platform {
+      const platform = window.electron.platform ?? ''
+      // https://nodejs.org/api/process.html#processplatform
+      switch (platform) {
+        case 'darwin':
+          return 'macos'
+        case 'win32':
+          return 'windows'
+        // We don't currently care to distinguish between these.
+        case 'android':
+        case 'freebsd':
+        case 'linux':
+        case 'openbsd':
+        case 'sunos':
+          return 'linux'
+        default:
+          console.error('Unknown platform:', platform)
+          return ''
+      }
     }
 
-    if (isTauri()) {
-      void getPlatform()
+    if (isDesktop()) {
+      setPlatformName(getPlatform())
     } else {
       if (navigator.userAgent.indexOf('Mac') !== -1) {
         setPlatformName('macos')

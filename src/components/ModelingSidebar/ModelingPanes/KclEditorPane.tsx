@@ -1,7 +1,7 @@
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
@@ -22,7 +22,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap } from '@codemirror/lint'
+import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -63,13 +63,6 @@ export const KclEditorPane = () => {
       ? getSystemTheme()
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const onlineCallback = () => kclManager.executeCode(true, true)
-    window.addEventListener('online', onlineCallback)
-    return () => window.removeEventListener('online', onlineCallback)
-  }, [])
 
   // Since these already exist in the editor, we don't need to define them
   // with the wrapper.
@@ -193,6 +186,13 @@ export const KclEditorPane = () => {
           if (_editorView === null) return
 
           editorManager.setEditorView(_editorView)
+
+          // On first load of this component, ensure we show the current errors
+          // in the editor.
+          // Make sure we don't add them twice.
+          if (diagnosticCount(_editorView.state) === 0) {
+            kclManager.setDiagnosticsForCurrentErrors()
+          }
         }}
       />
     </div>

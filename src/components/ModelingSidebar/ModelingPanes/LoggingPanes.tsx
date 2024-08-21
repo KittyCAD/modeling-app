@@ -27,27 +27,3 @@ export const LogsPane = () => {
     </div>
   )
 }
-
-export const KclErrorsPane = () => {
-  const theme = useResolvedTheme()
-  const { errors } = useKclContext()
-  return (
-    <div className="overflow-hidden">
-      <div className="absolute inset-0 p-2 flex flex-col overflow-auto">
-        <ReactJsonTypeHack
-          src={errors}
-          collapsed={1}
-          collapseStringsAfterLength={60}
-          enableClipboard={false}
-          displayArrayKey={false}
-          displayDataTypes={false}
-          displayObjectSize={true}
-          indentWidth={2}
-          quotesOnKeys={false}
-          name={false}
-          theme={theme === 'light' ? 'rjv-default' : 'monokai'}
-        />
-      </div>
-    </div>
-  )
-}

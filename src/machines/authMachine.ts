@@ -1,12 +1,18 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
-import { isTauri } from 'lib/isTauri'
-import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
-import { getUser as getUserTauri } from 'lib/tauri'
+import { isDesktop } from 'lib/isDesktop'
+import {
+  VITE_KC_API_BASE_URL,
+  VITE_KC_DEV_TOKEN,
+  VITE_KC_SKIP_AUTH,
+  DEV,
+} from 'env'
+import { getUser as getUserDesktop } from 'lib/desktop'
+import { COOKIE_NAME } from 'lib/constants'
 
-const SKIP_AUTH =
-  import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
+const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
+
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
   name: 'Test User',
@@ -38,10 +44,12 @@ export type Events =
       token?: string
     }
 
-const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken =
-  getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  VITE_KC_DEV_TOKEN ||
+  getCookie(COOKIE_NAME) ||
+  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
+  ''
 
 export const authMachine = createMachine<UserContext, Events>(
   {
@@ -112,18 +120,17 @@ export const authMachine = createMachine<UserContext, Events>(
 )
 
 async function getUser(context: UserContext) {
-  const token =
-    context.token && context.token !== ''
-      ? context.token
-      : getCookie(COOKIE_NAME) ||
-        localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-        VITE_KC_DEV_TOKEN
+  const token = VITE_KC_DEV_TOKEN
+    ? VITE_KC_DEV_TOKEN
+    : context.token && context.token !== ''
+    ? context.token
+    : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY)
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
 
-  if (!token && isTauri()) return Promise.reject(new Error('No token found'))
+  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
   if (token) headers['Authorization'] = `Bearer ${token}`
 
   if (SKIP_AUTH) {
@@ -138,7 +145,7 @@ async function getUser(context: UserContext) {
     }
   }
 
-  const userPromise = !isTauri()
+  const userPromise = !isDesktop()
     ? fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -146,7 +153,7 @@ async function getUser(context: UserContext) {
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : getUserTauri(context.token, VITE_KC_API_BASE_URL)
+    : getUserDesktop(context.token ?? '', VITE_KC_API_BASE_URL)
 
   const user = await userPromise
 
@@ -164,7 +171,7 @@ async function getUser(context: UserContext) {
 }
 
 function getCookie(cname: string): string | null {
-  if (isTauri()) {
+  if (isDesktop()) {
     return null
   }
 

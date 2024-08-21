@@ -17,13 +17,13 @@ import init, {
   parse_project_settings,
   default_project_settings,
   parse_project_route,
+  base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
-import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
-import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
+import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
@@ -33,13 +33,14 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { DeepPartial } from 'lib/types'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
-export type { Value } from '../wasm-lib/kcl/bindings/Value'
+export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
 export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
 export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'
@@ -81,23 +82,20 @@ export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
-export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
+export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? 'http://127.0.0.1:3000'
-      : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost' // custom protocol for macOS
-      : window.location.origin.includes('tauri.localhost')
-      ? 'http://tauri.localhost' // fallback for Windows
-      : window.location.origin.includes('localhost')
-      ? 'http://localhost:3000'
-      : window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : 'http://localhost:3000'
-  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  // For when we're in electron (file based) or web server (network based)
+  // For some reason relative paths don't work as expected. Otherwise we would
+  // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
+  // is used from within worker.ts.
+  const fullUrl = document.location.protocol.includes('http')
+    ? document.location.origin + '/wasm_lib_bg.wasm'
+    : document.location.protocol +
+      document.location.pathname.split('/').slice(0, -1).join('/') +
+      '/wasm_lib_bg.wasm'
+
   console.log(`Full URL for WASM: ${fullUrl}`)
 
   return fullUrl
@@ -140,17 +138,203 @@ export const parse = (code: string | Error): Program | Error => {
 export type PathToNode = [string | number, string][]
 
 interface Memory {
-  [key: string]: MemoryItem
+  [key: string]: KclValue
 }
 
-export interface ProgramMemory {
-  root: Memory
-  return: ProgramReturn | null
+type EnvironmentRef = number
+
+const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
+
+interface Environment {
+  bindings: Memory
+  parent: EnvironmentRef | null
+}
+
+function emptyEnvironment(): Environment {
+  return { bindings: {}, parent: null }
+}
+
+interface RawProgramMemory {
+  environments: Environment[]
+  currentEnv: EnvironmentRef
+  return: KclValue | null
+}
+
+/**
+ * This duplicates logic in Rust.  The hope is to keep ProgramMemory internals
+ * isolated from the rest of the TypeScript code so that we can move it to Rust
+ * in the future.
+ */
+export class ProgramMemory {
+  private environments: Environment[]
+  private currentEnv: EnvironmentRef
+  private return: KclValue | null
+
+  /**
+   * Empty memory doesn't include prelude definitions.
+   */
+  static empty(): ProgramMemory {
+    return new ProgramMemory()
+  }
+
+  static fromRaw(raw: RawProgramMemory): ProgramMemory {
+    return new ProgramMemory(raw.environments, raw.currentEnv, raw.return)
+  }
+
+  constructor(
+    environments: Environment[] = [emptyEnvironment()],
+    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
+    returnVal: KclValue | null = null
+  ) {
+    this.environments = environments
+    this.currentEnv = currentEnv
+    this.return = returnVal
+  }
+
+  /**
+   * Returns a deep copy.
+   */
+  clone(): ProgramMemory {
+    return ProgramMemory.fromRaw(structuredClone(this.toRaw()))
+  }
+
+  has(name: string): boolean {
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      if (env.bindings.hasOwnProperty(name)) {
+        return true
+      }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
+    }
+    return false
+  }
+
+  get(name: string): KclValue | null {
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      if (env.bindings.hasOwnProperty(name)) {
+        return env.bindings[name]
+      }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
+    }
+    return null
+  }
+
+  set(name: string, value: KclValue): Error | null {
+    if (this.environments.length === 0) {
+      return new Error('No environment to set memory in')
+    }
+    const env = this.environments[this.currentEnv]
+    env.bindings[name] = value
+    return null
+  }
+
+  /**
+   * Returns a new ProgramMemory with only `KclValue`s that pass the
+   * predicate.  Values are deep copied.
+   *
+   * Note: Return value of the returned ProgramMemory is always null.
+   */
+  filterVariables(
+    keepPrelude: boolean,
+    predicate: (value: KclValue) => boolean
+  ): ProgramMemory | Error {
+    const environments: Environment[] = []
+    for (const [i, env] of this.environments.entries()) {
+      let bindings: Memory
+      if (i === ROOT_ENVIRONMENT_REF && keepPrelude) {
+        // Get prelude definitions.  Create these first so that they're always
+        // first in iteration order.
+        const memoryOrError = programMemoryInit()
+        if (err(memoryOrError)) return memoryOrError
+        bindings = memoryOrError.environments[0].bindings
+      } else {
+        bindings = emptyEnvironment().bindings
+      }
+
+      for (const [name, value] of Object.entries(env.bindings)) {
+        // Check the predicate.
+        if (!predicate(value)) {
+          continue
+        }
+        // Deep copy.
+        bindings[name] = structuredClone(value)
+      }
+      environments.push({ bindings, parent: env.parent })
+    }
+    return new ProgramMemory(environments, this.currentEnv, null)
+  }
+
+  numEnvironments(): number {
+    return this.environments.length
+  }
+
+  numVariables(envRef: EnvironmentRef): number {
+    return Object.keys(this.environments[envRef]).length
+  }
+
+  /**
+   * Returns all variable entries in memory that are visible, in a flat
+   * structure.  If variables are shadowed, they're not visible, and therefore,
+   * not included.
+   *
+   * This should only be used to display in the MemoryPane UI.
+   */
+  visibleEntries(): Map<string, KclValue> {
+    const map = new Map<string, KclValue>()
+    let envRef = this.currentEnv
+    while (true) {
+      const env = this.environments[envRef]
+      for (const [name, value] of Object.entries(env.bindings)) {
+        // Don't include shadowed variables.
+        if (!map.has(name)) {
+          map.set(name, value)
+        }
+      }
+      if (!env.parent) {
+        break
+      }
+      envRef = env.parent
+    }
+    return map
+  }
+
+  /**
+   * Returns true if any visible variables are a SketchGroup or ExtrudeGroup.
+   */
+  hasSketchOrExtrudeGroup(): boolean {
+    for (const node of this.visibleEntries().values()) {
+      if (node.type === 'ExtrudeGroup' || node.type === 'SketchGroup') {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Return the representation that can be serialized to JSON.  This should only
+   * be used within this module.
+   */
+  toRaw(): RawProgramMemory {
+    return {
+      environments: this.environments,
+      currentEnv: this.currentEnv,
+      return: this.return,
+    }
+  }
 }
 
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ProgramMemory> => {
@@ -171,7 +355,7 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory | Error = { root: {}, return: null },
+  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ProgramMemory> => {
@@ -186,15 +370,15 @@ export const _executor = async (
       baseUnit =
         (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     }
-    const memory: ProgramMemory = await execute_wasm(
+    const memory: RawProgramMemory = await execute_wasm(
       JSON.stringify(node),
-      JSON.stringify(programMemory),
+      JSON.stringify(programMemory.toRaw()),
       baseUnit,
       engineCommandManager,
       fileSystemManager,
       isMock
     )
-    return memory
+    return ProgramMemory.fromRaw(memory)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -329,10 +513,17 @@ export function getTangentialArcToInfo({
   }
 }
 
+/**
+ * Returns new ProgramMemory with prelude definitions.
+ */
 export function programMemoryInit(): ProgramMemory | Error {
   try {
-    const memory: ProgramMemory = program_memory_init()
-    return memory
+    const memory: RawProgramMemory = program_memory_init()
+    return new ProgramMemory(
+      memory.environments,
+      memory.currentEnv,
+      memory.return
+    )
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -377,27 +568,41 @@ export function tomlStringify(toml: any): string | Error {
   return toml_stringify(JSON.stringify(toml))
 }
 
-export function defaultAppSettings(): Configuration | Error {
+export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
 }
 
-export function parseAppSettings(toml: string): Configuration | Error {
+export function parseAppSettings(
+  toml: string
+): DeepPartial<Configuration> | Error {
   return parse_app_settings(toml)
 }
 
-export function defaultProjectSettings(): ProjectConfiguration | Error {
+export function defaultProjectSettings():
+  | DeepPartial<ProjectConfiguration>
+  | Error {
   return default_project_settings()
 }
 
 export function parseProjectSettings(
   toml: string
-): ProjectConfiguration | Error {
+): DeepPartial<ProjectConfiguration> | Error {
   return parse_project_settings(toml)
 }
 
 export function parseProjectRoute(
-  configuration: Configuration,
+  configuration: DeepPartial<Configuration>,
   route_str: string
 ): ProjectRoute | Error {
   return parse_project_route(JSON.stringify(configuration), route_str)
+}
+
+export function base64Decode(base64: string): ArrayBuffer | Error {
+  try {
+    const decoded = base64_decode(base64)
+    return new Uint8Array(decoded).buffer
+  } catch (e) {
+    console.error('Caught error decoding base64 string: ' + e)
+    return new Error('Caught error decoding base64 string: ' + e)
+  }
 }

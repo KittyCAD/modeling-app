@@ -156,7 +156,7 @@ impl Backend {
 
         let resp = self
             .zoo_client
-            .ai()
+            .ml()
             .create_kcl_code_completions(&body)
             .await
             .map_err(|err| Error {
@@ -223,7 +223,8 @@ impl Backend {
         #[cfg(not(test))]
         let mut completion_list = vec![];
 
-        if self.dev_mode {
+        // if self.dev_mode
+        if false {
             completion_list.push(
                 r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')

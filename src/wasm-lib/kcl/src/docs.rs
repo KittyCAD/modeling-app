@@ -3,6 +3,7 @@
 use std::path::Path;
 
 use anyhow::Result;
+use convert_case::Casing;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -56,7 +57,10 @@ pub struct StdLibFnArg {
 impl StdLibFnArg {
     #[allow(dead_code)]
     pub fn get_type_string(&self) -> Result<(String, bool)> {
-        get_type_string_from_schema(&self.schema.clone())
+        match get_type_string_from_schema(&self.schema.clone()) {
+            Ok(r) => Ok(r),
+            Err(e) => anyhow::bail!("error getting type string for {}: {:#?}", self.type_, e),
+        }
     }
 
     pub fn get_autocomplete_string(&self) -> Result<String> {
@@ -343,6 +347,7 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                     return Ok((Primitive::Uuid.to_string(), false));
                 } else if format == "double"
                     || format == "uint"
+                    || format == "int32"
                     || format == "int64"
                     || format == "uint8"
                     || format == "uint32"
@@ -361,6 +366,13 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
                         continue;
+                    }
+
+                    // Make sure none of the object properties are in snake case.
+                    // We want the language to be consistent.
+                    // This will fail in the docs generation and not at runtime.
+                    if !prop_name.is_case(convert_case::Case::Camel) {
+                        anyhow::bail!("expected camel case: {:#?}", prop_name);
                     }
 
                     if let Some(description) = get_description_string_from_schema(prop) {
@@ -455,8 +467,14 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                 return Ok((fn_docs, true));
             }
 
-            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                return Ok((Primitive::String.to_string(), false));
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok((Primitive::Bool.to_string(), false));
+                } else if schemars::schema::InstanceType::String == **single
+                    || schemars::schema::InstanceType::Null == **single
+                {
+                    return Ok((Primitive::String.to_string(), false));
+                }
             }
 
             if let Some(reference) = &o.reference {
@@ -488,13 +506,10 @@ pub fn get_autocomplete_snippet_from_schema(
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
-                } else if format == "double"
-                    || format == "uint"
-                    || format == "int64"
-                    || format == "uint32"
-                    || format == "uint64"
-                {
+                } else if format == "double" {
                     return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
+                } else if format == "uint" || format == "int64" || format == "uint32" || format == "uint64" {
+                    return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
                 }
@@ -504,19 +519,27 @@ pub fn get_autocomplete_snippet_from_schema(
                 let mut fn_docs = String::new();
                 fn_docs.push_str("{\n");
                 // Let's print out the object's properties.
-                for (i, (prop_name, prop)) in obj_val.properties.iter().enumerate() {
+                let mut i = 0;
+                for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
+                        continue;
+                    }
+
+                    // Tolerance is a an optional property that we don't want to show in the
+                    // autocomplete, since it is mostly for advanced users.
+                    if prop_name == "tolerance" {
                         continue;
                     }
 
                     if let Some((_, snippet)) = get_autocomplete_snippet_from_schema(prop, index + i)? {
                         fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
+                        i += 1;
                     }
                 }
 
                 fn_docs.push('}');
 
-                return Ok(Some((index + obj_val.properties.len() - 1, fn_docs)));
+                return Ok(Some((index + i - 1, fn_docs)));
             }
 
             if let Some(array_val) = &o.array {
@@ -613,8 +636,14 @@ pub fn get_autocomplete_snippet_from_schema(
                 return Ok(Some((index, fn_docs)));
             }
 
-            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
+                } else if schemars::schema::InstanceType::String == **single {
+                    return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
+                } else if schemars::schema::InstanceType::Null == **single {
+                    return Ok(None);
+                }
             }
 
             anyhow::bail!("unknown type: {:#?}", o)
@@ -747,8 +776,14 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                 return Ok(fn_docs);
             }
 
-            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                return Ok(Primitive::String.to_string());
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok(Primitive::Bool.to_string());
+                } else if schemars::schema::InstanceType::String == **single
+                    || schemars::schema::InstanceType::Null == **single
+                {
+                    return Ok(Primitive::String.to_string());
+                }
             }
 
             anyhow::bail!("unknown type: {:#?}", o)
@@ -871,6 +906,7 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_pattern_circular_3d() {
+        // We test this one specifically because it has ints and floats and strings.
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternCircular3D);
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
@@ -879,8 +915,8 @@ mod tests {
 	arcDegrees: ${0:3.14},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
-	repetitions: ${3:3.14},
-	rotateDuplicates: ${4:"string"},
+	repetitions: ${3:10},
+	rotateDuplicates: ${4:false},
 }, ${5:%})${}"#
         );
     }
@@ -892,8 +928,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"revolve({
-	axis: ${1:"X"},
-}, ${2:%})${}"#
+	axis: ${0:"X"},
+}, ${1:%})${}"#
         );
     }
 

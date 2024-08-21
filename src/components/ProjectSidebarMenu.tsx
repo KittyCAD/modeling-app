@@ -1,17 +1,20 @@
 import { Popover, Transition } from '@headlessui/react'
-import { ActionButton } from './ActionButton'
+import { ActionButton, ActionButtonProps } from './ActionButton'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
-import { isTauri } from '../lib/isTauri'
-import { Link } from 'react-router-dom'
-import { Fragment } from 'react'
-import { sep } from '@tauri-apps/api/path'
+import { PATHS } from 'lib/paths'
+import { isDesktop } from '../lib/isDesktop'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Fragment, useMemo } from 'react'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
 import { engineCommandManager } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
+import usePlatform from 'hooks/usePlatform'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import Tooltip from './Tooltip'
 
 const ProjectSidebarMenu = ({
   project,
@@ -51,7 +54,7 @@ function AppLogoLink({
     "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  return isTauri() ? (
+  return isDesktop() ? (
     <Link
       data-testid="app-logo"
       onClick={() => {
@@ -59,7 +62,7 @@ function AppLogoLink({
         // Clear the scene and end the session.
         engineCommandManager.endSession()
       }}
-      to={paths.HOME}
+      to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
     >
       <Logo className={logoClassName} />
@@ -80,97 +83,188 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
+  const platform = usePlatform()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const filePath = useAbsoluteFilePath()
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commandBarState.context.commands.find(
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
+  const machineCount = machineManager.machineCount()
+
+  // We filter this memoized list so that no orphan "break" elements are rendered.
+  const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
+    () =>
+      [
+        {
+          id: 'settings',
+          Element: 'button',
+          children: (
+            <>
+              <span className="flex-1">Project settings</span>
+              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
+                isDesktop() ? '' : '⬆'
+              },`}</kbd>
+            </>
+          ),
+          onClick: () => {
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_PROJECT
+              : PATHS.HOME + PATHS.SETTINGS_PROJECT
+            navigate(targetPath)
+          },
+        },
+        'break',
+        {
+          id: 'export',
+          Element: 'button',
+          children: (
+            <>
+              <span>Export current part</span>
+              {!findCommand(exportCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(exportCommandInfo),
+          onClick: () =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: exportCommandInfo,
+            }),
+        },
+        'break',
+        {
+          id: 'make',
+          Element: 'button',
+          className: !isDesktop() ? 'hidden' : '',
+          children: (
+            <>
+              <span>Make current part</span>
+              {!findCommand(makeCommandInfo) && (
+                <Tooltip
+                  position="right"
+                  wrapperClassName="!max-w-none min-w-fit"
+                >
+                  Awaiting engine connection
+                </Tooltip>
+              )}
+            </>
+          ),
+          disabled: !findCommand(makeCommandInfo) || machineCount === 0,
+          onClick: () => {
+            commandBarSend({
+              type: 'Find and select command',
+              data: makeCommandInfo,
+            })
+          },
+        },
+        'break',
+        {
+          id: 'go-home',
+          Element: 'button',
+          children: 'Go to Home',
+          className: !isDesktop() ? 'hidden' : '',
+          onClick: () => {
+            onProjectClose(file || null, project?.path || null, true)
+            // Clear the scene and end the session.
+            engineCommandManager.endSession()
+          },
+        },
+      ].filter(
+        (props) =>
+          props === 'break' ||
+          (typeof props !== 'string' && !props.className?.includes('hidden'))
+      ) as (ActionButtonProps | 'break')[],
+    [
+      platform,
+      findCommand,
+      commandBarSend,
+      engineCommandManager,
+      onProjectClose,
+      isDesktop,
+    ]
+  )
 
   return (
     <Popover className="relative">
       <Popover.Button
-        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 pl-0 pr-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <CustomIcon name="three-dots" className="w-5 h-5 rotate-90" />
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
-            {isTauri() && file?.name
-              ? file.name.slice(file.name.lastIndexOf(sep()) + 1)
+            {isDesktop() && file?.name
+              ? file.name.slice(
+                  file.name.lastIndexOf(window.electron.path.sep) + 1
+                )
               : APP_NAME}
           </span>
-          {isTauri() && project?.name && (
+          {isDesktop() && project?.name && (
             <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
               {project.name}
             </span>
           )}
         </div>
+        <CustomIcon
+          name="caretDown"
+          className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+        />
       </Popover.Button>
-      <Transition
-        enter="duration-200 ease-out"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="duration-100 ease-in"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-        as={Fragment}
-      >
-        <Popover.Overlay className="fixed inset-0 z-20 bg-chalkboard-110/50" />
-      </Transition>
 
       <Transition
         enter="duration-100 ease-out"
-        enterFrom="opacity-0 -translate-x-1/4"
-        enterTo="opacity-100 translate-x-0"
-        leave="duration-75 ease-in"
-        leaveFrom="opacity-100 translate-x-0"
-        leaveTo="opacity-0 -translate-x-4"
+        enterFrom="opacity-0 -translate-y-2"
+        enterTo="opacity-100 translate-y-0"
         as={Fragment}
       >
         <Popover.Panel
-          className="fixed inset-0 right-auto z-30 grid w-64 h-screen max-h-screen grid-cols-1 border rounded-r-md shadow-md bg-chalkboard-10 dark:bg-chalkboard-100 border-chalkboard-40 dark:border-chalkboard-80"
-          style={{ gridTemplateRows: 'auto 1fr auto' }}
+          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+          border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
+          shadow-lg`}
         >
           {({ close }) => (
-            <>
-              <div className="flex flex-col gap-2 p-4">
-                <ActionButton
-                  Element="button"
-                  iconStart={{ icon: 'exportFile', className: 'p-1' }}
-                  className="border-transparent dark:border-transparent"
-                  disabled={!findCommand(exportCommandInfo)}
-                  onClick={() =>
-                    commandBarSend({
-                      type: 'Find and select command',
-                      data: exportCommandInfo,
-                    })
-                  }
-                >
-                  Export Part
-                </ActionButton>
-                {isTauri() && (
-                  <ActionButton
-                    Element="button"
-                    onClick={() => {
-                      onProjectClose(file || null, project?.path || null, true)
-                      // Clear the scene and end the session.
-                      engineCommandManager.endSession()
-                    }}
-                    iconStart={{
-                      icon: 'arrowLeft',
-                      className: 'p-1',
-                    }}
-                    className="border-transparent dark:border-transparent"
-                  >
-                    Go to Home
-                  </ActionButton>
-                )}
-              </div>
-            </>
+            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+              {projectMenuItems.map((props, index) => {
+                if (props === 'break') {
+                  return index !== projectMenuItems.length - 1 ? (
+                    <li key={`break-${index}`} className="contents">
+                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+                    </li>
+                  ) : null
+                }
+
+                const { id, className, children, ...rest } = props
+                return (
+                  <li key={id} className="contents">
+                    <ActionButton
+                      {...rest}
+                      className={
+                        'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
+                        className
+                      }
+                      onMouseUp={() => {
+                        close()
+                      }}
+                    >
+                      {children}
+                    </ActionButton>
+                  </li>
+                )
+              })}
+            </ul>
           )}
         </Popover.Panel>
       </Transition>

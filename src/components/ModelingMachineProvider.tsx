@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import React, { createContext, useEffect, useRef } from 'react'
+import React, { createContext, useEffect, useMemo, useRef } from 'react'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -8,7 +8,12 @@ import {
   StateFrom,
   assign,
 } from 'xstate'
-import { SetSelections, modelingMachine } from 'machines/modelingMachine'
+import {
+  SetSelections,
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
@@ -23,6 +28,7 @@ import {
   editorManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
+import { machineManager } from 'lib/machineManager'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -65,13 +71,20 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import { uuidv4 } from 'lib/utils'
 import { err, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
+import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import {
+  ExportIntent,
+  EngineConnectionStateType,
+  EngineConnectionEvents,
+} from 'lang/std/engineConnection'
+import { submitAndAwaitTextToKcl } from 'lib/textToCad'
+import { useFileContext } from 'hooks/useFileContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -97,13 +110,16 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const navigate = useNavigate()
+  const { context, send: fileMachineSend } = useFileContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
+  const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -121,6 +137,13 @@ export const ModelingMachineProvider = ({
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine,
     {
+      context: {
+        ...modelingMachineDefaultContext,
+        store: {
+          ...modelingMachineDefaultContext.store,
+          ...persistedContext,
+        },
+      },
       actions: {
         'disable copilot': () => {
           editorManager.setCopilotEnabled(false)
@@ -130,43 +153,22 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ store }) => {
           ;(async () => {
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
-            const settings: Models['CameraSettings_type'] = (
-              await engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'default_camera_get_settings',
-                },
-              })
-            )?.data?.data?.settings
-            if (settings.up.z !== 1) {
-              // workaround for gimbal lock situation
-              await engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'default_camera_look_at',
-                  center: settings.center,
-                  vantage: {
-                    ...settings.pos,
-                    y:
-                      settings.pos.y +
-                      (settings.center.z - settings.pos.z > 0 ? 2 : -2),
-                  },
-                  up: { x: 0, y: 0, z: 1 },
-                },
-              })
-            }
-
             store.videoElement?.pause()
-            kclManager.executeCode(true).then(() => {
-              if (engineCommandManager.engineConnection?.freezeFrame) return
 
-              store.videoElement?.play()
+            kclManager.isFirstRender = true
+            kclManager.executeCode().then(() => {
+              kclManager.isFirstRender = false
+              if (engineCommandManager.engineConnection?.idleMode) return
+
+              store.videoElement?.play().catch((e) => {
+                console.warn('Video playing was prevented', e)
+              })
             })
           })()
         },
@@ -360,9 +362,59 @@ export const ModelingMachineProvider = ({
 
           return {}
         }),
+        Make: async (_, event) => {
+          if (event.type !== 'Make' || TEST) return
+          // Check if we already have an export intent.
+          if (engineCommandManager.exportIntent) {
+            toast.error('Already exporting')
+            return
+          }
+          // Set the export intent.
+          engineCommandManager.exportIntent = ExportIntent.Make
+
+          // Set the current machine.
+          machineManager.currentMachine = event.data.machine
+
+          const format: Models['OutputFormat_type'] = {
+            type: 'stl',
+            coords: {
+              forward: {
+                axis: 'y',
+                direction: 'negative',
+              },
+              up: {
+                axis: 'z',
+                direction: 'positive',
+              },
+            },
+            storage: 'ascii',
+            // Convert all units to mm since that is what the slicer expects.
+            units: 'mm',
+            selection: { type: 'default_scene' },
+          }
+
+          // Artificially delay the export in playwright tests
+          toast.promise(
+            exportFromEngine({
+              format: format,
+            }),
+
+            {
+              loading: 'Starting print...',
+              success: 'Started print successfully',
+              error: 'Error while starting print',
+            }
+          )
+        },
         'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
-          console.log('exporting', event.data)
+          if (engineCommandManager.exportIntent) {
+            toast.error('Already exporting')
+            return
+          }
+          // Set the export intent.
+          engineCommandManager.exportIntent = ExportIntent.Save
+
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>
@@ -417,6 +469,23 @@ export const ModelingMachineProvider = ({
             }
           )
         },
+        'Submit to Text-to-CAD API': async (_, { data }) => {
+          const trimmedPrompt = data.prompt.trim()
+          if (!trimmedPrompt) return
+
+          void submitAndAwaitTextToKcl({
+            trimmedPrompt,
+            fileMachineSend,
+            navigate,
+            commandBarSend,
+            context,
+            token,
+            settings: {
+              theme: theme.current,
+              highlightEdges: highlightEdges.current,
+            },
+          })
+        },
       },
       guards: {
         'has valid extrude selection': ({ selectionRanges }) => {
@@ -444,12 +513,18 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.codeBasedSelections.length <= 0) return false
           return true
         },
+        'has valid fillet selection': ({ selectionRanges }) =>
+          hasValidFilletSelection({
+            selectionRanges,
+            ast: kclManager.ast,
+            code: codeManager.code,
+          }),
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
-            engineCommandManager.artifactMap,
+            engineCommandManager.artifactGraph,
             selectionRanges
           )
         },
@@ -477,7 +552,7 @@ export const ModelingMachineProvider = ({
           if (kclManager.ast.body.length) {
             // this assumes no changes have been made to the sketch besides what we did when entering the sketch
             // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
-            const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+            const newAst = structuredClone(kclManager.ast)
             const varDecIndex = sketchDetails.sketchPathToNode[1][0]
             // remove body item at varDecIndex
             newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
@@ -494,7 +569,6 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               data.sketchPathToNode,
               data.extrudePathToNode,
-              kclManager.programMemory,
               data.cap
             )
             if (trap(sketched)) return Promise.reject(sketched)
@@ -862,15 +936,19 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  useSetupEngineManager(streamRef, token, {
-    pool: pool,
-    theme: theme.current,
-    highlightEdges: highlightEdges.current,
-    enableSSAO: enableSSAO.current,
+  useSetupEngineManager(
+    streamRef,
     modelingSend,
-    modelingContext: modelingState.context,
-    showScaleGrid: showScaleGrid.current,
-  })
+    modelingState.context,
+    {
+      pool: pool,
+      theme: theme.current,
+      highlightEdges: highlightEdges.current,
+      enableSSAO: enableSSAO.current,
+      showScaleGrid: showScaleGrid.current,
+    },
+    token
+  )
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {
@@ -898,17 +976,25 @@ export const ModelingMachineProvider = ({
   }, [modelingState.context.selectionRanges])
 
   useEffect(() => {
-    const offlineCallback = () => {
+    const onConnectionStateChanged = ({ detail }: CustomEvent) => {
       // If we are in sketch mode we need to exit it.
       // TODO: how do i check if we are in a sketch mode, I only want to call
       // this then.
-      modelingSend({ type: 'Cancel' })
+      if (detail.type === EngineConnectionStateType.Disconnecting) {
+        modelingSend({ type: 'Cancel' })
+      }
     }
-    window.addEventListener('offline', offlineCallback)
+    engineCommandManager.engineConnection?.addEventListener(
+      EngineConnectionEvents.ConnectionStateChanged,
+      onConnectionStateChanged as EventListener
+    )
     return () => {
-      window.removeEventListener('offline', offlineCallback)
+      engineCommandManager.engineConnection?.removeEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChanged as EventListener
+      )
     }
-  }, [modelingSend])
+  }, [engineCommandManager.engineConnection, modelingSend])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

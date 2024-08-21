@@ -1,5 +1,5 @@
 .panel {
-  @apply relative z-0 rounded-r max-w-full h-full flex-1;
+  @apply relative z-0 rounded-r max-w-full flex-auto;
   display: grid;
   grid-template-rows: auto 1fr;
   @apply bg-chalkboard-10/50 focus-within:bg-chalkboard-10/90 backdrop-blur-sm border border-chalkboard-20;

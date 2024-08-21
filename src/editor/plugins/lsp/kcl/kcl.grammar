@@ -38,7 +38,7 @@ expression[@isGroup=Expression] {
     expression !exp ExpOp expression |
     expression !comp CompOp expression
   } |
-  UnaryExpression { AddOp expression } |
+  UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
@@ -47,6 +47,8 @@ expression[@isGroup=Expression] {
   SubscriptExpression { expression !member "[" expression "]" } |
   PipeExpression { expression (!pipe PipeOperator expression)+ }
 }
+
+UnaryOp { AddOp | BangOp }
 
 ObjectProperty { PropertyName ":" expression }
 
@@ -80,6 +82,7 @@ commaSep<term> { (term ("," term)*)? ","? }
   AddOp { "+" | "-" }
   MultOp { "/" | "*" | "\\" }
   ExpOp { "^" }
+  BangOp { "!" }
   CompOp { $[<>] "="? | "!=" | "==" }
   Equals { "=" }
   Arrow { "=>" }
@@ -108,6 +111,6 @@ commaSep<term> { (term ("," term)*)? ","? }
   "," "?" ":" "." ".."
 }
 
-@external propSource klcHighlight from "./highlight"
+@external propSource kclHighlight from "./highlight"
 
 @detectDelim

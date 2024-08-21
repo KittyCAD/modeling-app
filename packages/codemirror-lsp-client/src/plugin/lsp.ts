@@ -18,6 +18,7 @@ import type {
   ViewPlugin,
 } from '@codemirror/view'
 import { EditorView, Tooltip } from '@codemirror/view'
+import { linter } from '@codemirror/lint'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -30,12 +31,11 @@ import { URI } from 'vscode-uri'
 import { LanguageServerClient } from '../client'
 import { CompletionItemKindMap } from './autocomplete'
 import { addToken, SemanticToken } from './semantic-tokens'
-import { deferExecution, posToOffset, formatMarkdownContents } from './util'
+import { posToOffset, formatMarkdownContents } from './util'
 import lspAutocompleteExt from './autocomplete'
 import lspHoverExt from './hover'
 import lspFormatExt from './format'
 import lspIndentExt from './indent'
-import lspLintExt from './lint'
 import lspSemanticTokensExt from './semantic-tokens'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
@@ -214,6 +214,7 @@ export class LanguageServerPlugin implements PluginValue {
     }
 
     if (!this.client.ready) return
+
     try {
       // Update the state (not the editor) with the new code.
       this.client.textDocumentDidChange({
@@ -571,8 +572,8 @@ export class LanguageServerPluginSpec
       lspFormatExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),
-      lspLintExt(),
       lspSemanticTokensExt(),
+      linter(null),
     ]
   }
 }

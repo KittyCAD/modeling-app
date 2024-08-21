@@ -7,7 +7,7 @@ import {
   InterpreterFrom,
 } from 'xstate'
 import { Selection } from './selections'
-import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
+import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
@@ -15,12 +15,13 @@ const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
   'options',
   'string',
+  'text',
   'kcl',
   'selection',
   'boolean',
 ] as const
 export interface KclExpression {
-  valueAst: Value
+  valueAst: Expr
   valueText: string
   valueCalculated: string
 }
@@ -111,6 +112,10 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   skip?: boolean
+  /** For showing a summary display of the current value, such as in
+   *  the command bar's header
+   */
+  valueSummary?: (value: OutputType) => string
 } & (
   | {
       inputType: 'options'
@@ -148,6 +153,16 @@ export type CommandArgumentConfig<
       defaultValueFromContext?: (context: C) => OutputType
     }
   | {
+      inputType: 'text'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+    }
+  | {
       inputType: 'boolean'
       defaultValue?:
         | OutputType
@@ -172,6 +187,10 @@ export type CommandArgument<
       ) => boolean)
   skip?: boolean
   machineActor: InterpreterFrom<T>
+  /** For showing a summary display of the current value, such as in
+   *  the command bar's header
+   */
+  valueSummary?: (value: OutputType) => string
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
@@ -198,6 +217,15 @@ export type CommandArgument<
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
   | {
       inputType: 'string'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+  | {
+      inputType: 'text'
       defaultValue?:
         | OutputType
         | ((
