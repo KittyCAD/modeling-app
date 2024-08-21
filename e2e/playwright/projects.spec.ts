@@ -543,7 +543,7 @@ test(
       name: string
       page: Page
     }) => {
-      test.step(`Create and rename project ${name}`, async () => {
+      await test.step(`Create and rename project ${name}`, async () => {
         await createProjectAndRenameIt({ name, page })
       })
     }
@@ -633,16 +633,16 @@ test(
       name: string
       page: Page
     }) => {
-      test.step(`Create and rename project ${name}`, async () => {
+      await test.step(`Create and rename project ${name}`, async () => {
         await createProjectAndRenameIt({ name, page })
       })
     }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt({ name: 'router-template-slate', page })
-    await createProjectAndRenameIt({ name: 'bracket', page })
-    await createProjectAndRenameIt({ name: 'lego', page })
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
