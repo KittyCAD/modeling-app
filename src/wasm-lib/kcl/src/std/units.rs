@@ -18,7 +18,7 @@ pub async fn mm(args: Args) -> Result<KclValue, KclError> {
 /// No matter what units the current project uses, this function will always return the conversion
 /// factor to millimeters.
 ///
-/// For example, if the current project uses inches, this function will return `25.4`.
+/// For example, if the current project uses inches, this function will return `(1/25.4)`.
 /// If the current project uses millimeters, this function will return `1`.
 ///
 /// **Caution**: This function is only intended to be used when you absolutely MUST
@@ -26,7 +26,8 @@ pub async fn mm(args: Args) -> Result<KclValue, KclError> {
 /// a bad pattern to use this function.
 ///
 /// We merely provide these functions for convenience and readability, as
-/// `10 * mm()` is more readable than `10 * 25.4`.
+/// `10 * mm()` is more readable that your intent is "I want 10 millimeters" than
+/// `10 * (1/25.4)`, if the project settings are in inches.
 ///
 /// ```no_run
 /// const totalWidth = 10 * mm()
@@ -59,14 +60,15 @@ pub async fn inch(args: Args) -> Result<KclValue, KclError> {
 /// factor to inches.
 ///
 /// For example, if the current project uses inches, this function will return `1`.
-/// If the current project uses millimeters, this function will return `(1.0/25.4)`.
+/// If the current project uses millimeters, this function will return `25.4`.
 ///
 /// **Caution**: This function is only intended to be used when you absolutely MUST
 /// have different units in your code than the project settings. Otherwise, it is
 /// a bad pattern to use this function.
 ///
 /// We merely provide these functions for convenience and readability, as
-/// `10 * inch()` is more readable than `10 * (1/25.4)`.
+/// `10 * inch()` is more readable that your intent is "I want 10 inches" than
+/// `10 * 25.4`, if the project settings are in millimeters.
 ///
 /// ```no_run
 /// const totalWidth = 10 * inch()
@@ -98,8 +100,8 @@ pub async fn ft(args: Args) -> Result<KclValue, KclError> {
 /// No matter what units the current project uses, this function will always return the conversion
 /// factor to feet.
 ///
-/// For example, if the current project uses inches, this function will return `(1.0/12)`.
-/// If the current project uses millimeters, this function will return `(1.0/304.8)`.
+/// For example, if the current project uses inches, this function will return `12`.
+/// If the current project uses millimeters, this function will return `304.8`.
 /// If the current project uses feet, this function will return `1`.
 ///
 /// **Caution**: This function is only intended to be used when you absolutely MUST
@@ -107,7 +109,8 @@ pub async fn ft(args: Args) -> Result<KclValue, KclError> {
 /// a bad pattern to use this function.
 ///
 /// We merely provide these functions for convenience and readability, as
-/// `10 * ft()` is more readable than `10 * (1/304.8)`.
+/// `10 * ft()` is more readable that your intent is "I want 10 feet" than
+/// `10 * 304.8`, if the project settings are in millimeters.
 ///
 /// ```no_run
 /// const totalWidth = 10 * ft()
@@ -139,8 +142,8 @@ pub async fn m(args: Args) -> Result<KclValue, KclError> {
 /// No matter what units the current project uses, this function will always return the conversion
 /// factor to meters.
 ///
-/// For example, if the current project uses inches, this function will return `(1.0/39.3701)`.
-/// If the current project uses millimeters, this function will return `(1.0/1000)`.
+/// For example, if the current project uses inches, this function will return `39.3701`.
+/// If the current project uses millimeters, this function will return `1000`.
 /// If the current project uses meters, this function will return `1`.
 ///
 /// **Caution**: This function is only intended to be used when you absolutely MUST
@@ -148,7 +151,8 @@ pub async fn m(args: Args) -> Result<KclValue, KclError> {
 /// a bad pattern to use this function.
 ///
 /// We merely provide these functions for convenience and readability, as
-/// `10 * m()` is more readable than `10 * (1/1000)`.
+/// `10 * m()` is more readable that your intent is "I want 10 meters" than
+/// `10 * 1000`, if the project settings are in millimeters.
 ///
 /// ```no_run
 /// const totalWidth = 10 * m()
@@ -180,8 +184,8 @@ pub async fn cm(args: Args) -> Result<KclValue, KclError> {
 /// No matter what units the current project uses, this function will always return the conversion
 /// factor to centimeters.
 ///
-/// For example, if the current project uses inches, this function will return `(1.0/0.393701)`.
-/// If the current project uses millimeters, this function will return `(1.0/10)`.
+/// For example, if the current project uses inches, this function will return `0.393701`.
+/// If the current project uses millimeters, this function will return `10`.
 /// If the current project uses centimeters, this function will return `1`.
 ///
 /// **Caution**: This function is only intended to be used when you absolutely MUST
@@ -189,7 +193,8 @@ pub async fn cm(args: Args) -> Result<KclValue, KclError> {
 /// a bad pattern to use this function.
 ///
 /// We merely provide these functions for convenience and readability, as
-/// `10 * cm()` is more readable than `10 * (1/10)`.
+/// `10 * cm()` is more readable that your intent is "I want 10 centimeters" than
+/// `10 * 10`, if the project settings are in millimeters.
 ///
 /// ```no_run
 /// const totalWidth = 10 * cm()
@@ -221,8 +226,8 @@ pub async fn yd(args: Args) -> Result<KclValue, KclError> {
 /// No matter what units the current project uses, this function will always return the conversion
 /// factor to yards.
 ///
-/// For example, if the current project uses inches, this function will return `(1.0/36)`.
-/// If the current project uses millimeters, this function will return `(1.0/914.4)`.
+/// For example, if the current project uses inches, this function will return `36`.
+/// If the current project uses millimeters, this function will return `914.4`.
 /// If the current project uses yards, this function will return `1`.
 ///
 /// **Caution**: This function is only intended to be used when you absolutely MUST
@@ -230,7 +235,8 @@ pub async fn yd(args: Args) -> Result<KclValue, KclError> {
 /// a bad pattern to use this function.
 ///
 /// We merely provide these functions for convenience and readability, as
-/// `10 * yd()` is more readable than `10 * (1/914.4)`.
+/// `10 * yd()` is more readable that your intent is "I want 10 yards" than
+/// `10 * 914.4`, if the project settings are in millimeters.
 ///
 /// ```no_run
 /// const totalWidth = 10 * yd()
@@ -257,7 +263,7 @@ mod tests {
     use super::*;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_inner_mm() {
+    async fn test_units_inner_mm() {
         let mut args = Args::new_test_args().await.unwrap();
         args.ctx.settings.units = UnitLength::Mm;
         let result = inner_mm(&args).unwrap();
@@ -265,23 +271,23 @@ mod tests {
 
         args.ctx.settings.units = UnitLength::In;
         let result = inner_mm(&args).unwrap();
-        assert_eq!(result, 25.4);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_inner_inch() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::In;
-        let result = inner_inch(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_inch(&args).unwrap();
         assert_eq!(result, 1.0 / 25.4);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_inner_ft() {
+    async fn test_units_inner_inch() {
+        let mut args = Args::new_test_args().await.unwrap();
+        args.ctx.settings.units = UnitLength::In;
+        let result = inner_inch(&args).unwrap();
+        assert_eq!(result, 1.0);
+
+        args.ctx.settings.units = UnitLength::Mm;
+        let result = inner_inch(&args).unwrap();
+        assert_eq!(result, 25.4);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_units_inner_ft() {
         let mut args = Args::new_test_args().await.unwrap();
         args.ctx.settings.units = UnitLength::Ft;
         let result = inner_ft(&args).unwrap();
@@ -289,11 +295,11 @@ mod tests {
 
         args.ctx.settings.units = UnitLength::Mm;
         let result = inner_ft(&args).unwrap();
-        assert_eq!(result, 1.0 / 304.8);
+        assert_eq!(result, 304.8);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_inner_m() {
+    async fn test_units_inner_m() {
         let mut args = Args::new_test_args().await.unwrap();
         args.ctx.settings.units = UnitLength::M;
         let result = inner_m(&args).unwrap();
@@ -301,11 +307,11 @@ mod tests {
 
         args.ctx.settings.units = UnitLength::Mm;
         let result = inner_m(&args).unwrap();
-        assert_eq!(result, 1.0 / 1000.0);
+        assert_eq!(result, 1000.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_inner_cm() {
+    async fn test_units_inner_cm() {
         let mut args = Args::new_test_args().await.unwrap();
         args.ctx.settings.units = UnitLength::Cm;
         let result = inner_cm(&args).unwrap();
@@ -313,11 +319,11 @@ mod tests {
 
         args.ctx.settings.units = UnitLength::Mm;
         let result = inner_cm(&args).unwrap();
-        assert_eq!(result, 1.0 / 10.0);
+        assert_eq!(result, 10.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_inner_yd() {
+    async fn test_units_inner_yd() {
         let mut args = Args::new_test_args().await.unwrap();
         args.ctx.settings.units = UnitLength::Yd;
         let result = inner_yd(&args).unwrap();
@@ -325,6 +331,6 @@ mod tests {
 
         args.ctx.settings.units = UnitLength::Mm;
         let result = inner_yd(&args).unwrap();
-        assert_eq!(result, 1.0 / 914.4);
+        assert_eq!(result, 914.4);
     }
 }
