@@ -1,11 +1,10 @@
-name: build-test-publish-apps
+name: build-publish-apps
 
 on:
   pull_request:
   push:
     branches:
       - main
-      - pierremtb/issue3528-Add-electron-updater
   release:
     types: [published]
   schedule:
@@ -189,7 +188,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     # env:
       # VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
