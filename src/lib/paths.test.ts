@@ -2,7 +2,12 @@ import { parseProjectRoute } from './paths'
 import * as path from 'path'
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {
+<<<<<<< HEAD
     global.window = {electron:  { path: path }}
+=======
+    // @ts-ignore
+    global.window = { electron: { path: path } }
+>>>>>>> b1e8f79f (Ignore tsc for electron monkey-patch)
     let config = {
       settings: {
         project: {
@@ -19,7 +24,12 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project as the project dir', async () => {
+<<<<<<< HEAD
     global.window = {electron:  { path: path }}
+=======
+    // @ts-ignore
+    global.window = { electron: { path: path } }
+>>>>>>> b1e8f79f (Ignore tsc for electron monkey-patch)
     let config = {
       settings: {
         project: {
@@ -36,7 +46,8 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project with file in the project dir', async () => {
-    global.window = {electron:  { path: path }}
+    // @ts-ignore
+    global.window = { electron: { path: path } }
     let config = {
       settings: {
         project: {
@@ -53,6 +64,7 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project with file in a subdir in the project dir', async () => {
+    // @ts-ignore
     global.window = { electron: { path: path } }
     let config = {
       settings: {

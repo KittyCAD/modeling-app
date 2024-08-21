@@ -138,7 +138,7 @@ export const fileLoader: LoaderFunction = async (
       project: maybeProjectInfo ?? defaultProjectData,
       file: {
         name: currentFileName || '',
-        path: currentFilePath,
+        path: currentFilePath || '',
         children: [],
       },
     }
