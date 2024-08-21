@@ -153,33 +153,34 @@ export const FileMachineProvider = ({
         event: EventFrom<typeof fileMachine, 'Rename file'>
       ) => {
         const { oldName, newName, isDir } = event.data
-        const name = newName ? newName : DEFAULT_FILE_NAME
+        const name = newName
+          ? newName.endsWith(FILE_EXT) || isDir
+            ? newName
+            : newName + FILE_EXT
+          : DEFAULT_FILE_NAME
         const oldPath = window.electron.path.join(
           context.selectedDirectory.path,
           oldName
         )
-        const newDirPath = window.electron.path.join(
+        const newPath = window.electron.path.join(
           context.selectedDirectory.path,
           name
         )
-        const newPath =
-          newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
-        await window.electron.rename(oldPath, newPath)
+        window.electron.rename(oldPath, newPath)
 
         if (!file) {
           return Promise.reject(new Error('file is not defined'))
         }
 
-        const currentFilePath = window.electron.path.join(file.path, file.name)
-        if (oldPath === currentFilePath && project?.path) {
+        if (oldPath === file.path && project?.path) {
           // If we just renamed the current file, navigate to the new path
           navigate(`..${PATHS.FILE}/${encodeURIComponent(newPath)}`)
         } else if (file?.path.includes(oldPath)) {
           // If we just renamed a directory that the current file is in, navigate to the new path
           navigate(
             `..${PATHS.FILE}/${encodeURIComponent(
-              file.path.replace(oldPath, newDirPath)
+              file.path.replace(oldPath, newPath)
             )}`
           )
         }

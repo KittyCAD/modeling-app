@@ -93,6 +93,7 @@ export function LowerRightControls({
               ? filePath + PATHS.SETTINGS + '?tab=project'
               : PATHS.HOME + PATHS.SETTINGS
           }
+          data-testid="settings-link"
         >
           <CustomIcon
             name="settings"
