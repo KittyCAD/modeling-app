@@ -1472,11 +1472,9 @@ test.describe('Renaming in the file tree', () => {
       const fileToRename = page
         .getByRole('listitem')
         .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page
-        .getByRole('listitem')
-        .filter({
-          has: page.getByRole('button', { name: newFileName + FILE_EXT }),
-        })
+      const renamedFile = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: newFileName + FILE_EXT }),
+      })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')

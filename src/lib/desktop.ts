@@ -450,9 +450,8 @@ export const readAppSettingsFile = async () => {
   } catch (e) {
     if (e === 'ENOENT') {
       const config = defaultAppSettings()
-      if (err(config)) 
-        return Promise.reject(config)
-      if (!config.settings?.app) 
+      if (err(config)) return Promise.reject(config)
+      if (!config.settings?.app)
         return Promise.reject(new Error('config.app is falsey'))
 
       config.settings.app.project_directory = await getInitialDefaultDir()
