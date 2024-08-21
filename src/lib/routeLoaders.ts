@@ -127,6 +127,7 @@ export const fileLoader: LoaderFunction = async (
       ? await getProjectInfo(projectPath)
       : null
 
+    debugger
     console.log('maybeProjectInfo', {
       maybeProjectInfo,
       defaultProjectData,
