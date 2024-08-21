@@ -12,6 +12,7 @@ import {
   Literal,
   VariableDeclaration,
   Identifier,
+  sketchGroupFromKclValue,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -1009,9 +1010,12 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.get(variableName)
-    if (!sketch || sketch.type !== 'SketchGroup') {
-      return new Error('not a SketchGroup')
+    const sketch = sketchGroupFromKclValue(
+      previousProgramMemory?.get(variableName),
+      variableName
+    )
+    if (err(sketch)) {
+      return sketch
     }
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
@@ -1105,10 +1109,11 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.get(variableName)
-    if (!sketch || sketch.type !== 'SketchGroup') {
-      return new Error('not a SketchGroup')
-    }
+    const sketch = sketchGroupFromKclValue(
+      previousProgramMemory?.get(variableName),
+      variableName
+    )
+    if (err(sketch)) return sketch
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
@@ -1443,7 +1448,11 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declarations[0].id.name
-    const sketchGroup = previousProgramMemory.get(varName) as SketchGroup
+    const sketchGroup = sketchGroupFromKclValue(
+      previousProgramMemory.get(varName),
+      varName
+    )
+    if (err(sketchGroup)) return sketchGroup
     const intersectPath = sketchGroup.value.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )

@@ -203,13 +203,22 @@ impl Environment {
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            if let KclValue::SketchGroup(ref mut sketch_group) = val {
-                if sketch_group.original_id == sg.original_id {
-                    for tag in sg.tags.iter() {
-                        sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
-                    }
+            let KclValue::UserVal(v) = val else { continue };
+            let meta = v.meta.clone();
+            let maybe_sg: Result<SketchGroup, _> = serde_json::from_value(v.value.clone());
+            let Ok(mut sketch_group) = maybe_sg else {
+                continue;
+            };
+
+            if sketch_group.original_id == sg.original_id {
+                for tag in sg.tags.iter() {
+                    sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
+            *val = KclValue::UserVal(UserVal {
+                meta,
+                value: serde_json::to_value(sketch_group).expect("can always turn SketchGroup into JSON"),
+            });
         }
     }
 }
@@ -268,10 +277,7 @@ pub enum KclValue {
     TagDeclarator(Box<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups {
-        value: Vec<Box<SketchGroup>>,
-    },
+
     ExtrudeGroup(Box<ExtrudeGroup>),
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
@@ -289,27 +295,8 @@ pub enum KclValue {
 }
 
 impl KclValue {
-    pub(crate) fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
-        match self {
-            KclValue::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
-            KclValue::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
-            KclValue::UserVal(value) => {
-                let value = value.value.clone();
-                match value {
-                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
-                        "Failed to deserialize sketch group set from JSON {}",
-                        human_friendly_type(&value)
-                    )),
-                    JValue::Array(_) => serde_json::from_value::<Vec<Box<SketchGroup>>>(value)
-                        .map(SketchGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e)),
-                    JValue::Object(_) => serde_json::from_value::<Box<SketchGroup>>(value)
-                        .map(SketchGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize sketch group from JSON: {}", e)),
-                }
-            }
-            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
-        }
+    pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self::UserVal(UserVal::set(meta, val))
     }
 
     pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
@@ -342,8 +329,6 @@ impl KclValue {
             KclValue::UserVal(u) => human_friendly_type(&u.value),
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::SketchGroup(_) => "SketchGroup",
-            KclValue::SketchGroups { .. } => "SketchGroups",
             KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
             KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
@@ -356,20 +341,14 @@ impl KclValue {
 
 impl From<SketchGroupSet> for KclValue {
     fn from(sg: SketchGroupSet) -> Self {
-        match sg {
-            SketchGroupSet::SketchGroup(sg) => KclValue::SketchGroup(sg),
-            SketchGroupSet::SketchGroups(sgs) => KclValue::SketchGroups { value: sgs },
-        }
+        KclValue::UserVal(UserVal::set(sg.meta(), sg))
     }
 }
 
 impl From<Vec<Box<SketchGroup>>> for KclValue {
     fn from(sg: Vec<Box<SketchGroup>>) -> Self {
-        if sg.len() == 1 {
-            KclValue::SketchGroup(sg[0].clone())
-        } else {
-            KclValue::SketchGroups { value: sg }
-        }
+        let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
+        KclValue::UserVal(UserVal::set(meta, sg))
     }
 }
 
@@ -426,6 +405,24 @@ pub enum Geometries {
 pub enum SketchGroupSet {
     SketchGroup(Box<SketchGroup>),
     SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+impl SketchGroupSet {
+    pub fn meta(&self) -> Vec<Metadata> {
+        match self {
+            SketchGroupSet::SketchGroup(sg) => sg.meta.clone(),
+            SketchGroupSet::SketchGroups(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
+        }
+    }
+}
+
+impl From<SketchGroupSet> for Vec<SketchGroup> {
+    fn from(value: SketchGroupSet) -> Self {
+        match value {
+            SketchGroupSet::SketchGroup(sg) => vec![*sg],
+            SketchGroupSet::SketchGroups(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
+        }
+    }
 }
 
 impl From<SketchGroup> for SketchGroupSet {
@@ -641,6 +638,43 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
+impl UserVal {
+    /// If the UserVal matches the type `T`, return it.
+    pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
+        let meta = self.meta.clone();
+        // TODO: This clone might cause performance problems, it'll happen a lot.
+        let res: Result<T, _> = serde_json::from_value(self.value.clone());
+        if let Ok(t) = res {
+            Some((t, meta))
+        } else {
+            None
+        }
+    }
+
+    /// If the UserVal matches the type `T`, then mutate it via the given closure.
+    /// If the closure returns Err, the mutation won't be applied.
+    pub fn mutate<T, F, E>(&mut self, mutate: F) -> Result<(), E>
+    where
+        T: serde::de::DeserializeOwned + Serialize,
+        F: FnOnce(&mut T) -> Result<(), E>,
+    {
+        let Some((mut val, meta)) = self.get::<T>() else {
+            return Ok(());
+        };
+        mutate(&mut val)?;
+        *self = Self::set(meta, val);
+        Ok(())
+    }
+
+    /// Put the given value into this UserVal.
+    pub fn set<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self {
+            meta,
+            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -720,11 +754,6 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             KclValue::TagDeclarator(t) => t.into(),
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::SketchGroups { value } => value
-                .iter()
-                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
-                .collect(),
             KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             KclValue::ExtrudeGroups { value } => value
                 .iter()
@@ -1274,7 +1303,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -2083,6 +2112,39 @@ mod tests {
             .unwrap()
             .get_json_value()
             .unwrap()
+    }
+
+    #[test]
+    fn how_does_sketchgroup_serialize() {
+        let sg = SketchGroup {
+            id: uuid::Uuid::new_v4(),
+            value: vec![],
+            on: SketchSurface::Plane(Box::new(Plane {
+                id: uuid::Uuid::new_v4(),
+                value: PlaneType::XY,
+                origin: Point3d::default(),
+                x_axis: Point3d::default(),
+                y_axis: Point3d::default(),
+                z_axis: Point3d::default(),
+                meta: Vec::new(),
+            })),
+            start: BasePath {
+                from: [0.0, 0.0],
+                to: [0.0, 0.0],
+                tag: None,
+                geo_meta: GeoMeta {
+                    id: uuid::Uuid::new_v4(),
+                    metadata: Metadata {
+                        source_range: SourceRange([0, 0]),
+                    },
+                },
+            },
+            tags: HashMap::new(),
+            original_id: uuid::Uuid::new_v4(),
+            meta: Vec::new(),
+        };
+        let jstr = serde_json::to_string_pretty(&sg).unwrap();
+        println!("{jstr}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
