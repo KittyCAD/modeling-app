@@ -216,21 +216,14 @@ export async function saveSettings(
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
-  const tomlString = tomlStringify({ settings: jsAppSettings })
-  if (err(tomlString)) return
-
-  // Parse this as a Configuration.
-  const appSettings = parseAppSettings(tomlString)
-  if (err(appSettings)) return
-
-  const tomlString2 = tomlStringify({ settings: appSettings })
-  if (err(tomlString2)) return
+  const appTomlString = tomlStringify({ settings: jsAppSettings })
+  if (err(appTomlString)) return
 
   // Write the app settings.
   if (onDesktop) {
-    await writeAppSettingsFile(tomlString2)
+    await writeAppSettingsFile(appTomlString)
   } else {
-    localStorage.setItem(localStorageAppSettingsPath(), tomlString2)
+    localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
   }
 
   if (!projectPath) {
@@ -243,19 +236,11 @@ export async function saveSettings(
   const projectTomlString = tomlStringify({ settings: jsProjectSettings })
   if (err(projectTomlString)) return
 
-  // Parse this as a Configuration.
-  const projectSettings = parseProjectSettings(projectTomlString)
-  if (err(projectSettings)) return
-
-  const tomlStr = tomlStringify(projectSettings)
-
-  if (err(tomlStr)) return
-
   // Write the project settings.
   if (onDesktop) {
-    await writeProjectSettingsFile(projectPath, tomlStr)
+    await writeProjectSettingsFile(projectPath, projectTomlString)
   } else {
-    localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
+    localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
   }
 }
 
