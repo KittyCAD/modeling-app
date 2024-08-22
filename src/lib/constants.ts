@@ -65,7 +65,3 @@ export const COOKIE_NAME = '__Secure-next-auth.session-token'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
-/** localStorage key to set toast duration in Playwright tests */
-export const PLAYWRIGHT_TOAST_DURATION = 'playwright-toast-duration'
-/** localStorage key to set mock export pause duration in Playwright tests */
-export const PLAYWRIGHT_MOCK_EXPORT_DURATION = 'playwright-mock-export-duration'

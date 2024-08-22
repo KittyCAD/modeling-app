@@ -5,6 +5,7 @@ import {
   TestInfo,
   BrowserContext,
   _electron as electron,
+  Locator,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import os from 'os'
@@ -96,6 +97,8 @@ async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
   await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
+// Ignoring the lint since I assume someone will want to use this for a test.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function waitForDefaultPlanesToBeVisible(page: Page) {
   await page.waitForFunction(
     () =>
@@ -104,15 +107,19 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('code-pane-button')
-  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
-  const isOpen = ariaSelected === 'true'
+async function openPane(page: Page, testId: string) {
+  const locator = page.getByTestId(testId)
+  await expect(locator).toBeVisible()
+  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
-    await paneLocator.click()
-    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
+    await locator.click()
+    await expect(locator).toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openKclCodePanel(page: Page) {
+  await openPane(page, 'code-pane-button')
 }
 
 async function closeKclCodePanel(page: Page) {
@@ -127,14 +134,7 @@ async function closeKclCodePanel(page: Page) {
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('debug-pane-button')
-  await expect(debugLocator).toBeVisible()
-  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
-
-  if (!isOpen) {
-    await debugLocator.click()
-    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
-  }
+  await openPane(page, 'debug-pane-button')
 }
 
 async function closeDebugPanel(page: Page) {
@@ -145,6 +145,28 @@ async function closeDebugPanel(page: Page) {
     await debugLocator.click()
     await expect(debugLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openFilePanel(page: Page) {
+  await openPane(page, 'files-pane-button')
+}
+
+async function closeFilePanel(page: Page) {
+  const fileLocator = page.getByTestId('files-pane-button')
+  await expect(fileLocator).toBeVisible()
+  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
+  if (isOpen) {
+    await fileLocator.click()
+    await expect(fileLocator).not.toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
+async function openVariablesPane(page: Page) {
+  await openPane(page, 'variables-pane-button')
+}
+
+async function openLogsPane(page: Page) {
+  await openPane(page, 'logs-pane-button')
 }
 
 async function waitForCmdReceive(page: Page, commandType: string) {
@@ -173,7 +195,8 @@ export const wiggleMove = async (
       const isElVis = await page.locator(locator).isVisible()
       if (isElVis) return
     }
-    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
+    // x1 is 0.
+    const y1 = Math.sin((tau / steps) * j * freq) * amplitude
     const [x2, y2] = [
       Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
       Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
@@ -319,6 +342,10 @@ export async function getUtils(page: Page) {
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
+    openFilePanel: () => openFilePanel(page),
+    closeFilePanel: () => closeFilePanel(page),
+    openVariablesPane: () => openVariablesPane(page),
+    openLogsPane: () => openLogsPane(page),
     openAndClearDebugPanel: async () => {
       await openDebugPanel(page)
       return clearCommandLogs(page)
@@ -454,7 +481,10 @@ export async function getUtils(page: Page) {
         return page.evaluate('window.tearDown()')
       }
 
-      cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+      return cdpSession?.send(
+        'Network.emulateNetworkConditions',
+        networkOptions
+      )
     },
   }
 }
@@ -540,14 +570,36 @@ export interface Paths {
 
 export const doExport = async (
   output: Models['OutputFormat_type'],
-  page: Page
+  page: Page,
+  exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
-  await page.getByRole('button', { name: APP_NAME }).click()
-  const exportMenuButton = page.getByRole('button', {
-    name: 'Export current part',
-  })
-  await expect(exportMenuButton).toBeVisible()
-  await exportMenuButton.click()
+  if (exportFrom === 'dropdown') {
+    await page.getByRole('button', { name: APP_NAME }).click()
+    const exportMenuButton = page.getByRole('button', {
+      name: 'Export current part',
+    })
+    await expect(exportMenuButton).toBeVisible()
+    await exportMenuButton.click()
+  } else if (exportFrom === 'sidebarButton') {
+    await expect(page.getByTestId('export-pane-button')).toBeVisible()
+    await page.getByTestId('export-pane-button').click()
+  } else if (exportFrom === 'commandBar') {
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    await commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByRole('option', {
+      name: 'floppy disk arrow Export',
+    })
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    await textToCadCommand.first().click()
+  }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar
@@ -574,13 +626,21 @@ export const doExport = async (
   const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
   let downloadCnt = 0
 
-  page.on('download', async (download) => {
-    if (downloadCnt === 0) {
-      downloadResolve1(download)
-    }
-    downloadCnt++
-  })
+  if (exportFrom === 'dropdown')
+    page.on('download', async (download) => {
+      if (downloadCnt === 0) {
+        downloadResolve1(download)
+      }
+      downloadCnt++
+    })
   await page.getByRole('button', { name: 'Submit command' }).click()
+  if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
+    return {
+      modelPath: '',
+      imagePath: '',
+      outputType: output.type,
+    }
+  }
 
   // Handle download
   const download = await downloadPromise1
@@ -648,6 +708,7 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(context: BrowserContext, page: Page) {
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+      localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
@@ -711,6 +772,8 @@ export async function setup(context: BrowserContext, page: Page) {
 
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  await page.reload()
 }
 
 export async function setupElectron({
@@ -771,4 +834,23 @@ export async function setupElectron({
   await setup(context, page)
 
   return { electronApp, page }
+}
+
+export async function isOutOfViewInScrollContainer(
+  element: Locator,
+  container: Locator
+): Promise<boolean> {
+  const elementBox = await element.boundingBox({ timeout: 5_000 })
+  const containerBox = await container.boundingBox({ timeout: 5_000 })
+
+  let isOutOfView = false
+  if (elementBox && containerBox)
+    return (
+      elementBox.y + elementBox.height > containerBox.y + containerBox.height ||
+      elementBox.y < containerBox.y ||
+      elementBox.x + elementBox.width > containerBox.x + containerBox.width ||
+      elementBox.x < containerBox.x
+    )
+
+  return isOutOfView
 }

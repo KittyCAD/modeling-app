@@ -10,12 +10,12 @@ import {
   Program,
   ProgramMemory,
   ReturnStatement,
-  SketchGroup,
   SourceRange,
   SyntaxType,
   Expr,
   VariableDeclaration,
   VariableDeclarator,
+  sketchGroupFromKclValue,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -661,15 +661,16 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const path = programMemory?.get(varName) as SketchGroup
+    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
-      path,
+      sg,
       primaryLine.range
     )
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
-    const _segment = getSketchSegmentFromSourceRange(path, secondaryLine.range)
+    const _segment = getSketchSegmentFromSourceRange(sg, secondaryLine.range)
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
     const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
@@ -708,9 +709,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = (programMemory.get(varName) as SketchGroup).value[
-      secondaryIndex - 1
-    ]
+    const prevSegment = sg.value[secondaryIndex - 1]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
 
     const isParallelAndConstrained =
@@ -779,7 +778,10 @@ export function hasExtrudeSketchGroup({
   if (varDec.type !== 'VariableDeclaration') return false
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
-  return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
+  return (
+    varValue?.type === 'ExtrudeGroup' ||
+    !err(sketchGroupFromKclValue(varValue, varName))
+  )
 }
 
 export function isSingleCursorInPipe(

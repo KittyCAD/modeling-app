@@ -11,7 +11,6 @@ import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 
 export function LowerRightControls({
   children,
@@ -24,8 +23,6 @@ export function LowerRightControls({
   const filePath = useAbsoluteFilePath()
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
-
-  const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   async function reportbug(event: {
     preventDefault: () => void
@@ -74,7 +71,7 @@ export function LowerRightControls({
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
         >
-          v{isTestEnv ? '11.22.33' : APP_VERSION}
+          v{APP_VERSION}
         </a>
         <a
           onClick={reportbug}
@@ -96,6 +93,7 @@ export function LowerRightControls({
               ? filePath + PATHS.SETTINGS + '?tab=project'
               : PATHS.HOME + PATHS.SETTINGS
           }
+          data-testid="settings-link"
         >
           <CustomIcon
             name="settings"
@@ -107,7 +105,9 @@ export function LowerRightControls({
           </Tooltip>
         </Link>
         <NetworkMachineIndicator className={linkOverrideClassName} />
-        <NetworkHealthIndicator />
+        {!location.pathname.startsWith(PATHS.HOME) && (
+          <NetworkHealthIndicator />
+        )}
         <HelpMenu />
       </menu>
     </section>

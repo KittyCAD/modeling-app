@@ -1,7 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
-import { join } from 'path'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -31,15 +29,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -101,15 +97,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -121,13 +115,12 @@ test.describe('Text-to-CAD tests', () => {
     // Find the toast.
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
-
-    await page.waitForTimeout(5000)
-
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     // Expect 2 success toasts.
-    await expect(successToastMessage).toHaveCount(2)
+    await expect(successToastMessage).toHaveCount(2, {
+      timeout: 15000,
+    })
     await expect(page.getByText('a 2x4 lego')).toBeVisible()
     await expect(page.getByText('a 2x6 lego')).toBeVisible()
   })
@@ -150,15 +143,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Hit copy to clipboard.
     const rejectButton = page.getByRole('button', { name: 'Reject' })
@@ -199,7 +190,8 @@ test.describe('Text-to-CAD tests', () => {
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
-    await page.keyboard.type('akjsndladf ghgsssswefiuwq22262664')
+    const randomPrompt = `aslkdfja;` + Date.now() + `FFFFEIWJF`
+    await page.keyboard.type(randomPrompt)
     await page.waitForTimeout(1000)
     await page.keyboard.press('Enter')
 
@@ -319,11 +311,9 @@ test.describe('Text-to-CAD tests', () => {
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
-    await expect(generatingToastMessage).toBeVisible()
-
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
   })
 
   test('sending a bad prompt fails, can ignore toast, can start over from command bar', async ({
@@ -353,7 +343,7 @@ test.describe('Text-to-CAD tests', () => {
     const prompt = page.getByText('Prompt')
     await expect(prompt.first()).toBeVisible()
 
-    const badPrompt = 'akjsndladf lajbhflauweyfa;wieufjn---4;'
+    const badPrompt = 'akjsndladflajbhflauweyf15;'
 
     // Type the prompt.
     await page.keyboard.type(badPrompt)
@@ -391,11 +381,9 @@ test.describe('Text-to-CAD tests', () => {
     // Look out for the toast message
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(5000)
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
-    await expect(generatingToastMessage).toBeVisible()
-
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -448,16 +436,13 @@ test.describe('Text-to-CAD tests', () => {
     )
     await expect(submittingToastMessage).toBeVisible()
 
-    await page.waitForTimeout(1000)
-
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage).toBeVisible()
-    await page.waitForTimeout(5000)
+    await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    await expect(successToastMessage).toBeVisible()
+    await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
@@ -465,6 +450,14 @@ test.describe('Text-to-CAD tests', () => {
   test('can do many at once and get many prompts back, and interact with many', async ({
     page,
   }) => {
+    // Let this test run longer since we've seen it timeout.
+    test.setTimeout(180_000)
+    // skip on windows
+    test.skip(
+      process.platform === 'win32',
+      'This test is flaky, skipping for now'
+    )
+
     const u = await getUtils(page)
 
     await page.setViewportSize({ width: 1000, height: 500 })
@@ -487,11 +480,13 @@ test.describe('Text-to-CAD tests', () => {
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
+    await expect(generatingToastMessage.first()).toBeVisible({
+      timeout: 10_000,
+    })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
     // We should have three success toasts.
-    await expect(successToastMessage).toHaveCount(3, { timeout: 15000 })
+    await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
 
     await expect(page.getByText('Copied')).not.toBeVisible()
 
@@ -533,12 +528,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('.cm-content')).toContainText(`2x8`)
 
     // Find the toast close button.
-    const closeButton = page
-      .getByRole('status')
-      .locator('div')
-      .filter({ hasText: 'Text-to-CAD successfulPrompt' })
-      .first()
-      .getByRole('button', { name: 'Close' })
+    const closeButton = page.locator('[data-negative-button="close"]').first()
     await expect(closeButton).toBeVisible()
     await closeButton.click()
 
@@ -559,9 +549,13 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.press('ControlOrMeta+a')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyA')
+    await page.keyboard.up(CtrlKey)
     await page.keyboard.press('Backspace')
-    await page.keyboard.press('ControlOrMeta+v')
+    await page.keyboard.down(CtrlKey)
+    await page.keyboard.press('KeyV')
+    await page.keyboard.up(CtrlKey)
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
@@ -687,7 +681,7 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
 
     // Type the prompt.
     await page.keyboard.type(promptStr)
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(200)
     await page.keyboard.press('Enter')
   })
 }

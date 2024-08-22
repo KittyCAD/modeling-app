@@ -10,6 +10,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
 jobs:
   check-format:
     runs-on: 'ubuntu-22.04'
@@ -39,6 +44,8 @@ jobs:
       - run: yarn build:wasm
       - run: yarn xstate:typegen
       - run: yarn tsc
+      - name: Lint
+        run: yarn eslint --max-warnings 0 src e2e
 
 
   check-typos:
@@ -56,7 +63,7 @@ jobs:
 
 
   build-test-web:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -74,5 +81,37 @@ jobs:
       - run: yarn build:wasm
 
       - run: yarn simpleserver:ci
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
 
-      - run: yarn test:nowatch
+      - name: Install Chromium Browser
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        run: yarn playwright install chromium --with-deps
+
+      - name: run unit tests
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        run: yarn test:nowatch
+        env:
+          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+
+      - name: check for changes
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        id: git-check
+        run: |
+            git add src/lang/std/artifactMapGraphs
+            if git status src/lang/std/artifactMapGraphs | grep -q "Changes to be committed"
+            then echo "modified=true" >> $GITHUB_OUTPUT
+            else echo "modified=false" >> $GITHUB_OUTPUT
+            fi
+      - name: Commit changes, if any
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' && steps.git-check.outputs.modified == 'true' }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          # TODO when webkit works on ubuntu remove the os part of the commit message
+          git commit -am "Look at this (photo)Graph *in the voice of Nickelback*" || true
+          git push
+          git push origin ${{ github.head_ref }}

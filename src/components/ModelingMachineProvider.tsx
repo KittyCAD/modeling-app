@@ -85,7 +85,6 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import { PLAYWRIGHT_MOCK_EXPORT_DURATION } from 'lib/constants'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -394,24 +393,12 @@ export const ModelingMachineProvider = ({
             selection: { type: 'default_scene' },
           }
 
-          const mockExportDuration = window.localStorage.getItem(
-            PLAYWRIGHT_MOCK_EXPORT_DURATION
-          )
-
-          console.log('mockExportDuration', mockExportDuration)
-
           // Artificially delay the export in playwright tests
           toast.promise(
-            Promise.all([
-              exportFromEngine({
-                format: format,
-              }),
-              mockExportDuration
-                ? new Promise((resolve) =>
-                    setTimeout(resolve, Number(mockExportDuration))
-                  )
-                : Promise.resolve(),
-            ]),
+            exportFromEngine({
+              format: format,
+            }),
+
             {
               loading: 'Starting print...',
               success: 'Started print successfully',
