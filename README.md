@@ -232,7 +232,7 @@ run a specific test change the test from `test('...` to `test.only('...`
 (note if you commit this, the tests will instantly fail without running any of the tests**
 
 
-**Gotcha***: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
+**Gotcha**: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
 
 run headed
 
