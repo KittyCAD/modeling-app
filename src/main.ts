@@ -11,9 +11,10 @@ import * as kittycad from '@kittycad/lib/import'
 
 // If it's not set, scream.
 const NODE_ENV = process.env.NODE_ENV || 'production'
-if (!process.env.NODE_ENV) {
-  console.warn('*FOX SCREAM* process.env.NODE_ENV is not explicitly set!')
-}
+if (!process.env.NODE_ENV)
+  console.warn(
+    '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
+  )
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
