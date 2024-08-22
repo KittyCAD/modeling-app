@@ -5906,6 +5906,34 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
     }
 
     #[test]
+    fn recast_objects_no_comments() {
+        let input = r#"
+const sketch002 = startSketchOn({
+       plane: {
+    origin: { x: 1, y: 2, z: 3 },
+    x_axis: { x: 4, y: 5, z: 6 },
+    y_axis: { x: 7, y: 8, z: 9 },
+    z_axis: { x: 10, y: 11, z: 12 }
+       }
+  })
+"#;
+        let expected = r#"const sketch002 = startSketchOn({
+  plane: {
+    origin: { x: 1, y: 2, z: 3 },
+    x_axis: { x: 4, y: 5, z: 6 },
+    y_axis: { x: 7, y: 8, z: 9 },
+    z_axis: { x: 10, y: 11, z: 12 }
+  }
+})
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let p = crate::parser::Parser::new(tokens);
+        let ast = p.ast().unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn recast_objects_with_comments() {
         use winnow::Parser;
         for (i, (input, expected, reason)) in [(
