@@ -1,7 +1,9 @@
 import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
 
-export type MachinesListing = Array<components['schemas']['MachineInfoResponse']>
+export type MachinesListing = Array<
+  components['schemas']['MachineInfoResponse']
+>
 
 export class MachineManager {
   private _isDesktop: boolean = isDesktop()
