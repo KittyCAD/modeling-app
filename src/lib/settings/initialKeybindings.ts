@@ -61,7 +61,7 @@ export const interactionMap: Record<
       name: 'toggle-command-palette',
       sequence: `${PRIMARY}+K`,
       title: 'Toggle Command Palette',
-      description: 'Always available. Use Ctrl+/ on Windows/Linux.',
+      description: 'Always available.',
     },
   ],
   Panes: [
