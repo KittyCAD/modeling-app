@@ -16,7 +16,6 @@ import init, {
   parse_app_settings,
   parse_project_settings,
   default_project_settings,
-  parse_project_route,
   base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
@@ -33,7 +32,6 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
@@ -609,13 +607,6 @@ export function parseProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> | Error {
   return parse_project_settings(toml)
-}
-
-export function parseProjectRoute(
-  configuration: DeepPartial<Configuration>,
-  route_str: string
-): ProjectRoute | Error {
-  return parse_project_route(JSON.stringify(configuration), route_str)
 }
 
 export function base64Decode(base64: string): ArrayBuffer | Error {
