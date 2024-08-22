@@ -7,6 +7,7 @@ on:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
+      - 'src/wasm-lib/**.kcl'
       - .github/workflows/cargo-test.yml
 
   pull_request:
@@ -15,6 +16,7 @@ on:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
+      - 'src/wasm-lib/**.kcl'
       - .github/workflows/cargo-test.yml
   workflow_dispatch:
 permissions: read-all

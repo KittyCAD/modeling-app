@@ -76,7 +76,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
     let id = uuid::Uuid::new_v4();
 
     // Extrude the element(s).
-    let sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
+    let sketch_groups: Vec<SketchGroup> = sketch_group_set.into();
     let mut extrude_groups = Vec::new();
     for sketch_group in &sketch_groups {
         // Before we extrude, we need to enable the sketch mode.
@@ -118,7 +118,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
 }
 
 pub(crate) async fn do_post_extrude(
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     length: f64,
     id: Uuid,
     args: Args,
@@ -155,7 +155,7 @@ pub(crate) async fn do_post_extrude(
         }));
     };
 
-    let mut sketch_group = *sketch_group.clone();
+    let mut sketch_group = sketch_group.clone();
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch_group.on {

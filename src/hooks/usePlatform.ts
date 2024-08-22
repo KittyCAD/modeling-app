@@ -7,12 +7,29 @@ export default function usePlatform() {
   const [platformName, setPlatformName] = useState<Platform>('')
 
   useEffect(() => {
-    async function getPlatform() {
-      setPlatformName((window.electron.platform ?? '') as Platform)
+    function getPlatform(): Platform {
+      const platform = window.electron.platform ?? ''
+      // https://nodejs.org/api/process.html#processplatform
+      switch (platform) {
+        case 'darwin':
+          return 'macos'
+        case 'win32':
+          return 'windows'
+        // We don't currently care to distinguish between these.
+        case 'android':
+        case 'freebsd':
+        case 'linux':
+        case 'openbsd':
+        case 'sunos':
+          return 'linux'
+        default:
+          console.error('Unknown platform:', platform)
+          return ''
+      }
     }
 
     if (isDesktop()) {
-      void getPlatform()
+      setPlatformName(getPlatform())
     } else {
       if (navigator.userAgent.indexOf('Mac') !== -1) {
         setPlatformName('macos')

@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test'
 
-import { getUtils, setup, tearDown } from './test-utils'
+import { getUtils, setup, setupElectron, tearDown } from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import fsp from 'fs/promises'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -83,7 +84,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
     // Close the code pane
     await codePaneButton.click()
@@ -106,7 +107,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
@@ -217,3 +218,93 @@ test.describe('Code pane and errors', () => {
     ).toBeVisible()
   })
 })
+
+test(
+  'Opening multiple panes persists when switching projects',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    test.skip(
+      process.platform === 'win32',
+      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+    )
+    // Setup multiple projects.
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await Promise.all([
+          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
+          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+        ])
+        await Promise.all([
+          fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/router-template-slate/main.kcl`
+          ),
+          fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+            `${dir}/bracket/main.kcl`
+          ),
+        ])
+      },
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await test.step('Opening the bracket project should load', async () => {
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+    })
+
+    // If they're open by default, we're not actually testing anything.
+    await test.step('Pre-condition: panes are not already visible', async () => {
+      await expect(page.locator('#variables-pane')).not.toBeVisible()
+      await expect(page.locator('#logs-pane')).not.toBeVisible()
+    })
+
+    await test.step('Open multiple panes', async () => {
+      await u.openKclCodePanel()
+      await u.openVariablesPane()
+      await u.openLogsPane()
+    })
+
+    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+      await page.getByTestId('app-logo').click()
+
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
+    })
+
+    await test.step('Opening the router-template project should load', async () => {
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+
+      await page.getByText('router-template-slate').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+    })
+
+    await test.step('All panes opened before should be visible', async () => {
+      await expect(page.locator('#code-pane')).toBeVisible()
+      await expect(page.locator('#variables-pane')).toBeVisible()
+      await expect(page.locator('#logs-pane')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)

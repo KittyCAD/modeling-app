@@ -3,11 +3,9 @@ import { Models } from '@kittycad/lib'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 
 import {
   defaultAppSettings,
-  tomlStringify,
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
@@ -18,6 +16,9 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
 } from './constants'
+import { DeepPartial } from './types'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export { parseProjectRoute } from 'lang/wasm'
 
 export async function renameProjectDirectory(
@@ -61,10 +62,13 @@ export async function renameProjectDirectory(
 }
 
 export async function ensureProjectDirectoryExists(
-  config: Partial<SaveSettingsPayload>
+  config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir = config.app?.projectDirectory
+  const projectDir =
+    config.settings?.app?.project_directory ||
+    config.settings?.project?.directory
   if (!projectDir) {
+    console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
   }
   try {
@@ -81,12 +85,13 @@ export async function ensureProjectDirectoryExists(
 export async function createNewProjectDirectory(
   projectName: string,
   initialCode?: string,
-  configuration?: Partial<SaveSettingsPayload>
+  configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project> {
   if (!configuration) {
     configuration = await readAppSettingsFile()
   }
 
+  if (err(configuration)) return Promise.reject(configuration)
   const mainDir = await ensureProjectDirectoryExists(configuration)
 
   if (!projectName) {
@@ -124,11 +129,13 @@ export async function createNewProjectDirectory(
 }
 
 export async function listProjects(
-  configuration?: Partial<SaveSettingsPayload>
+  configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   if (configuration === undefined) {
     configuration = await readAppSettingsFile()
   }
+
+  if (err(configuration)) return Promise.reject(configuration)
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
@@ -179,7 +186,7 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
 
-  const pathParts = path.split('/')
+  const pathParts = path.split(window.electron.path.sep)
   let entry: FileEntry = {
     name: pathParts.slice(-1)[0],
     path,
@@ -358,10 +365,9 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
 // Write project settings file.
 export async function writeProjectSettingsFile(
   projectPath: string,
-  configuration: Partial<SaveSettingsPayload>
+  tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
-  const tomlStr = tomlStringify({ settings: configuration })
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(projectSettingsFilePath, tomlStr)
 }
@@ -416,7 +422,7 @@ export const getInitialDefaultDir = async () => {
 
 export const readProjectSettingsFile = async (
   projectPath: string
-): Promise<Partial<SaveSettingsPayload>> => {
+): Promise<DeepPartial<ProjectConfiguration>> => {
   let settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
@@ -431,6 +437,9 @@ export const readProjectSettingsFile = async (
 
   const configToml = await window.electron.readFile(settingsPath)
   const configObj = parseProjectSettings(configToml)
+  if (err(configObj)) {
+    return Promise.reject(configObj)
+  }
   return configObj
 }
 
@@ -441,29 +450,25 @@ export const readAppSettingsFile = async () => {
   } catch (e) {
     if (e === 'ENOENT') {
       const config = defaultAppSettings()
-      if (!config.app) {
+      if (err(config)) return Promise.reject(config)
+      if (!config.settings?.app)
         return Promise.reject(new Error('config.app is falsey'))
-      }
-      config.app.projectDirectory = await getInitialDefaultDir()
+
+      config.settings.app.project_directory = await getInitialDefaultDir()
       return config
     }
   }
   const configToml = await window.electron.readFile(settingsPath)
   const configObj = parseAppSettings(configToml)
-  if (!configObj.app) {
-    return Promise.reject(new Error('config.app is falsey'))
+  if (err(configObj)) {
+    return Promise.reject(configObj)
   }
-  if (!configObj.app.projectDirectory) {
-    configObj.app.projectDirectory = await getInitialDefaultDir()
-  }
+
   return configObj
 }
 
-export const writeAppSettingsFile = async (
-  config: Partial<SaveSettingsPayload>
-) => {
+export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
-  const tomlStr = tomlStringify({ settings: config })
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
 }

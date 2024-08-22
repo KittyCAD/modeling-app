@@ -254,7 +254,7 @@ async fn make_transform<'a>(
 }
 
 fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-    let serde_json::Value::Array(arr) = dbg!(json) else {
+    let serde_json::Value::Array(arr) = json else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
             source_ranges,

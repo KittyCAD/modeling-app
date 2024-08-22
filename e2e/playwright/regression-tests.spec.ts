@@ -194,7 +194,7 @@ const sketch001 = startSketchAt([-0, -0])
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
     // Okay execution finished, let's start editing text below the error.
     await u.codeLocator.click()
