@@ -347,7 +347,7 @@ jobs:
       run: yarn build:wasm
     - name: build electron
       shell: bash
-      run: yarn electron:package
+      run: yarn tron:package
     - uses: actions/download-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true

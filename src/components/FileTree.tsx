@@ -464,7 +464,10 @@ export const FileTreeInner = ({
   }, [documentHasFocus])
 
   return (
-    <div className="overflow-auto pb-12 absolute inset-0">
+    <div
+      className="overflow-auto pb-12 absolute inset-0"
+      data-testid="file-pane-scroll-container"
+    >
       <ul
         className="m-0 p-0 text-sm"
         onClickCapture={(e) => {

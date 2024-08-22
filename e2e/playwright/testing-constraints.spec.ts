@@ -72,7 +72,7 @@ test.describe('Testing constraints', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).not.toBeVisible()
   })
-  test(`Test remove constraints`, async ({ page }) => {
+  test(`Remove constraints`, async ({ page }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

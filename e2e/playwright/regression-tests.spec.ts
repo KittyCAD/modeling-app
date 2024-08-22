@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test'
-
-import { getUtils, setup, tearDown } from './test-utils'
+import * as fsp from 'fs/promises'
+import { getUtils, setup, setupElectron, tearDown } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
@@ -194,7 +194,7 @@ const sketch001 = startSketchAt([-0, -0])
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
     // Okay execution finished, let's start editing text below the error.
     await u.codeLocator.click()
@@ -236,9 +236,13 @@ const sketch001 = startSketchAt([-0, -0])
     page,
   }) => {
     const u = await getUtils(page)
-    await page.addInitScript(async (code) => {
-      localStorage.setItem('persistCode', code)
-    }, TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR)
+    await page.addInitScript(
+      async ({ code }) => {
+        localStorage.setItem('persistCode', code)
+        ;(window as any).playwrightSkipFilePicker = true
+      },
+      { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+    )
 
     await page.setViewportSize({ width: 1000, height: 500 })
 
@@ -325,7 +329,7 @@ const sketch001 = startSketchAt([-0, -0])
     await expect(exportingToastMessage).toBeVisible()
 
     // Expect it to succeed.
-    await expect(exportingToastMessage).not.toBeVisible()
+    await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
     await expect(errorToastMessage).not.toBeVisible()
     await expect(engineErrorToastMessage).not.toBeVisible()
 
@@ -337,6 +341,7 @@ const sketch001 = startSketchAt([-0, -0])
   }) => {
     // This is being weird on ubuntu and windows.
     test.skip(
+      // eslint-disable-next-line jest/valid-title
       process.platform === 'linux' || process.platform === 'win32',
       'This test is being weird on ubuntu'
     )
@@ -415,6 +420,56 @@ const sketch001 = startSketchAt([-0, -0])
       await expect(successToastMessage).toBeVisible()
     })
   })
+
+  test(
+    `Network health indicator only appears in modeling view`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      test.skip(
+        process.platform === 'win32',
+        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
+      )
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+            `${dir}/bracket/main.kcl`
+          )
+        },
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      const u = await getUtils(page)
+
+      // Locators
+      const projectsHeading = page.getByRole('heading', {
+        name: 'Your projects',
+      })
+      const projectLink = page.getByRole('link', { name: 'bracket' })
+      const networkHealthIndicator = page.getByTestId('network-toggle')
+
+      await test.step('Check the home page', async () => {
+        await expect(projectsHeading).toBeVisible()
+        await expect(projectLink).toBeVisible()
+        await expect(networkHealthIndicator).not.toBeVisible()
+      })
+
+      await test.step('Open the project', async () => {
+        await projectLink.click()
+      })
+
+      await test.step('Check the modeling view', async () => {
+        await expect(networkHealthIndicator).toBeVisible()
+        await expect(networkHealthIndicator).toContainText('Problem')
+        await u.waitForPageLoad()
+        await expect(networkHealthIndicator).toContainText('Connected')
+      })
+
+      await electronApp.close()
+    }
+  )
 })
 
 async function clickExportButton(page: Page) {
@@ -426,7 +481,7 @@ async function clickExportButton(page: Page) {
     // Click the export button
     await exportButton.click()
 
-    // Click the stl.
+    // Click the gltf.
     const gltfOption = page.getByRole('option', { name: 'glTF' })
     await expect(gltfOption).toBeVisible()
 

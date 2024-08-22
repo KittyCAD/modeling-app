@@ -34,6 +34,7 @@ const createWindow = () => {
       sandbox: false, // expose nodejs in preload
       preload: path.join(__dirname, './preload.js'),
     },
+    icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
   })
 
   // and load the index.html of the app.
@@ -131,8 +132,6 @@ ipcMain.handle('kittycad', (event, data) => {
     )(data.args)
 })
 
-const SERVICE_NAME = '_machine-api._tcp.local.'
-
 ipcMain.handle('find_machine_api', () => {
   const timeoutAfterMs = 5000
   return new Promise((resolve, reject) => {
@@ -144,8 +143,19 @@ ipcMain.handle('find_machine_api', () => {
       resolve(null)
     })
     console.log('Looking for machine API...')
-    bonjourEt.find({ type: SERVICE_NAME }, (service: Service) => {
-      resolve(service.fqdn)
-    })
+    bonjourEt.find(
+      { protocol: 'tcp', type: 'machine-api' },
+      (service: Service) => {
+        console.log('Found machine API!', JSON.stringify(service))
+        if (!service.addresses || service.addresses?.length === 0) {
+          console.log('No addresses found for machine API!')
+          return resolve(null)
+        }
+        const ip = service.addresses[0]
+        const port = service.port
+        // We want to return the ip address of the machine API.
+        resolve(`${ip}:${port}`)
+      }
+    )
   })
 })

@@ -977,10 +977,6 @@ const part001 = startSketchOn('XZ')
       const hoverPos = { x: segmentToDelete.x, y: segmentToDelete.y }
       await page.mouse.move(0, 0)
       await page.waitForTimeout(1000)
-      let x = 0,
-        y = 0
-      x = hoverPos.x + Math.cos(ang * deg) * 32
-      y = hoverPos.y - Math.sin(ang * deg) * 32
       await page.mouse.move(hoverPos.x, hoverPos.y)
       await wiggleMove(
         page,

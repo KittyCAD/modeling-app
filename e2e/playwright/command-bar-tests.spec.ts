@@ -12,50 +12,47 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test.describe('Command bar tests', () => {
-  // TODO fixme: enter is not working in the command bar
-  test.fixme(
-    'Extrude from command bar selects extrude line after',
-    async ({ page }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `const sketch001 = startSketchOn('XY')
+  test('Extrude from command bar selects extrude line after', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
     |> xLine(-20, %)
     |> close(%)
       `
-        )
-      })
-
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-
-      await u.waitForAuthSkipAppStart()
-
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
-
-      // Click the line of code for xLine.
-      await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
-      await page.waitForTimeout(100)
-
-      await page.getByRole('button', { name: 'Extrude' }).click()
-      await page.waitForTimeout(200)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(200)
-      await page.keyboard.press('Enter')
-      await page.waitForTimeout(200)
-      await expect(page.locator('.cm-activeLine')).toHaveText(
-        `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
       )
-    }
-  )
+    })
 
-  // TODO fixme: enter is not working in the command bar
-  test.fixme('Fillet from command bar', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // Click the line of code for xLine.
+    await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.waitForTimeout(100)
+
+    await page.getByRole('button', { name: 'Extrude' }).click()
+    await page.waitForTimeout(200)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(200)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(200)
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
+    )
+  })
+
+  test('Fillet from command bar', async ({ page }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

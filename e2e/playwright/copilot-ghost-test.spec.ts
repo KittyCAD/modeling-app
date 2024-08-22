@@ -9,6 +9,7 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 test.describe('Copilot ghost text', () => {
+  // eslint-disable-next-line jest/valid-title
   test.skip(true, 'Needs to get covered again')
 
   test('completes code in empty file', async ({ page }) => {

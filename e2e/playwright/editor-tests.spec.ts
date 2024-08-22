@@ -354,7 +354,7 @@ test.describe('Editor tests', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: $').first()).toBeVisible()
 
     // select the line that's causing the error and delete it
     await page.getByText('$ error').click()
@@ -714,17 +714,15 @@ test.describe('Editor tests', () => {
     |> close(%)`)
   })
 
-  // failing for the same reason as "Can edit a sketch that has been extruded in the same pipe"
-  // please fix together
-  test.fixme('Can undo a sketch modification with ctrl+z', async ({ page }) => {
+  test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
+    |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
     |> extrude(5, %)`
       )
@@ -759,11 +757,11 @@ test.describe('Editor tests', () => {
     })
     await page.waitForTimeout(100)
 
-    const startPX = [665, 458]
+    const startPX = [665, 397]
 
     const dragPX = 40
 
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await page.getByText('startProfileAt([4.61, -10.01], %)').click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
@@ -801,7 +799,7 @@ test.describe('Editor tests', () => {
     // drag tangentialArcTo handle
     const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
+      sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
       targetPosition: {
         x: tangentEnd.x + dragPX,
         y: tangentEnd.y + dragPX,
@@ -813,12 +811,12 @@ test.describe('Editor tests', () => {
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.12, -16.82], %)
-    |> line([15.4, -2.74], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> line([2.65, -2.69], %)
-    |> close(%)
-    |> extrude(5, %)`)
+  |> startProfileAt([7.12, -12.68], %)
+  |> line([15.39, -2.78], %)
+  |> tangentialArcTo([27.6, -3.05], %)
+  |> close(%)
+  |> extrude(5, %)
+`)
 
     // Hit undo
     await page.keyboard.down('Control')
@@ -827,11 +825,11 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.12, -16.82], %)
-    |> line([15.4, -2.74], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> close(%)
-    |> extrude(5, %)`)
+  |> startProfileAt([7.12, -12.68], %)
+  |> line([15.39, -2.78], %)
+  |> tangentialArcTo([24.95, -0.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -840,11 +838,12 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.12, -16.82], %)
-    |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> close(%)
-    |> extrude(5, %)`)
+  |> startProfileAt([7.12, -12.68], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -0.38], %)
+  |> close(%)
+  |> extrude(5, %)
+`)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -854,9 +853,9 @@ test.describe('Editor tests', () => {
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
+    |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
     |> extrude(5, %)`)
   })

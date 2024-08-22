@@ -9,7 +9,9 @@ export const NetworkMachineIndicator = ({
 }: {
   className?: string
 }) => {
-  const machineCount = Object.keys(machineManager.machines).length
+  const machineCount = machineManager.machineCount()
+  const reason = machineManager.noMachinesReason()
+
   return isDesktop() ? (
     <Popover className="relative">
       <Popover.Button
@@ -26,7 +28,7 @@ export const NetworkMachineIndicator = ({
           </p>
         )}
         <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
-          Network machines ({machineCount})
+          Network machines ({machineCount}) {reason && `: ${reason}`}
         </Tooltip>
       </Popover.Button>
       <Popover.Panel
