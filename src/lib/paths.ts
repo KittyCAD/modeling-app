@@ -7,6 +7,7 @@ import { err } from 'lib/trap'
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 import { DeepPartial } from './types'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { PlatformPath } from 'path'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -66,7 +67,7 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id, onDesktop)
+  const route = parseProjectRoute(configuration, id, window?.electron?.path)
 
   if (err(route)) return Promise.reject(route)
 
@@ -76,33 +77,34 @@ export async function getProjectMetaByRouteId(
 export async function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
   id: string,
-  onDesktop: boolean
+  pathlib: PlatformPath | undefined
 ): Promise<ProjectRoute> {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
   if (
+    pathlib &&
     configuration.settings?.project?.directory &&
     id.startsWith(configuration.settings.project.directory)
   ) {
-    const relativeToRoot = window.electron.path.relative(
+    const relativeToRoot = pathlib.relative(
       configuration.settings.project.directory,
       id
     )
-    projectName = relativeToRoot.split(window.electron.path.sep)[0]
-    projectPath = window.electron.path.join(
+    projectName = relativeToRoot.split(pathlib.sep)[0]
+    projectPath = pathlib.join(
       configuration.settings.project.directory,
       projectName
     )
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
-    if (onDesktop) {
-      if (window.electron.path.extname(id) === '.kcl') {
-        projectPath = window.electron.path.dirname(id)
+    if (pathlib) {
+      if (pathlib.extname(id) === '.kcl') {
+        projectPath = pathlib.dirname(id)
       }
-      projectName = window.electron.path.basename(projectPath)
+      projectName = pathlib.basename(projectPath)
     } else {
       if (id.endsWith('.kcl')) {
         projectPath = '/browser'
@@ -110,9 +112,9 @@ export async function parseProjectRoute(
       }
     }
   }
-  if (onDesktop) {
+  if (pathlib) {
     if (projectPath !== id) {
-      currentFileName = window.electron.path.basename(id)
+      currentFileName = pathlib.basename(id)
       currentFilePath = id
     }
   } else {
