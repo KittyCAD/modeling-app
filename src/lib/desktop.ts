@@ -19,7 +19,6 @@ import {
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-export { parseProjectRoute } from 'lang/wasm'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -39,7 +38,7 @@ export async function renameProjectDirectory(
 
   // Make sure the new name does not exist.
   const newPath = window.electron.path.join(
-    projectPath.split('/').slice(0, -1).join('/'),
+    window.electron.path.dirname(projectPath),
     newName
   )
   try {
@@ -186,9 +185,9 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
 
-  const pathParts = path.split(window.electron.path.sep)
+  const name = window.electron.path.basename(path)
   let entry: FileEntry = {
-    name: pathParts.slice(-1)[0],
+    name: name,
     path,
     children: [],
   }
@@ -330,7 +329,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
       new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
-
   let walked = await collectAllFilesRecursiveFrom(projectPath)
   let default_file = await getDefaultKclFileForDir(projectPath, walked)
   const metadata = await window.electron.stat(projectPath)

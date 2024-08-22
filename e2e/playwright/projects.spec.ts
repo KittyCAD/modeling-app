@@ -45,24 +45,25 @@ test(
   'click help/keybindings from project page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.mkdir(join(dir, 'bracket'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
+          join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs',
+            'focusrite_scarlett_mounting_braket.kcl'
+          ),
+          join(dir, 'bracket', 'main.kcl')
         )
       },
     })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-
-    page.on('console', console.log)
 
     page.on('console', console.log)
 
@@ -92,17 +93,20 @@ test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/broken-code`, { recursive: true })
+        await fsp.mkdir(join(dir, 'broken-code'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/broken-code-test.kcl',
-          `${dir}/broken-code/main.kcl`
+          join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs',
+            'broken-code-test.kcl'
+          ),
+          join(dir, 'broken-code', 'main.kcl')
         )
       },
     })
@@ -232,10 +236,6 @@ test(
   'Rename and delete projects, also spam arrow keys when renaming',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -524,10 +524,6 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -622,10 +618,6 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -748,10 +740,6 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({ testInfo })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -836,25 +824,35 @@ test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
         await Promise.all([
-          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+          fsp.mkdir(join(dir, 'router-template-slate'), { recursive: true }),
+          fsp.mkdir(join(dir, 'bracket'), { recursive: true }),
         ])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/router-template-slate/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'router-template-slate.kcl'
+            ),
+            join(dir, 'router-template-slate', 'main.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'focusrite_scarlett_mounting_braket.kcl'
+            ),
+            join(dir, 'bracket', 'main.kcl')
           ),
         ])
       },
@@ -1302,10 +1300,6 @@ test(
   'Settings persist across restarts',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     await test.step('We can change a user setting like theme', async () => {
       const { electronApp, page } = await setupElectron({
         testInfo,
@@ -1682,6 +1676,7 @@ test.describe('Renaming in the file tree', () => {
       })
 
       await test.step('Rename the folder', async () => {
+        await page.waitForTimeout(60000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
