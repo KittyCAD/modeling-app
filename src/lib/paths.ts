@@ -95,7 +95,7 @@ export async function parseProjectRoute(
       configuration.settings.project.directory,
       projectName
     )
-    projectName = projectName === "" ? null : projectName
+    projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
     if (onDesktop) {
@@ -112,8 +112,8 @@ export async function parseProjectRoute(
   }
   if (onDesktop) {
     if (projectPath !== id) {
-        currentFileName = window.electron.path.basename(id)
-	currentFilePath = id
+      currentFileName = window.electron.path.basename(id)
+      currentFilePath = id
     }
   } else {
     currentFileName = 'main.kcl'
