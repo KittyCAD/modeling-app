@@ -1233,18 +1233,13 @@ test(
 
     await page.getByText('mike_stress_test').click()
 
-    const modifier =
-      process.platform === 'win32' || process.platform === 'linux'
-        ? 'Control'
-        : 'Meta'
-
     await test.step('select all in code editor, check its length', async () => {
       await u.codeLocator.click()
       // expect u.codeLocator to have some text
       await expect(u.codeLocator).toContainText('line(')
-      await page.keyboard.down(modifier)
+      await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
-      await page.keyboard.up(modifier)
+      await page.keyboard.up('ControlOrMeta')
 
       // check the length of the selected text
       const selectedText = await page.evaluate(() => {
@@ -1260,9 +1255,9 @@ test(
     await test.step('delete all the text, select again and verify there are no characters left', async () => {
       await page.keyboard.press('Backspace')
 
-      await page.keyboard.down(modifier)
+      await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
-      await page.keyboard.up(modifier)
+      await page.keyboard.up('ControlOrMeta')
 
       // check the length of the selected text
       const selectedText = await page.evaluate(() => {

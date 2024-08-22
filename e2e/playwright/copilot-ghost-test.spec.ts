@@ -332,7 +332,6 @@ test.describe('Copilot ghost text', () => {
     await page.setViewportSize({ width: 1200, height: 500 })
 
     await u.waitForAuthSkipAppStart()
-    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -349,10 +348,10 @@ test.describe('Copilot ghost text', () => {
     )
 
     // Going elsewhere in the code should hide the ghost text.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.down('Shift')
     await page.keyboard.press('KeyZ')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
     await page.keyboard.up('Shift')
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
@@ -368,8 +367,6 @@ test.describe('Copilot ghost text', () => {
 
     await u.waitForAuthSkipAppStart()
 
-    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
-
     await page.waitForTimeout(800)
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -382,17 +379,17 @@ test.describe('Copilot ghost text', () => {
     await page.waitForTimeout(800)
 
     // Ctrl+z
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyZ')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(``)
 
     // Ctrl+shift+z
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.down('Shift')
     await page.keyboard.press('KeyZ')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
     await page.keyboard.up('Shift')
 
     await expect(page.locator('.cm-content')).toHaveText(`{thing: "blah"}`)
@@ -411,14 +408,14 @@ test.describe('Copilot ghost text', () => {
     )
 
     // Once for the enter.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyZ')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Once for the text.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyZ')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 

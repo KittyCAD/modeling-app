@@ -10,8 +10,6 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
-const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
-
 test('Units menu', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -373,9 +371,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await test.step(`Type code with sketch hotkeys, shouldn't fire`, async () => {
     // Since there's code now, we have to get to the end of the line
     await page.locator('.cm-line').last().click()
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('ArrowRight')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await page.keyboard.press('Enter')
     await page.keyboard.type('//')

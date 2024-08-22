@@ -77,11 +77,10 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.locator('.cm-content').click()
-  await page.keyboard.down(hotkey)
+  await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
-  await page.keyboard.up(hotkey)
+  await page.keyboard.up('ControlOrMeta')
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
