@@ -90,12 +90,12 @@ export const processMemory = (programMemory: ProgramMemory) => {
   for (const [key, val] of programMemory?.visibleEntries()) {
     if (typeof val.value !== 'function') {
       const sg = sketchGroupFromKclValue(val, null)
-      if (!err(sg)) {
-        processedMemory[key] = sg.value.map(({ __geoMeta, ...rest }: Path) => {
+      if (val.type === 'ExtrudeGroup') {
+        processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
-      } else if (val.type === 'ExtrudeGroup') {
-        processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
+      } else if (!err(sg)) {
+        processedMemory[key] = sg.value.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
       } else if ((val.type as any) === 'Function') {
