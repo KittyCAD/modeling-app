@@ -36,9 +36,9 @@ export const settingsLoader: LoaderFunction = async ({
       configuration
     )
     if (projectPathData) {
-      const { project_path } = projectPathData
+      const { projectPath } = projectPathData
       const { settings: s } = await loadAndValidateSettings(
-        project_path || undefined
+        projectPath || undefined
       )
       return s
     }
@@ -83,48 +83,49 @@ export const fileLoader: LoaderFunction = async (
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
-    const { project_name, project_path, current_file_name, current_file_path } =
+    const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
     const urlObj = new URL(routerData.request.url)
     let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      if (!current_file_name || !current_file_path || !project_name) {
+      if (!currentFileName || !currentFilePath || !projectName) {
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop()
-              ? (await getProjectInfo(project_path)).default_file
+              ? (await getProjectInfo(projectPath)).default_file
               : params.id + '/' + PROJECT_ENTRYPOINT
           )}`
         )
       }
 
-      code = await window.electron.readFile(current_file_path)
+      code = await window.electron.readFile(currentFilePath)
+      code = normalizeLineEndings(code)
 
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
       // the file system and not the editor.
-      codeManager.updateCurrentFilePath(current_file_path)
+      codeManager.updateCurrentFilePath(currentFilePath)
       codeManager.updateCodeStateEditor(code)
     }
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
-    fileSystemManager.dir = project_path
+    fileSystemManager.dir = projectPath
 
     const defaultProjectData = {
-      name: project_name || 'unnamed',
-      path: project_path,
+      name: projectName || 'unnamed',
+      path: projectPath,
       children: [],
       kcl_file_count: 0,
       directory_count: 0,
       metadata: null,
-      default_file: project_path,
+      default_file: projectPath,
     }
 
     const maybeProjectInfo = isDesktop()
-      ? await getProjectInfo(project_path)
+      ? await getProjectInfo(projectPath)
       : null
 
     console.log('maybeProjectInfo', {
@@ -137,8 +138,8 @@ export const fileLoader: LoaderFunction = async (
       code,
       project: maybeProjectInfo ?? defaultProjectData,
       file: {
-        name: current_file_name || '',
-        path: current_file_path || '',
+        name: currentFileName || '',
+        path: currentFilePath || '',
         children: [],
       },
     }
@@ -186,4 +187,8 @@ export const homeLoader: LoaderFunction = async (): Promise<
       projects: [],
     }
   }
+}
+
+const normalizeLineEndings = (str: string, normalized = '\n') => {
+  return str.replace(/\r?\n/g, normalized)
 }

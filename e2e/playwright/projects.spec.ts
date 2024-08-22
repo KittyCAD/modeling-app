@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import {
   doExport,
   getUtils,
@@ -6,6 +6,7 @@ import {
   Paths,
   setupElectron,
   tearDown,
+  createProjectAndRenameIt,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -45,24 +46,25 @@ test(
   'click help/keybindings from project page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        await fsp.mkdir(join(dir, 'bracket'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
+          join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs',
+            'focusrite_scarlett_mounting_braket.kcl'
+          ),
+          join(dir, 'bracket', 'main.kcl')
         )
       },
     })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-
-    page.on('console', console.log)
 
     page.on('console', console.log)
 
@@ -92,17 +94,20 @@ test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/broken-code`, { recursive: true })
+        await fsp.mkdir(join(dir, 'broken-code'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/broken-code-test.kcl',
-          `${dir}/broken-code/main.kcl`
+          join(
+            'src',
+            'wasm-lib',
+            'tests',
+            'executor',
+            'inputs',
+            'broken-code-test.kcl'
+          ),
+          join(dir, 'broken-code', 'main.kcl')
         )
       },
     })
@@ -232,10 +237,6 @@ test(
   'Rename and delete projects, also spam arrow keys when renaming',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -524,10 +525,6 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -535,33 +532,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
+      await test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({ name, page })
       })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -622,10 +609,6 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -635,33 +618,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
+      await test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({ name, page })
       })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -748,10 +721,6 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({ testInfo })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -836,25 +805,35 @@ test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
         await Promise.all([
-          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+          fsp.mkdir(join(dir, 'router-template-slate'), { recursive: true }),
+          fsp.mkdir(join(dir, 'bracket'), { recursive: true }),
         ])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/router-template-slate/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'router-template-slate.kcl'
+            ),
+            join(dir, 'router-template-slate', 'main.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'focusrite_scarlett_mounting_braket.kcl'
+            ),
+            join(dir, 'bracket', 'main.kcl')
           ),
         ])
       },
@@ -1302,10 +1281,6 @@ test(
   'Settings persist across restarts',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     await test.step('We can change a user setting like theme', async () => {
       const { electronApp, page } = await setupElectron({
         testInfo,
@@ -1682,6 +1657,7 @@ test.describe('Renaming in the file tree', () => {
       })
 
       await test.step('Rename the folder', async () => {
+        await page.waitForTimeout(60000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
@@ -1710,3 +1686,47 @@ test.describe('Renaming in the file tree', () => {
     }
   )
 })
+
+test(
+  'Original project name persist after onboarding',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const getAllProjects = () => page.getByTestId('project-link').all()
+    page.on('console', console.log)
+
+    await test.step('Should create and name a project called wrist brace', async () => {
+      await createProjectAndRenameIt({ name: 'wrist brace', page })
+    })
+
+    await test.step('Should go through onboarding', async () => {
+      await page.getByTestId('user-sidebar-toggle').click()
+      await page.getByTestId('user-settings').click()
+      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
+
+      const numberOfOnboardingSteps = 12
+      for (let clicks = 0; clicks < numberOfOnboardingSteps; clicks++) {
+        await page.getByTestId('onboarding-next').click()
+      }
+
+      await page.getByTestId('project-sidebar-toggle').click()
+    })
+
+    await test.step('Should go home after onboarding is completed', async () => {
+      await page.getByRole('button', { name: 'Go to Home' }).click()
+    })
+
+    await test.step('Should show the original project called wrist brace', async () => {
+      const projectNames = ['Tutorial Project 00', 'wrist brace']
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(projectNames[index])
+      }
+    })
+
+    await electronApp.close()
+  }
+)
