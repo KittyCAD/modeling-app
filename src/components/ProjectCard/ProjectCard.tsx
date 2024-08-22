@@ -36,8 +36,8 @@ function ProjectCard({
     void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
-  function getDisplayedTime(dateStr: string) {
-    const date = new Date(dateStr)
+  function getDisplayedTime(dateTimeMs: number) {
+    const date = new Date(dateTimeMs)
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     return date.getTime() < startOfToday.getTime()
@@ -52,7 +52,7 @@ function ProjectCard({
     }
 
     // async function setupImageUrl() {
-    //   const projectImagePath = await join(project.path, PROJECT_IMAGE_NAME)
+    //   const projectImagePath = await join(project.file.path, PROJECT_IMAGE_NAME)
     //   if (await exists(projectImagePath)) {
     //     const imageData = await readFile(projectImagePath)
     //     const blob = new Blob([imageData], { type: 'image/jpg' })
@@ -113,14 +113,17 @@ function ProjectCard({
           </span>
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
-            {project.metadata && project.metadata?.modified
-              ? getDisplayedTime(project.metadata.modified)
+            {project.metadata && project.metadata.modified
+              ? getDisplayedTime(parseInt(project.metadata.modified))
               : 'never'}
           </span>
         </div>
       </Link>
       {!isEditing && (
-        <div className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100">
+        <div
+          className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100"
+          data-edit-buttons-for={project.name?.replace(FILE_EXT, '')}
+        >
           <ActionButton
             Element="button"
             iconStart={{

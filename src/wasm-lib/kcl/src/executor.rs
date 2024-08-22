@@ -11,7 +11,10 @@ use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, Expr, FunctionExpression, KclNone, Program, TagDeclarator},
+    ast::types::{
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
+        ReturnStatement, TagDeclarator,
+    },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
@@ -200,13 +203,22 @@ impl Environment {
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            if let KclValue::SketchGroup(ref mut sketch_group) = val {
-                if sketch_group.original_id == sg.original_id {
-                    for tag in sg.tags.iter() {
-                        sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
-                    }
+            let KclValue::UserVal(v) = val else { continue };
+            let meta = v.meta.clone();
+            let maybe_sg: Result<SketchGroup, _> = serde_json::from_value(v.value.clone());
+            let Ok(mut sketch_group) = maybe_sg else {
+                continue;
+            };
+
+            if sketch_group.original_id == sg.original_id {
+                for tag in sg.tags.iter() {
+                    sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
+            *val = KclValue::UserVal(UserVal {
+                meta,
+                value: serde_json::to_value(sketch_group).expect("can always turn SketchGroup into JSON"),
+            });
         }
     }
 }
@@ -265,10 +277,7 @@ pub enum KclValue {
     TagDeclarator(Box<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups {
-        value: Vec<Box<SketchGroup>>,
-    },
+
     ExtrudeGroup(Box<ExtrudeGroup>),
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
@@ -286,17 +295,8 @@ pub enum KclValue {
 }
 
 impl KclValue {
-    pub(crate) fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
-        match self {
-            KclValue::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
-            KclValue::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
-            KclValue::UserVal(value) => {
-                let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
-                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
-                Ok(sg.into())
-            }
-            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
-        }
+    pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self::UserVal(UserVal::set(meta, val))
     }
 
     pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
@@ -304,31 +304,51 @@ impl KclValue {
             KclValue::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
             KclValue::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
             KclValue::UserVal(value) => {
-                let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
-                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
-                Ok(eg.into())
+                let value = value.value.clone();
+                match value {
+                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
+                        "Failed to deserialize extrude group set from JSON {}",
+                        human_friendly_type(&value)
+                    )),
+                    JValue::Array(_) => serde_json::from_value::<Vec<Box<ExtrudeGroup>>>(value)
+                        .map(ExtrudeGroupSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e)),
+                    JValue::Object(_) => serde_json::from_value::<Box<ExtrudeGroup>>(value)
+                        .map(ExtrudeGroupSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize extrude group from JSON: {}", e)),
+                }
             }
             _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+        }
+    }
+
+    /// Human readable type name used in error messages.  Should not be relied
+    /// on for program logic.
+    pub(crate) fn human_friendly_type(&self) -> &'static str {
+        match self {
+            KclValue::UserVal(u) => human_friendly_type(&u.value),
+            KclValue::TagDeclarator(_) => "TagDeclarator",
+            KclValue::TagIdentifier(_) => "TagIdentifier",
+            KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
+            KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
+            KclValue::ImportedGeometry(_) => "ImportedGeometry",
+            KclValue::Function { .. } => "Function",
+            KclValue::Plane(_) => "Plane",
+            KclValue::Face(_) => "Face",
         }
     }
 }
 
 impl From<SketchGroupSet> for KclValue {
     fn from(sg: SketchGroupSet) -> Self {
-        match sg {
-            SketchGroupSet::SketchGroup(sg) => KclValue::SketchGroup(sg),
-            SketchGroupSet::SketchGroups(sgs) => KclValue::SketchGroups { value: sgs },
-        }
+        KclValue::UserVal(UserVal::set(sg.meta(), sg))
     }
 }
 
 impl From<Vec<Box<SketchGroup>>> for KclValue {
     fn from(sg: Vec<Box<SketchGroup>>) -> Self {
-        if sg.len() == 1 {
-            KclValue::SketchGroup(sg[0].clone())
-        } else {
-            KclValue::SketchGroups { value: sg }
-        }
+        let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
+        KclValue::UserVal(UserVal::set(meta, sg))
     }
 }
 
@@ -385,6 +405,24 @@ pub enum Geometries {
 pub enum SketchGroupSet {
     SketchGroup(Box<SketchGroup>),
     SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+impl SketchGroupSet {
+    pub fn meta(&self) -> Vec<Metadata> {
+        match self {
+            SketchGroupSet::SketchGroup(sg) => sg.meta.clone(),
+            SketchGroupSet::SketchGroups(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
+        }
+    }
+}
+
+impl From<SketchGroupSet> for Vec<SketchGroup> {
+    fn from(value: SketchGroupSet) -> Self {
+        match value {
+            SketchGroupSet::SketchGroup(sg) => vec![*sg],
+            SketchGroupSet::SketchGroups(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
+        }
+    }
 }
 
 impl From<SketchGroup> for SketchGroupSet {
@@ -600,6 +638,43 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
+impl UserVal {
+    /// If the UserVal matches the type `T`, return it.
+    pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
+        let meta = self.meta.clone();
+        // TODO: This clone might cause performance problems, it'll happen a lot.
+        let res: Result<T, _> = serde_json::from_value(self.value.clone());
+        if let Ok(t) = res {
+            Some((t, meta))
+        } else {
+            None
+        }
+    }
+
+    /// If the UserVal matches the type `T`, then mutate it via the given closure.
+    /// If the closure returns Err, the mutation won't be applied.
+    pub fn mutate<T, F, E>(&mut self, mutate: F) -> Result<(), E>
+    where
+        T: serde::de::DeserializeOwned + Serialize,
+        F: FnOnce(&mut T) -> Result<(), E>,
+    {
+        let Some((mut val, meta)) = self.get::<T>() else {
+            return Ok(());
+        };
+        mutate(&mut val)?;
+        *self = Self::set(meta, val);
+        Ok(())
+    }
+
+    /// Put the given value into this UserVal.
+    pub fn set<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self {
+            meta,
+            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -679,11 +754,6 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             KclValue::TagDeclarator(t) => t.into(),
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::SketchGroups { value } => value
-                .iter()
-                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
-                .collect(),
             KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             KclValue::ExtrudeGroups { value } => value
                 .iter()
@@ -1233,7 +1303,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -1265,6 +1335,22 @@ pub struct Metadata {
 impl From<SourceRange> for Metadata {
     fn from(source_range: SourceRange) -> Self {
         Self { source_range }
+    }
+}
+
+impl From<&ExpressionStatement> for Metadata {
+    fn from(exp_statement: &ExpressionStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(exp_statement.start, exp_statement.end),
+        }
+    }
+}
+
+impl From<&ReturnStatement> for Metadata {
+    fn from(return_statement: &ReturnStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(return_statement.start, return_statement.end),
+        }
     }
 }
 
@@ -1716,20 +1802,26 @@ impl ExecutorContext {
         for statement in &program.body {
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
-                    if let Expr::PipeExpression(pipe_expr) = &expression_statement.expression {
-                        pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                    } else if let Expr::CallExpression(call_expr) = &expression_statement.expression {
-                        call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                    }
+                    let metadata = Metadata::from(expression_statement);
+                    // Discard return value.
+                    self.execute_expr(
+                        &expression_statement.expression,
+                        memory,
+                        dynamic_state,
+                        &pipe_info,
+                        &metadata,
+                        StatementKind::Expression,
+                    )
+                    .await?;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         let var_name = declaration.id.name.to_string();
-                        let source_range: SourceRange = declaration.init.clone().into();
+                        let source_range = SourceRange::from(&declaration.init);
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
-                            .arg_into_mem_item(
+                            .execute_expr(
                                 &declaration.init,
                                 memory,
                                 dynamic_state,
@@ -1741,51 +1833,20 @@ impl ExecutorContext {
                         memory.add(&var_name, memory_item, source_range)?;
                     }
                 }
-                BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
-                    Expr::BinaryExpression(bin_expr) => {
-                        let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::UnaryExpression(unary_expr) => {
-                        let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::Identifier(identifier) => {
-                        let value = memory.get(&identifier.name, identifier.into())?.clone();
-                        memory.return_ = Some(value);
-                    }
-                    Expr::Literal(literal) => {
-                        memory.return_ = Some(literal.into());
-                    }
-                    Expr::TagDeclarator(tag) => {
-                        memory.return_ = Some(tag.into());
-                    }
-                    Expr::ArrayExpression(array_expr) => {
-                        let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::ObjectExpression(obj_expr) => {
-                        let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::CallExpression(call_expr) => {
-                        let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::MemberExpression(member_expr) => {
-                        let result = member_expr.get_result(memory)?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::PipeExpression(pipe_expr) => {
-                        let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(result);
-                    }
-                    Expr::PipeSubstitution(_) => {}
-                    Expr::FunctionExpression(_) => {}
-                    Expr::None(none) => {
-                        memory.return_ = Some(KclValue::from(none));
-                    }
-                },
+                BodyItem::ReturnStatement(return_statement) => {
+                    let metadata = Metadata::from(return_statement);
+                    let value = self
+                        .execute_expr(
+                            &return_statement.argument,
+                            memory,
+                            dynamic_state,
+                            &pipe_info,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?;
+                    memory.return_ = Some(value);
+                }
             }
         }
 
@@ -1804,7 +1865,7 @@ impl ExecutorContext {
         Ok(memory.clone())
     }
 
-    pub async fn arg_into_mem_item<'a>(
+    pub async fn execute_expr<'a>(
         &self,
         init: &Expr,
         memory: &mut ProgramMemory,
@@ -1814,8 +1875,8 @@ impl ExecutorContext {
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
         let item = match init {
-            Expr::None(none) => none.into(),
-            Expr::Literal(literal) => literal.into(),
+            Expr::None(none) => KclValue::from(none),
+            Expr::Literal(literal) => KclValue::from(literal),
             Expr::TagDeclarator(tag) => tag.execute(memory).await?,
             Expr::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
@@ -2042,6 +2103,15 @@ mod tests {
         let memory = ctx.run(&program, None).await?;
 
         Ok(memory)
+    }
+
+    /// Convenience function to get a JSON value from memory and unwrap.
+    fn mem_get_json(memory: &ProgramMemory, name: &str) -> serde_json::Value {
+        memory
+            .get(name, SourceRange::default())
+            .unwrap()
+            .get_json_value()
+            .unwrap()
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2351,6 +2421,29 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // https://github.com/KittyCAD/modeling-app/issues/3338
+    async fn test_object_member_starting_pipeline() {
+        let ast = r#"
+fn test2 = () => {
+  return {
+    thing: startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, 1], %)
+      |> line([1, 0], %)
+      |> line([0, -1], %)
+      |> close(%)
+  }
+}
+
+const x2 = test2()
+
+x2.thing
+  |> extrude(10, %)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -2689,6 +2782,172 @@ const bracket = startSketchOn('XY')
   |> line([-leg2 + thickness(), 0], %)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_succeeds() {
+        let ast = r#"
+fn returnTrue = () => { return !false }
+const t = true
+const f = false
+let notTrue = !t
+let notFalse = !f
+let c = !!true
+let d = !returnTrue()
+
+assert(!false, "expected to pass")
+
+fn check = (x) => {
+  assert(!x, "expected argument to be false")
+  return true
+}
+check(false)
+"#;
+        let mem = parse_execute(ast).await.unwrap();
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_on_non_bool_fails() {
+        let code1 = r#"
+// Yup, this is null.
+let myNull = 0 / 0
+let notNull = !myNull
+"#;
+        assert_eq!(
+            parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: null".to_owned(),
+                source_ranges: vec![SourceRange([56, 63])],
+            })
+        );
+
+        let code2 = "let notZero = !0";
+        assert_eq!(
+            parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 0".to_owned(),
+                source_ranges: vec![SourceRange([14, 16])],
+            })
+        );
+
+        let code3 = r#"
+let notEmptyString = !""
+"#;
+        assert_eq!(
+            parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: \"\"".to_owned(),
+                source_ranges: vec![SourceRange([22, 25])],
+            })
+        );
+
+        let code4 = r#"
+let obj = { a: 1 }
+let notMember = !obj.a
+"#;
+        assert_eq!(
+            parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 1".to_owned(),
+                source_ranges: vec![SourceRange([36, 42])],
+            })
+        );
+
+        let code5 = "
+let a = []
+let notArray = !a";
+        assert_eq!(
+            parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: []".to_owned(),
+                source_ranges: vec![SourceRange([27, 29])],
+            })
+        );
+
+        let code6 = "
+let x = {}
+let notObject = !x";
+        assert_eq!(
+            parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: {}".to_owned(),
+                source_ranges: vec![SourceRange([28, 30])],
+            })
+        );
+
+        let code7 = "
+fn x = () => { return 1 }
+let notFunction = !x";
+        let fn_err = parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            fn_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: "),
+            "Actual error: {:?}",
+            fn_err
+        );
+
+        let code8 = "
+let myTagDeclarator = $myTag
+let notTagDeclarator = !myTagDeclarator";
+        let tag_declarator_err = parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            tag_declarator_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","),
+            "Actual error: {:?}",
+            tag_declarator_err
+        );
+
+        let code9 = "
+let myTagDeclarator = $myTag
+let notTagIdentifier = !myTag";
+        let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            tag_identifier_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","),
+            "Actual error: {:?}",
+            tag_identifier_err
+        );
+
+        let code10 = "let notPipe = !(1 |> 2)";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token: !".to_owned(),
+                source_ranges: vec![SourceRange([14, 15])],
+            })
+        );
+
+        let code11 = "
+fn identity = (x) => { return x }
+let notPipeSub = 1 |> identity(!%))";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token: |>".to_owned(),
+                source_ranges: vec![SourceRange([54, 56])],
+            })
+        );
+
+        // TODO: Add these tests when we support these types.
+        // let notNan = !NaN
+        // let notInfinity = !Infinity
     }
 
     #[tokio::test(flavor = "multi_thread")]

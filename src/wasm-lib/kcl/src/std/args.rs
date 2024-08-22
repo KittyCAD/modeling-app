@@ -1,9 +1,9 @@
 use std::any::type_name;
 
+use anyhow::Result;
 use kittycad::types::OkWebSocketResponseData;
 use serde::de::DeserializeOwned;
 
-use super::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg};
 use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
@@ -11,6 +11,7 @@ use crate::{
         DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata,
         ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
+    std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
 };
 
 #[derive(Debug, Clone)]
@@ -37,6 +38,25 @@ impl Args {
             current_program_memory,
             dynamic_state,
         }
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn new_test_args() -> Result<Self> {
+        use std::sync::Arc;
+
+        Ok(Self {
+            args: Vec::new(),
+            source_range: SourceRange::default(),
+            ctx: ExecutorContext {
+                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
+                fs: Arc::new(crate::fs::FileManager::new()),
+                stdlib: Arc::new(crate::std::StdLib::new()),
+                settings: Default::default(),
+                is_mock: true,
+            },
+            current_program_memory: ProgramMemory::default(),
+            dynamic_state: DynamicState::default(),
+        })
     }
 
     // Add a modeling command to the batch but don't fire it right away.
@@ -251,11 +271,11 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_sketch_groups(&self) -> Result<(SketchGroupSet, SketchGroup), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
+    pub(crate) fn get_sketch_group(&self) -> Result<SketchGroup, KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -270,9 +290,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_group_and_optional_tag(
-        &self,
-    ) -> Result<(Box<SketchGroup>, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_group_and_optional_tag(&self) -> Result<(SketchGroup, Option<TagDeclarator>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -283,7 +301,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, Box<SketchGroup>), KclError>
+    pub(crate) fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, SketchGroup), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
@@ -299,7 +317,7 @@ impl Args {
 
     pub(crate) fn get_data_and_sketch_group_and_tag<'a, T>(
         &'a self,
-    ) -> Result<(T, Box<SketchGroup>, Option<TagDeclarator>), KclError>
+    ) -> Result<(T, SketchGroup, Option<TagDeclarator>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -338,7 +356,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, Box<SketchGroup>), KclError> {
+    pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, SketchGroup), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -460,8 +478,9 @@ where
         let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Argument at index {i} was supposed to be type {} but wasn't",
+                    "Argument at index {i} was supposed to be type {} but found {}",
                     type_name::<T>(),
+                    arg.human_friendly_type()
                 ),
                 source_ranges: vec![args.source_range],
             }));
@@ -479,8 +498,9 @@ where
         let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Argument at index {i} was supposed to be type {} but wasn't",
-                    type_name::<T>()
+                    "Argument at index {i} was supposed to be type {} but found {}",
+                    type_name::<T>(),
+                    arg.human_friendly_type()
                 ),
                 source_ranges: vec![args.source_range],
             }));
@@ -548,15 +568,6 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a SketchGroup {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::SketchGroup(s) = arg else {
-            return None;
-        };
-        Some(s.as_ref())
-    }
-}
-
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for $typ {
@@ -606,6 +617,7 @@ impl_from_arg_via_json!(super::revolve::RevolveData);
 impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
+impl_from_arg_via_json!(SketchGroup);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(u32);
@@ -616,21 +628,16 @@ impl_from_arg_via_json!(bool);
 impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
 
-impl<'a> FromKclValue<'a> for &'a Box<SketchGroup> {
+impl<'a> FromKclValue<'a> for SketchGroupSet {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::SketchGroup(s) = arg else {
+        let KclValue::UserVal(uv) = arg else {
             return None;
         };
-        Some(s)
-    }
-}
-
-impl<'a> FromKclValue<'a> for Box<SketchGroup> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::SketchGroup(s) = arg else {
-            return None;
-        };
-        Some(s.to_owned())
+        if let Some((x, _meta)) = uv.get::<SketchGroup>() {
+            Some(SketchGroupSet::from(x))
+        } else {
+            uv.get::<Vec<SketchGroup>>().map(|x| x.0).map(SketchGroupSet::from)
+        }
     }
 }
 
@@ -654,15 +661,16 @@ impl<'a> FromKclValue<'a> for ExtrudeGroupSet {
         arg.get_extrude_group_set().ok()
     }
 }
-impl<'a> FromKclValue<'a> for SketchGroupSet {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.get_sketch_group_set().ok()
-    }
-}
 impl<'a> FromKclValue<'a> for SketchSurfaceOrGroup {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::SketchGroup(sg) => Some(Self::SketchGroup(sg.clone())),
+            KclValue::UserVal(uv) => {
+                if let Some((sg, _meta)) = uv.get() {
+                    Some(Self::SketchGroup(sg))
+                } else {
+                    None
+                }
+            }
             KclValue::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
             KclValue::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
             _ => None,

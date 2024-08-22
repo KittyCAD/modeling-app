@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  SketchGroup,
+  sketchGroupFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -563,6 +563,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
     elements,
   }
 }
@@ -980,7 +981,11 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
+          const sketchToPreserve = sketchGroupFromKclValue(
+            programMemory.get(sketchName),
+            sketchName
+          )
+          if (err(sketchToPreserve)) return sketchToPreserve
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict

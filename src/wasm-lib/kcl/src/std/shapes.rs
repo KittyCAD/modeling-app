@@ -27,7 +27,7 @@ pub async fn circle(args: Args) -> Result<KclValue, KclError> {
         args.get_circle_args()?;
 
     let sketch_group = inner_circle(center, radius, sketch_surface_or_group, tag, args).await?;
-    Ok(KclValue::SketchGroup(sketch_group))
+    Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
 /// Construct a 2-dimensional circle, of the specified radius, centered at
@@ -50,6 +50,7 @@ pub async fn circle(args: Args) -> Result<KclValue, KclError> {
 ///   |> hole(circle([0, 15], 5, %), %)
 ///
 /// const example = extrude(5, exampleSketch)
+/// ```
 #[stdlib {
     name = "circle",
 }]
@@ -59,7 +60,7 @@ async fn inner_circle(
     sketch_surface_or_group: SketchSurfaceOrGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let sketch_surface = match sketch_surface_or_group {
         SketchSurfaceOrGroup::SketchSurface(surface) => surface,
         SketchSurfaceOrGroup::SketchGroup(group) => group.on,

@@ -25,5 +25,5 @@ once fixed in engine will just start working here with no language changes.
 
     Sketching on the chamfered face does not currently work.
 
-- **Shell**: Shell is only working for `end` faces, not for `side` or `start` 
-    faces. We are tracking the engine side bug on this.
+- **Shell**: Shell sometimes does not work when arcs or fillets are involved.
+    We are tracking the engine side bug on this.

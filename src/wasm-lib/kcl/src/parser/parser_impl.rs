@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{collections::HashMap, str::FromStr};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
@@ -448,14 +448,91 @@ fn equals(i: TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
+#[allow(clippy::large_enum_variant)]
+pub enum NonCodeOr<T> {
+    NonCode(NonCodeNode),
+    Code(T),
+}
+
 /// Parse a KCL array of elements.
 fn array(i: TokenSlice) -> PResult<ArrayExpression> {
+    alt((array_empty, array_elem_by_elem, array_end_start)).parse_next(i)
+}
+
+/// Match an empty array.
+fn array_empty(i: TokenSlice) -> PResult<ArrayExpression> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let elements = alt((integer_range, separated(0.., expression, comma_sep)))
-        .context(expected(
-            "array contents, either a numeric range (like 0..10) or a list of elements (like [1, 2, 3])",
-        ))
+    let end = close_bracket(i)?.end;
+    Ok(ArrayExpression {
+        start,
+        end,
+        elements: Default::default(),
+        non_code_meta: Default::default(),
+        digest: None,
+    })
+}
+
+/// Match something that separates elements of an array.
+fn array_separator(i: TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the array is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_bracket)).void(),
+    ))
+    .parse_next(i)
+}
+
+pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
+    let start = open_bracket(i)?.start;
+    ignore_whitespace(i);
+    let elements: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(expression.map(NonCodeOr::Code), array_separator),
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+        )),
+    )
+    .context(expected("array contents, a list of elements (like [1, 2, 3])"))
+    .parse_next(i)?;
+    ignore_whitespace(i);
+    let end = close_bracket(i)?.end;
+
+    // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
+    let (elements, non_code_nodes): (Vec<_>, HashMap<usize, _>) = elements.into_iter().enumerate().fold(
+        (Vec::new(), HashMap::new()),
+        |(mut elements, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    elements.push(x);
+                }
+            }
+            (elements, non_code_nodes)
+        },
+    );
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        start: Vec::new(),
+        digest: None,
+    };
+    Ok(ArrayExpression {
+        start,
+        end,
+        elements,
+        non_code_meta,
+        digest: None,
+    })
+}
+
+fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
+    let start = open_bracket(i)?.start;
+    ignore_whitespace(i);
+    let elements = integer_range
+        .context(expected("array contents, a numeric range (like 0..10)"))
         .parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
@@ -463,6 +540,7 @@ fn array(i: TokenSlice) -> PResult<ArrayExpression> {
         start,
         end,
         elements,
+        non_code_meta: Default::default(),
         digest: None,
     })
 }
@@ -1136,11 +1214,11 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
-            // TODO: negation. Original parser doesn't support `not` yet.
             TokenType::Operator => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
                 message: format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
             })),
+            TokenType::Bang => Ok((UnaryOperator::Not, token)),
             other => Err(KclError::Syntax(KclErrorDetails { source_ranges: token.as_source_ranges(), message: format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) })),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
@@ -1594,7 +1672,7 @@ mod tests {
         let tokens = crate::token::lexer("|").unwrap();
         let err: KclError = program.parse(&tokens).unwrap_err().into();
         assert_eq!(err.source_ranges(), vec![SourceRange([0, 1])]);
-        assert_eq!(err.message(), "Unexpected token");
+        assert_eq!(err.message(), "Unexpected token: |");
     }
 
     #[test]
@@ -2426,7 +2504,8 @@ const mySk1 = startSketchAt([0, 0])"#;
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        let actual = result.err().unwrap().to_string();
+        assert!(actual.contains("Unexpected token: |"), "actual={actual:?}");
     }
 
     #[test]
@@ -2523,7 +2602,7 @@ const secondExtrude = startSketchOn('XY')
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        assert!(result.err().unwrap().to_string().contains("Unexpected token: |"));
     }
 
     #[test]
@@ -2533,7 +2612,7 @@ const secondExtrude = startSketchOn('XY')
         let err = parser.ast().unwrap_err();
         assert_eq!(
             err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "Unexpected token: >" }"#
         );
     }
 
@@ -2545,7 +2624,7 @@ const secondExtrude = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "Unexpected token: %" }"#
         );
     }
 
@@ -2600,7 +2679,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4])], message: "Unexpected token: (" }"#
         );
     }
 
@@ -2612,7 +2691,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3])], message: "Unexpected token: (" }"#
         );
     }
 
@@ -2657,7 +2736,8 @@ e
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        let actual = result.err().unwrap().to_string();
+        assert!(actual.contains("Unexpected token: +"), "actual={actual:?}");
     }
 
     #[test]
@@ -2777,6 +2857,7 @@ e
                     init: Expr::ArrayExpression(Box::new(ArrayExpression {
                         start: 16,
                         end: 23,
+                        non_code_meta: Default::default(),
                         elements: vec![
                             Expr::Literal(Box::new(Literal {
                                 start: 17,
@@ -2955,6 +3036,45 @@ e
     }
 
     #[test]
+    fn array() {
+        let program = r#"[1, 2, 3]"#;
+        let tokens = crate::token::lexer(program).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _arr = array_elem_by_elem(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn array_linesep_trailing_comma() {
+        let program = r#"[
+            1,
+            2,
+            3,
+        ]"#;
+        let tokens = crate::token::lexer(program).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _arr = array_elem_by_elem(&mut sl).unwrap();
+    }
+
+    #[allow(unused)]
+    fn print_tokens(tokens: &[Token]) {
+        for (i, tok) in tokens.iter().enumerate() {
+            println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
+        }
+    }
+
+    #[test]
+    fn array_linesep_no_trailing_comma() {
+        let program = r#"[
+            1,
+            2,
+            3
+        ]"#;
+        let tokens = crate::token::lexer(program).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _arr = array_elem_by_elem(&mut sl).unwrap();
+    }
+
+    #[test]
     fn test_keyword_ok_in_fn_args_return() {
         let some_program_string = r#"fn thing = (param) => {
     return true
@@ -3006,7 +3126,7 @@ thing(false)
         // It should say that the compiler is expecting a function expression on the RHS.
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18])], message: "Unexpected token: \"thing\"" }"#
         );
     }
 
@@ -3143,7 +3263,11 @@ mod snapshot_tests {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
                 };
-                insta::assert_json_snapshot!(actual);
+                let mut settings = insta::Settings::clone_current();
+                settings.set_sort_maps(true);
+                settings.bind(|| {
+                    insta::assert_json_snapshot!(actual);
+                });
             }
         };
     }
@@ -3262,4 +3386,22 @@ mod snapshot_tests {
     snapshot_test!(at, "line([0, l], %)");
     snapshot_test!(au, include_str!("../../../tests/executor/inputs/cylinder.kcl"));
     snapshot_test!(av, "fn f = (angle?) => { return default(angle, 360) }");
+    snapshot_test!(
+        aw,
+        "let numbers = [
+            1,
+            // A,
+            // B,
+            3,
+        ]"
+    );
+    snapshot_test!(
+        ax,
+        "let numbers = [
+            1,
+            2,
+            // A,
+            // B,
+        ]"
+    );
 }

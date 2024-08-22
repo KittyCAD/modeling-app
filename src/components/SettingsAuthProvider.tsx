@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
@@ -21,7 +21,7 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
@@ -96,6 +96,7 @@ export const SettingsAuthProviderBase = ({
   loadedSettings: typeof settings
   loadedProject?: IndexLoaderData
 }) => {
+  const location = useLocation()
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
 
@@ -301,7 +302,7 @@ export const SettingsAuthProviderBase = ({
         logout()
       },
       goToIndexPage: () => {
-        if (window.location.pathname.includes(PATHS.SIGN_IN)) {
+        if (location.pathname.includes(PATHS.SIGN_IN)) {
           navigate(PATHS.INDEX)
         }
       },
@@ -341,7 +342,7 @@ export default SettingsAuthProvider
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   return (
-    !isTauri() &&
+    !isDesktop() &&
     fetch(withBaseUrl('/logout'), {
       method: 'POST',
       credentials: 'include',

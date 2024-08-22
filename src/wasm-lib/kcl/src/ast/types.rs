@@ -23,7 +23,7 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SourceRange,
+        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SketchGroup, SourceRange,
         StatementKind, TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
@@ -1149,6 +1149,15 @@ pub enum NonCodeValue {
     NewLine,
 }
 
+impl NonCodeValue {
+    fn should_cause_array_newline(&self) -> bool {
+        match self {
+            Self::InlineComment { .. } => false,
+            Self::Shebang { .. } | Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1158,6 +1167,18 @@ pub struct NonCodeMeta {
     pub start: Vec<NonCodeNode>,
 
     pub digest: Option<Digest>,
+}
+
+impl NonCodeMeta {
+    /// Does this contain anything?
+    pub fn is_empty(&self) -> bool {
+        self.non_code_nodes.is_empty() && self.start.is_empty()
+    }
+
+    /// How many non-code values does this have?
+    pub fn non_code_nodes_len(&self) -> usize {
+        self.non_code_nodes.values().map(|x| x.len()).sum()
+    }
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1332,7 +1353,7 @@ impl CallExpression {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
             let result = ctx
-                .arg_into_mem_item(
+                .execute_expr(
                     arg,
                     memory,
                     dynamic_state,
@@ -1356,10 +1377,13 @@ impl CallExpression {
                 // TODO: This could probably be done in a better way, but as of now this was my only idea
                 // and it works.
                 match result {
-                    KclValue::SketchGroup(ref sketch_group) => {
-                        for (_, tag) in sketch_group.tags.iter() {
-                            memory.update_tag(&tag.value, tag.clone())?;
-                        }
+                    KclValue::UserVal(ref mut uval) => {
+                        uval.mutate(|sketch_group: &mut SketchGroup| {
+                            for (_, tag) in sketch_group.tags.iter() {
+                                memory.update_tag(&tag.value, tag.clone())?;
+                            }
+                            Ok::<_, KclError>(())
+                        })?;
                     }
                     KclValue::ExtrudeGroup(ref mut extrude_group) => {
                         for value in &extrude_group.value {
@@ -2224,11 +2248,13 @@ impl From<PipeSubstitution> for Expr {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Expr>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
 }
@@ -2247,6 +2273,7 @@ impl ArrayExpression {
             start: 0,
             end: 0,
             elements,
+            non_code_meta: Default::default(),
             digest: None,
         }
     }
@@ -2280,38 +2307,70 @@ impl ArrayExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
-        let flat_recast = format!(
-            "[{}]",
-            self.elements
-                .iter()
-                .map(|el| el.recast(options, 0, false))
-                .collect::<Vec<String>>()
-                .join(", ")
-        );
-        let max_array_length = 40;
-        if flat_recast.len() > max_array_length {
-            let inner_indentation = if is_in_pipe {
-                options.get_indentation_offset_pipe(indentation_level + 1)
-            } else {
-                options.get_indentation(indentation_level + 1)
-            };
-            format!(
-                "[\n{}{}\n{}]",
-                inner_indentation,
-                self.elements
-                    .iter()
-                    .map(|el| el.recast(options, indentation_level, is_in_pipe))
-                    .collect::<Vec<String>>()
-                    .join(format!(",\n{}", inner_indentation).as_str()),
-                if is_in_pipe {
-                    options.get_indentation_offset_pipe(indentation_level)
+        // Reconstruct the order of items in the array.
+        // An item can be an element (i.e. an expression for a KCL value),
+        // or a non-code item (e.g. a comment)
+        let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
+        let mut elems = self.elements.iter();
+        let mut found_line_comment = false;
+        let mut format_items: Vec<_> = (0..num_items)
+            .flat_map(|i| {
+                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                    noncode
+                        .iter()
+                        .map(|nc| {
+                            found_line_comment |= nc.value.should_cause_array_newline();
+                            nc.format("")
+                        })
+                        .collect::<Vec<_>>()
                 } else {
-                    options.get_indentation(indentation_level)
-                },
-            )
-        } else {
-            flat_recast
+                    let el = elems.next().unwrap();
+                    let s = format!("{}, ", el.recast(options, 0, false));
+                    vec![s]
+                }
+            })
+            .collect();
+
+        // Format these items into a one-line array.
+        if let Some(item) = format_items.last_mut() {
+            if let Some(norm) = item.strip_suffix(", ") {
+                *item = norm.to_owned();
+            }
         }
+        let format_items = format_items; // Remove mutability
+        let flat_recast = format!("[{}]", format_items.join(""));
+
+        // We might keep the one-line representation, if it's short enough.
+        let max_array_length = 40;
+        let multi_line = flat_recast.len() > max_array_length || found_line_comment;
+        if !multi_line {
+            return flat_recast;
+        }
+
+        // Otherwise, we format a multi-line representation.
+        let inner_indentation = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level + 1)
+        } else {
+            options.get_indentation(indentation_level + 1)
+        };
+        let formatted_array_lines = format_items
+            .iter()
+            .map(|s| {
+                format!(
+                    "{inner_indentation}{}{}",
+                    if let Some(x) = s.strip_suffix(" ") { x } else { s },
+                    if s.ends_with('\n') { "" } else { "\n" }
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("")
+            .to_owned();
+        let end_indent = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level)
+        } else {
+            options.get_indentation(indentation_level)
+        };
+        format!("[\n{formatted_array_lines}{end_indent}]")
     }
 
     /// Returns a hover value that includes the given character position.
@@ -2977,7 +3036,7 @@ impl MemberExpression {
                 source_ranges: vec![self.clone().into()],
             })),
             (being_indexed, _) => {
-                let t = human_friendly_type(being_indexed);
+                let t = human_friendly_type(&being_indexed);
                 Err(KclError::Semantic(KclErrorDetails {
                     message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
                     source_ranges: vec![self.clone().into()],
@@ -3196,6 +3255,18 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
+/// JSON value as bool.  If it isn't a bool, returns None.
+pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
+    match j {
+        JValue::Null => None,
+        JValue::Bool(b) => Some(*b),
+        JValue::Number(_) => None,
+        JValue::String(_) => None,
+        JValue::Array(_) => None,
+        JValue::Object(_) => None,
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -3336,6 +3407,27 @@ impl UnaryExpression {
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
+        if self.operator == UnaryOperator::Not {
+            let value = self
+                .argument
+                .get_result(memory, dynamic_state, pipe_info, ctx)
+                .await?
+                .get_json_value()?;
+            let Some(bool_value) = json_as_bool(&value) else {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot apply unary operator ! to non-boolean value: {}", value),
+                    source_ranges: vec![self.into()],
+                }));
+            };
+            let negated = !bool_value;
+            return Ok(KclValue::UserVal(UserVal {
+                value: serde_json::Value::Bool(negated),
+                meta: vec![Metadata {
+                    source_range: self.into(),
+                }],
+            }));
+        }
+
         let num = parse_json_number_as_f64(
             &self
                 .argument
@@ -3549,7 +3641,7 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .arg_into_mem_item(
+        .execute_expr(
             first,
             memory,
             dynamic_state,
@@ -3565,26 +3657,39 @@ async fn execute_pipe_body(
     new_pipe_info.previous_results = Some(output);
     // Evaluate remaining elements.
     for expression in body {
-        let output = match expression {
-            Expr::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .get_result(memory, dynamic_state, &new_pipe_info, ctx)
-                    .await?
-            }
-            Expr::CallExpression(call_expression) => {
-                call_expression
-                    .execute(memory, dynamic_state, &new_pipe_info, ctx)
-                    .await?
-            }
-            Expr::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
-            _ => {
-                // Return an error this should not happen.
+        match expression {
+            Expr::TagDeclarator(_) => {
                 return Err(KclError::Semantic(KclErrorDetails {
                     message: format!("This cannot be in a PipeExpression: {:?}", expression),
                     source_ranges: vec![expression.into()],
                 }));
             }
+            Expr::Literal(_)
+            | Expr::Identifier(_)
+            | Expr::BinaryExpression(_)
+            | Expr::FunctionExpression(_)
+            | Expr::CallExpression(_)
+            | Expr::PipeExpression(_)
+            | Expr::PipeSubstitution(_)
+            | Expr::ArrayExpression(_)
+            | Expr::ObjectExpression(_)
+            | Expr::MemberExpression(_)
+            | Expr::UnaryExpression(_)
+            | Expr::None(_) => {}
         };
+        let metadata = Metadata {
+            source_range: SourceRange([expression.start(), expression.end()]),
+        };
+        let output = ctx
+            .execute_expr(
+                expression,
+                memory,
+                dynamic_state,
+                &new_pipe_info,
+                &metadata,
+                StatementKind::Expression,
+            )
+            .await?;
         new_pipe_info.previous_results = Some(output);
     }
     // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
@@ -4071,7 +4176,7 @@ impl ConstraintLevels {
     }
 }
 
-fn human_friendly_type(j: JValue) -> &'static str {
+pub(crate) fn human_friendly_type(j: &JValue) -> &'static str {
     match j {
         JValue::Null => "null",
         JValue::Bool(_) => "boolean (true/false value)",
@@ -5793,6 +5898,103 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
     }
 
     #[test]
+    fn recast_array_with_comments() {
+        use winnow::Parser;
+        for (i, (input, expected, reason)) in [
+            (
+                "\
+[
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+]",
+                "\
+[
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+]",
+                "preserves multi-line arrays",
+            ),
+            (
+                "\
+[
+  1,
+  // 2,
+  3
+]",
+                "\
+[
+  1,
+  // 2,
+  3
+]",
+                "preserves comments",
+            ),
+            (
+                "\
+[
+  1,
+  2,
+  // 3
+]",
+                "\
+[
+  1,
+  2,
+  // 3
+]",
+                "preserves comments at the end of the array",
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let tokens = crate::token::lexer(input).unwrap();
+            let expr = crate::parser::parser_impl::array_elem_by_elem.parse(&tokens).unwrap();
+            assert_eq!(
+                expr.recast(&FormatOptions::new(), 0, false),
+                expected,
+                "failed test {i}, which is testing that recasting {reason}"
+            );
+        }
+    }
+
+    #[test]
     fn required_params() {
         for (i, (test_name, expected, function_expr)) in [
             (
@@ -5993,7 +6195,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token: |>" }"#
         );
     }
 

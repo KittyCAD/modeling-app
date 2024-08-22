@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import Tooltip from './Tooltip'
 import { machineManager } from 'lib/machineManager'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { CustomIcon } from './CustomIcon'
 
 export const NetworkMachineIndicator = ({
@@ -9,8 +9,10 @@ export const NetworkMachineIndicator = ({
 }: {
   className?: string
 }) => {
-  const machineCount = Object.keys(machineManager.machines).length
-  return isTauri() ? (
+  const machineCount = machineManager.machineCount()
+  const reason = machineManager.noMachinesReason()
+
+  return isDesktop() ? (
     <Popover className="relative">
       <Popover.Button
         className={
@@ -26,7 +28,7 @@ export const NetworkMachineIndicator = ({
           </p>
         )}
         <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
-          Network machines ({machineCount})
+          Network machines ({machineCount}) {reason && `: ${reason}`}
         </Tooltip>
       </Popover.Button>
       <Popover.Panel

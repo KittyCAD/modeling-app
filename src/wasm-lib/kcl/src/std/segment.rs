@@ -108,7 +108,7 @@ pub async fn last_segment_x(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "lastSegX",
 }]
-fn inner_last_segment_x(sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_last_segment_x(sketch_group: SketchGroup, args: Args) -> Result<f64, KclError> {
     let last_line = sketch_group
         .value
         .last()
@@ -151,7 +151,7 @@ pub async fn last_segment_y(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "lastSegY",
 }]
-fn inner_last_segment_y(sketch_group: Box<SketchGroup>, args: Args) -> Result<f64, KclError> {
+fn inner_last_segment_y(sketch_group: SketchGroup, args: Args) -> Result<f64, KclError> {
     let last_line = sketch_group
         .value
         .last()
@@ -281,7 +281,7 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<KclValue, KclError> {
 fn inner_angle_to_match_length_x(
     tag: &TagIdentifier,
     to: f64,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     args: Args,
 ) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(tag)?;
@@ -347,7 +347,7 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<KclValue, KclError> {
 fn inner_angle_to_match_length_y(
     tag: &TagIdentifier,
     to: f64,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     args: Args,
 ) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(tag)?;

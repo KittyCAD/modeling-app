@@ -2,6 +2,8 @@ import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
+export const IS_PLAYWRIGHT_KEY = 'playwright'
+
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS = {
   app: {

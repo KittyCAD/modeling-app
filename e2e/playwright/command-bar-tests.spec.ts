@@ -42,11 +42,11 @@ test.describe('Command bar tests', () => {
     await page.waitForTimeout(100)
 
     await page.getByRole('button', { name: 'Extrude' }).click()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     await page.keyboard.press('Enter')
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     await page.keyboard.press('Enter')
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(200)
     await expect(page.locator('.cm-activeLine')).toHaveText(
       `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
@@ -321,20 +321,18 @@ const extrude001 = extrude(distance001, sketch001)`.replace(
       name: 'rectangle',
     })
     const rectangleToolButton = page.getByRole('button', {
-      name: 'Corner rectangle',
-      exact: true,
+      name: 'rectangle Corner rectangle',
     })
     const lineToolCommand = page.getByRole('option', {
       name: 'Line',
     })
     const lineToolButton = page.getByRole('button', {
-      name: 'Line',
+      name: 'line Line',
       exact: true,
     })
     const arcToolCommand = page.getByRole('option', { name: 'Tangential Arc' })
     const arcToolButton = page.getByRole('button', {
-      name: 'Tangential Arc',
-      exact: true,
+      name: 'arc Tangential Arc',
     })
 
     // Start a sketch

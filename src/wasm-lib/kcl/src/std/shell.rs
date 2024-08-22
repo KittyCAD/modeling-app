@@ -50,6 +50,38 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 ///     thickness: 0.25,
 /// }, firstSketch)
 /// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('-XZ')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove the start face for the extrusion.
+/// shell({
+///     faces: ['start'],
+///     thickness: 0.25,
+/// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %, $myTag)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove a tagged face for the extrusion.
+/// shell({
+///     faces: [myTag],
+///     thickness: 0.25,
+/// }, firstSketch)
+/// ```
 #[stdlib {
     name = "shell",
 }]
