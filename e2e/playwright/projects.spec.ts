@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import {
   doExport,
   getUtils,
@@ -6,6 +6,7 @@ import {
   Paths,
   setupElectron,
   tearDown,
+  createProjectAndRenameIt,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -531,33 +532,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
+      await test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({ name, page })
       })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -627,33 +618,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
+      await test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({ name, page })
       })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -1252,18 +1233,13 @@ test(
 
     await page.getByText('mike_stress_test').click()
 
-    const modifier =
-      process.platform === 'win32' || process.platform === 'linux'
-        ? 'Control'
-        : 'Meta'
-
     await test.step('select all in code editor, check its length', async () => {
       await u.codeLocator.click()
       // expect u.codeLocator to have some text
       await expect(u.codeLocator).toContainText('line(')
-      await page.keyboard.down(modifier)
+      await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
-      await page.keyboard.up(modifier)
+      await page.keyboard.up('ControlOrMeta')
 
       // check the length of the selected text
       const selectedText = await page.evaluate(() => {
@@ -1279,9 +1255,9 @@ test(
     await test.step('delete all the text, select again and verify there are no characters left', async () => {
       await page.keyboard.press('Backspace')
 
-      await page.keyboard.down(modifier)
+      await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
-      await page.keyboard.up(modifier)
+      await page.keyboard.up('ControlOrMeta')
 
       // check the length of the selected text
       const selectedText = await page.evaluate(() => {
@@ -1777,3 +1753,47 @@ test.describe('Deleting files from the file pane', () => {
 
   test.fixme('TODO - when main.kcl does not exist', async () => {})
 })
+
+test(
+  'Original project name persist after onboarding',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const getAllProjects = () => page.getByTestId('project-link').all()
+    page.on('console', console.log)
+
+    await test.step('Should create and name a project called wrist brace', async () => {
+      await createProjectAndRenameIt({ name: 'wrist brace', page })
+    })
+
+    await test.step('Should go through onboarding', async () => {
+      await page.getByTestId('user-sidebar-toggle').click()
+      await page.getByTestId('user-settings').click()
+      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
+
+      const numberOfOnboardingSteps = 12
+      for (let clicks = 0; clicks < numberOfOnboardingSteps; clicks++) {
+        await page.getByTestId('onboarding-next').click()
+      }
+
+      await page.getByTestId('project-sidebar-toggle').click()
+    })
+
+    await test.step('Should go home after onboarding is completed', async () => {
+      await page.getByRole('button', { name: 'Go to Home' }).click()
+    })
+
+    await test.step('Should show the original project called wrist brace', async () => {
+      const projectNames = ['Tutorial Project 00', 'wrist brace']
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(projectNames[index])
+      }
+    })
+
+    await electronApp.close()
+  }
+)

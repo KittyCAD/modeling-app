@@ -9,7 +9,6 @@ import {
   test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import os from 'os'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
 import { join } from 'path'
@@ -27,6 +26,7 @@ import {
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { isArray } from 'lib/utils'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -77,11 +77,10 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.locator('.cm-content').click()
-  await page.keyboard.down(hotkey)
+  await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
-  await page.keyboard.up(hotkey)
+  await page.keyboard.up('ControlOrMeta')
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
@@ -209,7 +208,7 @@ export const wiggleMove = async (
 }
 
 export const circleMove = async (
-  page: any,
+  page: Page,
   x: number,
   y: number,
   steps: number,
@@ -582,7 +581,7 @@ const _makeTemplate = (
   templateParts: TemplateStringsArray,
   ...options: TemplateOptions
 ) => {
-  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  const length = Math.max(...options.map((a) => (isArray(a) ? a[0] : 0)))
   let reExpTemplate = ''
   for (let i = 0; i < length; i++) {
     const currentStr = templateParts.map((str, index) => {
@@ -590,7 +589,7 @@ const _makeTemplate = (
       return (
         escapeRegExp(str) +
         String(
-          Array.isArray(currentOptions)
+          isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
             ? currentOptions
@@ -744,11 +743,6 @@ export const doExport = async (
   }
 }
 
-/**
- * Gets the appropriate modifier key for the platform.
- */
-export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
-
 export async function tearDown(page: Page, testInfo: TestInfo) {
   if (testInfo.status === 'skipped') return
   if (testInfo.status === 'failed') return
@@ -891,4 +885,30 @@ export async function isOutOfViewInScrollContainer(
     )
 
   return isOutOfView
+}
+
+export async function createProjectAndRenameIt({
+  name,
+  page,
+}: {
+  name: string
+  page: Page
+}) {
+  await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page.getByText('Successfully created')).toBeVisible()
+  await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+  await expect(page.getByText(`project-000`)).toBeVisible()
+  await page.getByText(`project-000`).hover()
+  await page.getByText(`project-000`).focus()
+
+  await page.getByLabel('sketch').first().click()
+
+  await page.waitForTimeout(100)
+
+  // type the name passed in
+  await page.keyboard.press('Backspace')
+  await page.keyboard.type(name)
+
+  await page.getByLabel('checkmark').last().click()
 }

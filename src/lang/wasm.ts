@@ -338,13 +338,16 @@ export function sketchGroupFromKclValue(
   varName: string | null
 ): SketchGroup | Error {
   if (obj?.value?.type === 'SketchGroup') return obj.value
+  if (obj?.value?.type === 'ExtrudeGroup') return obj.value.sketchGroup
+  if (obj?.type === 'ExtrudeGroup') return obj.sketchGroup
   if (!varName) {
     varName = 'a KCL value'
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
+    console.log(obj)
     return new Error(
-      `Expected ${varName} to be a sketchGroup, but it was ${actualType} instead.`
+      `Expected ${varName} to be a sketchGroup or extrudeGroup, but it was ${actualType} instead.`
     )
   } else {
     return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)

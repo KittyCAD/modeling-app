@@ -1,4 +1,5 @@
 import { isDesktop } from 'lib/isDesktop'
+import { platform } from 'lib/utils'
 
 export type InteractionMapItem = {
   name: string
@@ -25,6 +26,11 @@ export const interactionMapCategories = [
 type InteractionMapCategory = (typeof interactionMapCategories)[number]
 
 /**
+ * Primary modifier key for the current platform.
+ */
+const PRIMARY = platform() === 'macos' ? 'Command' : 'Control'
+
+/**
  * A temporary implementation of the interaction map for
  * display purposes only.
  * @todo Implement a proper interaction map
@@ -38,7 +44,7 @@ export const interactionMap: Record<
   Settings: [
     {
       name: 'toggle-settings',
-      sequence: isDesktop() ? 'Meta+,' : 'Shift+Meta+,',
+      sequence: isDesktop() ? `${PRIMARY}+,` : `Shift+${PRIMARY}+,`,
       title: 'Toggle Settings',
       description: 'Opens the settings dialog. Always available.',
     },
@@ -53,7 +59,7 @@ export const interactionMap: Record<
   'Command Palette': [
     {
       name: 'toggle-command-palette',
-      sequence: 'Meta+K',
+      sequence: `${PRIMARY}+K`,
       title: 'Toggle Command Palette',
       description: 'Always available. Use Ctrl+/ on Windows/Linux.',
     },
@@ -159,7 +165,7 @@ export const interactionMap: Record<
     },
     {
       name: 'delete-file',
-      sequence: 'Meta+Backspace',
+      sequence: `${PRIMARY}+Backspace`,
       title: 'Delete File/Folder',
       description:
         'Available when a file or folder is selected in the file tree.',
