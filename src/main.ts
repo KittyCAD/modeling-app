@@ -8,6 +8,7 @@ import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
+import { updateElectronApp, UpdateSourceType } from 'update-electron-app'
 
 // If it's not set, scream.
 const NODE_ENV = process.env.NODE_ENV
@@ -156,5 +157,16 @@ ipcMain.handle('find_machine_api', () => {
         resolve(`${ip}:${port}`)
       }
     )
+  })
+})
+
+app.on('ready', () => {
+  const updaterBucketUrl =
+    'https://dl.zoo.dev/releases/modeling-app/test/electron'
+  updateElectronApp({
+    updateSource: {
+      type: UpdateSourceType.StaticStorage,
+      baseUrl: `${updaterBucketUrl}/${process.platform}/${process.arch}`
+    }
   })
 })
