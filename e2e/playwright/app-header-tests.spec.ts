@@ -22,13 +22,13 @@ test.describe('Electron app header tests', () => {
       let text
       switch (process.platform) {
         case 'darwin':
-          text = 'Commands⌘ K'
+          text = 'Commands⌘K'
           break
         case 'win32':
-          text = 'CommandsCtrl + K'
+          text = 'CommandsCtrl+K'
           break
         default: // 'linux' etc.
-          text = 'CommandsCtrl K'
+          text = 'CommandsCtrl+K'
           break
       }
       const commandsButton = page.getByRole('button', { name: 'Commands' })

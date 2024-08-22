@@ -47,9 +47,18 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
   const isMac = platform === 'macos'
   const isWindows = platform === 'windows'
   const meta = isWindows ? 'Win' : 'Meta'
-  const separator = isWindows ? ' + ' : ' '
+  const outputSeparator = isMac ? '' : '+'
   const display = hotkey
-    .replaceAll('+', separator)
+    // Capitalize letters.  We want Ctrl K, not Ctrl k, since Shift should be
+    // shown as a separate modifier.
+    .split('+')
+    .map((word) => {
+      if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
+        return word.toUpperCase()
+      }
+      return word
+    })
+    .join(outputSeparator)
     // Collapse multiple spaces into one.
     .replaceAll(WHITESPACE, ' ')
     .replaceAll('mod', isMac ? '⌘' : 'Ctrl')
@@ -63,16 +72,6 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
     // The correct arrow is ⇧ "UPWARDS WHITE ARROW" Unicode: U+21E7
     .replaceAll('shift', isMac ? '⬆' : 'Shift')
     .replaceAll('alt', isMac ? '⌥' : 'Alt')
-    // Capitalize letters.  We want Ctrl K, not Ctrl k, since Shift should be
-    // shown as a separate modifier.
-    .split(separator)
-    .map((word) => {
-      if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
-        return word.toUpperCase()
-      }
-      return word
-    })
-    .join(separator)
 
   return display
 }
