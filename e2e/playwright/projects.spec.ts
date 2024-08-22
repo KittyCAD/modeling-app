@@ -45,10 +45,6 @@ test(
   'click help/keybindings from project page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {

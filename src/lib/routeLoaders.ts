@@ -101,6 +101,7 @@ export const fileLoader: LoaderFunction = async (
       }
 
       code = await window.electron.readFile(currentFilePath)
+      code = normalizeLineEndings(code)
 
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
@@ -186,4 +187,8 @@ export const homeLoader: LoaderFunction = async (): Promise<
       projects: [],
     }
   }
+}
+
+const normalizeLineEndings = (str, normalized = '\n') => {
+  return str.replace(/\r?\n/g, normalized)
 }
