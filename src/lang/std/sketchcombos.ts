@@ -10,6 +10,7 @@ import {
   VariableDeclarator,
   PathToNode,
   ProgramMemory,
+  sketchGroupFromKclValue,
 } from '../wasm'
 import {
   getNodeFromPath,
@@ -1636,12 +1637,16 @@ export function transformAstSketchLines({
     })
 
     const varName = varDec.node.id.name
-    let sketchGroup = programMemory.get(varName)
-    if (sketchGroup?.type === 'ExtrudeGroup') {
-      sketchGroup = sketchGroup.sketchGroup
+    let kclVal = programMemory.get(varName)
+    let sketchGroup
+    if (kclVal?.type === 'ExtrudeGroup') {
+      sketchGroup = kclVal.sketchGroup
+    } else {
+      sketchGroup = sketchGroupFromKclValue(kclVal, varName)
+      if (err(sketchGroup)) {
+        return
+      }
     }
-    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
-      return new Error('not a sketch group')
     const segMeta = getSketchSegmentFromPathToNode(
       sketchGroup,
       ast,
