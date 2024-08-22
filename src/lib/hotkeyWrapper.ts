@@ -42,14 +42,19 @@ function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
 const LOWER_CASE_LETTER = /[a-z]/
 const WHITESPACE = /\s+/g
 
-// Convert hotkey to display text.
+/**
+ * Convert hotkey to display text.
+ *
+ * TODO: We should handle capitalized single letter hotkeys like K as Shift+K,
+ * but we don't.
+ */
 export function hotkeyDisplay(hotkey: string, platform: Platform): string {
   const isMac = platform === 'macos'
   const isWindows = platform === 'windows'
   const meta = isWindows ? 'Win' : 'Meta'
   const outputSeparator = isMac ? '' : '+'
   const display = hotkey
-    // Capitalize letters.  We want Ctrl K, not Ctrl k, since Shift should be
+    // Capitalize letters.  We want Ctrl+K, not Ctrl+k, since Shift should be
     // shown as a separate modifier.
     .split('+')
     .map((word) => {
@@ -66,8 +71,8 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
     // Note: This is *not* the ASCII caret character. It's "UP ARROWHEAD".
     // Unicode: U+2303.
     .replaceAll('ctrl', isMac ? '⌃' : 'Ctrl')
-    // Note: This is technically the wrong arrow for shift, but it's more
-    // visible and recognizable.  May want to change this in the future.
+    // This is technically the wrong arrow for shift, but it's more visible and
+    // recognizable.  May want to change this in the future.
     //
     // The correct arrow is ⇧ "UPWARDS WHITE ARROW" Unicode: U+21E7
     .replaceAll('shift', isMac ? '⬆' : 'Shift')
