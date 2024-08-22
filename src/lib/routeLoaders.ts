@@ -189,6 +189,6 @@ export const homeLoader: LoaderFunction = async (): Promise<
   }
 }
 
-const normalizeLineEndings = (str, normalized = '\n') => {
+const normalizeLineEndings = (str: string, normalized = '\n') => {
   return str.replace(/\r?\n/g, normalized)
 }
