@@ -10,11 +10,11 @@ import { Bonjour, Service } from 'bonjour-service'
 import * as kittycad from '@kittycad/lib/import'
 
 // If it's not set, scream.
-const NODE_ENV = process.env.NODE_ENV
-if (!NODE_ENV) {
-  console.error('*FOX SCREAM* process.env.NODE_ENV is not explicitly set!')
-  process.exit(1)
-}
+const NODE_ENV = process.env.NODE_ENV || 'production'
+if (!process.env.NODE_ENV)
+  console.warn(
+    '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
+  )
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -34,6 +34,7 @@ const createWindow = () => {
       sandbox: false, // expose nodejs in preload
       preload: path.join(__dirname, './preload.js'),
     },
+    icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
   })
 
   // and load the index.html of the app.

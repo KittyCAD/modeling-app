@@ -563,7 +563,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     digest: null,
-    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
+    nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
 }
@@ -577,7 +577,7 @@ export function createPipeExpression(
     end: 0,
     digest: null,
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
+    nonCodeMeta: nonCodeMetaEmpty(),
   }
 }
 
@@ -613,6 +613,7 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
@@ -1064,4 +1065,8 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+const nonCodeMetaEmpty = () => {
+  return { nonCodeNodes: {}, start: [], digest: null }
 }

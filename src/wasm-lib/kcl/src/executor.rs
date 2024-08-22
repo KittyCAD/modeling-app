@@ -2114,39 +2114,6 @@ mod tests {
             .unwrap()
     }
 
-    #[test]
-    fn how_does_sketchgroup_serialize() {
-        let sg = SketchGroup {
-            id: uuid::Uuid::new_v4(),
-            value: vec![],
-            on: SketchSurface::Plane(Box::new(Plane {
-                id: uuid::Uuid::new_v4(),
-                value: PlaneType::XY,
-                origin: Point3d::default(),
-                x_axis: Point3d::default(),
-                y_axis: Point3d::default(),
-                z_axis: Point3d::default(),
-                meta: Vec::new(),
-            })),
-            start: BasePath {
-                from: [0.0, 0.0],
-                to: [0.0, 0.0],
-                tag: None,
-                geo_meta: GeoMeta {
-                    id: uuid::Uuid::new_v4(),
-                    metadata: Metadata {
-                        source_range: SourceRange([0, 0]),
-                    },
-                },
-            },
-            tags: HashMap::new(),
-            original_id: uuid::Uuid::new_v4(),
-            meta: Vec::new(),
-        };
-        let jstr = serde_json::to_string_pretty(&sg).unwrap();
-        println!("{jstr}");
-    }
-
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_assign_two_variables() {
         let ast = r#"const myVar = 5
