@@ -770,13 +770,13 @@ const sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 const sketch002 = startSketchOn({
-       plane: {
-         origin: { x: 1, y: 2, z: 3 },
-         x_axis: { x: 4, y: 5, z: 6 },
-         y_axis: { x: 7, y: 8, z: 9 },
-         z_axis: { x: 10, y: 11, z: 12 }
-       }
-     })
+    plane: {
+      origin: { x: 1, y: 2, z: 3 },
+      x_axis: { x: 4, y: 5, z: 6 },
+      y_axis: { x: 7, y: 8, z: 9 },
+      z_axis: { x: 10, y: 11, z: 12 }
+    }
+  })
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
