@@ -759,10 +759,7 @@ export async function setup(context: BrowserContext, page: Page) {
       (coverageJSON: string) => {
         if (coverageJSON) {
           fs.writeFileSync(
-            join(
-              istanbulCLIOutput,
-              `playwright_coverage_${uuidv4()}.json`
-            ),
+            join(istanbulCLIOutput, `playwright_coverage_${uuidv4()}.json`),
             coverageJSON
           )
         }
