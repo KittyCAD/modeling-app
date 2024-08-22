@@ -334,8 +334,8 @@ test.describe('Testing settings', () => {
     const settingsCloseButton = await page.getByTestId('settings-close-button')
     await settingsCloseButton.click()
 
-    const commands = await page.getByRole('button', { name: 'Commands' })
     await test.step('Change modeling default unit within command bar', async () => {
+      const commands = await page.getByRole('button', { name: 'Commands' })
       const changeUnitOfMeasureInCommandBar = async (unitOfMeasure: string) => {
         // Open command bar
         await commands.click()
@@ -366,7 +366,6 @@ test.describe('Testing settings', () => {
     })
 
     await test.step('Change modeling default unit within gizmo', async () => {
-      // gizmo
       const changeUnitOfMeasureInGizmo = async (
         unitOfMeasure: string,
         copy: string
