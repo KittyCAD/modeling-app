@@ -28,18 +28,20 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      setupIcon: path.resolve(rootDir, 'assets', 'icon.ico'),
+    }),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({}),
-    {
-      name: '@electron-forge/maker-deb',
-        config: {
-          options: {
-            icon: path.resolve(rootDir, 'assets', 'icon'),
-          }
-      }
-    }
+    new MakerRpm({
+      options: {
+        icon: path.resolve(rootDir, 'assets', 'icon.png'),
+      },
+    }),
+    new MakerDeb({
+      options: {
+        icon: path.resolve(rootDir, 'assets', 'icon.png'),
+      },
+    }),
   ],
   plugins: [
     new VitePlugin({
