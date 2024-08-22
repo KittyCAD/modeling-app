@@ -27,6 +27,7 @@ import {
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { isArray } from 'lib/utils'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -582,7 +583,7 @@ const _makeTemplate = (
   templateParts: TemplateStringsArray,
   ...options: TemplateOptions
 ) => {
-  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  const length = Math.max(...options.map((a) => (isArray(a) ? a[0] : 0)))
   let reExpTemplate = ''
   for (let i = 0; i < length; i++) {
     const currentStr = templateParts.map((str, index) => {
@@ -590,7 +591,7 @@ const _makeTemplate = (
       return (
         escapeRegExp(str) +
         String(
-          Array.isArray(currentOptions)
+          isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
             ? currentOptions
