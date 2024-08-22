@@ -22,8 +22,6 @@ const config: ForgeConfig = {
       }) ||
       undefined,
     executableName: 'zoo-modeling-app',
-    // icon: 'app-icon.png',
-    // icon: path.resolve(rootDir, 'app-icon'),
     icon: path.resolve(rootDir, 'assets', 'icon'),
   },
   rebuildConfig: {},
