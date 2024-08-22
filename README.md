@@ -229,7 +229,7 @@ PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project=
 ```
 
 run a specific test change the test from `test('...` to `test.only('...`
-(note if you commit this, the tests will instantly fail without running any of the tests
+(note if you commit this, the tests will instantly fail without running any of the tests)
 
 
 **Gotcha**: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
