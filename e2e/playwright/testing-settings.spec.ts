@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
 import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import { join } from 'path'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
@@ -196,17 +203,14 @@ test.describe('Testing settings', () => {
     `Project settings override user settings on desktop`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          const bracketDir = join(dir, 'bracket')
+          await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           )
         },
       })

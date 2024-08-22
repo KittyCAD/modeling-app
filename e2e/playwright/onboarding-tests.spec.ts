@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
+import { join } from 'path'
 import fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import {
@@ -347,17 +354,14 @@ test(
   'Restarting onboarding on desktop takes one attempt',
   { tag: '@electron' },
   async ({ browser: _ }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        await fsp.mkdir(routerTemplateDir, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-          `${dir}/router-template-slate/main.kcl`
+          executorInputPath('router-template-slate.kcl'),
+          join(routerTemplateDir, 'main.kcl')
         )
       },
     })
