@@ -291,19 +291,21 @@ test.describe('Testing settings', () => {
     await test.step('Change modeling default unit within project tab', async () => {
       const changeUnitOfMeasureInProjectTab = async (unitOfMeasure: string) => {
         await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
-          await page.getByTestId('modeling-defaultUnit').selectOption(`${unitOfMeasure}`)
+          await page
+            .getByTestId('modeling-defaultUnit')
+            .selectOption(`${unitOfMeasure}`)
           const toastMessage = page.getByText(
             `Set default unit to "${unitOfMeasure}" for this project`
           )
           await expect(toastMessage).toBeVisible()
         })
       }
-      await changeUnitOfMeasureInProjectTab("in")
-      await changeUnitOfMeasureInProjectTab("ft")
-      await changeUnitOfMeasureInProjectTab("yd")
-      await changeUnitOfMeasureInProjectTab("mm")
-      await changeUnitOfMeasureInProjectTab("cm")
-      await changeUnitOfMeasureInProjectTab("m")
+      await changeUnitOfMeasureInProjectTab('in')
+      await changeUnitOfMeasureInProjectTab('ft')
+      await changeUnitOfMeasureInProjectTab('yd')
+      await changeUnitOfMeasureInProjectTab('mm')
+      await changeUnitOfMeasureInProjectTab('cm')
+      await changeUnitOfMeasureInProjectTab('m')
     })
 
     // Go to the user tab
@@ -311,39 +313,42 @@ test.describe('Testing settings', () => {
     await test.step('Change modeling default unit within user tab', async () => {
       const changeUnitOfMeasureInUserTab = async (unitOfMeasure: string) => {
         await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
-          await page.getByTestId('modeling-defaultUnit').selectOption(`${unitOfMeasure}`)
+          await page
+            .getByTestId('modeling-defaultUnit')
+            .selectOption(`${unitOfMeasure}`)
           const toastMessage = page.getByText(
             `Set default unit to "${unitOfMeasure}" as a user default`
           )
           await expect(toastMessage).toBeVisible()
         })
       }
-      await changeUnitOfMeasureInUserTab("in")
-      await changeUnitOfMeasureInUserTab("ft")
-      await changeUnitOfMeasureInUserTab("yd")
-      await changeUnitOfMeasureInUserTab("mm")
-      await changeUnitOfMeasureInUserTab("cm")
-      await changeUnitOfMeasureInUserTab("m")
+      await changeUnitOfMeasureInUserTab('in')
+      await changeUnitOfMeasureInUserTab('ft')
+      await changeUnitOfMeasureInUserTab('yd')
+      await changeUnitOfMeasureInUserTab('mm')
+      await changeUnitOfMeasureInUserTab('cm')
+      await changeUnitOfMeasureInUserTab('m')
     })
-
 
     // Close settings
     const settingsCloseButton = await page.getByTestId('settings-close-button')
     await settingsCloseButton.click()
 
-    const commands = await page.getByRole('button', {name:'Commands'})
+    const commands = await page.getByRole('button', { name: 'Commands' })
     await test.step('Change modeling default unit within command bar', async () => {
       const changeUnitOfMeasureInCommandBar = async (unitOfMeasure: string) => {
         // Open command bar
         await commands.click()
-        const settingsModelingDefaultUnitCommand = page.getByText('Settings · modeling · default unit')
+        const settingsModelingDefaultUnitCommand = page.getByText(
+          'Settings · modeling · default unit'
+        )
         await settingsModelingDefaultUnitCommand.click()
         const optionInput = await page.locator('#option-input')
         await optionInput.click()
 
         const commandOption = page.getByRole('option', {
           name: unitOfMeasure,
-          exact: true
+          exact: true,
         })
         await commandOption.click()
 
@@ -352,20 +357,28 @@ test.describe('Testing settings', () => {
         )
         await expect(toastMessage).toBeVisible()
       }
-      await changeUnitOfMeasureInCommandBar("in")
-      await changeUnitOfMeasureInCommandBar("ft")
-      await changeUnitOfMeasureInCommandBar("yd")
-      await changeUnitOfMeasureInCommandBar("mm")
-      await changeUnitOfMeasureInCommandBar("cm")
-      await changeUnitOfMeasureInCommandBar("m")
+      await changeUnitOfMeasureInCommandBar('in')
+      await changeUnitOfMeasureInCommandBar('ft')
+      await changeUnitOfMeasureInCommandBar('yd')
+      await changeUnitOfMeasureInCommandBar('mm')
+      await changeUnitOfMeasureInCommandBar('cm')
+      await changeUnitOfMeasureInCommandBar('m')
     })
 
     await test.step('Change modeling default unit within gizmo', async () => {
       // gizmo
-      const changeUnitOfMeasureInGizmo = async (unitOfMeasure: string, copy: string) => {
-        const gizmo = await page.getByRole('button', {name:'Current units are: '})
+      const changeUnitOfMeasureInGizmo = async (
+        unitOfMeasure: string,
+        copy: string
+      ) => {
+        const gizmo = await page.getByRole('button', {
+          name: 'Current units are: ',
+        })
         await gizmo.click()
-        const button = await page.getByRole('button', {name:copy, exact: true})
+        const button = await page.getByRole('button', {
+          name: copy,
+          exact: true,
+        })
         await button.click()
         const toastMessage = page.getByText(
           `Set default unit to "${unitOfMeasure}" for this project`
@@ -373,12 +386,12 @@ test.describe('Testing settings', () => {
         await expect(toastMessage).toBeVisible()
       }
 
-      await changeUnitOfMeasureInGizmo("in","Inches")
-      await changeUnitOfMeasureInGizmo("ft","Feet")
-      await changeUnitOfMeasureInGizmo("yd","Yards")
-      await changeUnitOfMeasureInGizmo("mm","Millimeters")
-      await changeUnitOfMeasureInGizmo("cm","Centimeters")
-      await changeUnitOfMeasureInGizmo("m","Meters")
+      await changeUnitOfMeasureInGizmo('in', 'Inches')
+      await changeUnitOfMeasureInGizmo('ft', 'Feet')
+      await changeUnitOfMeasureInGizmo('yd', 'Yards')
+      await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
+      await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
+      await changeUnitOfMeasureInGizmo('m', 'Meters')
     })
   })
 })
