@@ -1,9 +1,10 @@
 import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { useEffect } from 'react'
 import { codeManager } from './singletons'
+import { Platform } from './utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
-// With hotkeys inside the editor.
+// with hotkeys inside the editor.
 // This way we can have hotkeys defined in one place and not have to worry about
 // conflicting hotkeys, or them only being implemented for the app but not
 // inside the editor.
@@ -36,4 +37,42 @@ function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
     .replaceAll('ctrl', 'Ctrl')
     .replaceAll('shift', 'Shift')
     .replaceAll('alt', 'Alt')
+}
+
+const LOWER_CASE_LETTER = /[a-z]/
+const WHITESPACE = /\s+/g
+
+// Convert hotkey to display text.
+export function hotkeyDisplay(hotkey: string, platform: Platform): string {
+  const isMac = platform === 'macos'
+  const isWindows = platform === 'windows'
+  const meta = isWindows ? 'Win' : 'Meta'
+  const separator = isWindows ? ' + ' : ' '
+  const display = hotkey
+    .replaceAll('+', separator)
+    // Collapse multiple spaces into one.
+    .replaceAll(WHITESPACE, ' ')
+    .replaceAll('mod', isMac ? '⌘' : 'Ctrl')
+    .replaceAll('meta', isMac ? '⌘' : meta)
+    // Note: This is *not* the ASCII caret character. It's "UP ARROWHEAD".
+    // Unicode: U+2303.
+    .replaceAll('ctrl', isMac ? '⌃' : 'Ctrl')
+    // Note: This is technically the wrong arrow for shift, but it's more
+    // visible and recognizable.  May want to change this in the future.
+    //
+    // The correct arrow is ⇧ "UPWARDS WHITE ARROW" Unicode: U+21E7
+    .replaceAll('shift', isMac ? '⬆' : 'Shift')
+    .replaceAll('alt', isMac ? '⌥' : 'Alt')
+    // Capitalize letters.  We want Ctrl K, not Ctrl k, since Shift should be
+    // shown as a separate modifier.
+    .split(separator)
+    .map((word) => {
+      if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
+        return word.toUpperCase()
+      }
+      return word
+    })
+    .join(separator)
+
+  return display
 }
