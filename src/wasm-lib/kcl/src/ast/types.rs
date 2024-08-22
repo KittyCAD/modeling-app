@@ -570,12 +570,6 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
-/// Recast converts AST nodes back to source code.
-/// i.e. it "unparses" them.
-trait Recast {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String;
-}
-
 /// An expression can be evaluated to yield a single KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -597,28 +591,6 @@ pub enum Expr {
     None(KclNone),
 }
 
-impl Recast for Expr {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
-        match &self {
-            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
-            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
-            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
-            Expr::MemberExpression(mem_exp) => mem_exp.recast(),
-            Expr::Literal(literal) => literal.recast(),
-            Expr::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
-            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
-            Expr::Identifier(ident) => ident.name.to_string(),
-            Expr::TagDeclarator(tag) => tag.recast(),
-            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
-            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
-            Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
-            Expr::None(_) => {
-                unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
-            }
-        }
-    }
-}
-
 impl Expr {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
@@ -638,6 +610,26 @@ impl Expr {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
                 hasher.finalize().into()
+            }
+        }
+    }
+
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        match &self {
+            Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
+            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::MemberExpression(mem_exp) => mem_exp.recast(),
+            Expr::Literal(literal) => literal.recast(),
+            Expr::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
+            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::Identifier(ident) => ident.name.to_string(),
+            Expr::TagDeclarator(tag) => tag.recast(),
+            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
+            Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Expr::None(_) => {
+                unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
         }
     }
@@ -2275,83 +2267,6 @@ impl From<ArrayExpression> for Expr {
     }
 }
 
-fn recast_collection<'a, T>(
-    (open, close): (&str, &str),
-    code_len: usize,
-    mut elems: impl Iterator<Item = &'a T>,
-    non_code_meta: &NonCodeMeta,
-    options: &FormatOptions,
-    indentation_level: usize,
-    is_in_pipe: bool,
-) -> String
-where
-    T: Recast + 'a,
-{
-    // Reconstruct the order of items in the array.
-    // An item can be an element (i.e. an expression for a KCL value),
-    // or a non-code item (e.g. a comment)
-    let num_items = code_len + non_code_meta.non_code_nodes_len();
-    let mut found_line_comment = false;
-    let mut format_items: Vec<_> = (0..num_items)
-        .flat_map(|i| {
-            if let Some(noncode) = non_code_meta.non_code_nodes.get(&i) {
-                noncode
-                    .iter()
-                    .map(|nc| {
-                        found_line_comment |= nc.value.should_cause_array_newline();
-                        nc.format("")
-                    })
-                    .collect::<Vec<_>>()
-            } else {
-                let el = elems.next().unwrap();
-                let s = format!("{}, ", el.recast(options, 0, false));
-                vec![s]
-            }
-        })
-        .collect();
-
-    // Format these items into a one-line array.
-    if let Some(item) = format_items.last_mut() {
-        if let Some(norm) = item.strip_suffix(", ") {
-            *item = norm.to_owned();
-        }
-    }
-    let format_items = format_items; // Remove mutability
-    let flat_recast = format!("{open}{}{close}", format_items.join(""));
-
-    // We might keep the one-line representation, if it's short enough.
-    let max_array_length = 40;
-    let multi_line = flat_recast.len() > max_array_length || found_line_comment;
-    if !multi_line {
-        return flat_recast;
-    }
-
-    // Otherwise, we format a multi-line representation.
-    let inner_indentation = if is_in_pipe {
-        options.get_indentation_offset_pipe(indentation_level + 1)
-    } else {
-        options.get_indentation(indentation_level + 1)
-    };
-    let formatted_array_lines = format_items
-        .iter()
-        .map(|s| {
-            format!(
-                "{inner_indentation}{}{}",
-                if let Some(x) = s.strip_suffix(" ") { x } else { s },
-                if s.ends_with('\n') { "" } else { "\n" }
-            )
-        })
-        .collect::<Vec<String>>()
-        .join("")
-        .to_owned();
-    let end_indent = if is_in_pipe {
-        options.get_indentation_offset_pipe(indentation_level)
-    } else {
-        options.get_indentation(indentation_level)
-    };
-    format!("{}\n{formatted_array_lines}{end_indent}{}", open.trim(), close.trim())
-}
-
 impl ArrayExpression {
     pub fn new(elements: Vec<Expr>) -> Self {
         Self {
@@ -2392,15 +2307,70 @@ impl ArrayExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
-        recast_collection(
-            ("[", "]"),
-            self.elements.len(),
-            self.elements.iter(),
-            &self.non_code_meta,
-            options,
-            indentation_level,
-            is_in_pipe,
-        )
+        // Reconstruct the order of items in the array.
+        // An item can be an element (i.e. an expression for a KCL value),
+        // or a non-code item (e.g. a comment)
+        let num_items = self.elements.len() + self.non_code_meta.non_code_nodes_len();
+        let mut elems = self.elements.iter();
+        let mut found_line_comment = false;
+        let mut format_items: Vec<_> = (0..num_items)
+            .flat_map(|i| {
+                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                    noncode
+                        .iter()
+                        .map(|nc| {
+                            found_line_comment |= nc.value.should_cause_array_newline();
+                            nc.format("")
+                        })
+                        .collect::<Vec<_>>()
+                } else {
+                    let el = elems.next().unwrap();
+                    let s = format!("{}, ", el.recast(options, 0, false));
+                    vec![s]
+                }
+            })
+            .collect();
+
+        // Format these items into a one-line array.
+        if let Some(item) = format_items.last_mut() {
+            if let Some(norm) = item.strip_suffix(", ") {
+                *item = norm.to_owned();
+            }
+        }
+        let format_items = format_items; // Remove mutability
+        let flat_recast = format!("[{}]", format_items.join(""));
+
+        // We might keep the one-line representation, if it's short enough.
+        let max_array_length = 40;
+        let multi_line = flat_recast.len() > max_array_length || found_line_comment;
+        if !multi_line {
+            return flat_recast;
+        }
+
+        // Otherwise, we format a multi-line representation.
+        let inner_indentation = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level + 1)
+        } else {
+            options.get_indentation(indentation_level + 1)
+        };
+        let formatted_array_lines = format_items
+            .iter()
+            .map(|s| {
+                format!(
+                    "{inner_indentation}{}{}",
+                    if let Some(x) = s.strip_suffix(" ") { x } else { s },
+                    if s.ends_with('\n') { "" } else { "\n" }
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("")
+            .to_owned();
+        let end_indent = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level)
+        } else {
+            options.get_indentation(indentation_level)
+        };
+        format!("[\n{formatted_array_lines}{end_indent}]")
     }
 
     /// Returns a hover value that includes the given character position.
@@ -2547,14 +2517,71 @@ impl ObjectExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
-        recast_collection(
-            ("{ ", " }"),
-            self.properties.len(),
-            self.properties.iter(),
-            &self.non_code_meta,
-            options,
-            indentation_level,
-            is_in_pipe,
+        if self
+            .non_code_meta
+            .non_code_nodes
+            .values()
+            .any(|nc| nc.iter().any(|nc| nc.value.should_cause_array_newline()))
+        {
+            return self.recast_multi_line(options, indentation_level, is_in_pipe);
+        }
+        let flat_recast = format!(
+            "{{ {} }}",
+            self.properties
+                .iter()
+                .map(|prop| {
+                    format!(
+                        "{}: {}",
+                        prop.key.name,
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
+                    )
+                })
+                .collect::<Vec<String>>()
+                .join(", ")
+        );
+        let max_array_length = 40;
+        let needs_multiple_lines = flat_recast.len() > max_array_length;
+        if !needs_multiple_lines {
+            return flat_recast;
+        }
+        self.recast_multi_line(options, indentation_level, is_in_pipe)
+    }
+
+    /// Recast, but always outputs the object with newlines between each property.
+    fn recast_multi_line(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        let inner_indentation = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level + 1)
+        } else {
+            options.get_indentation(indentation_level + 1)
+        };
+        let num_items = self.properties.len() + self.non_code_meta.non_code_nodes_len();
+        let mut props = self.properties.iter();
+        let format_items: Vec<_> = (0..num_items)
+            .flat_map(|i| {
+                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                    noncode.iter().map(|nc| nc.format("")).collect::<Vec<_>>()
+                } else {
+                    let prop = props.next().unwrap();
+                    // Use a comma unless it's the last item
+                    let comma = if i == num_items - 1 { "" } else { ",\n" };
+                    let s = format!(
+                        "{}: {}{comma}",
+                        prop.key.name,
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
+                    );
+                    vec![s]
+                }
+            })
+            .collect();
+        dbg!(&format_items);
+        let end_indent = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level)
+        } else {
+            options.get_indentation(indentation_level)
+        };
+        format!(
+            "{{\n{inner_indentation}{}\n{end_indent}}}",
+            format_items.join(&inner_indentation),
         )
     }
 
@@ -2662,16 +2689,6 @@ pub struct ObjectProperty {
 }
 
 impl_value_meta!(ObjectProperty);
-
-impl Recast for ObjectProperty {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
-        format!(
-            "{}: {}",
-            self.key.name,
-            self.value.recast(options, indentation_level + 1, is_in_pipe).trim()
-        )
-    }
-}
 
 impl ObjectProperty {
     compute_digest!(|slf, hasher| {
