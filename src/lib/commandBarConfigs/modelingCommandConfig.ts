@@ -184,15 +184,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           machine.make_model.manufacturer ||
           'Unknown Machine',
         options: () => {
-          return Object.entries(machineManager.machines).map(
-            ([hostname, machine]) => ({
-              name: `${
-                machine.make_model.model || machine.make_model.manufacturer
-              }, ${hostname}`,
-              isCurrent: false,
-              value: machine as components['schemas']['MachineInfoResponse'],
-            })
-          )
+          return Object.entries(machineManager.machines).map((machine) => ({
+            name: `${
+              machine.make_model.model || machine.make_model.manufacturer
+            }, ${machineManager.machineApiIp}`,
+            isCurrent: false,
+            value: machine as components['schemas']['MachineInfoResponse'],
+          }))
         },
         defaultValue: () => {
           return Object.values(
