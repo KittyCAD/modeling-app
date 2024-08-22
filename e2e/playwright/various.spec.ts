@@ -1,13 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  doExport,
-  getUtils,
-  makeTemplate,
-  metaModifier,
-  setup,
-  tearDown,
-} from './test-utils'
+import { doExport, getUtils, makeTemplate, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -157,7 +150,7 @@ test('Paste should not work unless an input is focused', async ({
 
   // Paste without the code pane focused
   await codeEditorText.blur()
-  await page.keyboard.press(`${metaModifier}+KeyV`)
+  await page.keyboard.press('ControlOrMeta+KeyV')
 
   // Show that the paste didn't work but typing did
   await expect(codeEditorText).not.toContainText(pasteContent)
@@ -166,7 +159,7 @@ test('Paste should not work unless an input is focused', async ({
   // Paste with the code editor focused
   // Following this guidance: https://github.com/microsoft/playwright/issues/8114
   await codeEditorText.focus()
-  await page.keyboard.press(`${metaModifier}+KeyV`)
+  await page.keyboard.press('ControlOrMeta+KeyV')
   await expect(
     await page.evaluate(
       () => document.querySelector('.cm-content')?.textContent

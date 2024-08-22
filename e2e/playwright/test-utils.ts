@@ -9,7 +9,6 @@ import {
   test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import os from 'os'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
 import { join } from 'path'
@@ -744,11 +743,6 @@ export const doExport = async (
     outputType: output.type,
   }
 }
-
-/**
- * Gets the appropriate modifier key for the platform.
- */
-export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
 
 export async function tearDown(page: Page, testInfo: TestInfo) {
   if (testInfo.status === 'skipped') return

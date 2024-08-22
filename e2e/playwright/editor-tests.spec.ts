@@ -148,9 +148,7 @@ test.describe('Editor tests', () => {
     // Delete all the code.
     await page.locator('.cm-content').click()
     // Select all
-    await page.keyboard.press('Control+A')
-    await page.keyboard.press('Backspace')
-    await page.keyboard.press('Meta+A')
+    await page.keyboard.press('ControlOrMeta+A')
     await page.keyboard.press('Backspace')
 
     await expect(page.locator('.cm-content')).toHaveText(``)

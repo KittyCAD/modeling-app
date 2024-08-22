@@ -31,7 +31,7 @@ function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
   return hotkey
     .replaceAll('+', '-')
     .replaceAll(' ', '')
-    .replaceAll('mod', 'Meta')
+    .replaceAll('mod', 'Mod')
     .replaceAll('meta', 'Meta')
     .replaceAll('ctrl', 'Ctrl')
     .replaceAll('shift', 'Shift')
