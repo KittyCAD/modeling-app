@@ -6,6 +6,9 @@ import { MakerRpm } from '@electron-forge/maker-rpm'
 import { VitePlugin } from '@electron-forge/plugin-vite'
 import { FusesPlugin } from '@electron-forge/plugin-fuses'
 import { FuseV1Options, FuseVersion } from '@electron/fuses'
+import path from 'path'
+
+const rootDir = process.cwd()
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -19,6 +22,9 @@ const config: ForgeConfig = {
       }) ||
       undefined,
     executableName: 'zoo-modeling-app',
+    // icon: 'app-icon.png',
+    // icon: path.resolve(rootDir, 'app-icon'),
+    icon: path.resolve(rootDir, 'assets', 'icon'),
   },
   rebuildConfig: {},
   makers: [
@@ -26,6 +32,14 @@ const config: ForgeConfig = {
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),
+    {
+      name: '@electron-forge/maker-deb',
+        config: {
+          options: {
+            icon: path.resolve(rootDir, 'assets', 'icon'),
+          }
+      }
+    }
   ],
   plugins: [
     new VitePlugin({

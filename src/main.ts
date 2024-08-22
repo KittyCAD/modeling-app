@@ -34,6 +34,7 @@ const createWindow = () => {
       sandbox: false, // expose nodejs in preload
       preload: path.join(__dirname, './preload.js'),
     },
+    icon: path.resolve(process.cwd(), 'assets', 'icon'),
   })
 
   // and load the index.html of the app.
