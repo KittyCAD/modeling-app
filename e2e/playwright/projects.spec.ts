@@ -606,6 +606,46 @@ test(
 )
 
 test(
+  'Can load a file with CRLF line endings',
+  { tag: '@electron' },
+  async (_, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+
+        const file = await fsp.readFile(
+          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          'utf-8'
+        )
+        const fileWithCRLF = file.replace(/\n/g, '\r\n')
+        await fsp.writeFile(
+          `${dir}/router-template-slate/main.kcl`,
+          fileWithCRLF,
+          'utf-8'
+        )
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.getByText('router-template-slate').click()
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    await expect(u.codeLocator).toContainText('routerDiameter')
+    await expect(u.codeLocator).toContainText('templateGap')
+    await expect(u.codeLocator).toContainText('minClampingDistance')
+
+    await electronApp.close()
+  }
+)
+
+test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
