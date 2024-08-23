@@ -15,6 +15,7 @@ import {
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
+  TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
@@ -398,6 +399,23 @@ const getAppSettingsFilePath = async () => {
   }
   return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
 }
+const getTokenFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? testSettingsPath
+    : window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
+}
 
 const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
@@ -475,6 +493,24 @@ export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
+}
+
+export const readTokenFile = async () => {
+  let settingsPath = await getTokenFilePath()
+
+  if (window.electron.exists(settingsPath)) {
+    const token: string = await window.electron.readFile(settingsPath)
+    if (!token) return ''
+
+    return token
+  }
+  return ''
+}
+
+export const writeTokenFile = async (token: string) => {
+  const tokenFilePath = await getTokenFilePath()
+  if (err(token)) return Promise.reject(token)
+  return window.electron.writeFile(tokenFilePath, token)
 }
 
 let appStateStore: ProjectState | undefined = undefined

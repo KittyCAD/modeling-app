@@ -8,7 +8,11 @@ import {
   VITE_KC_SKIP_AUTH,
   DEV,
 } from 'env'
-import { getUser as getUserDesktop } from 'lib/desktop'
+import {
+  getUser as getUserDesktop,
+  readTokenFile,
+  writeTokenFile,
+} from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
@@ -85,6 +89,9 @@ export const authMachine = createMachine<UserContext, Events>(
         on: {
           'Log out': {
             target: 'loggedOut',
+            actions: () => {
+              if (isDesktop()) writeTokenFile('')
+            },
           },
         },
       },
@@ -97,6 +104,7 @@ export const authMachine = createMachine<UserContext, Events>(
               token: (_, event) => {
                 const token = event.token || ''
                 localStorage.setItem(TOKEN_PERSIST_KEY, token)
+                if (isDesktop()) writeTokenFile(token)
                 return token
               },
             }),
@@ -124,7 +132,11 @@ async function getUser(context: UserContext) {
     ? VITE_KC_DEV_TOKEN
     : context.token && context.token !== ''
     ? context.token
-    : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY)
+    : getCookie(COOKIE_NAME) ||
+      localStorage?.getItem(TOKEN_PERSIST_KEY) ||
+      isDesktop()
+    ? await readTokenFile()
+    : ''
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
