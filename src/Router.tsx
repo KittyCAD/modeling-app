@@ -190,7 +190,7 @@ function CoreDump() {
     () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
-  useHotkeyWrapper(['meta + shift + .'], () => {
+  useHotkeyWrapper(['mod + shift + .'], () => {
     toast.promise(
       coreDump(coreDumpManager, true),
       {

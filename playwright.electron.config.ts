@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -30,4 +30,24 @@ export default defineConfig({
     actionTimeout: 15_000,
     screenshot: 'only-on-failure',
   },
+  projects: [
+    {
+      name: 'Google Chrome',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome',
+        contextOptions: {
+          /* Chromium is the only one with these permission types */
+          permissions: ['clipboard-write', 'clipboard-read'],
+        },
+        launchOptions: {
+          ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+            ? {
+                executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+              }
+            : {}),
+        },
+      }, // or 'chrome-beta'
+    },
+  ],
 })

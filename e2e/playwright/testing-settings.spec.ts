@@ -72,7 +72,7 @@ test.describe('Testing settings', () => {
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
 
     // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('Meta+Shift+,')
+    await page.keyboard.press('ControlOrMeta+Shift+,')
 
     await expect(headingLocator).toBeVisible()
     await page.locator('#showDebugPanel').getByText('OffOn').click()
@@ -82,7 +82,7 @@ test.describe('Testing settings', () => {
     await test.step('Open settings with keyboard shortcut', async () => {
       await page.getByTestId('settings-close-button').click()
       await page.locator('.cm-content').click()
-      await page.keyboard.press('Meta+Shift+,')
+      await page.keyboard.press('ControlOrMeta+Shift+,')
       await expect(headingLocator).toBeVisible()
     })
 
@@ -259,6 +259,71 @@ test.describe('Testing settings', () => {
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
         await logoLink.click()
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  test(
+    `Closing settings modal should go back to the original file being viewed`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async () => {},
+      })
+
+      const {
+        panesOpen,
+        createAndSelectProject,
+        pasteCodeInEditor,
+        clickPane,
+        createNewFileAndSelect,
+        editorTextMatches,
+      } = await getUtils(page, test)
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await panesOpen([])
+
+      await test.step('Precondition: No projects exist', async () => {
+        await expect(page.getByTestId('home-section')).toBeVisible()
+        const projectLinksPre = page.getByTestId('project-link')
+        await expect(projectLinksPre).toHaveCount(0)
+      })
+
+      await createAndSelectProject('project-000')
+
+      await clickPane('code')
+      const kclCube = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclCube)
+
+      await clickPane('files')
+      await createNewFileAndSelect('2.kcl')
+
+      const kclCylinder = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclCylinder)
+
+      const settingsOpenButton = page.getByRole('link', {
+        name: 'settings Settings',
+      })
+      const settingsCloseButton = page.getByTestId('settings-close-button')
+
+      await test.step('Open and close settings', async () => {
+        await settingsOpenButton.click()
+        await settingsCloseButton.click()
+      })
+
+      await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
+        await editorTextMatches(kclCylinder)
       })
 
       await electronApp.close()

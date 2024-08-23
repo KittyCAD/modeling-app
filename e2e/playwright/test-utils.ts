@@ -2,13 +2,13 @@ import {
   expect,
   Page,
   Download,
-  TestInfo,
   BrowserContext,
+  TestInfo,
   _electron as electron,
   Locator,
+  test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import os from 'os'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
 import { join } from 'path'
@@ -26,6 +26,7 @@ import {
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { isArray } from 'lib/utils'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -43,6 +44,9 @@ export const commonPoints = {
   num1: 7.25,
   num2: 14.44,
 }
+
+export const editorSelector = '[role="textbox"][data-language="kcl"]'
+type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
@@ -73,11 +77,10 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.locator('.cm-content').click()
-  await page.keyboard.down(hotkey)
+  await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
-  await page.keyboard.up(hotkey)
+  await page.keyboard.up('ControlOrMeta')
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
@@ -205,7 +208,7 @@ export const wiggleMove = async (
 }
 
 export const circleMove = async (
-  page: any,
+  page: Page,
   x: number,
   y: number,
   steps: number,
@@ -311,13 +314,19 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
-export async function getUtils(page: Page) {
+export async function getUtils(page: Page, test_?: typeof test) {
+  if (!test) {
+    console.warn(
+      'Some methods in getUtils requires test object as second argument'
+    )
+  }
+
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
   const cdpSession =
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
-  return {
+  const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
     waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
@@ -484,7 +493,74 @@ export async function getUtils(page: Page) {
         networkOptions
       )
     },
+
+    toNormalizedCode: (text: string) => {
+      return text.replace(/\s+/g, '')
+    },
+
+    createAndSelectProject: async (hasText: string) => {
+      return test_?.step(
+        `Create and select project with text "${hasText}"`,
+        async () => {
+          await page.getByTestId('home-new-file').click()
+          const projectLinksPost = page.getByTestId('project-link')
+          await projectLinksPost.filter({ hasText }).click()
+        }
+      )
+    },
+
+    editorTextMatches: async (code: string) => {
+      const editor = page.locator(editorSelector)
+      const editorText = await editor.textContent()
+      return expect(util.toNormalizedCode(editorText || '')).toBe(
+        util.toNormalizedCode(code)
+      )
+    },
+
+    pasteCodeInEditor: async (code: string) => {
+      return test?.step('Paste in KCL code', async () => {
+        const editor = page.locator(editorSelector)
+        await editor.fill(code)
+        await util.editorTextMatches(code)
+      })
+    },
+
+    clickPane: async (paneId: PaneId) => {
+      return test?.step(`Open ${paneId} pane`, async () => {
+        await page.getByTestId(paneId + '-pane-button').click()
+        await expect(page.locator('#' + paneId + '-pane')).toBeVisible()
+      })
+    },
+
+    createNewFileAndSelect: async (name: string) => {
+      return test?.step(`Create a file named ${name}, select it`, async () => {
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+        await page
+          .getByTestId('file-pane-scroll-container')
+          .filter({ hasText: name })
+          .click()
+      })
+    },
+
+    panesOpen: async (paneIds: PaneId[]) => {
+      return test?.step(`Setting ${paneIds} panes to be open`, async () => {
+        await page.addInitScript(
+          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+            localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify({ openPanes: paneIds })
+            )
+          },
+          { PERSIST_MODELING_CONTEXT, paneIds }
+        )
+        await page.reload()
+      })
+    },
   }
+
+  return util
 }
 
 type TemplateOptions = Array<number | Array<number>>
@@ -505,7 +581,7 @@ const _makeTemplate = (
   templateParts: TemplateStringsArray,
   ...options: TemplateOptions
 ) => {
-  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  const length = Math.max(...options.map((a) => (isArray(a) ? a[0] : 0)))
   let reExpTemplate = ''
   for (let i = 0; i < length; i++) {
     const currentStr = templateParts.map((str, index) => {
@@ -513,7 +589,7 @@ const _makeTemplate = (
       return (
         escapeRegExp(str) +
         String(
-          Array.isArray(currentOptions)
+          isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
             ? currentOptions
@@ -667,11 +743,6 @@ export const doExport = async (
   }
 }
 
-/**
- * Gets the appropriate modifier key for the platform.
- */
-export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
-
 export async function tearDown(page: Page, testInfo: TestInfo) {
   if (testInfo.status === 'skipped') return
   if (testInfo.status === 'failed') return
@@ -733,6 +804,7 @@ export async function setup(context: BrowserContext, page: Page) {
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
+  // Trigger a navigation, since loading file:// doesn't.
   await page.reload()
 }
 
@@ -813,4 +885,30 @@ export async function isOutOfViewInScrollContainer(
     )
 
   return isOutOfView
+}
+
+export async function createProjectAndRenameIt({
+  name,
+  page,
+}: {
+  name: string
+  page: Page
+}) {
+  await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page.getByText('Successfully created')).toBeVisible()
+  await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+  await expect(page.getByText(`project-000`)).toBeVisible()
+  await page.getByText(`project-000`).hover()
+  await page.getByText(`project-000`).focus()
+
+  await page.getByLabel('sketch').first().click()
+
+  await page.waitForTimeout(100)
+
+  // type the name passed in
+  await page.keyboard.press('Backspace')
+  await page.keyboard.type(name)
+
+  await page.getByLabel('checkmark').last().click()
 }

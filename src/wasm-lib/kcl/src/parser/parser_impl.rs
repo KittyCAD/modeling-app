@@ -586,22 +586,60 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
     })
 }
 
+/// Match something that separates properties of an object.
+fn property_separator(i: TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the array is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_brace)).void(),
+    ))
+    .parse_next(i)
+}
+
 /// Parse a KCL object value.
-fn object(i: TokenSlice) -> PResult<ObjectExpression> {
+pub(crate) fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
-    let properties = separated(0.., object_property, comma_sep)
-        .context(expected(
-            "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
-        ))
-        .parse_next(i)?;
+    let properties: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(object_property, property_separator).map(NonCodeOr::Code),
+        )),
+    )
+    .context(expected(
+        "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
+    ))
+    .parse_next(i)?;
+
+    // Sort the object's properties from the noncode nodes.
+    let (properties, non_code_nodes): (Vec<_>, HashMap<usize, _>) = properties.into_iter().enumerate().fold(
+        (Vec::new(), HashMap::new()),
+        |(mut properties, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    properties.push(x);
+                }
+            }
+            (properties, non_code_nodes)
+        },
+    );
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        ..Default::default()
+    };
     Ok(ObjectExpression {
         start,
         end,
         properties,
+        non_code_meta,
         digest: None,
     })
 }
@@ -3056,12 +3094,6 @@ e
     }
 
     #[allow(unused)]
-    fn print_tokens(tokens: &[Token]) {
-        for (i, tok) in tokens.iter().enumerate() {
-            println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
-        }
-    }
-
     #[test]
     fn array_linesep_no_trailing_comma() {
         let program = r#"[
@@ -3259,6 +3291,7 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let tokens = crate::token::lexer($test_kcl_program).unwrap();
+                print_tokens(&tokens);
                 let actual = match program.parse(&tokens) {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
@@ -3404,4 +3437,28 @@ mod snapshot_tests {
             // B,
         ]"
     );
+    snapshot_test!(
+        ay,
+        "let props = {
+            a: 1,
+            // b: 2,
+            c: 3,
+        }"
+    );
+    snapshot_test!(
+        az,
+        "let props = {
+            a: 1,
+            // b: 2,
+            c: 3
+        }"
+    );
+}
+
+#[allow(unused)]
+#[cfg(test)]
+pub(crate) fn print_tokens(tokens: &[Token]) {
+    for (i, tok) in tokens.iter().enumerate() {
+        println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
+    }
 }

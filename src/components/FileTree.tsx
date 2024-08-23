@@ -61,6 +61,7 @@ function RenameForm({
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
@@ -395,13 +396,14 @@ export const FileTreeMenu = () => {
     })
   }
 
-  useHotkeyWrapper(['meta + n'], createFile)
-  useHotkeyWrapper(['meta + shift + n'], createFolder)
+  useHotkeyWrapper(['mod + n'], createFile)
+  useHotkeyWrapper(['mod + shift + n'], createFolder)
 
   return (
     <>
       <ActionButton
         Element="button"
+        data-testid="create-file-button"
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
@@ -417,6 +419,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
+        data-testid="create-folder-button"
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',

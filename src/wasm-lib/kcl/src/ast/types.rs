@@ -2466,11 +2466,13 @@ impl ArrayExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub struct ObjectExpression {
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
 
     pub digest: Option<Digest>,
 }
@@ -2481,6 +2483,7 @@ impl ObjectExpression {
             start: 0,
             end: 0,
             properties,
+            non_code_meta: Default::default(),
             digest: None,
         }
     }
@@ -2514,6 +2517,14 @@ impl ObjectExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        if self
+            .non_code_meta
+            .non_code_nodes
+            .values()
+            .any(|nc| nc.iter().any(|nc| nc.value.should_cause_array_newline()))
+        {
+            return self.recast_multi_line(options, indentation_level, is_in_pipe);
+        }
         let flat_recast = format!(
             "{{ {} }}",
             self.properties
@@ -2529,35 +2540,49 @@ impl ObjectExpression {
                 .join(", ")
         );
         let max_array_length = 40;
-        if flat_recast.len() > max_array_length {
-            let inner_indentation = if is_in_pipe {
-                options.get_indentation_offset_pipe(indentation_level + 1)
-            } else {
-                options.get_indentation(indentation_level + 1)
-            };
-            format!(
-                "{{\n{}{}\n{}}}",
-                inner_indentation,
-                self.properties
-                    .iter()
-                    .map(|prop| {
-                        format!(
-                            "{}: {}",
-                            prop.key.name,
-                            prop.value.recast(options, indentation_level + 1, is_in_pipe)
-                        )
-                    })
-                    .collect::<Vec<String>>()
-                    .join(format!(",\n{}", inner_indentation).as_str()),
-                if is_in_pipe {
-                    options.get_indentation_offset_pipe(indentation_level)
-                } else {
-                    options.get_indentation(indentation_level)
-                },
-            )
-        } else {
-            flat_recast
+        let needs_multiple_lines = flat_recast.len() > max_array_length;
+        if !needs_multiple_lines {
+            return flat_recast;
         }
+        self.recast_multi_line(options, indentation_level, is_in_pipe)
+    }
+
+    /// Recast, but always outputs the object with newlines between each property.
+    fn recast_multi_line(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        let inner_indentation = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level + 1)
+        } else {
+            options.get_indentation(indentation_level + 1)
+        };
+        let num_items = self.properties.len() + self.non_code_meta.non_code_nodes_len();
+        let mut props = self.properties.iter();
+        let format_items: Vec<_> = (0..num_items)
+            .flat_map(|i| {
+                if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
+                    noncode.iter().map(|nc| nc.format("")).collect::<Vec<_>>()
+                } else {
+                    let prop = props.next().unwrap();
+                    // Use a comma unless it's the last item
+                    let comma = if i == num_items - 1 { "" } else { ",\n" };
+                    let s = format!(
+                        "{}: {}{comma}",
+                        prop.key.name,
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
+                    );
+                    vec![s]
+                }
+            })
+            .collect();
+        dbg!(&format_items);
+        let end_indent = if is_in_pipe {
+            options.get_indentation_offset_pipe(indentation_level)
+        } else {
+            options.get_indentation(indentation_level)
+        };
+        format!(
+            "{{\n{inner_indentation}{}\n{end_indent}}}",
+            format_items.join(&inner_indentation),
+        )
     }
 
     /// Returns a hover value that includes the given character position.
@@ -5893,6 +5918,66 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                 literal.recast(),
                 expected,
                 "failed test {i}, which is testing that {reason}"
+            );
+        }
+    }
+
+    #[test]
+    fn recast_objects_no_comments() {
+        let input = r#"
+const sketch002 = startSketchOn({
+       plane: {
+    origin: { x: 1, y: 2, z: 3 },
+    x_axis: { x: 4, y: 5, z: 6 },
+    y_axis: { x: 7, y: 8, z: 9 },
+    z_axis: { x: 10, y: 11, z: 12 }
+       }
+  })
+"#;
+        let expected = r#"const sketch002 = startSketchOn({
+  plane: {
+    origin: { x: 1, y: 2, z: 3 },
+    x_axis: { x: 4, y: 5, z: 6 },
+    y_axis: { x: 7, y: 8, z: 9 },
+    z_axis: { x: 10, y: 11, z: 12 }
+  }
+})
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let p = crate::parser::Parser::new(tokens);
+        let ast = p.ast().unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn recast_objects_with_comments() {
+        use winnow::Parser;
+        for (i, (input, expected, reason)) in [(
+            "\
+{
+  a: 1,
+  // b: 2,
+  c: 3
+}",
+            "\
+{
+  a: 1,
+  // b: 2,
+  c: 3
+}",
+            "preserves comments",
+        )]
+        .into_iter()
+        .enumerate()
+        {
+            let tokens = crate::token::lexer(input).unwrap();
+            crate::parser::parser_impl::print_tokens(&tokens);
+            let expr = crate::parser::parser_impl::object.parse(&tokens).unwrap();
+            assert_eq!(
+                expr.recast(&FormatOptions::new(), 0, false),
+                expected,
+                "failed test {i}, which is testing that recasting {reason}"
             );
         }
     }
