@@ -1663,9 +1663,13 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 
 impl ExecutorContext {
     /// Create a new default executor context.
+    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let ws = client
+    pub async fn new_with_headers(
+        client: &kittycad::Client,
+        settings: ExecutorSettings,
+    ) -> Result<(Self, http::HeaderMap)> {
+        let (ws, headers) = client
             .modeling()
             .commands_ws(
                 None,
@@ -1697,13 +1701,21 @@ impl ExecutorContext {
             )
             .await?;
 
-        Ok(Self {
+        let slf = Self {
             engine,
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             settings,
             is_mock: false,
-        })
+        };
+        Ok((slf, headers))
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Create a new default executor context.
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let (slf, _headers) = Self::new_with_headers(client, settings).await?;
+        Ok(slf)
     }
 
     /// For executing unit tests.

@@ -912,3 +912,7 @@ export async function createProjectAndRenameIt({
 
   await page.getByLabel('checkmark').last().click()
 }
+
+export function executorInputPath(fileName: string): string {
+  return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+}
