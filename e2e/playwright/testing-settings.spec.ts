@@ -272,11 +272,17 @@ test.describe('Testing settings', () => {
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
         await settingsCloseButton.click()
       })
+      let screenshot = await page.screenshot()
+      await testInfo.attach('screenshot1', { body: screenshot, contentType: 'image/png' })
 
       await test.step('Set project theme color', async () => {
         // Open the project
         await projectLink.click()
+        screenshot = await page.screenshot()
+        await testInfo.attach('screenshot2', { body: screenshot, contentType: 'image/png' })
         await settingsOpenButton.click()
+        screenshot = await page.screenshot()
+        await testInfo.attach('screenshot3', { body: screenshot, contentType: 'image/png' })
         // The project tab should be selected by default within a project
         await expect(projectSettingsTab).toBeChecked()
         await themeColorSetting.fill(projectThemeColor)
