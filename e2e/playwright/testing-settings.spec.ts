@@ -233,10 +233,6 @@ test.describe('Testing settings', () => {
     `Project settings override user settings on desktop`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
