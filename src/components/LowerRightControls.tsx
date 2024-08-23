@@ -9,7 +9,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
-import openWindow from 'lib/openWindow'
+import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 
 export function LowerRightControls({
@@ -66,6 +66,9 @@ export function LowerRightControls({
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         <a
+          onClick={openExternalBrowserIfDesktop(
+            `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
+          )}
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"
           rel="noopener noreferrer"
