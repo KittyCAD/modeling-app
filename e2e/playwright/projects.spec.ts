@@ -1324,7 +1324,7 @@ test.describe('Renaming in the file tree', () => {
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -1352,6 +1352,16 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const checkUnRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', 'fileToRename.kcl')
+        return fs.existsSync(filePath)
+      }
+      const newFileName = 'newFileName'
+      const checkRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
+        return fs.existsSync(filePath)
+      }
+
       const fileToRename = page
         .getByRole('listitem')
         .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
@@ -1360,7 +1370,6 @@ test.describe('Renaming in the file tree', () => {
         .filter({ has: page.getByRole('button', { name: 'newFileName.kcl' }) })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
-      const newFileName = 'newFileName'
       const codeLocator = page.locator('.cm-content')
 
       await test.step('Open project and file pane', async () => {
@@ -1371,6 +1380,8 @@ test.describe('Renaming in the file tree', () => {
 
         await u.openFilePanel()
         await expect(fileToRename).toBeVisible()
+        expect(checkUnRenamedFS()).toBeTruthy()
+        expect(checkRenamedFS()).toBeFalsy()
         await fileToRename.click()
         await expect(projectMenuButton).toContainText('fileToRename.kcl')
         await u.openKclCodePanel()
@@ -1389,6 +1400,8 @@ test.describe('Renaming in the file tree', () => {
       await test.step('Verify the file is renamed', async () => {
         await expect(fileToRename).not.toBeAttached()
         await expect(renamedFile).toBeVisible()
+        expect(checkUnRenamedFS()).toBeFalsy()
+        expect(checkRenamedFS()).toBeTruthy()
       })
 
       await test.step('Verify we navigated', async () => {
@@ -1416,7 +1429,7 @@ test.describe('Renaming in the file tree', () => {
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -1443,6 +1456,14 @@ test.describe('Renaming in the file tree', () => {
 
       // Constants and locators
       const newFileName = 'newFileName'
+      const checkUnRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', 'fileToRename.kcl')
+        return fs.existsSync(filePath)
+      }
+      const checkRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
+        return fs.existsSync(filePath)
+      }
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const fileToRename = page
@@ -1463,6 +1484,8 @@ test.describe('Renaming in the file tree', () => {
 
         await u.openFilePanel()
         await expect(fileToRename).toBeVisible()
+        expect(checkUnRenamedFS()).toBeTruthy()
+        expect(checkRenamedFS()).toBeFalsy()
       })
 
       await test.step('Rename the file', async () => {
@@ -1476,6 +1499,8 @@ test.describe('Renaming in the file tree', () => {
       await test.step('Verify the file is renamed', async () => {
         await expect(fileToRename).not.toBeAttached()
         await expect(renamedFile).toBeVisible()
+        expect(checkUnRenamedFS()).toBeFalsy()
+        expect(checkRenamedFS()).toBeTruthy()
       })
 
       await test.step('Verify we have not navigated', async () => {
@@ -1506,7 +1531,7 @@ test.describe('Renaming in the file tree', () => {
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -1543,8 +1568,17 @@ test.describe('Renaming in the file tree', () => {
       })
       const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-      const renameInput = page.getByPlaceholder('folderToRename')
+      const originalFolderName = 'folderToRename'
+      const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
+      const checkUnRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', originalFolderName)
+        return fs.existsSync(folderPath)
+      }
+      const checkRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', newFolderName)
+        return fs.existsSync(folderPath)
+      }
 
       await test.step('Open project and file pane', async () => {
         await expect(projectLink).toBeVisible()
@@ -1558,6 +1592,8 @@ test.describe('Renaming in the file tree', () => {
 
         await u.openFilePanel()
         await expect(folderToRename).toBeVisible()
+        expect(checkUnRenamedFolderFS()).toBeTruthy()
+        expect(checkRenamedFolderFS()).toBeFalsy()
       })
 
       await test.step('Rename the folder', async () => {
@@ -1577,6 +1613,8 @@ test.describe('Renaming in the file tree', () => {
         await expect(projectMenuButton).toContainText('main.kcl')
         await expect(renamedFolder).toBeVisible()
         await expect(folderToRename).not.toBeAttached()
+        expect(checkUnRenamedFolderFS()).toBeFalsy()
+        expect(checkRenamedFolderFS()).toBeTruthy()
       })
 
       await electronApp.close()
@@ -1592,7 +1630,7 @@ test.describe('Renaming in the file tree', () => {
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
       const exampleDir = join('src', 'wasm-lib', 'tests', 'executor', 'inputs')
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -1625,8 +1663,17 @@ test.describe('Renaming in the file tree', () => {
         has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
       })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-      const renameInput = page.getByPlaceholder('folderToRename')
+      const originalFolderName = 'folderToRename'
+      const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
+      const checkUnRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', originalFolderName)
+        return fs.existsSync(folderPath)
+      }
+      const checkRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', newFolderName)
+        return fs.existsSync(folderPath)
+      }
 
       await test.step('Open project and navigate into folder', async () => {
         await expect(projectLink).toBeVisible()
@@ -1649,6 +1696,8 @@ test.describe('Renaming in the file tree', () => {
         expect(newUrl).toContain('folderToRename')
         expect(newUrl).toContain('someFileWithin.kcl')
         expect(newUrl).not.toContain('main.kcl')
+        expect(checkUnRenamedFolderFS()).toBeTruthy()
+        expect(checkRenamedFolderFS()).toBeFalsy()
       })
 
       await test.step('Rename the folder', async () => {
@@ -1675,6 +1724,8 @@ test.describe('Renaming in the file tree', () => {
         expect(url).not.toContain('main.kcl')
         expect(url).toContain(newFolderName)
         expect(url).toContain('someFileWithin.kcl')
+        expect(checkUnRenamedFolderFS()).toBeFalsy()
+        expect(checkRenamedFolderFS()).toBeTruthy()
       })
 
       await electronApp.close()
