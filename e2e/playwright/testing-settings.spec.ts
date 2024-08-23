@@ -338,7 +338,6 @@ test.describe('Testing settings', () => {
       .getByRole('button', { name: 'Start Sketch' })
       .waitFor({ state: 'visible' })
 
-    const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
 
     // Open the settings modal with lower-right button
@@ -396,11 +395,11 @@ test.describe('Testing settings', () => {
     })
 
     // Close settings
-    const settingsCloseButton = await page.getByTestId('settings-close-button')
+    const settingsCloseButton = page.getByTestId('settings-close-button')
     await settingsCloseButton.click()
 
     await test.step('Change modeling default unit within command bar', async () => {
-      const commands = await page.getByRole('button', { name: 'Commands' })
+      const commands = page.getByRole('button', { name: 'Commands' })
       const changeUnitOfMeasureInCommandBar = async (unitOfMeasure: string) => {
         // Open command bar
         await commands.click()
@@ -435,11 +434,11 @@ test.describe('Testing settings', () => {
         unitOfMeasure: string,
         copy: string
       ) => {
-        const gizmo = await page.getByRole('button', {
+        const gizmo = page.getByRole('button', {
           name: 'Current units are: ',
         })
         await gizmo.click()
-        const button = await page.getByRole('button', {
+        const button = page.getByRole('button', {
           name: copy,
           exact: true,
         })
