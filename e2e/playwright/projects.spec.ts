@@ -608,7 +608,7 @@ test(
 test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
-  async (_, testInfo) => {
+  async ({ browserName }, testInfo) => {
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
