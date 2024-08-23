@@ -26,7 +26,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^2.0.0",
+    "@kittycad/lib": "^2.0.1",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
     "@react-hook/resize-observer": "^2.0.1",
@@ -119,7 +119,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-env": "^7.25.4",
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
