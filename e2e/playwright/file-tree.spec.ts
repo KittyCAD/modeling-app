@@ -74,11 +74,8 @@ test.describe('when using the file tree to', () => {
         folderSetupFn: async () => {},
       })
 
-      const {
-        panesOpen,
-        createAndSelectProject,
-        createNewFile,
-      } = await getUtils(page, test)
+      const { panesOpen, createAndSelectProject, createNewFile } =
+        await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
