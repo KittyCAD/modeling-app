@@ -115,6 +115,36 @@ test.describe('Testing settings', () => {
     ).not.toBeChecked()
   })
 
+  test('Keybindings display the correct hotkey for Command Palette', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await test.step('Open keybindings settings', async () => {
+      // Open the settings modal with the browser keyboard shortcut
+      await page.keyboard.press('ControlOrMeta+Shift+,')
+
+      // Go to Keybindings tab.
+      const keybindingsTab = page.getByRole('radio', { name: 'Keybindings' })
+      await keybindingsTab.click()
+    })
+
+    // Go to the hotkey for Command Palette.
+    const commandPalette = page.getByText('Toggle Command Palette')
+    await commandPalette.scrollIntoViewIfNeeded()
+
+    // The heading is above it and should be in view now.
+    const commandPaletteHeading = page.getByRole('heading', {
+      name: 'Command Palette',
+    })
+    // The hotkey is in a kbd element next to the heading.
+    const hotkey = commandPaletteHeading.locator('+ div kbd')
+    const text = process.platform === 'darwin' ? 'Command+K' : 'Control+K'
+    await expect(hotkey).toHaveText(text)
+  })
+
   test('Project and user settings can be reset', async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })

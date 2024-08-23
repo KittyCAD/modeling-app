@@ -151,6 +151,30 @@ export function platform(): Platform {
         return ''
     }
   }
+
+  // navigator.platform is deprecated, but many browsers still support it, and
+  // it's more accurate than userAgent and userAgentData in Playwright.
+  if (
+    navigator.platform?.indexOf('Mac') === 0 ||
+    navigator.platform === 'iPhone'
+  ) {
+    return 'macos'
+  }
+  if (navigator.platform === 'Win32') {
+    return 'windows'
+  }
+
+  // Chrome only, but more accurate than userAgent.
+  if (
+    'userAgentData' in navigator &&
+    navigator.userAgentData &&
+    typeof navigator.userAgentData === 'object' &&
+    'platform' in navigator.userAgentData
+  ) {
+    if (navigator.userAgentData.platform === 'macOS') return 'macos'
+    if (navigator.userAgentData.platform === 'Windows') return 'windows'
+  }
+
   if (navigator.userAgent.indexOf('Mac') !== -1) {
     return 'macos'
   } else if (navigator.userAgent.indexOf('Win') !== -1) {
