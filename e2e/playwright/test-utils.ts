@@ -865,7 +865,7 @@ export async function setupElectron({
 
   await setup(context, page)
 
-  return { electronApp, page }
+  return { electronApp, page, dir: projectDirName }
 }
 
 export async function isOutOfViewInScrollContainer(
