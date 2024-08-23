@@ -396,8 +396,8 @@ export const FileTreeMenu = () => {
     })
   }
 
-  useHotkeyWrapper(['meta + n'], createFile)
-  useHotkeyWrapper(['meta + shift + n'], createFolder)
+  useHotkeyWrapper(['mod + n'], createFile)
+  useHotkeyWrapper(['mod + shift + n'], createFolder)
 
   return (
     <>

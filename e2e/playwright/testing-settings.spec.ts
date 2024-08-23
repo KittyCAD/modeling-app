@@ -72,7 +72,7 @@ test.describe('Testing settings', () => {
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
 
     // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('Meta+Shift+,')
+    await page.keyboard.press('ControlOrMeta+Shift+,')
 
     await expect(headingLocator).toBeVisible()
     await page.locator('#showDebugPanel').getByText('OffOn').click()
@@ -82,7 +82,7 @@ test.describe('Testing settings', () => {
     await test.step('Open settings with keyboard shortcut', async () => {
       await page.getByTestId('settings-close-button').click()
       await page.locator('.cm-content').click()
-      await page.keyboard.press('Meta+Shift+,')
+      await page.keyboard.press('ControlOrMeta+Shift+,')
       await expect(headingLocator).toBeVisible()
     })
 

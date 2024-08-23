@@ -9,8 +9,6 @@ test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
-const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
-
 test.describe('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({ page }) => {
     const u = await getUtils(page)
@@ -298,9 +296,9 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('textarea')).toContainText(badPrompt)
 
     // Select all and start a new prompt.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyA')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
     await page.keyboard.type('a 2x4 lego')
 
     // Submit the new prompt.
@@ -520,9 +518,9 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x8`)
@@ -549,13 +547,13 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyA')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
     await page.keyboard.press('Backspace')
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
@@ -636,9 +634,9 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
