@@ -165,14 +165,16 @@ export function platform(): Platform {
   }
 
   // Chrome only, but more accurate than userAgent.
+  let userAgentDataPlatform: unknown
   if (
     'userAgentData' in navigator &&
     navigator.userAgentData &&
     typeof navigator.userAgentData === 'object' &&
     'platform' in navigator.userAgentData
   ) {
-    if (navigator.userAgentData.platform === 'macOS') return 'macos'
-    if (navigator.userAgentData.platform === 'Windows') return 'windows'
+    userAgentDataPlatform = navigator.userAgentData.platform
+    if (userAgentDataPlatform === 'macOS') return 'macos'
+    if (userAgentDataPlatform === 'Windows') return 'windows'
   }
 
   if (navigator.userAgent.indexOf('Mac') !== -1) {
@@ -182,7 +184,12 @@ export function platform(): Platform {
   } else if (navigator.userAgent.indexOf('Linux') !== -1) {
     return 'linux'
   }
-  console.error('Unknown platform userAgent:', navigator.userAgent)
+  console.error(
+    'Unknown platform userAgent:',
+    navigator.platform,
+    userAgentDataPlatform,
+    navigator.userAgent
+  )
   return ''
 }
 
