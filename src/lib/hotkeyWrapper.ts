@@ -51,7 +51,8 @@ const WHITESPACE = /\s+/g
 export function hotkeyDisplay(hotkey: string, platform: Platform): string {
   const isMac = platform === 'macos'
   const isWindows = platform === 'windows'
-  const meta = isWindows ? 'Win' : 'Meta'
+  // Browsers call it metaKey, but that's a misnomer.
+  const meta = isWindows ? 'Win' : 'Super'
   const outputSeparator = isMac ? '' : '+'
   const display = hotkey
     // Capitalize letters.  We want Ctrl+K, not Ctrl+k, since Shift should be

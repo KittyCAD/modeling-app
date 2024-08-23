@@ -14,7 +14,8 @@ describe('hotkeyDisplay', () => {
   it('displays meta', async () => {
     expect(hotkeyDisplay('meta+c', 'macos')).toEqual('⌘C')
     expect(hotkeyDisplay('meta+c', 'windows')).toEqual('Win+C')
-    expect(hotkeyDisplay('meta+c', 'linux')).toEqual('Meta+C')
+    // That's correct.  What browsers call meta is actually super.
+    expect(hotkeyDisplay('meta+c', 'linux')).toEqual('Super+C')
   })
   it('displays alt', async () => {
     expect(hotkeyDisplay('alt+c', 'macos')).toEqual('⌥C')
