@@ -407,8 +407,6 @@ test.describe('Testing settings', () => {
           'Settings · modeling · default unit'
         )
         await settingsModelingDefaultUnitCommand.click()
-        const optionInput = await page.locator('#option-input')
-        await optionInput.click()
 
         const commandOption = page.getByRole('option', {
           name: unitOfMeasure,
