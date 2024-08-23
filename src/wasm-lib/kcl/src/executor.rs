@@ -1613,8 +1613,11 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
-    // Show grid?
+    /// Show grid?
     pub show_grid: bool,
+    /// Should engine store this for replay?
+    /// If so, under what name?
+    pub replay: Option<String>,
 }
 
 impl Default for ExecutorSettings {
@@ -1624,6 +1627,7 @@ impl Default for ExecutorSettings {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         }
     }
 }
@@ -1635,6 +1639,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1646,6 +1651,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1657,6 +1663,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1679,6 +1686,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                settings.replay.clone(),
                 if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
@@ -1755,6 +1763,7 @@ impl ExecutorContext {
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
+                replay: None,
             },
         )
         .await?;

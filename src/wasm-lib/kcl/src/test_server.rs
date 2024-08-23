@@ -63,6 +63,7 @@ async fn new_context(units: UnitLength) -> anyhow::Result<ExecutorContext> {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         },
     )
     .await?;
