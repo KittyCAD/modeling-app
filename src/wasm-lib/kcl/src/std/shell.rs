@@ -119,6 +119,7 @@ async fn inner_shell(
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::Solid3DShellFace {
+            hollow: false,
             face_ids,
             object_id: extrude_group.id,
             shell_thickness: data.thickness,

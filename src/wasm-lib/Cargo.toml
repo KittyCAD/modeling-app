@@ -70,7 +70,8 @@ members = [
 ]
 
 [workspace.dependencies]
-kittycad = { version = "0.3.14", default-features = false, features = ["js", "requests"] }
+http = "0.2.12"
+kittycad = { version = "0.3.16", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-session = "0.1.4"
 
 [[test]]
