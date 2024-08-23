@@ -469,7 +469,7 @@ test(
     await electronApp.close()
   }
 )
-test.fixme(
+test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
