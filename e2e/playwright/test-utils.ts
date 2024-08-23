@@ -9,7 +9,6 @@ import {
   test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import os from 'os'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
 import { join } from 'path'
@@ -78,11 +77,10 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.locator('.cm-content').click()
-  await page.keyboard.down(hotkey)
+  await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
-  await page.keyboard.up(hotkey)
+  await page.keyboard.up('ControlOrMeta')
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
@@ -745,11 +743,6 @@ export const doExport = async (
   }
 }
 
-/**
- * Gets the appropriate modifier key for the platform.
- */
-export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
-
 export async function tearDown(page: Page, testInfo: TestInfo) {
   if (testInfo.status === 'skipped') return
   if (testInfo.status === 'failed') return
@@ -872,7 +865,7 @@ export async function setupElectron({
 
   await setup(context, page)
 
-  return { electronApp, page }
+  return { electronApp, page, dir: projectDirName }
 }
 
 export async function isOutOfViewInScrollContainer(
