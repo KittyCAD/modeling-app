@@ -604,7 +604,8 @@ test(
           executorInputPath('router-template-slate.kcl'),
           'utf-8'
         )
-        const fileWithCRLF = file.replace(/\n/g, '\r\n')
+        // Replace both \r optionally so we don't end up with \r\r\n
+        const fileWithCRLF = file.replace(/\r?\n/g, '\r\n')
         await fsp.writeFile(
           join(routerTemplateDir, 'main.kcl'),
           fileWithCRLF,
