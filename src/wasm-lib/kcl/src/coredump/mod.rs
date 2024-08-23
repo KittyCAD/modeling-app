@@ -230,29 +230,42 @@ pub struct OsInfo {
 #[serde(rename_all = "snake_case")]
 pub struct WebrtcStats {
     /// The packets lost.
-    pub packets_lost: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub packets_lost: Option<u32>,
     /// The frames received.
-    pub frames_received: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frames_received: Option<u32>,
     /// The frame width.
-    pub frame_width: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frame_width: Option<f32>,
     /// The frame height.
-    pub frame_height: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frame_height: Option<f32>,
     /// The frame rate.
-    pub frame_rate: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frame_rate: Option<f32>,
     /// The number of key frames decoded.
-    pub key_frames_decoded: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub key_frames_decoded: Option<u32>,
     /// The number of frames dropped.
-    pub frames_dropped: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frames_dropped: Option<u32>,
     /// The pause count.
-    pub pause_count: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pause_count: Option<u32>,
     /// The total pauses duration.
-    pub total_pauses_duration: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub total_pauses_duration: Option<f32>,
     /// The freeze count.
-    pub freeze_count: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub freeze_count: Option<u32>,
     /// The total freezes duration.
-    pub total_freezes_duration: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub total_freezes_duration: Option<f32>,
     /// The pli count.
-    pub pli_count: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pli_count: Option<u32>,
     /// Packet jitter for this synchronizing source, measured in seconds.
-    pub jitter: f32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub jitter: Option<f32>,
 }
