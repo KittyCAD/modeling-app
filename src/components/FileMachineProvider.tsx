@@ -16,7 +16,11 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
-import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
+import {
+  DEFAULT_FILE_NAME,
+  DEFAULT_PROJECT_KCL_FILE,
+  FILE_EXT,
+} from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
 
@@ -167,6 +171,21 @@ export const FileMachineProvider = ({
           name
         )
 
+        // no-op
+        if (oldPath === newPath) {
+          return
+        }
+
+        // if there are any siblings with the same name, report error.
+        const entries = await window.electron.readdir(
+          window.electron.path.dirname(newPath)
+        )
+        for (let entry of entries) {
+          if (entry === newName) {
+            return Promise.reject(new Error('Filename already exists.'))
+          }
+        }
+
         window.electron.rename(oldPath, newPath)
 
         if (!file) {
@@ -209,6 +228,22 @@ export const FileMachineProvider = ({
             .catch((e) => console.error('Error deleting file', e))
         }
 
+        // If there are no more files at all in the project, create a main.kcl
+        // for when we navigate to the root.
+        if (!project?.path) {
+          return Promise.reject(new Error('Project path not set.'))
+        }
+
+        const entries = await window.electron.readdir(project.path)
+        const hasKclEntries =
+          entries.filter((e: string) => e.endsWith('.kcl')).length !== 0
+        if (!hasKclEntries) {
+          await window.electron.writeFile(
+            window.electron.path.join(project.path, DEFAULT_PROJECT_KCL_FILE),
+            ''
+          )
+        }
+
         // If we just deleted the current file or one of its parent directories,
         // navigate to the project root
         if (
@@ -218,6 +253,11 @@ export const FileMachineProvider = ({
         ) {
           navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
         }
+
+        // Refresh the route selected above because it's possible we're on
+        // the same path on the navigate, which doesn't cause anything to
+        // refresh, leaving a stale execution state.
+        navigate(0)
 
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
           event.data.name
