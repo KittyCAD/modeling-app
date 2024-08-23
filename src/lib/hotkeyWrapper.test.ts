@@ -22,12 +22,13 @@ describe('hotkeyDisplay', () => {
     expect(hotkeyDisplay('alt+c', 'linux')).toEqual('Alt+C')
   })
   it('displays ctrl', async () => {
-    expect(hotkeyDisplay('ctrl+c', 'macos')).toEqual('⌃C')
+    expect(hotkeyDisplay('ctrl+c', 'macos')).toEqual('^C')
     expect(hotkeyDisplay('ctrl+c', 'windows')).toEqual('Ctrl+C')
     expect(hotkeyDisplay('ctrl+c', 'linux')).toEqual('Ctrl+C')
   })
   it('displays multiple modifiers', async () => {
-    expect(hotkeyDisplay('shift+alt+ctrl+c', 'windows')).toEqual('Shift+Alt+Ctrl+C')
+    expect(hotkeyDisplay('shift+alt+ctrl+c', 'windows')).toEqual(
+      'Shift+Alt+Ctrl+C'
+    )
   })
-
 })

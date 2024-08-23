@@ -68,9 +68,11 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
     .replaceAll(WHITESPACE, ' ')
     .replaceAll('mod', isMac ? '⌘' : 'Ctrl')
     .replaceAll('meta', isMac ? '⌘' : meta)
-    // Note: This is *not* the ASCII caret character. It's "UP ARROWHEAD".
-    // Unicode: U+2303.
-    .replaceAll('ctrl', isMac ? '⌃' : 'Ctrl')
+    // This is technically the wrong arrow for control, but it's more visible
+    // and recognizable.  May want to change this in the future.
+    //
+    // The correct arrow is ⌃ "UP ARROWHEAD" Unicode: U+2303
+    .replaceAll('ctrl', isMac ? '^' : 'Ctrl')
     // This is technically the wrong arrow for shift, but it's more visible and
     // recognizable.  May want to change this in the future.
     //
