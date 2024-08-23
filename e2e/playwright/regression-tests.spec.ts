@@ -1,6 +1,13 @@
 import { test, expect, Page } from '@playwright/test'
+import { join } from 'path'
 import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
@@ -425,17 +432,14 @@ const sketch001 = startSketchAt([-0, -0])
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ browserName: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          const bracketDir = join(dir, 'bracket')
+          await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           )
         },
       })

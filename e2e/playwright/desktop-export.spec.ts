@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { getUtils, setupElectron, tearDown } from './test-utils'
+import { join } from 'path'
+import {
+  getUtils,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -10,22 +16,19 @@ test(
   'export works on the first try',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await Promise.all([fsp.mkdir(`${dir}/bracket`, { recursive: true })])
+        const bracketDir = join(dir, 'bracket')
+        await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/bracket/other.kcl`
+            executorInputPath('router-template-slate.kcl'),
+            join(bracketDir, 'other.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           ),
         ])
       },

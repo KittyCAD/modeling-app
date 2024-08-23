@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -25,6 +25,7 @@ form_urlencoded = "1.2.1"
 futures = { version = "0.3.30" }
 git_rev = "0.1.0"
 gltf-json = "1.4.1"
+http = { workspace = true }
 image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, features = ["clap"] }
 lazy_static = "1.5.0"
