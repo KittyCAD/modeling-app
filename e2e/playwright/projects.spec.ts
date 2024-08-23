@@ -597,15 +597,16 @@ test(
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        await fsp.mkdir(routerTemplateDir, { recursive: true })
 
         const file = await fsp.readFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          executorInputPath('router-template-slate.kcl'),
           'utf-8'
         )
         const fileWithCRLF = file.replace(/\n/g, '\r\n')
         await fsp.writeFile(
-          `${dir}/router-template-slate/main.kcl`,
+          join(routerTemplateDir, 'main.kcl'),
           fileWithCRLF,
           'utf-8'
         )
