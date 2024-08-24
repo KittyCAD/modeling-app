@@ -1,4 +1,4 @@
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 import { CustomIcon } from './CustomIcon'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'

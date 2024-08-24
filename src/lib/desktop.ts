@@ -1,7 +1,6 @@
 import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
-import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { Project, FileEntry } from 'lib/project'
 
 import {
   defaultAppSettings,
