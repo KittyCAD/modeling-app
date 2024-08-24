@@ -13,7 +13,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use kittycad::types::{Color, ModelingCmd, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest};
+use kittycad::types::{
+    Color, ModelingCmd, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest,
+};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -489,6 +491,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.flush_batch(false, Default::default()).await?;
 
         Ok(())
+    }
+
+    /// Get session data, if it has been received.
+    /// Returns None if the server never sent it.
+    fn get_session_data(&self) -> Option<ModelingSessionData> {
+        None
     }
 }
 
