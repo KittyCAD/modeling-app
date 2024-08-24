@@ -24,6 +24,10 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
+  CIRCLE_CENTER_HANDLE,
+  CIRCLE_SEGMENT,
+  CIRCLE_SEGMENT_BODY,
+  CIRCLE_SEGMENT_DASH,
   EXTRA_SEGMENT_HANDLE,
   EXTRA_SEGMENT_OFFSET_PX,
   HIDE_SEGMENT_LENGTH,
@@ -46,7 +50,7 @@ import {
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { roundOff } from 'lib/utils'
 
-export function profileStart({
+export function createProfileStartHandle({
   from,
   id,
   pathToNode,
@@ -225,6 +229,28 @@ function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
   arrowGroup.scale.set(scale, scale, scale)
   return arrowGroup
 }
+function createCircleCenterHandle(
+  scale = 1,
+  theme: Themes,
+  color?: number
+): Group {
+  const circleCenterGroup = new Group()
+
+  const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color })
+  const mesh = new Mesh(geometry, body)
+
+  circleCenterGroup.add(mesh)
+
+  circleCenterGroup.userData = {
+    type: CIRCLE_CENTER_HANDLE,
+    baseColor,
+  }
+  circleCenterGroup.name = CIRCLE_CENTER_HANDLE
+  circleCenterGroup.scale.set(scale, scale, scale)
+  return circleCenterGroup
+}
 
 function createExtraSegmentHandle(
   scale: number,
@@ -300,6 +326,103 @@ function createLengthIndicator({
   return lengthIndicatorGroup
 }
 
+export function circleSegment({
+  prevSegment,
+  from,
+  to,
+  center,
+  radius,
+  id,
+  pathToNode,
+  isDraftSegment,
+  scale = 1,
+  texture,
+  theme,
+  isSelected,
+}: {
+  prevSegment: SketchGroup['value'][number]
+  from: Coords2d
+  center: Coords2d
+  radius: number
+  to: Coords2d
+  id: string
+  pathToNode: PathToNode
+  isDraftSegment?: boolean
+  scale?: number
+  texture: Texture
+  theme: Themes
+  isSelected?: boolean
+}): Group {
+  const group = new Group()
+
+  const geometry = createArcGeometry({
+    center,
+    radius,
+    startAngle: 0,
+    endAngle: Math.PI * 2,
+    ccw: true,
+    isDashed: isDraftSegment,
+    scale,
+  })
+
+  const baseColor = getThemeColorForThreeJs(theme)
+  const color = isSelected ? 0x0000ff : baseColor
+  const body = new MeshBasicMaterial({ color })
+  const mesh = new Mesh(geometry, body)
+  mesh.userData.type = isDraftSegment
+    ? CIRCLE_SEGMENT_DASH
+    : CIRCLE_SEGMENT_BODY
+
+  group.userData = {
+    type: CIRCLE_SEGMENT,
+    id,
+    from,
+    to,
+    radius,
+    center,
+    ccw: true,
+    prevSegment,
+    pathToNode,
+    isSelected,
+    baseColor,
+  }
+  group.name = CIRCLE_SEGMENT
+
+  const arrowGroup = createArrowhead(scale, theme, color)
+  arrowGroup.position.set(
+    center[0] + Math.cos(Math.PI / 4) * radius,
+    center[1] + Math.sin(Math.PI / 4) * radius,
+    0
+  )
+
+  const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
+  circleCenterGroup.position.set(center[0], center[1], 0)
+  const arrowheadAngle = Math.PI / 4
+  arrowGroup.quaternion.setFromUnitVectors(
+    new Vector3(0, 1, 0),
+    new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+  )
+  const pxLength = (radius * 2 * Math.PI) / scale
+  const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
+
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+  const extraSegmentAngle = 0
+  const extraSegmentOffset = new Vector2(
+    Math.cos(extraSegmentAngle) * radius,
+    Math.sin(extraSegmentAngle) * radius
+  )
+  extraSegmentGroup.position.set(
+    center[0] + extraSegmentOffset.x,
+    center[1] + extraSegmentOffset.y,
+    0
+  )
+
+  extraSegmentGroup.visible = !shouldHide
+
+  group.add(mesh, arrowGroup, circleCenterGroup, extraSegmentGroup)
+
+  return group
+}
 export function tangentialArcToSegment({
   prevSegment,
   from,

@@ -1611,6 +1611,37 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   tangentialArcTo,
 } as const
 
+export function changeCircleArguments(
+  node: Program,
+  programMemory: ProgramMemory,
+  sourceRange: SourceRange,
+  center: [number, number],
+  radius: number
+): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+  const _node = { ...node }
+  const thePath = getNodePathFromSourceRange(_node, sourceRange)
+  const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
+  if (err(nodeMeta)) return nodeMeta
+
+  const { node: callExpression, shallowPath } = nodeMeta
+
+  if (callExpression?.callee?.name === 'circle') {
+    const newCenter = createArrayExpression([
+      createLiteral(roundOff(center[0])),
+      createLiteral(roundOff(center[1])),
+    ])
+    const newRadius = createLiteral(roundOff(radius))
+    callExpression.arguments[0] = newCenter
+    callExpression.arguments[1] = newRadius
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  }
+
+  return new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
+}
+
 export function changeSketchArguments(
   node: Program,
   programMemory: ProgramMemory,
