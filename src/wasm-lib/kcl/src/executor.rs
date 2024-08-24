@@ -4,6 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kittycad::types::ModelingSessionData;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -1613,8 +1614,11 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
-    // Show grid?
+    /// Show grid?
     pub show_grid: bool,
+    /// Should engine store this for replay?
+    /// If so, under what name?
+    pub replay: Option<String>,
 }
 
 impl Default for ExecutorSettings {
@@ -1624,6 +1628,7 @@ impl Default for ExecutorSettings {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         }
     }
 }
@@ -1635,6 +1640,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1646,6 +1652,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1657,6 +1664,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1665,11 +1673,8 @@ impl ExecutorContext {
     /// Create a new default executor context.
     /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_headers(
-        client: &kittycad::Client,
-        settings: ExecutorSettings,
-    ) -> Result<(Self, http::HeaderMap)> {
-        let (ws, headers) = client
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
@@ -1679,6 +1684,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                settings.replay.clone(),
                 if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
@@ -1701,21 +1707,13 @@ impl ExecutorContext {
             )
             .await?;
 
-        let slf = Self {
+        Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             settings,
             is_mock: false,
-        };
-        Ok((slf, headers))
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    /// Create a new default executor context.
-    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let (slf, _headers) = Self::new_with_headers(client, settings).await?;
-        Ok(slf)
+        })
     }
 
     /// For executing unit tests.
@@ -1755,6 +1753,7 @@ impl ExecutorContext {
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
+                replay: None,
             },
         )
         .await?;
@@ -1774,6 +1773,16 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
     ) -> Result<ProgramMemory, KclError> {
+        self.run_with_session_data(program, memory).await.map(|x| x.0)
+    }
+    /// Perform the execution of a program.
+    /// You can optionally pass in some initialization memory.
+    /// Kurt uses this for partial execution.
+    pub async fn run_with_session_data(
+        &self,
+        program: &crate::ast::types::Program,
+        memory: Option<ProgramMemory>,
+    ) -> Result<(ProgramMemory, Option<ModelingSessionData>), KclError> {
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
@@ -1790,13 +1799,16 @@ impl ExecutorContext {
             Default::default()
         };
         let mut dynamic_state = DynamicState::default();
-        self.inner_execute(
-            program,
-            &mut memory,
-            &mut dynamic_state,
-            crate::executor::BodyType::Root,
-        )
-        .await
+        let final_memory = self
+            .inner_execute(
+                program,
+                &mut memory,
+                &mut dynamic_state,
+                crate::executor::BodyType::Root,
+            )
+            .await?;
+        let session_data = self.engine.get_session_data();
+        Ok((final_memory, session_data))
     }
 
     /// Execute an AST's program.
