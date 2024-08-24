@@ -49,7 +49,13 @@ describe('getCurrentProjectFile', () => {
     try {
       const state = await getCurrentProjectFile('.')
 
-      expect(state).toBe(path.join(tmpProjectDir, 'main.kcl'))
+      if (state instanceof Error) {
+        throw state
+      }
+
+      expect(state.replace('/private', '')).toBe(
+        path.join(tmpProjectDir, 'main.kcl')
+      )
     } finally {
       process.chdir(originalCwd)
       await fs.rm(tmpProjectDir, { recursive: true, force: true })
