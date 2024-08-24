@@ -1,7 +1,6 @@
 import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
-import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 
 import {
@@ -475,18 +474,6 @@ export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
-}
-
-let appStateStore: ProjectState | undefined = undefined
-
-export const getState = async (): Promise<ProjectState | undefined> => {
-  return Promise.resolve(appStateStore)
-}
-
-export const setState = async (
-  state: ProjectState | undefined
-): Promise<void> => {
-  appStateStore = state
 }
 
 export const getUser = async (

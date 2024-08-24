@@ -49,13 +49,19 @@ impl ProjectState {
                 .await
                 .map_err(|e| anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e))?;
 
-            // Check if we have a main.kcl file in the project.
-            let project_file = source_path.join(crate::settings::types::DEFAULT_PROJECT_KCL_FILE);
+            let mut project_file = source_path.join(crate::settings::types::DEFAULT_PROJECT_KCL_FILE);
+            if project.kcl_file_count == 0 {
+                // Check if we have a main.kcl file in the project.
+                if !project_file.exists() {
+                    // Check if we have any kcl files in the project.
 
-            if !project_file.exists() {
-                // Create the default file in the project.
-                // Write the initial project file.
-                tokio::fs::write(&project_file, vec![]).await?;
+                    // Create the default file in the project.
+                    // Write the initial project file.
+                    tokio::fs::write(&project_file, vec![]).await?;
+                }
+            } else {
+                // Open the first kcl file in the project.
+                project_file = project.default_file.clone().into();
             }
 
             return Ok(ProjectState {
@@ -673,6 +679,34 @@ mod tests {
             state.project.default_file,
             tmp_project_dir.join("main.kcl").display().to_string()
         );
+
+        std::fs::remove_dir_all(tmp_project_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_project_state_new_from_path_dir_main_kcl_not_exists_other_kcl_does() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let tmp_project_dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&tmp_project_dir).unwrap();
+        std::fs::write(tmp_project_dir.join("other.kcl"), vec![]).unwrap();
+
+        let state = super::ProjectState::new_from_path(tmp_project_dir.clone())
+            .await
+            .unwrap();
+
+        assert_eq!(state.project.file.name, name);
+        assert_eq!(state.project.file.path, tmp_project_dir.display().to_string());
+        assert_eq!(
+            state.current_file,
+            Some(tmp_project_dir.join("other.kcl").display().to_string())
+        );
+        assert_eq!(
+            state.project.default_file,
+            tmp_project_dir.join("other.kcl").display().to_string()
+        );
+
+        // make sure we didn't create a main.kcl file
+        assert!(!tmp_project_dir.join("main.kcl").exists());
 
         std::fs::remove_dir_all(tmp_project_dir).unwrap();
     }

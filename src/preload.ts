@@ -5,6 +5,7 @@ import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
+import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -60,6 +61,9 @@ const listMachines = async (): Promise<MachinesListing> => {
 const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
+const loadProjectAtStartup = async (): Promise<ProjectState | null> =>
+  ipcRenderer.invoke('loadProjectAtStartup')
+
 contextBridge.exposeInMainWorld('electron', {
   login,
   // Passing fs directly is not recommended since it gives a lot of power
@@ -93,6 +97,7 @@ contextBridge.exposeInMainWorld('electron', {
     isWindows,
     isLinux,
   },
+  loadProjectAtStartup,
   // IMPORTANT NOTE: kittycad.ts reads process.env.BASE_URL. But there is
   // no way to set it across the bridge boundary. We need to make it a command.
   setBaseUrl: (value: string) => (process.env.BASE_URL = value),
