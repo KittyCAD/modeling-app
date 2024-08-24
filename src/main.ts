@@ -167,7 +167,7 @@ app.on('ready', () => {
   updateElectronApp({
     updateSource: {
       type: UpdateSourceType.StaticStorage,
-      baseUrl: `${updaterBucketUrl}/${process.platform}/${process.arch}`
-    }
+      baseUrl: `${updaterBucketUrl}/${process.platform}/${process.arch}`,
+    },
   })
 })
