@@ -151,6 +151,32 @@ export function platform(): Platform {
         return ''
     }
   }
+
+  // navigator.platform is deprecated, but many browsers still support it, and
+  // it's more accurate than userAgent and userAgentData in Playwright.
+  if (
+    navigator.platform?.indexOf('Mac') === 0 ||
+    navigator.platform === 'iPhone'
+  ) {
+    return 'macos'
+  }
+  if (navigator.platform === 'Win32') {
+    return 'windows'
+  }
+
+  // Chrome only, but more accurate than userAgent.
+  let userAgentDataPlatform: unknown
+  if (
+    'userAgentData' in navigator &&
+    navigator.userAgentData &&
+    typeof navigator.userAgentData === 'object' &&
+    'platform' in navigator.userAgentData
+  ) {
+    userAgentDataPlatform = navigator.userAgentData.platform
+    if (userAgentDataPlatform === 'macOS') return 'macos'
+    if (userAgentDataPlatform === 'Windows') return 'windows'
+  }
+
   if (navigator.userAgent.indexOf('Mac') !== -1) {
     return 'macos'
   } else if (navigator.userAgent.indexOf('Win') !== -1) {
@@ -158,7 +184,12 @@ export function platform(): Platform {
   } else if (navigator.userAgent.indexOf('Linux') !== -1) {
     return 'linux'
   }
-  console.error('Unknown platform userAgent:', navigator.userAgent)
+  console.error(
+    'Unknown platform userAgent:',
+    navigator.platform,
+    userAgentDataPlatform,
+    navigator.userAgent
+  )
   return ''
 }
 

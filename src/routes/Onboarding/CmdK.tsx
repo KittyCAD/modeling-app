@@ -2,6 +2,8 @@ import usePlatform from 'hooks/usePlatform'
 import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { hotkeyDisplay } from 'lib/hotkeyWrapper'
+import { COMMAND_PALETTE_HOTKEY } from 'components/CommandBar/CommandBar'
 
 export default function CmdK() {
   const { context } = useModelingContext()
@@ -20,15 +22,9 @@ export default function CmdK() {
         <h2 className="text-2xl font-bold">Command Bar</h2>
         <p className="my-4">
           Press{' '}
-          {platformName === 'macos' ? (
-            <>
-              <kbd className={kbdClasses}>⌘K</kbd>
-            </>
-          ) : (
-            <>
-              <kbd className={kbdClasses}>Ctrl + /</kbd>
-            </>
-          )}{' '}
+          <kbd className={kbdClasses}>
+            {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platformName)}
+          </kbd>{' '}
           to open the command bar. Try changing your theme with it.
         </p>
         <p className="my-4">
