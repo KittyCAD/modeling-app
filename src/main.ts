@@ -9,7 +9,7 @@ import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
 import minimist from 'minimist'
-import { getProjectState } from '@kittycad/kcl.ts'
+import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs()
@@ -170,6 +170,13 @@ ipcMain.handle('find_machine_api', () => {
 })
 
 ipcMain.handle('loadProjectAtStartup', async () => {
+  // If we are in development mode, we don't want to load a project at
+  // startup.
+  // Since the args passed are always '.'
+  if (NODE_ENV !== 'production') {
+    return null
+  }
+
   let projectPath: string | null = null
   // macOS: open-file events that were received before the app is ready
   const macOpenFiles: string[] = (global as any).macOpenFiles
@@ -206,10 +213,15 @@ ipcMain.handle('loadProjectAtStartup', async () => {
   if (projectPath) {
     // We have a project path, load the project information.
     console.log(`Loading project at startup: ${projectPath}`)
-    const state = await getProjectState(projectPath)
-    //console.log('Project state:', JSON.stringify(state))
+    try {
+      const currentFile = await getCurrentProjectFile(projectPath)
+      console.log(`Project loaded: ${currentFile}`)
+      return currentFile
+    } catch (e) {
+      console.error(e)
+    }
 
-    return state
+    return null
   }
 
   return null

@@ -5,7 +5,6 @@ import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
-import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -61,7 +60,7 @@ const listMachines = async (): Promise<MachinesListing> => {
 const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
-const loadProjectAtStartup = async (): Promise<ProjectState | null> =>
+const loadProjectAtStartup = async (): Promise<string | null> =>
   ipcRenderer.invoke('loadProjectAtStartup')
 
 contextBridge.exposeInMainWorld('electron', {
