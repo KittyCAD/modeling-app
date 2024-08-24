@@ -156,6 +156,7 @@ jobs:
           name: out
           path: |
             out/make/**/arm64/*
+            out/make/*.dmg
             out/publish-dry-run/*/*
 
       - name: Make the app for x64

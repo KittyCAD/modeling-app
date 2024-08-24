@@ -1,5 +1,7 @@
 import type { ForgeConfig } from '@electron-forge/shared-types'
 import { MakerSquirrel } from '@electron-forge/maker-squirrel'
+import { MakerWix } from '@electron-forge/maker-wix'
+import { MakerDMG } from '@electron-forge/maker-dmg'
 import { MakerZIP } from '@electron-forge/maker-zip'
 import { MakerDeb } from '@electron-forge/maker-deb'
 import { MakerRpm } from '@electron-forge/maker-rpm'
@@ -28,9 +30,11 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel((arch) => ({
       // TODO: reactive once we have releases live
-      // remoteReleases: `https://${process.env.WEBSITE_DIR}/win32/${arch}`,
+      remoteReleases: `https://${process.env.WEBSITE_DIR}/win32/${arch}`,
       setupIcon: path.resolve(rootDir, 'assets', 'icon.ico'),
     })),
+    new MakerWix(),
+    new MakerDMG(),
     new MakerZIP(
       (arch) => ({
         macUpdateManifestBaseUrl: `https://${process.env.WEBSITE_DIR}/darwin/${arch}`,
