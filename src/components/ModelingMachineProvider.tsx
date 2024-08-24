@@ -50,6 +50,7 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
+  CIRCLE_SEGMENT,
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
@@ -179,6 +180,7 @@ export const ModelingMachineProvider = ({
               const parent = getParentGroup(event.data.on, [
                 STRAIGHT_SEGMENT,
                 TANGENTIAL_ARC_TO_SEGMENT,
+                CIRCLE_SEGMENT,
               ])
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
@@ -196,6 +198,7 @@ export const ModelingMachineProvider = ({
               const mouseOnParent = getParentGroup(mouseState.on, [
                 STRAIGHT_SEGMENT,
                 TANGENTIAL_ARC_TO_SEGMENT,
+                CIRCLE_SEGMENT,
               ])
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
                 return segmentHoverMap

@@ -918,9 +918,9 @@ export class SceneEntities {
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
           const sketchGroup = sketchGroupFromKclValue(
-          programMemory.get(
+            programMemory.get(variableDeclarationName),
             variableDeclarationName
-          ), variableDeclarationName)
+          )
           if (err(sketchGroup)) return Promise.reject(sketchGroup)
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
@@ -1322,7 +1322,6 @@ export class SceneEntities {
             (group.userData.center[0] - dragTo[0]) ** 2
         )
       )
-      console.log('modded', modded)
     } else if (
       group.name === CIRCLE_SEGMENT &&
       subGroup?.name === CIRCLE_CENTER_HANDLE
@@ -1335,7 +1334,6 @@ export class SceneEntities {
         dragTo,
         group.userData.radius
       )
-      console.log('modded', modded)
     } else {
       modded = changeSketchArguments(
         modifiedAst,
@@ -1630,7 +1628,7 @@ export class SceneEntities {
 
     const hoveredParent =
       sceneInfra.hoveredObject &&
-      getParentGroup(sceneInfra.hoveredObject, [TANGENTIAL_ARC_TO_SEGMENT])
+      getParentGroup(sceneInfra.hoveredObject, [CIRCLE_SEGMENT])
     let isHandlesVisible = !shouldHideIdle
     if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
       isHandlesVisible = !shouldHideHover
@@ -1899,6 +1897,7 @@ export class SceneEntities {
         const parent = getParentGroup(selected, [
           STRAIGHT_SEGMENT,
           TANGENTIAL_ARC_TO_SEGMENT,
+          CIRCLE_SEGMENT,
           PROFILE_START,
         ])
         if (parent?.userData?.pathToNode) {
@@ -1964,6 +1963,7 @@ export class SceneEntities {
         const parent = getParentGroup(selected, [
           STRAIGHT_SEGMENT,
           TANGENTIAL_ARC_TO_SEGMENT,
+          CIRCLE_SEGMENT,
           PROFILE_START,
         ])
         if (parent) {
@@ -2161,7 +2161,11 @@ function prepareTruncatedMemoryAndAst(
 
 export function getParentGroup(
   object: any,
-  stopAt: string[] = [STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT]
+  stopAt: string[] = [
+    STRAIGHT_SEGMENT,
+    TANGENTIAL_ARC_TO_SEGMENT,
+    CIRCLE_SEGMENT,
+  ]
 ): Group | null {
   if (stopAt.includes(object?.userData?.type)) {
     return object
