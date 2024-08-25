@@ -103,6 +103,10 @@ test.describe('Editor tests', () => {
   |> line([-20, 0], %)
   |> close(%)`)
 
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
@@ -114,6 +118,10 @@ test.describe('Editor tests', () => {
 
     await page.locator('#code-pane button:first-child').click()
     await page.locator('button:has-text("Format code")').click()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch_001 = startSketchOn('XY')
