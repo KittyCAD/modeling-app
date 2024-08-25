@@ -2,7 +2,7 @@
 // template that ElectronJS provides.
 
 import dotenv from 'dotenv'
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
+import { app, BrowserWindow, protocol, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
@@ -10,6 +10,8 @@ import { Bonjour, Service } from 'bonjour-service'
 import * as kittycad from '@kittycad/lib/import'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
+
+let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs()
@@ -27,12 +29,27 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-// Global app listeners
-// Must be done before ready event
-registerListeners()
+// Register custom schemes with privileges.
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'zoo-studio',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      allowServiceWorkers: true,
+      codeCache: true,
+    },
+  },
+])
 
-const createWindow = () => {
-  const mainWindow = new BrowserWindow({
+// Global app listeners
+// Must be done before ready event.
+registerStartupListeners()
+
+const createWindow = (): BrowserWindow => {
+  const newWindow = new BrowserWindow({
     autoHideMenuBar: true,
     show: false,
     width: 1800,
@@ -44,13 +61,15 @@ const createWindow = () => {
       preload: path.join(__dirname, './preload.js'),
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+    frame: false,
+    titleBarStyle: 'hiddenInset',
   })
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
-    mainWindow.loadFile(
+    newWindow.loadFile(
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     )
   }
@@ -58,7 +77,9 @@ const createWindow = () => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  mainWindow.show()
+  newWindow.show()
+
+  return newWindow
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -73,7 +94,10 @@ app.on('window-all-closed', () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', (event, data) => {
+  // Create the mainWindow
+  mainWindow = createWindow()
+})
 
 // For now there is no good reason to separate these out to another file(s)
 // There is just not enough code to warrant it and further abstracts everything
@@ -231,7 +255,7 @@ function parseCLIArgs(): minimist.ParsedArgs {
   return minimist(process.argv, {})
 }
 
-function registerListeners() {
+function registerStartupListeners() {
   /**
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
@@ -241,6 +265,10 @@ function registerListeners() {
   global['macOpenFiles'] = macOpenFiles
   app.on('open-file', function (event, path) {
     macOpenFiles.push(path)
+    // If we have a mainWindow, lets open another window.
+    if (mainWindow) {
+      createWindow()
+    }
   })
 
   /**
