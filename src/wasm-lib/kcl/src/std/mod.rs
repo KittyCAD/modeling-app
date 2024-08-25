@@ -18,6 +18,7 @@ pub mod shapes;
 pub mod shell;
 pub mod sketch;
 pub mod types;
+pub mod units;
 pub mod utils;
 
 use std::collections::HashMap;
@@ -94,6 +95,7 @@ lazy_static! {
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
         Box::new(crate::std::shell::Shell),
+        Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
@@ -118,6 +120,12 @@ lazy_static! {
         Box::new(crate::std::math::Ln),
         Box::new(crate::std::math::ToDegrees),
         Box::new(crate::std::math::ToRadians),
+        Box::new(crate::std::units::Mm),
+        Box::new(crate::std::units::Inch),
+        Box::new(crate::std::units::Ft),
+        Box::new(crate::std::units::M),
+        Box::new(crate::std::units::Cm),
+        Box::new(crate::std::units::Yd),
         Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
         Box::new(crate::std::assert::AssertEqual),

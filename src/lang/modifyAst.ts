@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  SketchGroup,
+  sketchGroupFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -563,6 +563,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
 }
@@ -576,7 +577,7 @@ export function createPipeExpression(
     end: 0,
     digest: null,
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
+    nonCodeMeta: nonCodeMetaEmpty(),
   }
 }
 
@@ -612,6 +613,7 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
@@ -980,7 +982,11 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
+          const sketchToPreserve = sketchGroupFromKclValue(
+            programMemory.get(sketchName),
+            sketchName
+          )
+          if (err(sketchToPreserve)) return sketchToPreserve
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict
@@ -1059,4 +1065,8 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+const nonCodeMetaEmpty = () => {
+  return { nonCodeNodes: {}, start: [], digest: null }
 }

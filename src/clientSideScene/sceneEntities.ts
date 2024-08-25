@@ -50,6 +50,7 @@ import {
   ExtrudeGroup,
   VariableDeclaration,
   VariableDeclarator,
+  sketchGroupFromKclValue,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -74,7 +75,13 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isOverlap, normaliseAngle, roundOff, throttle } from 'lib/utils'
+import {
+  isArray,
+  isOverlap,
+  normaliseAngle,
+  roundOff,
+  throttle,
+} from 'lib/utils'
 import {
   addStartProfileAt,
   createArrayExpression,
@@ -98,6 +105,7 @@ import {
 import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -114,6 +122,8 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
+
+type Vec3Array = [number, number, number]
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -383,7 +393,7 @@ export class SceneEntities {
     if (err(sketchGroup)) return Promise.reject(sketchGroup)
     if (!sketchGroup) return Promise.reject('sketchGroup not found')
 
-    if (!Array.isArray(sketchGroup?.value))
+    if (!isArray(sketchGroup?.value))
       return {
         truncatedAst,
         programMemoryOverride,
@@ -588,10 +598,12 @@ export class SceneEntities {
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
 
-    const sg = kclManager.programMemory.get(
+    const sg = sketchGroupFromKclValue(
+      kclManager.programMemory.get(variableDeclarationName),
       variableDeclarationName
-    ) as SketchGroup
-    const lastSeg = sg?.value?.slice(-1)[0] || sg.start
+    )
+    if (err(sg)) return sg
+    const lastSeg = sg.value?.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
 
@@ -786,9 +798,11 @@ export class SceneEntities {
           programMemoryOverride,
         })
         this.sceneProgramMemory = programMemory
-        const sketchGroup = programMemory.get(
+        const sketchGroup = sketchGroupFromKclValue(
+          programMemory.get(variableDeclarationName),
           variableDeclarationName
-        ) as SketchGroup
+        )
+        if (err(sketchGroup)) return sketchGroup
         const sgPaths = sketchGroup.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -840,9 +854,11 @@ export class SceneEntities {
 
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
-          const sketchGroup = programMemory.get(
+          const sketchGroup = sketchGroupFromKclValue(
+            programMemory.get(variableDeclarationName),
             variableDeclarationName
-          ) as SketchGroup
+          )
+          if (err(sketchGroup)) return sketchGroup
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -1111,8 +1127,12 @@ export class SceneEntities {
 
       const maybeSketchGroup = programMemory.get(variableDeclarationName)
       let sketchGroup = undefined
-      if (maybeSketchGroup?.type === 'SketchGroup') {
-        sketchGroup = maybeSketchGroup
+      const sg = sketchGroupFromKclValue(
+        maybeSketchGroup,
+        variableDeclarationName
+      )
+      if (!err(sg)) {
+        sketchGroup = sg
       } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
         sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
       }
@@ -1656,9 +1676,12 @@ function prepareTruncatedMemoryAndAst(
   )
   if (err(_node)) return _node
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
-  const lastSeg = (
-    programMemory.get(variableDeclarationName) as SketchGroup
-  ).value.slice(-1)[0]
+  const sg = sketchGroupFromKclValue(
+    programMemory.get(variableDeclarationName),
+    variableDeclarationName
+  )
+  if (err(sg)) return sg
+  const lastSeg = sg?.value.slice(-1)[0]
   if (draftSegment) {
     // truncatedAst needs to setup with another segment at the end
     let newSegment
@@ -1782,10 +1805,11 @@ export function sketchGroupFromPathToNode({
   if (result?.type === 'ExtrudeGroup') {
     return result.sketchGroup
   }
-  if (result?.type === 'SketchGroup') {
-    return result
+  const sg = sketchGroupFromKclValue(result, varDec?.id?.name)
+  if (err(sg)) {
+    return null
   }
-  return null
+  return sg
 }
 
 function colorSegment(object: any, color: number) {
@@ -1823,6 +1847,7 @@ export function getSketchQuaternion(
   })
   if (err(sketchGroup)) return sketchGroup
   const zAxis = sketchGroup?.on.zAxis || sketchNormalBackUp
+  if (!zAxis) return Error('SketchGroup zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
@@ -1947,8 +1972,6 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   return quaternion
 }
 
-function massageFormats(a: any): Vector3 {
-  return Array.isArray(a)
-    ? new Vector3(a[0], a[1], a[2])
-    : new Vector3(a.x, a.y, a.z)
+function massageFormats(a: Vec3Array | Point3d): Vector3 {
+  return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
 }

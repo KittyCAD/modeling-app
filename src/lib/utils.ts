@@ -1,8 +1,16 @@
 import { SourceRange } from '../lang/wasm'
 
 import { v4 } from 'uuid'
+import { isDesktop } from './isDesktop'
 
 export const uuidv4 = v4
+
+/**
+ * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
+ */
+export function isArray(val: any): val is unknown[] {
+  return Array.isArray(val)
+}
 
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
@@ -117,6 +125,72 @@ export function getNormalisedCoordinates({
     x: Math.round((browserX / width) * streamWidth),
     y: Math.round((browserY / height) * streamHeight),
   }
+}
+
+// TODO: Remove the empty platform type.
+export type Platform = 'macos' | 'windows' | 'linux' | ''
+
+export function platform(): Platform {
+  if (isDesktop()) {
+    const platform = window.electron.platform ?? ''
+    // https://nodejs.org/api/process.html#processplatform
+    switch (platform) {
+      case 'darwin':
+        return 'macos'
+      case 'win32':
+        return 'windows'
+      // We don't currently care to distinguish between these.
+      case 'android':
+      case 'freebsd':
+      case 'linux':
+      case 'openbsd':
+      case 'sunos':
+        return 'linux'
+      default:
+        console.error('Unknown platform:', platform)
+        return ''
+    }
+  }
+
+  // navigator.platform is deprecated, but many browsers still support it, and
+  // it's more accurate than userAgent and userAgentData in Playwright.
+  if (
+    navigator.platform?.indexOf('Mac') === 0 ||
+    navigator.platform === 'iPhone'
+  ) {
+    return 'macos'
+  }
+  if (navigator.platform === 'Win32') {
+    return 'windows'
+  }
+
+  // Chrome only, but more accurate than userAgent.
+  let userAgentDataPlatform: unknown
+  if (
+    'userAgentData' in navigator &&
+    navigator.userAgentData &&
+    typeof navigator.userAgentData === 'object' &&
+    'platform' in navigator.userAgentData
+  ) {
+    userAgentDataPlatform = navigator.userAgentData.platform
+    if (userAgentDataPlatform === 'macOS') return 'macos'
+    if (userAgentDataPlatform === 'Windows') return 'windows'
+  }
+
+  if (navigator.userAgent.indexOf('Mac') !== -1) {
+    return 'macos'
+  } else if (navigator.userAgent.indexOf('Win') !== -1) {
+    return 'windows'
+  } else if (navigator.userAgent.indexOf('Linux') !== -1) {
+    return 'linux'
+  }
+  console.error(
+    'Unknown platform userAgent:',
+    navigator.platform,
+    userAgentDataPlatform,
+    navigator.userAgent
+  )
+  return ''
 }
 
 export function isReducedMotion(): boolean {

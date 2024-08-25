@@ -1,8 +1,6 @@
 import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
-import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
-import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { Project, FileEntry } from 'lib/project'
 
 import {
   defaultAppSettings,
@@ -19,7 +17,6 @@ import {
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-export { parseProjectRoute } from 'lang/wasm'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -39,7 +36,7 @@ export async function renameProjectDirectory(
 
   // Make sure the new name does not exist.
   const newPath = window.electron.path.join(
-    projectPath.split('/').slice(0, -1).join('/'),
+    window.electron.path.dirname(projectPath),
     newName
   )
   try {
@@ -186,9 +183,9 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
 
-  const pathParts = path.split(window.electron.path.sep)
+  const name = window.electron.path.basename(path)
   let entry: FileEntry = {
-    name: pathParts.slice(-1)[0],
+    name: name,
     path,
     children: [],
   }
@@ -330,7 +327,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
       new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
-
   let walked = await collectAllFilesRecursiveFrom(projectPath)
   let default_file = await getDefaultKclFileForDir(projectPath, walked)
   const metadata = await window.electron.stat(projectPath)
@@ -443,46 +439,40 @@ export const readProjectSettingsFile = async (
   return configObj
 }
 
+/**
+ * Read the app settings file, or creates an initial one if it doesn't exist.
+ */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
-  try {
-    await window.electron.stat(settingsPath)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      const config = defaultAppSettings()
-      if (err(config)) return Promise.reject(config)
-      if (!config.settings?.app)
-        return Promise.reject(new Error('config.app is falsey'))
 
-      config.settings.app.project_directory = await getInitialDefaultDir()
-      return config
+  // The file exists, read it and parse it.
+  if (window.electron.exists(settingsPath)) {
+    const configToml = await window.electron.readFile(settingsPath)
+    const configObj = parseAppSettings(configToml)
+    if (err(configObj)) {
+      return Promise.reject(configObj)
     }
-  }
-  const configToml = await window.electron.readFile(settingsPath)
-  const configObj = parseAppSettings(configToml)
-  if (err(configObj)) {
-    return Promise.reject(configObj)
+
+    return configObj
   }
 
-  return configObj
+  // The file doesn't exist, create a new one.
+  // This defaultAppConfig is truly an empty object every time.
+  const defaultAppConfig = defaultAppSettings()
+  if (err(defaultAppConfig)) {
+    return Promise.reject(defaultAppConfig)
+  }
+  const initialDirConfig: DeepPartial<Configuration> = {
+    settings: { project: { directory: await getInitialDefaultDir() } },
+  }
+  const config = Object.assign(defaultAppConfig, initialDirConfig)
+  return config
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
-}
-
-let appStateStore: ProjectState | undefined = undefined
-
-export const getState = async (): Promise<ProjectState | undefined> => {
-  return Promise.resolve(appStateStore)
-}
-
-export const setState = async (
-  state: ProjectState | undefined
-): Promise<void> => {
-  appStateStore = state
 }
 
 export const getUser = async (

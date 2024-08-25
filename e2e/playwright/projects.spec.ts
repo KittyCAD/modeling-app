@@ -1,11 +1,13 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import {
   doExport,
+  executorInputPath,
   getUtils,
   isOutOfViewInScrollContainer,
   Paths,
   setupElectron,
   tearDown,
+  createProjectAndRenameIt,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -45,24 +47,19 @@ test(
   'click help/keybindings from project page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
         )
       },
     })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-
-    page.on('console', console.log)
 
     page.on('console', console.log)
 
@@ -92,17 +89,13 @@ test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/broken-code`, { recursive: true })
+        await fsp.mkdir(join(dir, 'broken-code'), { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/broken-code-test.kcl',
-          `${dir}/broken-code/main.kcl`
+          executorInputPath('broken-code-test.kcl'),
+          join(dir, 'broken-code', 'main.kcl')
         )
       },
     })
@@ -138,17 +131,14 @@ test.describe('Can export from electron app', () => {
       `Can export using ${method}`,
       { tag: '@electron' },
       async ({ browserName }, testInfo) => {
-        test.skip(
-          process.platform === 'win32',
-          'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-        )
         const { electronApp, page } = await setupElectron({
           testInfo,
           folderSetupFn: async (dir) => {
-            await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+            const bracketDir = join(dir, 'bracket')
+            await fsp.mkdir(bracketDir, { recursive: true })
             await fsp.copyFile(
-              'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-              `${dir}/bracket/main.kcl`
+              executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+              join(bracketDir, 'main.kcl')
             )
           },
         })
@@ -232,10 +222,6 @@ test(
   'Rename and delete projects, also spam arrow keys when renaming',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
@@ -468,7 +454,8 @@ test(
     await electronApp.close()
   }
 )
-test.fixme(
+
+test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
@@ -521,13 +508,72 @@ test.fixme(
 )
 
 test(
+  'Nested directories in project without main.kcl do not create main.kcl',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let testDir: string | undefined
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(join(dir, 'router-template-slate', 'nested'), {
+          recursive: true,
+        })
+        await fsp.copyFile(
+          executorInputPath('router-template-slate.kcl'),
+          join(dir, 'router-template-slate', 'nested', 'slate.kcl')
+        )
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(dir, 'router-template-slate', 'nested', 'bracket.kcl')
+        )
+        testDir = dir
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await test.step('Open the project', async () => {
+      await page.getByText('router-template-slate').click()
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      // It actually loads.
+      await expect(u.codeLocator).toContainText('mounting bracket')
+      await expect(u.codeLocator).toContainText('const radius =')
+    })
+
+    await u.openFilePanel()
+
+    // Find the current file.
+    const filesPane = page.locator('#files-pane')
+    await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
+    // But there's no main.kcl in the file tree browser.
+    await expect(filesPane.getByText('main.kcl')).not.toBeVisible()
+    // No main.kcl file is created on the filesystem.
+    expect(testDir).toBeDefined()
+    if (testDir !== undefined) {
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        fsp.access(join(testDir, 'router-template-slate', 'main.kcl'))
+      ).rejects.toThrow()
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        fsp.access(join(testDir, 'router-template-slate', 'nested', 'main.kcl'))
+      ).rejects.toThrow()
+    }
+
+    await electronApp.close()
+  }
+)
+
+test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -535,33 +581,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
+      await test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({ name, page })
       })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -619,13 +655,51 @@ test(
 )
 
 test(
+  'Can load a file with CRLF line endings',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        await fsp.mkdir(routerTemplateDir, { recursive: true })
+
+        const file = await fsp.readFile(
+          executorInputPath('router-template-slate.kcl'),
+          'utf-8'
+        )
+        // Replace both \r optionally so we don't end up with \r\r\n
+        const fileWithCRLF = file.replace(/\r?\n/g, '\r\n')
+        await fsp.writeFile(
+          join(routerTemplateDir, 'main.kcl'),
+          fileWithCRLF,
+          'utf-8'
+        )
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.getByText('router-template-slate').click()
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    await expect(u.codeLocator).toContainText('routerDiameter')
+    await expect(u.codeLocator).toContainText('templateGap')
+    await expect(u.codeLocator).toContainText('minClampingDistance')
+
+    await electronApp.close()
+  }
+)
+
+test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
     })
@@ -635,33 +709,23 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameIt = async (name: string) =>
-      test.step(`Create and rename project ${name}`, async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await expect(page.getByText('Successfully created')).toBeVisible()
-        await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-        await expect(page.getByText(`project-000`)).toBeVisible()
-        await page.getByText(`project-000`).hover()
-        await page.getByText(`project-000`).focus()
-
-        await page.getByLabel('sketch').first().click()
-
-        await page.waitForTimeout(100)
-
-        // type "updated project name"
-        await page.keyboard.press('Backspace')
-        await page.keyboard.type(name)
-
-        await page.getByLabel('checkmark').last().click()
+    const createProjectAndRenameItTest = async ({
+      name,
+      page,
+    }: {
+      name: string
+      page: Page
+    }) => {
+      await test.step(`Create and rename project ${name}`, async () => {
+        await createProjectAndRenameIt({ name, page })
       })
+    }
 
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameIt('router-template-slate')
-    // await createProjectAndRenameIt('focusrite_scarlett_mounting_braket')
-    await createProjectAndRenameIt('bracket')
-    await createProjectAndRenameIt('lego')
+    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
+    await createProjectAndRenameItTest({ name: 'bracket', page })
+    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -748,10 +812,6 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({ testInfo })
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -836,25 +896,35 @@ test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
         await Promise.all([
-          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+          fsp.mkdir(join(dir, 'router-template-slate'), { recursive: true }),
+          fsp.mkdir(join(dir, 'bracket'), { recursive: true }),
         ])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/router-template-slate/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'router-template-slate.kcl'
+            ),
+            join(dir, 'router-template-slate', 'main.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            join(
+              'src',
+              'wasm-lib',
+              'tests',
+              'executor',
+              'inputs',
+              'focusrite_scarlett_mounting_braket.kcl'
+            ),
+            join(dir, 'bracket', 'main.kcl')
           ),
         ])
       },
@@ -1053,10 +1123,6 @@ test(
   'Search projects on desktop home',
   { tag: '@electron' },
   async ({ browserName: _ }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_braket.kcl'],
       ['basic-cube', 'basic_fillet_cube_end.kcl'],
@@ -1071,7 +1137,7 @@ test(
         for (const [name, file] of projectData) {
           await fsp.mkdir(join(dir, name), { recursive: true })
           await fsp.copyFile(
-            join('src', 'wasm-lib', 'tests', 'executor', 'inputs', file),
+            executorInputPath(file),
             join(dir, name, `main.kcl`)
           )
         }
@@ -1118,14 +1184,11 @@ test(
   'file pane is scrollable when there are many files',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/testProject`, { recursive: true })
+        const testDir = join(dir, 'testProject')
+        await fsp.mkdir(testDir, { recursive: true })
         const fileNames = [
           'angled_line.kcl',
           'basic_fillet_cube_close_opposite.kcl',
@@ -1189,8 +1252,8 @@ test(
         ]
         for (const fileName of fileNames) {
           await fsp.copyFile(
-            `src/wasm-lib/tests/executor/inputs/${fileName}`,
-            `${dir}/testProject/${fileName}`
+            executorInputPath(fileName),
+            join(testDir, fileName)
           )
         }
       },
@@ -1231,19 +1294,16 @@ test(
   'select all in code editor does not actually select all, just what is visible (regression)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
         // src/wasm-lib/tests/executor/inputs/mike_stress_test.kcl
         const name = 'mike_stress_test'
-        await fsp.mkdir(`${dir}/${name}`, { recursive: true })
+        const testDir = join(dir, name)
+        await fsp.mkdir(testDir, { recursive: true })
         await fsp.copyFile(
-          `src/wasm-lib/tests/executor/inputs/${name}.kcl`,
-          `${dir}/${name}/main.kcl`
+          executorInputPath(`${name}.kcl`),
+          join(testDir, 'main.kcl')
         )
       },
     })
@@ -1254,18 +1314,13 @@ test(
 
     await page.getByText('mike_stress_test').click()
 
-    const modifier =
-      process.platform === 'win32' || process.platform === 'linux'
-        ? 'Control'
-        : 'Meta'
-
     await test.step('select all in code editor, check its length', async () => {
       await u.codeLocator.click()
       // expect u.codeLocator to have some text
       await expect(u.codeLocator).toContainText('line(')
-      await page.keyboard.down(modifier)
+      await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
-      await page.keyboard.up(modifier)
+      await page.keyboard.up('ControlOrMeta')
 
       // check the length of the selected text
       const selectedText = await page.evaluate(() => {
@@ -1281,9 +1336,9 @@ test(
     await test.step('delete all the text, select again and verify there are no characters left', async () => {
       await page.keyboard.press('Backspace')
 
-      await page.keyboard.down(modifier)
+      await page.keyboard.down('ControlOrMeta')
       await page.keyboard.press('KeyA')
-      await page.keyboard.up(modifier)
+      await page.keyboard.up('ControlOrMeta')
 
       // check the length of the selected text
       const selectedText = await page.evaluate(() => {
@@ -1302,10 +1357,6 @@ test(
   'Settings persist across restarts',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     await test.step('We can change a user setting like theme', async () => {
       const { electronApp, page } = await setupElectron({
         testInfo,
@@ -1350,27 +1401,16 @@ test.describe('Renaming in the file tree', () => {
     'A file you have open',
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'fileToRename.kcl')
           )
         },
@@ -1382,6 +1422,16 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const checkUnRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', 'fileToRename.kcl')
+        return fs.existsSync(filePath)
+      }
+      const newFileName = 'newFileName'
+      const checkRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
+        return fs.existsSync(filePath)
+      }
+
       const fileToRename = page
         .getByRole('listitem')
         .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
@@ -1390,7 +1440,6 @@ test.describe('Renaming in the file tree', () => {
         .filter({ has: page.getByRole('button', { name: 'newFileName.kcl' }) })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
-      const newFileName = 'newFileName'
       const codeLocator = page.locator('.cm-content')
 
       await test.step('Open project and file pane', async () => {
@@ -1401,6 +1450,8 @@ test.describe('Renaming in the file tree', () => {
 
         await u.openFilePanel()
         await expect(fileToRename).toBeVisible()
+        expect(checkUnRenamedFS()).toBeTruthy()
+        expect(checkRenamedFS()).toBeFalsy()
         await fileToRename.click()
         await expect(projectMenuButton).toContainText('fileToRename.kcl')
         await u.openKclCodePanel()
@@ -1419,6 +1470,8 @@ test.describe('Renaming in the file tree', () => {
       await test.step('Verify the file is renamed', async () => {
         await expect(fileToRename).not.toBeAttached()
         await expect(renamedFile).toBeVisible()
+        expect(checkUnRenamedFS()).toBeFalsy()
+        expect(checkRenamedFS()).toBeTruthy()
       })
 
       await test.step('Verify we navigated', async () => {
@@ -1442,27 +1495,16 @@ test.describe('Renaming in the file tree', () => {
     'A file you do not have open',
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'fileToRename.kcl')
           )
         },
@@ -1473,6 +1515,14 @@ test.describe('Renaming in the file tree', () => {
 
       // Constants and locators
       const newFileName = 'newFileName'
+      const checkUnRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', 'fileToRename.kcl')
+        return fs.existsSync(filePath)
+      }
+      const checkRenamedFS = () => {
+        const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
+        return fs.existsSync(filePath)
+      }
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const fileToRename = page
@@ -1493,6 +1543,8 @@ test.describe('Renaming in the file tree', () => {
 
         await u.openFilePanel()
         await expect(fileToRename).toBeVisible()
+        expect(checkUnRenamedFS()).toBeTruthy()
+        expect(checkRenamedFS()).toBeFalsy()
       })
 
       await test.step('Rename the file', async () => {
@@ -1506,6 +1558,8 @@ test.describe('Renaming in the file tree', () => {
       await test.step('Verify the file is renamed', async () => {
         await expect(fileToRename).not.toBeAttached()
         await expect(renamedFile).toBeVisible()
+        expect(checkUnRenamedFS()).toBeFalsy()
+        expect(checkRenamedFS()).toBeTruthy()
       })
 
       await test.step('Verify we have not navigated', async () => {
@@ -1532,30 +1586,19 @@ test.describe('Renaming in the file tree', () => {
     `A folder you're not inside`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
           await fsp.mkdir(join(dir, 'Test Project', 'folderToRename'), {
             recursive: true,
           })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'folderToRename', 'someFileWithin.kcl')
           )
         },
@@ -1573,8 +1616,17 @@ test.describe('Renaming in the file tree', () => {
       })
       const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-      const renameInput = page.getByPlaceholder('folderToRename')
+      const originalFolderName = 'folderToRename'
+      const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
+      const checkUnRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', originalFolderName)
+        return fs.existsSync(folderPath)
+      }
+      const checkRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', newFolderName)
+        return fs.existsSync(folderPath)
+      }
 
       await test.step('Open project and file pane', async () => {
         await expect(projectLink).toBeVisible()
@@ -1588,6 +1640,8 @@ test.describe('Renaming in the file tree', () => {
 
         await u.openFilePanel()
         await expect(folderToRename).toBeVisible()
+        expect(checkUnRenamedFolderFS()).toBeTruthy()
+        expect(checkRenamedFolderFS()).toBeFalsy()
       })
 
       await test.step('Rename the folder', async () => {
@@ -1607,6 +1661,8 @@ test.describe('Renaming in the file tree', () => {
         await expect(projectMenuButton).toContainText('main.kcl')
         await expect(renamedFolder).toBeVisible()
         await expect(folderToRename).not.toBeAttached()
+        expect(checkUnRenamedFolderFS()).toBeFalsy()
+        expect(checkRenamedFolderFS()).toBeTruthy()
       })
 
       await electronApp.close()
@@ -1617,12 +1673,7 @@ test.describe('Renaming in the file tree', () => {
     `A folder you are inside`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
-      const exampleDir = join('src', 'wasm-lib', 'tests', 'executor', 'inputs')
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -1630,11 +1681,11 @@ test.describe('Renaming in the file tree', () => {
             recursive: true,
           })
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'folderToRename', 'someFileWithin.kcl')
           )
         },
@@ -1655,8 +1706,17 @@ test.describe('Renaming in the file tree', () => {
         has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
       })
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
-      const renameInput = page.getByPlaceholder('folderToRename')
+      const originalFolderName = 'folderToRename'
+      const renameInput = page.getByPlaceholder(originalFolderName)
       const newFolderName = 'newFolderName'
+      const checkUnRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', originalFolderName)
+        return fs.existsSync(folderPath)
+      }
+      const checkRenamedFolderFS = () => {
+        const folderPath = join(dir, 'Test Project', newFolderName)
+        return fs.existsSync(folderPath)
+      }
 
       await test.step('Open project and navigate into folder', async () => {
         await expect(projectLink).toBeVisible()
@@ -1679,9 +1739,12 @@ test.describe('Renaming in the file tree', () => {
         expect(newUrl).toContain('folderToRename')
         expect(newUrl).toContain('someFileWithin.kcl')
         expect(newUrl).not.toContain('main.kcl')
+        expect(checkUnRenamedFolderFS()).toBeTruthy()
+        expect(checkRenamedFolderFS()).toBeFalsy()
       })
 
       await test.step('Rename the folder', async () => {
+        await page.waitForTimeout(60000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
@@ -1704,9 +1767,124 @@ test.describe('Renaming in the file tree', () => {
         expect(url).not.toContain('main.kcl')
         expect(url).toContain(newFolderName)
         expect(url).toContain('someFileWithin.kcl')
+        expect(checkUnRenamedFolderFS()).toBeFalsy()
+        expect(checkRenamedFolderFS()).toBeTruthy()
       })
 
       await electronApp.close()
     }
   )
 })
+
+test.describe('Deleting files from the file pane', () => {
+  test(
+    `when main.kcl exists, navigate to main.kcl`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          const testDir = join(dir, 'testProject')
+          await fsp.mkdir(testDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(testDir, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('basic_fillet_cube_end.kcl'),
+            join(testDir, 'fileToDelete.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      // Constants and locators
+      const projectCard = page.getByText('testProject')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const fileToDelete = page
+        .getByRole('listitem')
+        .filter({ has: page.getByRole('button', { name: 'fileToDelete.kcl' }) })
+      const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+      const deleteConfirmation = page.getByTestId('delete-confirmation')
+
+      await test.step('Open project and navigate to fileToDelete.kcl', async () => {
+        await projectCard.click()
+        await u.waitForPageLoad()
+        await u.openFilePanel()
+
+        await fileToDelete.click()
+        await u.waitForPageLoad()
+        await u.openKclCodePanel()
+        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        await u.closeKclCodePanel()
+      })
+
+      await test.step('Delete fileToDelete.kcl', async () => {
+        await fileToDelete.click({ button: 'right' })
+        await expect(deleteMenuItem).toBeVisible()
+        await deleteMenuItem.click()
+        await expect(deleteConfirmation).toBeVisible()
+        await deleteConfirmation.click()
+      })
+
+      await test.step('Check deletion and navigation', async () => {
+        await u.waitForPageLoad()
+        await expect(fileToDelete).not.toBeVisible()
+        await u.closeFilePanel()
+        await u.openKclCodePanel()
+        await expect(u.codeLocator).toContainText('circle(')
+        await expect(projectMenuButton).toContainText('main.kcl')
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  test.fixme('TODO - when main.kcl does not exist', async () => {})
+})
+
+test(
+  'Original project name persist after onboarding',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const getAllProjects = () => page.getByTestId('project-link').all()
+    page.on('console', console.log)
+
+    await test.step('Should create and name a project called wrist brace', async () => {
+      await createProjectAndRenameIt({ name: 'wrist brace', page })
+    })
+
+    await test.step('Should go through onboarding', async () => {
+      await page.getByTestId('user-sidebar-toggle').click()
+      await page.getByTestId('user-settings').click()
+      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
+
+      const numberOfOnboardingSteps = 12
+      for (let clicks = 0; clicks < numberOfOnboardingSteps; clicks++) {
+        await page.getByTestId('onboarding-next').click()
+      }
+
+      await page.getByTestId('project-sidebar-toggle').click()
+    })
+
+    await test.step('Should go home after onboarding is completed', async () => {
+      await page.getByRole('button', { name: 'Go to Home' }).click()
+    })
+
+    await test.step('Should show the original project called wrist brace', async () => {
+      const projectNames = ['Tutorial Project 00', 'wrist brace']
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(projectNames[index])
+      }
+    })
+
+    await electronApp.close()
+  }
+)

@@ -1,13 +1,13 @@
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
 import { isDesktop } from './isDesktop'
-import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
-import { parseProjectRoute, readAppSettingsFile } from './desktop'
+import { readAppSettingsFile } from './desktop'
 import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 import { DeepPartial } from './types'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { PlatformPath } from 'path'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -24,6 +24,13 @@ type OnboardingPaths = {
 }
 
 const SETTINGS = '/settings' as const
+
+export type ProjectRoute = {
+  projectName: string | null
+  projectPath: string
+  currentFileName: string | null
+  currentFilePath: string | null
+}
 
 export const PATHS = {
   INDEX: '/',
@@ -60,9 +67,64 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id)
+  const route = parseProjectRoute(configuration, id, window?.electron?.path)
 
   if (err(route)) return Promise.reject(route)
 
   return route
+}
+
+export async function parseProjectRoute(
+  configuration: DeepPartial<Configuration>,
+  id: string,
+  pathlib: PlatformPath | undefined
+): Promise<ProjectRoute> {
+  let projectName = null
+  let projectPath = ''
+  let currentFileName = null
+  let currentFilePath = null
+  if (
+    pathlib &&
+    configuration.settings?.project?.directory &&
+    id.startsWith(configuration.settings.project.directory)
+  ) {
+    const relativeToRoot = pathlib.relative(
+      configuration.settings.project.directory,
+      id
+    )
+    projectName = relativeToRoot.split(pathlib.sep)[0]
+    projectPath = pathlib.join(
+      configuration.settings.project.directory,
+      projectName
+    )
+    projectName = projectName === '' ? null : projectName
+  } else {
+    projectPath = id
+    if (pathlib) {
+      if (pathlib.extname(id) === '.kcl') {
+        projectPath = pathlib.dirname(id)
+      }
+      projectName = pathlib.basename(projectPath)
+    } else {
+      if (id.endsWith('.kcl')) {
+        projectPath = '/browser'
+        projectName = 'browser'
+      }
+    }
+  }
+  if (pathlib) {
+    if (projectPath !== id) {
+      currentFileName = pathlib.basename(id)
+      currentFilePath = id
+    }
+  } else {
+    currentFileName = 'main.kcl'
+    currentFilePath = id
+  }
+  return {
+    projectName: projectName,
+    projectPath: projectPath,
+    currentFileName: currentFileName,
+    currentFilePath: currentFilePath,
+  }
 }

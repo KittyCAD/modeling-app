@@ -60,6 +60,9 @@ const listMachines = async (): Promise<MachinesListing> => {
 const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
+const loadProjectAtStartup = async (): Promise<string | null> =>
+  ipcRenderer.invoke('loadProjectAtStartup')
+
 contextBridge.exposeInMainWorld('electron', {
   login,
   // Passing fs directly is not recommended since it gives a lot of power
@@ -93,6 +96,7 @@ contextBridge.exposeInMainWorld('electron', {
     isWindows,
     isLinux,
   },
+  loadProjectAtStartup,
   // IMPORTANT NOTE: kittycad.ts reads process.env.BASE_URL. But there is
   // no way to set it across the bridge boundary. We need to make it a command.
   setBaseUrl: (value: string) => (process.env.BASE_URL = value),

@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
 import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import { join } from 'path'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
@@ -72,7 +79,7 @@ test.describe('Testing settings', () => {
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
 
     // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('Meta+Shift+,')
+    await page.keyboard.press('ControlOrMeta+Shift+,')
 
     await expect(headingLocator).toBeVisible()
     await page.locator('#showDebugPanel').getByText('OffOn').click()
@@ -82,7 +89,7 @@ test.describe('Testing settings', () => {
     await test.step('Open settings with keyboard shortcut', async () => {
       await page.getByTestId('settings-close-button').click()
       await page.locator('.cm-content').click()
-      await page.keyboard.press('Meta+Shift+,')
+      await page.keyboard.press('ControlOrMeta+Shift+,')
       await expect(headingLocator).toBeVisible()
     })
 
@@ -113,6 +120,36 @@ test.describe('Testing settings', () => {
     await expect(
       page.locator('input[name="modeling-showDebugPanel"]')
     ).not.toBeChecked()
+  })
+
+  test('Keybindings display the correct hotkey for Command Palette', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+
+    await test.step('Open keybindings settings', async () => {
+      // Open the settings modal with the browser keyboard shortcut
+      await page.keyboard.press('ControlOrMeta+Shift+,')
+
+      // Go to Keybindings tab.
+      const keybindingsTab = page.getByRole('radio', { name: 'Keybindings' })
+      await keybindingsTab.click()
+    })
+
+    // Go to the hotkey for Command Palette.
+    const commandPalette = page.getByText('Toggle Command Palette')
+    await commandPalette.scrollIntoViewIfNeeded()
+
+    // The heading is above it and should be in view now.
+    const commandPaletteHeading = page.getByRole('heading', {
+      name: 'Command Palette',
+    })
+    // The hotkey is in a kbd element next to the heading.
+    const hotkey = commandPaletteHeading.locator('+ div kbd')
+    const text = process.platform === 'darwin' ? 'Command+K' : 'Control+K'
+    await expect(hotkey).toHaveText(text)
   })
 
   test('Project and user settings can be reset', async ({ page }) => {
@@ -203,10 +240,11 @@ test.describe('Testing settings', () => {
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          const bracketDir = join(dir, 'bracket')
+          await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           )
         },
       })
@@ -264,4 +302,195 @@ test.describe('Testing settings', () => {
       await electronApp.close()
     }
   )
+
+  test(
+    `Closing settings modal should go back to the original file being viewed`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async () => {},
+      })
+
+      const {
+        panesOpen,
+        createAndSelectProject,
+        pasteCodeInEditor,
+        clickPane,
+        createNewFileAndSelect,
+        editorTextMatches,
+      } = await getUtils(page, test)
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await panesOpen([])
+
+      await test.step('Precondition: No projects exist', async () => {
+        await expect(page.getByTestId('home-section')).toBeVisible()
+        const projectLinksPre = page.getByTestId('project-link')
+        await expect(projectLinksPre).toHaveCount(0)
+      })
+
+      await createAndSelectProject('project-000')
+
+      await clickPane('code')
+      const kclCube = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclCube)
+
+      await clickPane('files')
+      await createNewFileAndSelect('2.kcl')
+
+      const kclCylinder = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclCylinder)
+
+      const settingsOpenButton = page.getByRole('link', {
+        name: 'settings Settings',
+      })
+      const settingsCloseButton = page.getByTestId('settings-close-button')
+
+      await test.step('Open and close settings', async () => {
+        await settingsOpenButton.click()
+        await settingsCloseButton.click()
+      })
+
+      await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
+        await editorTextMatches(kclCylinder)
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  test('Changing modeling default unit', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await page
+      .getByRole('button', { name: 'Start Sketch' })
+      .waitFor({ state: 'visible' })
+
+    const userSettingsTab = page.getByRole('radio', { name: 'User' })
+
+    // Open the settings modal with lower-right button
+    await page.getByRole('link', { name: 'Settings' }).last().click()
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+
+    const resetButton = page.getByRole('button', {
+      name: 'Restore default settings',
+    })
+    // Default unit should be mm
+    await resetButton.click()
+
+    await test.step('Change modeling default unit within project tab', async () => {
+      const changeUnitOfMeasureInProjectTab = async (unitOfMeasure: string) => {
+        await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
+          await page
+            .getByTestId('modeling-defaultUnit')
+            .selectOption(`${unitOfMeasure}`)
+          const toastMessage = page.getByText(
+            `Set default unit to "${unitOfMeasure}" for this project`
+          )
+          await expect(toastMessage).toBeVisible()
+        })
+      }
+      await changeUnitOfMeasureInProjectTab('in')
+      await changeUnitOfMeasureInProjectTab('ft')
+      await changeUnitOfMeasureInProjectTab('yd')
+      await changeUnitOfMeasureInProjectTab('mm')
+      await changeUnitOfMeasureInProjectTab('cm')
+      await changeUnitOfMeasureInProjectTab('m')
+    })
+
+    // Go to the user tab
+    await userSettingsTab.click()
+    await test.step('Change modeling default unit within user tab', async () => {
+      const changeUnitOfMeasureInUserTab = async (unitOfMeasure: string) => {
+        await test.step(`Set modeling default unit to ${unitOfMeasure}`, async () => {
+          await page
+            .getByTestId('modeling-defaultUnit')
+            .selectOption(`${unitOfMeasure}`)
+          const toastMessage = page.getByText(
+            `Set default unit to "${unitOfMeasure}" as a user default`
+          )
+          await expect(toastMessage).toBeVisible()
+        })
+      }
+      await changeUnitOfMeasureInUserTab('in')
+      await changeUnitOfMeasureInUserTab('ft')
+      await changeUnitOfMeasureInUserTab('yd')
+      await changeUnitOfMeasureInUserTab('mm')
+      await changeUnitOfMeasureInUserTab('cm')
+      await changeUnitOfMeasureInUserTab('m')
+    })
+
+    // Close settings
+    const settingsCloseButton = page.getByTestId('settings-close-button')
+    await settingsCloseButton.click()
+
+    await test.step('Change modeling default unit within command bar', async () => {
+      const commands = page.getByRole('button', { name: 'Commands' })
+      const changeUnitOfMeasureInCommandBar = async (unitOfMeasure: string) => {
+        // Open command bar
+        await commands.click()
+        const settingsModelingDefaultUnitCommand = page.getByText(
+          'Settings · modeling · default unit'
+        )
+        await settingsModelingDefaultUnitCommand.click()
+
+        const commandOption = page.getByRole('option', {
+          name: unitOfMeasure,
+          exact: true,
+        })
+        await commandOption.click()
+
+        const toastMessage = page.getByText(
+          `Set default unit to "${unitOfMeasure}" for this project`
+        )
+        await expect(toastMessage).toBeVisible()
+      }
+      await changeUnitOfMeasureInCommandBar('in')
+      await changeUnitOfMeasureInCommandBar('ft')
+      await changeUnitOfMeasureInCommandBar('yd')
+      await changeUnitOfMeasureInCommandBar('mm')
+      await changeUnitOfMeasureInCommandBar('cm')
+      await changeUnitOfMeasureInCommandBar('m')
+    })
+
+    await test.step('Change modeling default unit within gizmo', async () => {
+      const changeUnitOfMeasureInGizmo = async (
+        unitOfMeasure: string,
+        copy: string
+      ) => {
+        const gizmo = page.getByRole('button', {
+          name: 'Current units are: ',
+        })
+        await gizmo.click()
+        const button = page.getByRole('button', {
+          name: copy,
+          exact: true,
+        })
+        await button.click()
+        const toastMessage = page.getByText(
+          `Set default unit to "${unitOfMeasure}" for this project`
+        )
+        await expect(toastMessage).toBeVisible()
+      }
+
+      await changeUnitOfMeasureInGizmo('in', 'Inches')
+      await changeUnitOfMeasureInGizmo('ft', 'Feet')
+      await changeUnitOfMeasureInGizmo('yd', 'Yards')
+      await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
+      await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
+      await changeUnitOfMeasureInGizmo('m', 'Meters')
+    })
+  })
 })

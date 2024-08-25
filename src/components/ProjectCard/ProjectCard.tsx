@@ -7,7 +7,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from '../Tooltip'
 import { DeleteConfirmationDialog } from './DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCardRenameForm'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 
 function ProjectCard({
   project,

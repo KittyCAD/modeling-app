@@ -1,4 +1,4 @@
-import type { FileEntry, IndexLoaderData } from 'lib/types'
+import type { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
@@ -20,6 +20,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
+import { FileEntry } from 'lib/project'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -61,6 +62,7 @@ function RenameForm({
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
@@ -395,13 +397,14 @@ export const FileTreeMenu = () => {
     })
   }
 
-  useHotkeyWrapper(['meta + n'], createFile)
-  useHotkeyWrapper(['meta + shift + n'], createFolder)
+  useHotkeyWrapper(['mod + n'], createFile)
+  useHotkeyWrapper(['mod + shift + n'], createFolder)
 
   return (
     <>
       <ActionButton
         Element="button"
+        data-testid="create-file-button"
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
@@ -417,6 +420,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
+        data-testid="create-folder-button"
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',

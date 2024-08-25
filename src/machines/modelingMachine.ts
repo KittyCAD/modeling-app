@@ -4,6 +4,7 @@ import {
   VariableDeclarator,
   parse,
   recast,
+  sketchGroupFromKclValue,
 } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'

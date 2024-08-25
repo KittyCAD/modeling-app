@@ -16,7 +16,6 @@ test.describe('Editor tests', () => {
     await page.setViewportSize({ width: 1000, height: 500 })
 
     await u.waitForAuthSkipAppStart()
-    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -29,9 +28,9 @@ test.describe('Editor tests', () => {
   |> line([-20, 0], %)
   |> close(%)`)
 
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XY')
@@ -42,9 +41,9 @@ test.describe('Editor tests', () => {
     // |> close(%)`)
 
     // uncomment the code
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`const sketch001 = startSketchOn('XY')
@@ -148,9 +147,7 @@ test.describe('Editor tests', () => {
     // Delete all the code.
     await page.locator('.cm-content').click()
     // Select all
-    await page.keyboard.press('Control+A')
-    await page.keyboard.press('Backspace')
-    await page.keyboard.press('Meta+A')
+    await page.keyboard.press('ControlOrMeta+A')
     await page.keyboard.press('Backspace')
 
     await expect(page.locator('.cm-content')).toHaveText(``)

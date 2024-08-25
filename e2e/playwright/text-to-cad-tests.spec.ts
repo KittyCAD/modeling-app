@@ -1,5 +1,11 @@
 import { test, expect, Page } from '@playwright/test'
-import { getUtils, setup, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  tearDown,
+  setupElectron,
+  createProjectAndRenameIt,
+} from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -8,8 +14,6 @@ test.beforeEach(async ({ context, page }) => {
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
-
-const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
 test.describe('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({ page }) => {
@@ -298,9 +302,9 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.locator('textarea')).toContainText(badPrompt)
 
     // Select all and start a new prompt.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyA')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
     await page.keyboard.type('a 2x4 lego')
 
     // Submit the new prompt.
@@ -520,9 +524,9 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x8`)
@@ -549,13 +553,13 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyA')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
     await page.keyboard.press('Backspace')
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
@@ -636,9 +640,9 @@ test.describe('Text-to-CAD tests', () => {
     await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
     // Paste the code.
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('KeyV')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     // Expect the code to be pasted.
     await expect(page.locator('.cm-content')).toContainText(`2x4`)
@@ -685,3 +689,60 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
     await page.keyboard.press('Enter')
   })
 }
+
+test(
+  'Text-to-CAD functionality',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async () => {},
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Create and navigate to the project
+    await createProjectAndRenameIt({ name: 'test-000', page })
+    await page.getByTestId('project-link').click()
+
+    // Wait for Start Sketch otherwise you will not have access Text-to-CAD command
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeEnabled({
+      timeout: 20_000,
+    })
+
+    // Open the files pane
+    const filesPaneButton = page.getByTestId('files-pane-button')
+    await filesPaneButton.click()
+
+    await test.step(`Test file creation`, async () => {
+      await sendPromptFromCommandBar(page, 'lego 2x4')
+      // File is considered created if it shows up in the Project Files pane
+      const file = page.getByRole('button', { name: 'lego-2x4.kcl' })
+      await expect(file).toBeVisible({ timeout: 20_000 })
+    })
+
+    await test.step(`Test file navigation`, async () => {
+      const file = page.getByRole('button', { name: 'lego-2x4.kcl' })
+      await file.click()
+      const kclComment = page.getByText('Lego 2x4 Brick')
+      // File can be navigated and loaded assuming a specific KCL comment is loaded into the KCL code pane
+      await expect(kclComment).toBeVisible({ timeout: 20_000 })
+    })
+
+    await test.step(`Test file deletion on rejection`, async () => {
+      const rejectButton = page.getByRole('button', { name: 'Reject' })
+      // A file is created and can be navigated to while this prompt is still opened
+      // Click the "Reject" button within the prompt and it will delete the file.
+      await rejectButton.click()
+
+      const submittingToastMessage = page.getByText(
+        `Successfully deleted file "lego-2x4.kcl"`
+      )
+      await expect(submittingToastMessage).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)

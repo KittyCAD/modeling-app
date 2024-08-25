@@ -4,6 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kittycad::types::ModelingSessionData;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -203,13 +204,22 @@ impl Environment {
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            if let KclValue::SketchGroup(ref mut sketch_group) = val {
-                if sketch_group.original_id == sg.original_id {
-                    for tag in sg.tags.iter() {
-                        sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
-                    }
+            let KclValue::UserVal(v) = val else { continue };
+            let meta = v.meta.clone();
+            let maybe_sg: Result<SketchGroup, _> = serde_json::from_value(v.value.clone());
+            let Ok(mut sketch_group) = maybe_sg else {
+                continue;
+            };
+
+            if sketch_group.original_id == sg.original_id {
+                for tag in sg.tags.iter() {
+                    sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
+            *val = KclValue::UserVal(UserVal {
+                meta,
+                value: serde_json::to_value(sketch_group).expect("can always turn SketchGroup into JSON"),
+            });
         }
     }
 }
@@ -268,10 +278,7 @@ pub enum KclValue {
     TagDeclarator(Box<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups {
-        value: Vec<Box<SketchGroup>>,
-    },
+
     ExtrudeGroup(Box<ExtrudeGroup>),
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
@@ -289,27 +296,8 @@ pub enum KclValue {
 }
 
 impl KclValue {
-    pub(crate) fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
-        match self {
-            KclValue::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
-            KclValue::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
-            KclValue::UserVal(value) => {
-                let value = value.value.clone();
-                match value {
-                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
-                        "Failed to deserialize sketch group set from JSON {}",
-                        human_friendly_type(&value)
-                    )),
-                    JValue::Array(_) => serde_json::from_value::<Vec<Box<SketchGroup>>>(value)
-                        .map(SketchGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e)),
-                    JValue::Object(_) => serde_json::from_value::<Box<SketchGroup>>(value)
-                        .map(SketchGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize sketch group from JSON: {}", e)),
-                }
-            }
-            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
-        }
+    pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self::UserVal(UserVal::set(meta, val))
     }
 
     pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
@@ -342,8 +330,6 @@ impl KclValue {
             KclValue::UserVal(u) => human_friendly_type(&u.value),
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::SketchGroup(_) => "SketchGroup",
-            KclValue::SketchGroups { .. } => "SketchGroups",
             KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
             KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
@@ -356,20 +342,14 @@ impl KclValue {
 
 impl From<SketchGroupSet> for KclValue {
     fn from(sg: SketchGroupSet) -> Self {
-        match sg {
-            SketchGroupSet::SketchGroup(sg) => KclValue::SketchGroup(sg),
-            SketchGroupSet::SketchGroups(sgs) => KclValue::SketchGroups { value: sgs },
-        }
+        KclValue::UserVal(UserVal::set(sg.meta(), sg))
     }
 }
 
 impl From<Vec<Box<SketchGroup>>> for KclValue {
     fn from(sg: Vec<Box<SketchGroup>>) -> Self {
-        if sg.len() == 1 {
-            KclValue::SketchGroup(sg[0].clone())
-        } else {
-            KclValue::SketchGroups { value: sg }
-        }
+        let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
+        KclValue::UserVal(UserVal::set(meta, sg))
     }
 }
 
@@ -426,6 +406,24 @@ pub enum Geometries {
 pub enum SketchGroupSet {
     SketchGroup(Box<SketchGroup>),
     SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+impl SketchGroupSet {
+    pub fn meta(&self) -> Vec<Metadata> {
+        match self {
+            SketchGroupSet::SketchGroup(sg) => sg.meta.clone(),
+            SketchGroupSet::SketchGroups(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
+        }
+    }
+}
+
+impl From<SketchGroupSet> for Vec<SketchGroup> {
+    fn from(value: SketchGroupSet) -> Self {
+        match value {
+            SketchGroupSet::SketchGroup(sg) => vec![*sg],
+            SketchGroupSet::SketchGroups(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
+        }
+    }
 }
 
 impl From<SketchGroup> for SketchGroupSet {
@@ -641,6 +639,43 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
+impl UserVal {
+    /// If the UserVal matches the type `T`, return it.
+    pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
+        let meta = self.meta.clone();
+        // TODO: This clone might cause performance problems, it'll happen a lot.
+        let res: Result<T, _> = serde_json::from_value(self.value.clone());
+        if let Ok(t) = res {
+            Some((t, meta))
+        } else {
+            None
+        }
+    }
+
+    /// If the UserVal matches the type `T`, then mutate it via the given closure.
+    /// If the closure returns Err, the mutation won't be applied.
+    pub fn mutate<T, F, E>(&mut self, mutate: F) -> Result<(), E>
+    where
+        T: serde::de::DeserializeOwned + Serialize,
+        F: FnOnce(&mut T) -> Result<(), E>,
+    {
+        let Some((mut val, meta)) = self.get::<T>() else {
+            return Ok(());
+        };
+        mutate(&mut val)?;
+        *self = Self::set(meta, val);
+        Ok(())
+    }
+
+    /// Put the given value into this UserVal.
+    pub fn set<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self {
+            meta,
+            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -720,11 +755,6 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             KclValue::TagDeclarator(t) => t.into(),
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::SketchGroups { value } => value
-                .iter()
-                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
-                .collect(),
             KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             KclValue::ExtrudeGroups { value } => value
                 .iter()
@@ -1274,7 +1304,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -1584,8 +1614,11 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
-    // Show grid?
+    /// Show grid?
     pub show_grid: bool,
+    /// Should engine store this for replay?
+    /// If so, under what name?
+    pub replay: Option<String>,
 }
 
 impl Default for ExecutorSettings {
@@ -1595,6 +1628,7 @@ impl Default for ExecutorSettings {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         }
     }
 }
@@ -1606,6 +1640,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1617,6 +1652,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1628,15 +1664,17 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
+    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let ws = client
+        let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
@@ -1646,6 +1684,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                settings.replay.clone(),
                 if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
@@ -1714,6 +1753,7 @@ impl ExecutorContext {
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
+                replay: None,
             },
         )
         .await?;
@@ -1733,6 +1773,16 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
     ) -> Result<ProgramMemory, KclError> {
+        self.run_with_session_data(program, memory).await.map(|x| x.0)
+    }
+    /// Perform the execution of a program.
+    /// You can optionally pass in some initialization memory.
+    /// Kurt uses this for partial execution.
+    pub async fn run_with_session_data(
+        &self,
+        program: &crate::ast::types::Program,
+        memory: Option<ProgramMemory>,
+    ) -> Result<(ProgramMemory, Option<ModelingSessionData>), KclError> {
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
@@ -1749,13 +1799,16 @@ impl ExecutorContext {
             Default::default()
         };
         let mut dynamic_state = DynamicState::default();
-        self.inner_execute(
-            program,
-            &mut memory,
-            &mut dynamic_state,
-            crate::executor::BodyType::Root,
-        )
-        .await
+        let final_memory = self
+            .inner_execute(
+                program,
+                &mut memory,
+                &mut dynamic_state,
+                crate::executor::BodyType::Root,
+            )
+            .await?;
+        let session_data = self.engine.get_session_data();
+        Ok((final_memory, session_data))
     }
 
     /// Execute an AST's program.

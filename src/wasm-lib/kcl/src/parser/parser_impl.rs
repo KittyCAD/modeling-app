@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{collections::HashMap, str::FromStr};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
@@ -448,14 +448,91 @@ fn equals(i: TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
+#[allow(clippy::large_enum_variant)]
+pub enum NonCodeOr<T> {
+    NonCode(NonCodeNode),
+    Code(T),
+}
+
 /// Parse a KCL array of elements.
 fn array(i: TokenSlice) -> PResult<ArrayExpression> {
+    alt((array_empty, array_elem_by_elem, array_end_start)).parse_next(i)
+}
+
+/// Match an empty array.
+fn array_empty(i: TokenSlice) -> PResult<ArrayExpression> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let elements = alt((integer_range, separated(0.., expression, comma_sep)))
-        .context(expected(
-            "array contents, either a numeric range (like 0..10) or a list of elements (like [1, 2, 3])",
-        ))
+    let end = close_bracket(i)?.end;
+    Ok(ArrayExpression {
+        start,
+        end,
+        elements: Default::default(),
+        non_code_meta: Default::default(),
+        digest: None,
+    })
+}
+
+/// Match something that separates elements of an array.
+fn array_separator(i: TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the array is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_bracket)).void(),
+    ))
+    .parse_next(i)
+}
+
+pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
+    let start = open_bracket(i)?.start;
+    ignore_whitespace(i);
+    let elements: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(expression.map(NonCodeOr::Code), array_separator),
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+        )),
+    )
+    .context(expected("array contents, a list of elements (like [1, 2, 3])"))
+    .parse_next(i)?;
+    ignore_whitespace(i);
+    let end = close_bracket(i)?.end;
+
+    // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
+    let (elements, non_code_nodes): (Vec<_>, HashMap<usize, _>) = elements.into_iter().enumerate().fold(
+        (Vec::new(), HashMap::new()),
+        |(mut elements, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    elements.push(x);
+                }
+            }
+            (elements, non_code_nodes)
+        },
+    );
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        start: Vec::new(),
+        digest: None,
+    };
+    Ok(ArrayExpression {
+        start,
+        end,
+        elements,
+        non_code_meta,
+        digest: None,
+    })
+}
+
+fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
+    let start = open_bracket(i)?.start;
+    ignore_whitespace(i);
+    let elements = integer_range
+        .context(expected("array contents, a numeric range (like 0..10)"))
         .parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
@@ -463,6 +540,7 @@ fn array(i: TokenSlice) -> PResult<ArrayExpression> {
         start,
         end,
         elements,
+        non_code_meta: Default::default(),
         digest: None,
     })
 }
@@ -508,22 +586,60 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
     })
 }
 
+/// Match something that separates properties of an object.
+fn property_separator(i: TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the array is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_brace)).void(),
+    ))
+    .parse_next(i)
+}
+
 /// Parse a KCL object value.
-fn object(i: TokenSlice) -> PResult<ObjectExpression> {
+pub(crate) fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
-    let properties = separated(0.., object_property, comma_sep)
-        .context(expected(
-            "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
-        ))
-        .parse_next(i)?;
+    let properties: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(object_property, property_separator).map(NonCodeOr::Code),
+        )),
+    )
+    .context(expected(
+        "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
+    ))
+    .parse_next(i)?;
+
+    // Sort the object's properties from the noncode nodes.
+    let (properties, non_code_nodes): (Vec<_>, HashMap<usize, _>) = properties.into_iter().enumerate().fold(
+        (Vec::new(), HashMap::new()),
+        |(mut properties, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    properties.push(x);
+                }
+            }
+            (properties, non_code_nodes)
+        },
+    );
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        ..Default::default()
+    };
     Ok(ObjectExpression {
         start,
         end,
         properties,
+        non_code_meta,
         digest: None,
     })
 }
@@ -2779,6 +2895,7 @@ e
                     init: Expr::ArrayExpression(Box::new(ArrayExpression {
                         start: 16,
                         end: 23,
+                        non_code_meta: Default::default(),
                         elements: vec![
                             Expr::Literal(Box::new(Literal {
                                 start: 17,
@@ -2954,6 +3071,39 @@ e
         let tokens = crate::token::lexer(program).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let _ast = parser.ast().unwrap();
+    }
+
+    #[test]
+    fn array() {
+        let program = r#"[1, 2, 3]"#;
+        let tokens = crate::token::lexer(program).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _arr = array_elem_by_elem(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn array_linesep_trailing_comma() {
+        let program = r#"[
+            1,
+            2,
+            3,
+        ]"#;
+        let tokens = crate::token::lexer(program).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _arr = array_elem_by_elem(&mut sl).unwrap();
+    }
+
+    #[allow(unused)]
+    #[test]
+    fn array_linesep_no_trailing_comma() {
+        let program = r#"[
+            1,
+            2,
+            3
+        ]"#;
+        let tokens = crate::token::lexer(program).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _arr = array_elem_by_elem(&mut sl).unwrap();
     }
 
     #[test]
@@ -3141,11 +3291,16 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let tokens = crate::token::lexer($test_kcl_program).unwrap();
+                print_tokens(&tokens);
                 let actual = match program.parse(&tokens) {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
                 };
-                insta::assert_json_snapshot!(actual);
+                let mut settings = insta::Settings::clone_current();
+                settings.set_sort_maps(true);
+                settings.bind(|| {
+                    insta::assert_json_snapshot!(actual);
+                });
             }
         };
     }
@@ -3264,4 +3419,46 @@ mod snapshot_tests {
     snapshot_test!(at, "line([0, l], %)");
     snapshot_test!(au, include_str!("../../../tests/executor/inputs/cylinder.kcl"));
     snapshot_test!(av, "fn f = (angle?) => { return default(angle, 360) }");
+    snapshot_test!(
+        aw,
+        "let numbers = [
+            1,
+            // A,
+            // B,
+            3,
+        ]"
+    );
+    snapshot_test!(
+        ax,
+        "let numbers = [
+            1,
+            2,
+            // A,
+            // B,
+        ]"
+    );
+    snapshot_test!(
+        ay,
+        "let props = {
+            a: 1,
+            // b: 2,
+            c: 3,
+        }"
+    );
+    snapshot_test!(
+        az,
+        "let props = {
+            a: 1,
+            // b: 2,
+            c: 3
+        }"
+    );
+}
+
+#[allow(unused)]
+#[cfg(test)]
+pub(crate) fn print_tokens(tokens: &[Token]) {
+    for (i, tok) in tokens.iter().enumerate() {
+        println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
+    }
 }
