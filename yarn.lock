@@ -1713,7 +1713,7 @@
     semver "^7.1.3"
     yargs-parser "^21.1.1"
 
-"@electron/rebuild@^3.2.10":
+"@electron/rebuild@^3.2.10", "@electron/rebuild@^3.6.0":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/@electron/rebuild/-/rebuild-3.6.0.tgz#60211375a5f8541a71eb07dd2f97354ad0b2b96f"
   integrity sha512-zF4x3QupRU3uNGaP5X1wjpmcjfw1H87kyqZ00Tc3HvriV+4gmOGuvQjGNkrJuXdsApssdNyVwLsy+TaeTGGcVw==
@@ -2614,6 +2614,11 @@
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
   integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
+
+"@types/minimist@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.5.tgz#ec10755e871497bcd83efe927e43ec46e8c0747e"
+  integrity sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==
 
 "@types/mocha@^10.0.6":
   version "10.0.7"

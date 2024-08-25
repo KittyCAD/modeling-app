@@ -11,7 +11,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 bson = { version = "2.11.0", features = ["uuid-1", "chrono"] }
-clap = "4.5.16"
 data-encoding = "2.6.0"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }

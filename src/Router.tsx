@@ -33,7 +33,6 @@ import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
-import { getState, setState } from 'lib/desktop'
 import { CoreDumpManager } from 'lib/coredump'
 import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -71,17 +70,13 @@ const router = createRouter([
         loader: async () => {
           const onDesktop = isDesktop()
           if (onDesktop) {
-            const appState = await getState()
-
-            if (appState) {
-              // Reset the state.
-              // We do this so that we load the initial state from the cli but everything
-              // else we can ignore.
-              await setState(undefined)
+            const projectStartupFile =
+              await window.electron.loadProjectAtStartup()
+            if (projectStartupFile !== null) {
               // Redirect to the file if we have a file path.
-              if (appState.current_file) {
+              if (projectStartupFile.length > 0) {
                 return redirect(
-                  PATHS.FILE + '/' + encodeURIComponent(appState.current_file)
+                  PATHS.FILE + '/' + encodeURIComponent(projectStartupFile)
                 )
               }
             }

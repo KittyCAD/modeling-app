@@ -454,6 +454,7 @@ test(
     await electronApp.close()
   }
 )
+
 test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
@@ -501,6 +502,69 @@ test(
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
     )
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'Nested directories in project without main.kcl do not create main.kcl',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let testDir: string | undefined
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(join(dir, 'router-template-slate', 'nested'), {
+          recursive: true,
+        })
+        await fsp.copyFile(
+          executorInputPath('router-template-slate.kcl'),
+          join(dir, 'router-template-slate', 'nested', 'slate.kcl')
+        )
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(dir, 'router-template-slate', 'nested', 'bracket.kcl')
+        )
+        testDir = dir
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await test.step('Open the project', async () => {
+      await page.getByText('router-template-slate').click()
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      // It actually loads.
+      await expect(u.codeLocator).toContainText('mounting bracket')
+      await expect(u.codeLocator).toContainText('const radius =')
+    })
+
+    await u.openFilePanel()
+
+    // Find the current file.
+    const filesPane = page.locator('#files-pane')
+    await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
+    // But there's no main.kcl in the file tree browser.
+    await expect(filesPane.getByText('main.kcl')).not.toBeVisible()
+    // No main.kcl file is created on the filesystem.
+    expect(testDir).toBeDefined()
+    if (testDir !== undefined) {
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        fsp.access(join(testDir, 'router-template-slate', 'main.kcl'))
+      ).rejects.toThrow()
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        fsp.access(join(testDir, 'router-template-slate', 'nested', 'main.kcl'))
+      ).rejects.toThrow()
+    }
 
     await electronApp.close()
   }

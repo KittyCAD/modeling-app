@@ -1,5 +1,5 @@
 import { isDesktop } from './isDesktop'
-import type { FileEntry } from 'lib/types'
+import type { FileEntry } from 'lib/project'
 import {
   FILE_EXT,
   INDEX_IDENTIFIER,
