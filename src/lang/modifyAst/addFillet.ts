@@ -175,7 +175,7 @@ function tagSketchSegment(
   node: Program,
   pathToSegmentNode: PathToNode
 ): { tag: string } | Error {
-  const sketchSegmentChunk = getNodeFromPath(
+  const sketchSegmentChunk = getNodeFromPath<CallExpression>(
     node,
     pathToSegmentNode,
     'CallExpression'
@@ -240,7 +240,7 @@ function locateExtrudeCall(
   node: Program,
   pathToExtrudeNode: PathToNode
 ): { extrudeDeclarator: VariableDeclarator; extrudeInit: Expr } | Error {
-  const extrudeChunk = getNodeFromPath(
+  const extrudeChunk = getNodeFromPath<VariableDeclaration>(
     node,
     pathToExtrudeNode,
     'VariableDeclaration'
