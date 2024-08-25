@@ -153,7 +153,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: out
+          name: out-${{ matrix.os }}-arm64
           path: |
             out/make/**/arm64/*
             out/make/*.dmg
@@ -177,9 +177,10 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: out
+          name: out-${{ matrix.os }}-x64
           path: |
             out/make/**/x64/*
+            out/make/*.dmg
             out/publish-dry-run/*/*
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
@@ -204,7 +205,32 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: out
+          name: out-windows-2022-arm64
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-windows-2022-x64
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-macos-14-arm64
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-macos-14-x64
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-ubuntu-22.04-arm64
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-ubuntu-22.04-x64
           path: out
 
       - name: List artifacts
