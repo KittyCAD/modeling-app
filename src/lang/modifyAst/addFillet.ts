@@ -8,6 +8,7 @@ import {
   Expr,
   VariableDeclaration,
   VariableDeclarator,
+  sketchGroupFromKclValue,
 } from '../wasm'
 import {
   createCallExpressionStdLib,
@@ -120,9 +121,11 @@ export function getPathToExtrudeForSegmentSelection(
   if (err(varDecNode)) return varDecNode
   const sketchVar = varDecNode.node.declarations[0].id.name
 
-  const sketchGroup = programMemory.get(sketchVar)
-  if (sketchGroup?.type !== 'SketchGroup')
-    return new Error('Invalid sketch group type')
+  const sketchGroup = sketchGroupFromKclValue(
+    kclManager.programMemory.get(sketchVar),
+    sketchVar
+  )
+  if (trap(sketchGroup)) return sketchGroup
 
   const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
 
