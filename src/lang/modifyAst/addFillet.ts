@@ -156,8 +156,7 @@ export function addFillet(
   node: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
-  // radius = createLiteral(5) as Expr // TODO what is EXP?
-  radius = createLiteral(5) as Expr
+  radius: Expr = createLiteral(5)
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   // clone ast to make mutations safe
   let _node = structuredClone(node)
