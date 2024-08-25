@@ -173,7 +173,11 @@ export const FileMachineProvider = ({
 
         // no-op
         if (oldPath === newPath) {
-          return
+          return {
+            message: `Old is the same as new.`,
+            newPath,
+            oldPath,
+          }
         }
 
         // if there are any siblings with the same name, report error.
