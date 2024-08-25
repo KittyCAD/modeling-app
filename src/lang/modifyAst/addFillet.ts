@@ -229,7 +229,6 @@ function mutateAstWithFilletNode(
   )
   if (err(locatedExtrudeDeclarator)) return locatedExtrudeDeclarator
   const { extrudeDeclarator } = locatedExtrudeDeclarator
-  console.log('extrudeDeclarator', extrudeDeclarator)
 
   /**
    * Prepare changes to the AST
@@ -339,7 +338,7 @@ function getPathToNodeOfFilletLiteral(
   extrudeDeclarator: VariableDeclarator,
   tag: string
 ): PathToNode {
-  let pathToFilletObj: any
+  let pathToFilletObj: PathToNode = []
   let inFillet = false
 
   traverse(extrudeDeclarator.init, {
@@ -384,7 +383,7 @@ function hasTag(node: ObjectExpression, tag: string): boolean {
   })
 }
 
-function getPathToRadiusLiteral(node: ObjectExpression, path: any): any {
+function getPathToRadiusLiteral(node: ObjectExpression, path: any): PathToNode {
   let pathToFilletObj = path
   node.properties.forEach((prop, index) => {
     if (prop.key.name === 'radius') {
