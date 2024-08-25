@@ -128,10 +128,11 @@ export function getPathToExtrudeForSegmentSelection(
   if (trap(sketchGroup)) return sketchGroup
 
   const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
+  if(err(extrusion)) return extrusion
 
-  const pathToExtrudeNode = err(extrusion)
-    ? []
-    : getNodePathFromSourceRange(ast, extrusion.codeRef.range)
+  const pathToExtrudeNode = getNodePathFromSourceRange(ast, extrusion.codeRef.range)
+  if (err(pathToExtrudeNode)) return pathToExtrudeNode
+
   return { pathToSegmentNode, pathToExtrudeNode }
 }
 
