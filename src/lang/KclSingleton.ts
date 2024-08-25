@@ -399,6 +399,9 @@ export class KclManager {
     codeManager.updateCodeStateEditor(code)
     // Write back to the file system.
     codeManager.writeToFile()
+
+    // execute the code.
+    this.executeCode()
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
