@@ -49,7 +49,7 @@ export function applyFilletToSelection(
 ): void | Error {
   // 1. get AST
   let ast = kclManager.ast
-  const astResult = mutateAstForRadiusInsertion(ast, radius)
+  const astResult = insertRadiusIntoAst(ast, radius)
   if (err(astResult)) return astResult
 
   // 2. get path
@@ -81,7 +81,7 @@ export function applyFilletToSelection(
   updateAstAndFocus(modifiedAst, pathToFilletNode)
 }
 
-function mutateAstForRadiusInsertion(
+function insertRadiusIntoAst(
   ast: Program,
   radius: KclCommandValue
 ): { ast: Program } | Error {
@@ -92,9 +92,9 @@ function mutateAstForRadiusInsertion(
       radius.variableName &&
       radius.insertIndex !== undefined
     ) {
-      const newBody = [...ast.body]
-      newBody.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
-      ast.body = newBody
+      const newAst = structuredClone(ast)
+      newAst.body.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
+      return { ast: newAst }
     }
     return { ast }
   } catch (error) {
