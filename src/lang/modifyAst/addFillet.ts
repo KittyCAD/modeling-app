@@ -49,7 +49,7 @@ export function applyFilletToSelection(
 ): void | Error {
   // 1. get AST
   let ast = kclManager.ast
-  const astResult = getAst(ast, radius)
+  const astResult = mutateAstForRadiusInsertion(ast, radius)
   if (err(astResult)) return astResult
 
   // 2. get path
@@ -81,7 +81,7 @@ export function applyFilletToSelection(
   updateAstAndFocus(modifiedAst, pathToFilletNode)
 }
 
-function getAst(
+function mutateAstForRadiusInsertion(
   ast: Program,
   radius: KclCommandValue
 ): { ast: Program } | Error {
