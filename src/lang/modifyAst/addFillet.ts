@@ -247,9 +247,7 @@ function locateExtrudeCall(
   )
   if (err(extrudeChunk)) return extrudeChunk
 
-  const { node: extrudeVarDecl } = extrudeChunk as {
-    node: VariableDeclaration
-  }
+  const { node: extrudeVarDecl } = extrudeChunk
   const extrudeDeclarator = extrudeVarDecl.declarations[0]
   if (!extrudeDeclarator) {
     return new Error('Extrude Declarator not found.')
@@ -266,8 +264,6 @@ function locateExtrudeCall(
   ) {
     return new Error('Extrude must be a PipeExpression or CallExpression')
   }
-
-  const extrudeExpressionType = extrudeInit.type
 
   return { extrudeDeclarator, extrudeInit }
 }
