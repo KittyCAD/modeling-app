@@ -15,7 +15,7 @@ import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
-import { FileEntry } from 'lib/types'
+import { FileEntry } from 'lib/project'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
   KclWorkerOptions,
