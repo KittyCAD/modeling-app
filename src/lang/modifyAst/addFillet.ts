@@ -128,9 +128,12 @@ export function getPathToExtrudeForSegmentSelection(
   if (trap(sketchGroup)) return sketchGroup
 
   const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
-  if(err(extrusion)) return extrusion
+  if (err(extrusion)) return extrusion
 
-  const pathToExtrudeNode = getNodePathFromSourceRange(ast, extrusion.codeRef.range)
+  const pathToExtrudeNode = getNodePathFromSourceRange(
+    ast,
+    extrusion.codeRef.range
+  )
   if (err(pathToExtrudeNode)) return pathToExtrudeNode
 
   return { pathToSegmentNode, pathToExtrudeNode }
@@ -153,93 +156,156 @@ async function updateAstAndFocus(
  */
 
 export function addFillet(
-  node: Program,
+  ast: Program,
   pathToSegmentNode: PathToNode,
   pathToExtrudeNode: PathToNode,
   radius: Expr = createLiteral(5)
 ): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
-  // clone ast to make mutations safe
-  let _node = structuredClone(node)
+  // Clone AST to ensure safe mutations
+  const astClone = structuredClone(ast)
 
-  // Tag sketch segment
-  const taggedSegment = tagSketchSegment(_node, pathToSegmentNode)
-  if (err(taggedSegment)) return taggedSegment
-  const { tag } = taggedSegment
+  // Modify AST clone : TAG the sketch segment and retrieve tag
+  const segmentResult = mutateAstWithTagForSketchSegment(
+    astClone,
+    pathToSegmentNode
+  )
+  if (err(segmentResult)) return segmentResult
+  const { tag } = segmentResult
 
-  // Create and insert fillet
-  const filletCall = createFilletCall(radius, tag)
-  return insertFilletCall(filletCall, _node, tag, pathToExtrudeNode)
+  // Modify AST clone : Insert FILLET node and retrieve path to fillet
+  const filletResult = mutateAstWithFilletNode(
+    astClone,
+    pathToExtrudeNode,
+    radius,
+    tag
+  )
+  if (err(filletResult)) return filletResult
+  const { pathToFilletNode } = filletResult
+
+  return { modifiedAst: astClone, pathToFilletNode }
 }
 
-function tagSketchSegment(
-  node: Program,
+function mutateAstWithTagForSketchSegment(
+  astClone: Program,
   pathToSegmentNode: PathToNode
-): { tag: string } | Error {
-  const sketchSegmentChunk = getNodeFromPath<CallExpression>(
-    node,
+): { modifiedAst: Program; tag: string } | Error {
+  const segmentNode = getNodeFromPath<CallExpression>(
+    astClone,
     pathToSegmentNode,
     'CallExpression'
   )
-  if (err(sketchSegmentChunk)) return sketchSegmentChunk
-  const { node: sketchSegmentNode } = sketchSegmentChunk as {
-    node: CallExpression
-  }
+  if (err(segmentNode)) return segmentNode
 
-  // Check whether selection is a valid segment from sketchLineHelpersMap
-  if (!(sketchSegmentNode.callee.name in sketchLineHelperMap)) {
+  // Check whether selection is a valid segment
+  if (!(segmentNode.node.callee.name in sketchLineHelperMap)) {
     return new Error('Selection is not a sketch segment')
   }
 
   // Add tag to the sketch segment or use existing tag
+  // a helper function that creates the updated node and applies the changes to the AST
   const taggedSegment = addTagForSketchOnFace(
     {
       pathToNode: pathToSegmentNode,
-      node: node,
+      node: astClone,
     },
-    sketchSegmentNode.callee.name
+    segmentNode.node.callee.name
   )
+  if (err(taggedSegment)) return taggedSegment
+  const { tag } = taggedSegment
 
-  return taggedSegment
+  return { modifiedAst: astClone, tag }
 }
 
-function createFilletCall(radius: Expr, tag: string): CallExpression {
-  return createCallExpressionStdLib('fillet', [
+function mutateAstWithFilletNode(
+  astClone: Program,
+  pathToExtrudeNode: PathToNode,
+  radius: Expr,
+  tag: string
+): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
+  // Locate the extrude call
+  const locatedExtrudeDeclarator = locateExtrudeDeclarator(
+    astClone,
+    pathToExtrudeNode
+  )
+  if (err(locatedExtrudeDeclarator)) return locatedExtrudeDeclarator
+  const { extrudeDeclarator } = locatedExtrudeDeclarator
+  console.log('extrudeDeclarator', extrudeDeclarator)
+
+  /**
+   * Prepare changes to the AST
+   */
+
+  const filletCall = createCallExpressionStdLib('fillet', [
     createObjectExpression({
       radius: radius,
       tags: createArrayExpression([createIdentifier(tag)]),
     }),
     createPipeSubstitution(),
   ])
+
+  /**
+   * Mutate the AST
+   */
+
+  // CallExpression - no fillet
+  // PipeExpression - fillet exists
+
+  let pathToFilletNode: PathToNode = []
+
+  if (extrudeDeclarator.init.type === 'CallExpression') {
+    // 1. case when no fillet exists
+
+    // modify ast with new fillet call by mutating the extrude node
+    extrudeDeclarator.init = createPipeExpression([
+      extrudeDeclarator.init,
+      filletCall,
+    ])
+
+    // get path to the fillet node
+    pathToFilletNode = getPathToNodeOfFilletLiteral(
+      pathToExtrudeNode,
+      extrudeDeclarator,
+      tag
+    )
+
+    return { modifiedAst: astClone, pathToFilletNode }
+  } else if (extrudeDeclarator.init.type === 'PipeExpression') {
+    // 2. case when fillet exists
+
+    const existingFilletCall = extrudeDeclarator.init.body.find((node) => {
+      return node.type === 'CallExpression' && node.callee.name === 'fillet'
+    })
+
+    if (!existingFilletCall || existingFilletCall.type !== 'CallExpression') {
+      return new Error('Fillet CallExpression not found.')
+    }
+
+    // check if the existing fillet has the same tag as the new fillet
+    const filletTag = getFilletTag(existingFilletCall)
+
+    if (filletTag !== tag) {
+      // mutate the extrude node with the new fillet call
+      extrudeDeclarator.init.body.push(filletCall)
+      return {
+        modifiedAst: astClone,
+        pathToFilletNode: getPathToNodeOfFilletLiteral(
+          pathToExtrudeNode,
+          extrudeDeclarator,
+          tag
+        ),
+      }
+    }
+  } else {
+    return new Error('Unsupported extrude type.')
+  }
+
+  return { modifiedAst: astClone, pathToFilletNode }
 }
 
-function insertFilletCall(
-  filletCall: CallExpression,
-  node: Program,
-  tag: string,
-  pathToExtrudeNode: PathToNode
-): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
-  // Locate the extrude call
-  const locatedExtrudeCall = locateExtrudeCall(node, pathToExtrudeNode)
-  if (err(locatedExtrudeCall)) return locatedExtrudeCall
-
-  // determine if extrude is in a PipeExpression or CallExpression
-  const { extrudeDeclarator, extrudeInit } = locatedExtrudeCall
-
-  // Insert the fillet call based on the type of extrude
-  return handleExtrudeType(
-    node,
-    extrudeDeclarator,
-    extrudeInit,
-    filletCall,
-    pathToExtrudeNode,
-    tag
-  )
-}
-
-function locateExtrudeCall(
+function locateExtrudeDeclarator(
   node: Program,
   pathToExtrudeNode: PathToNode
-): { extrudeDeclarator: VariableDeclarator; extrudeInit: Expr } | Error {
+): { extrudeDeclarator: VariableDeclarator } | Error {
   const extrudeChunk = getNodeFromPath<VariableDeclaration>(
     node,
     pathToExtrudeNode,
@@ -265,60 +331,7 @@ function locateExtrudeCall(
     return new Error('Extrude must be a PipeExpression or CallExpression')
   }
 
-  return { extrudeDeclarator, extrudeInit }
-}
-
-function handleExtrudeType(
-  node: Program,
-  extrudeDeclarator: VariableDeclarator,
-  extrudeInit: Expr,
-  filletCall: CallExpression,
-  pathToExtrudeNode: PathToNode,
-  tag: string
-): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
-  // CallExpression - no fillet
-  // PipeExpression - fillet exists
-
-  if (extrudeInit.type === 'CallExpression') {
-    // 1. no fillet case
-    extrudeDeclarator.init = createPipeExpression([extrudeInit, filletCall])
-    return {
-      modifiedAst: node,
-      pathToFilletNode: getPathToNodeOfFilletLiteral(
-        pathToExtrudeNode,
-        extrudeDeclarator,
-        tag
-      ),
-    }
-  } else if (extrudeInit.type === 'PipeExpression') {
-    // 2. fillet case
-    const existingFilletCall = extrudeInit.body.find((node) => {
-      return node.type === 'CallExpression' && node.callee.name === 'fillet'
-    })
-
-    if (!existingFilletCall || existingFilletCall.type !== 'CallExpression') {
-      return new Error('Fillet CallExpression not found.')
-    }
-
-    // check if the existing fillet has the same tag as the new fillet
-    const filletTag = getFilletTag(existingFilletCall)
-
-    if (filletTag !== tag) {
-      extrudeInit.body.push(filletCall)
-      return {
-        modifiedAst: node,
-        pathToFilletNode: getPathToNodeOfFilletLiteral(
-          pathToExtrudeNode,
-          extrudeDeclarator,
-          tag
-        ),
-      }
-    }
-  } else {
-    return new Error('Unsupported extrude type.')
-  }
-
-  return new Error('Unsupported extrude type.')
+  return { extrudeDeclarator }
 }
 
 function getPathToNodeOfFilletLiteral(
