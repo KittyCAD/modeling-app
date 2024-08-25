@@ -27,7 +27,8 @@ const ProjectSidebarMenu = ({
 }) => {
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
-  const trafficLightsOffset = isDesktop() ? 'ml-20' : ''
+  const trafficLightsOffset =
+    isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div
       className={
