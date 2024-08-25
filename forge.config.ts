@@ -29,6 +29,7 @@ const config: ForgeConfig = {
         schemes: ['zoo-studio'],
       },
     ],
+    extendInfo: 'Info.plist', // Information for file associations.
   },
   rebuildConfig: {},
   makers: [
