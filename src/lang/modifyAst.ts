@@ -563,6 +563,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
 }
@@ -612,6 +613,7 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
