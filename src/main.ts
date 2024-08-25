@@ -29,10 +29,23 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
+const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
+
+/// Register our application to handle all "electron-fiddle://" protocols.
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
+      path.resolve(process.argv[1]),
+    ])
+  }
+} else {
+  app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL)
+}
+
 // Register custom schemes with privileges.
 protocol.registerSchemesAsPrivileged([
   {
-    scheme: 'zoo-studio',
+    scheme: ZOO_STUDIO_PROTOCOL,
     privileges: {
       standard: true,
       secure: true,
@@ -213,16 +226,13 @@ ipcMain.handle('loadProjectAtStartup', async () => {
   global['macOpenFiles'] = macOpenFilesEmpty
 
   // macOS: open-url events that were received before the app is ready
-  const getOpenUrls: string[] = ((global as any).getOpenUrls() ||
-    []) as string[]
+  const getOpenUrls: string[] = (global as any).getOpenUrls
   if (getOpenUrls && getOpenUrls.length > 0) {
     projectPath = getOpenUrls[0] // We only do one project at a
   }
   // Reset this so we don't accidentally use it again.
   // @ts-ignore
-  global['getOpenUrls'] = function () {
-    return []
-  }
+  global['getOpenUrls'] = []
 
   // Check if we have a project path in the command line arguments
   // If we do, we will load the project at that path
@@ -264,6 +274,8 @@ function registerStartupListeners() {
   // @ts-ignore
   global['macOpenFiles'] = macOpenFiles
   app.on('open-file', function (event, path) {
+    event.preventDefault()
+
     macOpenFiles.push(path)
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {
@@ -275,6 +287,8 @@ function registerStartupListeners() {
    * macOS: react to open-url requests.
    */
   const openUrls: string[] = []
+  // @ts-ignore
+  global['openUrls'] = openUrls
   const onOpenUrl = function (
     event: { preventDefault: () => void },
     url: string
@@ -282,16 +296,13 @@ function registerStartupListeners() {
     event.preventDefault()
 
     openUrls.push(url)
+    // If we have a mainWindow, lets open another window.
+    if (mainWindow) {
+      createWindow()
+    }
   }
 
   app.on('will-finish-launching', function () {
     app.on('open-url', onOpenUrl)
   })
-
-  // @ts-ignore
-  global['getOpenUrls'] = function () {
-    app.removeListener('open-url', onOpenUrl)
-
-    return openUrls
-  }
 }
