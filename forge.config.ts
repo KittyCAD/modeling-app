@@ -23,6 +23,12 @@ const config: ForgeConfig = {
       undefined,
     executableName: 'zoo-modeling-app',
     icon: path.resolve(rootDir, 'assets', 'icon'),
+    protocols: [
+      {
+        name: 'Zoo Studio',
+        schemes: ['zoo-studio'],
+      },
+    ],
   },
   rebuildConfig: {},
   makers: [
