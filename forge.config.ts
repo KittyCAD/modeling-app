@@ -23,7 +23,7 @@ const config: ForgeConfig = {
         teamId: process.env.APPLE_TEAM_ID || '',
       }) ||
       undefined,
-    executableName: 'zoo-modeling-app',
+    executableName: 'Zoo Modeling App',
     icon: path.resolve(rootDir, 'assets', 'icon'),
   },
   rebuildConfig: {},
