@@ -517,9 +517,7 @@ export const getState = async (): Promise<Project | undefined> => {
   return Promise.resolve(appStateStore)
 }
 
-export const setState = async (
-  state: Project | undefined
-): Promise<void> => {
+export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
