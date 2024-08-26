@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
-import { setupElectron, tearDown } from './test-utils'
+import { setupElectron, tearDown, executorInputPath } from './test-utils'
+import { join } from 'path'
 import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -10,17 +11,14 @@ test(
   'When machine-api server not found butt is disabled and shows the reason',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
         )
       },
     })
@@ -58,17 +56,14 @@ test(
   'When machine-api server not found home screen & project status shows the reason',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/bracket/main.kcl`
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
         )
       },
     })

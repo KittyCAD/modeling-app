@@ -865,7 +865,7 @@ export async function setupElectron({
 
   await setup(context, page)
 
-  return { electronApp, page }
+  return { electronApp, page, dir: projectDirName }
 }
 
 export async function isOutOfViewInScrollContainer(
@@ -911,4 +911,8 @@ export async function createProjectAndRenameIt({
   await page.keyboard.type(name)
 
   await page.getByLabel('checkmark').last().click()
+}
+
+export function executorInputPath(fileName: string): string {
+  return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
 }

@@ -1,6 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 
 export const homeMachine = createMachine(
   {

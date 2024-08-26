@@ -119,9 +119,71 @@ async fn inner_shell(
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::Solid3DShellFace {
+            hollow: false,
             face_ids,
             object_id: extrude_group.id,
             shell_thickness: data.thickness,
+        },
+    )
+    .await?;
+
+    Ok(extrude_group)
+}
+
+/// Make the inside of a 3D object hollow.
+pub async fn hollow(args: Args) -> Result<KclValue, KclError> {
+    let (thickness, extrude_group): (f64, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let extrude_group = inner_hollow(thickness, extrude_group, args).await?;
+    Ok(KclValue::ExtrudeGroup(extrude_group))
+}
+
+/// Make the inside of a 3D object hollow.
+///
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains around the exterior of the shape.
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///     |> hollow (0.25, %)
+/// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('-XZ')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///     |> hollow (0.5, %)
+/// ```
+#[stdlib {
+    name = "hollow",
+}]
+async fn inner_hollow(
+    thickness: f64,
+    extrude_group: Box<ExtrudeGroup>,
+    args: Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not do these for sketch on face, things will fail with face does not exist.
+    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+        .await?;
+
+    args.batch_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::Solid3DShellFace {
+            hollow: true,
+            face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
+            object_id: extrude_group.id,
+            shell_thickness: thickness,
         },
     )
     .await?;

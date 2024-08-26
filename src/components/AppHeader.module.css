@@ -4,4 +4,21 @@
  */
 .header {
   grid-template-columns: 1fr auto 1fr;
+  -webkit-app-region: drag; /* Make the header of the app draggable */
+}
+
+.header button {
+  -webkit-app-region: no-drag; /* Make the button not draggable */
+}
+
+.header a {
+  -webkit-app-region: no-drag; /* Make the link not draggable */
+}
+
+.header textarea {
+  -webkit-app-region: no-drag; /* Make the textarea not draggable */
+}
+
+.header input {
+  -webkit-app-region: no-drag; /* Make the input not draggable */
 }

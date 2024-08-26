@@ -1,4 +1,4 @@
-import type { FileEntry, IndexLoaderData } from 'lib/types'
+import type { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
@@ -20,6 +20,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
+import { FileEntry } from 'lib/project'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`

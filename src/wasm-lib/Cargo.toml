@@ -11,12 +11,11 @@ crate-type = ["cdylib"]
 
 [dependencies]
 bson = { version = "2.11.0", features = ["uuid-1", "chrono"] }
-clap = "4.5.16"
 data-encoding = "2.6.0"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
 kittycad.workspace = true
-serde_json = "1.0.125"
+serde_json = "1.0.127"
 tokio = { version = "1.39.3", features = ["sync"] }
 toml = "0.8.19"
 uuid = { version = "1.10.0", features = ["v4", "js", "serde"] }
@@ -70,7 +69,8 @@ members = [
 ]
 
 [workspace.dependencies]
-kittycad = { version = "0.3.14", default-features = false, features = ["js", "requests"] }
+http = "0.2.12"
+kittycad = { version = "0.3.17", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-session = "0.1.4"
 
 [[test]]

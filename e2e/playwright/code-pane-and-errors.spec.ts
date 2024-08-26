@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
 
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
+import { join } from 'path'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
 import fsp from 'fs/promises'
@@ -223,26 +230,24 @@ test(
   'Opening multiple panes persists when switching projects',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     // Setup multiple projects.
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        const bracketDir = join(dir, 'bracket')
         await Promise.all([
-          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+          fsp.mkdir(routerTemplateDir, { recursive: true }),
+          fsp.mkdir(bracketDir, { recursive: true }),
         ])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/router-template-slate/main.kcl`
+            executorInputPath('router-template-slate.kcl'),
+            join(routerTemplateDir, 'main.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           ),
         ])
       },

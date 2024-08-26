@@ -9,7 +9,7 @@ use std::{
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
-use kittycad::types::{WebSocketRequest, WebSocketResponse};
+use kittycad::types::{ModelingSessionData, WebSocketRequest, WebSocketResponse};
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
@@ -27,10 +27,10 @@ enum SocketHealth {
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
 #[derive(Debug, Clone)]
-#[allow(dead_code)] // for the TcpReadHandle
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
+    #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
@@ -38,6 +38,8 @@ pub struct EngineConnection {
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    /// If the server sends session data, it'll be copied to here.
+    session_data: Arc<Mutex<Option<ModelingSessionData>>>,
 }
 
 pub struct TcpRead {
@@ -181,6 +183,8 @@ impl EngineConnection {
 
         let mut tcp_read = TcpRead { stream: tcp_read };
 
+        let session_data: Arc<Mutex<Option<ModelingSessionData>>> = Arc::new(Mutex::new(None));
+        let session_data2 = session_data.clone();
         let responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>> = Arc::new(DashMap::new());
         let responses_clone = responses.clone();
         let socket_health = Arc::new(Mutex::new(SocketHealth::Active));
@@ -192,35 +196,40 @@ impl EngineConnection {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
                         // If we got a batch response, add all the inner responses.
-                        if let Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) =
-                            &ws_resp.resp
-                        {
-                            for (resp_id, batch_response) in responses {
-                                let id: uuid::Uuid = resp_id.parse().unwrap();
-                                if let Some(response) = &batch_response.response {
-                                    responses_clone.insert(
-                                        id,
-                                        kittycad::types::WebSocketResponse {
-                                            request_id: Some(id),
-                                            resp: Some(kittycad::types::OkWebSocketResponseData::Modeling {
-                                                modeling_response: response.clone(),
-                                            }),
-                                            errors: None,
-                                            success: Some(true),
-                                        },
-                                    );
-                                } else {
-                                    responses_clone.insert(
-                                        id,
-                                        kittycad::types::WebSocketResponse {
-                                            request_id: Some(id),
-                                            resp: None,
-                                            errors: batch_response.errors.clone(),
-                                            success: Some(false),
-                                        },
-                                    );
+                        match &ws_resp.resp {
+                            Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) => {
+                                for (resp_id, batch_response) in responses {
+                                    let id: uuid::Uuid = resp_id.parse().unwrap();
+                                    if let Some(response) = &batch_response.response {
+                                        responses_clone.insert(
+                                            id,
+                                            kittycad::types::WebSocketResponse {
+                                                request_id: Some(id),
+                                                resp: Some(kittycad::types::OkWebSocketResponseData::Modeling {
+                                                    modeling_response: response.clone(),
+                                                }),
+                                                errors: None,
+                                                success: Some(true),
+                                            },
+                                        );
+                                    } else {
+                                        responses_clone.insert(
+                                            id,
+                                            kittycad::types::WebSocketResponse {
+                                                request_id: Some(id),
+                                                resp: None,
+                                                errors: batch_response.errors.clone(),
+                                                success: Some(false),
+                                            },
+                                        );
+                                    }
                                 }
                             }
+                            Some(kittycad::types::OkWebSocketResponseData::ModelingSessionData { session }) => {
+                                let mut sd = session_data2.lock().unwrap();
+                                sd.replace(session.clone());
+                            }
+                            _ => {}
                         }
 
                         if let Some(id) = ws_resp.request_id {
@@ -249,6 +258,7 @@ impl EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(HashMap::new())),
             default_planes: Default::default(),
+            session_data,
         })
     }
 }
@@ -344,5 +354,9 @@ impl EngineManager for EngineConnection {
             message: format!("Modeling command timed out `{}`", id),
             source_ranges: vec![source_range],
         }))
+    }
+
+    fn get_session_data(&self) -> Option<ModelingSessionData> {
+        self.session_data.lock().unwrap().clone()
     }
 }
