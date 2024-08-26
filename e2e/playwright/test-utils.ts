@@ -511,10 +511,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     editorTextMatches: async (code: string) => {
       const editor = page.locator(editorSelector)
-      const editorText = await editor.textContent()
-      return expect(util.toNormalizedCode(editorText || '')).toBe(
-        util.toNormalizedCode(code)
-      )
+      return expect(editor).toHaveText(code, { useInnerText: true })
     },
 
     pasteCodeInEditor: async (code: string) => {
