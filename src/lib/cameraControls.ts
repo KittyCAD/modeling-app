@@ -5,8 +5,6 @@ const PLATFORM = platform()
 const META =
   PLATFORM === 'macos' ? 'Cmd' : PLATFORM === 'windows' ? 'Win' : 'Super'
 const ALT = PLATFORM === 'macos' ? 'Option' : 'Alt'
-// Apple mouse scrolls without a wheel.
-const SCROLL = PLATFORM === 'macos' ? 'Scroll' : 'Scroll wheel'
 
 const noModifiersPressed = (e: React.MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
@@ -87,7 +85,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         (btnName(e).right && e.shiftKey),
     },
     zoom: {
-      description: `${SCROLL} or Ctrl + Right click drag`,
+      description: 'Scroll or Ctrl + Right click drag',
       dragCallback: (e) => !!(e.buttons & 2) && e.ctrlKey,
       scrollCallback: () => true,
     },
@@ -104,7 +102,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         (btnName(e).middle && noModifiersPressed(e)),
     },
     zoom: {
-      description: `${SCROLL}`,
+      description: 'Scroll',
       dragCallback: () => false,
       scrollCallback: () => true,
     },
@@ -121,7 +119,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         (btnName(e).middle && noModifiersPressed(e)),
     },
     zoom: {
-      description: `${SCROLL} or ${ALT} + ${META} + Left click drag`,
+      description: `Scroll or ${ALT} + ${META} + Left click drag`,
       dragCallback: (e) => btnName(e).left && e.altKey && e.metaKey,
       scrollCallback: () => true,
     },
@@ -138,7 +136,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       lenientDragStartButton: 2,
     },
     zoom: {
-      description: `${SCROLL} or Shift + Middle click drag`,
+      description: 'Scroll or Shift + Middle click drag',
       dragCallback: (e) => btnName(e).middle && e.shiftKey,
       scrollCallback: () => true,
     },
@@ -153,7 +151,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) => btnName(e).middle && e.shiftKey,
     },
     zoom: {
-      description: `${SCROLL} or Ctrl + Middle click drag`,
+      description: 'Scroll or Ctrl + Middle click drag',
       dragCallback: (e) => btnName(e).middle && e.ctrlKey,
       scrollCallback: () => true,
     },
@@ -168,7 +166,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) => btnName(e).left && !btnName(e).right && e.ctrlKey,
     },
     zoom: {
-      description: `${SCROLL} or Ctrl + Right click drag`,
+      description: 'Scroll or Ctrl + Right click drag',
       dragCallback: (e) => btnName(e).right && !btnName(e).left && e.ctrlKey,
       scrollCallback: () => true,
     },
@@ -186,7 +184,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) => btnName(e).middle && noModifiersPressed(e),
     },
     zoom: {
-      description: `${SCROLL}`,
+      description: 'Scroll',
       dragCallback: () => false,
       scrollCallback: () => true,
     },
