@@ -24,7 +24,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@headlessui/react": "^1.7.19",
+    "@headlessui/react": "^2.1.3",
     "@headlessui/tailwindcss": "^0.2.0",
     "@kittycad/lib": "^2.0.1",
     "@lezer/highlight": "^1.2.1",
