@@ -44,7 +44,7 @@ const config: ForgeConfig = {
       setupIcon: path.resolve(rootDir, 'assets', 'icon.ico'),
     }),
     new MakerWix({
-      icon: path.resolve(rootDir, 'assets', 'icon.png'),
+      icon: path.resolve(rootDir, 'assets', 'icon.ico'),
       associateExtensions: 'kcl',
     } as ExtendedMakerWixConfig),
     new MakerZIP({}, ['darwin']),
