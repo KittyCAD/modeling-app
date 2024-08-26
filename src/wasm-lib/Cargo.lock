@@ -1365,7 +1365,7 @@ dependencies = [
  "futures",
  "git_rev",
  "gltf-json",
- "http 0.2.12",
+ "http 1.1.0",
  "iai",
  "image",
  "insta",
