@@ -220,6 +220,8 @@ export const FileMachineProvider = ({
       ) => {
         const isDir = !!event.data.children
 
+        debugger
+
         if (isDir) {
           await window.electron
             .rm(event.data.path, {
