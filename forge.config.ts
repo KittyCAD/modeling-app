@@ -23,7 +23,7 @@ const config: ForgeConfig = {
         teamId: process.env.APPLE_TEAM_ID || '',
       }) ||
       undefined,
-    executableName: 'Zoo Modeling App',
+    executableName: process.platform === 'linux' ? 'zoo-modeling-app' : 'Zoo Modeling App',
     icon: path.resolve(rootDir, 'assets', 'icon'),
   },
   rebuildConfig: {},
@@ -33,7 +33,12 @@ const config: ForgeConfig = {
       remoteReleases: `https://${process.env.WEBSITE_DIR}/win32/${arch}`,
       setupIcon: path.resolve(rootDir, 'assets', 'icon.ico'),
     })),
-    new MakerWix(),
+    new MakerWix({
+      features: {
+        autoLaunch: true,
+        autoUpdate: true,
+      },
+    }),
     new MakerDMG(),
     new MakerZIP(
       (arch) => ({
