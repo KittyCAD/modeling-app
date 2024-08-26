@@ -2,7 +2,7 @@
 // template that ElectronJS provides.
 
 import dotenv from 'dotenv'
-import { app, BrowserWindow, protocol, ipcMain, dialog, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
@@ -41,21 +41,6 @@ if (process.defaultApp) {
 } else {
   app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL)
 }
-
-// Register custom schemes with privileges.
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: ZOO_STUDIO_PROTOCOL,
-    privileges: {
-      standard: true,
-      secure: true,
-      supportFetchAPI: true,
-      corsEnabled: true,
-      allowServiceWorkers: true,
-      codeCache: true,
-    },
-  },
-])
 
 // Global app listeners
 // Must be done before ready event.

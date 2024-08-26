@@ -61,6 +61,7 @@ export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
 export const DEFAULT_HOST = 'https://api.zoo.dev'
 export const SETTINGS_FILE_NAME = 'settings.toml'
+export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
 
