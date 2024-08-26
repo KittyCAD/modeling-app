@@ -57,7 +57,7 @@ const persistedToken =
 
 export const authMachine = createMachine<UserContext, Events>(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwBmAEzYA7ABYAbAFZTcgBzGbN44adWANCACeiKbGdthypk4AnBFyVs6uQXYAvom+aFh4BMTk1LSQjExgAE6FVIXYKmIAhuhkpQC2GcLikpDSDPJKSCBqGlo6XQYIrk7YETYWctYRxmMWFk6+AUPj2I5OdjZyrnZOFmbJqRg4Ern0zDkABFQYHbo9mtoMuoOGFhHYxlZOhvbOsUGGRaIL4WbBONzWQxWYwWOx2H4HEBpY4tCAAeQwTEuskUd3UD36oEGIlMNlCuzk8Js0TcVisgP8iG2lmcGysb0mW3ByRSIAYVAgcF0yLxvUez0QIms5ImVJpNjpDKW5gib1MVjG4NJMzhxkRyMaWUoqMYooJTwGiCcIyCzj2JmC0M8QIQ0Ww7Ii6qipjstmcEX1R2wJzopq69z6FqJRnVo2t1MMpMi9nCLtcVlGwUTVjsnupMSsgfSIcgGPQZsjEoQifMczk9bkhjseze4xdNibYJipmzOcbYx5iSAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwBmAEzYA7ABYAbAFZTcgBzGbN44adWANCACeiKbGdthypk4AnBFyVs6uQXYAvom+aFh4BMTk1LSQjExgAE6FVIXYKmIAhuhkpQC2GcLikpDSDPJKSCBqGlo6XQYIrk7YETYWctYRxmMWFk6+AUPj2I5OdjZyrnZOFmbJqRg4Ern0zDkABFQYHbo9mtoMuoOGFhHYxlZOhvbOsUGGRaIL4WbBONzWQxWYwWOx2H4HEBpY4tCAAeQwTEuskUd3UD36oEGIlMNlCuzk8Js0TcVisgP8iG2lmcGysb0mW3ByRSIAYVAgcF0yLxvUez0QIms5ImVJpNjpDKWxmw9PGdLh4Te00+iORjSylFRjFFBKeA0QThGQWcexMwWhniBCGiqrepisUVMdlszgieqO2BOdBNXXufXNRKMHtGVuphlJkXs4Wdriso2CCasdgipOidID6WDkAx6FNEYlCAT5jmcjrckMdj2b3GzpsjbBMVMWezDbGPMSQA */
     id: 'Auth',
     initial: 'checkIfLoggedIn',
     states: {
@@ -69,12 +69,10 @@ export const authMachine = createMachine<UserContext, Events>(
           onDone: [
             {
               target: 'loggedIn',
-              actions: assign((context, event) => {
-                return {
-                  user: event.data.user,
-                  token: event.data.token || context.token,
-                }
-              }),
+              actions: assign((context, event) => ({
+                user: event.data.user,
+                token: event.data.token || context.token,
+              })),
             },
           ],
           onError: [
