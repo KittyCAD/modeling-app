@@ -70,14 +70,6 @@ export const authMachine = createMachine<UserContext, Events>(
             {
               target: 'loggedIn',
               actions: assign((context, event) => {
-                const updateStoredInFileToken = async (token = '') => {
-                  if (!isDesktop) return
-                  if (!token) return
-                  const currentStorededToken = (await readTokenFile()) || ''
-                  if (currentStorededToken) return // do nothing if it already exists
-                  writeTokenFile(event.data.token)
-                }
-                updateStoredInFileToken(event.data.token)
                 return {
                   user: event.data.user,
                   token: event.data.token || context.token,
@@ -114,8 +106,6 @@ export const authMachine = createMachine<UserContext, Events>(
             actions: assign({
               token: (_, event) => {
                 const token = event.token || ''
-                localStorage.setItem(TOKEN_PERSIST_KEY, token)
-                if (isDesktop()) writeTokenFile(token)
                 return token
               },
             }),
@@ -139,15 +129,7 @@ export const authMachine = createMachine<UserContext, Events>(
 )
 
 async function getUser(context: UserContext) {
-  const token = VITE_KC_DEV_TOKEN
-    ? VITE_KC_DEV_TOKEN
-    : context.token && context.token !== ''
-    ? context.token
-    : getCookie(COOKIE_NAME) ||
-      localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-      isDesktop()
-    ? await readTokenFile()
-    : ''
+  const token = await getAndSyncStoredToken(context)
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
@@ -211,4 +193,27 @@ function getCookie(cname: string): string | null {
     }
   }
   return null
+}
+
+async function getAndSyncStoredToken(context: UserContext): Promise<string> {
+  // dev mode
+  if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
+
+  const token =
+    context.token && context.token !== ''
+      ? context.token
+      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+  if (token) {
+    // has just logged in, update storage
+    localStorage.setItem(TOKEN_PERSIST_KEY, token)
+    isDesktop() && writeTokenFile(token)
+    return token
+  }
+  if (!isDesktop()) return ''
+  const fileToken = isDesktop() ? await readTokenFile() : ''
+  // prefer other above, but file will ensure login persists after app updates
+  if (!fileToken) return ''
+  // has token in file, update localStorage
+  localStorage.setItem(TOKEN_PERSIST_KEY, fileToken)
+  return fileToken
 }
