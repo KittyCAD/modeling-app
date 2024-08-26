@@ -1,5 +1,7 @@
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import usePlatform from 'hooks/usePlatform'
+import { hotkeyDisplay } from 'lib/hotkeyWrapper'
+import { COMMAND_PALETTE_HOTKEY } from './CommandBar/CommandBar'
 
 export function CommandBarOpenButton() {
   const { commandBarSend } = useCommandsContext()
@@ -12,7 +14,7 @@ export function CommandBarOpenButton() {
     >
       <span>Commands</span>
       <kbd className="bg-primary/10 dark:bg-chalkboard-80 dark:group-hover:bg-primary font-mono rounded-sm dark:text-inherit inline-block px-1 border-primary dark:border-chalkboard-90">
-        {platform === 'macos' ? '⌘K' : '^/'}
+        {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platform)}
       </kbd>
     </button>
   )

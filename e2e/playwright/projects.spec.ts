@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test'
 import {
   doExport,
+  executorInputPath,
   getUtils,
   isOutOfViewInScrollContainer,
   Paths,
@@ -49,17 +50,11 @@ test(
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(join(dir, 'bracket'), { recursive: true })
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
-          join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs',
-            'focusrite_scarlett_mounting_braket.kcl'
-          ),
-          join(dir, 'bracket', 'main.kcl')
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
         )
       },
     })
@@ -99,14 +94,7 @@ test(
       folderSetupFn: async (dir) => {
         await fsp.mkdir(join(dir, 'broken-code'), { recursive: true })
         await fsp.copyFile(
-          join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs',
-            'broken-code-test.kcl'
-          ),
+          executorInputPath('broken-code-test.kcl'),
           join(dir, 'broken-code', 'main.kcl')
         )
       },
@@ -143,17 +131,14 @@ test.describe('Can export from electron app', () => {
       `Can export using ${method}`,
       { tag: '@electron' },
       async ({ browserName }, testInfo) => {
-        test.skip(
-          process.platform === 'win32',
-          'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-        )
         const { electronApp, page } = await setupElectron({
           testInfo,
           folderSetupFn: async (dir) => {
-            await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+            const bracketDir = join(dir, 'bracket')
+            await fsp.mkdir(bracketDir, { recursive: true })
             await fsp.copyFile(
-              'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-              `${dir}/bracket/main.kcl`
+              executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+              join(bracketDir, 'main.kcl')
             )
           },
         })
@@ -469,6 +454,7 @@ test(
     await electronApp.close()
   }
 )
+
 test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
@@ -516,6 +502,69 @@ test(
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
     )
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'Nested directories in project without main.kcl do not create main.kcl',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let testDir: string | undefined
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        await fsp.mkdir(join(dir, 'router-template-slate', 'nested'), {
+          recursive: true,
+        })
+        await fsp.copyFile(
+          executorInputPath('router-template-slate.kcl'),
+          join(dir, 'router-template-slate', 'nested', 'slate.kcl')
+        )
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(dir, 'router-template-slate', 'nested', 'bracket.kcl')
+        )
+        testDir = dir
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await test.step('Open the project', async () => {
+      await page.getByText('router-template-slate').click()
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      // It actually loads.
+      await expect(u.codeLocator).toContainText('mounting bracket')
+      await expect(u.codeLocator).toContainText('const radius =')
+    })
+
+    await u.openFilePanel()
+
+    // Find the current file.
+    const filesPane = page.locator('#files-pane')
+    await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
+    // But there's no main.kcl in the file tree browser.
+    await expect(filesPane.getByText('main.kcl')).not.toBeVisible()
+    // No main.kcl file is created on the filesystem.
+    expect(testDir).toBeDefined()
+    if (testDir !== undefined) {
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        fsp.access(join(testDir, 'router-template-slate', 'main.kcl'))
+      ).rejects.toThrow()
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        fsp.access(join(testDir, 'router-template-slate', 'nested', 'main.kcl'))
+      ).rejects.toThrow()
+    }
 
     await electronApp.close()
   }
@@ -600,6 +649,48 @@ test(
       await expect(page.getByText('Successfully created')).not.toBeVisible()
       await expect(page.getByText('project-000')).toBeVisible()
     })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'Can load a file with CRLF line endings',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        await fsp.mkdir(routerTemplateDir, { recursive: true })
+
+        const file = await fsp.readFile(
+          executorInputPath('router-template-slate.kcl'),
+          'utf-8'
+        )
+        // Replace both \r optionally so we don't end up with \r\r\n
+        const fileWithCRLF = file.replace(/\r?\n/g, '\r\n')
+        await fsp.writeFile(
+          join(routerTemplateDir, 'main.kcl'),
+          fileWithCRLF,
+          'utf-8'
+        )
+      },
+    })
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.getByText('router-template-slate').click()
+    await expect(page.getByTestId('loading')).toBeAttached()
+    await expect(page.getByTestId('loading')).not.toBeAttached({
+      timeout: 20_000,
+    })
+
+    await expect(u.codeLocator).toContainText('routerDiameter')
+    await expect(u.codeLocator).toContainText('templateGap')
+    await expect(u.codeLocator).toContainText('minClampingDistance')
 
     await electronApp.close()
   }
@@ -1032,10 +1123,6 @@ test(
   'Search projects on desktop home',
   { tag: '@electron' },
   async ({ browserName: _ }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_braket.kcl'],
       ['basic-cube', 'basic_fillet_cube_end.kcl'],
@@ -1050,7 +1137,7 @@ test(
         for (const [name, file] of projectData) {
           await fsp.mkdir(join(dir, name), { recursive: true })
           await fsp.copyFile(
-            join('src', 'wasm-lib', 'tests', 'executor', 'inputs', file),
+            executorInputPath(file),
             join(dir, name, `main.kcl`)
           )
         }
@@ -1097,14 +1184,11 @@ test(
   'file pane is scrollable when there are many files',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/testProject`, { recursive: true })
+        const testDir = join(dir, 'testProject')
+        await fsp.mkdir(testDir, { recursive: true })
         const fileNames = [
           'angled_line.kcl',
           'basic_fillet_cube_close_opposite.kcl',
@@ -1168,8 +1252,8 @@ test(
         ]
         for (const fileName of fileNames) {
           await fsp.copyFile(
-            `src/wasm-lib/tests/executor/inputs/${fileName}`,
-            `${dir}/testProject/${fileName}`
+            executorInputPath(fileName),
+            join(testDir, fileName)
           )
         }
       },
@@ -1210,19 +1294,16 @@ test(
   'select all in code editor does not actually select all, just what is visible (regression)',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
         // src/wasm-lib/tests/executor/inputs/mike_stress_test.kcl
         const name = 'mike_stress_test'
-        await fsp.mkdir(`${dir}/${name}`, { recursive: true })
+        const testDir = join(dir, name)
+        await fsp.mkdir(testDir, { recursive: true })
         await fsp.copyFile(
-          `src/wasm-lib/tests/executor/inputs/${name}.kcl`,
-          `${dir}/${name}/main.kcl`
+          executorInputPath(`${name}.kcl`),
+          join(testDir, 'main.kcl')
         )
       },
     })
@@ -1320,27 +1401,16 @@ test.describe('Renaming in the file tree', () => {
     'A file you have open',
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'fileToRename.kcl')
           )
         },
@@ -1425,27 +1495,16 @@ test.describe('Renaming in the file tree', () => {
     'A file you do not have open',
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'fileToRename.kcl')
           )
         },
@@ -1527,10 +1586,6 @@ test.describe('Renaming in the file tree', () => {
     `A folder you're not inside`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
@@ -1538,19 +1593,12 @@ test.describe('Renaming in the file tree', () => {
           await fsp.mkdir(join(dir, 'Test Project', 'folderToRename'), {
             recursive: true,
           })
-          const exampleDir = join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs'
-          )
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'folderToRename', 'someFileWithin.kcl')
           )
         },
@@ -1625,11 +1673,6 @@ test.describe('Renaming in the file tree', () => {
     `A folder you are inside`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
-      const exampleDir = join('src', 'wasm-lib', 'tests', 'executor', 'inputs')
       const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
@@ -1638,11 +1681,11 @@ test.describe('Renaming in the file tree', () => {
             recursive: true,
           })
           await fsp.copyFile(
-            join(exampleDir, 'basic_fillet_cube_end.kcl'),
+            executorInputPath('basic_fillet_cube_end.kcl'),
             join(dir, 'Test Project', 'main.kcl')
           )
           await fsp.copyFile(
-            join(exampleDir, 'cylinder.kcl'),
+            executorInputPath('cylinder.kcl'),
             join(dir, 'Test Project', 'folderToRename', 'someFileWithin.kcl')
           )
         },
@@ -1738,21 +1781,18 @@ test.describe('Deleting files from the file pane', () => {
     `when main.kcl exists, navigate to main.kcl`,
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/testProject`, { recursive: true })
+          const testDir = join(dir, 'testProject')
+          await fsp.mkdir(testDir, { recursive: true })
           await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
-            `${dir}/testProject/main.kcl`
+            executorInputPath('cylinder.kcl'),
+            join(testDir, 'main.kcl')
           )
           await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/basic_fillet_cube_end.kcl',
-            `${dir}/testProject/fileToDelete.kcl`
+            executorInputPath('basic_fillet_cube_end.kcl'),
+            join(testDir, 'fileToDelete.kcl')
           )
         },
       })

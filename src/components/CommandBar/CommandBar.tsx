@@ -9,6 +9,8 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 
+export const COMMAND_PALETTE_HOTKEY = 'mod+k'
+
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commandBarState, commandBarSend } = useCommandsContext()
@@ -24,7 +26,7 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Hook up keyboard shortcuts
-  useHotkeyWrapper(['mod+k'], () => {
+  useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
     if (commandBarState.context.commands.length === 0) return
     if (commandBarState.matches('Closed')) {
       commandBarSend({ type: 'Open' })

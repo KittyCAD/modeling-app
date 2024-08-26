@@ -84,6 +84,63 @@ test.describe('Editor tests', () => {
     |> close(%)`)
   })
 
+  test('if you click the format button it formats your code and executes so lints are still there', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await u.codeLocator.click()
+    await page.keyboard.type(`const sketch_001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+
+    await page.locator('#code-pane button:first-child').click()
+    await page.locator('button:has-text("Format code")').click()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch_001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+  })
+
   test('fold gutters work', async ({ page }) => {
     const u = await getUtils(page)
 
@@ -239,6 +296,67 @@ test.describe('Editor tests', () => {
     |> line([0, 20], %)
     |> line([-20, 0], %)
     |> close(%)`)
+  })
+
+  test('if you use the format keyboard binding it formats your code and executes so lints are shown', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch_001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`
+      )
+      localStorage.setItem('disableAxis', 'true')
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+
+    // focus the editor
+    await u.codeLocator.click()
+
+    // Hit alt+shift+f to format the code
+    await page.keyboard.press('Alt+Shift+KeyF')
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch_001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
   })
 
   test('if you write kcl with lint errors you get lints', async ({ page }) => {
@@ -399,7 +517,7 @@ test.describe('Editor tests', () => {
   const width = 0.500
   const height = 0.500
   const dia = 4
-  
+
   fn squareHole = (l, w) => {
     const squareHoleSketch = startSketchOn('XY')
     |> startProfileAt([-width / 2, -length / 2], %)
