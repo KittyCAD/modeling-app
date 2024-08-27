@@ -423,14 +423,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: test-results-electron-${{ github.sha }}
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: playwright-report-electron-${{ github.sha }}
+        name: playwright-report-electron-${{ matrix.os }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
