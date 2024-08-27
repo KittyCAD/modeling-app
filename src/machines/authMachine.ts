@@ -8,11 +8,7 @@ import {
   VITE_KC_SKIP_AUTH,
   DEV,
 } from 'env'
-import {
-  getUser as getUserDesktop,
-  readTokenFile,
-  writeTokenFile,
-} from 'lib/desktop'
+import { getUser as getUserDesktop } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
@@ -57,7 +53,6 @@ const persistedToken =
 
 export const authMachine = createMachine<UserContext, Events>(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwBmAEzYA7ABYAbAFZTcgBzGbN44adWANCACeiKbGdthypk4AnBFyVs6uQXYAvom+aFh4BMTk1LSQjExgAE6FVIXYKmIAhuhkpQC2GcLikpDSDPJKSCBqGlo6XQYIrk7YETYWctYRxmMWFk6+AUPj2I5OdjZyrnZOFmbJqRg4Ern0zDkABFQYHbo9mtoMuoOGFhHYxlZOhvbOsUGGRaIL4WbBONzWQxWYwWOx2H4HEBpY4tCAAeQwTEuskUd3UD36oEGIlMNlCuzk8Js0TcVisgP8iG2lmcGysb0mW3ByRSIAYVAgcF0yLxvUez0QIms5ImVJpNjpDKWxmw9PGdLh4Te00+iORjSylFRjFFBKeA0QThGQWcexMwWhniBCGiqrepisUVMdlszgieqO2BOdBNXXufXNRKMHtGVuphlJkXs4Wdriso2CCasdgipOidID6WDkAx6FNEYlCAT5jmcjrckMdj2b3GzpsjbBMVMWezDbGPMSQA */
     id: 'Auth',
     initial: 'checkIfLoggedIn',
     states: {
@@ -90,9 +85,6 @@ export const authMachine = createMachine<UserContext, Events>(
         on: {
           'Log out': {
             target: 'loggedOut',
-            actions: () => {
-              if (isDesktop()) writeTokenFile('')
-            },
           },
         },
       },
@@ -104,6 +96,7 @@ export const authMachine = createMachine<UserContext, Events>(
             actions: assign({
               token: (_, event) => {
                 const token = event.token || ''
+                localStorage.setItem(TOKEN_PERSIST_KEY, token)
                 return token
               },
             }),
@@ -127,7 +120,11 @@ export const authMachine = createMachine<UserContext, Events>(
 )
 
 async function getUser(context: UserContext) {
-  const token = await getAndSyncStoredToken(context)
+  const token = VITE_KC_DEV_TOKEN
+    ? VITE_KC_DEV_TOKEN
+    : context.token && context.token !== ''
+    ? context.token
+    : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY)
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
@@ -191,27 +188,4 @@ function getCookie(cname: string): string | null {
     }
   }
   return null
-}
-
-async function getAndSyncStoredToken(context: UserContext): Promise<string> {
-  // dev mode
-  if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
-
-  const token =
-    context.token && context.token !== ''
-      ? context.token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-  if (token) {
-    // has just logged in, update storage
-    localStorage.setItem(TOKEN_PERSIST_KEY, token)
-    isDesktop() && writeTokenFile(token)
-    return token
-  }
-  if (!isDesktop()) return ''
-  const fileToken = isDesktop() ? await readTokenFile() : ''
-  // prefer other above, but file will ensure login persists after app updates
-  if (!fileToken) return ''
-  // has token in file, update localStorage
-  localStorage.setItem(TOKEN_PERSIST_KEY, fileToken)
-  return fileToken
 }
