@@ -12,7 +12,7 @@ use crate::{
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
-const DEFAULT_V_DEGREE: u32 = 3;
+const DEFAULT_V_DEGREE: u32 = 2;
 
 /// Data for a loft.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -20,7 +20,7 @@ const DEFAULT_V_DEGREE: u32 = 3;
 pub struct LoftData {
     /// Degree of the interpolation. Must be greater than zero.
     /// For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.
-    /// This defaults to 3, if not specified.
+    /// This defaults to 2, if not specified.
     pub v_degree: Option<std::num::NonZeroU32>,
     /// Attempt to approximate rational curves (such as arcs) using a bezier.
     /// This will remove banding around interpolations between arcs and non-arcs.  It may produce errors in other scenarios
