@@ -5,6 +5,13 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
+import { useCallback } from 'react'
+import { Logo } from 'components/Logo'
+import { CustomIcon } from 'components/CustomIcon'
+
+const subtleBorder =
+  'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
+const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-80 dark:text-chalkboard-30`
 
 const SignIn = () => {
   const {
@@ -18,11 +25,18 @@ const SignIn = () => {
     },
   } = useSettingsAuthContext()
 
-  const getLogoTheme = () =>
-    theme.current === Themes.Light ||
-    (theme.current === Themes.System && getSystemTheme() === Themes.Light)
-      ? '-dark'
-      : ''
+  const getThemeText = useCallback(
+    (shouldContrast = true) =>
+      theme.current === Themes.Light ||
+      (theme.current === Themes.System && getSystemTheme() === Themes.Light)
+        ? shouldContrast
+          ? '-dark'
+          : ''
+        : shouldContrast
+        ? ''
+        : '-dark',
+    [theme.current]
+  )
 
   const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
@@ -35,56 +49,162 @@ const SignIn = () => {
   }
 
   return (
-    <main className="body-bg h-full min-h-screen m-0 p-0 pt-24">
-      <div className="max-w-2xl mx-auto">
-        <div>
-          <img
-            src={`./zma-logomark${getLogoTheme()}.svg`}
-            alt="Zoo Modeling App"
-            className="w-48 inline-block"
-          />
+    <main className="bg-primary h-screen grid place-items-stretch m-0 p-2">
+      <div
+        style={{ height: 'calc(100vh - 16px)' }}
+        className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
+      >
+        <div className="max-w-7xl grid gap-5 grid-cols-4 grid-rows-5">
+          <div className="col-span-3 row-span-3 max-w-3xl">
+            <div className="flex items-baseline mb-8">
+              <Logo className="text-primary h-16 relative translate-y-1 mr-8" />
+              <h1 className="text-5xl">{APP_NAME}</h1>
+              <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
+                alpha
+              </span>
+            </div>
+            <p className="my-4 text-lg xl:text-xl">
+              Thank you for using our hardware design application. It is built
+              on a novel CAD engine and crafted to help you create parametric,
+              version-controlled, and accurate parts ready for manufacturing.
+            </p>
+            <p className="my-4 text-lg xl:text-xl">
+              As alpha software, Zoo Modeling App is still in heavy development.
+              We encourage feedback and feature requests that align with{' '}
+              <a
+                href="https://github.com/KittyCAD/modeling-app/issues/729"
+                target="_blank"
+                rel="noreferrer"
+              >
+                our roadmap to v1.0
+              </a>
+              .
+            </p>
+            {isDesktop() ? (
+              <button
+                onClick={signInDesktop}
+                className={
+                  'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
+                  '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                }
+                data-testid="sign-in-button"
+              >
+                Sign in to get started
+                <CustomIcon name="arrowRight" className="w-6 h-6" />
+              </button>
+            ) : (
+              <ActionButton
+                Element="link"
+                to={`${VITE_KC_SITE_BASE_URL}${
+                  PATHS.SIGN_IN
+                }?callbackUrl=${encodeURIComponent(
+                  typeof window !== 'undefined' &&
+                    window.location.href.replace('signin', '')
+                )}`}
+                iconStart={{ icon: 'arrowRight' }}
+                className="w-fit mt-4"
+              >
+                Sign in
+              </ActionButton>
+            )}
+          </div>
+          <div
+            className={`row-span-full col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+          >
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="h-full object-cover"
+            >
+              <source
+                src={`/wheel-loop${getThemeText(false)}.mp4`}
+                type="video/mp4"
+              />
+            </video>
+          </div>
+          <div className="self-end h-min col-span-3 row-span-2 grid grid-cols-2 grid-rows-2 gap-5">
+            <div className={cardArea}>
+              <h2 className="text-xl">Built in the open</h2>
+              <p className="text-xs my-4">
+                Open-source and open discussions. Check our public code base and
+                join our Discord.
+              </p>
+              <div className="flex gap-4 items-center">
+                <ActionButton
+                  Element="externalLink"
+                  to="https://github.com/KittyCAD/modeling-app"
+                  iconStart={{ icon: 'code' }}
+                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                >
+                  Read our source code
+                </ActionButton>
+                <ActionButton
+                  Element="externalLink"
+                  to="https://discord.gg/JQEpHR7Nt2"
+                  iconStart={{ icon: 'keyboard' }}
+                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                >
+                  Join our community
+                </ActionButton>
+              </div>
+            </div>
+            <div className={cardArea}>
+              <h2 className="text-xl">Ready for the future</h2>
+              <p className="text-xs my-4">
+                Modern software ideas being brought together to create a
+                familiar modeling experience with new superpowers.
+              </p>
+              <div className="flex gap-4 items-center">
+                <ActionButton
+                  Element="externalLink"
+                  to="https://zoo.dev/docs/kcl-samples/ball-bearing"
+                  iconStart={{ icon: 'settings' }}
+                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                >
+                  Parametric design with KCL
+                </ActionButton>
+                <ActionButton
+                  Element="externalLink"
+                  to="https://zoo.dev/docs/tutorials/text-to-cad"
+                  iconStart={{ icon: 'sparkles' }}
+                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                >
+                  AI-unlocked CAD
+                </ActionButton>
+              </div>
+            </div>
+            <div className={cardArea + ' col-span-2'}>
+              <h2 className="text-xl">
+                Built on the first infrastructure for hardware design
+              </h2>
+              <p className="text-xs my-4">
+                You can make your own niche hardware design tools with our
+                design and machine learning interfaces. We're building Modeling
+                App in the same way.
+              </p>
+              <div className="flex gap-4 items-center">
+                <ActionButton
+                  Element="externalLink"
+                  to="https://zoo.dev/design-api"
+                  iconStart={{ icon: 'sketch' }}
+                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                >
+                  KittyCAD Design API
+                </ActionButton>
+                <ActionButton
+                  Element="externalLink"
+                  to="https://zoo.dev/machine-learning-api"
+                  iconStart={{ icon: 'elephant' }}
+                  className="border-chalkboard-30 dark:border-chalkboard-80"
+                >
+                  ML-ephant Machine Learning API
+                </ActionButton>
+              </div>
+            </div>
+          </div>
         </div>
-        <h1 className="font-bold text-2xl mt-12 mb-6">
-          Sign in to get started with the {APP_NAME}
-        </h1>
-        <p className="py-4">
-          ZMA is an open-source CAD application for creating accurate 3D models
-          for use in manufacturing. It is built on top of KittyCAD, the design
-          API from Zoo. Zoo is the first software infrastructure company built
-          specifically for the needs of the manufacturing industry. With ZMA we
-          are showing how the KittyCAD API from Zoo can be used to build
-          entirely new kinds of software for manufacturing.
-        </p>
-        <p className="py-4">
-          ZMA is currently in development. If you would like to be notified when
-          ZMA is ready for production, please sign up for our mailing list at{' '}
-          <a href="https://zoo.dev">zoo.dev</a>.
-        </p>
-        {isDesktop() ? (
-          <ActionButton
-            Element="button"
-            onClick={signInDesktop}
-            iconStart={{ icon: 'arrowRight' }}
-            className="w-fit mt-4"
-            data-testid="sign-in-button"
-          >
-            Sign in
-          </ActionButton>
-        ) : (
-          <ActionButton
-            Element="link"
-            to={`${VITE_KC_SITE_BASE_URL}${
-              PATHS.SIGN_IN
-            }?callbackUrl=${encodeURIComponent(
-              typeof window !== 'undefined' &&
-                window.location.href.replace('signin', '')
-            )}`}
-            iconStart={{ icon: 'arrowRight' }}
-            className="w-fit mt-4"
-          >
-            Sign in
-          </ActionButton>
-        )}
       </div>
     </main>
   )
