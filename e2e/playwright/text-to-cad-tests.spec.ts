@@ -700,11 +700,14 @@ test(
     const fileExists = () =>
       fs.existsSync(join(dir, 'test-000', 'lego-2x4.kcl'))
 
+    const { clickPane, createAndSelectProject, panesOpen } = await getUtils(page, test)
+
     await page.setViewportSize({ width: 1200, height: 500 })
 
+    await panesOpen(['code', 'files'])
+
     // Create and navigate to the project
-    await createProjectAndRenameIt({ name: 'test-000', page })
-    await page.getByTestId('project-link').click()
+    await createAndSelectProject('project-000')
 
     // Wait for Start Sketch otherwise you will not have access Text-to-CAD command
     await expect(
@@ -712,10 +715,6 @@ test(
     ).toBeEnabled({
       timeout: 20_000,
     })
-
-    // Open the files pane
-    const filesPaneButton = page.getByTestId('files-pane-button')
-    await filesPaneButton.click()
 
     await test.step(`Test file creation`, async () => {
       await sendPromptFromCommandBar(page, 'lego 2x4')

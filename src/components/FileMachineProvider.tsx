@@ -246,6 +246,11 @@ export const FileMachineProvider = ({
             window.electron.path.join(project.path, DEFAULT_PROJECT_KCL_FILE),
             ''
           )
+          // Refresh the route selected above because it's possible we're on
+          // the same path on the navigate, which doesn't cause anything to
+          // refresh, leaving a stale execution state.
+          navigate(0)
+          return
         }
 
         // If we just deleted the current file or one of its parent directories,
@@ -257,11 +262,6 @@ export const FileMachineProvider = ({
         ) {
           navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
         }
-
-        // Refresh the route selected above because it's possible we're on
-        // the same path on the navigate, which doesn't cause anything to
-        // refresh, leaving a stale execution state.
-        navigate(0)
 
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
           event.data.name

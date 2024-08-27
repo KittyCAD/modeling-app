@@ -41,6 +41,7 @@ export default defineConfig({
           permissions: ['clipboard-write', 'clipboard-read'],
         },
         launchOptions: {
+          slowMo: true,
           ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
             ? {
                 executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
