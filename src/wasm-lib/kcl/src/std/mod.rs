@@ -9,6 +9,7 @@ pub mod fillet;
 pub mod helix;
 pub mod import;
 pub mod kcl_stdlib;
+pub mod loft;
 pub mod math;
 pub mod patterns;
 pub mod polar;
@@ -98,6 +99,7 @@ lazy_static! {
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
+        Box::new(crate::std::loft::Loft),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
