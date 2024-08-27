@@ -16,7 +16,6 @@ window.tearDown = engineCommandManager.tearDown
 
 // This needs to be after codeManager is created.
 export const kclManager = new KclManager(engineCommandManager)
-kclManager.isFirstRender = true
 
 engineCommandManager.getAstCb = () => kclManager.ast
 

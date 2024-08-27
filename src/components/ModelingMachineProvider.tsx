@@ -161,9 +161,7 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
 
-            kclManager.isFirstRender = true
             kclManager.executeCode().then(() => {
-              kclManager.isFirstRender = false
               if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play().catch((e) => {
