@@ -1,10 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import {
-  getUtils,
-  setup,
-  tearDown,
-  setupElectron,
-} from './test-utils'
+import { getUtils, setup, tearDown, setupElectron } from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
 
@@ -699,10 +694,7 @@ test(
     const fileExists = () =>
       fs.existsSync(join(dir, 'test-000', 'lego-2x4.kcl'))
 
-    const { createAndSelectProject, panesOpen } = await getUtils(
-      page,
-      test
-    )
+    const { createAndSelectProject, panesOpen } = await getUtils(page, test)
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
