@@ -31,13 +31,13 @@ import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
 import {
   createNewProjectDirectory,
   listProjects,
   renameProjectDirectory,
 } from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
+import { Project } from 'lib/project'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.

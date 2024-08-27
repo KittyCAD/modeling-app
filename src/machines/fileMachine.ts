@@ -1,6 +1,5 @@
 import { assign, createMachine } from 'xstate'
-import type { FileEntry } from 'lib/types'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project, FileEntry } from 'lib/project'
 
 export const fileMachine = createMachine(
   {
