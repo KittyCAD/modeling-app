@@ -147,7 +147,6 @@ export async function getEventForSelectWithPoint({
       _artifact,
       engineCommandManager.artifactGraph
     )
-    console.log('codeRef', codeRef)
     if (err(codeRef)) return null
     return {
       type: 'Set selection',
