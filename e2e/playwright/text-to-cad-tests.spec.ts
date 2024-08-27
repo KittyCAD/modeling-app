@@ -700,7 +700,10 @@ test(
     const fileExists = () =>
       fs.existsSync(join(dir, 'test-000', 'lego-2x4.kcl'))
 
-    const { clickPane, createAndSelectProject, panesOpen } = await getUtils(page, test)
+    const { clickPane, createAndSelectProject, panesOpen } = await getUtils(
+      page,
+      test
+    )
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
