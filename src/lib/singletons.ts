@@ -51,39 +51,4 @@ if (typeof window !== 'undefined') {
         padding: 0.2, // padding around the objects
       },
     })
-  ;(window as any).getEdgesForAndAskEngineForType = async (faceId: string) => {
-    // Kurt - Debugging tool used help to show edges aren't stable after further 3d operations
-    // if this was added more than a few months ago, it probably can be removed.
-    const face = engineCommandManager.artifactGraph.get(faceId)
-    if (face?.type !== 'wall') {
-      console.log('was expecting a wall, you gave me a ', face?.type)
-      return
-    }
-    const extrusion = engineCommandManager.artifactGraph.get(face.extrusionId)
-    if (extrusion?.type !== 'extrusion') {
-      console.log('was expecting an extrusion, but got ', extrusion?.type)
-      return
-    }
-    extrusion.edgeIds.forEach(async (edgeId) => {
-      const result = await engineCommandManager
-        .sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'get_entity_type',
-            entity_id: edgeId,
-          },
-        })
-        .catch((a) => console.log('error:', a))
-      if (!result?.success) return
-      if (result.resp.type !== 'modeling') return
-      if (result.resp.data.modeling_response.type !== 'get_entity_type') return
-      console.log(
-        'result edge is: ',
-        result.resp.data.modeling_response.data.entity_type,
-        ' id: ',
-        edgeId
-      )
-    })
-  }
 }
