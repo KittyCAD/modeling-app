@@ -110,7 +110,6 @@ Which commands from setup are one off vs need to be run every time?
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
 ```bash
 yarn install
-yarn wasm-prep
 yarn build:wasm-dev # or yarn build:wasm for slower but more production-like build
 yarn start # or yarn build:local && yarn serve for slower but more production-like build
 ```
@@ -374,3 +373,14 @@ yarn wdio run wdio.conf.ts
 ## KCL
 
 For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).
+
+
+- Theme removed as a project setting
+- Rename kcl Value to Expr, MemoryItem to KclValue
+- Remove ProgramReturn
+- Macro to make KCL snapshot tests easier
+- Add logical not operator using bang !
+- ensure we never execute over ourselves 
+- Unify KCL expression execution (2 + draw() didn't work)
+- Text-CAD-integration
+

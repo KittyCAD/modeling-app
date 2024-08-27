@@ -6,6 +6,8 @@ import {
   setupElectron,
   createProjectAndRenameIt,
 } from './test-utils'
+import { join } from 'path'
+import fs from 'fs'
 
 test.beforeEach(async ({ context, page }) => {
   await setup(context, page)
@@ -694,10 +696,9 @@ test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async () => {},
-    })
+    const { electronApp, page, dir } = await setupElectron({ testInfo })
+    const fileExists = () =>
+      fs.existsSync(join(dir, 'test-000', 'lego-2x4.kcl'))
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -721,6 +722,7 @@ test(
       // File is considered created if it shows up in the Project Files pane
       const file = page.getByRole('button', { name: 'lego-2x4.kcl' })
       await expect(file).toBeVisible({ timeout: 20_000 })
+      expect(fileExists()).toBeTruthy()
     })
 
     await test.step(`Test file navigation`, async () => {
@@ -741,6 +743,7 @@ test(
         `Successfully deleted file "lego-2x4.kcl"`
       )
       await expect(submittingToastMessage).toBeVisible()
+      expect(fileExists()).toBeFalsy()
     })
 
     await electronApp.close()
