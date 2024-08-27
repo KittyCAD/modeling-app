@@ -423,10 +423,12 @@ export function getArtifactsToUpdate({
     })
     return returnArr
   } else if (
+    // is opposite edge
     (cmd.type === 'solid3d_get_opposite_edge' &&
       response.type === 'modeling' &&
       response.data.modeling_response.type === 'solid3d_get_opposite_edge' &&
       response.data.modeling_response.data.edge) ||
+    // or is adjacent edge
     (cmd.type === 'solid3d_get_prev_adjacent_edge' &&
       response.type === 'modeling' &&
       response.data.modeling_response.type ===
