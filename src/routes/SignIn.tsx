@@ -54,11 +54,11 @@ const SignIn = () => {
         style={{ height: 'calc(100vh - 16px)' }}
         className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
-        <div className="max-w-7xl grid gap-5 grid-cols-4 grid-rows-5">
-          <div className="col-span-3 row-span-3 max-w-3xl">
+        <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
+          <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
             <div className="flex items-baseline mb-8">
-              <Logo className="text-primary h-16 relative translate-y-1 mr-8" />
-              <h1 className="text-5xl">{APP_NAME}</h1>
+              <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
+              <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
               <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
                 alpha
               </span>
@@ -109,14 +109,14 @@ const SignIn = () => {
             )}
           </div>
           <div
-            className={`row-span-full col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+            className={`xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
           >
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="h-full object-cover"
+              className="h-full object-cover object-center"
             >
               <source
                 src={`/wheel-loop${getThemeText(false)}.mp4`}
@@ -124,7 +124,7 @@ const SignIn = () => {
               />
             </video>
           </div>
-          <div className="self-end h-min col-span-3 row-span-2 grid grid-cols-2 grid-rows-2 gap-5">
+          <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 grid-rows-2 gap-5">
             <div className={cardArea}>
               <h2 className="text-xl">Built in the open</h2>
               <p className="text-xs my-4">
