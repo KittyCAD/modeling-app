@@ -469,9 +469,9 @@ export const hasValidFilletSelection = ({
       if (segmentNode.node.type === 'CallExpression') {
         const segmentName = segmentNode.node.callee.name
         if (segmentName in sketchLineHelperMap) {
-          // add check wheather tag exists at all:
+          // Add check whether the tag exists at all
           if (!(segmentNode.node.arguments.length === 3)) return true
-          // if tag exists, check if it is already filleted
+          // If the tag exists, check if it is already filleted
           const edges = isTagUsedInFillet({
             ast,
             callExp: segmentNode.node,
