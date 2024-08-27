@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{KclValue, Plane},
+    executor::{KclValue, Metadata, Plane, UserVal},
     std::{sketch::PlaneData, Args},
 };
 
@@ -52,7 +52,13 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
     let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
 
     let plane = inner_offset_plane(std_plane, offset).await?;
-    Ok(KclValue::Plane(plane))
+
+    Ok(KclValue::UserVal(UserVal::set(
+        vec![Metadata {
+            source_range: args.source_range,
+        }],
+        plane,
+    )))
 }
 
 /// Offset a plane by a distance along its normal.
@@ -182,7 +188,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "offsetPlane",
 }]
-async fn inner_offset_plane(std_plane: StandardPlane, offset: f64) -> Result<Box<Plane>, KclError> {
+async fn inner_offset_plane(std_plane: StandardPlane, offset: f64) -> Result<PlaneData, KclError> {
     // Convert to the plane type.
     let plane_data: PlaneData = std_plane.into();
     // Convert to a plane.
@@ -209,5 +215,10 @@ async fn inner_offset_plane(std_plane: StandardPlane, offset: f64) -> Result<Box
         }
     }
 
-    Ok(Box::new(plane))
+    Ok(PlaneData::Plane {
+        origin: Box::new(plane.origin),
+        x_axis: Box::new(plane.x_axis),
+        y_axis: Box::new(plane.y_axis),
+        z_axis: Box::new(plane.z_axis),
+    })
 }
