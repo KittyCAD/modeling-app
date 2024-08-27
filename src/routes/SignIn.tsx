@@ -9,6 +9,7 @@ import { CSSProperties, useCallback } from 'react'
 import { Logo } from 'components/Logo'
 import { CustomIcon } from 'components/CustomIcon'
 import { Link } from 'react-router-dom'
+import { APP_VERSION } from './Settings'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -59,6 +60,7 @@ const SignIn = () => {
             '--circle-y': '12%',
             '--circle-size-mid': '15%',
             '--circle-size-end': '200%',
+            '--circle-timing': 'cubic-bezier(0.25, 1, 0.4, 0.9)',
           } as CSSProperties
         }
         className="in-circle-hesitate body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
@@ -69,7 +71,7 @@ const SignIn = () => {
               <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
               <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
               <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
-                alpha
+                alpha v{APP_VERSION}
               </span>
             </div>
             <p className="my-4 text-lg xl:text-xl">
@@ -136,21 +138,21 @@ const SignIn = () => {
               />
             </video>
           </div>
-          <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 grid-rows-2 gap-5">
+          <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 gap-5">
             <div className={cardArea}>
               <h2 className="text-xl">Built in the open</h2>
               <p className="text-xs my-4">
                 Open-source and open discussions. Check our public code base and
                 join our Discord.
               </p>
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app"
                   iconStart={{ icon: 'code' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
-                  Read our source code
+                  <span className="py-2 lg:py-0">Read our source code</span>
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
@@ -158,7 +160,7 @@ const SignIn = () => {
                   iconStart={{ icon: 'keyboard' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
-                  Join our community
+                  <span className="py-2 lg:py-0">Join our community</span>
                 </ActionButton>
               </div>
             </div>
@@ -168,14 +170,16 @@ const SignIn = () => {
                 Modern software ideas being brought together to create a
                 familiar modeling experience with new superpowers.
               </p>
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
                   to="https://zoo.dev/docs/kcl-samples/ball-bearing"
                   iconStart={{ icon: 'settings' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
-                  Parametric design with KCL
+                  <span className="py-2 lg:py-0">
+                    Parametric design with KCL
+                  </span>
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
@@ -183,7 +187,7 @@ const SignIn = () => {
                   iconStart={{ icon: 'sparkles' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
-                  AI-unlocked CAD
+                  <span className="py-2 lg:py-0">AI-unlocked CAD</span>
                 </ActionButton>
               </div>
             </div>
@@ -196,14 +200,14 @@ const SignIn = () => {
                 design and machine learning interfaces. We're building Modeling
                 App in the same way.
               </p>
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
                   to="https://zoo.dev/design-api"
                   iconStart={{ icon: 'sketch' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
-                  KittyCAD Design API
+                  <span className="py-2 lg:py-0">KittyCAD Design API</span>
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
@@ -211,7 +215,9 @@ const SignIn = () => {
                   iconStart={{ icon: 'elephant' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
-                  ML-ephant Machine Learning API
+                  <span className="py-2 lg:py-0">
+                    ML-ephant Machine Learning API
+                  </span>
                 </ActionButton>
               </div>
             </div>

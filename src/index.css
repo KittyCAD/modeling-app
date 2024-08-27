@@ -297,8 +297,9 @@ code {
   }
 
   .in-circle-hesitate {
-    animation: var(--circle-duration, 2.5s) cubic-bezier(0.25, 1, 0.3, 1)
-      circle-in-hesitate both;
+    animation: var(--circle-duration, 2.5s)
+      var(--circle-timing, cubic-bezier(0.25, 1, 0.3, 1)) circle-in-hesitate
+      both;
   }
 }
 
