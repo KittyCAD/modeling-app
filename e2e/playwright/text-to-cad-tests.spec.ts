@@ -4,7 +4,6 @@ import {
   setup,
   tearDown,
   setupElectron,
-  createProjectAndRenameIt,
 } from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
@@ -700,7 +699,7 @@ test(
     const fileExists = () =>
       fs.existsSync(join(dir, 'test-000', 'lego-2x4.kcl'))
 
-    const { clickPane, createAndSelectProject, panesOpen } = await getUtils(
+    const { createAndSelectProject, panesOpen } = await getUtils(
       page,
       test
     )
