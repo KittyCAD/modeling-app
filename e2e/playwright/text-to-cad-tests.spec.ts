@@ -692,7 +692,7 @@ test(
   async ({ browserName }, testInfo) => {
     const { electronApp, page, dir } = await setupElectron({ testInfo })
     const fileExists = () =>
-      fs.existsSync(join(dir, 'test-000', 'lego-2x4.kcl'))
+      fs.existsSync(join(dir, 'project-000', 'lego-2x4.kcl'))
 
     const { createAndSelectProject, panesOpen } = await getUtils(page, test)
 
