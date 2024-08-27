@@ -58,6 +58,7 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 ///
 /// The sketches need to closed and on the same plane.
+///
 /// ```no_run
 /// // Loft a square and a triangle.
 /// const squareSketch = startSketchOn('XZ')
@@ -68,14 +69,7 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn({
-///     plane: {
-///         origin: { x: 0, y: -150, z: 0 },
-///         xAxis: { x: 1, y: 0, z: 0 },
-///         yAxis: { x: 0, y: 0, z: 1 },
-///         zAxis: { x: 0, y: -1, z: 0 }
-///         }
-///     })
+/// const triangleSketch = startSketchOn(offsetPlane('XZ', 150))
 ///     |> startProfileAt([0, 125], %)
 ///     |> line([-15, -30], %)
 ///     |> line([30, 0], %)
@@ -85,6 +79,28 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 /// loft([squareSketch, triangleSketch])
 /// ```
 ///
+/// ```no_run
+/// // Loft a square, a circle, and a triangle.
+/// const squareSketch = startSketchOn('XZ')
+///     |> startProfileAt([-100, 200], %)
+///     |> line([200, 0], %)
+///     |> line([0, -200], %)
+///     |> line([-200, 0], %)
+///     |> lineTo([profileStartX(%), profileStartY(%)], %)
+///     |> close(%)
+///
+/// const circleSketch = startSketchOn(offsetPlane('XZ', 75))
+///     |> circle([0, 100], 50, %)
+///
+/// const triangleSketch = startSketchOn(offsetPlane('XZ', 150))
+///     |> startProfileAt([0, 125], %)
+///     |> line([-15, -30], %)
+///     |> line([30, 0], %)
+///     |> lineTo([profileStartX(%), profileStartY(%)], %)
+///     |> close(%)
+///
+/// loft([squareSketch, circleSketch, triangleSketch])
+/// ```
 #[stdlib {
     name = "loft",
 }]

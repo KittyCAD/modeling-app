@@ -367,6 +367,13 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
+    pub(crate) fn get_data_and_float<'a, T>(&'a self) -> Result<(T, f64), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
+    {
+        FromArgs::from_args(self, 0)
+    }
+
     pub(crate) fn get_number_sketch_group_set(&self) -> Result<(f64, SketchGroupSet), KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -628,6 +635,7 @@ impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(crate::std::loft::LoftData);
+impl_from_arg_via_json!(crate::std::planes::StandardPlane);
 impl_from_arg_via_json!(SketchGroup);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
