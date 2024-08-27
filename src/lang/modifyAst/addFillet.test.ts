@@ -152,7 +152,7 @@ const extrude001 = extrude(-15, sketch001)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  })
+  }, 5_000)
   it('should return the correct paths for a valid selection and extrusion in case of several extrusions and sketches', async () => {
     const code = `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-30, 30], %)
