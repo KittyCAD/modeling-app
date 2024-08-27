@@ -274,6 +274,34 @@ code {
   }
 }
 
+@layer utilities {
+  /* Modified from the very helpful https://www.transition.style/#in:circle:hesitate */
+  @keyframes circle-in-hesitate {
+    0% {
+      clip-path: circle(
+        var(--circle-size-start, 0%) at var(--circle-x, 50%)
+          var(--circle-y, 50%)
+      );
+    }
+    40% {
+      clip-path: circle(
+        var(--circle-size-mid, 40%) at var(--circle-x, 50%) var(--circle-y, 50%)
+      );
+    }
+    100% {
+      clip-path: circle(
+        var(--circle-size-end, 125%) at var(--circle-x, 50%)
+          var(--circle-y, 50%)
+      );
+    }
+  }
+
+  .in-circle-hesitate {
+    animation: var(--circle-duration, 2.5s) cubic-bezier(0.25, 1, 0.3, 1)
+      circle-in-hesitate both;
+  }
+}
+
 #code-mirror-override .cm-scroller,
 #code-mirror-override .cm-editor {
   height: 100% !important;

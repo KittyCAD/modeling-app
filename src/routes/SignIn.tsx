@@ -5,13 +5,14 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
-import { useCallback } from 'react'
+import { CSSProperties, useCallback } from 'react'
 import { Logo } from 'components/Logo'
 import { CustomIcon } from 'components/CustomIcon'
+import { Link } from 'react-router-dom'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
-const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-80 dark:text-chalkboard-30`
+const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
 
 const SignIn = () => {
   const {
@@ -51,8 +52,16 @@ const SignIn = () => {
   return (
     <main className="bg-primary h-screen grid place-items-stretch m-0 p-2">
       <div
-        style={{ height: 'calc(100vh - 16px)' }}
-        className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
+        style={
+          {
+            height: 'calc(100vh - 16px)',
+            '--circle-x': '14%',
+            '--circle-y': '12%',
+            '--circle-size-mid': '15%',
+            '--circle-size-end': '200%',
+          } as CSSProperties
+        }
+        className="in-circle-hesitate body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
         <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
           <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
@@ -93,19 +102,22 @@ const SignIn = () => {
                 <CustomIcon name="arrowRight" className="w-6 h-6" />
               </button>
             ) : (
-              <ActionButton
-                Element="link"
+              <Link
                 to={`${VITE_KC_SITE_BASE_URL}${
                   PATHS.SIGN_IN
                 }?callbackUrl=${encodeURIComponent(
                   typeof window !== 'undefined' &&
                     window.location.href.replace('signin', '')
                 )}`}
-                iconStart={{ icon: 'arrowRight' }}
-                className="w-fit mt-4"
+                className={
+                  'w-fit m-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
+                  '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                }
+                data-testid="sign-in-button"
               >
-                Sign in
-              </ActionButton>
+                Sign in to get started
+                <CustomIcon name="arrowRight" className="w-6 h-6" />
+              </Link>
             )}
           </div>
           <div
