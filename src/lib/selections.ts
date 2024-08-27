@@ -86,7 +86,6 @@ export async function getEventForSelectWithPoint({
     }
   }
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
-  console.log('entity id', data.entity_id)
   if (!_artifact)
     return {
       type: 'Set selection',
