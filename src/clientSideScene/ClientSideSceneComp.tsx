@@ -126,7 +126,8 @@ export const ClientSideScene = ({
     } else if (
       state.matches('Sketch.Line tool') ||
       state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches('Sketch.Rectangle tool') ||
+      state.matches('Sketch.Circle tool')
     ) {
       cursor = 'crosshair'
     } else {
