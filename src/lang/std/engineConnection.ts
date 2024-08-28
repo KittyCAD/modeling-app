@@ -52,8 +52,8 @@ interface WebRTCClientMetrics extends ClientMetrics {
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-  ? { type: T }
-  : { type: T; value: U }
+    ? { type: T }
+    : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -297,8 +297,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
-  60_000)
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
+    () => {},
+    60_000
+  )
   isUsingConnectionLite: boolean = false
 
   constructor({
@@ -1364,7 +1366,7 @@ export class EngineCommandManager extends EventTarget {
   }
 
   private getAst: () => Program = () =>
-    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} }) as any
   set getAstCb(cb: () => Program) {
     this.getAst = cb
   }
@@ -1991,6 +1993,7 @@ export class EngineCommandManager extends EventTarget {
       range: message.range,
       idToRangeMap: message.idToRangeMap,
     }
+
     if (message.command.type === 'modeling_cmd_req') {
       this.orderedCommands.push({
         command: message.command,
@@ -2037,6 +2040,18 @@ export class EngineCommandManager extends EventTarget {
       this.deferredArtifactPopulated(null)
     }
   }
+
+  /**
+   * Reject all of the pendingCommands created from sendModelingCommandFromWasm
+   * This interrupts the runtime of executeAst. Stops the AST processing and stops sending commands
+   * to the engine
+   */
+  rejectAllCommands(rejectionMessage: string) {
+    Object.values(this.pendingCommands).forEach((a) => {
+      a.reject(rejectionMessage)
+    })
+  }
+
   async initPlanes() {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()

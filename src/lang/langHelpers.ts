@@ -73,13 +73,23 @@ export async function executeAst({
       logs: [],
       errors: [],
       programMemory,
+      isInterrupted: false,
     }
   } catch (e: any) {
+    let isInterrupted = false
     if (e instanceof KCLError) {
+      // Detect if it is a force interrupt error which is not a KCL processing error.
+      if (
+        e.msg ===
+        'Failed to wait for promise from engine: JsValue("Force interrupt, executionIsStale, new AST requested")'
+      ) {
+        isInterrupted = true
+      }
       return {
         errors: [e],
         logs: [],
         programMemory: ProgramMemory.empty(),
+        isInterrupted,
       }
     } else {
       console.log(e)
@@ -87,6 +97,7 @@ export async function executeAst({
         logs: [e],
         errors: [],
         programMemory: ProgramMemory.empty(),
+        isInterrupted,
       }
     }
   }
