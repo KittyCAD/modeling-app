@@ -72,6 +72,7 @@ jobs:
   build-apps:
     needs: [prepare-files]
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-14, windows-2022, ubuntu-22.04]
     runs-on: ${{ matrix.os }}
