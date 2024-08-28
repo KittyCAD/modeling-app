@@ -147,7 +147,7 @@ export function platform(): Platform {
       case 'sunos':
         return 'linux'
       default:
-        console.error('Unknown platform:', platform)
+        console.error('Unknown desktop platform:', platform)
         return ''
     }
   }
@@ -156,11 +156,14 @@ export function platform(): Platform {
   // it's more accurate than userAgent and userAgentData in Playwright.
   if (
     navigator.platform?.indexOf('Mac') === 0 ||
-    navigator.platform === 'iPhone'
+    navigator.platform?.indexOf('iPhone') === 0 ||
+    navigator.platform?.indexOf('iPad') === 0 ||
+    // Vite tests running in HappyDOM.
+    navigator.platform?.indexOf('Darwin') >= 0
   ) {
     return 'macos'
   }
-  if (navigator.platform === 'Win32') {
+  if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
   }
 
@@ -185,7 +188,7 @@ export function platform(): Platform {
     return 'linux'
   }
   console.error(
-    'Unknown platform userAgent:',
+    'Unknown web platform:',
     navigator.platform,
     userAgentDataPlatform,
     navigator.userAgent
