@@ -10,6 +10,7 @@ import { Logo } from 'components/Logo'
 import { CustomIcon } from 'components/CustomIcon'
 import { Link } from 'react-router-dom'
 import { APP_VERSION } from './Settings'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -26,6 +27,12 @@ const SignIn = () => {
       },
     },
   } = useSettingsAuthContext()
+  const signInUrl = `${VITE_KC_SITE_BASE_URL}${
+    PATHS.SIGN_IN
+  }?callbackUrl=${encodeURIComponent(
+    typeof window !== 'undefined' && window.location.href.replace('signin', '')
+  )}`
+  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel`
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -105,12 +112,8 @@ const SignIn = () => {
               </button>
             ) : (
               <Link
-                to={`${VITE_KC_SITE_BASE_URL}${
-                  PATHS.SIGN_IN
-                }?callbackUrl=${encodeURIComponent(
-                  typeof window !== 'undefined' &&
-                    window.location.href.replace('signin', '')
-                )}`}
+                onClick={openExternalBrowserIfDesktop(signInUrl)}
+                to={signInUrl}
                 className={
                   'w-fit m-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                   '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
@@ -124,9 +127,10 @@ const SignIn = () => {
           </div>
           <Link
             className={`group relative xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
-            to="https://zoo.dev/docs/kcl-samples/car-wheel"
+            to={kclSampleUrl}
+            onClick={openExternalBrowserIfDesktop(kclSampleUrl)}
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
           >
             <video
               autoPlay
@@ -136,7 +140,9 @@ const SignIn = () => {
               className="h-full object-cover object-center"
             >
               <source
-                src={`/wheel-loop${getThemeText(false)}.mp4`}
+                src={`${isDesktop() ? '.' : ''}/wheel-loop${getThemeText(
+                  false
+                )}.mp4`}
                 type="video/mp4"
               />
             </video>
