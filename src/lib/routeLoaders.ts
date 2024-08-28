@@ -90,9 +90,9 @@ export const fileLoader: LoaderFunction = async (
     let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath)).default_file
-      let fileExists = true
-      if (currentFilePath) {
+      const fallbackFile = isDesktop() ? (await getProjectInfo(projectPath)).default_file : ''
+      let fileExists = isDesktop()
+      if (currentFilePath && fileExists) {
         try {
           await window.electron.stat(currentFilePath)
         } catch (e) {
