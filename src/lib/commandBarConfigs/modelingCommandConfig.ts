@@ -186,9 +186,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         options: () => {
           return Object.entries(machineManager.machines).map(
             ([_, machine]) => ({
-              name: `${
+              name: `${machine.id} (${
                 machine.make_model.model || machine.make_model.manufacturer
-              } via ${machineManager.machineApiIp || 'the local network'}`,
+              }) via ${machineManager.machineApiIp || 'the local network'}`,
               isCurrent: false,
               value: machine as components['schemas']['MachineInfoResponse'],
             })
