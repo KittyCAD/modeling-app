@@ -13,6 +13,7 @@ export type CameraSystem =
   | 'KittyCAD'
   | 'OnShape'
   | 'Trackpad Friendly'
+  | 'Apple Trackpad'
   | 'Solidworks'
   | 'NX'
   | 'Creo'
@@ -22,6 +23,7 @@ export const cameraSystems: CameraSystem[] = [
   'KittyCAD',
   'OnShape',
   'Trackpad Friendly',
+  'Apple Trackpad',
   'Solidworks',
   'NX',
   'Creo',
@@ -38,6 +40,8 @@ export function mouseControlsToCameraSystem(
       return 'OnShape'
     case 'trackpad_friendly':
       return 'Trackpad Friendly'
+    case 'apple_trackpad':
+      return 'Apple Trackpad'
     case 'solidworks':
       return 'Solidworks'
     case 'nx':
@@ -54,6 +58,7 @@ export function mouseControlsToCameraSystem(
 interface MouseGuardHandler {
   description: string
   callback: (e: MouseEvent) => boolean
+  scrollCallback: (e: WheelEvent) => boolean
   lenientDragStartButton?: number
 }
 
@@ -61,6 +66,7 @@ interface MouseGuardZoomHandler {
   description: string
   dragCallback: (e: MouseEvent) => boolean
   scrollCallback: (e: WheelEvent) => boolean
+  scrollReverseY?: boolean
   lenientDragStartButton?: number
 }
 
@@ -83,6 +89,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) =>
         (btnName(e).middle && noModifiersPressed(e)) ||
         (btnName(e).right && e.shiftKey),
+      scrollCallback: () => false,
     },
     zoom: {
       description: 'Scroll or Ctrl + Right click drag',
@@ -92,6 +99,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: 'Right click drag',
       callback: (e) => btnName(e).right && noModifiersPressed(e),
+      scrollCallback: () => false,
     },
   },
   OnShape: {
@@ -100,6 +108,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) =>
         (btnName(e).right && e.ctrlKey) ||
         (btnName(e).middle && noModifiersPressed(e)),
+      scrollCallback: () => false,
     },
     zoom: {
       description: 'Scroll',
@@ -109,6 +118,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: 'Right click drag',
       callback: (e) => btnName(e).right && noModifiersPressed(e),
+      scrollCallback: () => false,
     },
   },
   'Trackpad Friendly': {
@@ -117,6 +127,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       callback: (e) =>
         (btnName(e).left && e.altKey && e.shiftKey && !e.metaKey) ||
         (btnName(e).middle && noModifiersPressed(e)),
+      scrollCallback: () => false,
     },
     zoom: {
       description: `Scroll or ${ALT} + ${META} + Left click drag`,
@@ -126,13 +137,44 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: `${ALT} + Left click drag`,
       callback: (e) => btnName(e).left && e.altKey && !e.shiftKey && !e.metaKey,
+      scrollCallback: () => false,
       lenientDragStartButton: 0,
+    },
+  },
+  'Apple Trackpad': {
+    pan: {
+      description: `Scroll or one finger drag`,
+      callback: (e) => btnName(e).left && noModifiersPressed(e),
+      scrollCallback: (e) => e.deltaMode === 0 && noModifiersPressed(e),
+      lenientDragStartButton: 0,
+    },
+    zoom: {
+      description: `Shift + Scroll`,
+      dragCallback: (e) => false,
+      scrollCallback: (e) =>
+        e.deltaMode === 0 &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.metaKey,
+      scrollReverseY: true,
+    },
+    rotate: {
+      description: `${ALT} + Scroll`,
+      callback: (e) => false,
+      scrollCallback: (e) =>
+        e.deltaMode === 0 &&
+        e.altKey &&
+        !e.ctrlKey &&
+        !e.shiftKey &&
+        !e.metaKey,
     },
   },
   Solidworks: {
     pan: {
       description: 'Ctrl + Right click drag',
       callback: (e) => btnName(e).right && e.ctrlKey,
+      scrollCallback: () => false,
       lenientDragStartButton: 2,
     },
     zoom: {
@@ -143,12 +185,14 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: 'Middle click drag',
       callback: (e) => btnName(e).middle && noModifiersPressed(e),
+      scrollCallback: () => false,
     },
   },
   NX: {
     pan: {
       description: 'Shift + Middle click drag',
       callback: (e) => btnName(e).middle && e.shiftKey,
+      scrollCallback: () => false,
     },
     zoom: {
       description: 'Scroll or Ctrl + Middle click drag',
@@ -158,12 +202,14 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: 'Middle click drag',
       callback: (e) => btnName(e).middle && noModifiersPressed(e),
+      scrollCallback: () => false,
     },
   },
   Creo: {
     pan: {
       description: 'Ctrl + Left click drag',
       callback: (e) => btnName(e).left && !btnName(e).right && e.ctrlKey,
+      scrollCallback: () => false,
     },
     zoom: {
       description: 'Scroll or Ctrl + Right click drag',
@@ -176,12 +222,14 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         const b = btnName(e)
         return (b.middle || (b.left && b.right)) && e.ctrlKey
       },
+      scrollCallback: () => false,
     },
   },
   AutoCAD: {
     pan: {
       description: 'Middle click drag',
       callback: (e) => btnName(e).middle && noModifiersPressed(e),
+      scrollCallback: () => false,
     },
     zoom: {
       description: 'Scroll',
@@ -191,6 +239,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: 'Shift + Middle click drag',
       callback: (e) => btnName(e).middle && e.shiftKey,
+      scrollCallback: () => false,
     },
   },
 }

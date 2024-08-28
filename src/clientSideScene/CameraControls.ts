@@ -390,28 +390,7 @@ export class CameraControls {
         return
       }
 
-      // Implement camera movement logic here based on deltaMove
-      // For example, for rotating the camera around the target:
-      if (interaction === 'rotate') {
-        this.pendingRotation = this.pendingRotation
-          ? this.pendingRotation
-          : new Vector2()
-        this.pendingRotation.x += deltaMove.x
-        this.pendingRotation.y += deltaMove.y
-      } else if (interaction === 'zoom') {
-        this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-        this.pendingZoom *= 1 + deltaMove.y * 0.01
-      } else if (interaction === 'pan') {
-        this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
-        let distance = this.camera.position.distanceTo(this.target)
-        if (this.camera instanceof OrthographicCamera) {
-          const zoomFudgeFactor = 2280
-          distance = zoomFudgeFactor / (this.camera.zoom * 45)
-        }
-        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
-        this.pendingPan.x += -deltaMove.x * panSpeed
-        this.pendingPan.y += deltaMove.y * panSpeed
-      }
+      this.moveCamera(interaction, deltaMove)
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -430,6 +409,31 @@ export class CameraControls {
           cmd_id: newCmdId,
         })
       }
+    }
+  }
+
+  moveCamera(interaction: interactionType, deltaMove: Vector2) {
+    // Implement camera movement logic here based on deltaMove
+    // For example, for rotating the camera around the target:
+    if (interaction === 'rotate') {
+      this.pendingRotation = this.pendingRotation
+        ? this.pendingRotation
+        : new Vector2()
+      this.pendingRotation.x += deltaMove.x
+      this.pendingRotation.y += deltaMove.y
+    } else if (interaction === 'zoom') {
+      this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
+      this.pendingZoom *= 1 + deltaMove.y * 0.01
+    } else if (interaction === 'pan') {
+      this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
+      let distance = this.camera.position.distanceTo(this.target)
+      if (this.camera instanceof OrthographicCamera) {
+        const zoomFudgeFactor = 2280
+        distance = zoomFudgeFactor / (this.camera.zoom * 45)
+      }
+      const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+      this.pendingPan.x += -deltaMove.x * panSpeed
+      this.pendingPan.y += deltaMove.y * panSpeed
     }
   }
 
@@ -457,14 +461,56 @@ export class CameraControls {
     if (interaction === 'none') return
     event.preventDefault()
 
+    const zoomDirection = this.interactionGuards.zoom.scrollReverseY ? -1 : 1
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
-        this.zoomDataFromLastFrame = event.deltaY
+        this.zoomDataFromLastFrame = event.deltaY * zoomDirection
       } else {
-        // This case will get handled when we add pan and rotate using Apple trackpad.
-        console.error(
-          `Unexpected interaction type for engineToClient wheel event: ${interaction}`
-        )
+        this.isDragging = true
+        this.handleStart()
+
+        this.engineCommandManager
+          .sendSceneCommand({
+            type: 'modeling_cmd_batch_req',
+            batch_id: uuidv4(),
+            requests: [
+              {
+                cmd: {
+                  type: 'camera_drag_start',
+                  interaction,
+                  window: { x: event.clientX, y: event.clientY },
+                },
+                cmd_id: uuidv4(),
+              },
+              {
+                cmd: {
+                  type: 'camera_drag_move',
+                  interaction,
+                  window: {
+                    x: event.clientX - event.deltaX,
+                    y: event.clientY - event.deltaY,
+                  },
+                },
+                cmd_id: uuidv4(),
+              },
+              {
+                cmd: {
+                  type: 'camera_drag_end',
+                  interaction,
+                  window: {
+                    x: event.clientX - event.deltaX,
+                    y: event.clientY - event.deltaY,
+                  },
+                },
+                cmd_id: uuidv4(),
+              },
+            ],
+            responses: false,
+          })
+          .catch(reportRejection)
+
+        this.isDragging = false
+        this.handleEnd()
       }
       return
     }
@@ -478,12 +524,19 @@ export class CameraControls {
 
     this.handleStart()
     if (interaction === 'zoom') {
-      this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+      this.pendingZoom =
+        1 + (event.deltaY / window.devicePixelRatio) * 0.001 * zoomDirection
     } else {
-      // This case will get handled when we add pan and rotate using Apple trackpad.
-      console.error(
-        `Unexpected interaction type for wheel event: ${interaction}`
+      this.isDragging = true
+      this.mouseDownPosition.set(event.clientX, event.clientY)
+
+      this.moveCamera(interaction, new Vector2(-event.deltaX, -event.deltaY))
+
+      this.mouseDownPosition.set(
+        event.clientX + event.deltaX,
+        event.clientY + event.deltaY
       )
+      this.isDragging = false
     }
     this.handleEnd()
   }
@@ -1266,6 +1319,9 @@ function _getInteractionType(
   enableZoom: boolean
 ): interactionType | 'none' {
   if (event instanceof WheelEvent) {
+    if (enablePan && interactionGuards.pan.scrollCallback(event)) return 'pan'
+    if (enableRotate && interactionGuards.rotate.scrollCallback(event))
+      return 'rotate'
     if (enableZoom && interactionGuards.zoom.scrollCallback(event))
       return 'zoom'
   } else {

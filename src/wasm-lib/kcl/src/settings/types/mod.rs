@@ -389,6 +389,8 @@ pub enum MouseControlType {
     OnShape,
     #[serde(alias = "Trackpad Friendly")]
     TrackpadFriendly,
+    #[serde(alias = "Apple Trackpad")]
+    AppleTrackpad,
     #[serde(alias = "Solidworks")]
     Solidworks,
     #[serde(alias = "NX")]
