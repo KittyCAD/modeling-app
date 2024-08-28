@@ -561,7 +561,7 @@ impl<'a> FromKclValue<'a> for &'a str {
 
 impl<'a> FromKclValue<'a> for TagDeclarator {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        dbg!(arg.get_tag_declarator()).ok()
+        arg.get_tag_declarator().ok()
     }
 }
 
