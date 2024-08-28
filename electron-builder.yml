@@ -10,9 +10,3 @@ files:
 mac:
   category: public.app-category.developer-tools
   target: zip
-
-windows:
-  target: nsis
-
-linux:
-  target: appimage
