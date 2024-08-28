@@ -1078,37 +1078,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'Finish circle' })
-
-          const { programMemory } = await executeAst({
-            ast: _ast,
-            useFakeExecutor: true,
-            engineCommandManager: this.engineCommandManager,
-            programMemoryOverride,
-          })
-
-          // Prepare to update the THREEjs scene
-          this.sceneProgramMemory = programMemory
-          const sketchGroup = sketchGroupFromKclValue(
-            programMemory.get(variableDeclarationName),
-            variableDeclarationName
-          )
-          if (err(sketchGroup)) return sketchGroup
-          const sgPaths = sketchGroup.value
-          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-
-          // Update the starting segment of the THREEjs scene
-          this.updateSegment(
-            sketchGroup.start,
-            0,
-            0,
-            _ast,
-            orthoFactor,
-            sketchGroup
-          )
-          // Update the rest of the segments of the THREEjs scene
-          sgPaths.forEach((seg, index) =>
-            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
-          )
         }
       },
     })
