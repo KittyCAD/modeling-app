@@ -82,7 +82,7 @@
                 "$ref": "#/components/schemas/ExtraMachineInfoResponse"
               }
             ],
-            "description": "Additional, per-machine information which is specfic to the underlying machine type.",
+            "description": "Additional, per-machine information which is specific to the underlying machine type.",
             "nullable": true
           },
           "id": {
