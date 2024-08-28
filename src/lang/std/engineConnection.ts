@@ -1938,7 +1938,13 @@ export class EngineCommandManager extends EventTarget {
       command,
       idToRangeMap: {},
       range: [0, 0],
-    }).then(([a]) => a)
+    })
+      .then(([a]) => a)
+      .catch((e) => {
+        // TODO: Previously was never caught, since adding rejectAllCommands how should we handle this
+        // error?
+        /*noop*/
+      })
   }
   /**
    * A wrapper around the sendCommand where all inputs are JSON strings
