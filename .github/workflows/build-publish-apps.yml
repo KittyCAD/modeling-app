@@ -14,7 +14,7 @@ on:
 
 env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-  BUILD_RELEASE: true
+  BUILD_RELEASE: false
   BUCKET_NAME: 'dl.kittycad.io'
   BUCKET_FOLDER: 'releases/modeling-app/test/electron'
   WEBSITE_DIR: 'dl.zoo.dev/releases/modeling-app/test/electron' 
@@ -137,14 +137,16 @@ jobs:
 
       - name: Make the app for arm64
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        run: "yarn electron-forge make --arch arm64"
+        # run: "yarn electron-forge make --arch arm64"
+        run: "yarn electron-builder --config --arm64"
 
       - name: Publish the app for arm64 (dry run)
         if: ${{ env.BUILD_RELEASE == 'true' }}
         run: "yarn electron-forge publish --arch arm64 --dry-run"
 
       - name: Sign Windows arm64 builds using Signtool
-        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
+        # if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
+        if: false
         env:
           FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\arm64\\Zoo Modeling App-*Setup.exe"
         run: |
@@ -155,20 +157,23 @@ jobs:
         with:
           name: out-${{ matrix.os }}-arm64
           path: |
-            out/make/**/arm64/*
-            out/make/*.dmg
-            out/publish-dry-run/*/*
+            out/*arm64*
+          # out/make/**/arm64/*
+          # out/make/*.dmg
+          # out/publish-dry-run/*/*
 
       - name: Make the app for x64
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        run: "yarn electron-forge make --arch x64"
+        # run: "yarn electron-forge make --arch x64"
+        run: "yarn electron-builder --config --x64"
 
       - name: Publish the app for x64 (dry run)
         if: ${{ env.BUILD_RELEASE == 'true' }}
         run: "yarn electron-forge publish --arch x64 --dry-run"
 
       - name: Sign Windows x64 builds using Signtool
-        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
+        # if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
+        if: false
         env:
           FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\x64\\Zoo Modeling App-*Setup.exe"
         run: |
@@ -179,9 +184,10 @@ jobs:
         with:
           name: out-${{ matrix.os }}-x64
           path: |
-            out/make/**/x64/*
-            out/make/*.dmg
-            out/publish-dry-run/*/*
+            out/*x64*
+          # out/make/**/x64/*
+          # out/make/*.dmg
+          # out/publish-dry-run/*/*
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 

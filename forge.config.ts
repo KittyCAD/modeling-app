@@ -30,7 +30,8 @@ const config: ForgeConfig = {
         teamId: process.env.APPLE_TEAM_ID || '',
       }) ||
       undefined,
-    executableName: process.platform === 'linux' ? 'zoo-modeling-app' : 'Zoo Modeling App',
+    executableName:
+      process.platform === 'linux' ? 'zoo-modeling-app' : 'Zoo Modeling App',
     icon: path.resolve(rootDir, 'assets', 'icon'),
     protocols: [
       {

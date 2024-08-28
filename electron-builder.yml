@@ -1,0 +1,18 @@
+appId: dev.zoo.modeling-app
+
+directories:
+  output: out
+  buildResources: assets
+
+files:
+  - .vite/**
+
+mac:
+  category: public.app-category.developer-tools
+  target: zip
+
+windows:
+  target: nsis
+
+linux:
+  target: appimage

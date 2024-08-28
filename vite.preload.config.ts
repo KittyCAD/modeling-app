@@ -20,7 +20,7 @@ export default defineConfig((env) => {
     base: './',
     build: {
       lib: {
-        entry: forgeConfigSelf.entry!,
+        entry: 'src/preload.ts',
         fileName: () => '[name].js',
         formats: ['cjs'],
       },
