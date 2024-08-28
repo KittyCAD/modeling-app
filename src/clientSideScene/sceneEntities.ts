@@ -947,7 +947,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
-    rectangleOrigin: [x: number, y: number]
+    circleCenter: [x: number, y: number]
   ) => {
     let _ast = structuredClone(kclManager.ast)
 
@@ -962,20 +962,24 @@ export class SceneEntities {
     const startSketchOn = _node1.node?.declarations
     const startSketchOnInit = startSketchOn?.[0]?.init
 
-    const tags: [string, string, string] = [
-      findUniqueName(_ast, 'rectangleSegmentA'),
-      findUniqueName(_ast, 'rectangleSegmentB'),
-      findUniqueName(_ast, 'rectangleSegmentC'),
-    ]
-
     startSketchOn[0].init = createPipeExpression([
       startSketchOnInit,
-      ...getRectangleCallExpressions(rectangleOrigin, tags),
+      createCallExpressionStdLib('circle', [
+        createArrayExpression([
+          createLiteral(roundOff(circleCenter[0])),
+          createLiteral(roundOff(circleCenter[1])),
+        ]),
+        createLiteral(1),
+        createPipeSubstitution(),
+      ]),
     ])
 
     let _recastAst = parse(recast(_ast))
     if (trap(_recastAst)) return Promise.reject(_recastAst)
     _ast = _recastAst
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -983,12 +987,11 @@ export class SceneEntities {
       up,
       position: sketchOrigin,
       maybeModdedAst: _ast,
-      draftExpressionsIndices: { start: 0, end: 3 },
+      draftExpressionsIndices: { start: 0, end: 0 },
     })
 
     sceneInfra.setCallbacks({
       onMove: async (args) => {
-        // Update the width and height of the draft rectangle
         const pathToNodeTwo = structuredClone(sketchPathToNode)
         pathToNodeTwo[1][0] = 0
 
@@ -997,18 +1000,27 @@ export class SceneEntities {
           pathToNodeTwo || [],
           'VariableDeclaration'
         )
+        let modded = structuredClone(truncatedAst)
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declarations?.[0]?.init
 
-        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
-        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+        const x = (args.intersectionPoint.twoD.x || 0) - circleCenter[0]
+        const y = (args.intersectionPoint.twoD.y || 0) - circleCenter[1]
 
         if (sketchInit.type === 'PipeExpression') {
-          updateRectangleSketch(sketchInit, x, y, tags[0])
+          const moddedResult = changeCircleArguments(
+            modded,
+            kclManager.programMemory,
+            [..._node.deepPath, ['body', 'PipeExpression'], [1, 'index']],
+            circleCenter,
+            Math.sqrt(x ** 2 + y ** 2)
+          )
+          if (err(moddedResult)) return Promise.reject(moddedResult)
+          modded = moddedResult.modifiedAst
         }
 
         const { programMemory } = await executeAst({
-          ast: truncatedAst,
+          ast: modded,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
@@ -1039,8 +1051,8 @@ export class SceneEntities {
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
 
-        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
-        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+        const x = roundOff((cornerPoint.x || 0) - circleCenter[0])
+        const y = roundOff((cornerPoint.y || 0) - circleCenter[1])
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
@@ -1050,16 +1062,25 @@ export class SceneEntities {
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declarations?.[0]?.init
 
+        let modded = structuredClone(_ast)
         if (sketchInit.type === 'PipeExpression') {
-          updateRectangleSketch(sketchInit, x, y, tags[0])
+          const moddedResult = changeCircleArguments(
+            modded,
+            kclManager.programMemory,
+            [..._node.deepPath, ['body', 'PipeExpression'], [1, 'index']],
+            circleCenter,
+            Math.sqrt(x ** 2 + y ** 2)
+          )
+          if (err(moddedResult)) return Promise.reject(moddedResult)
+          modded = moddedResult.modifiedAst
 
-          let _recastAst = parse(recast(_ast))
+          let _recastAst = parse(recast(modded))
           if (trap(_recastAst)) return Promise.reject(_recastAst)
           _ast = _recastAst
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
-          sceneInfra.modelingSend({ type: 'Finish rectangle' })
+          sceneInfra.modelingSend({ type: 'Finish circle' })
 
           const { programMemory } = await executeAst({
             ast: _ast,
@@ -1315,7 +1336,7 @@ export class SceneEntities {
       modded = changeCircleArguments(
         modifiedAst,
         kclManager.programMemory,
-        [node.start, node.end],
+        getNodePathFromSourceRange(modifiedAst, [node.start, node.end]),
         group.userData.center,
         Math.sqrt(
           (group.userData.center[0] - dragTo[0]) ** 2 +
@@ -1330,7 +1351,7 @@ export class SceneEntities {
       modded = changeCircleArguments(
         modifiedAst,
         kclManager.programMemory,
-        [node.start, node.end],
+        getNodePathFromSourceRange(modifiedAst, [node.start, node.end]),
         dragTo,
         group.userData.radius
       )

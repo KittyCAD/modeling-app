@@ -1614,13 +1614,12 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
 export function changeCircleArguments(
   node: Program,
   programMemory: ProgramMemory,
-  sourceRange: SourceRange,
+  pathToNode: PathToNode,
   center: [number, number],
   radius: number
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   const _node = { ...node }
-  const thePath = getNodePathFromSourceRange(_node, sourceRange)
-  const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
+  const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
   if (err(nodeMeta)) return nodeMeta
 
   const { node: callExpression, shallowPath } = nodeMeta
@@ -1639,7 +1638,7 @@ export function changeCircleArguments(
     }
   }
 
-  return new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
+  return new Error(`There was a problem: ${callExpression?.callee?.name}`)
 }
 
 export function changeSketchArguments(
