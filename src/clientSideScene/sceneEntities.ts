@@ -676,7 +676,7 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    // if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
 
     const { truncatedAst, programMemoryOverride, sketchGroup } =
@@ -780,9 +780,6 @@ export class SceneEntities {
       },
       ...this.mouseEnterLeaveCallbacks(),
     })
-    // } catch (e) {
-    //   console.log('yo wtf', e)
-    // }
   }
   setupDraftRectangle = async (
     sketchPathToNode: PathToNode,
