@@ -309,7 +309,7 @@ function singleRawValueHelper(
   ]
 }
 
-function getTag(index = 2): SketchLineHelper['getTag'] {
+function getTag(index = 3): SketchLineHelper['getTag'] {
   return (callExp: CallExpression) => {
     if (callExp.type !== 'CallExpression')
       return new Error('Not a CallExpression')
@@ -1861,7 +1861,7 @@ function isAngleLiteral(lineArugement: Expr): boolean {
 
 type addTagFn = (a: AddTagInfo) => { modifiedAst: Program; tag: string } | Error
 
-function addTag(tagIndex = 2): addTagFn {
+function addTag(tagIndex = 3): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
     const callExpr = getNodeFromPath<CallExpression>(
