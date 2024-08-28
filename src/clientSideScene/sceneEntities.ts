@@ -1704,7 +1704,7 @@ export class SceneEntities {
         radius,
         ccw: true,
         startAngle: 0,
-        endAngle: 360,
+        endAngle: Math.PI * 2,
         mesh: circleSegmentBodyDashed,
         isDashed: true,
         scale,
