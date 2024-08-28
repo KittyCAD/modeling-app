@@ -1286,7 +1286,7 @@ capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
+async fn kcl_test_bracket_with_fillets() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
@@ -1327,11 +1327,7 @@ const bracket = startSketchOn('XY')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1329, 1430])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
-    );
+    assert!(!result.is_err());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1535,13 +1531,13 @@ const bracket = startSketchOn('XY')
   |> fillet({
        radius: filletR,
        tags: [
-         getPreviousAdjacentEdge(innerEdge)
+         getNextAdjacentEdge(innerEdge)
        ]
      }, %)
   |> fillet({
        radius: filletR + thickness,
        tags: [
-         getPreviousAdjacentEdge(outerEdge)
+         getNextAdjacentEdge(outerEdge)
        ]
      }, %)
 
