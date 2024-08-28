@@ -1717,7 +1717,7 @@ export class SceneEntities {
         group,
         isHandlesVisible,
         from,
-        to,
+        to: [center[0], center[1]],
         angle,
       })
   }

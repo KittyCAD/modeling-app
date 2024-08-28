@@ -402,25 +402,8 @@ export function circleSegment({
     new Vector3(0, 1, 0),
     new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
   )
-  const pxLength = (radius * 2 * Math.PI) / scale
-  const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
 
-  const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-  const extraSegmentAngle = 0
-  const extraSegmentOffset = new Vector2(
-    Math.cos(extraSegmentAngle) * radius,
-    Math.sin(extraSegmentAngle) * radius
-  )
-  extraSegmentGroup.position.set(
-    center[0] + extraSegmentOffset.x,
-    center[1] + extraSegmentOffset.y,
-    0
-  )
-
-  extraSegmentGroup.visible = !shouldHide
-
-  group.add(mesh, arrowGroup, circleCenterGroup, extraSegmentGroup)
-
+  group.add(mesh, arrowGroup, circleCenterGroup)
   return group
 }
 export function tangentialArcToSegment({
