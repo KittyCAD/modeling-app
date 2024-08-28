@@ -122,8 +122,11 @@ const SignIn = () => {
               </Link>
             )}
           </div>
-          <div
-            className={`xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+          <Link
+            className={`group relative xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+            to="https://zoo.dev/docs/kcl-samples/car-wheel"
+            target="_blank"
+            rel="noreferrer"
           >
             <video
               autoPlay
@@ -137,7 +140,19 @@ const SignIn = () => {
                 type="video/mp4"
               />
             </video>
-          </div>
+            <div
+              className={
+                'absolute bottom-0 left-0 right-0 transition translate-y-4 opacity-0 ' +
+                'group-hover:translate-y-0 group-hover:opacity-100 ' +
+                'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
+                '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+              }
+              data-testid="sign-in-button"
+            >
+              View this sample
+              <CustomIcon name="arrowRight" className="w-6 h-6" />
+            </div>
+          </Link>
           <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 gap-5">
             <div className={cardArea}>
               <h2 className="text-xl">Built in the open</h2>
