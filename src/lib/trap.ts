@@ -2,13 +2,22 @@ import toast from 'react-hot-toast'
 
 type ExcludeErr<T> = Exclude<T, Error>
 
+/**
+ * This is intentionally *not* exported due to misuse.  We'd like to add a lint.
+ */
+function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
+  return value instanceof Error
+}
+
 // Used to bubble errors up
 export function err<T>(value: ExcludeErr<T> | Error): value is Error {
-  if (!(value instanceof Error)) {
+  if (!isErr(value)) {
     return false
   }
 
+  // TODO: Remove this once we have a lint to prevent misuse of this function.
   console.error(value)
+
   return true
 }
 
@@ -21,7 +30,7 @@ export function cleanErrs<T>(
   const argsWOutErr: Array<ExcludeErr<T>> = []
   const argsWErr: Array<Error> = []
   for (const v of value) {
-    if (err(v)) {
+    if (isErr(v)) {
       argsWErr.push(v)
     } else {
       argsWOutErr.push(v)
@@ -31,8 +40,9 @@ export function cleanErrs<T>(
 }
 
 /**
- *  Used to report errors to user at a certain point in execution
- *  @returns boolean
+ * Report an error to the user.  Trapping is the opposite of propagating an
+ * error.  We should propagate errors in low-level functions and trap at the top
+ * level.
  */
 export function trap<T>(
   value: ExcludeErr<T> | Error,
@@ -41,7 +51,7 @@ export function trap<T>(
     suppress?: boolean
   }
 ): value is Error {
-  if (!err(value)) {
+  if (!isErr(value)) {
     return false
   }
 
@@ -51,4 +61,15 @@ export function trap<T>(
       id: 'error',
     })
   return true
+}
+
+/**
+ * Trap an error, suppressing it from the user.  Trapping is the opposite of
+ * propagating an error.  We should propagate errors in low-level functions and
+ * trap at the top level.
+ */
+export function trapSuppressed<T>(
+  value: ExcludeErr<T> | Error
+): value is Error {
+  return trap(value, { suppress: true })
 }

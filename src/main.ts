@@ -12,6 +12,7 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
+import { trapSuppressed } from 'lib/trap'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -79,11 +80,13 @@ const createWindow = (): BrowserWindow => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(trapSuppressed)
   } else {
-    newWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    )
+    newWindow
+      .loadFile(
+        path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
+      )
+      .catch(trapSuppressed)
   }
 
   // Open the DevTools.
@@ -150,6 +153,7 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   shell.openExternal(handle.verification_uri_complete)
 
   // Wait for the user to login.
