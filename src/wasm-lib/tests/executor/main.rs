@@ -1354,7 +1354,7 @@ const secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([279, 305])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
     );
 }
 
