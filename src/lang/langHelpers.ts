@@ -54,10 +54,12 @@ export async function executeAst({
   engineCommandManager: EngineCommandManager
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
+  isInterrupted?: boolean
 }): Promise<{
   logs: string[]
   errors: KCLError[]
   programMemory: ProgramMemory
+  isInterrupted: boolean
 }> {
   try {
     if (!useFakeExecutor) {

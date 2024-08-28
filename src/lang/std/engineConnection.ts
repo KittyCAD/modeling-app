@@ -1942,6 +1942,7 @@ export class EngineCommandManager extends EventTarget {
         // TODO: Previously was never caught, since adding rejectAllCommands how should we handle this
         // error?
         /*noop*/
+        return null
       })
   }
   /**
