@@ -182,29 +182,28 @@ pub(crate) async fn do_post_extrude(
     };
 
     for face_info in face_infos.iter() {
-        if face_info.cap == kittycad::types::ExtrusionFaceCapType::None
-            && face_info.face_id.is_some()
-            && face_info.curve_id.is_some()
-        {
-            args.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
-                    edge_id: face_info.curve_id.unwrap(),
-                    object_id: sketch_group.id,
-                    face_id: face_info.face_id.unwrap_or_default(),
-                },
-            )
-            .await?;
+        if face_info.cap == kittycad::types::ExtrusionFaceCapType::None {
+            if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
+                args.batch_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+                        edge_id: curve_id,
+                        object_id: sketch_group.id,
+                        face_id,
+                    },
+                )
+                .await?;
 
-            args.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                    edge_id: face_info.curve_id.unwrap(),
-                    object_id: sketch_group.id,
-                    face_id: face_info.face_id.unwrap(),
-                },
-            )
-            .await?;
+                args.batch_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                        edge_id: curve_id,
+                        object_id: sketch_group.id,
+                        face_id,
+                    },
+                )
+                .await?;
+            }
         }
     }
 
