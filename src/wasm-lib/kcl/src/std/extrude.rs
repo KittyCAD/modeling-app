@@ -186,40 +186,25 @@ pub(crate) async fn do_post_extrude(
             && face_info.face_id.is_some()
             && face_info.curve_id.is_some()
         {
-            match args
-                .batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
-                        edge_id: face_info.curve_id.unwrap(),
-                        object_id: sketch_group.id,
-                        face_id: face_info.face_id.unwrap_or_default(),
-                    },
-                )
-                .await
-            {
-                Ok(info) => info,
-                Err(e) => {
-                    eprintln!("Error fetching opposite edge: {:?}", e);
-                    continue;
-                }
-            };
-            match args
-                .batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                        edge_id: face_info.curve_id.unwrap(),
-                        object_id: sketch_group.id,
-                        face_id: face_info.face_id.unwrap(),
-                    },
-                )
-                .await
-            {
-                Ok(info) => info,
-                Err(e) => {
-                    eprintln!("Error fetching adjacent edge: {:?}", e);
-                    continue;
-                }
-            };
+            args.batch_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+                    edge_id: face_info.curve_id.unwrap(),
+                    object_id: sketch_group.id,
+                    face_id: face_info.face_id.unwrap_or_default(),
+                },
+            )
+            .await?;
+
+            args.batch_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                    edge_id: face_info.curve_id.unwrap(),
+                    object_id: sketch_group.id,
+                    face_id: face_info.face_id.unwrap(),
+                },
+            )
+            .await?;
         }
     }
 
