@@ -596,7 +596,13 @@ fn from_user_val<T: DeserializeOwned>(arg: &KclValue) -> Option<T> {
         KclValue::UserVal(v) => v.value.clone(),
         other => serde_json::to_value(other).ok()?,
     };
-    serde_json::from_value(v).ok()
+    match serde_json::from_value(v) {
+        Ok(x) => Some(x),
+        Err(e) => {
+            eprintln!("Deser error: {e}");
+            None
+        }
+    }
 }
 
 impl_from_arg_via_json!(super::sketch::AngledLineData);

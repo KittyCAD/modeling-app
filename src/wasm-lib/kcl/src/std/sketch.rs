@@ -1797,17 +1797,17 @@ pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
 
 /// Draw a tangential arc to a a specified distance.
 pub async fn tangential_arc_to_relative(args: Args) -> Result<KclValue, KclError> {
-    let src = args.source_range;
-
     // Get arguments to function call
-    let mut it = args.args.iter();
-    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
-    let sketch_group: SketchGroup = get_arg(&mut it, src)?.get_json()?;
-    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
-        memory_item.get_json_opt()?
-    } else {
-        None
-    };
+    let (to, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
+        args.get_data_and_sketch_group_and_tag()?;
+    // let mut it = args.args.iter();
+    // let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
+    // let sketch_group: SketchGroup = get_arg(&mut it, src)?.get_json()?;
+    // let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
+    //     memory_item.get_json_opt()?
+    // } else {
+    //     None
+    // };
 
     let new_sketch_group = inner_tangential_arc_to_relative(to, sketch_group, tag, args).await?;
     Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
@@ -1839,14 +1839,7 @@ async fn inner_tangential_arc_to(
     tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<SketchGroup, KclError> {
-    let from: Point2d = sketch_group.current_pen_position()?;
-    let tangent_info = sketch_group.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
-    do_tan_arc_to(to, sketch_group, tag, args, tan_previous_point, from).await
+    do_tan_arc_to(false, to, sketch_group, tag, args).await
 }
 
 /// Starting at the current path pen location, draw a curved line segment along
@@ -1875,6 +1868,16 @@ async fn inner_tangential_arc_to_relative(
     tag: Option<TagDeclarator>,
     args: Args,
 ) -> Result<SketchGroup, KclError> {
+    do_tan_arc_to(true, to, sketch_group, tag, args).await
+}
+
+async fn do_tan_arc_to(
+    relative: bool,
+    to: [f64; 2],
+    sketch_group: SketchGroup,
+    tag: Option<TagDeclarator>,
+    args: Args,
+) -> Result<SketchGroup, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
     let tangent_info = sketch_group.get_tangential_info_from_paths();
     let tan_previous_point = if tangent_info.is_center {
@@ -1882,25 +1885,6 @@ async fn inner_tangential_arc_to_relative(
     } else {
         tangent_info.center_or_tangent_point
     };
-    do_tan_arc_to(
-        [to[0] + from.x, to[1] + from.y],
-        sketch_group,
-        tag,
-        args,
-        tan_previous_point,
-        from,
-    )
-    .await
-}
-
-async fn do_tan_arc_to(
-    to: [f64; 2],
-    sketch_group: SketchGroup,
-    tag: Option<TagDeclarator>,
-    args: Args,
-    tan_previous_point: [f64; 2],
-    from: Point2d,
-) -> Result<SketchGroup, KclError> {
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1908,10 +1892,14 @@ async fn do_tan_arc_to(
         tan_previous_point,
         obtuse: true,
     });
+    let to = if relative {
+        [to_x, to_y]
+    } else {
+        [to_x - from.x, to_y - from.y]
+    };
 
-    let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
+    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &to)).await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {

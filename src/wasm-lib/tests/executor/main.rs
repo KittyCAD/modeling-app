@@ -736,6 +736,8 @@ const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
 
+    println!("{}", &code[145..164]);
+
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
