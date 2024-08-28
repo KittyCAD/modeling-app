@@ -358,10 +358,18 @@ function FileTreeContextMenu({
     <ContextMenu
       menuTargetElement={itemRef}
       items={[
-        <ContextMenuItem onClick={onRename} hotkey="Enter">
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          onClick={onRename}
+          hotkey="Enter"
+        >
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem onClick={onDelete} hotkey={metaKey + ' + Del'}>
+        <ContextMenuItem
+          data-testid="context-menu-delete"
+          onClick={onDelete}
+          hotkey={metaKey + ' + Del'}
+        >
           Delete
         </ContextMenuItem>,
       ]}

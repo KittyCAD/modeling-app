@@ -135,16 +135,15 @@ interface ContextMenuItemProps {
   icon?: ActionIconProps['icon']
   onClick?: () => void
   hotkey?: string
+  'data-testid'?: string
 }
 
-export function ContextMenuItem({
-  children,
-  icon,
-  onClick,
-  hotkey,
-}: ContextMenuItemProps) {
+export function ContextMenuItem(props: ContextMenuItemProps) {
+  const { children, icon, onClick, hotkey } = props
+
   return (
     <button
+      data-testid={props['data-testid']}
       className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
       onClick={onClick}
     >
