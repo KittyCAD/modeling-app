@@ -473,7 +473,7 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: string | number): Literal {
+export function createLiteral(value: string | number | boolean): Literal {
   return {
     type: 'Literal',
     start: 0,
