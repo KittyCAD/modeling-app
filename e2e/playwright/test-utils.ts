@@ -440,7 +440,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       }
       return maxDiff
     },
-    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
+    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
       new Promise<boolean>((resolve) => {
         (async () => {
           await page.screenshot({
