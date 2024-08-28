@@ -106,6 +106,8 @@ jobs:
 
       - run: yarn install
 
+      - run: yarn tronb:vite
+
       - name: Add macOS signing certificate
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
         run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
@@ -139,7 +141,7 @@ jobs:
       - name: Make the app for arm64
         if: ${{ env.BUILD_RELEASE == 'false' }}
         # run: "yarn electron-forge make --arch arm64"
-        run: "yarn electron-builder --config --arm64"
+        run: yarn electron-builder --config --arm64
 
       - name: Publish the app for arm64 (dry run)
         if: ${{ env.BUILD_RELEASE == 'true' }}
