@@ -186,7 +186,7 @@ async fn kcl_test_negative_args() {
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
+    |> tangentialArcToRelative([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
@@ -715,7 +715,7 @@ async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
-  |> tangentialArc([0, scale], %, $here)
+  |> tangentialArcToRelative([0, scale], %, $here)
   |> line([scale, 0], %)
   |> line([0, -scale], %)
 
