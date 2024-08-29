@@ -233,9 +233,9 @@ export class KclManager {
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
     if (this.isExecuting) {
       this.executeIsStale = args
-      // Previous execution will be rejected and finish, execution will be marked as stale
-      // new executeAst will start. This will reject previous AST calls while the user is typing
-      // in the editor
+
+      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // A new executeAst will start.
       this.engineCommandManager.rejectAllCommands(
         `Force interrupt, executionIsStale, new AST requested`
       )
