@@ -726,7 +726,7 @@ test.describe('Deleting items from the file pane', () => {
     `Delete folder we are in, navigate to main.kcl`,
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
-      const { electronApp, page, dir } = await setupElectron({
+      const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
