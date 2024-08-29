@@ -61,7 +61,7 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// // Loft a square and a triangle.
-/// const squareSketch = startSketchOn('XZ')
+/// const squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -69,14 +69,14 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('XZ', -150))
+/// const triangleSketch = startSketchOn(offsetPlane('XY', 75))
 ///     |> startProfileAt([0, 125], %)
 ///     |> line([-15, -30], %)
 ///     |> line([30, 0], %)
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// //loft([squareSketch, triangleSketch])
+/// loft([squareSketch, triangleSketch])
 /// ```
 ///
 /// ```no_run
@@ -99,7 +99,7 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// loft([squareSketch, circleSketch])
+/// loft([squareSketch, circleSketch, triangleSketch])
 /// ```
 #[stdlib {
     name = "loft",
