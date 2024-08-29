@@ -11,10 +11,13 @@ mac:
   category: public.app-category.developer-tools
   target: dmg
 
+# mac only
+afterSign: scripts/notarize.js
+
 win:
   target: nsis
+  sign: scripts/signWin.js,
+  signingHashAlgorithms": ["sha256"]
 
 linux:
   target: appimage
-
-afterSign: "notarize.js"
