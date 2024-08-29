@@ -16,3 +16,5 @@ win:
 
 linux:
   target: appimage
+
+afterSign: "notarize.js"
