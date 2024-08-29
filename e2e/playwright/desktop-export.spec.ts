@@ -50,6 +50,10 @@ test(
       const exportButton = page.getByTestId('export-pane-button')
       await expect(exportButton).toBeVisible()
 
+      // Wait for the model to finish loading
+      const modelStateIndicator = page.getByTestId('model-state-indicator-execution-done')
+      await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
+
       const gltfOption = page.getByText('glTF')
       const submitButton = page.getByText('Confirm Export')
       const exportingToastMessage = page.getByText(`Exporting...`)
