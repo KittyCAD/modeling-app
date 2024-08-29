@@ -17,7 +17,7 @@ afterSign: scripts/notarize.js
 win:
   target: nsis
   sign: scripts/signWin.js,
-  signingHashAlgorithms": ["sha256"]
+  # signingHashAlgorithms": ["sha256"]
 
 linux:
   target: appimage
