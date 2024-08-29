@@ -66,9 +66,7 @@ export function LowerRightControls({
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
-        {!location.pathname.startsWith(PATHS.HOME) && (
-          <ModelStateIndicator />
-        )}
+        {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
           onClick={openExternalBrowserIfDesktop(
             `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`

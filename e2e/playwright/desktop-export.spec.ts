@@ -51,7 +51,9 @@ test(
       await expect(exportButton).toBeVisible()
 
       // Wait for the model to finish loading
-      const modelStateIndicator = page.getByTestId('model-state-indicator-execution-done')
+      const modelStateIndicator = page.getByTestId(
+        'model-state-indicator-execution-done'
+      )
       await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
 
       const gltfOption = page.getByText('glTF')
