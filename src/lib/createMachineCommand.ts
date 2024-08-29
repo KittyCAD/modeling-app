@@ -17,7 +17,7 @@ import {
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 > {
   type: EventFrom<T>['type']
   groupId: T['id']
@@ -32,7 +32,7 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 >({
   groupId,
   type,
@@ -46,6 +46,7 @@ export function createMachineCommand<
   | Command<T, typeof type, S[typeof type]>[]
   | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
+
   // There may be no command config for this event type,
   // or there may be multiple commands to create.
   if (!commandConfig) {
@@ -120,7 +121,7 @@ export function createMachineCommand<
 function buildCommandArguments<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
-  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
+  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
@@ -139,7 +140,7 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>
+  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>,
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,

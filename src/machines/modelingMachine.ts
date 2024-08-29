@@ -33,7 +33,11 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { deleteFromSelection, extrudeSketch } from 'lang/modifyAst'
+import {
+  deleteFromSelection,
+  extrudeSketch,
+  revolveSketch,
+} from 'lang/modifyAst'
 import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
@@ -203,6 +207,7 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | {
@@ -318,6 +323,13 @@ export const modelingMachine = createMachine(
             target: 'idle',
             cond: 'has valid extrude selection',
             actions: ['AST extrude'],
+            internal: true,
+          },
+
+          Revolve: {
+            target: 'idle',
+            cond: 'has valid revolve selection',
+            actions: ['AST revolve'],
             internal: true,
           },
 
@@ -1118,6 +1130,50 @@ export const modelingMachine = createMachine(
         store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'path',
+          },
+        })
+        if (!engineCommandManager.engineConnection?.idleMode) {
+          store.videoElement?.play().catch((e) => {
+            console.warn('Video playing was prevented', e)
+          })
+        }
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
+        }
+      },
+      'AST revolve': async ({ store }, event) => {
+        if (!event.data) return
+        const { selection, angle } = event.data
+        let ast = kclManager.ast
+        if (
+          'variableName' in angle &&
+          angle.variableName &&
+          angle.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
+          ast.body = newBody
+        }
+        const pathToNode = getNodePathFromSourceRange(
+          ast,
+          selection.codeBasedSelections[0].range
+        )
+        const revolveSketchRes = revolveSketch(
+          ast,
+          pathToNode,
+          false,
+          'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst
+        )
+        if (trap(revolveSketchRes)) return
+        const { modifiedAst, pathToRevolveArg } = revolveSketchRes
+
+        store.videoElement?.pause()
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+          focusPath: pathToRevolveArg,
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.codeBasedSelections[0].range,

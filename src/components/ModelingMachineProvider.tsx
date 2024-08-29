@@ -508,6 +508,27 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
+        // TODO Kevin:
+        'has valid revolve selection': ({ selectionRanges }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
+          // TODO: I believe this guard only allows for extruding a single face at a time
+          const isPipe = isSketchPipe(selectionRanges)
+
+          if (
+            selectionRanges.codeBasedSelections.length === 0 ||
+            isRangeInbetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+          ) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            if (hasExtrudableGeometry(kclManager.ast)) return true
+            return false
+          }
+          if (!isPipe) return false
+
+          return canExtrudeSelection(selectionRanges)
+        },
         'has valid selection for deletion': ({ selectionRanges }) => {
           if (!commandBarState.matches('Closed')) return false
           if (selectionRanges.codeBasedSelections.length <= 0) return false
