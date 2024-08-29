@@ -90,12 +90,24 @@ export const fileLoader: LoaderFunction = async (
     let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      if (!currentFileName || !currentFilePath || !projectName) {
+      const fallbackFile = isDesktop()
+        ? (await getProjectInfo(projectPath)).default_file
+        : ''
+      let fileExists = isDesktop()
+      if (currentFilePath && fileExists) {
+        try {
+          await window.electron.stat(currentFilePath)
+        } catch (e) {
+          if (e === 'ENOENT') {
+            fileExists = false
+          }
+        }
+      }
+
+      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
-            isDesktop()
-              ? (await getProjectInfo(projectPath)).default_file
-              : params.id + '/' + PROJECT_ENTRYPOINT
+            isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
           )}`
         )
       }
