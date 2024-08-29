@@ -10,7 +10,8 @@ files:
 mac:
   category: public.app-category.developer-tools
   target: dmg
-  notarize: true
+  notarize:
+    teamId: 92H8YB3B95
 
 # mac only
 # afterSign: notarize.js
