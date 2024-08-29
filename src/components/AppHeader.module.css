@@ -5,6 +5,7 @@
 .header {
   grid-template-columns: 1fr auto 1fr;
   user-select: none;
+  -webkit-user-select: none;
   /* Make the header act as a handle to drag the electron app window,
    * per the electron docs: https://www.electronjs.org/docs/latest/tutorial/window-customization#set-custom-draggable-region
    * all element opt-out of this behavior by default in src/index.css
