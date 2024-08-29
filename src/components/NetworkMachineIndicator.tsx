@@ -49,7 +49,11 @@ export const NetworkMachineIndicator = ({
             {Object.entries(machineManager.machines).map(
               ([hostname, machine]) => (
                 <li key={hostname} className={'px-2 py-4 gap-1 last:mb-0 '}>
-                  <p className="">{machine.model || machine.manufacturer}</p>
+                  <p className="">
+                    {machine.make_model.model ||
+                      machine.make_model.manufacturer ||
+                      'Unknown Machine'}
+                  </p>
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
                     Hostname {hostname}
                   </p>
