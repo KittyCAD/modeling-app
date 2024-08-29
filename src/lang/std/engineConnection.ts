@@ -16,6 +16,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import { kclManager } from 'lib/singletons'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1975,6 +1977,12 @@ export class EngineCommandManager extends EventTarget {
     const command: EngineCommand = JSON.parse(commandStr)
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
+
+    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Used in conjunction with rejectAllModelingCommands
+    if (kclManager.executeIsStale) {
+      return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    }
 
     const resp = await this.sendCommand(id, {
       command,

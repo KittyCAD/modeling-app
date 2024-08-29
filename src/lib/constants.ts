@@ -65,3 +65,8 @@ export const COOKIE_NAME = '__Secure-next-auth.session-token'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
+
+/** Custom error message to match when rejectAllModelCommands is called
+ * allows us to match if the execution of executeAst was interrupted */
+export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
+  'Force interrupt, executionIsStale, new AST requested'
