@@ -12,6 +12,7 @@ interface AppHeaderProps extends React.PropsWithChildren {
   project?: Omit<IndexLoaderData, 'code'>
   className?: string
   enableMenu?: boolean
+  style?: React.CSSProperties
 }
 
 export const AppHeader = ({
@@ -19,6 +20,7 @@ export const AppHeader = ({
   project,
   children,
   className = '',
+  style,
   enableMenu = false,
 }: AppHeaderProps) => {
   const { auth } = useSettingsAuthContext()
@@ -33,6 +35,7 @@ export const AppHeader = ({
         ' overlaid-panes sticky top-0 z-20 px-2 items-start ' +
         className
       }
+      style={style}
     >
       <ProjectSidebarMenu
         enableMenu={enableMenu}

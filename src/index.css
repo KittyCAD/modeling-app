@@ -4,6 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+button,
+input,
+select,
+textarea,
+a {
+  /* Make all interactive elements not act as handles
+   * to drag the electron app window by default,
+   * per the electron docs: https://www.electronjs.org/docs/latest/tutorial/window-customization#set-custom-draggable-region
+  */
+  -webkit-app-region: no-drag;
+}
+
 body {
   margin: 0;
   @apply font-sans;
