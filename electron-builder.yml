@@ -10,13 +10,14 @@ files:
 mac:
   category: public.app-category.developer-tools
   target: dmg
+  notarize: true
 
 # mac only
-afterSign: notarize.js
+# afterSign: notarize.js
 
 win:
   target: nsis
-  sign: signWin.js,
+  sign: "./sign-win.js"
   # signingHashAlgorithms": ["sha256"]
 
 linux:
