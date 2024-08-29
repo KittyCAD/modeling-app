@@ -14,6 +14,8 @@ import { isDesktop } from 'lib/isDesktop'
 import { Themes } from './theme'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { getNextFileName } from './desktopFS'
+import { reportRejection } from './trap'
+import { toSync } from './utils'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -128,37 +130,42 @@ export async function submitAndAwaitTextToKcl({
   // Check the status of the text-to-cad API job
   // until it is completed
   const textToCadComplete = new Promise<Models['TextToCad_type']>(
-    async (resolve, reject) => {
-      const value = await textToCadQueued
-      if (value instanceof Error) {
-        reject(value)
-      }
-
-      const MAX_CHECK_TIMEOUT = 3 * 60_000
-      const CHECK_INTERVAL = 3000
-
-      let timeElapsed = 0
-      const interval = setInterval(async () => {
-        timeElapsed += CHECK_INTERVAL
-        if (timeElapsed >= MAX_CHECK_TIMEOUT) {
-          clearInterval(interval)
-          reject(new Error('Text-to-CAD API timed out'))
+    (resolve, reject) => {
+      ;(async () => {
+        const value = await textToCadQueued
+        if (value instanceof Error) {
+          reject(value)
         }
 
-        const check = await getTextToCadResult(value.id, token)
-        if (check instanceof Error) {
-          clearInterval(interval)
-          reject(check)
-        }
+        const MAX_CHECK_TIMEOUT = 3 * 60_000
+        const CHECK_INTERVAL = 3000
 
-        if (check instanceof Error || check.status === 'failed') {
-          clearInterval(interval)
-          reject(check)
-        } else if (check.status === 'completed') {
-          clearInterval(interval)
-          resolve(check)
-        }
-      }, CHECK_INTERVAL)
+        let timeElapsed = 0
+        const interval = setInterval(
+          toSync(async () => {
+            timeElapsed += CHECK_INTERVAL
+            if (timeElapsed >= MAX_CHECK_TIMEOUT) {
+              clearInterval(interval)
+              reject(new Error('Text-to-CAD API timed out'))
+            }
+
+            const check = await getTextToCadResult(value.id, token)
+            if (check instanceof Error) {
+              clearInterval(interval)
+              reject(check)
+            }
+
+            if (check instanceof Error || check.status === 'failed') {
+              clearInterval(interval)
+              reject(check)
+            } else if (check.status === 'completed') {
+              clearInterval(interval)
+              resolve(check)
+            }
+          }, reportRejection),
+          CHECK_INTERVAL
+        )
+      })().catch(reportRejection)
     }
   )
 
