@@ -4,7 +4,7 @@ import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { isDesktop } from '../lib/isDesktop'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useEffect, useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -15,7 +15,6 @@ import { machineManager } from 'lib/machineManager'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
-import { useAppState } from 'AppState'
 
 const ProjectSidebarMenu = ({
   project,
@@ -55,56 +54,34 @@ const ProjectSidebarMenu = ({
 function AppLogoLink({
   project,
   file,
-  className = '',
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
-  className?: string
 }) {
-  const { hasRenderedOnce, setAppState } = useAppState()
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
     "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  useEffect(() => {
-    if (!hasRenderedOnce) {
-      setAppState({ hasRenderedOnce: true })
-    }
-  }, [])
-
-  return (
-    <Transition
-      show={true}
-      appear={!hasRenderedOnce}
-      as={Fragment}
-      enter="transition-transform ease-out duration-500 delay-200"
-      enterFrom="-translate-y-12"
-      enterTo="translate-y-0"
+  return isDesktop() ? (
+    <Link
+      data-testid="app-logo"
+      onClick={() => {
+        onProjectClose(file || null, project?.path || null, false)
+        // Clear the scene and end the session.
+        engineCommandManager.endSession()
+      }}
+      to={PATHS.HOME}
+      className={wrapperClassName + ' hover:before:brightness-110'}
     >
-      {isDesktop() ? (
-        <Link
-          data-testid="app-logo"
-          onClick={() => {
-            onProjectClose(file || null, project?.path || null, false)
-            // Clear the scene and end the session.
-            engineCommandManager.endSession()
-          }}
-          to={PATHS.HOME}
-          className={
-            wrapperClassName + ' hover:before:brightness-110 ' + className
-          }
-        >
-          <Logo className={logoClassName} />
-          <span className="sr-only">{APP_NAME}</span>
-        </Link>
-      ) : (
-        <div className={wrapperClassName} data-testid="app-logo">
-          <Logo className={logoClassName} />
-          <span className="sr-only">{APP_NAME}</span>
-        </div>
-      )}
-    </Transition>
+      <Logo className={logoClassName} />
+      <span className="sr-only">{APP_NAME}</span>
+    </Link>
+  ) : (
+    <div className={wrapperClassName} data-testid="app-logo">
+      <Logo className={logoClassName} />
+      <span className="sr-only">{APP_NAME}</span>
+    </div>
   )
 }
 

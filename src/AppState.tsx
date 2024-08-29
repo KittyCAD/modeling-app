@@ -10,18 +10,11 @@ Please do not fill this up with junk.
 
 interface AppState {
   isStreamReady: boolean
-  /**
-   * Saves if the app has loaded already across route navigations.
-   * Used by the ProjectSidebarMenu component to determine if it should
-   * perform a fancy animation, which is only on the first render.
-   */
-  hasRenderedOnce: boolean
   setAppState: (newAppState: Partial<AppState>) => void
 }
 
 const AppStateContext = createContext<AppState>({
   isStreamReady: false,
-  hasRenderedOnce: false,
   setAppState: () => {},
 })
 
@@ -30,7 +23,6 @@ export const useAppState = () => useContext(AppStateContext)
 export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   const [appState, _setAppState] = useState<AppState>({
     isStreamReady: false,
-    hasRenderedOnce: false,
     setAppState: () => {},
   })
   const setAppState = (newAppState: Partial<AppState>) =>
@@ -40,7 +32,6 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     <AppStateContext.Provider
       value={{
         isStreamReady: appState.isStreamReady,
-        hasRenderedOnce: appState.hasRenderedOnce,
         setAppState,
       }}
     >
