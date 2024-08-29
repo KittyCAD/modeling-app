@@ -9,4 +9,7 @@ files:
 
 mac:
   category: public.app-category.developer-tools
-  target: zip
+  target: dmg
+
+windows:
+  target: nsis
