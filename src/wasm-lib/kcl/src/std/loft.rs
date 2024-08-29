@@ -12,7 +12,7 @@ use crate::{
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
-const DEFAULT_V_DEGREE: u32 = 2;
+const DEFAULT_V_DEGREE: u32 = 1;
 
 /// Data for a loft.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -69,19 +69,19 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('XZ', 150))
+/// const triangleSketch = startSketchOn(offsetPlane('XZ', -150))
 ///     |> startProfileAt([0, 125], %)
 ///     |> line([-15, -30], %)
 ///     |> line([30, 0], %)
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// loft([squareSketch, triangleSketch])
+/// //loft([squareSketch, triangleSketch])
 /// ```
 ///
 /// ```no_run
 /// // Loft a square, a circle, and a triangle.
-/// const squareSketch = startSketchOn('XZ')
+/// const squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -89,17 +89,17 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch = startSketchOn(offsetPlane('XZ', 75))
+/// const circleSketch = startSketchOn(offsetPlane('XY', 75))
 ///     |> circle([0, 100], 50, %)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('XZ', 150))
+/// const triangleSketch = startSketchOn(offsetPlane('XY', 150))
 ///     |> startProfileAt([0, 125], %)
 ///     |> line([-15, -30], %)
 ///     |> line([30, 0], %)
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// loft([squareSketch, circleSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 #[stdlib {
     name = "loft",
