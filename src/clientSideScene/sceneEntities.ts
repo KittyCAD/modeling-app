@@ -1669,8 +1669,9 @@ export class SceneEntities {
         center,
         radius,
         ccw: true,
-        startAngle: 0,
-        endAngle: Math.PI * 2,
+        // make the start end where the handle is
+        startAngle: Math.PI * 0.25,
+        endAngle: Math.PI * 2.25,
         mesh: circleSegmentBodyDashed,
         isDashed: true,
         scale,
