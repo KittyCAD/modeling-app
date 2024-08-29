@@ -25,8 +25,17 @@ const ProjectSidebarMenu = ({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
+  // Make room for traffic lights on desktop left side.
+  // TODO: make sure this doesn't look like shit on Linux or Windows
+  const trafficLightsOffset =
+    isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
   return (
-    <div className="!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2">
+    <div
+      className={
+        '!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2 ' +
+        trafficLightsOffset
+      }
+    >
       <AppLogoLink project={project} file={file} />
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />

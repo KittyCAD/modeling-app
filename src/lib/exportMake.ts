@@ -26,15 +26,7 @@ export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
     return null
   }
 
-  let machineId = null
-  if ('id' in currentMachine) {
-    machineId = currentMachine.id
-  } else if ('hostname' in currentMachine && currentMachine.hostname) {
-    machineId = currentMachine.hostname
-  } else if ('ip' in currentMachine && currentMachine.ip) {
-    machineId = currentMachine.ip
-  }
-
+  let machineId = currentMachine?.id
   if (!machineId) {
     console.error('No machine id available', currentMachine)
     toast.error('No machine id available')

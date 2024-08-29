@@ -8,6 +8,7 @@ export const MAX_PADDING = 7
  * This is available for users to edit as a setting.
  */
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
 /** Name given the temporary file in the browser version of the app */
@@ -60,6 +61,7 @@ export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
 export const DEFAULT_HOST = 'https://api.zoo.dev'
 export const SETTINGS_FILE_NAME = 'settings.toml'
+export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
 

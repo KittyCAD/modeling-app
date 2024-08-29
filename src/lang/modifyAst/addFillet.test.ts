@@ -6,9 +6,13 @@ import {
   Expr,
   Program,
   CallExpression,
+  makeDefaultPlanes,
+  PipeExpression,
+  VariableDeclaration,
 } from '../wasm'
 import {
   addFillet,
+  getPathToExtrudeForSegmentSelection,
   hasValidFilletSelection,
   isTagUsedInFillet,
 } from './addFillet'
@@ -16,9 +20,204 @@ import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
+import { engineCommandManager, kclManager } from 'lib/singletons'
+import { VITE_KC_DEV_TOKEN } from 'env'
 
 beforeAll(async () => {
-  await initPromise // Initialize the WASM environment before running tests
+  await initPromise
+
+  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
+  await new Promise((resolve) => {
+    engineCommandManager.start({
+      token: VITE_KC_DEV_TOKEN,
+      width: 256,
+      height: 256,
+      makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
+      setMediaStream: () => {},
+      setIsStreamReady: () => {},
+      modifyGrid: async () => {},
+      callbackOnEngineLiteConnect: async () => {
+        resolve(true)
+      },
+    })
+  })
+}, 20_000)
+
+afterAll(() => {
+  engineCommandManager.tearDown()
+})
+
+const runGetPathToExtrudeForSegmentSelectionTest = async (
+  code: string,
+  selectedSegmentSnippet: string,
+  expectedExtrudeSnippet: string
+) => {
+  // helpers
+  function getExtrudeExpression(
+    ast: Program,
+    pathToExtrudeNode: PathToNode
+  ): CallExpression | PipeExpression | undefined | Error {
+    if (pathToExtrudeNode.length === 0) return undefined // no extrude node
+
+    const extrudeNodeResult = getNodeFromPath(ast, pathToExtrudeNode)
+    if (err(extrudeNodeResult)) {
+      return extrudeNodeResult
+    }
+    return extrudeNodeResult.node as CallExpression | PipeExpression
+  }
+  function getExpectedExtrudeExpression(
+    ast: Program,
+    code: string,
+    expectedExtrudeSnippet: string
+  ): CallExpression | PipeExpression | Error {
+    const extrudeRange: [number, number] = [
+      code.indexOf(expectedExtrudeSnippet),
+      code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
+    ]
+    const expedtedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
+    const expedtedExtrudeNodeResult = getNodeFromPath(ast, expedtedExtrudePath)
+    if (err(expedtedExtrudeNodeResult)) {
+      return expedtedExtrudeNodeResult
+    }
+    const expectedExtrudeNode =
+      expedtedExtrudeNodeResult.node as VariableDeclaration
+    return expectedExtrudeNode.declarations[0].init as
+      | CallExpression
+      | PipeExpression
+  }
+
+  // ast
+  const astOrError = parse(code)
+  if (err(astOrError)) return new Error('AST not found')
+  const ast = astOrError as Program
+
+  // selection
+  const segmentRange: [number, number] = [
+    code.indexOf(selectedSegmentSnippet),
+    code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
+  ]
+  const selection: Selections = {
+    codeBasedSelections: [
+      {
+        range: segmentRange,
+        type: 'default',
+      },
+    ],
+    otherSelections: [],
+  }
+
+  // programMemory and artifactGraph
+  await kclManager.executeAst({ ast })
+  const programMemory = kclManager.programMemory
+  const artifactGraph = engineCommandManager.artifactGraph
+
+  // get extrude expression
+  const pathResult = getPathToExtrudeForSegmentSelection(
+    ast,
+    selection,
+    programMemory,
+    artifactGraph
+  )
+  if (err(pathResult)) return pathResult
+  const { pathToExtrudeNode } = pathResult
+  const extrudeExpression = getExtrudeExpression(ast, pathToExtrudeNode)
+
+  // test
+  if (expectedExtrudeSnippet) {
+    const expectedExtrudeExpression = getExpectedExtrudeExpression(
+      ast,
+      code,
+      expectedExtrudeSnippet
+    )
+    if (err(expectedExtrudeExpression)) return expectedExtrudeExpression
+    expect(extrudeExpression).toEqual(expectedExtrudeExpression)
+  } else {
+    expect(extrudeExpression).toBeUndefined()
+  }
+}
+describe('Testing getPathToExtrudeForSegmentSelection', () => {
+  it('should return the correct paths for a valid selection and extrusion', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)`
+    const selectedSegmentSnippet = `line([20, 0], %)`
+    const expectedExtrudeSnippet = `const extrude001 = extrude(-15, sketch001)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  }, 5_000)
+  it('should return the correct paths for a valid selection and extrusion in case of several extrusions and sketches', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-30, 30], %)
+  |> line([15, 0], %)
+  |> line([0, -15], %)
+  |> line([-15, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([30, 30], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch003 = startSketchOn('XY')
+  |> startProfileAt([30, -30], %)
+  |> line([25, 0], %)
+  |> line([0, -25], %)
+  |> line([-25, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+const extrude002 = extrude(-15, sketch002)
+const extrude003 = extrude(-15, sketch003)`
+    const selectedSegmentSnippet = `line([20, 0], %)`
+    const expectedExtrudeSnippet = `const extrude002 = extrude(-15, sketch002)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  })
+  it('should not return any path for missing extrusion', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-30, 30], %)
+  |> line([15, 0], %)
+  |> line([0, -15], %)
+  |> line([-15, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([30, 30], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const sketch003 = startSketchOn('XY')
+  |> startProfileAt([30, -30], %)
+  |> line([25, 0], %)
+  |> line([0, -25], %)
+  |> line([-25, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+const extrude003 = extrude(-15, sketch003)`
+    const selectedSegmentSnippet = `line([20, 0], %)`
+    const expectedExtrudeSnippet = ``
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  })
 })
 
 const runFilletTest = async (
@@ -57,8 +256,6 @@ const runFilletTest = async (
     return new Error('Path to extrude node not found')
   }
 
-  // const radius = createLiteral(5) as Expr
-
   const result = addFillet(ast, pathToSegmentNode, pathToExtrudeNode, radius)
   if (err(result)) {
     return result
@@ -68,7 +265,6 @@ const runFilletTest = async (
 
   expect(newCode).toContain(expectedCode)
 }
-
 describe('Testing addFillet', () => {
   /**
    * 1. Ideal Case

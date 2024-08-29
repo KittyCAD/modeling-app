@@ -284,15 +284,6 @@ export class KclManager {
             padding: 0.1, // padding around the objects
           },
         })
-        await this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-          },
-        })
       }
     }
 
@@ -412,6 +403,9 @@ export class KclManager {
     codeManager.updateCodeStateEditor(code)
     // Write back to the file system.
     codeManager.writeToFile()
+
+    // execute the code.
+    this.executeCode()
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.

@@ -1,7 +1,4 @@
-import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
-
-export type { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { Project, FileEntry } from 'lib/project'
 
 export type IndexLoaderData = {
   code: string | null

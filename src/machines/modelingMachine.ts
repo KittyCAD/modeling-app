@@ -4,7 +4,6 @@ import {
   VariableDeclarator,
   parse,
   recast,
-  sketchGroupFromKclValue,
 } from 'lang/wasm'
 import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
@@ -35,7 +34,7 @@ import {
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
 import { deleteFromSelection, extrudeSketch } from 'lang/modifyAst'
-import { addFillet } from 'lang/modifyAst/addFillet'
+import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -59,7 +58,6 @@ import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
-import { getExtrusionFromSuspectedPath } from 'lang/std/artifactGraph'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1120,13 +1118,11 @@ export const modelingMachine = createMachine(
         store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
-          // commented out as a part of https://github.com/KittyCAD/modeling-app/issues/3270
-          // looking to add back in the future
-          // zoomToFit: true,
-          // zoomOnRangeAndType: {
-          //   range: selection.codeBasedSelections[0].range,
-          //   type: 'path',
-          // },
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'path',
+          },
         })
         if (!engineCommandManager.engineConnection?.idleMode) {
           store.videoElement?.play().catch((e) => {
@@ -1163,65 +1159,16 @@ export const modelingMachine = createMachine(
       'AST fillet': async (_, event) => {
         if (!event.data) return
 
+        // Extract inputs
         const { selection, radius } = event.data
-        let ast = kclManager.ast
 
-        if (
-          'variableName' in radius &&
-          radius.variableName &&
-          radius.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
-          ast.body = newBody
-        }
-
-        const pathToSegmentNode = getNodePathFromSourceRange(
-          ast,
-          selection.codeBasedSelections[0].range
+        // Apply fillet to selection
+        const applyFilletToSelectionResult = applyFilletToSelection(
+          selection,
+          radius
         )
-
-        const varDecNode = getNodeFromPath<VariableDeclaration>(
-          ast,
-          pathToSegmentNode,
-          'VariableDeclaration'
-        )
-        if (err(varDecNode)) return
-        const sketchVar = varDecNode.node.declarations[0].id.name
-        const sketchGroup = sketchGroupFromKclValue(
-          kclManager.programMemory.get(sketchVar),
-          sketchVar
-        )
-        if (trap(sketchGroup)) return
-        const extrusion = getExtrusionFromSuspectedPath(
-          sketchGroup.id,
-          engineCommandManager.artifactGraph
-        )
-        const pathToExtrudeNode = err(extrusion)
-          ? []
-          : getNodePathFromSourceRange(ast, extrusion.codeRef.range)
-
-        // we assume that there is only one body related to the sketch
-        // and apply the fillet to it
-
-        const addFilletResult = addFillet(
-          ast,
-          pathToSegmentNode,
-          pathToExtrudeNode,
-          'variableName' in radius
-            ? radius.variableIdentifierAst
-            : radius.valueAst
-        )
-
-        if (trap(addFilletResult)) return
-        const { modifiedAst, pathToFilletNode } = addFilletResult
-
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: pathToFilletNode,
-        })
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
+        if (err(applyFilletToSelectionResult))
+          return applyFilletToSelectionResult
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
