@@ -42,7 +42,13 @@ export type ActionButtonProps =
 
 export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
   const classNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 ${
-    props.iconStart ? (props.iconEnd ? 'px-0' : 'pr-2') : 'px-2'
+    props.iconStart
+      ? props.iconEnd
+        ? 'px-0'
+        : 'pr-2'
+      : props.iconEnd
+      ? 'px-2'
+      : 'pl-2'
   } ${props.className ? props.className : ''}`
 
   switch (props.Element) {
