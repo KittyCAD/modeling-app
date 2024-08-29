@@ -850,8 +850,8 @@ export const tangentialArcTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTag(3),
+  addTag: addTag(3),
   getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
     if (callExp.type !== 'CallExpression') return []
     const firstArg = callExp.arguments?.[0]
