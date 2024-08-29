@@ -12,11 +12,11 @@ mac:
   target: dmg
 
 # mac only
-afterSign: scripts/notarize.js
+afterSign: notarize.js
 
 win:
   target: nsis
-  sign: scripts/signWin.js,
+  sign: signWin.js,
   # signingHashAlgorithms": ["sha256"]
 
 linux:
