@@ -286,6 +286,7 @@ export default class EditorManager {
 
     this._lastEvent = { event: stringEvent, time: Date.now() }
     this._modelingSend(eventInfo.modelingEvent)
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
     )
