@@ -39,6 +39,24 @@ export function cleanErrs<T>(
   return [argsWOutErr.length !== value.length, argsWOutErr, argsWErr]
 }
 
+export function report(
+  message: string,
+  { showToast }: { showToast: boolean } = { showToast: false }
+) {
+  console.error(message)
+  if (showToast) {
+    toast.error(message, { id: 'error' })
+  }
+}
+
+/**
+ * Report a promise rejection.  The type of reason is `any` so that it matches
+ * Promise.prototype.catch.
+ */
+export function reportRejection(reason: any) {
+  report((reason ?? 'Unknown promise rejection').toString())
+}
+
 /**
  * Report an error to the user.  Trapping is the opposite of propagating an
  * error.  We should propagate errors in low-level functions and trap at the top

@@ -442,7 +442,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     },
     doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
       new Promise<boolean>((resolve) => {
-        (async () => {
+        ;(async () => {
           await page.screenshot({
             path: './e2e/playwright/temp1.png',
             fullPage: true,
@@ -472,7 +472,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
           // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
           let count = 0
           const interval = setInterval(() => {
-            (async () => {
+            ;(async () => {
               count++
               if (await isImageDiff()) {
                 clearInterval(interval)

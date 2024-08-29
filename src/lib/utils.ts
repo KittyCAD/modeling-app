@@ -105,6 +105,25 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
   return deferred
 }
 
+/**
+ * Convert an async function to sync, catching any errors.
+ *
+ * It's common to want to run an async function in a sync context, like an event
+ * handler.  But we don't want to do that without trapping errors.
+ *
+ * @param onReject This callback type is from Promise.prototype.catch.
+ */
+export function toSync<T>(
+  fn: () => Promise<T>,
+  onReject: (
+    reason: any
+  ) => void | PromiseLike<void | null | undefined> | null | undefined
+) {
+  return () => {
+    fn().catch(onReject)
+  }
+}
+
 export function getNormalisedCoordinates({
   clientX,
   clientY,
