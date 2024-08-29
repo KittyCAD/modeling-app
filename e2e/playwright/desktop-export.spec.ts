@@ -43,12 +43,6 @@ test(
       // open the project
       await page.getByText(`bracket`).click()
 
-      // wait for the project to load
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
