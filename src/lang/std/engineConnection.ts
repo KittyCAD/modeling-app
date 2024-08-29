@@ -52,8 +52,8 @@ interface WebRTCClientMetrics extends ClientMetrics {
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-  ? { type: T }
-  : { type: T; value: U }
+    ? { type: T }
+    : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -297,8 +297,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
-  60_000)
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
+    () => {},
+    60_000
+  )
   isUsingConnectionLite: boolean = false
 
   constructor({
@@ -1279,6 +1281,7 @@ interface PendingMessage {
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
+  isSceneCommand: boolean
 }
 export class EngineCommandManager extends EventTarget {
   /**
@@ -1364,7 +1367,7 @@ export class EngineCommandManager extends EventTarget {
   }
 
   private getAst: () => Program = () =>
-    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} }) as any
   set getAstCb(cb: () => Program) {
     this.getAst = cb
   }
@@ -1932,15 +1935,18 @@ export class EngineCommandManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
-    return this.sendCommand(command.cmd_id, {
-      command,
-      idToRangeMap: {},
-      range: [0, 0],
-    })
+    return this.sendCommand(
+      command.cmd_id,
+      {
+        command,
+        idToRangeMap: {},
+        range: [0, 0],
+      },
+      true // isSceneCommand
+    )
       .then(([a]) => a)
       .catch((e) => {
-        // TODO: Previously was never caught, since adding rejectAllCommands how should we handle this
-        // error?
+        // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
         /*noop*/
         return null
       })
@@ -1987,7 +1993,8 @@ export class EngineCommandManager extends EventTarget {
       command: PendingMessage['command']
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
-    }
+    },
+    isSceneCommand = false
   ): Promise<[Models['WebSocketResponse_type']]> {
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
@@ -1997,6 +2004,7 @@ export class EngineCommandManager extends EventTarget {
       command: message.command,
       range: message.range,
       idToRangeMap: message.idToRangeMap,
+      isSceneCommand,
     }
 
     if (message.command.type === 'modeling_cmd_req') {
@@ -2047,14 +2055,15 @@ export class EngineCommandManager extends EventTarget {
   }
 
   /**
-   * Reject all of the pendingCommands created from sendModelingCommandFromWasm
+   * Reject all of the modeling pendingCommands created from sendModelingCommandFromWasm
    * This interrupts the runtime of executeAst. Stops the AST processing and stops sending commands
    * to the engine
    */
-  rejectAllCommands(rejectionMessage: string) {
-    Object.values(this.pendingCommands).forEach((a) => {
-      a.reject(rejectionMessage)
-    })
+  rejectAllModelingCommands(rejectionMessage: string) {
+    Object.values(this.pendingCommands).forEach(
+      ({ reject, isSceneCommand }) =>
+        !isSceneCommand && reject(rejectionMessage)
+    )
   }
 
   async initPlanes() {

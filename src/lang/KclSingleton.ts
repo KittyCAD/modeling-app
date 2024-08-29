@@ -236,7 +236,7 @@ export class KclManager {
 
       // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
-      this.engineCommandManager.rejectAllCommands(
+      this.engineCommandManager.rejectAllModelingCommands(
         `Force interrupt, executionIsStale, new AST requested`
       )
       // Exit early if we are already executing.
