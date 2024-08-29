@@ -156,11 +156,11 @@ jobs:
           signtool.exe sign /sha1 ${{ env.WINDOWS_CERTIFICATE_THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.FILE }}"
           signtool.exe verify /v /pa "${{ env.FILE }}"
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: out-${{ matrix.os }}-arm64
-          path: |
-            out/*arm64*
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: out-${{ matrix.os }}-arm64
+      #     path: |
+      #       out/*arm64*.*
           # out/make/**/arm64/*
           # out/make/*.dmg
           # out/publish-dry-run/*/*
@@ -185,9 +185,9 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: out-${{ matrix.os }}-x64
+          name: out-${{ matrix.os }}
           path: |
-            out/*x64*
+            out/Zoo*.*
           # out/make/**/x64/*
           # out/make/*.dmg
           # out/publish-dry-run/*/*

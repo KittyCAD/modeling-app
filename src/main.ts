@@ -192,16 +192,16 @@ ipcMain.handle('find_machine_api', () => {
   })
 })
 
-app.on('ready', () => {
-  const updaterBucketUrl =
-    'https://dl.zoo.dev/releases/modeling-app/test/electron'
-  updateElectronApp({
-    updateSource: {
-      type: UpdateSourceType.StaticStorage,
-      baseUrl: `${updaterBucketUrl}/${process.platform}/${process.arch}`,
-    },
-  })
-})
+// app.on('ready', () => {
+//   const updaterBucketUrl =
+//     'https://dl.zoo.dev/releases/modeling-app/test/electron'
+//   updateElectronApp({
+//     updateSource: {
+//       type: UpdateSourceType.StaticStorage,
+//       baseUrl: `${updaterBucketUrl}/${process.platform}/${process.arch}`,
+//     },
+//   })
+// })
 
 ipcMain.handle('loadProjectAtStartup', async () => {
   // If we are in development mode, we don't want to load a project at

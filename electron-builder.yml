@@ -13,3 +13,6 @@ mac:
 
 win:
   target: nsis
+
+linux:
+  target: appimage
