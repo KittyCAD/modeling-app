@@ -9,22 +9,37 @@ files:
 
 mac:
   category: public.app-category.developer-tools
-  target: dmg
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
   notarize:
     teamId: 92H8YB3B95
+
+dmg:
+  artifactName: "${productName}-${version}-${arch}.${ext}"
 
 win:
   target:
     - target: nsis
       arch:
         - x64
+        - arm64
   signingHashAlgorithms:
     - sha256
   sign: "./sign-win.js"
   icon: "assets/icon.ico"
 
 linux:
-  target: appimage
+  target:
+    - target: appImage
+      arch:
+        - x64
+        - arm64
+
+appImage:
+  artifactName: "${productName}-${version}-${arch}.${ext}"
 
 publish:
   - provider: generic

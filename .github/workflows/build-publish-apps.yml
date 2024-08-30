@@ -136,41 +136,22 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
-      - name: Make the app for arm64
+      - name: Build the app
         # if: ${{ env.BUILD_RELEASE == 'false' }}
-        run: yarn electron-builder --config --arm64
+        run: yarn electron-builder --config
 
-      # - name: Publish the app for arm64 (dry run)
+      # - name: Publish the app  (dry run)
       #   if: ${{ env.BUILD_RELEASE == 'true' }}
-      #   run: "yarn electron-forge publish --arch arm64 --dry-run"
+      #   run: "yarn electron-forge publish --dry-run"
 
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: out-${{ matrix.os }}-arm64
-      #     path: |
-      #       out/*arm64*.*
-          # out/make/**/arm64/*
-          # out/make/*.dmg
-          # out/publish-dry-run/*/*
-
-      - name: Make the app for x64
-        # if: ${{ env.BUILD_RELEASE == 'false' }}
-        run: "yarn electron-builder --config --x64"
-
-      # - name: Publish the app for x64 (dry run)
-      #   if: ${{ env.BUILD_RELEASE == 'true' }}
-      #   run: "yarn electron-forge publish --arch x64 --dry-run"
-
-      - run: ls -R out
+      - name: List artifacts in out/
+        run: ls -R out
 
       - uses: actions/upload-artifact@v3
         with:
           name: out-${{ matrix.os }}
           path: |
             out/Zoo*.*
-          # out/make/**/x64/*
-          # out/make/*.dmg
-          # out/publish-dry-run/*/*
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
