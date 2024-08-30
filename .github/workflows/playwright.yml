@@ -139,7 +139,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: playwright-report-ubuntu-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
@@ -174,14 +174,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
     - uses: actions/download-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
     - name: Run playwright/chrome flow (with retries)
       id: retry
@@ -244,14 +244,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
@@ -351,7 +351,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-ubuntu-${{ github.sha }}
+        name: test-results-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
     - name: Run electron tests (with retries)
       id: retry

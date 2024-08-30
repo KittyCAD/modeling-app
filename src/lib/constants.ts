@@ -8,6 +8,7 @@ export const MAX_PADDING = 7
  * This is available for users to edit as a setting.
  */
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
 /** Name given the temporary file in the browser version of the app */
@@ -66,3 +67,8 @@ export const COOKIE_NAME = '__Secure-next-auth.session-token'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
+
+/** Custom error message to match when rejectAllModelCommands is called
+ * allows us to match if the execution of executeAst was interrupted */
+export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
+  'Force interrupt, executionIsStale, new AST requested'
