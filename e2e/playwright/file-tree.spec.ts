@@ -233,7 +233,7 @@ test.describe('when using the file tree to', () => {
       // pasted into main.kcl
       await pasteCodeInEditor(kclCube)
 
-      // Create an Untitled file to copy the larger lego piece into
+      // Create a large lego file
       await createNewFile('lego')
       const legoFile = page.getByRole('button', { name: 'lego.kcl' })
       await expect(legoFile).toBeVisible({ timeout: 20_000 })
