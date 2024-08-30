@@ -100,7 +100,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
         // TODO: disabled
-        // Whos state is this?
+        // Who's state is this?
         disabled: (state) => !state.can('Revolve'),
         icon: 'revolve',
         status: DEV ? 'available' : 'kcl-only',
