@@ -138,21 +138,11 @@ jobs:
 
       - name: Make the app for arm64
         # if: ${{ env.BUILD_RELEASE == 'false' }}
-        # run: "yarn electron-forge make --arch arm64"
         run: yarn electron-builder --config --arm64
 
       # - name: Publish the app for arm64 (dry run)
       #   if: ${{ env.BUILD_RELEASE == 'true' }}
       #   run: "yarn electron-forge publish --arch arm64 --dry-run"
-
-      # - name: Sign Windows arm64 builds using Signtool
-      #   # if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
-      #   if: false
-      #   env:
-      #     FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\arm64\\Zoo Modeling App-*Setup.exe"
-      #   run: |
-      #     signtool.exe sign /sha1 ${{ env.WINDOWS_CERTIFICATE_THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.FILE }}"
-      #     signtool.exe verify /v /pa "${{ env.FILE }}"
 
       # - uses: actions/upload-artifact@v3
       #   with:
@@ -165,21 +155,13 @@ jobs:
 
       - name: Make the app for x64
         # if: ${{ env.BUILD_RELEASE == 'false' }}
-        # run: "yarn electron-forge make --arch x64"
         run: "yarn electron-builder --config --x64"
 
       # - name: Publish the app for x64 (dry run)
       #   if: ${{ env.BUILD_RELEASE == 'true' }}
       #   run: "yarn electron-forge publish --arch x64 --dry-run"
 
-      # - name: Sign Windows x64 builds using Signtool
-      #   # if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
-      #   if: false
-      #   env:
-      #     FILE: "D:\\a\\modeling-app\\modeling-app\\out\\make\\squirrel.windows\\x64\\Zoo Modeling App-*Setup.exe"
-      #   run: |
-      #     signtool.exe sign /sha1 ${{ env.WINDOWS_CERTIFICATE_THUMBPRINT }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "${{ env.FILE }}"
-      #     signtool.exe verify /v /pa "${{ env.FILE }}"
+      - run: ls -R out
 
       - uses: actions/upload-artifact@v3
         with:
