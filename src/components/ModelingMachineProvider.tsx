@@ -73,7 +73,7 @@ import { EditorSelection, Transaction } from '@codemirror/state'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
@@ -163,11 +163,12 @@ export const ModelingMachineProvider = ({
             kclManager.executeCode().then(() => {
               if (engineCommandManager.engineConnection?.idleMode) return
 
-              store.videoElement?.play().catch((e) => {
-                console.warn('Video playing was prevented', e)
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
               })
-            })
-          })()
+              .catch(reportRejection)
+          })().catch(reportRejection)
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
@@ -298,6 +299,7 @@ export const ModelingMachineProvider = ({
             })
             codeMirrorSelection && dispatchSelection(codeMirrorSelection)
             engineEvents &&
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
               engineEvents.forEach((event) =>
                 engineCommandManager.sendSceneCommand(event)
               )
@@ -331,6 +333,7 @@ export const ModelingMachineProvider = ({
                 selections,
               })
             engineEvents &&
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
               engineEvents.forEach((event) =>
                 engineCommandManager.sendSceneCommand(event)
               )
@@ -359,7 +362,7 @@ export const ModelingMachineProvider = ({
 
           return {}
         }),
-        Make: async (_, event) => {
+        Make: (_, event) => {
           if (event.type !== 'Make') return
           // Check if we already have an export intent.
           if (engineCommandManager.exportIntent) {
@@ -391,19 +394,21 @@ export const ModelingMachineProvider = ({
           }
 
           // Artificially delay the export in playwright tests
-          toast.promise(
-            exportFromEngine({
-              format: format,
-            }),
+          toast
+            .promise(
+              exportFromEngine({
+                format: format,
+              }),
 
-            {
-              loading: 'Starting print...',
-              success: 'Started print successfully',
-              error: 'Error while starting print',
-            }
-          )
+              {
+                loading: 'Starting print...',
+                success: 'Started print successfully',
+                error: 'Error while starting print',
+              }
+            )
+            .catch(reportRejection)
         },
-        'Engine export': async (_, event) => {
+        'Engine export': (_, event) => {
           if (event.type !== 'Export') return
           if (engineCommandManager.exportIntent) {
             toast.error('Already exporting')
@@ -455,22 +460,24 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          toast.promise(
-            exportFromEngine({
-              format: format as Models['OutputFormat_type'],
-            }),
-            {
-              loading: 'Exporting...',
-              success: 'Exported successfully',
-              error: 'Error while exporting',
-            }
-          )
+          toast
+            .promise(
+              exportFromEngine({
+                format: format as Models['OutputFormat_type'],
+              }),
+              {
+                loading: 'Exporting...',
+                success: 'Exported successfully',
+                error: 'Error while exporting',
+              }
+            )
+            .catch(reportRejection)
         },
-        'Submit to Text-to-CAD API': async (_, { data }) => {
+        'Submit to Text-to-CAD API': (_, { data }) => {
           const trimmedPrompt = data.prompt.trim()
           if (!trimmedPrompt) return
 
-          void submitAndAwaitTextToKcl({
+          submitAndAwaitTextToKcl({
             trimmedPrompt,
             fileMachineSend,
             navigate,
@@ -481,7 +488,7 @@ export const ModelingMachineProvider = ({
               theme: theme.current,
               highlightEdges: highlightEdges.current,
             },
-          })
+          }).catch(reportRejection)
         },
       },
       guards: {

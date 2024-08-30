@@ -5,7 +5,7 @@ import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
-import { throttle } from 'lib/utils'
+import { throttle, toSync } from 'lib/utils'
 import {
   sceneInfra,
   kclManager,
@@ -44,7 +44,7 @@ import {
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -582,7 +582,7 @@ const ConstraintSymbol = ({
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
-        onClick={async () => {
+        onClick={toSync(async () => {
           if (!isConstrained) {
             send({
               type: 'Convert to variable',
@@ -616,13 +616,14 @@ const ConstraintSymbol = ({
               )
               if (!transform) return
               const { modifiedAst } = transform
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               kclManager.updateAst(modifiedAst, true)
             } catch (e) {
               console.log('error', e)
             }
             toast.success('Constraint removed')
           }
-        }}
+        }, reportRejection)}
       >
         <CustomIcon name={name} />
       </button>
@@ -688,7 +689,7 @@ const ConstraintSymbol = ({
 
 const throttled = throttle((a: ReactCameraProperties) => {
   if (a.type === 'perspective' && a.fov) {
-    sceneInfra.camControls.dollyZoom(a.fov)
+    sceneInfra.camControls.dollyZoom(a.fov).catch(reportRejection)
   }
 }, 1000 / 15)
 
@@ -718,6 +719,7 @@ export const CamDebugSettings = () => {
           if (camSettings.type === 'perspective') {
             sceneInfra.camControls.useOrthographicCamera()
           } else {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             sceneInfra.camControls.usePerspectiveCamera(true)
           }
         }}
@@ -725,7 +727,7 @@ export const CamDebugSettings = () => {
       <div>
         <button
           onClick={() => {
-            sceneInfra.camControls.resetCameraPosition()
+            sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
           }}
         >
           Reset Camera Position

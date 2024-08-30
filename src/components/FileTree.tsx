@@ -176,9 +176,11 @@ const FileTreeItem = ({
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           codeManager.code
       )
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
@@ -388,14 +390,14 @@ interface FileTreeProps {
 export const FileTreeMenu = () => {
   const { send } = useFileContext()
 
-  async function createFile() {
+  function createFile() {
     send({
       type: 'Create file',
       data: { name: '', makeDir: false },
     })
   }
 
-  async function createFolder() {
+  function createFolder() {
     send({
       type: 'Create file',
       data: { name: '', makeDir: true },

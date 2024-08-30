@@ -1063,12 +1063,14 @@ export const modelingMachine = createMachine(
           },
         }
       }),
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'hide default planes': () => kclManager.hidePlanes(),
       'reset sketch metadata': assign({
         sketchDetails: null,
         sketchEnginePathId: '',
         sketchPlaneId: '',
       }),
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'reset camera position': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -1083,6 +1085,7 @@ export const modelingMachine = createMachine(
       'set new sketch metadata': assign((_, { data }) => ({
         sketchDetails: data,
       })),
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'AST extrude': async ({ store }, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
@@ -1133,6 +1136,7 @@ export const modelingMachine = createMachine(
           editorManager.selectRange(updatedAst?.selections)
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'AST delete selection': async ({ selectionRanges }) => {
         let ast = kclManager.ast
 
@@ -1156,6 +1160,7 @@ export const modelingMachine = createMachine(
 
         await kclManager.updateAst(modifiedAst, true)
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'AST fillet': async (_, event) => {
         if (!event.data) return
 
@@ -1182,7 +1187,8 @@ export const modelingMachine = createMachine(
         sketchDetails,
         selectionRanges,
       }) => {
-        if (!sketchDetails) return
+        if (!sketchDetails)
+          return // eslint-disable-next-line @typescript-eslint/no-floating-promises
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
             await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
@@ -1207,12 +1213,14 @@ export const modelingMachine = createMachine(
       },
       'tear down client sketch': () => {
         if (sceneEntitiesManager.activeSegments) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           sceneEntitiesManager.tearDownSketch({ removeAxis: false })
         }
       },
       'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
       'set up draft line': ({ sketchDetails }) => {
         if (!sketchDetails) return
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sceneEntitiesManager.setUpDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -1223,6 +1231,7 @@ export const modelingMachine = createMachine(
       },
       'set up draft arc': ({ sketchDetails }) => {
         if (!sketchDetails) return
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sceneEntitiesManager.setUpDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -1250,6 +1259,7 @@ export const modelingMachine = createMachine(
       },
       'set up draft rectangle': ({ sketchDetails }, { data }) => {
         if (!sketchDetails || !data) return
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sceneEntitiesManager.setupDraftRectangle(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -1260,6 +1270,7 @@ export const modelingMachine = createMachine(
       },
       'set up draft line without teardown': ({ sketchDetails }) => {
         if (!sketchDetails) return
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sceneEntitiesManager.setUpDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -1269,6 +1280,7 @@ export const modelingMachine = createMachine(
           false
         )
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'show default planes': () => kclManager.showPlanes(),
       'setup noPoints onClick listener': ({ sketchDetails }) => {
         if (!sketchDetails) return
@@ -1299,6 +1311,7 @@ export const modelingMachine = createMachine(
       'engineToClient cam sync direction': () => {
         sceneInfra.camControls.syncDirection = 'engineToClient'
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'set selection filter to faces only': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -1310,6 +1323,7 @@ export const modelingMachine = createMachine(
         }),
       'set selection filter to defaults': () =>
         kclManager.defaultSelectionFilter(),
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),

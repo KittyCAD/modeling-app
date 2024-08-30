@@ -26,6 +26,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
+import { reportRejection } from 'lib/trap'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -80,7 +81,7 @@ export function App() {
   useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
-    engineCommandManager.sendSceneCommand(message)
+    engineCommandManager.sendSceneCommand(message).catch(reportRejection)
   }, 1000 / 15)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
     if (state.matches('Sketch')) {
