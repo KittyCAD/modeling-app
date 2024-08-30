@@ -201,4 +201,58 @@ test.describe('when using the file tree to', () => {
       await electronApp.close()
     }
   )
+
+  test(
+    'loading small file, then large, then back to small',
+    {
+      tag: '@electron',
+    },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+      })
+
+      const {
+        panesOpen,
+        createAndSelectProject,
+        pasteCodeInEditor,
+        createNewFile,
+      } = await getUtils(page, test)
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await panesOpen(['files', 'code'])
+      await createAndSelectProject('project-000')
+
+      // Create a small file
+      const kclCube = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'utf-8'
+      )
+      // pasted into main.kcl
+      await pasteCodeInEditor(kclCube)
+
+      // Create an Untitled file to copy the larger lego piece into
+      await createNewFile('lego')
+      const legoFile = page.getByRole('button', { name: 'lego.kcl' })
+      await expect(legoFile).toBeVisible({ timeout: 20_000 })
+      await legoFile.click()
+      const kclLego = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/lego.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclLego)
+      const mainFile = page.getByRole('button', { name: 'main.kcl' })
+
+      test.step('swap between small and large files', async () => {
+        // Previously created a file so we need to start back at main.kcl
+        await mainFile.click()
+        // Click the large file
+        await legoFile.click()
+        // Once it is building, click back to the smaller file
+        await mainFile.click()
+      })
+    }
+  )
 })
