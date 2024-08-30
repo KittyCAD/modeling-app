@@ -142,15 +142,16 @@ jobs:
           cache: 'yarn'
 
       - name: Set nightly version
-        if: github.event_name == 'schedule'
+        # if: github.event_name == 'schedule'
         run: |
-          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          # VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          VERSION=0.99.99 yarn bump-jsons
           echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json' \
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
-          echo "$(jq --arg id 'dev.zoo.modeling-app-nightly' \
-            '.identifier=$id' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
-          echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
-            '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+          # echo "$(jq --arg id 'dev.zoo.modeling-app-nightly' \
+          #   '.identifier=$id' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+          # echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
+          #   '.productName=$name' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - name: Set updater test version
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
@@ -159,7 +160,7 @@ jobs:
             '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
-        if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
+        # if: ${{ github.event_name == 'schedule' || env.CUT_RELEASE_PR == 'true' }}
         with:
           path: |
             package.json
@@ -186,10 +187,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
-        if: github.event_name == 'schedule'
+        # if: github.event_name == 'schedule'
 
       - name: Copy updated .json files
-        if: github.event_name == 'schedule'
+        # if: github.event_name == 'schedule'
         run: |
           ls -l artifact
           cp artifact/package.json package.json
@@ -443,7 +444,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
