@@ -33,6 +33,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
+  getExtrudeEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -138,6 +139,20 @@ export async function getEventForSelectWithPoint({
       data: {
         selectionType: 'singleCodeCursor',
         selection: { range: _artifact.codeRef.range, type: 'default' },
+      },
+    }
+  }
+  if (_artifact.type === 'extrudeEdge') {
+    const codeRef = getExtrudeEdgeCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'edge' },
       },
     }
   }

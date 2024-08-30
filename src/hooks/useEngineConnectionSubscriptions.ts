@@ -9,6 +9,7 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
+  getExtrudeEdgeCodeRef,
   getExtrusionFromSuspectedExtrudeSurface,
   getSolid2dCodeRef,
   getWallCodeRef,
@@ -60,6 +61,13 @@ export function useEngineConnectionSubscriptions() {
                 ? [codeRef.range]
                 : [codeRef.range, extrusion.codeRef.range]
             )
+          } else if (artifact?.type === 'extrudeEdge') {
+            const codeRef = getExtrudeEdgeCodeRef(
+              artifact,
+              engineCommandManager.artifactGraph
+            )
+            if (err(codeRef)) return
+            editorManager.setHighlightRange([codeRef.range])
           } else if (artifact?.type === 'segment') {
             editorManager.setHighlightRange([
               artifact?.codeRef?.range || [0, 0],
