@@ -8,7 +8,7 @@ import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
-import electronUpdater, { type AppUpdater } from 'electron-updater';
+import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 
@@ -193,10 +193,10 @@ ipcMain.handle('find_machine_api', () => {
 })
 
 export function getAutoUpdater(): AppUpdater {
-   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
-   // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
-   const { autoUpdater } = electronUpdater;
-   return autoUpdater;
+  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
+  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
+  const { autoUpdater } = electronUpdater
+  return autoUpdater
 }
 
 app.on('ready', () => {
