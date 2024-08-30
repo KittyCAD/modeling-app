@@ -181,6 +181,32 @@ pub(crate) async fn do_post_extrude(
         vec![]
     };
 
+    for face_info in face_infos.iter() {
+        if face_info.cap == kittycad::types::ExtrusionFaceCapType::None {
+            if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
+                args.batch_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+                        edge_id: curve_id,
+                        object_id: sketch_group.id,
+                        face_id,
+                    },
+                )
+                .await?;
+
+                args.batch_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                        edge_id: curve_id,
+                        object_id: sketch_group.id,
+                        face_id,
+                    },
+                )
+                .await?;
+            }
+        }
+    }
+
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
     // creating fake ids for start and end caps is to make extrudes mock-execute safe
