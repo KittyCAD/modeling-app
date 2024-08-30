@@ -106,7 +106,22 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
 }
 
 /**
- * Wrap an async thunk so that it can be called in a sync context, catching
+ * Replace a function's return type with another type.
+ */
+type WithReturnType<F extends (...args: any[]) => any, NewReturn> = (
+  ...args: Parameters<F>
+) => NewReturn
+
+/**
+ * Assert that a function type is async, preserving its parameter types.
+ */
+type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
+  F,
+  Promise<unknown>
+>
+
+/**
+ * Wrap an async function so that it can be called in a sync context, catching
  * rejections.
  *
  * It's common to want to run an async function in a sync context, like an event
@@ -116,14 +131,14 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
  *
  * @param onReject This callback type is from Promise.prototype.catch.
  */
-export function toSync<T>(
-  fn: () => Promise<T>,
+export function toSync<F extends AsyncFn<F>>(
+  fn: F,
   onReject: (
     reason: any
   ) => void | PromiseLike<void | null | undefined> | null | undefined
-) {
-  return () => {
-    fn().catch(onReject)
+): (...args: Parameters<F>) => void {
+  return (...args: Parameters<F>) => {
+    fn(...args).catch(onReject)
   }
 }
 
