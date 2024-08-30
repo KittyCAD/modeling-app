@@ -8,7 +8,7 @@ import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
-import { updateElectronApp, UpdateSourceType } from 'update-electron-app'
+import electronUpdater, { type AppUpdater } from 'electron-updater';
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 
@@ -192,16 +192,17 @@ ipcMain.handle('find_machine_api', () => {
   })
 })
 
-// app.on('ready', () => {
-//   const updaterBucketUrl =
-//     'https://dl.zoo.dev/releases/modeling-app/test/electron'
-//   updateElectronApp({
-//     updateSource: {
-//       type: UpdateSourceType.StaticStorage,
-//       baseUrl: `${updaterBucketUrl}/${process.platform}/${process.arch}`,
-//     },
-//   })
-// })
+export function getAutoUpdater(): AppUpdater {
+   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
+   // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
+   const { autoUpdater } = electronUpdater;
+   return autoUpdater;
+}
+
+app.on('ready', () => {
+  const autoUpdater = getAutoUpdater()
+  autoUpdater.checkForUpdatesAndNotify()
+})
 
 ipcMain.handle('loadProjectAtStartup', async () => {
   // If we are in development mode, we don't want to load a project at

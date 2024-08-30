@@ -110,10 +110,6 @@ jobs:
 
       - run: yarn tronb:vite
 
-      - name: Add macOS signing certificate
-        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
-        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
-
       - name: Prepare certificate and variables (Windows only)
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'windows-2022' }}
         run: |

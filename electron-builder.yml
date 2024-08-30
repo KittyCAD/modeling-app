@@ -13,13 +13,14 @@ mac:
   notarize:
     teamId: 92H8YB3B95
 
-# mac only
-# afterSign: notarize.js
-
 win:
   target: nsis
   sign: "./sign-win.js"
-  # signingHashAlgorithms": ["sha256"]
 
 linux:
   target: appimage
+
+publish:
+  - provider: generic
+    url: https://dl.zoo.dev/releases/modeling-app/test/electron-builder
+    channel: latest
