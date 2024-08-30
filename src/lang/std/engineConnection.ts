@@ -16,8 +16,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import { kclManager } from 'lib/singletons'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import { KclManager } from 'lang/KclSingleton'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1382,6 +1382,7 @@ export class EngineCommandManager extends EventTarget {
   }: CustomEvent<NewTrackArgs>) => {}
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
+  kclManager: null | KclManager = null
 
   set exportIntent(intent: ExportIntent | null) {
     this._exportIntent = intent
@@ -1978,7 +1979,7 @@ export class EngineCommandManager extends EventTarget {
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
     // Used in conjunction with rejectAllModelingCommands
-    if (kclManager.executeIsStale) {
+    if (this?.kclManager?.executeIsStale) {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
