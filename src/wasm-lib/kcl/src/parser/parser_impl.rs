@@ -3453,6 +3453,17 @@ mod snapshot_tests {
             c: 3
         }"
     );
+    snapshot_test!(
+        ba,
+        r#"
+const sketch001 = startSketchOn('XY')
+  // |> arc({
+  //   angleEnd: 270,
+  //   angleStart: 450,
+  // }, %)
+  |> startProfileAt(%)
+"#
+    );
 }
 
 #[allow(unused)]
