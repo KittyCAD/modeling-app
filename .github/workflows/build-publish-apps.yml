@@ -217,6 +217,7 @@ jobs:
         with:
           path: out
           glob: 'latest-*.yml'
+          parent: false
           destination: ${{ env.BUCKET_DIR }}
 
       # - name: Upload download endpoint to public bucket
