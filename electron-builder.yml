@@ -14,8 +14,14 @@ mac:
     teamId: 92H8YB3B95
 
 win:
-  target: nsis
+  target:
+    - target: nsis
+      arch:
+        - x64
+  signingHashAlgorithms:
+    - sha256
   sign: "./sign-win.js"
+  icon: "assets/icon.ico"
 
 linux:
   target: appimage
@@ -24,3 +30,12 @@ publish:
   - provider: generic
     url: https://dl.zoo.dev/releases/modeling-app/test/electron-builder
     channel: latest
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  license: "LICENSE"
+  installerIcon: "assets/icon.ico"
+  artifactName: "${productName}-Setup-${arch}-${version}.${ext}"
