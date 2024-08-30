@@ -103,7 +103,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         // Whos state is this?
         disabled: (state) => !state.can('Revolve'),
         icon: 'revolve',
-        status: 'available',
+        status: DEV ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
