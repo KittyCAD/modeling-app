@@ -199,9 +199,10 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
-app.on('ready', () => {
+app.on('ready', async () => {
   const autoUpdater = getAutoUpdater()
-  autoUpdater.checkForUpdatesAndNotify()
+  const result = await autoUpdater.checkForUpdatesAndNotify()
+  console.log(result)
 })
 
 ipcMain.handle('loadProjectAtStartup', async () => {
