@@ -186,7 +186,7 @@ async fn kcl_test_negative_args() {
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
+    |> tangentialArcToRelative([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
