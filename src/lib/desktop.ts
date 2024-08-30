@@ -462,29 +462,33 @@ export const readProjectSettingsFile = async (
  */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
+  const initialDirConfig: DeepPartial<Configuration> = {
+    settings: { project: { directory: await getInitialDefaultDir() } },
+  }
 
   // The file exists, read it and parse it.
   if (window.electron.exists(settingsPath)) {
     const configToml = await window.electron.readFile(settingsPath)
-    const configObj = parseAppSettings(configToml)
-    if (err(configObj)) {
-      return Promise.reject(configObj)
+    const parsedAppConfig = parseAppSettings(configToml)
+    if (err(parsedAppConfig)) {
+      return Promise.reject(parsedAppConfig)
     }
 
-    return configObj
+    const hasProjectDirectorySetting =
+      parsedAppConfig.settings?.project?.directory ||
+      parsedAppConfig.settings?.app?.project_directory
+    return hasProjectDirectorySetting
+      ? parsedAppConfig
+      : Object.assign(parsedAppConfig, initialDirConfig)
   }
 
   // The file doesn't exist, create a new one.
-  // This defaultAppConfig is truly an empty object every time.
   const defaultAppConfig = defaultAppSettings()
   if (err(defaultAppConfig)) {
     return Promise.reject(defaultAppConfig)
   }
-  const initialDirConfig: DeepPartial<Configuration> = {
-    settings: { project: { directory: await getInitialDefaultDir() } },
-  }
-  const config = Object.assign(defaultAppConfig, initialDirConfig)
-  return config
+
+  return Object.assign(defaultAppConfig, initialDirConfig)
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
