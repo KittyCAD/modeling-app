@@ -1894,6 +1894,22 @@ async fn inner_tangential_arc_to_relative(
         obtuse: true,
     });
 
+    if result.center[0].is_infinite() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message:
+                "could not sketch tangential arc, because its center would be infinitely far away in the X direction"
+                    .to_owned(),
+        }));
+    } else if result.center[1].is_infinite() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message:
+                "could not sketch tangential arc, because its center would be infinitely far away in the Y direction"
+                    .to_owned(),
+        }));
+    }
+
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
@@ -1907,7 +1923,7 @@ async fn inner_tangential_arc_to_relative(
                 metadata: args.source_range.into(),
             },
         },
-        center: result.center,
+        center: dbg!(result.center),
         ccw: result.ccw > 0,
     };
 
