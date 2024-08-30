@@ -405,8 +405,8 @@ export const commandBarMachine = createMachine(
               e.data.argDefaultValues && argName in e.data.argDefaultValues
                 ? e.data.argDefaultValues[argName]
                 : arg.skip && 'defaultValue' in arg
-                  ? arg.defaultValue
-                  : undefined
+                ? arg.defaultValue
+                : undefined
           }
           return args
         },

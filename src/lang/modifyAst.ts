@@ -739,7 +739,7 @@ export function createUnaryExpression(
 export function createBinaryExpression([left, operator, right]: [
   BinaryExpression['left'],
   BinaryExpression['operator'],
-  BinaryExpression['right'],
+  BinaryExpression['right']
 ]): BinaryExpression {
   return {
     type: 'BinaryExpression',
@@ -754,7 +754,7 @@ export function createBinaryExpression([left, operator, right]: [
 
 export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
-  BinaryExpression['right'],
+  BinaryExpression['right']
 ]): BinaryExpression {
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
@@ -940,16 +940,16 @@ export function makeRemoveSingleConstraintInput(
         pathToCallExp: pathToNode,
       }
     : argPosition?.type === 'arrayItem'
-      ? {
-          pathToCallExp: pathToNode,
-          arrayIndex: argPosition.index,
-        }
-      : argPosition?.type === 'objectProperty'
-        ? {
-            pathToCallExp: pathToNode,
-            objectProperty: argPosition.key,
-          }
-        : false
+    ? {
+        pathToCallExp: pathToNode,
+        arrayIndex: argPosition.index,
+      }
+    : argPosition?.type === 'objectProperty'
+    ? {
+        pathToCallExp: pathToNode,
+        objectProperty: argPosition.key,
+      }
+    : false
 }
 
 export function removeSingleConstraintInfo(
@@ -993,7 +993,7 @@ export async function deleteFromSelection(
   selection: Selection,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({}) as any
+    ({} as any)
 ): Promise<Program | Error> {
   const astClone = structuredClone(ast)
   const range = selection.range

@@ -25,7 +25,7 @@ export type AllMachines =
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,
-  S extends StateMachineCommandSetSchema<T>,
+  S extends StateMachineCommandSetSchema<T>
 > {
   machineId: T['id']
   state: StateFrom<T>
@@ -38,7 +38,7 @@ interface UseStateMachineCommandsArgs<
 
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>,
+  S extends StateMachineCommandSetSchema<T>
 >({
   machineId,
   state,
