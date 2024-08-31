@@ -14,7 +14,7 @@ import { type HomeLoaderData } from 'lib/types'
 import Loading from 'components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
-import { ContextFrom, EventFrom } from 'xstate'
+import { fromPromise } from 'xstate'
 import { PATHS } from 'lib/paths'
 import {
   getNextSearchParams,
@@ -68,95 +68,87 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  const [state, send, actor] = useMachine(homeMachine, {
-    context: {
-      projects: loadedProjects,
-      defaultProjectName: settings.projects.defaultProjectName.current,
-      defaultDirectory: settings.app.projectDirectory.current,
-    },
-    actions: {
-      navigateToProject: (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine>
-      ) => {
-        if (event.data && 'name' in event.data) {
-          let projectPath =
-            context.defaultDirectory +
-            window.electron.path.sep +
-            event.data.name
-          onProjectOpen(
-            {
-              name: event.data.name,
-              path: projectPath,
-            },
-            null
-          )
-          commandBarSend({ type: 'Close' })
-          navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
-        }
-      },
-      toastSuccess: (_, event) => toast.success((event.data || '') + ''),
-      toastError: (_, event) => toast.error((event.data || '') + ''),
-    },
-    services: {
-      readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        listProjects(),
-      createProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Create project'>
-      ) => {
-        let name = (
-          event.data && 'name' in event.data
-            ? event.data.name
-            : settings.projects.defaultProjectName.current
-        ).trim()
-
-        if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = getNextProjectIndex(name, projects)
-          name = interpolateProjectNameWithIndex(name, nextIndex)
-        }
-
-        await createNewProjectDirectory(name)
-
-        return `Successfully created "${name}"`
-      },
-      renameProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Rename project'>
-      ) => {
-        const { oldName, newName } = event.data
-        let name = newName ? newName : context.defaultProjectName
-        if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = await getNextProjectIndex(name, projects)
-          name = interpolateProjectNameWithIndex(name, nextIndex)
-        }
-
-        await renameProjectDirectory(
-          window.electron.path.join(context.defaultDirectory, oldName),
-          name
-        )
-        return `Successfully renamed "${oldName}" to "${name}"`
-      },
-      deleteProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Delete project'>
-      ) => {
-        await window.electron.rm(
-          window.electron.path.join(context.defaultDirectory, event.data.name),
-          {
-            recursive: true,
+  const [state, send, actor] = useMachine(
+    homeMachine.provide({
+      actions: {
+        navigateToProject: ({ context, event }) => {
+          if (event.data && 'name' in event.data) {
+            let projectPath =
+              context.defaultDirectory +
+              window.electron.path.sep +
+              event.data.name
+            onProjectOpen(
+              {
+                name: event.data.name,
+                path: projectPath,
+              },
+              null
+            )
+            commandBarSend({ type: 'Close' })
+            navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
           }
-        )
-        return `Successfully deleted "${event.data.name}"`
+        },
+        toastSuccess: ({ event }) => toast.success((event.data || '') + ''),
+        toastError: ({ event }) => toast.error((event.data || '') + ''),
       },
-    },
-    guards: {
-      'Has at least 1 project': (_, event: EventFrom<typeof homeMachine>) => {
-        if (event.type !== 'done.invoke.read-projects') return false
-        return event?.data?.length ? event.data?.length >= 1 : false
+      actors: {
+        readProjects: fromPromise(listProjects),
+        createProject: fromPromise(async ({ input }) => {
+          let name = (
+            input && 'name' in input
+              ? input.name
+              : settings.projects.defaultProjectName.current
+          ).trim()
+
+          if (doesProjectNameNeedInterpolated(name)) {
+            const nextIndex = getNextProjectIndex(name, projects)
+            name = interpolateProjectNameWithIndex(name, nextIndex)
+          }
+
+          await createNewProjectDirectory(name)
+
+          return `Successfully created "${name}"`
+        }),
+        renameProject: fromPromise(async ({ input }) => {
+          const { oldName, newName, defaultProjectName, defaultDirectory } =
+            input
+          let name = newName ? newName : defaultProjectName
+          if (doesProjectNameNeedInterpolated(name)) {
+            const nextIndex = await getNextProjectIndex(name, projects)
+            name = interpolateProjectNameWithIndex(name, nextIndex)
+          }
+
+          await renameProjectDirectory(
+            window.electron.path.join(defaultDirectory, oldName),
+            name
+          )
+          return `Successfully renamed "${oldName}" to "${name}"`
+        }),
+        deleteProject: fromPromise(async ({ input }) => {
+          await window.electron.rm(
+            window.electron.path.join(input.defaultDirectory, input.name),
+            {
+              recursive: true,
+            }
+          )
+          return `Successfully deleted "${input.name}"`
+        }),
       },
-    },
-  })
+      guards: {
+        'Has at least 1 project': ({ event }) => {
+          if (event.type !== 'xstate.done.actor.read-projects') return false
+          return event.data.length ? event.data.length >= 1 : false
+        },
+      },
+    }),
+    {
+      input: {
+        projects: loadedProjects,
+        defaultProjectName: settings.projects.defaultProjectName.current,
+        defaultDirectory: settings.app.projectDirectory.current,
+      },
+    }
+  )
   const { projects } = state.context
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
@@ -197,14 +189,18 @@ const Home = () => {
     )
 
     if (newProjectName !== project.name) {
-      send('Rename project', {
-        data: { oldName: project.name, newName: newProjectName },
+      send({
+        type: 'Rename project',
+        data: { oldName: project.name, newName: newProjectName as string },
       })
     }
   }
 
   async function handleDeleteProject(project: Project) {
-    send('Delete project', { data: { name: project.name || '' } })
+    send({
+      type: 'Delete project',
+      data: { name: project.name || '' },
+    })
   }
 
   return (
@@ -217,7 +213,9 @@ const Home = () => {
               <h1 className="text-3xl font-bold">Your Projects</h1>
               <ActionButton
                 Element="button"
-                onClick={() => send('Create project')}
+                onClick={
+                  () => send({ type: 'Create project', data: { name: '' } }) // TODO: @frank to check this
+                }
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{
                   icon: 'plus',
