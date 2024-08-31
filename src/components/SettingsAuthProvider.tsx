@@ -26,7 +26,7 @@ import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
-import { settings } from 'lib/settings/initialSettings'
+import { createSettings, settings } from 'lib/settings/initialSettings'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -101,21 +101,19 @@ export const SettingsAuthProviderBase = ({
   const { commandBarSend } = useCommandsContext()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
-    settingsMachine,
-    {
-      context: loadedSettings,
+    settingsMachine.provide({
       actions: {
         //TODO: batch all these and if that's difficult to do from tsx,
         // make it easy to do
 
-        setClientSideSceneUnits: (context, event) => {
+        setClientSideSceneUnits: ({ context, event }) => {
           const newBaseUnit =
             event.type === 'set.modeling.defaultUnit'
               ? (event.data.value as BaseUnit)
               : context.modeling.defaultUnit.current
           sceneInfra.baseUnit = newBaseUnit
         },
-        setEngineTheme: (context) => {
+        setEngineTheme: ({ context }) => {
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
             type: 'modeling_cmd_req',
@@ -135,16 +133,16 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
-        setEngineScaleGridVisibility: (context) => {
+        setEngineScaleGridVisibility: ({ context }) => {
           engineCommandManager.setScaleGridVisibility(
             context.modeling.showScaleGrid.current
           )
         },
-        setClientTheme: (context) => {
+        setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
         },
-        setEngineEdges: (context) => {
+        setEngineEdges: ({ context }) => {
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
             type: 'modeling_cmd_req',
@@ -154,7 +152,8 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
-        toastSuccess: (_, event) => {
+        toastSuccess: ({ event }) => {
+          if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
             string
@@ -212,6 +211,9 @@ export const SettingsAuthProviderBase = ({
         'Persist settings': (context) =>
           saveSettings(context, loadedProject?.project?.path),
       },
+    }),
+    {
+      context: loadedSettings,
     }
   )
   settingsStateRef = settingsState.context
