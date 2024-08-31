@@ -32,6 +32,7 @@ win:
   signingHashAlgorithms:
     - sha256
   sign: "./sign-win.js"
+  publisherName: "KittyCAD Inc"
   icon: "assets/icon.ico"
 
 nsis:
