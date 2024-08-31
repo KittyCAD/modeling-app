@@ -287,19 +287,21 @@ export const SettingsAuthProviderBase = ({
   }, [settingsState.context.textEditor.blinkingCursor.current])
 
   // Auth machine setup
-  const [authState, authSend, authActor] = useMachine(authMachine, {
-    actions: {
-      goToSignInPage: () => {
-        navigate(PATHS.SIGN_IN)
-        logout()
+  const [authState, authSend, authActor] = useMachine(
+    authMachine.provide({
+      actions: {
+        goToSignInPage: () => {
+          navigate(PATHS.SIGN_IN)
+          logout()
+        },
+        goToIndexPage: () => {
+          if (location.pathname.includes(PATHS.SIGN_IN)) {
+            navigate(PATHS.INDEX)
+          }
+        },
       },
-      goToIndexPage: () => {
-        if (location.pathname.includes(PATHS.SIGN_IN)) {
-          navigate(PATHS.INDEX)
-        }
-      },
-    },
-  })
+    })
+  )
 
   useStateMachineCommands({
     machineId: 'auth',
