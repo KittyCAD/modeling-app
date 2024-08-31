@@ -12,6 +12,7 @@ import {
 export const settingsMachine = setup({
   types: {
     context: {} as ReturnType<typeof createSettings>,
+    input: {} as ReturnType<typeof createSettings>,
     events: {} as
       | WildcardSetEvent<SettingsPaths>
       | SetEventTypes
@@ -34,10 +35,9 @@ export const settingsMachine = setup({
     setEngineEdges: () => {},
     setEngineScaleGridVisibility: () => {},
     setClientSideSceneUnits: () => {},
+    persistSettings: () => {},
     resetSettings: assign(({ context, event }) => {
-      if (event.type !== 'Reset settings') {
-        return {}
-      }
+      if (!('defaultDirectory' in event)) return {}
       // Reset everything except onboarding status,
       // which should be preserved
       const newSettings = createSettings()
@@ -52,15 +52,11 @@ export const settingsMachine = setup({
       return newSettings
     }),
     setAllSettings: assign(({ event }) => {
-      if (event.type !== 'Set all settings') {
-        return {}
-      }
+      if (!('settings' in event)) return {}
       return event.settings
     }),
     setSettingAtLevel: assign(({ context, event }) => {
-      if (!event.type.startsWith('set.') || event.type !== '*') {
-        return {}
-      }
+      if (!('data' in event)) return {}
       const { level, value } = event.data
       const [category, setting] = event.type
         .replace(/^set./, '')
@@ -87,14 +83,16 @@ export const settingsMachine = setup({
       )
     },
   },
-  actors: {
-    'Persist settings': fromCallback(() => {}),
-  },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IALAFYAnPgBMARgDsBsQDY969QGYjmzQBoQAT0SnrADnwePY61r0PAwNtMyMAX3CnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BD1PfFtfE3UzTUNNaydXBCD1b209PTEPTTMtdQNNSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmusxPXx7bRt1DzMxI3UjD3UutwhAz4MyeHxiV5+AYRKIgGJzPCERZJFYpfDpLJgC6lK6VaqIExPMwWGwdGxBPRmAE9PSafCPMQ-EzWbQ6ELTOGzOJIxLLVbrTbbNKYKBpLaitAAUWgcGxMjk11uoBqVmBH0ZLKCrVs-xciCCwLCvhCjyMFhGHPh3IS5AASnB0AACZYI0SSS4KvF3AlafADRl1YZ2IxiRx6hBtIzPb7abQ+DxGaxmYKWrnzHnkGKO6jEYjOtN4OVlT03KrehAtOnm7Qaup6Ixm6mR6OaR4dAwjM1mVOxdM2lH8jZbXD4WBpRgAd2QAGMc2AAOIcIhF3Gl-EIRPA6yGcyh4whSnU0xGJ5GAat0OfFowma9xH9gBUK5LStUiECdMmfx+mg8hmNTY-PgMYQpoZoxh41g9q6+C0GAHDyLACL5nesBkBAzBgIQ2AAG6MAA1lhcEIZgSFWvMz4VGu5YALTbtYwEnj8HhxnooT1mG3QhmY-TmJ82gGCyjzaJEsLYAK8ClOReAelRr41HRJiMZYvysexdjUuohh+poBiGDuXzGKy0HWossmKmWyqIDR3zAZWLSahM2jWJ04YjDxHbDMmmhaYE3wmemxGIchLpxOZXpWQgNEjMB1h6WEYHqK8ZgJk2EL6N8wR1Cy-gJqJ4RAA */
   id: 'Settings',
   initial: 'idle',
-  context: createSettings(),
+  context: ({ input }) => {
+    return {
+      ...createSettings(),
+      ...input,
+    }
+  },
   states: {
     idle: {
       entry: ['setThemeClass', 'setClientSideSceneUnits'],
@@ -190,11 +188,8 @@ export const settingsMachine = setup({
     },
 
     'persisting settings': {
-      invoke: {
-        src: 'Persist settings',
-        id: 'persistSettings',
-        onDone: 'idle',
-      },
+      entry: ['persistSettings'],
+      always: 'idle',
     },
   },
 })

@@ -14,19 +14,13 @@ import {
   Themes,
 } from 'lib/theme'
 import decamelize from 'decamelize'
-import {
-  AnyStateMachine,
-  ContextFrom,
-  InterpreterFrom,
-  Prop,
-  StateFrom,
-} from 'xstate'
+import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
 import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
-import { createSettings, settings } from 'lib/settings/initialSettings'
+import { settings } from 'lib/settings/initialSettings'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -39,7 +33,7 @@ import { saveSettings } from 'lib/settings/settingsUtils'
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
   context: ContextFrom<T>
-  send: Prop<InterpreterFrom<T>, 'send'>
+  send: Prop<Actor<T>, 'send'>
 }
 
 type SettingsAuthContextType = {
@@ -50,7 +44,7 @@ type SettingsAuthContextType = {
 // a little hacky for sure, open to changing it
 // this implies that we should only even have one instance of this provider mounted at any one time
 // but I think that's a safe assumption
-let settingsStateRef: (typeof settingsMachine)['context'] | undefined
+let settingsStateRef: ContextFrom<typeof settingsMachine> | undefined
 export const getSettingsState = () => settingsStateRef
 
 export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
@@ -175,7 +169,7 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': (context, event) => {
+        'Execute AST': ({ context, event }) => {
           try {
             const allSettingsIncludesUnitChange =
               event.type === 'Set all settings' &&
@@ -206,15 +200,11 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
-      },
-      services: {
-        'Persist settings': (context) =>
+        persistSettings: ({ context }) =>
           saveSettings(context, loadedProject?.project?.path),
       },
     }),
-    {
-      context: loadedSettings,
-    }
+    { input: loadedSettings }
   )
   settingsStateRef = settingsState.context
 
