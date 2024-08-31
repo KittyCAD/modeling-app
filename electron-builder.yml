@@ -9,7 +9,7 @@ files:
 
 mac:
   category: public.app-category.developer-tools
-  artifactName: "${productName}-${version}-${arch}.${ext}"
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: dmg 
       arch:
@@ -23,7 +23,7 @@ mac:
     teamId: 92H8YB3B95
 
 win:
-  artifactName: "${productName}-Setup-${arch}-${version}.${ext}"
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: nsis
       arch:
@@ -43,7 +43,7 @@ nsis:
   installerIcon: "assets/icon.ico"
 
 linux:
-  artifactName: "${productName}-${version}-${arch}.${ext}"
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: appImage
       arch:
