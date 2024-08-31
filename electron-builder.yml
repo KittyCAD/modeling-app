@@ -9,6 +9,7 @@ files:
 
 mac:
   category: public.app-category.developer-tools
+  artifactName: "${productName}-${version}-${arch}.${ext}"
   target:
     - target: dmg 
       arch:
@@ -21,10 +22,8 @@ mac:
   notarize:
     teamId: 92H8YB3B95
 
-dmg:
-  artifactName: "${productName}-${version}-${arch}.${ext}"
-
 win:
+  artifactName: "${productName}-Setup-${arch}-${version}.${ext}"
   target:
     - target: nsis
       arch:
@@ -35,21 +34,6 @@ win:
   sign: "./sign-win.js"
   icon: "assets/icon.ico"
 
-linux:
-  target:
-    - target: appImage
-      arch:
-        - x64
-        - arm64
-
-appImage:
-  artifactName: "${productName}-${version}-${arch}.${ext}"
-
-publish:
-  - provider: generic
-    url: https://dl.zoo.dev/releases/modeling-app/test/electron-builder
-    channel: latest
-
 nsis:
   oneClick: false
   perMachine: false
@@ -57,4 +41,16 @@ nsis:
   allowElevation: true
   license: "LICENSE"
   installerIcon: "assets/icon.ico"
-  artifactName: "${productName}-Setup-${arch}-${version}.${ext}"
+
+linux:
+  artifactName: "${productName}-${version}-${arch}.${ext}"
+  target:
+    - target: appImage
+      arch:
+        - x64
+        - arm64
+
+publish:
+  - provider: generic
+    url: https://dl.zoo.dev/releases/modeling-app/test/electron-builder
+    channel: latest

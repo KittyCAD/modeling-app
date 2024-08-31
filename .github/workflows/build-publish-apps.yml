@@ -161,7 +161,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     env:
       # VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
@@ -210,7 +210,7 @@ jobs:
           path: out
           glob: 'Zoo*'
           parent: false
-          destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v2.1.3
