@@ -359,6 +359,23 @@ export const fileMachine = setup({
       invoke: {
         src: 'createFile',
         id: 'create-file',
+        input: ({ event, context }) => {
+          if (event.type !== 'Create file') {
+            // This is just to make TS happy
+            return {
+              name: '',
+              makeDir: false,
+              selectedDirectory: {} as FileEntry,
+              content: '',
+            }
+          }
+          return {
+            name: event.data.name,
+            makeDir: event.data.makeDir,
+            selectedDirectory: context.selectedDirectory,
+            content: event.data.content ?? '',
+          }
+        },
         onDone: 'Reading files',
         onError: 'Reading files',
       },
