@@ -2573,7 +2573,6 @@ impl ObjectExpression {
                 }
             })
             .collect();
-        dbg!(&format_items);
         let end_indent = if is_in_pipe {
             options.get_indentation_offset_pipe(indentation_level)
         } else {

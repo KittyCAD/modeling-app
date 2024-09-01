@@ -88,6 +88,7 @@ layout: manual
 * [`tan`](kcl/tan)
 * [`tangentialArc`](kcl/tangentialArc)
 * [`tangentialArcTo`](kcl/tangentialArcTo)
+* [`tangentialArcToRelative`](kcl/tangentialArcToRelative)
 * [`tau`](kcl/tau)
 * [`toDegrees`](kcl/toDegrees)
 * [`toRadians`](kcl/toRadians)

@@ -212,11 +212,10 @@ export type ModelingMachineEvent =
       data: [x: number, y: number]
     }
   | {
-      type:
-        | 'xstate.done.actor.animate-to-face'
-        | 'xstate.done.actor.animate-to-sketch'
-      data: SketchDetails
+      type: 'xstate.done.actor.animate-to-face'
+      output: SketchDetails
     }
+  | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
@@ -503,12 +502,19 @@ export const modelingMachine = setup({
           up: { x: 0, y: 0, z: 1 },
         },
       }),
-    'set new sketch metadata': assign(({ event: { data } }) => ({
-      sketchDetails: data,
-    })),
+    'set new sketch metadata': assign(({ event }) => {
+      const _event = event as Extract<
+        ModelingMachineEvent,
+        { type: 'xstate.done.actor.animate-to-face' }
+      >
+      return {
+        sketchDetails: _event.output,
+      }
+    }),
     'AST extrude': async ({ context: { store }, event }) => {
-      if (!event.data) return
-      const { selection, distance } = event.data
+      const _event = event as Extract<ModelingMachineEvent, { type: 'Extrude' }>
+      if (!_event.data) return
+      const { selection, distance } = _event.data
       let ast = kclManager.ast
       if (
         'variableName' in distance &&
@@ -537,13 +543,11 @@ export const modelingMachine = setup({
       store.videoElement?.pause()
       const updatedAst = await kclManager.updateAst(modifiedAst, true, {
         focusPath: pathToExtrudeArg,
-        // commented out as a part of https://github.com/KittyCAD/modeling-app/issues/3270
-        // looking to add back in the future
-        // zoomToFit: true,
-        // zoomOnRangeAndType: {
-        //   range: selection.codeBasedSelections[0].range,
-        //   type: 'path',
-        // },
+        zoomToFit: true,
+        zoomOnRangeAndType: {
+          range: selection.codeBasedSelections[0].range,
+          type: 'path',
+        },
       })
       if (!engineCommandManager.engineConnection?.idleMode) {
         store.videoElement?.play().catch((e) => {
@@ -577,7 +581,7 @@ export const modelingMachine = setup({
 
       await kclManager.updateAst(modifiedAst, true)
     },
-    'AST fillet': async ({ event }) => {
+    'AST fillet': async (_, event) => {
       const _event = event as Extract<ModelingMachineEvent, { type: 'Fillet' }>
       if (!_event.data) return
 
@@ -740,7 +744,10 @@ export const modelingMachine = setup({
         { type: 'Delete segment' }
       >
       if (!sketchDetails || !_event.data) return
-      deleteSegment({ pathToNode: _event.data, sketchDetails })
+      return deleteSegment({
+        pathToNode: _event.data,
+        sketchDetails,
+      })
     },
     'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     'Set context': assign({

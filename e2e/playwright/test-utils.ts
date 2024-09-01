@@ -813,7 +813,6 @@ export async function setup(context: BrowserContext, page: Page) {
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      console.log('TEST_SETTINGS.projects', settings)
     },
     {
       token: secrets.token,

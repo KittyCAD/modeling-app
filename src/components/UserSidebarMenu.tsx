@@ -217,7 +217,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   </p>
                   {displayedName !== user.email && (
                     <p
-                      className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                      className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
                       data-testid="email"
                     >
                       {user.email}
