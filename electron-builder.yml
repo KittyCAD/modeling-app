@@ -39,6 +39,10 @@ win:
   publisherName: "KittyCAD Inc"
   icon: "assets/icon.ico"
 
+msi:
+  oneClick: false
+  perMachine: true
+
 nsis:
   oneClick: false
   perMachine: false
