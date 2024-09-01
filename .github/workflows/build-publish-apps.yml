@@ -165,6 +165,22 @@ jobs:
           done
           ls -R out
 
+      - name: Prepare the tauri update bundles (Windows)
+        if: ${{ matrix.os == 'windows-2022' }}
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+          VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
+          VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
+        run: |
+          $env:TAURI_DIR="out/tauri/${env:VERSION}/msi"
+          mkdir -p ${env:TAURI_DIR}
+          MSI_FILE="${env:TAURI_DIR}/Zoo Modeling App_${env:VERSION_NO_V}_x64_en-US.msi.zip"
+          Compress-Archive -Path out/*-x64-win.msi -Destination "${env:MSI_FILE}"
+          yarn tauri signer sign "${env:MSI_FILE}"
+          ls -R out
+
       - uses: actions/upload-artifact@v3
         with:
           name: out-${{ matrix.os }}
@@ -187,7 +203,8 @@ jobs:
       # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      # NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      NOTES: ${{ format('Electron build, commit {0}', github.sha) }}
       # BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
       BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder' }}
       BUCKET_DIR_TAURI: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder/tauri' }}
@@ -246,7 +263,7 @@ jobs:
         run: |
           TAURI_DIR=out/tauri/$VERSION
           DARWIN_SIG=`cat $TAURI_DIR/macos/*.app.tar.gz.sig`
-          WINDOWS_SIG="TODO:"
+          WINDOWS_SIG=`cat $TAURI_DIR/msi/*.msi.zip.sig`
           RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
