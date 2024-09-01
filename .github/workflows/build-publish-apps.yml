@@ -156,7 +156,7 @@ jobs:
         run: |
           # for ARCH in arm64 x64; do
           for ARCH in universal; do
-            TAURI_DIR=out/tauri/${{ env.version }}/macos/$ARCH
+            TAURI_DIR=out/tauri/${{ env.version }}/macos
             mkdir -p $TAURI_DIR
             unzip out/*-$ARCH-mac.zip -d $TAURI_DIR
             tar -czvf "$TAURI_DIR/Zoo Modeling App.app.tar.gz" "$TAURI_DIR/Zoo Modeling App.app" 
@@ -179,18 +179,20 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     env:
-      # VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
-      # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
-      VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
-      # PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      # NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
+      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+      PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
+      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       # BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
       BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder' }}
+      BUCKET_DIR_TAURI: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder/tauri' }}
       # WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
+      WEBSITE_DIR_TAURI: ${{ 'dl.zoo.dev/releases/modeling-app/test/electron-builder/tauri' }}
       # URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+      URL_CODED_NAME: ${{ 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -236,7 +238,56 @@ jobs:
           path: out
           glob: 'latest*'
           parent: false
-          destination: ${{ env.BUCKET_DIR }}
+          destination: ${{ env.BUCKET_DIR }} 
+
+      - name: Generate the update static endpoint for tauri
+        run: |
+          TAURI_DIR=out/tauri/$VERSION
+          DARWIN_SIG=`cat $TAURI_DIR/macos/*.app.tar.gz.sig`
+          WINDOWS_SIG="TODO:"
+          RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
+          jq --null-input \
+            --arg version "${VERSION}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
+            --arg darwin_sig "$DARWIN_SIG" \
+            --arg darwin_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}.app.tar.gz" \
+            --arg windows_sig "$WINDOWS_SIG" \
+            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            '{
+              "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
+              "platforms": {
+                "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "darwin-aarch64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "windows-x86_64": {
+                  "signature": $windows_sig,
+                  "url": $windows_url
+                }
+              }
+            }' > last_update.json
+            cat last_update.json
+
+      - name: Upload release files to public bucket for tauri
+        uses: google-github-actions/upload-cloud-storage@v2.1.1
+        with:
+          path: "out/tauri/${{ env.VERSION }}" 
+          glob: '*/Zoo*'
+          parent: false
+          destination: ${{ env.BUCKET_DIR_TAURI }}/${{ env.VERSION }}
+
+      - name: Upload update endpoint to public bucket for tauri
+        uses: google-github-actions/upload-cloud-storage@v2.1.1
+        with:
+          path: last_update.json
+          destination: ${{ env.BUCKET_DIR_TAURI }}
 
       # - name: Upload download endpoint to public bucket
       #   uses: google-github-actions/upload-cloud-storage@v2.1.3
