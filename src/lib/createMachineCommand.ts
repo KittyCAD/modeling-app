@@ -2,7 +2,7 @@ import {
   AnyStateMachine,
   ContextFrom,
   EventFrom,
-  InterpreterFrom,
+  Actor,
   StateFrom,
 } from 'xstate'
 import { isDesktop } from './isDesktop'
@@ -23,7 +23,7 @@ interface CreateMachineCommandProps<
   groupId: T['id']
   state: StateFrom<T>
   send: Function
-  actor: InterpreterFrom<T>
+  actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
 }
@@ -124,7 +124,7 @@ function buildCommandArguments<
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
 ): NonNullable<Command<T, CommandName, S>['args']> {
   const newArgs = {} as NonNullable<Command<T, CommandName, S>['args']>
 
@@ -143,7 +143,7 @@ export function buildCommandArgument<
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
   const baseCommandArgument = {
     description: arg.description,

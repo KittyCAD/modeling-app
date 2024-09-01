@@ -2,6 +2,7 @@ import { SourceRange } from '../lang/wasm'
 
 import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
+import { AnyMachineSnapshot } from 'xstate'
 
 export const uuidv4 = v4
 
@@ -207,4 +208,8 @@ export function isReducedMotion(): boolean {
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {
   return (bool1 || bool2) && !(bool1 && bool2)
+}
+
+export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
+  return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
 }
