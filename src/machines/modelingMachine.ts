@@ -462,9 +462,12 @@ export const modelingMachine = setup({
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
     },
-    'next is tangential arc': ({ context: { sketchDetails } }) =>
-      (state?.event as any).data.tool === 'tangentialArc' &&
-      isEditingExistingSketch({ sketchDetails }),
+    'next is tangential arc': ({ context: { sketchDetails } }) => {
+      return (
+        (state?.event as any).data.tool === 'tangentialArc' &&
+        isEditingExistingSketch({ sketchDetails })
+      )
+    },
     'next is rectangle': ({ context: { sketchDetails } }) => {
       if ((state?.event as any).data.tool !== 'rectangle') return false
       return canRectangleTool({ sketchDetails })
