@@ -183,7 +183,8 @@ jobs:
     needs: [prepare-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
-      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+      # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+      VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       # BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
