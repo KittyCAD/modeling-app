@@ -156,7 +156,7 @@ jobs:
         run: |
           # for ARCH in arm64 x64; do
           for ARCH in universal; do
-            TAURI_DIR=out/tauri/${{ env.version }}/macos
+            TAURI_DIR=out/tauri/$VERSION/macos
             mkdir -p $TAURI_DIR
             unzip out/*-$ARCH-mac.zip -d $TAURI_DIR
             tar -czvf "$TAURI_DIR/Zoo Modeling App.app.tar.gz" "$TAURI_DIR/Zoo Modeling App.app" 
