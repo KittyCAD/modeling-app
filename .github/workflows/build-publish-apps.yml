@@ -176,7 +176,7 @@ jobs:
         run: |
           $env:TAURI_DIR="out/tauri/${env:VERSION}/msi"
           mkdir -p ${env:TAURI_DIR}
-          MSI_FILE="${env:TAURI_DIR}/Zoo Modeling App_${env:VERSION_NO_V}_x64_en-US.msi.zip"
+          $env:MSI_FILE="${env:TAURI_DIR}/Zoo Modeling App_${env:VERSION_NO_V}_x64_en-US.msi.zip"
           Compress-Archive -Path out/*-x64-win.msi -Destination "${env:MSI_FILE}"
           yarn tauri signer sign "${env:MSI_FILE}"
           ls -R out
