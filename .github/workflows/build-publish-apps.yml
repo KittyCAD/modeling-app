@@ -147,12 +147,29 @@ jobs:
       - name: List artifacts in out/
         run: ls -R out
 
+      - name: Prepare the tauri update bundles (macOS)
+        if: ${{ matrix.os == 'macos-14' }}
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+        run: |
+          for arch in arm64 x64; do
+            TAURI_DIR=out/tauri/${{ env.version }}/macos/$ARCH
+            mkdir -p $TAURI_DIR
+            unzip out/*-$ARCH-mac.zip -d $TAURI_DIR
+            tar -czvf "$TAURI_DIR/Zoo Modeling App.app.tar.gz" "$TAURI_DIR/Zoo Modeling App.app" 
+            yarn tauri signer sign "$TAURI_DIR/Zoo Modeling App.app.tar.gz"
+          done
+          ls -R out
+
       - uses: actions/upload-artifact@v3
         with:
           name: out-${{ matrix.os }}
           path: |
             out/Zoo*.*
             out/latest*.yml
+            out/tauri
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
