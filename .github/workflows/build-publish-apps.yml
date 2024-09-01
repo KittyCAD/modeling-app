@@ -152,7 +152,8 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+          # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
+          VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
         run: |
           # for ARCH in arm64 x64; do
           for ARCH in universal; do
