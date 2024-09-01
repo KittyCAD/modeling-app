@@ -41,7 +41,6 @@ win:
 
 msi:
   oneClick: false
-  perMachine: true
 
 nsis:
   oneClick: false
