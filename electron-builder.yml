@@ -51,7 +51,7 @@ nsis:
   allowElevation: true
   license: "LICENSE"
   installerIcon: "assets/icon.ico"
-  include: "build/installer.nsh"
+  include: "./installer.nsh"
 
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
