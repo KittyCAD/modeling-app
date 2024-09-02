@@ -61,7 +61,7 @@ const createWindow = (): BrowserWindow => {
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
     // frame: false,
-    titleBarStyle: 'hiddenInset',
+    // titleBarStyle: 'hiddenInset',
   })
 
   // and load the index.html of the app.
