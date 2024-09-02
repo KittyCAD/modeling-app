@@ -206,6 +206,7 @@ jobs:
       BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder' }}
       BUCKET_DIR_TAURI: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder/tauri' }}
       # WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
+      WEBSITE_DIR: ${{ 'dl.zoo.dev/releases/modeling-app/test/electron-builder' }}
       WEBSITE_DIR_TAURI: ${{ 'dl.zoo.dev/releases/modeling-app/test/electron-builder/tauri' }}
       # URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
       URL_CODED_NAME: ${{ 'Zoo%20Modeling%20App' }}
@@ -229,7 +230,7 @@ jobs:
       
       - name: Generate the download static endpoint
         run: |
-          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
+          RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
