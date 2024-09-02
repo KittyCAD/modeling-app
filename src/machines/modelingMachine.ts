@@ -1866,7 +1866,7 @@ export const modelingMachine = setup({
 
   on: {
     Cancel: {
-      target: 'idle',
+      target: '.idle',
       // TODO what if we're existing extrude equipped, should these actions still be fired?
       // maybe cancel needs to have a guard for if else logic?
       actions: ['reset sketch metadata', 'enable copilot'],
