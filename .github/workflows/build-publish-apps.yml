@@ -174,11 +174,11 @@ jobs:
           VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
           VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
         run: |
-          $env:TAURI_DIR="out/tauri/${env:VERSION}/msi"
+          $env:TAURI_DIR="out/tauri/${env:VERSION}/nsis"
           mkdir -p ${env:TAURI_DIR}
-          $env:MSI_FILE="${env:TAURI_DIR}/Zoo Modeling App_${env:VERSION_NO_V}_x64_en-US.msi.zip"
-          7z a -mm=Copy "${env:MSI_FILE}" ./out/*-x64-win.msi
-          yarn tauri signer sign "${env:MSI_FILE}"
+          $env:OUT_FILE="${env:TAURI_DIR}/Zoo Modeling App_${env:VERSION_NO_V}_x64-setup.nsis.zip"
+          7z a -mm=Copy "${env:OUT_FILE}" ./out/*-x64-win.exe
+          yarn tauri signer sign "${env:OUT_FILE}"
           ls -R out
 
       - uses: actions/upload-artifact@v3
@@ -264,7 +264,7 @@ jobs:
         run: |
           TAURI_DIR=out/tauri/$VERSION
           DARWIN_SIG=`cat $TAURI_DIR/macos/*.app.tar.gz.sig`
-          WINDOWS_SIG=`cat $TAURI_DIR/msi/*.msi.zip.sig`
+          WINDOWS_SIG=`cat $TAURI_DIR/nsis/*.nsis.zip.sig`
           RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
@@ -273,7 +273,7 @@ jobs:
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}.app.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_url "$RELEASE_DIR/nsis/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
               "version": $version,
               "pub_date": $pub_date,

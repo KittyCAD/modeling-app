@@ -201,8 +201,13 @@ export function getAutoUpdater(): AppUpdater {
 
 app.on('ready', async () => {
   const autoUpdater = getAutoUpdater()
-  const result = await autoUpdater.checkForUpdatesAndNotify()
+  const result = await autoUpdater.checkForUpdates()
   console.log(result)
+  const download = await result?.downloadPromise
+  console.log(download)
+  const { response } = await dialog.showMessageBox({ message: "The update will install and the app will reopen" })
+  console.log(response)
+  await autoUpdater.quitAndInstall(false)
 })
 
 ipcMain.handle('loadProjectAtStartup', async () => {
