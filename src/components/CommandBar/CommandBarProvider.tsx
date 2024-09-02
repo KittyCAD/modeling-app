@@ -26,11 +26,18 @@ export const CommandBarProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  return (
+    <CommandsContext.Provider>
+      <CommandBarProviderInner>{children}</CommandBarProviderInner>
+    </CommandsContext.Provider>
+  )
+}
+function CommandBarProviderInner({ children }: { children: React.ReactNode }) {
   const commandBarActor = CommandsContext.useActorRef()
 
   useEffect(() => {
     editorManager.setCommandBarSend(commandBarActor.send)
   })
 
-  return <CommandsContext.Provider>{children}</CommandsContext.Provider>
+  return children
 }
