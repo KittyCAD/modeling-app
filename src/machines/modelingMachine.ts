@@ -1168,13 +1168,11 @@ export const modelingMachine = createMachine(
         store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
-          // commented out as a part of https://github.com/KittyCAD/modeling-app/issues/3270
-          // looking to add back in the future
-          // zoomToFit: true,
-          // zoomOnRangeAndType: {
-          //   range: selection.codeBasedSelections[0].range,
-          //   type: 'path',
-          // },
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'path',
+          },
         })
         if (!engineCommandManager.engineConnection?.idleMode) {
           store.videoElement?.play().catch((e) => {

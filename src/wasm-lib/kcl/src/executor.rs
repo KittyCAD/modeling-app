@@ -2097,10 +2097,7 @@ fn assign_args_to_params(
             if param.optional {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                let none = KclNone {
-                    start: param.identifier.start,
-                    end: param.identifier.end,
-                };
+                let none = KclNone::new(param.identifier.start, param.identifier.end);
                 fn_memory.add(
                     &param.identifier.name,
                     KclValue::from(&none),
