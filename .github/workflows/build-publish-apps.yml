@@ -155,8 +155,8 @@ jobs:
             TAURI_DIR=out/tauri/$VERSION/macos/$ARCH
             mkdir -p $TAURI_DIR
             unzip out/*-$ARCH-mac.zip -d $TAURI_DIR
-            tar -czvf "$TAURI_DIR/Zoo Modeling App.app.tar.gz" -C $TAURI_DIR "Zoo Modeling App.app" 
-            yarn tauri signer sign "$TAURI_DIR/Zoo Modeling App.app.tar.gz"
+            tar -czvf "$TAURI_DIR/Zoo Modeling App-$ARCH.app.tar.gz" -C $TAURI_DIR "Zoo Modeling App.app" 
+            yarn tauri signer sign "$TAURI_DIR/Zoo Modeling App-$ARCH.app.tar.gz"
           done
           ls -R out
 
@@ -263,8 +263,8 @@ jobs:
       - name: Generate the update static endpoint for tauri
         run: |
           TAURI_DIR=out/tauri/$VERSION
-          MAC_ARM64_SIG=`cat $TAURI_DIR/macos/arm64/*.app.tar.gz.sig`
-          MAC_X64_SIG=`cat $TAURI_DIR/macos/x64/*.app.tar.gz.sig`
+          MAC_ARM64_SIG=`cat $TAURI_DIR/macos/*-arm64.app.tar.gz.sig`
+          MAC_X64_SIG=`cat $TAURI_DIR/macos/*-x64.app.tar.gz.sig`
           WINDOWS_SIG=`cat $TAURI_DIR/nsis/*.nsis.zip.sig`
           RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
           jq --null-input \
@@ -272,9 +272,9 @@ jobs:
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg mac_arm64_sig "$MAC_ARM64_SIG" \
-            --arg mac_arm64_url "$RELEASE_DIR/macos/arm64/${{ env.URL_CODED_NAME }}.app.tar.gz" \
+            --arg mac_arm64_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}-arm64.app.tar.gz" \
             --arg mac_x64_sig "$MAC_X64_SIG" \
-            --arg mac_x64_url "$RELEASE_DIR/macos/x64/${{ env.URL_CODED_NAME }}.app.tar.gz" \
+            --arg mac_x64_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}-x64.app.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
             --arg windows_url "$RELEASE_DIR/nsis/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
