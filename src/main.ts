@@ -205,9 +205,7 @@ app.on('ready', async () => {
   console.log(result)
   const download = await result?.downloadPromise
   console.log(download)
-  const { response } = await dialog.showMessageBox({
-    message: 'The update will install and the app will reopen',
-  })
+  const { response } = await dialog.showMessageBox({ message: "The update will install and the app will reopen" })
   console.log(response)
   await autoUpdater.quitAndInstall(false)
 })
