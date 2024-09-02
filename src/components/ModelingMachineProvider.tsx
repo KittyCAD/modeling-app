@@ -1022,8 +1022,8 @@ export const ModelingMachineProvider = ({
   }, [modelingSend])
 
   useEffect(() => {
-    editorManager.modelingEvent = modelingState.event
-  }, [modelingState.event])
+    editorManager.modelingState = modelingState
+  }, [modelingState])
 
   useEffect(() => {
     editorManager.selectionRanges = modelingState.context.selectionRanges
