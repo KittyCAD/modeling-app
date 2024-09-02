@@ -148,7 +148,7 @@ jobs:
         run: ls -R out
 
       - name: Prepare the tauri update bundles (macOS)
-        if: ${{ matrix.os == 'macos-14' }}
+        if: false
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
@@ -166,7 +166,7 @@ jobs:
           ls -R out
 
       - name: Prepare the tauri update bundles (Windows)
-        if: ${{ matrix.os == 'windows-2022' }}
+        if: false
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
@@ -260,6 +260,7 @@ jobs:
           destination: ${{ env.BUCKET_DIR }} 
 
       - name: Generate the update static endpoint for tauri
+        if: false
         run: |
           TAURI_DIR=out/tauri/$VERSION
           DARWIN_SIG=`cat $TAURI_DIR/macos/*.app.tar.gz.sig`
@@ -295,6 +296,7 @@ jobs:
             cat last_update.json
 
       - name: Upload release files to public bucket for tauri
+        if: false
         uses: google-github-actions/upload-cloud-storage@v2.1.1
         with:
           path: "out/tauri/${{ env.VERSION }}" 
@@ -303,6 +305,7 @@ jobs:
           destination: ${{ env.BUCKET_DIR_TAURI }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket for tauri
+        if: false
         uses: google-github-actions/upload-cloud-storage@v2.1.1
         with:
           path: last_update.json
