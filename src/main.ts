@@ -60,7 +60,7 @@ const createWindow = (): BrowserWindow => {
       preload: path.join(__dirname, './preload.js'),
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    frame: false,
+    // frame: false,
     titleBarStyle: 'hiddenInset',
   })
 
@@ -199,15 +199,27 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
+export async function checkForUpdates(autoUpdater: AppUpdater) {
+  // TODO: figure out how to get the update modal back
+  const result = await autoUpdater.checkForUpdatesAndNotify()
+  console.log(result)
+}
+
 app.on('ready', async () => {
   const autoUpdater = getAutoUpdater()
-  const result = await autoUpdater.checkForUpdates()
-  console.log(result)
-  const download = await result?.downloadPromise
-  console.log(download)
-  const { response } = await dialog.showMessageBox({ message: "The update will install and the app will reopen" })
-  console.log(response)
-  await autoUpdater.quitAndInstall(false)
+  checkForUpdates(autoUpdater)
+  const fifteenMinutes = 15 * 60 * 1000
+  setInterval(() => {
+    checkForUpdates(autoUpdater)
+  }, fifteenMinutes)
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('update-available', info)
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('update-downloaded', info)
+  })
 })
 
 ipcMain.handle('loadProjectAtStartup', async () => {
