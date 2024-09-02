@@ -47,7 +47,7 @@ msi:
 
 nsis:
   oneClick: false
-  perMachine: false
+  perMachine: true
   allowToChangeInstallationDirectory: true
   allowElevation: true
   license: "LICENSE"
