@@ -92,7 +92,7 @@ const Home = () => {
         toastError: ({ event }) => toast.error((event.data || '') + ''),
       },
       actors: {
-        readProjects: fromPromise(listProjects),
+        readProjects: fromPromise(() => listProjects()),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input
