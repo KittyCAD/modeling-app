@@ -152,7 +152,7 @@ jobs:
           VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
         run: |
           for ARCH in arm64 x64; do
-            TAURI_DIR=out/tauri/$VERSION/macos/$ARCH
+            TAURI_DIR=out/tauri/$VERSION/macos
             mkdir -p $TAURI_DIR
             unzip out/*-$ARCH-mac.zip -d $TAURI_DIR
             tar -czvf "$TAURI_DIR/Zoo Modeling App-$ARCH.app.tar.gz" -C $TAURI_DIR "Zoo Modeling App.app" 
