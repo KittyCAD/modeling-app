@@ -140,10 +140,6 @@ jobs:
         # if: ${{ env.BUILD_RELEASE == 'false' }}
         run: yarn electron-builder --config --publish always
 
-      # - name: Publish the app  (dry run)
-      #   if: ${{ env.BUILD_RELEASE == 'true' }}
-      #   run: "yarn electron-forge publish --dry-run"
-
       - name: List artifacts in out/
         run: ls -R out
 
@@ -155,9 +151,8 @@ jobs:
           # VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-files.outputs.version) || needs.prepare-files.outputs.version }}
           VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
         run: |
-          # for ARCH in arm64 x64; do
-          for ARCH in universal; do
-            TAURI_DIR=out/tauri/$VERSION/macos
+          for ARCH in arm64 x64; do
+            TAURI_DIR=out/tauri/$VERSION/macos/$ARCH
             mkdir -p $TAURI_DIR
             unzip out/*-$ARCH-mac.zip -d $TAURI_DIR
             tar -czvf "$TAURI_DIR/Zoo Modeling App.app.tar.gz" -C $TAURI_DIR "Zoo Modeling App.app" 
@@ -191,6 +186,8 @@ jobs:
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
+      # TODO: add the updater tests back
+
 
   publish-apps-release:
     runs-on: ubuntu-22.04
@@ -209,6 +206,7 @@ jobs:
       BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder' }}
       BUCKET_DIR_TAURI: ${{ 'dl.kittycad.io/releases/modeling-app/test/electron-builder/tauri' }}
       # WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
+      WEBSITE_DIR: ${{ 'dl.zoo.dev/releases/modeling-app/test/electron-builder' }}
       WEBSITE_DIR_TAURI: ${{ 'dl.zoo.dev/releases/modeling-app/test/electron-builder/tauri' }}
       # URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
       URL_CODED_NAME: ${{ 'Zoo%20Modeling%20App' }}
@@ -229,6 +227,77 @@ jobs:
         with:
           name: out-ubuntu-22.04
           path: out
+      
+      - name: Generate the download static endpoint
+        run: |
+          RELEASE_DIR=https://${WEBSITE_DIR}
+          jq --null-input \
+            --arg version "${VERSION}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
+            --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
+            --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
+            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.msi" \
+            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.msi" \
+            '{
+              "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
+              "platforms": {
+                "dmg-arm64": {
+                  "url": $mac_arm64_url
+                },
+                "dmg-x64": {
+                  "url": $mac_x64_url
+                },
+                "msi-arm64": {
+                  "url": $windows_arm64_url
+                },
+                "msi-x64": {
+                  "url": $windows_x64_url
+                }
+              }
+            }' > last_download.json
+            cat last_download.json
+
+      - name: Generate the update static endpoint for tauri
+        if: false
+        run: |
+          TAURI_DIR=out/tauri/$VERSION
+          MAC_ARM64_SIG=`cat $TAURI_DIR/macos/arm64/*.app.tar.gz.sig`
+          MAC_X64_SIG=`cat $TAURI_DIR/macos/x64/*.app.tar.gz.sig`
+          WINDOWS_SIG=`cat $TAURI_DIR/nsis/*.nsis.zip.sig`
+          RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
+          jq --null-input \
+            --arg version "${VERSION}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
+            --arg mac_arm64_sig "$MAC_ARM64_SIG" \
+            --arg mac_arm64_url "$RELEASE_DIR/macos/arm64/${{ env.URL_CODED_NAME }}.app.tar.gz" \
+            --arg mac_x64_sig "$MAC_X64_SIG" \
+            --arg mac_x64_url "$RELEASE_DIR/macos/x64/${{ env.URL_CODED_NAME }}.app.tar.gz" \
+            --arg windows_sig "$WINDOWS_SIG" \
+            --arg windows_url "$RELEASE_DIR/nsis/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64-setup.nsis.zip" \
+            '{
+              "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
+              "platforms": {
+                "darwin-x86_64": {
+                  "signature": $mac_x64_sig,
+                  "url": $mac_x64_url
+                },
+                "darwin-aarch64": {
+                  "signature": $mac_arm64_sig,
+                  "url": $mac_arm64_url
+                },
+                "windows-x86_64": {
+                  "signature": $windows_sig,
+                  "url": $windows_url
+                }
+              }
+            }' > last_update.json
+            cat last_update.json
 
       - name: List artifacts
         run: "ls -R out"
@@ -259,41 +328,11 @@ jobs:
           parent: false
           destination: ${{ env.BUCKET_DIR }} 
 
-      - name: Generate the update static endpoint for tauri
-        if: false
-        run: |
-          TAURI_DIR=out/tauri/$VERSION
-          DARWIN_SIG=`cat $TAURI_DIR/macos/*.app.tar.gz.sig`
-          WINDOWS_SIG=`cat $TAURI_DIR/nsis/*.nsis.zip.sig`
-          RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
-          jq --null-input \
-            --arg version "${VERSION}" \
-            --arg pub_date "${PUB_DATE}" \
-            --arg notes "${NOTES}" \
-            --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}.app.tar.gz" \
-            --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/nsis/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64-setup.nsis.zip" \
-            '{
-              "version": $version,
-              "pub_date": $pub_date,
-              "notes": $notes,
-              "platforms": {
-                "darwin-x86_64": {
-                  "signature": $darwin_sig,
-                  "url": $darwin_url
-                },
-                "darwin-aarch64": {
-                  "signature": $darwin_sig,
-                  "url": $darwin_url
-                },
-                "windows-x86_64": {
-                  "signature": $windows_sig,
-                  "url": $windows_url
-                }
-              }
-            }' > last_update.json
-            cat last_update.json
+      - name: Upload download endpoint to public bucket
+        uses: google-github-actions/upload-cloud-storage@v2.1.3
+        with:
+          path: last_download.json
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to public bucket for tauri
         if: false
@@ -310,12 +349,6 @@ jobs:
         with:
           path: last_update.json
           destination: ${{ env.BUCKET_DIR_TAURI }}
-
-      # - name: Upload download endpoint to public bucket
-      #   uses: google-github-actions/upload-cloud-storage@v2.1.3
-      #   with:
-      #     path: last_download.json
-      #     destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to Github
         if: ${{ github.event_name == 'release' }}
