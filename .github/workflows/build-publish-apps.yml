@@ -251,7 +251,7 @@ jobs:
                 },
                 "msi-arm64": {
                   "url": $windows_arm64_url
-                }
+                },
                 "msi-x64": {
                   "url": $windows_x64_url
                 }
