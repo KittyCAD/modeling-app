@@ -217,6 +217,9 @@ test.describe('when using the file tree to', () => {
         createAndSelectProject,
         pasteCodeInEditor,
         createNewFile,
+        openDebugPanel,
+        closeDebugPanel,
+        expectCmdLog,
       } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -245,13 +248,25 @@ test.describe('when using the file tree to', () => {
       await pasteCodeInEditor(kclLego)
       const mainFile = page.getByRole('button', { name: 'main.kcl' })
 
+      // Open settings and enable the debug panel
+      await page.getByRole('link', {
+        name: 'settings Settings',
+      }).click()
+      await page.locator('#showDebugPanel').getByText('OffOn').click()
+      await page.getByTestId('settings-close-button').click()
+
       test.step('swap between small and large files', async () => {
+        await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
         await mainFile.click()
+        await expectCmdLog('[data-message-type="execution-done"]', 20_000)
         // Click the large file
         await legoFile.click()
         // Once it is building, click back to the smaller file
         await mainFile.click()
+        await expectCmdLog('[data-message-type="execution-done"]', 20_000)
+        await new Promise(() => {})
+        await closeDebugPanel()
       })
     }
   )
