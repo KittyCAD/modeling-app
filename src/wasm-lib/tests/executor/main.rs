@@ -1328,7 +1328,7 @@ const bracket = startSketchOn('XY')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
-    assert!(!result.is_err());
+    assert!(result.is_ok());
 }
 
 #[tokio::test(flavor = "multi_thread")]

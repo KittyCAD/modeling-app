@@ -89,7 +89,7 @@ const tabsR = startSketchOn(tabPlane)
        radius: holeDiam / 2,
        tags: [
          getNextAdjacentEdge(edge12),
-         getNextAdjacentEdge(edge13)
+         getNextAdjacentEdge(edge11)
        ]
      }, %)
   |> patternLinear3d({
