@@ -120,7 +120,7 @@ onmessage = (event: MessageEvent) => {
       console.error('Worker: Unknown message type', worker, eventType)
   }
 }
-;(async function () {
+;(async () => {
   if (err(fromServer)) return
   for await (const requests of fromServer.requests) {
     const encoded = Codec.encode(requests as jsrpc.JSONRPCRequest)
