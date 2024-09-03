@@ -8,8 +8,10 @@ import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
+import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
+import os from 'node:os'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -22,7 +24,19 @@ if (!process.env.NODE_ENV)
   console.warn(
     '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
   )
+// Default prod values
+
+// dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
+
+console.log(process.env)
+
+process.env.VITE_KC_API_WS_MODELING_URL ??=
+  'wss://api.zoo.dev/ws/modeling/commands'
+process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
+process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
+process.env.VITE_KC_SKIP_AUTH ??= 'false'
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -59,7 +73,7 @@ const createWindow = (): BrowserWindow => {
       preload: path.join(__dirname, './preload.js'),
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    frame: false,
+    frame: os.platform() !== 'darwin',
     titleBarStyle: 'hiddenInset',
   })
 
@@ -188,6 +202,36 @@ ipcMain.handle('find_machine_api', () => {
         resolve(`${ip}:${port}`)
       }
     )
+  })
+})
+
+export function getAutoUpdater(): AppUpdater {
+  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
+  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
+  const { autoUpdater } = electronUpdater
+  return autoUpdater
+}
+
+export async function checkForUpdates(autoUpdater: AppUpdater) {
+  // TODO: figure out how to get the update modal back
+  const result = await autoUpdater.checkForUpdatesAndNotify()
+  console.log(result)
+}
+
+app.on('ready', async () => {
+  const autoUpdater = getAutoUpdater()
+  checkForUpdates(autoUpdater)
+  const fifteenMinutes = 15 * 60 * 1000
+  setInterval(() => {
+    checkForUpdates(autoUpdater)
+  }, fifteenMinutes)
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('update-available', info)
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('update-downloaded', info)
   })
 })
 
