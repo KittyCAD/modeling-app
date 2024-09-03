@@ -593,7 +593,7 @@ export const modelingMachine = setup({
 
       await kclManager.updateAst(modifiedAst, true)
     },
-    'AST fillet': async (_, event) => {
+    'AST fillet': async ({ event }) => {
       const _event = event as Extract<ModelingMachineEvent, { type: 'Fillet' }>
       if (!_event.data) return
 
