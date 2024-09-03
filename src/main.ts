@@ -11,7 +11,7 @@ import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
-import os from  'node:os'
+import os from 'node:os'
 
 let mainWindow: BrowserWindow | null = null
 
