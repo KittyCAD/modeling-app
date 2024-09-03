@@ -61,7 +61,7 @@ export async function kclLspRun(
 }
 
 // WebWorker message handler.
-onmessage = (event: MessageEvent) => {
+onmessage = function (event: MessageEvent) {
   if (err(fromServer)) return
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
 
