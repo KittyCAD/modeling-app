@@ -216,6 +216,7 @@ export type ModelingMachineEvent =
       output: SketchDetails
     }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
+  | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {

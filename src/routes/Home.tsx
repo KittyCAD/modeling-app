@@ -228,8 +228,8 @@ const Home = () => {
               <h1 className="text-3xl font-bold">Your Projects</h1>
               <ActionButton
                 Element="button"
-                onClick={
-                  () => send({ type: 'Create project', data: { name: '' } })
+                onClick={() =>
+                  send({ type: 'Create project', data: { name: '' } })
                 }
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{

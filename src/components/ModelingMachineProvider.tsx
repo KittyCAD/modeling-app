@@ -268,11 +268,25 @@ export const ModelingMachineProvider = ({
         ),
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
-            const _event = event as Extract<
-              ModelingMachineEvent,
-              { type: 'Set selection' }
-            >
-            const setSelections = _event.data // this was needed for ts after adding 'Set selection' action to on done modal events
+            // this was needed for ts after adding 'Set selection' action to on done modal events
+            const setSelections =
+              ('data' in event &&
+                event.data &&
+                'selectionType' in event.data &&
+                event.data) ||
+              ('output' in event &&
+                event.output &&
+                'selectionType' in event.output &&
+                event.output) ||
+              null
+            if (!setSelections) return {}
+
+            console.log('from inside Set selection', {
+              event,
+              setSelections,
+              selectionRanges,
+              sketchDetails,
+            })
             const dispatchSelection = (selection?: EditorSelection) => {
               if (!selection) return // TODO less of hack for the below please
               if (!editorManager.editorView) return
