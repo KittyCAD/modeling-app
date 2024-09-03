@@ -36,7 +36,7 @@ win:
   signingHashAlgorithms:
     - sha256
   sign: "./sign-win.js"
-  publisherName: "KittyCAD Inc"
+  publisherName: "KittyCAD Inc"  # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
 
 msi:
