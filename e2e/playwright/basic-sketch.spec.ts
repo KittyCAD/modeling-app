@@ -116,13 +116,14 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
     await page.waitForTimeout(100)
   }
 
-
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
   if (openPanes.includes('code')) {
-    await expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    await expect(
+      await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
     await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
   }
 
