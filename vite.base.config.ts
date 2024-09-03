@@ -49,7 +49,7 @@ export function getDefineKeys(names: string[]) {
 
 export function getBuildDefine(env: ConfigEnv<'build'>) {
   const { command, forgeConfig } = env
-  const renderer = [
+  const renderer = (forgeConfig && forgeConfig.renderer) ?? [
     {
       name: 'main_window',
       config: 'vite.renderer.config.ts',

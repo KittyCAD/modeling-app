@@ -67,7 +67,7 @@ export default defineConfig((env) => {
     },
     build: {
       lib: {
-        entry: 'src/main.ts',
+        entry: forgeConfigSelf?.entry ?? 'src/main.ts',
         fileName: () => '[name].js',
         formats: ['cjs'],
       },

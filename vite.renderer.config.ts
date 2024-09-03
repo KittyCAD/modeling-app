@@ -9,7 +9,7 @@ import { lezer } from '@lezer/generator/rollup'
 export default defineConfig((env) => {
   const forgeEnv = env as ConfigEnv<'renderer'>
   const { root, mode, forgeConfigSelf } = forgeEnv
-  const name = 'main_window'
+  const name = forgeConfigSelf?.name ?? 'main_window'
 
   return {
     root,
