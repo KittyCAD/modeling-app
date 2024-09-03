@@ -249,9 +249,11 @@ test.describe('when using the file tree to', () => {
       const mainFile = page.getByRole('button', { name: 'main.kcl' })
 
       // Open settings and enable the debug panel
-      await page.getByRole('link', {
-        name: 'settings Settings',
-      }).click()
+      await page
+        .getByRole('link', {
+          name: 'settings Settings',
+        })
+        .click()
       await page.locator('#showDebugPanel').getByText('OffOn').click()
       await page.getByTestId('settings-close-button').click()
 
