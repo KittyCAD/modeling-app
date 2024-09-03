@@ -28,14 +28,17 @@ test.describe('Code pane and errors', () => {
 
     // Load the app with the working starter code
     await page.addInitScript(() => {
-      localStorage.setItem('persistCode', `// Extruded Triangle
+      localStorage.setItem(
+        'persistCode',
+        `// Extruded Triangle
 const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> line([-5, 10], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)`)
+const extrude001 = extrude(5, sketch001)`
+      )
     })
 
     await page.setViewportSize({ width: 1200, height: 500 })
