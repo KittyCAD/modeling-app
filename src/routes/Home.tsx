@@ -72,7 +72,7 @@ const Home = () => {
     homeMachine.provide({
       actions: {
         navigateToProject: ({ context, event }) => {
-          if (event.data && 'name' in event.data) {
+          if ('data' in event && event.data && 'name' in event.data) {
             let projectPath =
               context.defaultDirectory +
               window.electron.path.sep +
@@ -88,14 +88,28 @@ const Home = () => {
             navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
           }
         },
-        toastSuccess: ({ event }) => toast.success((event.data || '') + ''),
-        toastError: ({ event }) => toast.error((event.data || '') + ''),
+        toastSuccess: ({ event }) =>
+          toast.success(
+            ('data' in event && typeof event.data === 'string' && event.data) ||
+              ('output' in event &&
+                typeof event.output === 'string' &&
+                event.output) ||
+              ''
+          ),
+        toastError: ({ event }) =>
+          toast.error(
+            ('data' in event && typeof event.data === 'string' && event.data) ||
+              ('output' in event &&
+                typeof event.output === 'string' &&
+                event.output) ||
+              ''
+          ),
       },
       actors: {
         readProjects: fromPromise(() => listProjects()),
         createProject: fromPromise(async ({ input }) => {
           let name = (
-            input && 'name' in input
+            input && 'name' in input && input.name
               ? input.name
               : settings.projects.defaultProjectName.current
           ).trim()
@@ -137,7 +151,8 @@ const Home = () => {
       guards: {
         'Has at least 1 project': ({ event }) => {
           if (event.type !== 'xstate.done.actor.read-projects') return false
-          return event.data.length ? event.data.length >= 1 : false
+          console.log(`from has at least 1 project: ${event.output.length}`)
+          return event.output.length ? event.output.length >= 1 : false
         },
       },
     }),
@@ -214,7 +229,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={
-                  () => send({ type: 'Create project', data: { name: '' } }) // TODO: @frank to check this
+                  () => send({ type: 'Create project', data: { name: '' } })
                 }
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{

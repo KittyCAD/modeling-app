@@ -17,7 +17,7 @@ export const homeMachine = setup({
       | { type: 'navigate'; data: { name: string } }
       | {
           type: 'xstate.done.actor.read-projects'
-          data: Project[]
+          output: Project[]
         }
       | { type: 'assign'; data: { [key: string]: any } },
     input: {} as {
@@ -27,8 +27,9 @@ export const homeMachine = setup({
     },
   },
   actions: {
-    setProjects: assign(({ event }) => {
-      return { projects: event.data as Project[] }
+    setProjects: assign({
+      projects: ({ context, event }) =>
+        'output' in event ? event.output : context.projects,
     }),
     toastSuccess: () => {},
     toastError: () => {},
